@@ -21,7 +21,17 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
+from cyo_adventure.utils.logging import get_logger
+
+logger = get_logger(__name__)
+
 router = APIRouter(prefix="/health", tags=["health"])
+
+# Generic, non-leaking message returned to clients when a readiness probe fails.
+# The full exception is logged server-side (OWASP A09); raw exception text is
+# never serialized into the response body to avoid leaking DSN/host/driver detail.
+_CHECK_FAILED_MESSAGE = "dependency unavailable"
+_CHECK_FAILED_LOG = "readiness check failed"
 
 # Track application start time for uptime calculation
 _START_TIME = time.time()
@@ -98,13 +108,14 @@ async def check_database() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="database", error=str(exc))
         return ReadinessCheck(
             name="database",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 
@@ -132,13 +143,14 @@ async def check_cache() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="cache", error=str(exc))
         return ReadinessCheck(
             name="cache",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 
@@ -168,13 +180,14 @@ async def check_external_service() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="external_api", error=str(exc))
         return ReadinessCheck(
             name="external_api",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 
