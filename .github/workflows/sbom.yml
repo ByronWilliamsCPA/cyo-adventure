@@ -44,6 +44,10 @@ jobs:
     uses: ByronWilliamsCPA/.github/.github/workflows/python-sbom.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
     with:
       python-version: '3.12'
+      # cyo_adventure ships a build backend (it is an installable package), so the
+      # reusable workflow must NOT pass --no-build; otherwise `uv sync` errors with
+      # "marked as --no-build but has no binary distribution".
+      no-build: false
       fail-on-vulnerabilities: true
       severity-threshold: 'CRITICAL,HIGH'
       artifact-retention-days: 90

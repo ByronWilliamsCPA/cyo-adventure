@@ -15,7 +15,8 @@ be immediately remediated. Entries must be reviewed within 60 days of the Discov
 date. Any entry older than 60 days without reassessment blocks releases per the OpenSSF
 release gate policy.
 
-To add new entries, see [known-vulnerabilities-template.md](known-vulnerabilities-template.md).
+To add new entries, see the [known-vulnerabilities template](https://github.com/ByronWilliamsCPA/cyo-adventure/blob/main/.github/known-vulnerabilities-template.md)
+in the `.github/` directory.
 
 ## Active Entries
 

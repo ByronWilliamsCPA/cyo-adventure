@@ -21,10 +21,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Least-privilege at workflow level; jobs that need writes declare them locally.
+# (SonarCloud githubactions:S8233: no workflow-level write permissions.)
 permissions:
   contents: read
-  pull-requests: write
-  checks: write
 
 # Standalone CI workflow
 env:

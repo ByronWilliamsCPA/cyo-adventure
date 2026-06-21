@@ -19,8 +19,21 @@ path = [
     "benchmarks/**/*.py",
     "scripts/**/*.py",
     "modal/**/*.py",
+    ".claude/**/*.py",  # Claude skill helper scripts
     "*.py",
     "noxfile.py",
+]
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "2025 Byron Williams"
+
+# Frontend source code (React/TypeScript/JavaScript) - MIT
+[[annotations]]
+path = [
+    "frontend/src/**",
+    "frontend/*.ts",
+    "frontend/*.js",
+    "frontend/eslint.config.js",
+    "frontend/vite.config.ts",
 ]
 SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "2025 Byron Williams"
@@ -30,6 +43,8 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 path = [
     "docs/**",
     "*.md",
+    "frontend/README.md",  # Frontend documentation
+    "scripts/README.md",  # Scripts documentation
     "tmp_cleanup/**/*.md",  # Temporary reference files
     "benchmarks/*.md",  # Benchmark documentation (not reports)
     "!LICENSES/*.txt",  # Exclude actual license text files
@@ -114,6 +129,42 @@ path = [
     "Makefile",  # Build automation
     "justfile",  # Just command runner
     "Taskfile.yml",  # Task runner configuration
+    ".claude/**/*.json",  # Claude config and example files
+    ".claude/**/*.example",  # Claude example config files
+    ".cruft.json",  # Cruft template tracking metadata
+    ".dockerignore",  # Docker build context exclusions
+    ".editorconfig",  # Editor configuration
+    ".env.example",  # Environment variable template
+    ".infisical.json",  # Infisical secrets manager config
+    ".markdownlint.json",  # Markdownlint configuration
+    ".mutmut_config",  # Mutmut mutation testing config
+    ".prettierrc",  # Prettier formatter config
+    ".secrets.baseline",  # detect-secrets baseline
+    ".shellcheckrc",  # ShellCheck configuration
+    ".yamllint",  # yamllint configuration
+    "Dockerfile",  # Container build definition
+    "uv.lock",  # UV dependency lockfile for reproducible builds
+]
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileCopyrightText = "2025 Byron Williams"
+
+# Frontend configuration, lockfiles, and assets - CC0-1.0
+[[annotations]]
+path = [
+    "frontend/.env.example",  # Frontend environment template
+    "frontend/.gitignore",  # Frontend git exclusions
+    "frontend/.prettierrc",  # Frontend Prettier config
+    "frontend/Dockerfile",  # Frontend container build
+    "frontend/nginx.conf",  # Nginx serving config
+    "frontend/index.html",  # Vite entry HTML
+    "frontend/package.json",  # npm package manifest
+    "frontend/package-lock.json",  # npm dependency lockfile
+    "frontend/tsconfig.json",  # TypeScript base config
+    "frontend/tsconfig.app.json",  # TypeScript app config
+    "frontend/tsconfig.node.json",  # TypeScript node config
+    "frontend/public/**",  # Static public assets
+    "frontend/src/**/*.css",  # Frontend stylesheets
+    "frontend/src/assets/**",  # Frontend asset files
 ]
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileCopyrightText = "2025 Byron Williams"
