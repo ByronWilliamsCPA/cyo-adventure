@@ -34,10 +34,13 @@ This directory contains the essential planning documents for CYO Adventure.
 
 | Document | Purpose | Status |
 |----------|---------|--------|
-| [project-vision.md](./project-vision.md) | What & Why | Awaiting Generation |
-| [tech-spec.md](./tech-spec.md) | How to build | Awaiting Generation |
-| [roadmap.md](./roadmap.md) | Implementation plan | Awaiting Generation |
-| [adr/](./adr/) | Architecture decisions | Awaiting Generation |
+| [project-vision.md](./project-vision.md) | What & Why | Generated (2026-06-20) |
+| [tech-spec.md](./tech-spec.md) | How to build | Generated (2026-06-20) |
+| [roadmap.md](./roadmap.md) | Implementation plan | Generated (2026-06-20) |
+| [adr/](./adr/) | Architecture decisions | Generated (ADR-001 to 006) |
+
+> Source: synthesized from the Project Ariadne scoping handoff
+> (`tmp/project-ariadne-architecture.md` rev 3 and the Phase 0 punch list, 2026-06-20).
 
 ## Using Documents During Development
 

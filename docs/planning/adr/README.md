@@ -25,7 +25,12 @@ ADRs document significant architectural decisions along with their context and c
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
-| *No ADRs yet* | Generate with `/plan` command | - | - |
+| [ADR-001](./adr-001-story-format-json-storybook.md) | Story format is a versioned JSON Storybook graph | Proposed | 2026-06-20 |
+| [ADR-002](./adr-002-client-pwa.md) | Client is a Progressive Web App | Proposed | 2026-06-20 |
+| [ADR-003](./adr-003-frontier-llm-generation.md) | Frontier LLM for generation, local model as fallback | Proposed | 2026-06-20 |
+| [ADR-004](./adr-004-homelab-first-deployment.md) | Homelab-first deployment, Azure as the scale-out alternative | Proposed | 2026-06-20 |
+| [ADR-005](./adr-005-mandatory-human-approval.md) | Mandatory human approval before any story reaches a child | Proposed | 2026-06-20 |
+| [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Proposed | 2026-06-20 |
 
 ## Creating ADRs
 

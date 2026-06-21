@@ -1,0 +1,136 @@
+---
+title: "ADR-005: Mandatory human approval before any story reaches a child"
+schema_type: planning
+status: proposed
+owner: core-maintainer
+purpose: "Record the decision to gate every story behind a guardian approval state, enforced by a state machine."
+tags:
+  - planning
+  - architecture
+  - decisions
+---
+
+# ADR-005: Mandatory human approval before any story reaches a child
+
+> **Status**: Proposed
+> **Date**: 2026-06-20
+
+## TL;DR
+
+A story can enter a child's library only after a parent approves it, encoded as a state
+machine with no path from generation to a child profile that bypasses the `approved`
+state, because automated moderation helps but cannot be the only line for
+machine-generated content read by children.
+
+## Context
+
+### Problem
+
+The content is machine-generated and read by children. Automated moderation reduces
+risk but cannot be the sole safeguard; a person who knows the child must make the
+publish decision.
+
+### Constraints
+
+- **Technical**: the guarantee must be structural, not a convention a future code
+  change can erode.
+- **Business**: at family volume a manual step per story is acceptable; the design
+  should also future-proof a possible move beyond one family.
+
+### Significance
+
+This is the central child-safety guarantee. Getting it wrong means a generated story
+could reach a child unreviewed.
+
+## Decision
+
+**We will allow a story to enter a child's library only after a guardian approves it,
+encoded as a publish state machine with no bypass path to a child profile, because
+defense in depth requires an irreplaceable human layer.** Automated moderation and the
+validation gate run first and gate entry to review; they do not replace the human step.
+
+### Rationale
+
+The irreplaceable layer is a person who knows the child. Automated classifiers reduce
+what reaches review and flag riskier passages, but the publish decision stays human.
+This matches a sound child-safety stance and future-proofs the design if the app is
+ever shared beyond the family.
+
+## Options Considered
+
+### Option 1: State machine with a mandatory guardian approval transition ✓
+
+**Pros**:
+
+- ✅ A hard guarantee that a parent saw every story.
+- ✅ A clean audit trail (who approved which version, by which model and prompt).
+
+**Cons**:
+
+- ❌ A manual step per story. Acceptable at family volume; the Phase 3 review UI makes
+  it a few minutes.
+
+### Option 2: Automated moderation only
+
+**Pros**:
+
+- ✅ Zero manual effort.
+
+**Cons**:
+
+- ❌ No human who knows the child in the loop; a single classifier miss reaches a kid.
+  Rejected on child-safety grounds.
+
+## Consequences
+
+### Positive
+
+- ✅ A guaranteed parent review of every story, with provenance recorded per version.
+
+### Trade-offs
+
+- ⚠️ The publish state machine and an approver role are core, not optional. Mitigation:
+  the review surface (Phase 3) keeps each approval to a few minutes.
+
+### Technical Debt
+
+- The transition `in_review -> approved` requires a guardian; auto checks (validator
+  plus moderation) gate `generating -> in_review`, and failures route to
+  `needs_revision`. A story is visible to a child only in `published`.
+
+## Implementation
+
+### Components Affected
+
+1. **Publish state machine**: `draft -> generating -> auto_check -> in_review ->
+   approved -> published -> archived`, with `needs_revision` on failures.
+2. **Authorization**: an approver (guardian) role; child tokens cannot approve or
+   publish.
+3. **Provenance**: model, provider, prompt version, and approver persisted per
+   published version.
+
+### Testing Strategy
+
+- Integration: attempt every transition path and verify no route reaches a child
+  profile without a recorded guardian approval.
+- Safety: adversarial briefs are flagged and cannot be auto-published.
+
+## Validation
+
+### Success Criteria
+
+- [ ] No story reaches a child profile without a recorded guardian approval.
+- [ ] Adversarial briefs are flagged and cannot be auto-published.
+
+### Review Schedule
+
+- Initial: Phase 3 acceptance.
+- Ongoing: on any change to the publish or authorization model.
+
+## Related
+
+- [ADR-001](./adr-001-story-format-json-storybook.md): the validatable format the gate
+  depends on.
+- [ADR-003](./adr-003-frontier-llm-generation.md): the generator whose output this
+  gate reviews.
+- [Tech Spec: Publish state machine](../tech-spec.md#publish-state-machine)
