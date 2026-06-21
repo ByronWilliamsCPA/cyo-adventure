@@ -13,8 +13,8 @@ These directives apply to every AI agent session in this project, regardless of 
 
 - **Signed commits**: Sign every commit (`git commit -S`); never bypass with `--no-gpg-sign`.
 - **Conventional Commits**: Use the Conventional Commits format for every commit message and PR title.
-- **No em-dash**: Never use em-dash characters (`--`) in any output, including docs, comments,
-  commit messages, and ADRs. Replace with a comma, semicolon, colon, or restructured sentence.
+- **No em-dash**: Never use em-dash characters (Unicode U+2014) in any output, including docs,
+  comments, commit messages, and ADRs. Replace with a comma, semicolon, colon, or restructured sentence.
 - **RAD assumption tagging**: Tag assumptions that could cause production failures using
   `#CRITICAL`, `#ASSUME`, and `#EDGE` markers paired with `#VERIFY` instructions.
   Mandatory categories: timing dependencies, external resources, data integrity,

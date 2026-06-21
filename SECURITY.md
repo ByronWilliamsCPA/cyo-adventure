@@ -17,10 +17,10 @@ Or email: byronawilliams@gmail.com
 
 ## Response Timeline
 
-- Acknowledgement: within 48 hours
+- Acknowledgement: within 48 hours (14 days maximum)
 - Initial assessment: within 5 business days
 - Resolution target: 30 days for critical, 90 days for others
-- Maximum initial response: we commit to acknowledging all vulnerability reports within 14 days of submission.
+- We commit to acknowledging all vulnerability reports within 14 days of submission at the latest; our target is 48 hours.
 
 ## Organization Policy
 

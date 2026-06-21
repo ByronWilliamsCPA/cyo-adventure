@@ -58,8 +58,9 @@ in the same repository.
 
 **Backend** (`src/cyo_adventure/`):
 
-- **Python**: 3.10-3.14 supported (`requires-python = ">=3.10,<3.15"`); 3.12 is
-  the primary local target. CI tests all five versions via `nox`.
+- **Python**: 3.10+ supported (`requires-python = ">=3.10"`, no enforced upper
+  bound); 3.12 is the primary local target. CI tests Python 3.10 through 3.14
+  via `nox`.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`)

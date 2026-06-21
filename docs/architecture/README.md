@@ -74,8 +74,11 @@ Security middleware (`middleware/security.py`) enforces:
 - `X-Content-Type-Options: nosniff` and related OWASP-recommended headers
 
 All inputs are validated through Pydantic models before reaching business logic.
-Secrets are loaded from environment variables only; no secrets are committed to
-the repository.
+Secrets are loaded from environment variables. The only credential-like default
+committed to the repository is the localhost-only development database URL; a
+`model_validator` in `core/config.py` raises `ConfigurationError` if that
+development default is used in any non-local environment, so it cannot leak into
+deployed environments.
 
 ## Further Reading
 
