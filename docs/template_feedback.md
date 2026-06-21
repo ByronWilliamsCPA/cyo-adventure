@@ -12,7 +12,7 @@ tags:
 > **Purpose**: Document issues discovered in this project that should be addressed in the [cookiecutter-python-template](https://github.com/ByronWilliamsCPA/cookiecutter-python-template).
 >
 > **Generated From**: cookiecutter-python-template v0.1.0
-> **Project Created**: __PROJECT_CREATION_DATE__
+> **Project Created**: 2026-06-20
 
 ---
 
@@ -41,6 +41,72 @@ When working on this project, if you discover any issue that originates from the
 ## Feedback Items
 
 <!-- Add your feedback below this line -->
+
+### ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
+
+- **Priority**: Critical
+- **Category**: CI/CD
+- **Discovered**: 2026-06-20
+
+**Issue**: In the generated `.github/workflows/ci.yml`, the `frontend:` and
+`ci-gate:` job blocks are indented at column 0, placing them as top-level
+workflow keys instead of members of `jobs:`. GitHub Actions parses only the
+`test` job; `frontend` and `ci-gate` are silently ignored, so the `CI Gate`
+required status check is never produced.
+
+**Context**: Found during a repo-compliance audit via `yaml.safe_load`, which
+reported top-level keys `[name, on, concurrency, permissions, env, jobs,
+frontend, ci-gate]` with `jobs` containing only `test`.
+
+**Suggested Fix**: Correct the indentation in the template's `ci.yml` so all
+jobs nest under `jobs:`. Add a `yamllint`/parse check in the template CI to
+catch dedented job blocks.
+
+**Affected Files**: `.github/workflows/ci.yml`
+
+### Required pre-commit hooks are missing or fail-open in the generated config
+
+- **Priority**: High
+- **Category**: Security
+- **Discovered**: 2026-06-20
+
+**Issue**: The generated `.pre-commit-config.yaml` omits the `basedpyright`
+hook (PC-003, critical), the `no-em-dash` hook (PC-011), `commitizen`,
+`yamllint`, and `markdownlint`, and wraps `trufflehog` in a fail-open
+silent-skip (`command -v trufflehog ... || echo "...skipping"`) that passes
+when the tool is absent, defeating PC-005.
+
+**Context**: Found during a repo-compliance audit; corroborated by two
+independent auditors.
+
+**Suggested Fix**: Ship the full required hook set SHA-pinned, and make secret
+scanning fail closed (no `|| echo` fallback).
+
+**Affected Files**: `.pre-commit-config.yaml`
+
+### Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder
+
+- **Priority**: Medium
+- **Category**: Structure
+- **Discovered**: 2026-06-20
+
+**Issue**: Several baseline items drift from the standards manifest:
+`AGENTS.md` is not scaffolded at root (FOUND-010); `known-vulnerabilities.md`
+is placed at `.github/` instead of `docs/` (FOUND-009); a Jinja2 artifact
+`README.md.j2` is emitted into `.github/workflows/` (CI-013); `requires-python`
+carries a `<3.15` upper bound (FOUND-008); and `docs/template_feedback.md`
+ships with an unsubstituted `__PROJECT_CREATION_DATE__` placeholder.
+
+**Context**: Found during a repo-compliance audit of a freshly generated
+project.
+
+**Suggested Fix**: Scaffold `AGENTS.md`; output `known-vulnerabilities.md`
+under `docs/`; keep template-only files out of `.github/workflows/`; drop the
+`requires-python` upper bound; substitute the creation-date placeholder in the
+post-generation hook.
+
+**Affected Files**: `AGENTS.md`, `docs/known-vulnerabilities.md`,
+`.github/workflows/README.md.j2`, `pyproject.toml`, `docs/template_feedback.md`
 
 ### Planning document templates generate markdown that violates the repo markdownlint config
 

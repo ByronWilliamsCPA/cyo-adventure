@@ -84,9 +84,9 @@ Proposed → Accepted → [Deprecated | Superseded]
 
 ## Template Reference
 
-See `.claude/skills/project-planning/templates/adr-template.md` for the full template structure.
+For the full ADR template, see the ADR template documentation in the Reference section, or refer to `.claude/skills/project-planning/templates/adr-template.md` in the project repository.
 
 ## More Information
 
-- [Document Guide](../.claude/skills/project-planning/reference/document-guide.md)
-- [Prompting Patterns](../.claude/skills/project-planning/reference/prompting-patterns.md)
+- Document Guide: See `.claude/skills/project-planning/reference/document-guide.md` in the project repository
+- Prompting Patterns: See `.claude/skills/project-planning/reference/prompting-patterns.md` in the project repository

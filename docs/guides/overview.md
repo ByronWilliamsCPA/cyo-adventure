@@ -22,7 +22,7 @@ A choose-your-own-adventure reading app for kids
 
 ### Quality Assurance
 
-- **pytest** with comprehensive coverage
+- **pytest** with full test coverage
 - **Pre-commit hooks** for automated checks
 - **GitHub Actions** CI/CD pipeline
 

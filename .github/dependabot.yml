@@ -7,7 +7,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "03:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0  # Renovate is sole PR-opener; Dependabot detection-only
     reviewers:
       - "williaby"
     assignees:
@@ -32,7 +32,7 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "04:00"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 0  # Renovate is sole PR-opener; Dependabot detection-only
     reviewers:
       - "williaby"
     assignees:

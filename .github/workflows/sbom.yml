@@ -32,12 +32,16 @@ permissions:
   contents: read
   security-events: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   INFISICAL_DOMAIN: https://infisical.williamshome.family
 jobs:
   sbom:
     name: SBOM & Security
-    uses: williaby/.github/.github/workflows/python-sbom.yml@main
+    uses: williaby/.github/.github/workflows/python-sbom.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
     with:
       python-version: '3.12'
       fail-on-vulnerabilities: true

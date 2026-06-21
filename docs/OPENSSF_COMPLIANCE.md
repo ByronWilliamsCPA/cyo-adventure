@@ -17,14 +17,14 @@ This project follows [OpenSSF (Open Source Security Foundation)](https://openssf
 **Estimated Scorecard Score**: 9.0/10 (Excellent)
 **Best Practices Compliance**: 95%+ (Passing)
 
-This template implements comprehensive security controls including:
+This template implements the following security controls:
 
 - ✅ Signed releases with Sigstore/Cosign
 - ✅ SLSA Level 3 provenance attestations
 - ✅ Continuous fuzzing with ClusterFuzzLite
 - ✅ Branch protection with scoped permissions
 - ✅ Automated dependency updates
-- ✅ Comprehensive security scanning
+- ✅ All static-analysis security scanning
 
 ---
 
@@ -191,7 +191,7 @@ Automated dependency updates and vulnerability scanning.
 
 ### 7. Security Scanning (SAST) 🔍
 
-Comprehensive static analysis on every commit.
+Full static analysis on every commit.
 
 **Tools**:
 
@@ -276,7 +276,7 @@ The template meets 44/46 passing-level criteria:
 
 - ✅ Project website with clear description
 - ✅ OSI-approved license
-- ✅ Comprehensive documentation
+- ✅ Full project documentation
 - ✅ HTTPS for all sites
 - ✅ Discussion forum (GitHub Issues/Discussions)
 - ✅ English documentation

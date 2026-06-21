@@ -285,3 +285,9 @@ tmp_cleanup/.tmp-*
 # SonarCloud
 .scannerwork/
 .sonar/
+
+# Git worktrees
+.worktrees/
+
+# Compliance report outputs
+docs/compliance-reports/

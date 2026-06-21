@@ -73,7 +73,7 @@ uv run basedpyright src/
 
 ### 5. Generate Project Planning Documents
 
-Use Claude Code to generate comprehensive planning documents for your project:
+Use Claude Code to generate all planning documents for your project:
 
 ```bash
 # Open Claude Code and describe your project, then run:
@@ -90,7 +90,7 @@ This template includes an integrated AI-assisted project planning workflow that 
 
 ### Overview
 
-The planning workflow generates 4 core documents, then synthesizes them into a comprehensive project plan:
+The planning workflow generates 4 core documents, then synthesizes them into a full project plan:
 
 ```text
 Project Description
@@ -481,7 +481,7 @@ You can configure branch protection either via script (recommended) or manually 
 
 #### Option 1: Automated Setup (Recommended)
 
-Use the included script to configure comprehensive branch protection:
+Use the included script to configure full branch protection:
 
 ```bash
 # Set up branch protection with default settings
