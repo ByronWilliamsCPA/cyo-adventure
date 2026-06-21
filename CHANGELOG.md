@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial project setup and structure
+- `environment` setting plus a fail-fast guard that refuses to start outside a
+  local environment when the development default database URL is still in use
+- Unit tests for the database, health, config, and security modules, restoring
+  the 80% coverage gate
+
+### Changed
+- Readiness probes no longer return raw exception text to clients; failures are
+  logged server-side and a generic message is returned (OWASP A09)
+- Removed the deprecated org `python-pr-validation.yml` caller; PR-title and
+  conventional-commit validation are handled by `pr-title.yml` and `ci.yml`
+
+### Fixed
+- `mkdocs --strict` docs build (dangling known-vulnerabilities template link)
+- SBOM workflow caller now passes `no-build: false` for this installable package
+- Windows compatibility matrix `ParserError` (test step pinned to `shell: bash`)
+- REUSE compliance coverage for newly added files
+- Documentation consistency (SECURITY.md SLA, requires-python, docs claims)
 
 ## [0.1.0] - TBD
 
