@@ -33,12 +33,10 @@ class AgeBand(StrEnum):
 
 
 class VariableType(StrEnum):
-    """The type of a story state variable."""
+    """The type of a story state variable (v1 supports bool and int only)."""
 
     BOOL = "bool"
     INT = "int"
-    STRING = "string"
-    ENUM = "enum"
 
 
 class EffectOp(StrEnum):
@@ -98,7 +96,7 @@ class Variable(BaseModel):
 
     name: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     type: VariableType
-    initial: bool | int | str
+    initial: bool | int
     min: int | None = None
     max: int | None = None
     description: str = ""
@@ -112,10 +110,8 @@ class Variable(BaseModel):
         """
         if self.type is VariableType.BOOL:
             self._check_bool()
-        elif self.type is VariableType.INT:
+        else:  # INT
             self._check_int()
-        else:  # STRING or ENUM
-            self._check_text()
         return self
 
     def _reject_bounds(self) -> None:
@@ -139,24 +135,13 @@ class Variable(BaseModel):
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
         self._reject_bounds()
 
-    def _check_text(self) -> None:
-        """Validate a string or enum variable.
-
-        Raises:
-            ValueError: If the initial value is not a string or bounds are set.
-        """
-        if not isinstance(self.initial, str):
-            msg = f"{self.type.value} variable '{self.name}' needs a string initial"
-            raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
-        self._reject_bounds()
-
     def _check_int(self) -> None:
         """Validate an integer variable and its bounds.
 
         Raises:
             ValueError: If the initial value is not integral or out of bounds.
         """
-        if isinstance(self.initial, bool) or not isinstance(self.initial, int):
+        if isinstance(self.initial, bool):
             msg = f"int variable '{self.name}' needs an integer initial value"
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
         self._check_int_bounds()
@@ -168,8 +153,6 @@ class Variable(BaseModel):
             ValueError: If min > max or the initial value is out of bounds.
         """
         initial = self.initial
-        if not isinstance(initial, int):  # pragma: no cover - guarded by caller
-            return
         if self.min is not None and self.max is not None and self.min > self.max:
             msg = f"int variable '{self.name}' has min greater than max"
             raise ValueError(msg)
@@ -192,7 +175,7 @@ class Effect(BaseModel):
 
     op: EffectOp
     var: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
-    value: bool | int | str | None = None
+    value: bool | int | None = None
     once: bool = False
 
     @model_validator(mode="after")
@@ -301,12 +284,26 @@ class Storybook(BaseModel):
         Returns:
             Self: The validated model.
         """
+        self._check_schema_version()
         self._check_unique_ids()
         self._check_start_node()
         self._check_tier_variables()
         self._check_variable_references()
         self._check_ending_count()
         return self
+
+    def _check_schema_version(self) -> None:
+        """Reject a schema_version this model does not implement.
+
+        Raises:
+            ValueError: If ``schema_version`` is not the supported version.
+        """
+        if self.schema_version != SCHEMA_VERSION:
+            msg = (
+                f"unsupported schema_version '{self.schema_version}'; "
+                f"this model implements {SCHEMA_VERSION}"
+            )
+            raise ValueError(msg)
 
     def _check_unique_ids(self) -> None:
         """Reject duplicate node, choice, and ending ids."""
@@ -338,14 +335,21 @@ class Storybook(BaseModel):
             raise ValueError(msg)
 
     def _check_variable_references(self) -> None:
-        """Reject conditions or effects that reference undeclared variables."""
-        declared = {variable.name for variable in self.variables}
+        """Reject effects or conditions that misuse declared variables.
+
+        Verifies that every effect and condition references a declared variable,
+        and that each effect's operation and value agree with the target
+        variable's declared type: ``inc``/``dec`` require an int target, and a
+        ``set`` value must match the target variable's type.
+        """
+        by_name = {variable.name: variable for variable in self.variables}
+        declared = set(by_name)
         for node in self.nodes:
             for effect in node.on_enter:
-                self._require_declared(effect.var, declared, node.id)
+                self._check_effect(effect, by_name, node.id)
             for choice in node.choices:
                 for effect in choice.effects:
-                    self._require_declared(effect.var, declared, node.id)
+                    self._check_effect(effect, by_name, node.id)
                 if choice.condition is not None:
                     for name in referenced_vars(choice.condition):
                         self._require_declared(name, declared, node.id)
@@ -364,6 +368,47 @@ class Storybook(BaseModel):
         """
         if name not in declared:
             msg = f"node '{node_id}' references undeclared variable '{name}'"
+            raise ValueError(msg)
+
+    @staticmethod
+    def _check_effect(
+        effect: Effect, by_name: dict[str, Variable], node_id: str
+    ) -> None:
+        """Reject an effect targeting an undeclared or type-incompatible variable.
+
+        Args:
+            effect (Effect): The effect to validate.
+            by_name (dict[str, Variable]): Declared variables keyed by name.
+            node_id (str): The node where the effect occurs (for the message).
+
+        Raises:
+            ValueError: If the target is undeclared, or the operation or value
+                disagrees with the target variable's declared type.
+        """
+        variable = by_name.get(effect.var)
+        if variable is None:
+            msg = f"node '{node_id}' references undeclared variable '{effect.var}'"
+            raise ValueError(msg)
+        if effect.op in (EffectOp.INC, EffectOp.DEC):
+            if variable.type is not VariableType.INT:
+                msg = (
+                    f"node '{node_id}': {effect.op.value} effect requires an int "
+                    f"variable, but '{effect.var}' is {variable.type.value}"
+                )
+                raise ValueError(msg)
+        elif variable.type is VariableType.BOOL and not isinstance(effect.value, bool):
+            msg = (
+                f"node '{node_id}': set effect on bool variable '{effect.var}' "
+                "requires a boolean value"
+            )
+            raise ValueError(msg)
+        elif variable.type is VariableType.INT and (
+            isinstance(effect.value, bool) or not isinstance(effect.value, int)
+        ):
+            msg = (
+                f"node '{node_id}': set effect on int variable '{effect.var}' "
+                "requires an integer value"
+            )
             raise ValueError(msg)
 
     def _check_ending_count(self) -> None:

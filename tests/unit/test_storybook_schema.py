@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -232,10 +233,10 @@ def test_set_effect_requires_value() -> None:
 
 @pytest.mark.unit
 def test_inc_effect_requires_integer_value() -> None:
-    """An inc effect with a non-integer value fails validation."""
+    """An inc effect with a non-integer (boolean) value fails validation."""
     story = _tier2_with_state()
     story["nodes"][0]["choices"][0]["effects"] = [
-        {"op": "inc", "var": "courage", "value": "lots"}
+        {"op": "inc", "var": "courage", "value": True}
     ]
     with pytest.raises(ValidationError, match="requires an integer value"):
         Storybook.model_validate(story)
@@ -326,9 +327,9 @@ def test_bool_variable_rejects_bounds() -> None:
 
 @pytest.mark.unit
 def test_int_variable_rejects_non_int_initial() -> None:
-    """An int variable with a string initial value is rejected."""
+    """An int variable with a boolean initial value is rejected."""
     story = _tier2_with_state()
-    story["variables"][1]["initial"] = "zero"
+    story["variables"][1]["initial"] = True
     with pytest.raises(ValidationError, match="needs an integer initial"):
         Storybook.model_validate(story)
 
@@ -355,13 +356,15 @@ def test_int_variable_rejects_initial_below_min() -> None:
 
 
 @pytest.mark.unit
-def test_string_variable_rejects_bounds() -> None:
-    """A string variable that declares min/max is rejected."""
+def test_unknown_variable_type_rejected() -> None:
+    """A variable using a removed/unknown type (string, enum) is rejected.
+
+    v1 supports only ``bool`` and ``int``; ``string`` and ``enum`` are not
+    valid VariableType members and must fail at parse time.
+    """
     story = _tier2_with_state()
-    story["variables"].append(
-        {"name": "color", "type": "string", "initial": "red", "min": 0}
-    )
-    with pytest.raises(ValidationError, match="must not declare min/max"):
+    story["variables"].append({"name": "color", "type": "string", "initial": "red"})
+    with pytest.raises(ValidationError):
         Storybook.model_validate(story)
 
 
@@ -417,3 +420,68 @@ def test_deepcopy_helpers_are_independent() -> None:
     two = deepcopy(one)
     one["nodes"][0]["choices"][0]["label"] = "changed"
     assert two["nodes"][0]["choices"][0]["label"] == "Open it"
+
+
+@pytest.mark.unit
+def test_ending_node_with_choices_rejected() -> None:
+    """An ending node that also declares choices is rejected."""
+    story = _minimal_tier1()
+    story["nodes"][1]["choices"] = [{"id": "c2", "label": "Linger", "target": "start"}]
+    with pytest.raises(ValidationError, match="must have no choices"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_choice_effect_referencing_undeclared_var_rejected() -> None:
+    """A choice effect mutating an undeclared variable is rejected."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["effects"] = [
+        {"op": "set", "var": "ghost", "value": True}
+    ]
+    with pytest.raises(ValidationError, match="undeclared variable 'ghost'"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_inc_effect_on_non_int_variable_rejected() -> None:
+    """An inc effect targeting a bool variable is rejected."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["effects"] = [
+        {"op": "inc", "var": "has_lantern", "value": 1}
+    ]
+    with pytest.raises(ValidationError, match="inc effect requires an int variable"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_set_effect_type_mismatch_rejected() -> None:
+    """A set effect whose value type disagrees with the variable is rejected."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["effects"] = [
+        {"op": "set", "var": "courage", "value": True}
+    ]
+    with pytest.raises(ValidationError, match="requires an integer value"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_unsupported_schema_version_rejected() -> None:
+    """A story declaring an unsupported schema_version is rejected."""
+    story = _minimal_tier1()
+    story["schema_version"] = "2.0"
+    with pytest.raises(ValidationError, match="unsupported schema_version"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_committed_schema_is_current() -> None:
+    """The committed JSON Schema matches the model (guards against drift)."""
+    committed_path = (
+        Path(__file__).resolve().parents[2] / "schema" / "storybook.schema.json"
+    )
+    committed = committed_path.read_text(encoding="utf-8")
+    regenerated = json.dumps(build_schema(), indent=2, sort_keys=True) + "\n"
+    assert committed == regenerated, (
+        "schema/storybook.schema.json is stale; regenerate via "
+        "`python -m cyo_adventure.storybook.schema_export`"
+    )
