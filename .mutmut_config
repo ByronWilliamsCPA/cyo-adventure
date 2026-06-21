@@ -1,0 +1,37 @@
+
+# Mutmut configuration for CYO Adventure
+# See: https://mutmut.readthedocs.io/en/latest/
+#
+# Mutation testing verifies that your tests actually catch bugs by introducing
+# small changes (mutations) to your code and checking if tests fail.
+#
+# Usage:
+#   mutmut run            # Run mutation testing
+#   mutmut results        # Show results summary
+#   mutmut show <id>      # Show details of a specific mutant
+#   mutmut html           # Generate HTML report
+
+[mutmut]
+# Paths to mutate (core source code)
+paths_to_mutate = src/cyo_adventure/
+
+# Paths to exclude from mutation (tests, generated code, UI)
+paths_to_exclude = src/__pycache__/,tests/,docs/,.venv/
+
+# Test command to run (fast, fail-fast for efficiency)
+test_command = pytest tests/unit/ -x --disable-warnings -q
+
+# Test timeout in seconds (prevent hanging on infinite loops)
+test_timeout = 60
+
+# Number of mutations to run in parallel
+processes = auto
+
+# Cache directory for mutation results
+cache_dir = .mutmut-cache
+
+# Skip equivalent mutants (mutations that don't change behavior)
+skip_equivalent_operators = True
+
+# Mutation score threshold (percentage) - uncomment to enforce
+# fail_under = 80

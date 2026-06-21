@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation
+    url: https://cyo-adventure.readthedocs.io
+    about: Check our documentation for usage guides and API reference
+  - name: Discussions
+    url: https://github.com/williaby/cyo_adventure/discussions
+    about: Ask questions and share ideas in GitHub Discussions

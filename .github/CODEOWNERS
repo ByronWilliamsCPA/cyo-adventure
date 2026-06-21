@@ -1,0 +1,37 @@
+# CODEOWNERS for CYO Adventure
+# This file defines code ownership for automated review assignment
+# and branch protection enforcement.
+#
+# Format: path/pattern @github-username or @organization/team
+# Documentation: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for all files
+*                          @williaby
+
+# Documentation
+/docs/**                   @williaby
+*.md                       @williaby
+
+# GitHub workflows and configuration
+/.github/workflows/**      @williaby
+/.github/**                @williaby
+
+# Source code
+/src/**                    @williaby
+
+# Tests
+/tests/**                  @williaby
+
+# Configuration files
+pyproject.toml             @williaby
+uv.lock                    @williaby
+.pre-commit-config.yaml    @williaby
+mkdocs.yml                 @williaby
+
+# Security and compliance
+LICENSE                    @williaby
+
+# CI/CD and tooling
+/scripts/**                @williaby
+/tools/**                  @williaby
+noxfile.py                 @williaby

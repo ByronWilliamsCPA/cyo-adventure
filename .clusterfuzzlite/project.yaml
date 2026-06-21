@@ -1,0 +1,11 @@
+# ClusterFuzzLite Project Configuration
+# https://google.github.io/clusterfuzzlite/
+
+# Python fuzzing configuration
+language: python
+
+# Build mode for fuzzing
+# - coverage: For measuring fuzzing coverage
+# - address: For detecting memory safety issues
+# - undefined: For detecting undefined behavior
+main_repo: https://github.com/williaby/cyo-adventure.git
