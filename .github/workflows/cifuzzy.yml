@@ -82,7 +82,11 @@ jobs:
           output-sarif: true
 
       - name: Upload SARIF
-        if: always() && steps.check-fuzz.outputs.has-targets == 'true'
+        # Only upload when a SARIF was actually produced. ClusterFuzzLite emits
+        # results.sarif only when the fuzz run finds a crash; with no crash the
+        # file is absent and an unconditional upload fails on the missing path.
+        # (Matches the dna/cifuzzy.yml reference pattern.)
+        if: always() && steps.check-fuzz.outputs.has-targets == 'true' && hashFiles('results.sarif') != ''
         uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
         with:
           sarif_file: results.sarif
