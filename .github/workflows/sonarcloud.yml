@@ -4,7 +4,7 @@
 # The reusable workflow uses sonarqube-scan-action v7.2.0, which resolves
 # the /analysis/analyses 404 bug encountered with v4.x on new projects.
 #
-# SonarCloud Dashboard: https://sonarcloud.io/dashboard?id=williaby_cyo_adventure
+# SonarCloud Dashboard: https://sonarcloud.io/dashboard?id=ByronWilliamsCPA_cyo-adventure
 #
 # Note: This workflow requires SONAR_TOKEN secret to be configured.
 # If not configured, the reusable workflow will skip gracefully.
@@ -37,8 +37,8 @@ jobs:
       pull-requests: write
     uses: ByronWilliamsCPA/.github/.github/workflows/python-sonarcloud.yml@961eb17d8e9b7fe0d8bfc5dbe9d23c824484fb11  # main
     with:
-      sonar-organization: 'williaby'
-      sonar-project-key: 'williaby_cyo_adventure'
+      sonar-organization: 'byronwilliamscpa'
+      sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'
       python-version: '3.12'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'

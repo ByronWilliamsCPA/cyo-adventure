@@ -2,7 +2,7 @@
 # OpenSSF Scorecard for CYO Adventure
 # Security posture assessment and supply chain security validation.
 #
-# Dashboard: https://securityscorecards.dev/viewer/?uri=github.com/williaby/cyo_adventure
+# Dashboard: https://securityscorecards.dev/viewer/?uri=github.com/ByronWilliamsCPA/cyo-adventure
 # Documentation: https://github.com/ossf/scorecard
 name: OpenSSF Scorecard
 

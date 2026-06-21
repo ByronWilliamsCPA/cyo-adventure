@@ -41,7 +41,7 @@ All configuration files have been created in `/home/user/cookiecutter-python-tem
 - **Cookiecutter Variables**:
   - `cyo_adventure` - Package name
   - `Byron Williams` - Copyright holder
-  - `https://github.com/williaby/cyo-adventure` - Download location
+  - `https://github.com/ByronWilliamsCPA/cyo-adventure` - Download location
   - `MIT` - Primary license for source code
 - **License Categories**:
   - Source code (Python, tools, tests): `MIT` (user-selected)
@@ -71,7 +71,7 @@ All configuration files have been created in `/home/user/cookiecutter-python-tem
   - `A choose-your-own-adventure reading app for kids` - Site description
   - `Byron Williams` - Author and copyright holder
   - `https://cyo-adventure.readthedocs.io` - Documentation site URL
-  - `https://github.com/williaby/cyo-adventure` - Repository URL
+  - `https://github.com/ByronWilliamsCPA/cyo-adventure` - Repository URL
   - `williaby` - GitHub org/user in repo name
   - `cyo_adventure` - Project slug for repo name
 - **Features**:
@@ -154,7 +154,7 @@ All templates use the following cookiecutter variables from `cookiecutter.json`:
 | `williaby` | string | "yourusername" | renovate.json |
 | `williaby` | auto | Derived from github_username | mkdocs.yml |
 | `MIT` | choice | Apache-2.0 (default) | REUSE.toml |
-| `https://github.com/williaby/cyo-adventure` | auto | Derived from github info | REUSE.toml, mkdocs.yml |
+| `https://github.com/ByronWilliamsCPA/cyo-adventure` | auto | Derived from github info | REUSE.toml, mkdocs.yml |
 | `https://cyo-adventure.readthedocs.io` | auto | Derived from project_slug | mkdocs.yml |
 | `80` | string | "80" | codecov.yml |
 | `3.12` | choice | 3.12 (default) | noxfile.py |

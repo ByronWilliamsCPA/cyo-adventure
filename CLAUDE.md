@@ -48,7 +48,7 @@ This feedback will be shared with the template team to improve the cookiecutter 
 **Name**: CYO Adventure
 **Description**: A choose-your-own-adventure reading app for kids
 **Author**: Byron Williams <byronawilliams@gmail.com>
-**Repository**: https://github.com/williaby/cyo-adventure
+**Repository**: https://github.com/ByronWilliamsCPA/cyo-adventure
 **Created**: 2026-06-20
 
 ### Technology Stack

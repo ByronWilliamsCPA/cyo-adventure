@@ -156,4 +156,4 @@ If fuzzing discovers a security vulnerability:
 
 1. **DO NOT** commit crash samples to the repository
 2. Report to byronawilliams@gmail.com
-3. See [Security Policy](https://github.com/williaby/.github/blob/main/SECURITY.md)
+3. See [Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)

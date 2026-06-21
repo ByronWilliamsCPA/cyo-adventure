@@ -11,7 +11,7 @@
 Do not open a public GitHub issue for security vulnerabilities.
 
 Use GitHub Security Advisories to report privately:
-[Private Vulnerability Reporting](https://github.com/williaby/cyo-adventure/security/advisories/new)
+[Private Vulnerability Reporting](https://github.com/ByronWilliamsCPA/cyo-adventure/security/advisories/new)
 
 Or email: byronawilliams@gmail.com
 
@@ -24,7 +24,7 @@ Or email: byronawilliams@gmail.com
 
 ## Organization Policy
 
-See also: [williaby organization Security Policy](https://github.com/williaby/.github/blob/main/SECURITY.md)
+See also: [ByronWilliamsCPA organization Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)
 
 ## Security Surface
 

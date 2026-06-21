@@ -23,7 +23,7 @@ Thank you for your interest in contributing to CYO Adventure!
 
 ```bash
 # Clone the repository
-git clone https://github.com/williaby/cyo-adventure
+git clone https://github.com/ByronWilliamsCPA/cyo-adventure
 cd cyo_adventure
 
 # Install dependencies

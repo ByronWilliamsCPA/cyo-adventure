@@ -8,4 +8,4 @@ language: python
 # - coverage: For measuring fuzzing coverage
 # - address: For detecting memory safety issues
 # - undefined: For detecting undefined behavior
-main_repo: https://github.com/williaby/cyo-adventure.git
+main_repo: https://github.com/ByronWilliamsCPA/cyo-adventure.git

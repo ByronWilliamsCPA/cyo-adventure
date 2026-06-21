@@ -149,6 +149,7 @@ dmypy.json
 # IDE specific files
 .vscode/
 .idea/
+.sonarlint/
 *.swp
 *.swo
 *~

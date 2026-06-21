@@ -15,7 +15,7 @@ Thank you for your interest in contributing to CYO Adventure! This document prov
 
 ## Code of Conduct
 
-This project adheres to the [williaby organization Code of Conduct](https://github.com/williaby/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to byronawilliams@gmail.com.
+This project adheres to the [ByronWilliamsCPA organization Code of Conduct](https://github.com/ByronWilliamsCPA/.github/blob/main/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to byronawilliams@gmail.com.
 
 ## Getting Started
 
@@ -30,7 +30,7 @@ This project adheres to the [williaby organization Code of Conduct](https://gith
 
 ```bash
 # Clone the repository
-git clone https://github.com/williaby/cyo-adventure.git
+git clone https://github.com/ByronWilliamsCPA/cyo-adventure.git
 cd cyo_adventure
 
 # Install dependencies with UV
@@ -430,9 +430,9 @@ Use the feature request template and include:
 
 ## Questions?
 
-- **General Questions**: Open a [GitHub Discussion](https://github.com/williaby/cyo-adventure/discussions)
-- **Bug Reports**: Open a [GitHub Issue](https://github.com/williaby/cyo-adventure/issues)
-- **Security Issues**: See [williaby Security Policy](https://github.com/williaby/.github/blob/main/SECURITY.md)
+- **General Questions**: Open a [GitHub Discussion](https://github.com/ByronWilliamsCPA/cyo-adventure/discussions)
+- **Bug Reports**: Open a [GitHub Issue](https://github.com/ByronWilliamsCPA/cyo-adventure/issues)
+- **Security Issues**: See [ByronWilliamsCPA Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)
 - **Email**: byronawilliams@gmail.com
 
 ## Recognition

@@ -6,8 +6,8 @@ site_name: CYO Adventure
 site_description: A choose-your-own-adventure reading app for kids
 site_author: Byron Williams
 site_url: https://cyo-adventure.readthedocs.io
-repo_url: https://github.com/williaby/cyo-adventure
-repo_name: williaby/cyo_adventure
+repo_url: https://github.com/ByronWilliamsCPA/cyo-adventure
+repo_name: ByronWilliamsCPA/cyo-adventure
 edit_uri: edit/main/docs/
 
 # Copyright

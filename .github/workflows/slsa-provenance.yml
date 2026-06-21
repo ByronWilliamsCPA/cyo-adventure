@@ -99,7 +99,7 @@ jobs:
   slsa:
     name: SLSA Level 3
     needs: [build]
-    uses: williaby/.github/.github/workflows/python-slsa.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-slsa.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true

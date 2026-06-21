@@ -25,8 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - README with project overview and quick start
 - CONTRIBUTING guidelines with development workflow
-- References to williaby org-level Security Policy
-- References to williaby org-level Code of Conduct
+- References to ByronWilliamsCPA org-level Security Policy
+- References to ByronWilliamsCPA org-level Code of Conduct
 
 ### Infrastructure
 - Poetry dependency management with lock file
@@ -41,5 +41,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/williaby/cyo_adventure/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/williaby/cyo_adventure/releases/tag/v0.1.0
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/releases/tag/v0.1.0

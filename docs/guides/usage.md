@@ -22,7 +22,7 @@ pip install cyo-adventure
 ### From Source
 
 ```bash
-git clone https://github.com/williaby/cyo-adventure
+git clone https://github.com/ByronWilliamsCPA/cyo-adventure
 cd cyo_adventure
 uv sync --all-extras
 ```

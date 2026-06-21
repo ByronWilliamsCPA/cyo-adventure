@@ -6,7 +6,7 @@
 version = 1
 SPDX-PackageName = "cyo_adventure"
 SPDX-PackageSupplier = "Byron Williams"
-SPDX-PackageDownloadLocation = "https://github.com/williaby/cyo-adventure"
+SPDX-PackageDownloadLocation = "https://github.com/ByronWilliamsCPA/cyo-adventure"
 
 # Source code (Python, tools, tests) - MIT
 [[annotations]]

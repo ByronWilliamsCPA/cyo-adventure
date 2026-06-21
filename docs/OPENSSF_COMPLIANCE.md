@@ -51,15 +51,15 @@ brew install cosign  # macOS
 # or download from https://github.com/sigstore/cosign/releases
 
 # Download release artifacts
-wget https://github.com/williaby/cyo_adventure/releases/download/v1.0.0/package.whl
-wget https://github.com/williaby/cyo_adventure/releases/download/v1.0.0/package.whl.sig
-wget https://github.com/williaby/cyo_adventure/releases/download/v1.0.0/package.whl.pem
+wget https://github.com/ByronWilliamsCPA/cyo-adventure/releases/download/v1.0.0/package.whl
+wget https://github.com/ByronWilliamsCPA/cyo-adventure/releases/download/v1.0.0/package.whl.sig
+wget https://github.com/ByronWilliamsCPA/cyo-adventure/releases/download/v1.0.0/package.whl.pem
 
 # Verify signature
 cosign verify-blob \
   --certificate package.whl.pem \
   --signature package.whl.sig \
-  --certificate-identity-regexp="https://github.com/williaby/cyo_adventure" \
+  --certificate-identity-regexp="https://github.com/ByronWilliamsCPA/cyo-adventure" \
   --certificate-oidc-issuer="https://token.actions.githubusercontent.com" \
   package.whl
 ```
@@ -81,12 +81,12 @@ cosign verify-blob \
 
 ```bash
 # Download provenance file
-wget https://github.com/williaby/cyo_adventure/releases/download/v1.0.0/attestation.intoto.jsonl
+wget https://github.com/ByronWilliamsCPA/cyo-adventure/releases/download/v1.0.0/attestation.intoto.jsonl
 
 # Verify with slsa-verifier
 slsa-verifier verify-artifact package.whl \
   --provenance-path attestation.intoto.jsonl \
-  --source-uri github.com/williaby/cyo_adventure
+  --source-uri github.com/ByronWilliamsCPA/cyo-adventure
 ```
 
 ### 3. Continuous Fuzzing 🐛
@@ -146,7 +146,7 @@ python scripts/setup_github_protection.py
 
 **Manual setup**:
 
-1. Go to: `https://github.com/williaby/cyo_adventure/settings/branches`
+1. Go to: `https://github.com/ByronWilliamsCPA/cyo-adventure/settings/branches`
 2. Click "Add branch protection rule"
 3. Apply protection pattern: `main`
 4. Enable all recommended protections
@@ -396,8 +396,8 @@ The template meets 44/46 passing-level criteria:
 ## Getting Help
 
 **Security Questions**: byronawilliams@gmail.com
-**Vulnerability Reports**: See [Security Policy](https://github.com/williaby/.github/blob/main/SECURITY.md)
-**General Issues**: [GitHub Issues](https://github.com/williaby/cyo-adventure/issues)
+**Vulnerability Reports**: See [Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)
+**General Issues**: [GitHub Issues](https://github.com/ByronWilliamsCPA/cyo-adventure/issues)
 
 ---
 

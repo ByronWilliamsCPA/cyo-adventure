@@ -30,7 +30,7 @@ These directives apply to every AI agent session in this project, regardless of 
 
 **Name**: CYO Adventure
 **Description**: A choose-your-own-adventure reading app for kids
-**Repository**: https://github.com/williaby/cyo-adventure
+**Repository**: https://github.com/ByronWilliamsCPA/cyo-adventure
 **Language**: Python 3.12 (backend), React 19 / TypeScript (frontend)
 **Package manager**: UV
 
