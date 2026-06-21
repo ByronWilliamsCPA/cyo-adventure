@@ -1,0 +1,104 @@
+{
+  "schema_version": "1.0",
+  "id": "s_courage_gate",
+  "version": 1,
+  "title": "The Courage Gate",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.5, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["bravery", "challenge"],
+    "estimated_minutes": 20,
+    "ending_count": 2,
+    "content_flags": {"violence": "none", "scariness": "mild", "peril": "mild"}
+  },
+  "variables": [
+    {
+      "name": "courage",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 5,
+      "description": "The player's accumulated courage score"
+    }
+  ],
+  "start_node": "n_village",
+  "nodes": [
+    {
+      "id": "n_village",
+      "body": "The village elder asks you to face the trial. Do you accept?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_accept_trial",
+          "label": "Accept the trial bravely.",
+          "target": "n_trial",
+          "effects": [{"op": "inc", "var": "courage", "value": 2}]
+        },
+        {
+          "id": "c_decline_trial",
+          "label": "Politely decline and help in the village instead.",
+          "target": "n_village_help"
+        }
+      ]
+    },
+    {
+      "id": "n_village_help",
+      "body": "You help carry water and stack grain. The villagers thank you warmly.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_help_courage",
+          "label": "Keep helping until you feel ready.",
+          "target": "n_gate",
+          "effects": [{"op": "inc", "var": "courage", "value": 1}]
+        }
+      ]
+    },
+    {
+      "id": "n_trial",
+      "body": "You face the spinning blades of the trial. Your heart pounds.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_push_through",
+          "label": "Push through with everything you have.",
+          "target": "n_gate",
+          "effects": [{"op": "inc", "var": "courage", "value": 1}]
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "You stand before the ancient gate. Only the truly brave may pass.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pass_gate",
+          "label": "Step through the courage gate.",
+          "target": "n_beyond",
+          "condition": {">=": [{"var": "courage"}, 3]}
+        },
+        {
+          "id": "c_turn_back",
+          "label": "Turn back and live peacefully.",
+          "target": "n_peaceful_life"
+        }
+      ]
+    },
+    {
+      "id": "n_beyond",
+      "body": "Beyond the gate lies a kingdom that has awaited a champion for a century.",
+      "is_ending": true,
+      "ending": {"id": "e_champion", "type": "triumph", "title": "Champion of the Gate"},
+      "choices": []
+    },
+    {
+      "id": "n_peaceful_life",
+      "body": "You return to the village and live happily among the people you helped.",
+      "is_ending": true,
+      "ending": {"id": "e_peaceful", "type": "peaceful", "title": "A Quiet Life"},
+      "choices": []
+    }
+  ]
+}

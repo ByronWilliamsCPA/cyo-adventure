@@ -1,0 +1,399 @@
+"""Storybook schema v1 (Pydantic v2).
+
+The Storybook is the single artifact the reader plays and the pipeline produces:
+a versioned JSON graph of passages and choices with optional state for older
+readers. This module is the one place the schema is defined; the JSON Schema at
+``schema/storybook.schema.json`` is exported from it (see ``schema_export``).
+
+The models enforce the *local, structural* invariants of a story: unique node,
+choice, and ending ids; the ``is_ending`` / ``ending`` / ``choices`` agreement;
+whitelisted condition operators; declared-variable references; and value bounds.
+Graph properties that require traversal (reachability, dangling targets, trap
+loops, termination) are the validator's job in later phases, not the schema's.
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+from typing import Self
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from cyo_adventure.storybook.condition import Condition, referenced_vars
+
+SCHEMA_VERSION = "1.0"
+
+
+class AgeBand(StrEnum):
+    """The reading age band a story targets."""
+
+    BAND_8_11 = "8-11"
+    BAND_10_13 = "10-13"
+    BAND_13_16 = "13-16"
+
+
+class VariableType(StrEnum):
+    """The type of a story state variable."""
+
+    BOOL = "bool"
+    INT = "int"
+    STRING = "string"
+    ENUM = "enum"
+
+
+class EffectOp(StrEnum):
+    """A state mutation operation."""
+
+    SET = "set"
+    INC = "inc"
+    DEC = "dec"
+
+
+class ContentFlagLevel(StrEnum):
+    """The intensity level of a content sensitivity flag."""
+
+    NONE = "none"
+    MILD = "mild"
+    MODERATE = "moderate"
+
+
+class ReadingLevel(BaseModel):
+    """Target readability for a story (advisory at validation time)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    scheme: str = "flesch_kincaid"
+    target: float = Field(ge=0.0)
+    tolerance: float = Field(default=1.0, ge=0.0)
+
+
+class ContentFlags(BaseModel):
+    """Per-story content sensitivity flags scored per age band."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    violence: ContentFlagLevel = ContentFlagLevel.NONE
+    scariness: ContentFlagLevel = ContentFlagLevel.NONE
+    peril: ContentFlagLevel = ContentFlagLevel.NONE
+
+
+class StoryMetadata(BaseModel):
+    """Descriptive metadata carried by every Storybook."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    age_band: AgeBand
+    reading_level: ReadingLevel
+    tier: int = Field(ge=1, le=2)
+    themes: list[str] = Field(default_factory=list)
+    estimated_minutes: int = Field(ge=1)
+    ending_count: int = Field(ge=1)
+    content_flags: ContentFlags = Field(default_factory=ContentFlags)
+
+
+class Variable(BaseModel):
+    """A declared story state variable with a type-consistent initial value."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
+    type: VariableType
+    initial: bool | int | str
+    min: int | None = None
+    max: int | None = None
+    description: str = ""
+
+    @model_validator(mode="after")
+    def _check_type_consistency(self) -> Self:
+        """Enforce that ``initial`` and bounds agree with ``type``.
+
+        Returns:
+            Self: The validated model.
+        """
+        if self.type is VariableType.BOOL:
+            self._check_bool()
+        elif self.type is VariableType.INT:
+            self._check_int()
+        else:  # STRING or ENUM
+            self._check_text()
+        return self
+
+    def _reject_bounds(self) -> None:
+        """Reject min/max declared on a non-integer variable.
+
+        Raises:
+            ValueError: If either bound is set.
+        """
+        if self.min is not None or self.max is not None:
+            msg = f"{self.type.value} variable '{self.name}' must not declare min/max"
+            raise ValueError(msg)
+
+    def _check_bool(self) -> None:
+        """Validate a bool variable.
+
+        Raises:
+            ValueError: If the initial value is not boolean or bounds are set.
+        """
+        if not isinstance(self.initial, bool):
+            msg = f"bool variable '{self.name}' needs a boolean initial value"
+            raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        self._reject_bounds()
+
+    def _check_text(self) -> None:
+        """Validate a string or enum variable.
+
+        Raises:
+            ValueError: If the initial value is not a string or bounds are set.
+        """
+        if not isinstance(self.initial, str):
+            msg = f"{self.type.value} variable '{self.name}' needs a string initial"
+            raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        self._reject_bounds()
+
+    def _check_int(self) -> None:
+        """Validate an integer variable and its bounds.
+
+        Raises:
+            ValueError: If the initial value is not integral or out of bounds.
+        """
+        if isinstance(self.initial, bool) or not isinstance(self.initial, int):
+            msg = f"int variable '{self.name}' needs an integer initial value"
+            raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        self._check_int_bounds()
+
+    def _check_int_bounds(self) -> None:
+        """Validate that an integer variable's bounds contain its initial value.
+
+        Raises:
+            ValueError: If min > max or the initial value is out of bounds.
+        """
+        initial = self.initial
+        if not isinstance(initial, int):  # pragma: no cover - guarded by caller
+            return
+        if self.min is not None and self.max is not None and self.min > self.max:
+            msg = f"int variable '{self.name}' has min greater than max"
+            raise ValueError(msg)
+        if self.min is not None and initial < self.min:
+            msg = (
+                f"int variable '{self.name}' initial {initial} is below min {self.min}"
+            )
+            raise ValueError(msg)
+        if self.max is not None and initial > self.max:
+            msg = (
+                f"int variable '{self.name}' initial {initial} is above max {self.max}"
+            )
+            raise ValueError(msg)
+
+
+class Effect(BaseModel):
+    """A state change applied on node entry or when a choice is taken."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    op: EffectOp
+    var: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
+    value: bool | int | str | None = None
+    once: bool = False
+
+    @model_validator(mode="after")
+    def _check_value(self) -> Self:
+        """Enforce value presence and type per operation.
+
+        Returns:
+            Self: The validated model.
+
+        Raises:
+            ValueError: If a set effect has no value or inc/dec is not integral.
+        """
+        if self.op is EffectOp.SET:
+            if self.value is None:
+                msg = f"set effect on '{self.var}' requires a value"
+                raise ValueError(msg)
+        elif isinstance(self.value, bool) or not isinstance(self.value, int):
+            msg = f"{self.op.value} effect on '{self.var}' requires an integer value"
+            raise ValueError(msg)
+        elif self.value < 0:
+            msg = f"{self.op.value} effect on '{self.var}' must be non-negative"
+            raise ValueError(msg)
+        return self
+
+
+class Choice(BaseModel):
+    """A reader-facing choice edge from one node to a target node."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    target: str = Field(min_length=1)
+    condition: Condition | None = None
+    effects: list[Effect] = Field(default_factory=list)
+
+
+class Ending(BaseModel):
+    """A terminal outcome, identified by a stable id across prose edits."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(min_length=1)
+    type: str = Field(min_length=1)
+    title: str = Field(min_length=1)
+
+
+class Node(BaseModel):
+    """A passage: prose plus either choices (branch) or an ending (terminal)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    id: str = Field(min_length=1)
+    body: str
+    on_enter: list[Effect] = Field(default_factory=list)
+    choices: list[Choice] = Field(default_factory=list)
+    is_ending: bool = False
+    ending: Ending | None = None
+    tags: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _check_ending_consistency(self) -> Self:
+        """Enforce the agreement between ``is_ending``, ``ending``, ``choices``.
+
+        Returns:
+            Self: The validated model.
+
+        Raises:
+            ValueError: If the node violates the ending/choice invariants.
+        """
+        if self.is_ending:
+            if self.ending is None:
+                msg = f"ending node '{self.id}' requires an ending block"
+                raise ValueError(msg)
+            if self.choices:
+                msg = f"ending node '{self.id}' must have no choices"
+                raise ValueError(msg)
+        else:
+            if self.ending is not None:
+                msg = f"non-ending node '{self.id}' must not carry an ending block"
+                raise ValueError(msg)
+            if not self.choices:
+                msg = f"non-ending node '{self.id}' must have at least one choice"
+                raise ValueError(msg)
+        return self
+
+
+class Storybook(BaseModel):
+    """A complete, versioned branching story graph."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    schema_version: str = SCHEMA_VERSION
+    id: str = Field(min_length=1)
+    version: int = Field(ge=1)
+    title: str = Field(min_length=1)
+    metadata: StoryMetadata
+    variables: list[Variable] = Field(default_factory=list)
+    start_node: str = Field(min_length=1)
+    nodes: list[Node] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _check_story_invariants(self) -> Self:
+        """Enforce story-wide structural invariants.
+
+        Returns:
+            Self: The validated model.
+        """
+        self._check_unique_ids()
+        self._check_start_node()
+        self._check_tier_variables()
+        self._check_variable_references()
+        self._check_ending_count()
+        return self
+
+    def _check_unique_ids(self) -> None:
+        """Reject duplicate node, choice, and ending ids."""
+        node_ids = [node.id for node in self.nodes]
+        _reject_duplicates(node_ids, "node id")
+        choice_ids = [c.id for node in self.nodes for c in node.choices]
+        _reject_duplicates(choice_ids, "choice id")
+        ending_ids = [node.ending.id for node in self.nodes if node.ending is not None]
+        _reject_duplicates(ending_ids, "ending id")
+
+    def _check_start_node(self) -> None:
+        """Reject a start node that is not present in the story.
+
+        Raises:
+            ValueError: If ``start_node`` is not an existing node id.
+        """
+        if self.start_node not in {node.id for node in self.nodes}:
+            msg = f"start_node '{self.start_node}' is not an existing node id"
+            raise ValueError(msg)
+
+    def _check_tier_variables(self) -> None:
+        """Enforce that Tier 1 stories declare no variables.
+
+        Raises:
+            ValueError: If a Tier 1 story declares variables.
+        """
+        if self.metadata.tier == 1 and self.variables:
+            msg = "tier 1 stories must not declare variables"
+            raise ValueError(msg)
+
+    def _check_variable_references(self) -> None:
+        """Reject conditions or effects that reference undeclared variables."""
+        declared = {variable.name for variable in self.variables}
+        for node in self.nodes:
+            for effect in node.on_enter:
+                self._require_declared(effect.var, declared, node.id)
+            for choice in node.choices:
+                for effect in choice.effects:
+                    self._require_declared(effect.var, declared, node.id)
+                if choice.condition is not None:
+                    for name in referenced_vars(choice.condition):
+                        self._require_declared(name, declared, node.id)
+
+    @staticmethod
+    def _require_declared(name: str, declared: set[str], node_id: str) -> None:
+        """Raise if ``name`` is not in the declared set.
+
+        Args:
+            name (str): The referenced variable name.
+            declared (set[str]): The set of declared variable names.
+            node_id (str): The node where the reference occurs (for the message).
+
+        Raises:
+            ValueError: If the variable is undeclared.
+        """
+        if name not in declared:
+            msg = f"node '{node_id}' references undeclared variable '{name}'"
+            raise ValueError(msg)
+
+    def _check_ending_count(self) -> None:
+        """Enforce that the declared ending count matches the ending nodes.
+
+        Raises:
+            ValueError: If ``metadata.ending_count`` is wrong.
+        """
+        actual = sum(1 for node in self.nodes if node.is_ending)
+        if actual != self.metadata.ending_count:
+            msg = (
+                f"metadata.ending_count {self.metadata.ending_count} does not match "
+                f"the {actual} ending node(s)"
+            )
+            raise ValueError(msg)
+
+
+def _reject_duplicates(values: list[str], label: str) -> None:
+    """Raise if ``values`` contains any duplicate.
+
+    Args:
+        values (list[str]): The list of ids to check.
+        label (str): A human label for the id namespace (for the message).
+
+    Raises:
+        ValueError: If a duplicate is found.
+    """
+    seen: set[str] = set()
+    for value in values:
+        if value in seen:
+            msg = f"duplicate {label}: '{value}'"
+            raise ValueError(msg)
+        seen.add(value)

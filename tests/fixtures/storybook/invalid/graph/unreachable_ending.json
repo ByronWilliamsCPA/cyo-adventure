@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "id": "s_unreachable_ending",
+  "version": 1,
+  "title": "Unreachable Ending",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 2
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You enter the maze.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_north", "label": "Go north.", "target": "n_only_path"}
+      ]
+    },
+    {
+      "id": "n_only_path",
+      "body": "The only path leads straight to the exit.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_exit", "label": "Exit the maze.", "target": "n_end_main"}
+      ]
+    },
+    {
+      "id": "n_end_main",
+      "body": "You escaped the maze.",
+      "is_ending": true,
+      "ending": {"id": "e_escaped", "type": "happy", "title": "Escaped"},
+      "choices": []
+    },
+    {
+      "id": "n_end_hidden",
+      "body": "Graph defect: this ending node exists in nodes but no choice ever points to it. A player can never reach this ending, making it an unreachable ending.",
+      "is_ending": true,
+      "ending": {"id": "e_hidden", "type": "secret", "title": "The Hidden End"},
+      "choices": []
+    }
+  ]
+}

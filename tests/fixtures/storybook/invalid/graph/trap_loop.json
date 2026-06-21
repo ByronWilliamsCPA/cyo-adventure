@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "id": "s_trap_loop",
+  "version": 1,
+  "title": "Trap Loop",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 1
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You enter a spinning corridor.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_into_loop", "label": "Walk forward.", "target": "n_loop_a"}
+      ]
+    },
+    {
+      "id": "n_loop_a",
+      "body": "The corridor bends back on itself.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_a_to_b", "label": "Keep walking.", "target": "n_loop_b"}
+      ]
+    },
+    {
+      "id": "n_loop_b",
+      "body": "Graph defect: n_loop_a -> n_loop_b -> n_loop_a forms a strongly connected component with no exit edge toward any ending. This is a trap loop (L1-5).",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_b_to_a", "label": "Walk on.", "target": "n_loop_a"}
+      ]
+    },
+    {
+      "id": "n_end",
+      "body": "You found the exit.",
+      "is_ending": true,
+      "ending": {"id": "e_out", "type": "happy", "title": "Escaped"},
+      "choices": []
+    }
+  ]
+}

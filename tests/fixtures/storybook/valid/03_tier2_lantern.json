@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "id": "s_lantern_cave",
+  "version": 1,
+  "title": "The Lantern Cave",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["mystery", "exploration"],
+    "estimated_minutes": 15,
+    "ending_count": 2,
+    "content_flags": {"violence": "none", "scariness": "mild", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "has_lantern",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the player carries a lit lantern"
+    }
+  ],
+  "start_node": "n_entrance",
+  "nodes": [
+    {
+      "id": "n_entrance",
+      "body": "You find a lantern on the ground near the cave entrance.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_lantern",
+          "label": "Pick up the lantern.",
+          "target": "n_cave_fork",
+          "effects": [{"op": "set", "var": "has_lantern", "value": true}]
+        },
+        {
+          "id": "c_ignore_lantern",
+          "label": "Leave the lantern and walk inside.",
+          "target": "n_cave_fork"
+        }
+      ]
+    },
+    {
+      "id": "n_cave_fork",
+      "body": "The cave splits into a bright tunnel and a dark passage.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dark_passage",
+          "label": "Enter the dark passage with your lantern.",
+          "target": "n_treasure",
+          "condition": {"==": [{"var": "has_lantern"}, true]}
+        },
+        {
+          "id": "c_bright_tunnel",
+          "label": "Take the bright tunnel.",
+          "target": "n_exit"
+        }
+      ]
+    },
+    {
+      "id": "n_treasure",
+      "body": "Your lantern light reveals a glittering cache of ancient coins.",
+      "is_ending": true,
+      "ending": {"id": "e_treasure_found", "type": "triumph", "title": "Fortune Discovered"},
+      "choices": []
+    },
+    {
+      "id": "n_exit",
+      "body": "The bright tunnel leads you back outside into warm sunlight.",
+      "is_ending": true,
+      "ending": {"id": "e_safe_exit", "type": "peaceful", "title": "Safe and Sound"},
+      "choices": []
+    }
+  ]
+}

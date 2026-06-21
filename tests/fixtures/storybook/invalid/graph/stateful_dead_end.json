@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "id": "s_stateful_dead_end",
+  "version": 1,
+  "title": "Stateful Dead End",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"target": 5.0},
+    "tier": 2,
+    "estimated_minutes": 10,
+    "ending_count": 1
+  },
+  "variables": [
+    {
+      "name": "has_silver_key",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the player holds the silver key"
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You walk into a room. There is a silver door ahead.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_approach_door",
+          "label": "Approach the silver door.",
+          "target": "n_silver_door"
+        }
+      ]
+    },
+    {
+      "id": "n_silver_door",
+      "body": "Graph defect (L2-9 stateful dead-end): the only choice requires has_silver_key == true, but no reachable path ever sets has_silver_key to true. Any player reaching this configuration (n_silver_door, has_silver_key=false) has zero visible choices and is permanently stuck.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open_silver",
+          "label": "Unlock the door with the silver key.",
+          "target": "n_end",
+          "condition": {"==": [{"var": "has_silver_key"}, true]}
+        }
+      ]
+    },
+    {
+      "id": "n_end",
+      "body": "Beyond the door lies freedom.",
+      "is_ending": true,
+      "ending": {"id": "e_free", "type": "happy", "title": "Freedom"},
+      "choices": []
+    }
+  ]
+}
