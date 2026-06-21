@@ -76,6 +76,9 @@ jobs:
           uv sync --all-extras
 
       - name: Run tests
+        # Force bash on all platforms; Windows runners default to PowerShell,
+        # which cannot parse the backslash line-continuations below (ParserError).
+        shell: bash
         run: |
           uv run pytest tests/ -v --tb=short -x \
             --ignore=tests/integration \

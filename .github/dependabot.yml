@@ -9,9 +9,9 @@ updates:
       time: "03:00"
     open-pull-requests-limit: 0  # Renovate is sole PR-opener; Dependabot detection-only
     reviewers:
-      - "williaby"
+      - "ByronWilliamsCPA"
     assignees:
-      - "williaby"
+      - "ByronWilliamsCPA"
     commit-message:
       prefix: "chore(deps):"
       prefix-development: "chore(deps-dev):"
@@ -34,9 +34,9 @@ updates:
       time: "04:00"
     open-pull-requests-limit: 0  # Renovate is sole PR-opener; Dependabot detection-only
     reviewers:
-      - "williaby"
+      - "ByronWilliamsCPA"
     assignees:
-      - "williaby"
+      - "ByronWilliamsCPA"
     commit-message:
       prefix: "ci(actions):"
       include: "scope"
