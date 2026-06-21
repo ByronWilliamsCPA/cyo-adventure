@@ -187,3 +187,100 @@ Once you've collected feedback, you can:
 3. **Share this file** with the template maintainers
 
 When submitting, reference this project as the source of the feedback.
+
+### Docker compose image tags fall back to `latest`
+
+- **Priority**: Medium
+- **Category**: CI/CD
+- **Discovered**: 2026-06-20
+
+**Issue**: `docker-compose.yml` tags the app and frontend images as
+`${VERSION:-latest}`. The project standard forbids the `latest` tag in any
+environment, so the default fallback violates the policy whenever `VERSION` is
+unset.
+
+**Context**: Discovered while writing `TECHNICAL_BASELINE.md` (Phase 0, P0-07),
+which records that container images are pinned by tag and `latest` is never used.
+
+**Suggested Fix**: Drop the `:-latest` fallback and require `VERSION` to be set
+(fail fast if missing), or default to a pinned placeholder tag rather than
+`latest`.
+
+**Affected Files**: `docker-compose.yml`, `docker-compose.prod.yml`
+
+### `requires-python` range lets local venvs drift off the target interpreter
+
+- **Priority**: Low
+- **Category**: Configuration
+- **Discovered**: 2026-06-20
+
+**Issue**: `requires-python = ">=3.10,<3.15"` permits uv to build a local venv on
+Python 3.14 even though `target-version` and CI pin 3.12. Local test runs then
+execute on a different interpreter than CI.
+
+**Context**: The worktree venv resolved to Python 3.14 during Phase 0 schema work;
+CI runs 3.12.
+
+**Suggested Fix**: Either pin a `.python-version` to 3.12 for local development, or
+document that the broad range is intentional for library compatibility testing.
+
+**Affected Files**: `pyproject.toml`, optionally `.python-version`
+
+### pydoclint config requires typed docstrings the template itself does not provide
+
+- **Priority**: High
+- **Category**: Tooling
+- **Discovered**: 2026-06-20
+
+**Issue**: `[tool.pydoclint]` sets `arg-type-hints-in-docstring = true`, but the
+template's own modules (for example `src/cyo_adventure/core/exceptions.py`) ship
+Google-style docstrings without docstring type hints. Running pydoclint on the
+template code reports many violations, so any new code must adopt a docstring
+style the template does not itself model.
+
+**Context**: A Phase 0 commit was blocked by pydoclint until the new schema module
+docstrings were rewritten to include parenthesized arg types and typed Returns.
+
+**Suggested Fix**: Either set `arg-type-hints-in-docstring = false` (types live in
+signatures already), or update the template's shipped modules to the typed style so
+there is a working example to copy.
+
+**Affected Files**: `pyproject.toml`, `src/**/*.py`
+
+### `test_example.py` imports a `cli` module that the template does not ship
+
+- **Priority**: High
+- **Category**: Tooling
+- **Discovered**: 2026-06-20
+
+**Issue**: `tests/test_example.py` contains a `TestCLI` class importing
+`from cyo_adventure.cli import cli`, but no `cli` module exists, so 12 tests fail
+with `ModuleNotFoundError` on a fresh checkout.
+
+**Context**: Discovered when running the full test suite during Phase 0.
+
+**Suggested Fix**: Either include a minimal `cli` module in the template, or gate
+the CLI tests behind the feature flag that generates the CLI, or remove them when
+no CLI is selected.
+
+**Affected Files**: `tests/test_example.py`, `src/{{package}}/cli.py`
+
+### Docs CI runs `mkdocs build --strict` but most pages are not in the nav
+
+- **Priority**: Medium
+- **Category**: Documentation
+- **Discovered**: 2026-06-20
+
+**Issue**: `mkdocs.yml` sets `strict: false`, yet `.github/workflows/docs.yml` runs
+`mkdocs build --strict`. The starter nav lists only a subset of pages, so every
+page outside it (the whole `docs/planning/` tree, the ADR pages, several root docs)
+is an orphan that fails the strict CLI build.
+
+**Context**: Discovered while wiring Phase 0 specification docs; the docs job is red
+on the base independent of any new content.
+
+**Suggested Fix**: Make the config and CI agree (either drop `--strict` from CI or
+set `strict: true` in config), and ship a nav that covers every generated page, or
+set `validation.nav.omitted_files` so intentional orphans do not fail strict builds.
+
+**Affected Files**: `mkdocs.yml`, `.github/workflows/docs.yml`
