@@ -139,18 +139,17 @@ variable multiplies the state space.
 **Variable rules**:
 
 - Declare all variables in the `variables` block at the top of the story. Every variable
-  must have a `name` (snake_case), a `type` (`bool`, `int`, `string`, or `enum`), an
-  `initial` value, and a `description`.
+  must have a `name` (snake_case), a `type` (`bool` or `int`), an `initial` value, and a
+  `description`.
 - For `int` variables, always set `min` and `max`. The validator rejects any story where
   a reachable transition could push the variable past its bounds.
 - Use booleans for flags ("has_lantern", "met_the_elder"). Use small integers for
   counters that matter ("courage", "supplies", "keys_found") with a range of 0 to 5 or
   0 to 3.
-- Do not use `string` or `enum` variables in Tier-2 stories unless the story explicitly
-  requires branching on text values; they add surface area without adding meaningful
-  player experience at this scale.
+- v1 supports only `bool` and `int` variables. String and enum state are out of scope
+  for v1; model categorical choices as a set of boolean flags instead.
 
-**Condition rules** (the JSONLogic shape, restricted to 8 operators):
+**Condition rules** (the JSONLogic shape, restricted to 10 operators):
 
 ```json
 // "you have the lantern"

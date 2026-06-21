@@ -170,7 +170,7 @@ Storybook
 
 Variable
   - name: String                        # snake_case, declared once
-  - type: Enum                          # "bool" | "int" | "string" | "enum"
+  - type: Enum                          # "bool" | "int"
   - initial: any                        # type-consistent
   - min, max: Integer                   # for int, bounds the range
   - description: String
