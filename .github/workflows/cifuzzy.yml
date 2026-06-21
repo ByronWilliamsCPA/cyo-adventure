@@ -15,15 +15,12 @@
 name: Continuous Fuzzing
 
 on:
+  # Fuzzing is heavy; run it on a weekly schedule and on demand only, not on
+  # every push or pull request. (Matches the AMC/cifuzzy.yml reference.)
+  schedule:
+    # Mondays at 07:13 UTC (off-peak minute to avoid scheduler contention).
+    - cron: '13 7 * * 1'
   workflow_dispatch:  # Manual trigger
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    branches:
-      - main
-      - develop
 
 permissions:
   contents: read
