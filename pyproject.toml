@@ -9,7 +9,7 @@ authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = {text = "MIT"}
 keywords = []
 classifiers = [
@@ -156,7 +156,7 @@ packages = ["src/cyo_adventure"]
 # Ruff Configuration - Consolidated Linting & Formatting
 [tool.ruff]
 line-length = 88
-target-version = "py312"
+target-version = "py311"
 exclude = [
     ".git",
     ".mypy_cache",
@@ -416,7 +416,7 @@ known-first-party = ["cyo_adventure"]
 # Replaces MyPy with faster, stricter type checking
 # Reference: https://docs.basedpyright.com
 [tool.basedpyright]
-pythonVersion = "3.12"
+pythonVersion = "3.11"
 pythonPlatform = "All"
 
 # Type checking mode: basic, standard, strict, all
