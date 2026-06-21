@@ -4,19 +4,26 @@
 # =============================================================================
 # Stage 1: Builder - Install dependencies
 # =============================================================================
-FROM python:3.12-slim AS builder
+# Base image pinned by digest for reproducible builds (python:3.12-slim, Debian
+# trixie). Refresh the digest when bumping to a newer patched base image.
+# hadolint ignore=DL3006
+FROM python@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203 AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Install system dependencies for building Python packages
+# Install system dependencies for building Python packages.
+# build-essential is required to compile C extensions during `uv sync`.
+# Version pinning is intentionally omitted (DL3008): the build stage is discarded
+# and never scanned, and Debian point releases retire exact apt versions quickly,
+# which would otherwise break reproducible rebuilds.
+# hadolint ignore=DL3008
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    curl \
-    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Install UV for fast dependency management
+# hadolint ignore=DL3007
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Copy dependency files
@@ -40,7 +47,9 @@ RUN uv sync --frozen --no-dev
 # =============================================================================
 # Stage 2: Runtime - Minimal production image
 # =============================================================================
-FROM python:3.12-slim
+# Base image pinned by digest for reproducible builds (see note above).
+# hadolint ignore=DL3006
+FROM python@sha256:090ba77e2958f6af52a5341f788b50b032dd4ca28377d2893dcf1ecbdfdfe203
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"
@@ -51,10 +60,18 @@ LABEL org.opencontainers.image.url="https://github.com/williaby/cyo-adventure"
 LABEL org.opencontainers.image.source="https://github.com/williaby/cyo-adventure"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Install runtime dependencies only
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Apply outstanding security patches from the Debian package index, then install
+# only the minimal runtime dependencies. `apt-get upgrade` picks up fixes (e.g.
+# openssl/libssl) that ship after the base image was built. `curl` is
+# deliberately NOT installed: it and its transitive deps (libcurl, libssh2) carry
+# unpatched CVEs, and the container healthcheck below uses Python's stdlib
+# instead, so curl provides no value in the runtime image.
+# hadolint ignore=DL3008
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && apt-get install -y --no-install-recommends \
     ca-certificates \
-    curl \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Security: Create non-root user
@@ -80,9 +97,10 @@ USER appuser
 
 # Expose port (default for FastAPI/web apps)
 EXPOSE 8000
-# Health check - adjust endpoint based on your app
+
+# Health check - uses the Python stdlib (urllib) so the image does not need curl.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD curl -f http://localhost:8000/health/live || exit 1
+    CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=2).status == 200 else 1)"]
 
 # Default command - run web server
 CMD ["uvicorn", "cyo_adventure.main:app", "--host", "0.0.0.0", "--port", "8000"]
