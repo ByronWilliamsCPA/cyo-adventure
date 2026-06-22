@@ -7,15 +7,19 @@ JSON payload both contain literal ``{`` and ``}`` characters, which would cause
 ``str.format`` to raise ``KeyError``. Explicit ``.replace()`` is safe because it
 is a literal string match with no format-string interpretation.
 
-Placeholders in the templates follow the ``{name}`` convention. Each builder
-substitutes only the tokens it owns; ``{schema_rules}`` is intentionally left
-for the orchestrator layer (WP8) that has access to the compiled rule catalog.
+Placeholders in the templates follow the ``{name}`` convention. All placeholders
+are filled by the builders: ``{schema_rules}`` is substituted with the
+pretty-printed Storybook JSON Schema so that no unfilled tokens reach the
+provider.
 """
 
 from __future__ import annotations
 
+import json
 from importlib.resources import files
 from typing import TYPE_CHECKING
+
+from cyo_adventure.storybook.schema_export import build_schema
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.concept import ConceptBrief
@@ -59,6 +63,18 @@ def _drafting_guide() -> str:
     return _load_template("drafting_guide.md")
 
 
+def _schema_rules() -> str:
+    """Return the Storybook JSON Schema as a pretty-printed JSON string.
+
+    The schema is static for v1 of the Storybook format, so this helper
+    builds it on each call. Callers must not mutate the returned string.
+
+    Returns:
+        Pretty-printed JSON string of the Storybook JSON Schema.
+    """
+    return json.dumps(build_schema(), indent=2)
+
+
 # ---------------------------------------------------------------------------
 # Public builders
 # ---------------------------------------------------------------------------
@@ -67,37 +83,36 @@ def _drafting_guide() -> str:
 def build_structure_prompt(brief: ConceptBrief) -> str:
     """Build the Stage A (Structure) generation prompt.
 
-    Loads ``structure.md`` from the bundled templates package and substitutes:
+    Loads ``structure.md`` from the bundled templates package and substitutes
+    all placeholders, returning a complete prompt:
 
     - ``{concept_brief}`` with the JSON-serialised concept brief.
     - ``{drafting_guide}`` with the full text of the bundled drafting guide.
-
-    The ``{schema_rules}`` placeholder is left in place for the orchestrator
-    (WP8) to fill with the compiled Layer-1/Layer-2 rule catalog.
+    - ``{schema_rules}`` with the pretty-printed Storybook JSON Schema.
 
     Args:
         brief: The validated concept brief for this generation job.
 
     Returns:
-        The fully assembled structure-stage prompt string.
+        The fully assembled structure-stage prompt string (no unfilled tokens).
     """
     return (
         _load_template("structure.md")
         .replace("{concept_brief}", brief.model_dump_json(indent=2))
         .replace("{drafting_guide}", _drafting_guide())
+        .replace("{schema_rules}", _schema_rules())
     )
 
 
 def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> str:
     """Build the Stage B (Prose) generation prompt.
 
-    Loads ``prose.md`` from the bundled templates package and substitutes:
+    Loads ``prose.md`` from the bundled templates package and substitutes all
+    placeholders, returning a complete prompt:
 
     - ``{approved_skeleton}`` with the validated skeleton JSON string.
     - ``{drafting_guide}`` with the full text of the bundled drafting guide.
-
-    The ``{schema_rules}`` placeholder is left in place for the orchestrator
-    (WP8) to fill with the compiled validator rule catalog.
+    - ``{schema_rules}`` with the pretty-printed Storybook JSON Schema.
 
     Args:
         skeleton_json: The full JSON string of the Stage A skeleton that passed
@@ -107,7 +122,7 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> str:
             but callers should pass it for forward-compatibility).
 
     Returns:
-        The fully assembled prose-stage prompt string.
+        The fully assembled prose-stage prompt string (no unfilled tokens).
     """
     # #ASSUME: data-integrity: skeleton_json is valid JSON and may contain
     # literal `{` / `}` characters. .replace() handles this safely.
@@ -117,6 +132,7 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> str:
         _load_template("prose.md")
         .replace("{approved_skeleton}", skeleton_json)
         .replace("{drafting_guide}", _drafting_guide())
+        .replace("{schema_rules}", _schema_rules())
     )
 
 

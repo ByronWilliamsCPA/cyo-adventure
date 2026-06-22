@@ -202,6 +202,19 @@ class TestBuildStructurePrompt:
         assert "adventurous" in result  # tone field
         assert "8-11" in result  # age_band value
 
+    def test_no_unfilled_schema_rules_placeholder(
+        self, minimal_brief: ConceptBrief
+    ) -> None:
+        """The {schema_rules} placeholder is filled; the literal token must not remain."""
+        result = build_structure_prompt(minimal_brief)
+        assert "{schema_rules}" not in result
+
+    def test_schema_content_present(self, minimal_brief: ConceptBrief) -> None:
+        """The rendered schema content appears in the structure prompt."""
+        result = build_structure_prompt(minimal_brief)
+        # build_schema() returns a dict with a "properties" key at top level.
+        assert "properties" in result
+
 
 # ---------------------------------------------------------------------------
 # build_prose_prompt
@@ -289,6 +302,25 @@ class TestBuildProsePrompt:
         """Builder returns a non-empty string."""
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
         assert len(result) > 0
+
+    def test_no_unfilled_schema_rules_placeholder(
+        self,
+        skeleton_json_with_braces: str,
+        minimal_brief: ConceptBrief,
+    ) -> None:
+        """The {schema_rules} placeholder is filled; the literal token must not remain."""
+        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
+        assert "{schema_rules}" not in result
+
+    def test_schema_content_present(
+        self,
+        skeleton_json_with_braces: str,
+        minimal_brief: ConceptBrief,
+    ) -> None:
+        """The rendered schema content appears in the prose prompt."""
+        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
+        # build_schema() returns a dict with a "properties" key at top level.
+        assert "properties" in result
 
 
 # ---------------------------------------------------------------------------
