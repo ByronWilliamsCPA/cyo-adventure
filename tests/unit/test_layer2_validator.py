@@ -708,3 +708,118 @@ def test_l2_11_message_format() -> None:
     assert "c_hidden" in l2_11.message
     assert "start" in l2_11.message
     assert "s_msg_test" in l2_11.message
+
+
+# ---------------------------------------------------------------------------
+# Test 8: L2-10 regression -- ConfigKey-keyed suppression (not node_id)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_l2_10_fires_for_non_deadend_config_at_a_deadend_node() -> None:
+    """L2-10 must fire for a trapped config even when another config at the
+    same node is a stateful dead-end (L2-9).
+
+    Regression for the bug where L2-10 suppression was keyed by node_id: a
+    non-dead-end config sharing a node with a dead-end config was silently
+    dropped.
+
+    Graph design
+    ------------
+    ``gate`` is reachable in two distinct configurations:
+
+    * ``(gate, flag=False)``: the only choice ``c_enter`` requires
+      ``flag == True``; it is invisible, leaving zero visible choices.
+      This config is a stateful dead-end -> L2-9 must fire.
+
+    * ``(gate, flag=True)``: ``c_enter`` is visible and leads to ``cycle``,
+      which loops back to ``gate`` unconditionally. Neither ``gate`` nor
+      ``cycle`` can ever reach ``end`` once ``flag`` is True and the walk
+      enters the loop. This config cannot reach any ending -> L2-10 must fire.
+
+    The ``end`` node is structurally present in the graph (so Layer 1 would
+    pass on the pure graph), but is never reachable in the stateful walk.
+    We call ``validate_layer2`` directly because Layer-2 validation assumes
+    Layer 1 has already been run successfully.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start node with flag initially False.",
+                "is_ending": False,
+                "choices": [
+                    # Unconditional path to gate (flag stays False).
+                    {"id": "c_to_gate", "label": "Go to gate.", "target": "gate"},
+                    # Path through setter raises flag to True before gate.
+                    {"id": "c_to_setter", "label": "Activate.", "target": "setter"},
+                ],
+            },
+            {
+                "id": "setter",
+                "body": "Sets flag to True then proceeds to gate.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_set_and_go",
+                        "label": "Set flag and go.",
+                        "target": "gate",
+                        "effects": [{"op": "set", "var": "flag", "value": True}],
+                    }
+                ],
+            },
+            {
+                "id": "gate",
+                "body": "Gate node: reachable in two configurations.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_enter",
+                        "label": "Enter loop (only when flag).",
+                        "target": "cycle",
+                        "condition": {"==": [{"var": "flag"}, True]},
+                    }
+                ],
+            },
+            {
+                "id": "cycle",
+                "body": "Cycle node: loops back to gate with no exit.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_back",
+                        "label": "Back to gate.",
+                        "target": "gate",
+                    }
+                ],
+            },
+            {
+                "id": "end",
+                "body": "Ending node -- structurally present, never reached in walk.",
+                "is_ending": True,
+                "ending": {"id": "e_end", "type": "happy", "title": "Done"},
+                "choices": [],
+            },
+        ],
+        start="start",
+        variables=[{"name": "flag", "type": "bool", "initial": False}],
+        ending_count=1,
+    )
+    report = validate_layer2(story)
+
+    rule_ids = report.rule_ids()
+
+    # L2-9 must fire: (gate, flag=False) is a stateful dead-end.
+    assert "L2-9" in rule_ids, f"expected L2-9 but got: {report.findings}"
+    l2_9_nodes = {f.node_id for f in report.findings if f.rule_id == "L2-9"}
+    assert "gate" in l2_9_nodes, f"L2-9 not attributed to 'gate': {l2_9_nodes}"
+
+    # L2-10 must fire: (gate, flag=True) and (cycle, flag=True) cannot reach
+    # any ending; the trapped config at 'gate' must not be silently suppressed
+    # because a different config at the same node triggered L2-9.
+    assert "L2-10" in rule_ids, f"expected L2-10 but got: {report.findings}"
+    l2_10_nodes = {f.node_id for f in report.findings if f.rule_id == "L2-10"}
+    assert "gate" in l2_10_nodes, (
+        f"L2-10 not attributed to 'gate' (trapped flag=True config); "
+        f"found nodes: {l2_10_nodes}"
+    )
