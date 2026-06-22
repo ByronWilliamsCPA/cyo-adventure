@@ -4,6 +4,8 @@ Settings are loaded from environment variables with the prefix 'CYO_ADVENTURE_'.
 Pydantic-settings handles the parsing and validation.
 """
 
+from __future__ import annotations
+
 from typing import Literal
 
 from pydantic import model_validator
@@ -29,6 +31,8 @@ class Settings(BaseSettings):
         json_logs: Flag to enable or disable JSON formatted logs.
         include_timestamp: Flag to include timestamps in logs.
         database_url: Async SQLAlchemy connection URL for PostgreSQL.
+        redis_url: Redis connection URL for the RQ task queue.
+        generation_provider: Which LLM provider to use for story generation.
     """
 
     model_config = SettingsConfigDict(
@@ -47,9 +51,18 @@ class Settings(BaseSettings):
     # development default and must never reach staging or production.
     # #VERIFY: enforced by _reject_dev_database_url_outside_local below.
     database_url: str = _DEV_DATABASE_URL
+    # Development default for local Redis; safe to leave unset in non-production
+    # environments where no queue is configured. Production must override via
+    # CYO_ADVENTURE_REDIS_URL.
+    redis_url: str = "redis://localhost:6379/0"
+    # Phase 2 stand-in: only "mock" is operational; real providers are deferred
+    # to Phase 2b. Setting any other value raises ConfigurationError at
+    # build_provider() call time, not at startup, so the app can start without
+    # a live LLM backend.
+    generation_provider: Literal["mock", "claude", "ollama", "openrouter"] = "mock"
 
     @model_validator(mode="after")
-    def _reject_dev_database_url_outside_local(self) -> "Settings":
+    def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
 
         Raises:

@@ -11,7 +11,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from cyo_adventure.api import health, library, reading
+from cyo_adventure.api import generation, health, library, reading
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -77,6 +77,7 @@ def create_app() -> FastAPI:
     app.include_router(health.router)
     app.include_router(library.router)
     app.include_router(reading.router)
+    app.include_router(generation.router)
     return app
 
 

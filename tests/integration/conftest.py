@@ -31,6 +31,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
     User,
 )
+from cyo_adventure.middleware.security import RateLimitMiddleware
 
 if TYPE_CHECKING:
     import uuid
@@ -102,6 +103,26 @@ async def sessions(engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, expire_on_commit=False)
 
 
+def _reset_rate_limiter() -> None:
+    """Clear the singleton app's in-memory rate-limiter bucket.
+
+    The app is a module-level singleton whose ``RateLimitMiddleware`` keeps
+    per-IP request timestamps. Integration tests share one app instance and one
+    client IP, so the 60-rpm bucket would otherwise leak across tests and cause
+    order-dependent 429 responses (a request budget exhausted by an earlier
+    test). Resetting it gives each test a fresh budget, matching the
+    fresh-schema-per-test isolation the harness already provides. Building the
+    stack on first use pins the same instance that subsequently serves requests.
+    """
+    if app.middleware_stack is None:
+        app.middleware_stack = app.build_middleware_stack()
+    node: object | None = app.middleware_stack
+    while node is not None:
+        if isinstance(node, RateLimitMiddleware):
+            node.requests.clear()
+        node = getattr(node, "app", None)
+
+
 @pytest_asyncio.fixture
 async def client(
     sessions: async_sessionmaker[AsyncSession],
@@ -120,6 +141,7 @@ async def client(
             await session.close()
 
     app.dependency_overrides[get_db_session] = _override
+    _reset_rate_limiter()
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac

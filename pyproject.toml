@@ -71,6 +71,8 @@ dependencies = [
     # UV handles these automatically based on the Python version being used.
     # See: https://docs.astral.sh/uv/concepts/dependencies/#dependency-specifiers
     "networkx>=3.6.1",
+    "rq>=2.10.0",
+    "redis>=8.0.0",
 ]
 
 # Optional dependency groups

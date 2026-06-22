@@ -42,7 +42,7 @@ Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░�
 |-----------|--------|--------|--------------|
 | M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ⏸️ Planned | None |
 | M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ⏸️ Planned | M0 |
-| M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ⏸️ Planned | M1 |
+| M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | 🔄 In progress (partial; see Phase 2b for live-provider wiring and yield measurement) | M1 |
 | M3: Parent approval gate enforced end to end | Wk 11-14 | ⏸️ Planned | M2 |
 | M4: First usable release (generation + library) | Wk 11-16 | ⏸️ Planned | M3 |
 | M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Planned | M4 |
@@ -171,6 +171,9 @@ This phase has no external network egress.
 
 ## Phase 2: Validation gate and authoring pipeline (4-6 weeks)
 
+**Status**: Delivered (validation gate + mock-provider pipeline). Two criteria deferred
+to Phase 2b; see note below.
+
 ### Objective
 
 Generate stories that hold together, with the gate as the arbiter. First external LLM
@@ -178,22 +181,37 @@ call, so the privacy controls and provider data-handling decision are preconditi
 
 ### Deliverables
 
-- [ ] Layer-2 state-space validator (configuration walk, stateful dead-end, termination
+- [x] Layer-2 state-space validator (configuration walk, stateful dead-end, termination
       and loop escape, conditional usefulness, configuration cap).
-- [ ] Generation orchestrator with staged passes (structure, prose, repair with the 3-cap
-      and no-progress abort) and the provider interface (Claude primary; Ollama/OpenRouter
-      fallback).
-- [ ] Concept intake (no real child PII) and the RQ worker queue.
-- [ ] The known-bad and Tier-2 state corpora and their tests.
+- [x] Generation orchestrator with staged passes (structure, prose, repair with the 3-cap
+      and no-progress abort) and the provider interface protocol (`GenerationProvider`;
+      MockProvider ships; live adapters deferred to Phase 2b).
+- [x] Concept intake (no real child PII) and the RQ worker queue.
+- [x] The known-bad and Tier-2 state corpora and their tests.
+- [x] Guardian-only API endpoints for concept intake, generation jobs, and validation.
+- [x] `concept` and `generation_job` database tables with Alembic migration.
+- [x] Mock-driven yield harness (`scripts/yield_harness.py`).
 
 ### Success Criteria
 
-- ✅ From a concept brief, the pipeline produces a story that passes the full gate with
-  zero structural edits at least 60% of the time over a 20-story sample.
 - ✅ The validator rejects 100% of the known-bad and Tier-2 corpora with correct rule and
   node attribution.
 - ✅ No prompt sent to the provider contains a real child name, birthdate, or sensitive
   trait.
+- ⏳ From a concept brief, the pipeline produces a story that passes the full gate with
+  zero structural edits at least 60% of the time over a 20-story sample. (Deferred to
+  Phase 2b; harness exists but runs against MockProvider.)
+
+### Deferred to Phase 2b
+
+Two acceptance criteria were deliberately deferred after review:
+
+1. **60% generation yield over a 20-story sample** (requires a live LLM; the harness
+   exists but the in-phase run uses MockProvider).
+2. **Concrete Claude/Ollama/OpenRouter provider adapters** (the `GenerationProvider`
+   protocol and config seam shipped; the HTTP clients did not).
+
+These are tracked in [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
 
 ### Dependencies
 

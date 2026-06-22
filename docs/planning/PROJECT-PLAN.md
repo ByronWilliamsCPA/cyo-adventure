@@ -331,9 +331,10 @@ and [ADR-002](./adr/adr-002-client-pwa.md).
 
 ### Phase 2: Validation Gate and Authoring Pipeline (4-6 weeks)
 
-**Branch**: `feat/phase-2-generation-gate`
+**Branch**: `feat/phase-2-generation-gate` (PRs #5 and PR-c)
 **Milestone**: M2 - Concept-to-story pipeline passes the full gate
-**Status**: Planned
+**Status**: Delivered (validation gate + mock-provider pipeline). Two criteria are deferred to
+Phase 2b; see the subsection below.
 
 **Objective**: Generate stories that hold together, with the gate as the arbiter. This is the
 long pole of the project: generation reliability and the state-space validator absorb most of the
@@ -368,10 +369,26 @@ from Phase 0 are preconditions. See [ADR-003](./adr/adr-003-frontier-llm-generat
 **Acceptance criteria** (from [Roadmap Phase 2](./roadmap.md)):
 
 - From a concept brief, the pipeline produces a story that passes the full gate with zero
-  structural edits at least 60% of the time over a 20-story sample.
+  structural edits at least 60% of the time over a 20-story sample. (Deferred to Phase 2b.)
 - The validator rejects 100% of the known-bad and Tier-2 corpora with correct rule and node
-  attribution.
+  attribution. (Delivered.)
 - No prompt sent to the provider contains a real child name, birthdate, or sensitive trait.
+  (Delivered.)
+
+**Deferred to Phase 2b**:
+
+Two acceptance criteria were deliberately deferred after review. The decision was recorded
+because both require a live LLM provider, which was not wired in-phase:
+
+1. **60% generation yield over a 20-story sample** - the mock-driven yield harness
+   (`scripts/yield_harness.py`) ships in Phase 2 and can be re-run once a live provider
+   is configured.
+2. **Concrete Claude/Ollama/OpenRouter provider adapters** - the `GenerationProvider`
+   protocol and `build_provider` factory shipped; the HTTP client implementations did not.
+   Live providers currently raise `ConfigurationError`.
+
+Follow-up scope and acceptance criteria are in
+[`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
 
 **Quality gates**:
 

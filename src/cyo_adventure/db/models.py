@@ -31,6 +31,7 @@ _FK_FAMILY = "family.id"
 _FK_USER = "user.id"
 _FK_CHILD_PROFILE = "child_profile.id"
 _FK_STORYBOOK = "storybook.id"
+_FK_CONCEPT = "concept.id"
 
 
 class Family(Base):
@@ -180,3 +181,97 @@ class Completion(Base):
     version: Mapped[int] = mapped_column(primary_key=True)
     ending_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     found_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class Concept(Base):
+    """A generation concept brief: the intake form for a story request.
+
+    One Concept row is created per guardian request and holds the serialized
+    ``ConceptBrief`` payload. A concept drives one or more ``GenerationJob``
+    attempts; the brief is immutable once written.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: Owning family; all access checks are scoped to this.
+        brief: The full ``ConceptBrief`` JSON blob (age band, topic, constraints,
+            etc.). Schema is validated at the application boundary before insert.
+        created_by: The guardian user who submitted the concept. Nullable because
+            the system may create concepts without a logged-in user in tests.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "concept"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    # #ASSUME: data integrity: ``brief`` shape is validated by ConceptBrief
+    # Pydantic model before insertion; the DB stores raw JSON with no
+    # column-level schema constraint.
+    # #VERIFY: ensure all write paths go through ConceptBrief.model_validate
+    # before calling session.add(Concept(...)).
+    brief: Mapped[dict[str, object]] = mapped_column(JSONB)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class GenerationJob(Base):
+    """Tracks a single staged-generation attempt for a Concept.
+
+    One job row is created when a generation run is enqueued. The status
+    transitions from ``queued`` to ``running``, then to ``passed``,
+    ``needs_review``, or ``failed``. The ``report`` column stores the full
+    ``GenerationOutcome`` payload once the job completes.
+
+    ``storybook_id`` is stored as a plain nullable ``String(120)`` rather than
+    a foreign key. A job may fail before any ``storybook`` row exists, so a
+    hard FK would block inserting the failure record. The application layer is
+    responsible for linking the job to the correct storybook after a successful
+    run.
+
+    Attributes:
+        id: Surrogate primary key.
+        concept_id: The concept this job was generated from.
+        status: Lifecycle state (queued, running, passed, needs_review, failed).
+            Stored as a string; validated at the application boundary.
+        model: LLM model identifier used for generation.
+        provider: LLM provider name (e.g. ``anthropic``, ``openai``).
+        prompt_version: Semver-style tag for the prompt template revision.
+        report: Full ``GenerationOutcome`` JSON including metrics and flags.
+        storybook_id: String key of the produced storybook row, set only when
+            the job reaches ``passed`` or ``needs_review``. Not a FK -- see
+            class docstring.
+        version: Storybook version number produced by this job.
+        error: Short error message when status is ``failed``.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        updated_at: Updated on every status transition (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "generation_job"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    concept_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_CONCEPT), index=True)
+    status: Mapped[str] = mapped_column(String(20), default="queued")
+    model: Mapped[str | None] = mapped_column(String(120), default=None)
+    provider: Mapped[str | None] = mapped_column(String(120), default=None)
+    prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
+    # #ASSUME: data integrity: ``report`` schema is determined by
+    # GenerationOutcome at the application layer; no DB-level constraint
+    # enforces its shape.
+    # #VERIFY: all readers must tolerate None and partial report dicts (e.g.
+    # when a job fails mid-run before a full report is assembled).
+    report: Mapped[dict[str, object] | None] = mapped_column(JSONB, default=None)
+    # #ASSUME: data integrity: ``storybook_id`` is NOT a FK intentionally.
+    # A job may fail before any storybook row is created; a hard FK constraint
+    # would prevent inserting the failure record. The application layer must
+    # verify the storybook row exists independently when reading this field.
+    # #VERIFY: any code path that reads storybook_id and joins to storybook
+    # must handle the case where the storybook row is absent.
+    storybook_id: Mapped[str | None] = mapped_column(String(120), default=None)
+    version: Mapped[int | None] = mapped_column(default=None)
+    error: Mapped[str | None] = mapped_column(String(512), default=None)
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
