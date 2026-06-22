@@ -131,3 +131,74 @@ model. Useful fallback inside the provider abstraction.
   generator call.
 - [ADR-005](./adr-005-mandatory-human-approval.md): the human gate after generation.
 - [Tech Spec: Authoring pipeline](../tech-spec.md#authoring-pipeline-staged-generation)
+
+## Amendment (2026-06-22): OpenRouter primary
+
+The original decision named Anthropic Claude (via the Anthropic SDK, billed to a
+dedicated Anthropic API account) as the primary generator. This amendment changes the
+primary provider to **OpenRouter** behind the same `GenerationProvider` interface. The
+decision driver is access and cost, not quality: the project does not provision a
+separate Anthropic API account, and one OpenRouter key reaches many model families
+(including free `:free` endpoints and `anthropic/claude-sonnet-4.6`) through a single
+integration. The operator holds an Anthropic API key but routes Claude through OpenRouter
+generally, so Claude is reached at `anthropic/claude-sonnet-4.6` via OpenRouter, not a
+separate SDK adapter. (A claude.ai chat subscription cannot serve API calls and is not a
+provider path.)
+
+Revised provider posture:
+
+- **Primary**: OpenRouter (`settings.openrouter_model`); Claude is reached here.
+- **Fallback cascade**: on `ProviderError`, route OpenRouter primary model -> OpenRouter
+  fallback model (`settings.openrouter_fallback_model`) -> local Ollama. The interface
+  already isolates this swap.
+- **Deferred**: a direct Anthropic SDK adapter. Not implemented in Phase 2b (OpenRouter
+  covers Claude); a trivial future add via the existing seam if direct Opus 4.8 or prompt
+  caching without the OpenRouter markup is ever wanted.
+
+### Model availability is weekly-volatile, not monthly
+
+Two snapshots of the OpenRouter roster three days apart (2026-06-19, 2026-06-22) shared
+only ~14% of their working model IDs. The "frontier rankings shift monthly" note above
+understates it: model IDs appear and disappear weekly. Consequences pinned into scope:
+
+1. Pin **first-party model families** (Anthropic, Google) that survive roster churn, not
+   the exotic top-scorers that vanish.
+2. The adapter MUST map "model unavailable" (HTTP 400/404 invalid-model) to
+   `ProviderError` so the orchestrator treats a vanished model as a fallback trigger, not
+   an unhandled crash. This widens the Phase 2b retry policy beyond network failures.
+
+### Minors' content data-handling constraint
+
+Per [ADR-004](./adr-004-homelab-first-deployment.md), the provider's data handling
+matters because the app generates children's content. The PII guard
+(`generation/pii.py`) strips real-child names before every egress, but the *choice of
+OpenRouter model* still has a governance dimension. Acceptable model families for
+production generation are limited to those with a defensible data policy (Anthropic,
+Google); arbitrary third-party labs on OpenRouter are for local/free experimentation
+only, never production.
+
+### Empirical findings (2026-06-22 model probe)
+
+A direct-OpenRouter probe fed the real Stage A/B prompts to four reachable models and
+scored outputs with `run_gate`:
+
+- **Free models are viable**: `google/gemma-4-26b-a4b-it:free` produced a complete,
+  gate-clean, genuinely safe Tier-1 story in one pass (cost $0).
+- **The yield bottleneck is L1-7 "budget", not model quality**: blocked outputs failed on
+  `branch_depth` over the band cap of 6 (Sonnet built depth 12) or `ending_count` over the
+  brief's value (Qwen made 3 of an asked-for 2). Frontier models overshoot *more* because
+  they build richer trees. This is a prompt-constraint fix (state the numeric budget
+  inline in the structure prompt), and is the highest-leverage yield lever, independent of
+  model choice.
+- **Quality vs validity gap**: a four-lens review panel rated the free-model story safe
+  (5/5) and structurally valid but narratively bland (narrative 2/5: formulaic prose,
+  cosmetic choices, absent protagonist/theme). `run_gate` cannot see this; ADR-005's human
+  gate must. Whether a frontier model is materially better on prose quality is untested
+  (no frontier model completed a full story in the probe).
+
+### Cost (measured, OpenRouter)
+
+Generation remains negligible: one Sonnet-4.6 Stage-A call billed $0.077; a full clean
+story is ~$0.13-0.16 on Sonnet and $0 on free Gemma. Phase 2b completion (debug on free,
+measure on a paid model) is well under $20. The schema embedded in every prompt (~5k
+tokens) is a static prefix that prompt caching would discount ~90% on the paid path.
