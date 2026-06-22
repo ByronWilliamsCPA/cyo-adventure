@@ -158,15 +158,13 @@ async def test_repair_success_one_attempt() -> None:
     assert outcome.attempts == 1
     assert outcome.storybook is not None
     assert outcome.report["ok"] is True
-    # The third provider call was the repair prompt; it should contain a node id
-    # from the blocked story's findings.
+    # The third provider call was the repair prompt; it must contain the failing
+    # node id from the blocked story's findings. dangling_target.json has node
+    # 'n_start' with a dangling choice target; the gate emits findings with
+    # node_id='n_start' (L1-2 and L1-4). The repair prompt must name this node.
     repair_prompt = provider.calls[2]
-    assert (
-        "n_start" in repair_prompt
-        or "n_does_not_exist" in repair_prompt
-        or "L1" in repair_prompt
-    ), (
-        f"Repair prompt should reference a failing node/rule, got:\n{repair_prompt[:300]}"
+    assert "n_start" in repair_prompt, (
+        f"Repair prompt must reference the failing node 'n_start', got:\n{repair_prompt[:300]}"
     )
     assert "repair:1" in outcome.stage_log
 
@@ -440,15 +438,12 @@ async def test_all_malformed_produces_failed_when_no_doc() -> None:
 
     outcome = await generate_story(brief, provider, pii, max_repairs=3)
 
-    # All were malformed and no doc was ever produced -> either failed or
-    # needs_review depending on whether any partial doc survived. Since all
-    # stages returned malformed output, we expect 'failed' (no doc).
-    # However no-progress can kick in early (same hash for all malformed).
-    assert outcome.status in ("failed", "needs_review")
-    # Key: no exception escaped
-    # If failed, storybook should be None
-    if outcome.status == "failed":
-        assert outcome.storybook is None
+    # All outputs were malformed: no doc was ever produced. The no-progress
+    # check fires after Repair 1 (same hash "{}" for every malformed output),
+    # so the loop stops after exactly 1 repair attempt.
+    # Deterministic outcome: status='failed', storybook is None.
+    assert outcome.status == "failed"
+    assert outcome.storybook is None
 
 
 # ---------------------------------------------------------------------------
@@ -528,7 +523,10 @@ async def test_non_dict_json_treated_as_blocked() -> None:
     outcome = await generate_story(brief, provider, pii, max_repairs=3)
 
     # Must not raise; Stage A produced a non-dict so it routes to repair.
-    assert outcome.status in ("passed", "needs_review", "failed")
+    # Stage A: parse_error -> repair loop runs; Repair 1 returns valid story.
+    # Deterministic outcome: status='passed', attempts==1.
+    assert outcome.status == "passed"
+    assert outcome.attempts == 1
     assert "stage_a:parse_error" in outcome.stage_log
 
 

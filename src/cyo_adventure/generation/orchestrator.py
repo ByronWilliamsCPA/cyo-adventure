@@ -32,7 +32,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.generation.pii import assert_prompt_pii_safe
 from cyo_adventure.generation.prompts import (
@@ -107,9 +107,13 @@ class GenerationOutcome:
     stage_log: list[str]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(slots=True)
 class _RepairContext:
     """Grouped parameters for the repair loop to stay under the arg-count limit.
+
+    Not frozen: ``stage_log`` is mutated in place (appended to) by
+    ``_run_repair_loop``. Making this frozen while holding a mutable list field
+    would be a footgun (the list itself is still mutable even under ``frozen``).
 
     Attributes:
         pii: PII context forwarded to every :func:`_run_one_stage` call.
@@ -250,13 +254,13 @@ async def _run_one_stage(
     # Parse: treat any non-dict or non-JSON as a synthetic blocked gate.
     try:
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
-    except ValueError:
+    except json.JSONDecodeError:
         return None, _empty_blocked_gate()
 
     if not isinstance(parsed, dict):
         return None, _empty_blocked_gate()
 
-    doc: dict[str, object] = parsed  # type: ignore[assignment]
+    doc = cast("dict[str, object]", parsed)
     return doc, run_gate(doc)
 
 
@@ -363,6 +367,12 @@ async def _run_repair_loop(
 
     while gate_result.blocked and attempts < ctx.max_repairs:
         failing_findings = _get_failing_findings(gate_result)
+        # #EDGE: data-integrity: when current_doc is None (Stage B parse failure),
+        # the repair prompt skeleton falls back to "{}", discarding Stage A's
+        # validated document. The repair loop has no access to the last valid doc.
+        # #VERIFY: a future improvement could thread the last valid doc through the
+        # repair context so a Stage-B parse failure can still repair from Stage A's
+        # skeleton rather than an empty object.
         current_json = json.dumps(current_doc) if current_doc is not None else "{}"
 
         repair_prompt = build_repair_prompt(current_json, failing_findings)
