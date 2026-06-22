@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "id": "s_unsatisfiable_condition",
+  "version": 1,
+  "title": "The Impossible Gate",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["challenge"],
+    "estimated_minutes": 10,
+    "ending_count": 2,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "courage",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "Player courage, clamped at 2"
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You stand before a champion's gate. Two paths lead onward.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_train",
+          "label": "Train hard to build courage.",
+          "target": "n_training",
+          "effects": [{"op": "inc", "var": "courage", "value": 2}]
+        },
+        {
+          "id": "c_safe_path",
+          "label": "Take the safe path around.",
+          "target": "n_safe_end"
+        }
+      ]
+    },
+    {
+      "id": "n_training",
+      "body": "You train until your muscles ache, feeling stronger than before.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_champion_gate",
+          "label": "Enter the champion's arena.",
+          "target": "n_champion_end",
+          "condition": {">=": [{"var": "courage"}, 5]}
+        },
+        {
+          "id": "c_retreat_safe",
+          "label": "Rest and take the long road home.",
+          "target": "n_safe_end"
+        }
+      ]
+    },
+    {
+      "id": "n_champion_end",
+      "body": "You stride through the champion's gate to glory beyond.",
+      "is_ending": true,
+      "ending": {"id": "e_champion", "type": "triumph", "title": "Champion"},
+      "choices": []
+    },
+    {
+      "id": "n_safe_end",
+      "body": "The long road leads you safely home.",
+      "is_ending": true,
+      "ending": {"id": "e_safe", "type": "peaceful", "title": "Safe Return"},
+      "choices": []
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0",
+  "id": "s_silver_door_dead_end",
+  "version": 1,
+  "title": "The Silver Door",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["exploration", "mystery"],
+    "estimated_minutes": 10,
+    "ending_count": 2,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "has_key",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the player holds the silver key"
+    }
+  ],
+  "start_node": "n_hall",
+  "nodes": [
+    {
+      "id": "n_hall",
+      "body": "You stand in a long hall. A silver door waits at the far end. A side passage leads to an exit.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_approach_with_key",
+          "label": "Take the key from the alcove and go to the door.",
+          "target": "n_silver_door",
+          "effects": [{"op": "set", "var": "has_key", "value": true}]
+        },
+        {
+          "id": "c_approach_without",
+          "label": "Walk directly to the silver door.",
+          "target": "n_silver_door"
+        },
+        {
+          "id": "c_side_exit",
+          "label": "Leave through the side passage.",
+          "target": "n_side_end"
+        }
+      ]
+    },
+    {
+      "id": "n_silver_door",
+      "body": "The silver door is locked. A keyhole gleams in the wood.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_use_key",
+          "label": "Unlock the door with the silver key.",
+          "target": "n_beyond",
+          "condition": {"==": [{"var": "has_key"}, true]}
+        }
+      ]
+    },
+    {
+      "id": "n_beyond",
+      "body": "Beyond the door, light floods in from a high window.",
+      "is_ending": true,
+      "ending": {"id": "e_freedom", "type": "triumph", "title": "Into the Light"},
+      "choices": []
+    },
+    {
+      "id": "n_side_end",
+      "body": "The side passage leads you outside into the open air.",
+      "is_ending": true,
+      "ending": {"id": "e_side", "type": "peaceful", "title": "The Open Air"},
+      "choices": []
+    }
+  ]
+}
