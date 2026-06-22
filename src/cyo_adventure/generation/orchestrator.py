@@ -73,9 +73,16 @@ __all__ = [
 # system block (the cacheable region), so no shared system constant is needed
 # here; the orchestrator forwards StagePrompt.system to the provider verbatim.
 
-_MAX_TOKENS_STRUCTURE = 4096
-_MAX_TOKENS_PROSE = 8192
-_MAX_TOKENS_REPAIR = 8192
+# Output ceilings sized to the largest briefs, NOT a budget: providers bill the
+# tokens actually generated, so a high ceiling is free for small stories and only
+# prevents truncation for big ones. A 2026-06-22 live run showed the old 4096/8192
+# caps truncated mid-JSON for larger stories, surfacing as L1-1 "not valid JSON"
+# (a 30-node Stage A even produced no parseable doc at all). The band budgets allow
+# up to 60 nodes; a full-prose story of that size at 250 words/node runs well past
+# 8192 output tokens, and even the one-line Stage A skeleton exceeds 4096.
+_MAX_TOKENS_STRUCTURE = 16384
+_MAX_TOKENS_PROSE = 32000
+_MAX_TOKENS_REPAIR = 32000
 
 # Type alias: (sorted_findings_tuple, doc_sha256_hex)
 _Signature = tuple[tuple[tuple[str, str | None, str | None, str], ...], str]
