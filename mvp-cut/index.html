@@ -12,13 +12,9 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/template_feedback/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/mvp-cut/">
       
       
-        <link rel="prev" href="../PYTHON_COMPATIBILITY/">
-      
-      
-        <link rel="next" href="../ADRs/">
       
       
         
@@ -29,7 +25,7 @@
     
     
       
-        <title>Template Feedback - CYO Adventure</title>
+        <title>MVP Cut - CYO Adventure</title>
       
     
     
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to-use-this-file" class="md-skip">
+        <a href="#overview" class="md-skip">
           Skip to content
         </a>
       
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Template Feedback
+              MVP Cut
             
           </span>
         </div>
@@ -366,12 +362,10 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
+      <li class="md-tabs__item">
         <a href="../PROJECT_SETUP/" class="md-tabs__link">
           
   
@@ -1689,10 +1683,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1708,22 +1700,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1741,7 +1732,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1861,42 +1852,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Template Feedback
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../template_feedback/" class="md-nav__link">
         
   
   
@@ -1919,179 +1878,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-use-this-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to Use This File
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#feedback-items" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Feedback Items
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Feedback Items">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Required pre-commit hooks are missing or fail-open in the generated config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Planning document templates generate markdown that violates the repo markdownlint config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#submitting-feedback" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Submitting Feedback
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Submitting Feedback">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#docker-compose-image-tags-fall-back-to-latest" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker compose image tags fall back to latest
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        requires-python range lets local venvs drift off the target interpreter
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        pydoclint config requires typed docstrings the template itself does not provide
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        test_example.py imports a cli module that the template does not ship
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docs CI runs mkdocs build --strict but most pages are not in the nav
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2249,10 +2035,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-this-file" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to Use This File
+        Overview
       
     </span>
   </a>
@@ -2260,146 +2046,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feedback-items" class="md-nav__link">
+  <a href="#in-scope-first-release" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feedback Items
+        In Scope (First Release)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Feedback Items">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Required pre-commit hooks are missing or fail-open in the generated config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Planning document templates generate markdown that violates the repo markdownlint config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#submitting-feedback" class="md-nav__link">
+  <a href="#out-of-scope-v1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Submitting Feedback
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Submitting Feedback">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#docker-compose-image-tags-fall-back-to-latest" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker compose image tags fall back to latest
+        Out of Scope (v1)
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#change-control" class="md-nav__link">
     <span class="md-ellipsis">
       
-        requires-python range lets local venvs drift off the target interpreter
+        Change Control
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        pydoclint config requires typed docstrings the template itself does not provide
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        test_example.py imports a cli module that the template does not ship
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docs CI runs mkdocs build --strict but most pages are not in the nav
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2423,233 +2098,107 @@
   
 
 
-  <h1>Template Feedback</h1>
+  <h1>MVP Cut</h1>
 
-<blockquote>
-<p><strong>Purpose</strong>: Document issues discovered in this project that should be addressed in the <a href="https://github.com/ByronWilliamsCPA/cookiecutter-python-template">cookiecutter-python-template</a>.</p>
-<p><strong>Generated From</strong>: cookiecutter-python-template v0.1.0
-<strong>Project Created</strong>: 2026-06-20</p>
-</blockquote>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>This page records the agreed scope boundary for the first usable release of CYO Adventure
+(Phases 0 through 3 plus the Phase 4a library-and-profiles slice). It is a one-page
+reference that the team checks before adding anything to a phase branch.</p>
+<p>Approved: OPEN: owner approval required</p>
 <hr />
-<h2 id="how-to-use-this-file">How to Use This File<a class="headerlink" href="#how-to-use-this-file" title="Permanent link">&para;</a></h2>
-<p>When working on this project, if you discover any issue that originates from the template itself (not project-specific), add it here with the following format:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gu">### [Short Title]</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Priority**</span>: Critical / High / Medium / Low
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Category**</span>: [Configuration / Documentation / Tooling / Structure / CI/CD / Security / Other]
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Discovered**</span>: YYYY-MM-DD
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gs">**Issue**</span>: [Clear description of what&#39;s wrong or missing]
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gs">**Context**</span>: [How was this discovered? What were you trying to do?]
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gs">**Suggested Fix**</span>: [What should the template do differently?]
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gs">**Affected Files**</span>: [List template files that need changes]
-</span></code></pre></div>
-<hr />
-<h2 id="feedback-items">Feedback Items<a class="headerlink" href="#feedback-items" title="Permanent link">&para;</a></h2>
-<!-- Add your feedback below this line -->
-
-<h3 id="ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map">ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map<a class="headerlink" href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Critical</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: In the generated <code>.github/workflows/ci.yml</code>, the <code>frontend:</code> and
-<code>ci-gate:</code> job blocks are indented at column 0, placing them as top-level
-workflow keys instead of members of <code>jobs:</code>. GitHub Actions parses only the
-<code>test</code> job; <code>frontend</code> and <code>ci-gate</code> are silently ignored, so the <code>CI Gate</code>
-required status check is never produced.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit via <code>yaml.safe_load</code>, which
-reported top-level keys <code>[name, on, concurrency, permissions, env, jobs,
-frontend, ci-gate]</code> with <code>jobs</code> containing only <code>test</code>.</p>
-<p><strong>Suggested Fix</strong>: Correct the indentation in the template's <code>ci.yml</code> so all
-jobs nest under <code>jobs:</code>. Add a <code>yamllint</code>/parse check in the template CI to
-catch dedented job blocks.</p>
-<p><strong>Affected Files</strong>: <code>.github/workflows/ci.yml</code></p>
-<h3 id="required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config">Required pre-commit hooks are missing or fail-open in the generated config<a class="headerlink" href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Security</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: The generated <code>.pre-commit-config.yaml</code> omits the <code>basedpyright</code>
-hook (PC-003, critical), the <code>no-em-dash</code> hook (PC-011), <code>commitizen</code>,
-<code>yamllint</code>, and <code>markdownlint</code>, and wraps <code>trufflehog</code> in a fail-open
-silent-skip (<code>command -v trufflehog ... || echo "...skipping"</code>) that passes
-when the tool is absent, defeating PC-005.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit; corroborated by two
-independent auditors.</p>
-<p><strong>Suggested Fix</strong>: Ship the full required hook set SHA-pinned, and make secret
-scanning fail closed (no <code>|| echo</code> fallback).</p>
-<p><strong>Affected Files</strong>: <code>.pre-commit-config.yaml</code></p>
-<h3 id="misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder">Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder<a class="headerlink" href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Structure</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: Several baseline items drift from the standards manifest:
-<code>AGENTS.md</code> is not scaffolded at root (FOUND-010); <code>known-vulnerabilities.md</code>
-is placed at <code>.github/</code> instead of <code>docs/</code> (FOUND-009); a Jinja2 artifact
-<code>README.md.j2</code> is emitted into <code>.github/workflows/</code> (CI-013); <code>requires-python</code>
-carries a <code>&lt;3.15</code> upper bound (FOUND-008); and <code>docs/template_feedback.md</code>
-ships with an unsubstituted <code>__PROJECT_CREATION_DATE__</code> placeholder.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit of a freshly generated
-project.</p>
-<p><strong>Suggested Fix</strong>: Scaffold <code>AGENTS.md</code>; output <code>known-vulnerabilities.md</code>
-under <code>docs/</code>; keep template-only files out of <code>.github/workflows/</code>; drop the
-<code>requires-python</code> upper bound; substitute the creation-date placeholder in the
-post-generation hook.</p>
-<p><strong>Affected Files</strong>: <code>AGENTS.md</code>, <code>docs/known-vulnerabilities.md</code>,
-<code>.github/workflows/README.md.j2</code>, <code>pyproject.toml</code>, <code>docs/template_feedback.md</code></p>
-<h3 id="planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config">Planning document templates generate markdown that violates the repo markdownlint config<a class="headerlink" href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Low</li>
-<li><strong>Category</strong>: Documentation</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: The planning templates in <code>.claude/skills/project-planning/templates/</code>
-(pvs, tech-spec, roadmap, adr) prescribe an H1 heading in the document body, while the
-placeholder files in <code>docs/planning/</code> carry a <code>title:</code> field in their YAML frontmatter.
-With the repo <code>.markdownlint.json</code> settings, this trips <code>MD025</code> (multiple top-level
-headings) on every generated planning doc. The ADR template's <code>**Pros**:</code> / <code>**Cons**:</code>
-labels placed directly above a list also trip <code>MD032</code> (lists should be surrounded by
-blank lines), and ASCII diagrams plus dense tables trip <code>MD060</code> (table column style).</p>
-<p><strong>Context</strong>: Discovered while generating the four foundational planning documents
-(project-vision, tech-spec, roadmap, and six ADRs) from the project scoping handoff. The
-committed gate already excludes <code>docs/planning/</code> via the pre-commit pattern
-<code>^docs/(?!planning/).*\.md$</code>, so these are IDE-only warnings and do not block commits,
-but they are noise for anyone authoring planning docs in an editor.</p>
-<p><strong>Suggested Fix</strong>: Either (a) set <code>MD025: { front_matter_title: "" }</code> in
-<code>.markdownlint.json</code> so the frontmatter <code>title</code> is not treated as a competing H1, or
-(b) drop the <code>title:</code> field from the planning placeholder frontmatter and rely on the
-body H1. Additionally, add a blank line between the <code>**Pros**:</code> / <code>**Cons**:</code> labels and
-their lists in <code>adr-template.md</code> so generated ADRs are MD032-clean.</p>
-<p><strong>Affected Files</strong>: <code>.markdownlint.json</code>;
-<code>.claude/skills/project-planning/templates/adr-template.md</code>;
-<code>docs/planning/*.md</code> placeholder frontmatter.</p>
-<h3 id="template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box">Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)<a class="headerlink" href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: A freshly generated project fails <code>pre-commit</code> immediately. The
-<code>validate-front-matter</code> hook (wired in <code>.pre-commit-config.yaml</code> with
-<code>files: ^docs/(?!planning/).*\.md$</code>) only accepts <code>schema_type</code> values of
-<code>script</code>, <code>knowledge</code>, <code>planning</code>, or <code>common</code>, but the template ships
-<code>docs/ADRs/adr-template.md</code> with <code>schema_type: adr</code>. Because the hook validates
-the whole non-planning docs tree (not just staged files), this one file blocks
-every commit in the repo until it is corrected.</p>
-<p><strong>Context</strong>: Discovered when committing the generated planning documents. The
-hook failed on <code>docs/ADRs/adr-template.md</code> even though it was not part of the
-change set, blocking the commit. Fixed locally by changing <code>schema_type: adr</code>
-to <code>schema_type: planning</code> (matching the value used by
-<code>docs/planning/adr/README.md</code>).</p>
-<p>There is a deeper mismatch underneath: even after correcting <code>schema_type</code> to
-<code>planning</code>, the <code>planning</code> schema's <code>status</code> enum is <code>draft | in-review |
-published</code>, which excludes the natural ADR statuses (<code>proposed</code>, <code>accepted</code>,
-<code>superseded</code>). So no <code>schema_type</code> + <code>status</code> combination cleanly fits an ADR
-under the current validator. Locally this was resolved by setting
-<code>schema_type: planning</code> and <code>status: draft</code> on the template placeholder.</p>
-<p><strong>Suggested Fix</strong>: Add a dedicated <code>adr</code> schema to the front-matter validator
-with an ADR-appropriate status enum (<code>proposed | accepted | deprecated |
-superseded</code>) and set <code>docs/ADRs/adr-template.md</code> to use it; or, if a separate
-schema is not wanted, ship the template file with a combination the existing
-validator accepts (<code>schema_type: planning</code>, <code>status: draft</code>). Add a CI smoke
-test that runs <code>pre-commit run --all-files</code> on a freshly rendered project so this
-class of out-of-the-box breakage is caught in the template repo.</p>
-<p><strong>Affected Files</strong>: <code>docs/ADRs/adr-template.md</code>; the front-matter validation
-script and its allowed-tags list.</p>
-<hr />
-<h2 id="submitting-feedback">Submitting Feedback<a class="headerlink" href="#submitting-feedback" title="Permanent link">&para;</a></h2>
-<p>Once you've collected feedback, you can:</p>
+<h2 id="in-scope-first-release">In Scope (First Release)<a class="headerlink" href="#in-scope-first-release" title="Permanent link">&para;</a></h2>
+<p>The following capabilities are committed for the first release:</p>
 <ol>
-<li><strong>Create an issue</strong> in the <a href="https://github.com/ByronWilliamsCPA/cookiecutter-python-template/issues">cookiecutter-python-template repository</a></li>
-<li><strong>Submit a PR</strong> if you have fixes for the template</li>
-<li><strong>Share this file</strong> with the template maintainers</li>
+<li>
+<p><strong>Reader (PWA)</strong>: offline play, save and resume, multi-device sync, multiple endings.
+   The reader works on family-owned tablets, phones, and laptops without an app-store
+   install. (<a href="../planning/adr/adr-002-client-pwa/">ADR-002</a>)</p>
+</li>
+<li>
+<p><strong>JSON Storybook format</strong>: Tier 1 (simple branching, no state) and Tier 2 (small
+   state-tracking with booleans and bounded integers). The schema is versioned and
+   exported to <code>schema/storybook.schema.json</code>. (<a href="../planning/adr/adr-001-story-format-json-storybook/">ADR-001</a>)</p>
+</li>
+<li>
+<p><strong>Staged LLM generation</strong>: concept brief to finished story through Structure (Stage A),
+   Prose (Stage B), and Repair (Stage C) passes behind a <code>GenerationProvider</code> interface.
+   Claude is the primary provider; Ollama and OpenRouter are fallback targets.
+   (<a href="../planning/adr/adr-003-frontier-llm-generation/">ADR-003</a>)</p>
+</li>
+<li>
+<p><strong>Validation gate</strong>: deterministic Layer-1 graph checks (schema, reference integrity,
+   reachability, termination, no trap loops, condition consistency, length budget) plus
+   Layer-2 state-space analysis for Tier-2 stories (stateful dead-ends, stateful
+   termination, conditional usefulness, configuration cap of 100,000 reachable
+   configurations).</p>
+</li>
+<li>
+<p><strong>Content-moderation gate</strong>: provider moderation API plus an independent LLM-reviewer
+   pass, scored per age band. Any hit flags the nodes and forces human review; safety hits
+   never auto-publish.</p>
+</li>
+<li>
+<p><strong>Parent approval workflow</strong>: publish state machine enforcing a mandatory guardian
+   approval before any story is visible to a child.
+   (<a href="../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a>)</p>
+</li>
+<li>
+<p><strong>Per-child profiles</strong>: <code>child_profile</code> records with <code>age_band</code>, <code>reading_level_cap</code>,
+   <code>allowed_content_flags</code>, and <code>tts_enabled</code>; enforced by the library API, never trusted
+   from the client.</p>
+</li>
+<li>
+<p><strong>Homelab deployment</strong>: behind Pangolin (zero-trust ingress) and Authentik (OIDC), with
+   cloud-portable containers. Azure Container Apps is a documented drop-in alternative.
+   (<a href="../planning/adr/adr-004-homelab-first-deployment/">ADR-004</a>)</p>
+</li>
 </ol>
-<p>When submitting, reference this project as the source of the feedback.</p>
-<h3 id="docker-compose-image-tags-fall-back-to-latest">Docker compose image tags fall back to <code>latest</code><a class="headerlink" href="#docker-compose-image-tags-fall-back-to-latest" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>docker-compose.yml</code> tags the app and frontend images as
-<code>${VERSION:-latest}</code>. The project standard forbids the <code>latest</code> tag in any
-environment, so the default fallback violates the policy whenever <code>VERSION</code> is
-unset.</p>
-<p><strong>Context</strong>: Discovered while writing <code>TECHNICAL_BASELINE.md</code> (Phase 0, P0-07),
-which records that container images are pinned by tag and <code>latest</code> is never used.</p>
-<p><strong>Suggested Fix</strong>: Drop the <code>:-latest</code> fallback and require <code>VERSION</code> to be set
-(fail fast if missing), or default to a pinned placeholder tag rather than
-<code>latest</code>.</p>
-<p><strong>Affected Files</strong>: <code>docker-compose.yml</code>, <code>docker-compose.prod.yml</code></p>
-<h3 id="requires-python-range-lets-local-venvs-drift-off-the-target-interpreter"><code>requires-python</code> range lets local venvs drift off the target interpreter<a class="headerlink" href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Low</li>
-<li><strong>Category</strong>: Configuration</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>requires-python = "&gt;=3.10,&lt;3.15"</code> permits uv to build a local venv on
-Python 3.14 even though <code>target-version</code> and CI pin 3.12. Local test runs then
-execute on a different interpreter than CI.</p>
-<p><strong>Context</strong>: The worktree venv resolved to Python 3.14 during Phase 0 schema work;
-CI runs 3.12.</p>
-<p><strong>Suggested Fix</strong>: Either pin a <code>.python-version</code> to 3.12 for local development, or
-document that the broad range is intentional for library compatibility testing.</p>
-<p><strong>Affected Files</strong>: <code>pyproject.toml</code>, optionally <code>.python-version</code></p>
-<h3 id="pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide">pydoclint config requires typed docstrings the template itself does not provide<a class="headerlink" href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>[tool.pydoclint]</code> sets <code>arg-type-hints-in-docstring = true</code>, but the
-template's own modules (for example <code>src/cyo_adventure/core/exceptions.py</code>) ship
-Google-style docstrings without docstring type hints. Running pydoclint on the
-template code reports many violations, so any new code must adopt a docstring
-style the template does not itself model.</p>
-<p><strong>Context</strong>: A Phase 0 commit was blocked by pydoclint until the new schema module
-docstrings were rewritten to include parenthesized arg types and typed Returns.</p>
-<p><strong>Suggested Fix</strong>: Either set <code>arg-type-hints-in-docstring = false</code> (types live in
-signatures already), or update the template's shipped modules to the typed style so
-there is a working example to copy.</p>
-<p><strong>Affected Files</strong>: <code>pyproject.toml</code>, <code>src/**/*.py</code></p>
-<h3 id="test_examplepy-imports-a-cli-module-that-the-template-does-not-ship"><code>test_example.py</code> imports a <code>cli</code> module that the template does not ship<a class="headerlink" href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>tests/test_example.py</code> contains a <code>TestCLI</code> class importing
-<code>from cyo_adventure.cli import cli</code>, but no <code>cli</code> module exists, so 12 tests fail
-with <code>ModuleNotFoundError</code> on a fresh checkout.</p>
-<p><strong>Context</strong>: Discovered when running the full test suite during Phase 0.</p>
-<p><strong>Suggested Fix</strong>: Either include a minimal <code>cli</code> module in the template, or gate
-the CLI tests behind the feature flag that generates the CLI, or remove them when
-no CLI is selected.</p>
-<p><strong>Affected Files</strong>: <code>tests/test_example.py</code>, <code>src/{{package}}/cli.py</code></p>
-<h3 id="docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav">Docs CI runs <code>mkdocs build --strict</code> but most pages are not in the nav<a class="headerlink" href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Documentation</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>mkdocs.yml</code> sets <code>strict: false</code>, yet <code>.github/workflows/docs.yml</code> runs
-<code>mkdocs build --strict</code>. The starter nav lists only a subset of pages, so every
-page outside it (the whole <code>docs/planning/</code> tree, the ADR pages, several root docs)
-is an orphan that fails the strict CLI build.</p>
-<p><strong>Context</strong>: Discovered while wiring Phase 0 specification docs; the docs job is red
-on the base independent of any new content.</p>
-<p><strong>Suggested Fix</strong>: Make the config and CI agree (either drop <code>--strict</code> from CI or
-set <code>strict: true</code> in config), and ship a nav that covers every generated page, or
-set <code>validation.nav.omitted_files</code> so intentional orphans do not fail strict builds.</p>
-<p><strong>Affected Files</strong>: <code>mkdocs.yml</code>, <code>.github/workflows/docs.yml</code></p>
+<hr />
+<h2 id="out-of-scope-v1">Out of Scope (v1)<a class="headerlink" href="#out-of-scope-v1" title="Permanent link">&para;</a></h2>
+<p>The following are explicitly excluded from the first release. They are not deferred
+by accident; each has a documented reason.</p>
+<ol>
+<li>
+<p><strong>Dice combat and skill/luck checks (Tier 3)</strong>: randomness makes "every path reaches
+   an ending" unprovable by the deterministic validation gate. The gate cannot certify
+   a probability. Revisit only if explicitly requested.</p>
+</li>
+<li>
+<p><strong>Social, chat, or user-to-user features</strong>: a children's app has no reason to carry
+   them. Excluded permanently unless the scope and privacy posture are revisited.</p>
+</li>
+<li>
+<p><strong>Monetization, accounts for outside users, or telemetry on minors</strong>: out of scope
+   for this family-only deployment.</p>
+</li>
+<li>
+<p><strong>Native iOS/Android apps</strong>: the JSON Storybook format keeps this option open for
+   the future; the PWA covers the MVP need without app-store friction.</p>
+</li>
+<li>
+<p><strong>Rich visual graph canvas editor</strong>: a lightweight node editor (read passages as a
+   list, edit a passage, re-roll a branch) lands in Phase 4b after the first release.
+   The full canvas editor is later still.</p>
+</li>
+<li>
+<p><strong>Sharing beyond this family</strong>: requires a revisited privacy posture covering COPPA
+   and state equivalents, age assurance, verifiable parental consent, retention and
+   deletion policy, vendor terms, incident response, and a published privacy notice.</p>
+</li>
+<li>
+<p><strong>Per-passage illustrations or AI-generated images</strong>: deferred; no target phase
+   assigned.</p>
+</li>
+<li>
+<p><strong>Ending tracker, bookmarks, and read-aloud (TTS)</strong>: these engagement features land
+   in Phase 4b after the first release, along with the node editor.</p>
+</li>
+</ol>
+<hr />
+<h2 id="change-control">Change Control<a class="headerlink" href="#change-control" title="Permanent link">&para;</a></h2>
+<p>Any addition to the in-scope list requires an update to this file with the rationale and
+the source planning document that authorizes it. Do not add scope that is not present in
+<code>docs/planning/project-vision.md</code>, <code>docs/planning/tech-spec.md</code>, or the ADRs.</p>
 
 
 
@@ -2682,7 +2231,7 @@ set <code>validation.nav.omitted_files</code> so intentional orphans do not fail
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
   </span>
 
     
