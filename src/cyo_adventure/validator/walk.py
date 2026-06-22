@@ -22,23 +22,10 @@ The key's third element corrects this:
 
 In stories without any once-effects the intersection is always empty, so the
 key collapses to ``(node, var_state)`` with a constant ``frozenset()`` third
-component -- the common-case cost is zero.
-
-# #CRITICAL: data integrity: a once:true on_enter effect makes (node, var_state)
-# an unsound dedup key; keying on visited once-effect nodes preserves walk soundness.
-# #VERIFY: test_config_walk covers a once-effect story where two paths into the same
-# node must NOT collapse into one configuration.
-
-# #ASSUME: data integrity: the engine is assumed pure (no shared mutable state,
-# no side-effects beyond the returned ReadingState).  walk_configurations trusts
-# engine.choose() to return a fresh state and not mutate the input.
-# #VERIFY: StoryEngine._clone() is called on every choose() transition; no mutable
-# containers are shared between parent and child states.
-
-# #EDGE: timing/concurrency: walk_configurations is synchronous and not thread-safe.
-# It builds mutable dicts in local scope; concurrent callers on the same story must
-# call walk_configurations independently (no shared state is needed).
-# #VERIFY: only one thread invokes walk_configurations per story per call.
+component -- the common-case cost is zero.  The RAD markers documenting this
+soundness invariant live as standalone ``#`` comments at the relevant code
+locations (``_config_key`` and ``walk_configurations``) so comment-grep audits
+find them.
 """
 
 from __future__ import annotations
@@ -83,7 +70,12 @@ class WalkResult:
             that produced the key during BFS.
         edges: For each :data:`ConfigKey`, the ordered list of successor
             :data:`ConfigKey` values (one per visible choice at that configuration).
-            Ending configurations map to an empty list.
+            Ending configurations map to an empty list.  A non-ending configuration
+            whose choices are all conditioned away ALSO maps to an empty list (a
+            stateful dead-end), so callers must check ``engine.is_ending`` to tell a
+            true ending apart from a dead-end.  Under a capped walk an entry may hold
+            a partial successor list, and a listed successor key may be absent from
+            ``configs`` (it was the configuration the cap refused to record).
         capped: ``True`` if the walk was aborted because the number of distinct
             configurations would have exceeded *cap*.  Partial results are still
             returned; callers must inspect ``capped`` before relying on completeness.
@@ -121,6 +113,11 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
     """
     once_node_ids = _once_effect_node_ids(story)
 
+    # #ASSUME: data integrity: the engine is pure; choose() returns a fresh state
+    # and does not mutate its input, so the queued parent states stay valid as the
+    # walk expands their successors.
+    # #VERIFY: StoryEngine._clone() copies every mutable container on each choose();
+    # no containers are shared between a parent state and its child.
     engine = StoryEngine(story)
     initial = engine.start()
 
@@ -128,13 +125,20 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
     edges: dict[ConfigKey, list[ConfigKey]] = {}
     queue: deque[ReadingState] = deque()
 
-    initial_key = _config_key(initial, once_node_ids)
-
-    # Cap check before the first insertion.
-    if len(configs) >= cap:
+    # cap < 1 admits no configurations at all: the start config itself would
+    # push len(configs) above the cap, so abort before recording anything.
+    if cap < 1:
         return WalkResult(configs=configs, edges=edges, capped=True)
 
+    # Every config is recorded with an edge-list entry at the same moment, so the
+    # invariant set(edges.keys()) == set(configs.keys()) holds at every return
+    # point, including the capped early return. A config that is recorded but not
+    # yet dequeued keeps its empty placeholder list (its successors are simply
+    # unexplored under a capped walk); the dequeue loop overwrites the placeholder
+    # with the real successor list once it expands the config.
+    initial_key = _config_key(initial, once_node_ids)
     configs[initial_key] = initial
+    edges[initial_key] = []
     queue.append(initial)
 
     while queue:
@@ -146,6 +150,9 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
             continue
 
         successor_keys: list[ConfigKey] = []
+        # Alias into edges so a partial successor list is preserved if the cap
+        # guard below returns early while this config is mid-expansion.
+        edges[key] = successor_keys
         for choice in engine.visible_choices(state):
             next_state = engine.choose(state, choice.id)
             next_key = _config_key(next_state, once_node_ids)
@@ -156,9 +163,8 @@ def walk_configurations(story: Storybook, *, cap: int = 100_000) -> WalkResult:
                 if len(configs) >= cap:
                     return WalkResult(configs=configs, edges=edges, capped=True)
                 configs[next_key] = next_state
+                edges[next_key] = []
                 queue.append(next_state)
-
-        edges[key] = successor_keys
 
     return WalkResult(configs=configs, edges=edges, capped=False)
 
@@ -199,5 +205,10 @@ def _config_key(state: ReadingState, once_node_ids: frozenset[str]) -> ConfigKey
         ConfigKey: The ``(node_id, sorted_var_state, once_visit_intersection)`` key.
     """
     sorted_vars = tuple(sorted(state.var_state.items()))
+    # #CRITICAL: data integrity: a once:true on_enter effect makes (node, var_state)
+    # an unsound dedup key; keying on the visited once-effect nodes preserves walk
+    # soundness so two paths into the same node do not wrongly collapse.
+    # #VERIFY: test_config_walk covers a once-effect story where two paths into the
+    # same node must NOT collapse into one configuration.
     once_intersection = frozenset(state.visit_set & once_node_ids)
     return (state.current_node, sorted_vars, once_intersection)

@@ -241,8 +241,9 @@ def test_lantern_fixture_exit_node_reachable_regardless_of_lantern() -> None:
 
 
 def test_lantern_fixture_config_count() -> None:
-    """The lantern story has 4 nodes; the walk should find 4 or fewer configs
-    (variable branching at n_entrance produces 2 var states at n_cave_fork)."""
+    """The lantern story has 4 nodes; the walk should find at most 6 distinct
+    (node, var-state) configurations (variable branching at n_entrance produces
+    2 var states at n_cave_fork)."""
     data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text())
     story = Storybook.model_validate(data)
 
@@ -389,6 +390,107 @@ def test_cap_one_still_returns_start_config() -> None:
     assert len(result.configs) == 1
 
 
+def test_cap_zero_returns_empty_capped() -> None:
+    """cap=0 admits no configurations: empty configs, empty edges, capped=True."""
+    story = _minimal_tier1_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Begin.",
+                "is_ending": False,
+                "choices": [{"id": "c1", "label": "Go", "target": "end"}],
+            },
+            {
+                "id": "end",
+                "body": "Done.",
+                "is_ending": True,
+                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "choices": [],
+            },
+        ],
+        start="start",
+    )
+
+    result = walk_configurations(story, cap=0)
+
+    assert result.capped is True
+    assert result.configs == {}
+    assert result.edges == {}
+
+
+def test_cap_preserves_edges_configs_key_invariant_when_aborted() -> None:
+    """Under a cap that aborts mid-expansion of a dequeued non-ending config, the
+    invariant set(edges.keys()) == set(configs.keys()) must still hold so a
+    Layer-2 rule iterating configs.keys() and indexing edges[key] never KeyErrors.
+
+    Regression for the bug where the inner cap guard returned before recording
+    edges[key] for the config currently being expanded.
+    """
+    # A branching story: start -> {a, b}, a -> end_a, b -> end_b.
+    # With cap=2, the walk records start (1) and its first successor 'a' (2),
+    # then dequeues 'start', begins expanding it, records edges[start], and the
+    # cap fires while trying to record 'b' (would be config 3). 'start' is a
+    # dequeued non-ending config, so without the fix edges[start] would be missing.
+    story = _minimal_tier1_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Begin.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_a", "label": "Go A", "target": "a"},
+                    {"id": "c_b", "label": "Go B", "target": "b"},
+                ],
+            },
+            {
+                "id": "a",
+                "body": "A passage.",
+                "is_ending": False,
+                "choices": [{"id": "c_ea", "label": "End A", "target": "end_a"}],
+            },
+            {
+                "id": "b",
+                "body": "B passage.",
+                "is_ending": False,
+                "choices": [{"id": "c_eb", "label": "End B", "target": "end_b"}],
+            },
+            {
+                "id": "end_a",
+                "body": "End A.",
+                "is_ending": True,
+                "ending": {"id": "e_a", "type": "happy", "title": "End A"},
+                "choices": [],
+            },
+            {
+                "id": "end_b",
+                "body": "End B.",
+                "is_ending": True,
+                "ending": {"id": "e_b", "type": "sad", "title": "End B"},
+                "choices": [],
+            },
+        ],
+        start="start",
+        ending_count=2,
+    )
+
+    # Probe a range of caps so at least one aborts while a non-ending config is
+    # mid-expansion; the invariant must hold for every one of them.
+    for cap_val in [2, 3, 4]:
+        result = walk_configurations(story, cap=cap_val)
+        assert set(result.edges.keys()) == set(result.configs.keys()), (
+            f"edges/configs key mismatch at cap={cap_val}: "
+            f"edges={set(result.edges.keys())} configs={set(result.configs.keys())}"
+        )
+
+    # cap=2 specifically must abort (the story has >2 configs).
+    capped_result = walk_configurations(story, cap=2)
+    assert capped_result.capped is True
+    assert len(capped_result.configs) <= 2
+    # Every dequeued config must be safely indexable in edges.
+    for key in capped_result.configs:
+        _ = capped_result.edges.get(key)  # presence checked by the invariant above
+
+
 def test_large_enough_cap_completes_small_story() -> None:
     """A cap larger than the total config count must not set capped=True."""
     story = _minimal_tier1_story(
@@ -457,25 +559,6 @@ def test_no_once_effects_produce_empty_frozenset_third_component() -> None:
 def test_once_effect_node_discriminates_configurations() -> None:
     """A node with once:true on_enter must produce DISTINCT configurations for
     readers with and without prior visit history (key[2] must differ).
-
-    Story layout:
-    - start -> A or B (choice effects set a variable to track which path)
-    - A -> junction (junction has once:true effect that sets 'reward' to True)
-    - B -> junction (same target, but reward fires only once; already visited = no effect)
-    - junction -> end
-
-    If two readers arrive at 'junction' -- one from A (first visit) and one
-    from B (first visit in that path, but we craft it so both arrive fresh) --
-    the once-effect fires for both here. Instead, we test the canonical
-    discriminating case: a reader visits junction twice via a loop, and the
-    second visit must NOT fire the once-effect.
-
-    Simpler discriminating test: build a story where two paths converge on a
-    node that has a once:true effect. Path 1 visits the once-node en route to
-    a second node; Path 2 skips the once-node and goes directly to the second
-    node. At the second node, Path 1 has the once-node in visit_set, Path 2
-    does not. The key[2] must differ for the second node across those two
-    paths.
 
     Layout:
       start -> (choice A -> once_node -> second) or (choice B -> second)
