@@ -41,7 +41,7 @@ Your project was generated with the following configuration:
 
 ```bash
 # Create a new repository on GitHub, then:
-git remote add origin https://github.com/williaby/cyo-adventure.git
+git remote add origin https://github.com/ByronWilliamsCPA/cyo-adventure.git
 git push -u origin main
 ```
 
@@ -73,7 +73,7 @@ uv run basedpyright src/
 
 ### 5. Generate Project Planning Documents
 
-Use Claude Code to generate comprehensive planning documents for your project:
+Use Claude Code to generate all planning documents for your project:
 
 ```bash
 # Open Claude Code and describe your project, then run:
@@ -90,7 +90,7 @@ This template includes an integrated AI-assisted project planning workflow that 
 
 ### Overview
 
-The planning workflow generates 4 core documents, then synthesizes them into a comprehensive project plan:
+The planning workflow generates 4 core documents, then synthesizes them into a full project plan:
 
 ```text
 Project Description
@@ -303,7 +303,7 @@ The OpenSSF Best Practices badge requires manual project registration:
 
 1. **Register your project**: Visit [https://www.bestpractices.dev/en](https://www.bestpractices.dev/en)
 2. **Click "Get Your Badge Now"**
-3. **Enter your repository URL**: `https://github.com/williaby/cyo_adventure`
+3. **Enter your repository URL**: `https://github.com/ByronWilliamsCPA/cyo-adventure`
 4. **Complete the questionnaire** answering questions about your project's security practices
 5. **Get your badge ID** (e.g., `12345`)
 6. **Add the badge to your README**:
@@ -325,7 +325,7 @@ The OpenSSF Best Practices badge requires manual project registration:
 
 1. **Sign up/Login**: Visit [https://sonarcloud.io](https://sonarcloud.io) and authenticate with GitHub
 2. **Import your repository**
-3. **Get your project key**: Should be `williaby_cyo_adventure`
+3. **Get your project key**: Should be `ByronWilliamsCPA_cyo-adventure`
 4. **Create a token**: Account > Security > Generate Token
 5. **Add as GitHub secret**: Repository Settings > Secrets > `SONAR_TOKEN`
 
@@ -481,7 +481,7 @@ You can configure branch protection either via script (recommended) or manually 
 
 #### Option 1: Automated Setup (Recommended)
 
-Use the included script to configure comprehensive branch protection:
+Use the included script to configure full branch protection:
 
 ```bash
 # Set up branch protection with default settings
@@ -641,7 +641,7 @@ cyo_adventure/
 
 ## Getting Help
 
-- **Template Issues**: [cookiecutter-python-template issues](https://github.com/williaby/cookiecutter-python-template/issues)
+- **Template Issues**: [cookiecutter-python-template issues](https://github.com/ByronWilliamsCPA/cookiecutter-python-template/issues)
 - **Cruft Documentation**: [cruft.github.io/cruft](https://cruft.github.io/cruft/)
 - **UV Documentation**: [docs.astral.sh/uv](https://docs.astral.sh/uv/)
 - **OpenSSF Scorecard**: [securityscorecards.dev](https://securityscorecards.dev/)

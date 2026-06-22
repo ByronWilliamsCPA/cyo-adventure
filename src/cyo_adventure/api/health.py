@@ -19,8 +19,19 @@ import time
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
+from sqlalchemy import text
+
+from cyo_adventure.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/health", tags=["health"])
+
+# Generic, non-leaking message returned to clients when a readiness probe fails.
+# The full exception is logged server-side (OWASP A09); raw exception text is
+# never serialized into the response body to avoid leaking DSN/host/driver detail.
+_CHECK_FAILED_MESSAGE = "dependency unavailable"
+_CHECK_FAILED_LOG = "readiness check failed"
 
 # Track application start time for uptime calculation
 _START_TIME = time.time()
@@ -41,8 +52,10 @@ class ReadinessCheck(BaseModel):
 
     name: str = Field(..., description="Dependency name")
     status: bool = Field(..., description="Check passed")
-    latency_ms: float | None = Field(None, description="Check latency in milliseconds")
-    error: str | None = Field(None, description="Error message if failed")
+    latency_ms: float | None = Field(
+        default=None, description="Check latency in milliseconds"
+    )
+    error: str | None = Field(default=None, description="Error message if failed")
 
 
 class ReadinessStatus(HealthStatus):
@@ -78,7 +91,7 @@ async def check_database() -> ReadinessCheck:
     """Check database connectivity.
 
     Returns:
-        ReadinessCheck with database status and latency
+        ReadinessCheck: database status and latency.
     """
     start = time.time()
     try:
@@ -87,7 +100,7 @@ async def check_database() -> ReadinessCheck:
 
         async with get_session() as session:
             # Simple query to check connectivity
-            await session.execute("SELECT 1")
+            await session.execute(text("SELECT 1"))
 
         latency_ms = (time.time() - start) * 1000
         return ReadinessCheck(
@@ -95,13 +108,14 @@ async def check_database() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="database", error=str(exc))
         return ReadinessCheck(
             name="database",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 
@@ -109,7 +123,7 @@ async def check_cache() -> ReadinessCheck:
     """Check Redis/cache connectivity.
 
     Returns:
-        ReadinessCheck with cache status and latency
+        ReadinessCheck: cache status and latency.
     """
     start = time.time()
     try:
@@ -117,6 +131,11 @@ async def check_cache() -> ReadinessCheck:
         # from cyo_adventure.core.cache import redis_client
         # await redis_client.ping()
 
+        # #ASSUME: external resources: this placeholder returns status=True without
+        # performing any real cache check. Enabling it in readiness() before the
+        # redis ping is implemented reports a false-healthy cache.
+        # #VERIFY: implement the redis ping above before uncommenting the cache
+        # check in readiness().
         # Placeholder - replace with actual cache check
         latency_ms = (time.time() - start) * 1000
         return ReadinessCheck(
@@ -124,13 +143,14 @@ async def check_cache() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="cache", error=str(exc))
         return ReadinessCheck(
             name="cache",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 
@@ -138,7 +158,7 @@ async def check_external_service() -> ReadinessCheck:
     """Check external API/service connectivity.
 
     Returns:
-        ReadinessCheck with external service status
+        ReadinessCheck: external service status.
     """
     start = time.time()
     try:
@@ -148,6 +168,11 @@ async def check_external_service() -> ReadinessCheck:
         #     response = await client.get("https://api.example.com/health", timeout=2.0)
         #     response.raise_for_status()
 
+        # #ASSUME: external resources: this placeholder returns status=True without
+        # calling the external service. Enabling it in readiness() before the real
+        # request is implemented reports a false-healthy dependency.
+        # #VERIFY: implement the httpx call above before uncommenting the external
+        # service check in readiness().
         # Placeholder - replace with actual external service check
         latency_ms = (time.time() - start) * 1000
         return ReadinessCheck(
@@ -155,13 +180,14 @@ async def check_external_service() -> ReadinessCheck:
             status=True,
             latency_ms=round(latency_ms, 2),
         )
-    except Exception as e:
+    except Exception as exc:
         latency_ms = (time.time() - start) * 1000
+        logger.warning(_CHECK_FAILED_LOG, check="external_api", error=str(exc))
         return ReadinessCheck(
             name="external_api",
             status=False,
             latency_ms=round(latency_ms, 2),
-            error=str(e),
+            error=_CHECK_FAILED_MESSAGE,
         )
 
 

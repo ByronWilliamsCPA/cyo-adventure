@@ -9,7 +9,7 @@ authors = [
     {name = "Byron Williams", email = "byronawilliams@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.10,<3.15"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 keywords = []
 classifiers = [
@@ -96,7 +96,7 @@ dev = [
     "pre-commit>=3.3.0",
     # Documentation
     "mkdocs>=1.6.0",
-    "mkdocs-material>=9.5.0",
+    "mkdocs-material>=9.5.0,<10",
     "mkdocstrings[python]>=0.26.0",
     "griffe-pydantic>=1.1.0",
     "mkdocs-gen-files>=0.5.0",
@@ -128,6 +128,7 @@ api = [
     "starlette>=0.49.1",
     "sqlalchemy[asyncio]>=2.0.0",  # ORM for database operations
     "alembic>=1.12.0",  # Database migrations
+    "asyncpg>=0.29.0",  # Async PostgreSQL driver for SQLAlchemy
 ]
 
 

@@ -582,5 +582,5 @@ cap.
 ## Related Documents
 
 - [Project Vision](./project-vision.md)
-- [Architecture Decisions](./adr/)
+- [Architecture Decisions](./adr/README.md)
 - [Development Roadmap](./roadmap.md)

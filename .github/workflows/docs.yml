@@ -25,11 +25,16 @@ permissions:
   pages: write
   id-token: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 # Standalone documentation workflow
 jobs:
   docs:
     name: Build & Deploy Docs
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     # `mkdocs gh-deploy --force` pushes directly to the gh-pages branch and
     # only needs `contents: write`. Pages API / OIDC scopes are not exercised
     # here (those would be required only if switching to actions/deploy-pages).

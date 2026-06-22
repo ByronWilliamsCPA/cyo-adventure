@@ -6,8 +6,8 @@ site_name: CYO Adventure
 site_description: A choose-your-own-adventure reading app for kids
 site_author: Byron Williams
 site_url: https://cyo-adventure.readthedocs.io
-repo_url: https://github.com/williaby/cyo-adventure
-repo_name: williaby/cyo_adventure
+repo_url: https://github.com/ByronWilliamsCPA/cyo-adventure
+repo_name: ByronWilliamsCPA/cyo-adventure
 edit_uri: edit/main/docs/
 
 # Copyright
@@ -112,16 +112,12 @@ markdown_extensions:
   - admonition
   - attr_list
   - def_list
-  - footnotes
-  - md_in_html
   - tables
   - toc:
       permalink: true
       toc_depth: 3
 
   # Python Markdown Extensions
-  - pymdownx.arithmatex:
-      generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
@@ -142,8 +138,6 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
@@ -181,7 +175,37 @@ nav:
       - Changelog: project/changelog.md
       - License: project/license.md
 
+  - Planning:
+      - Overview: planning/index.md
+      - Project Vision: planning/project-vision.md
+      - Tech Specification: planning/tech-spec.md
+      - Project Plan: planning/PROJECT-PLAN.md
+      - Roadmap: planning/roadmap.md
+      - ADRs:
+          - Overview: planning/adr/README.md
+          - ADR-001: planning/adr/adr-001-story-format-json-storybook.md
+          - ADR-002: planning/adr/adr-002-client-pwa.md
+          - ADR-003: planning/adr/adr-003-frontier-llm-generation.md
+          - ADR-004: planning/adr/adr-004-homelab-first-deployment.md
+          - ADR-005: planning/adr/adr-005-mandatory-human-approval.md
+          - ADR-006: planning/adr/adr-006-conditions-inhouse-evaluator.md
+
+  - Supplementary Docs:
+      - Project Setup: PROJECT_SETUP.md
+      - OpenSSF Compliance: OPENSSF_COMPLIANCE.md
+      - Python Compatibility: PYTHON_COMPATIBILITY.md
+      - Template Feedback: template_feedback.md
+
+  - Reference:
+      - Architecture Decision Records: ADRs/README.md
+      - ADR Template: ADRs/adr-template.md
+
+# Docs exclusion
+# planning/README.md conflicts with planning/index.md (which is the proper index)
+# planning/project-plan-template.md is a template, not intended for publishing
+exclude_docs: |
+  planning/README.md
+  planning/project-plan-template.md
+
 # Validation
-# strict mode disabled to allow links to repo root files
-# These files are valid but outside docs/ directory
-strict: false
+strict: true

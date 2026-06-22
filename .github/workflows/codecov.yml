@@ -23,7 +23,7 @@ jobs:
     name: Upload Coverage
     # Only run on successful CI completion
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    uses: williaby/.github/.github/workflows/python-codecov.yml@main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-codecov.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
     with:
       artifact-name: 'coverage-reports'
       coverage-files: '*.xml'
@@ -36,6 +36,7 @@ jobs:
   report-failure:
     name: Report CI Failure
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: ${{ github.event.workflow_run.conclusion == 'failure' }}
     permissions:
       contents: read

@@ -149,6 +149,7 @@ dmypy.json
 # IDE specific files
 .vscode/
 .idea/
+.sonarlint/
 *.swp
 *.swo
 *~
@@ -285,3 +286,9 @@ tmp_cleanup/.tmp-*
 # SonarCloud
 .scannerwork/
 .sonar/
+
+# Git worktrees
+.worktrees/
+
+# Compliance report outputs
+docs/compliance-reports/

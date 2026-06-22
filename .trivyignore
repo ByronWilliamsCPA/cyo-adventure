@@ -1,0 +1,32 @@
+# Trivy ignore file for CYO Adventure container image scanning.
+#
+# Scope: ONLY base-image (Debian trixie) OS-package CVEs that currently have NO
+# fixed version available upstream. Every entry below was confirmed via
+#   trivy image --scanners vuln --severity CRITICAL,HIGH <image>
+# to report an empty "Fixed Version" with status "affected" or "fix_deferred".
+#
+# Policy (per CLAUDE.md "Unfixed CVEs"): these are not suppressions of fixable
+# issues. They are unavoidable until Debian ships patched packages. Re-evaluate
+# on each base-image bump; remove any entry once a fixed version lands, and let
+# the patched package flow in via the runtime stage `apt-get upgrade`.
+#
+# Remediation already applied in the Dockerfile (so these do NOT need ignores):
+#   - curl / libcurl4t64 / libssh2-1t64 CVEs: curl is no longer installed.
+#   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
+#   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
+#
+# Last reviewed: 2026-06-21
+
+# --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
+CVE-2026-42496
+CVE-2026-8376
+CVE-2026-42497
+CVE-2026-48962
+CVE-2026-9538
+
+# --- libsqlite3-0 (SQLite < 3.53.2); no Debian fix yet ---
+CVE-2026-11822
+CVE-2026-11824
+
+# --- ncurses family: libncursesw6, libtinfo6, ncurses-base, ncurses-bin; no Debian fix yet ---
+CVE-2025-69720

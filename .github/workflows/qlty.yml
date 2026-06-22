@@ -6,6 +6,9 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+
 concurrency:
   group: qlty-coverage-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true

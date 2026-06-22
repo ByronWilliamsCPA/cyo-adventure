@@ -329,4 +329,4 @@ and Tier-2 corpora.
 
 - [Project Vision](./project-vision.md)
 - [Technical Spec](./tech-spec.md)
-- [Architecture Decisions](./adr/)
+- [Architecture Decisions](./adr/README.md)

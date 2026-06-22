@@ -24,23 +24,16 @@ permissions:
 
 jobs:
   # ==========================================================================
-  # Org-Level PR Validation (Core Checks)
+  # NOTE: The org-level `python-pr-validation.yml` reusable workflow is
+  # DEPRECATED (its upstream now emits a "This workflow is removed" stub).
+  # Its responsibilities are already covered locally:
+  #   - conventional-commit / PR-title validation -> pr-title.yml
+  #   - tests / lint / type-check / coverage       -> ci.yml
+  # The deprecated `core-validation` caller was removed to keep the required
+  # "Dependency & Standards Validation" gate green. PR-description length and
+  # automatic size-labels (previously provided by the org workflow) are no
+  # longer enforced; add the standalone size-label action if those are wanted.
   # ==========================================================================
-  core-validation:
-    name: Core Validation
-    uses: williaby/.github/.github/workflows/python-pr-validation.yml@main
-    with:
-      python-version: '3.12'
-      source-directory: 'src'
-      test-directory: 'tests'
-      require-tests: true
-      require-conventional-commits: true
-      require-description: true
-      min-description-length: 50
-      check-breaking-changes: true
-      add-size-labels: true
-      coverage-threshold: 80
-    secrets: inherit
 
   # ==========================================================================
   # Additional Checks (Template-Specific)
@@ -50,8 +43,10 @@ jobs:
   dead-code:
     name: Dead Code Check
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Harden the runner
+        # deferral: 2026-09-18
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
@@ -91,6 +86,7 @@ jobs:
   changelog:
     name: Changelog Check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     # Skip via event payload to avoid GitHub API label-timing races on the
     # opened event (e.g. Renovate PRs). Avoids out-of-step false positives
     # when main advances after the PR was opened.
@@ -103,6 +99,7 @@ jobs:
       contents: read
     steps:
       - name: Harden the runner
+        # deferral: 2026-09-18
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
@@ -131,8 +128,10 @@ jobs:
   link-check:
     name: Documentation Links
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Harden the runner
+        # deferral: 2026-09-18
         uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
         with:
           egress-policy: audit
@@ -165,19 +164,20 @@ jobs:
   validate-dependencies:
     name: Dependency & Standards Validation
     runs-on: ubuntu-latest
-    needs: [core-validation, dead-code, changelog, link-check]
+    timeout-minutes: 5
+    needs: [dead-code, changelog, link-check]
     if: always()
     steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
       - name: Check validation results
         run: |
           echo "## Dependency & Standards Validation" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          if [ "${{ needs.core-validation.result }}" == "success" ]; then
-            echo "✅ Core Validation: Passed" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "❌ Core Validation: ${{ needs.core-validation.result }}" >> $GITHUB_STEP_SUMMARY
-          fi
 
           if [ "${{ needs.dead-code.result }}" == "success" ]; then
             echo "✅ Dead Code Check: Passed" >> $GITHUB_STEP_SUMMARY
@@ -197,10 +197,12 @@ jobs:
           else
             echo "⚠️ Link Check: ${{ needs.link-check.result }}" >> $GITHUB_STEP_SUMMARY
           fi
-          # Fail if core validation failed
-          if [ "${{ needs.core-validation.result }}" == "failure" ]; then
+          # Fail only if the changelog gate genuinely failed (it is the one hard
+          # gate here; dead-code and link-check are advisory). A skipped changelog
+          # (label-based) is not a failure.
+          if [ "${{ needs.changelog.result }}" == "failure" ]; then
             echo ""
-            echo "❌ Core validation checks failed. Please review and fix issues." >> $GITHUB_STEP_SUMMARY
+            echo "❌ Changelog check failed. Please review and fix issues." >> $GITHUB_STEP_SUMMARY
             exit 1
           fi
 

@@ -152,6 +152,16 @@ secrets*.json
 .ssh/
 
 # =============================================================================
+# Frontend (built and deployed separately)
+# =============================================================================
+# The React frontend is its own npm workspace built/served independently of the
+# Python backend image. Excluding it keeps the backend runtime image minimal and,
+# critically, keeps frontend/node_modules out of the image. Bundled tool binaries
+# there (e.g. @esbuild/linux-x64/bin/esbuild, a Go binary) otherwise drag Go
+# stdlib CVEs into the Trivy container scan even though they never run at runtime.
+frontend/
+
+# =============================================================================
 # Project-Specific
 # =============================================================================
 # Add project-specific files to ignore
@@ -170,7 +180,11 @@ scripts/
 tools/
 
 # Fuzz testing
-fuzz/
+# Note: fuzz/ is intentionally NOT excluded. ClusterFuzzLite copies the repo
+# into the build container (.clusterfuzzlite/Dockerfile: COPY . $SRC/cyo_adventure)
+# and build.sh compiles the fuzz targets from $SRC/cyo_adventure/fuzz/. Excluding
+# this directory drops the targets from the build context and the build fails
+# the bad-build-check with "No fuzz targets found".
 
 # REUSE compliance (not needed in runtime)
 REUSE.toml

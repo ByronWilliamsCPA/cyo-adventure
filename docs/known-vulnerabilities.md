@@ -1,11 +1,22 @@
-# Known Vulnerabilities
+---
+title: "Known Vulnerabilities"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Tracks CVEs and advisories that cannot be immediately remediated."
+tags:
+  - security
+  - dependencies
+  - compliance
+---
 
 This document tracks CVEs and security advisories that have been identified but cannot
 be immediately remediated. Entries must be reviewed within 60 days of the Discovered
 date. Any entry older than 60 days without reassessment blocks releases per the OpenSSF
 release gate policy.
 
-To add new entries, see [known-vulnerabilities-template.md](known-vulnerabilities-template.md).
+To add new entries, see the [known-vulnerabilities template](https://github.com/ByronWilliamsCPA/cyo-adventure/blob/main/.github/known-vulnerabilities-template.md)
+in the `.github/` directory.
 
 ## Active Entries
 

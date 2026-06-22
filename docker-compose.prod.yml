@@ -6,7 +6,7 @@ version: '3.9'
 services:
   app:
     # Production image (pre-built)
-    # image: ghcr.io/williaby/cyo_adventure:${VERSION:-latest}
+    # image: ghcr.io/byronwilliamscpa/cyo-adventure:${VERSION:-latest}
 
     # Don't mount source code in production
     volumes: []
