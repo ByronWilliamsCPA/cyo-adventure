@@ -1,0 +1,320 @@
+"""Tests for the Layer-1 graph validator.
+
+The validator is driven against the Phase-0 fixture corpus: every valid story
+must pass (no error-severity findings), and every invalid story must be rejected
+with its expected rule id. ``stateful_dead_end`` is a Tier-2 (Layer-2) case and
+must pass Layer 1.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+import pytest
+
+from cyo_adventure.validator import Severity, validate_layer1
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+_FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "storybook"
+_VALID = _FIXTURES / "valid"
+_INVALID = _FIXTURES / "invalid"
+
+
+def _load(path: Path) -> Mapping[str, object]:
+    """Load a story fixture as a mapping."""
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+# --- Valid corpus --------------------------------------------------------------
+
+_VALID_FILES = sorted(_VALID.glob("*.json"))
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("path", _VALID_FILES, ids=lambda p: p.name)
+def test_valid_fixtures_pass_layer1(path: Path) -> None:
+    """Every valid fixture passes Layer 1 (no error-severity findings)."""
+    report = validate_layer1(_load(path))
+    assert report.ok, [f.message for f in report.errors]
+
+
+# --- Invalid corpus ------------------------------------------------------------
+
+# Each invalid fixture maps to the Layer-1 rule it is expected to trip.
+_EXPECTED_RULE: dict[str, str] = {
+    "invalid/schema/duplicate_node_id.json": "L1-2",
+    "invalid/schema/undeclared_variable.json": "L1-6",
+    "invalid/schema/non_whitelisted_operator.json": "L1-6",
+    "invalid/schema/int_initial_above_max.json": "L1-6",
+    "invalid/schema/missing_ending_block.json": "L1-4",
+    "invalid/schema/tier1_with_variables.json": "L1-6",
+    "invalid/graph/dangling_target.json": "L1-2",
+    "invalid/graph/orphan_node.json": "L1-3",
+    "invalid/graph/unreachable_ending.json": "L1-3",
+    "invalid/graph/trap_loop.json": "L1-5",
+}
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(("rel", "rule_id"), list(_EXPECTED_RULE.items()))
+def test_invalid_fixture_rejected_with_rule(rel: str, rule_id: str) -> None:
+    """Each invalid fixture is rejected and carries its expected rule id."""
+    report = validate_layer1(_load(_INVALID / Path(rel).relative_to("invalid")))
+    assert not report.ok, f"{rel} should have failed Layer 1"
+    assert rule_id in report.rule_ids(), (
+        f"{rel}: expected {rule_id}, got {sorted(report.rule_ids())}"
+    )
+
+
+@pytest.mark.unit
+def test_stateful_dead_end_passes_layer1() -> None:
+    """The silver-door story is a Tier-2 (Layer-2) case and passes Layer 1."""
+    report = validate_layer1(_load(_INVALID / "graph" / "stateful_dead_end.json"))
+    assert report.ok, [f.message for f in report.errors]
+
+
+# --- Targeted rule behaviour ---------------------------------------------------
+
+
+@pytest.mark.unit
+def test_below_lower_node_bound_is_warning_not_error() -> None:
+    """A tiny valid story warns on node count but does not fail (L1-7)."""
+    report = validate_layer1(_load(_VALID / "01_hello_world.json"))
+    assert report.ok
+    budget_warnings = [f for f in report.warnings if f.rule_id == "L1-7"]
+    assert budget_warnings, "expected an L1-7 below-lower-bound warning"
+
+
+@pytest.mark.unit
+def test_dangling_target_attributes_node_and_choice() -> None:
+    """An L1-2 dangling-target finding names the offending node and choice."""
+    report = validate_layer1(_load(_INVALID / "graph" / "dangling_target.json"))
+    l1_2 = [f for f in report.errors if f.rule_id == "L1-2"]
+    assert l1_2
+    assert any(f.node_id is not None for f in l1_2)
+
+
+@pytest.mark.unit
+def test_report_is_serializable() -> None:
+    """A report round-trips to a JSON-serializable dict."""
+    report = validate_layer1(_load(_INVALID / "graph" / "trap_loop.json"))
+    payload = report.to_dict()
+    assert payload["ok"] is False
+    text = json.dumps(payload)
+    assert "L1-5" in text
+
+
+@pytest.mark.unit
+def test_severity_enum_values() -> None:
+    """Severity serializes to the documented wire strings."""
+    assert str(Severity.ERROR) == "error"
+    assert str(Severity.WARNING) == "warning"
+
+
+# --- Synthetic stories for branch coverage -------------------------------------
+
+
+def _meta(
+    age_band: str = "10-13", tier: int = 2, ending_count: int = 1
+) -> dict[str, object]:
+    """Build a minimal valid metadata block."""
+    return {
+        "age_band": age_band,
+        "reading_level": {"scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0},
+        "tier": tier,
+        "themes": [],
+        "estimated_minutes": 5,
+        "ending_count": ending_count,
+        "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+    }
+
+
+def _ending(nid: str = "n_end", eid: str = "e1") -> dict[str, object]:
+    """Build an ending node."""
+    return {
+        "id": nid,
+        "body": "The end.",
+        "on_enter": [],
+        "choices": [],
+        "is_ending": True,
+        "ending": {"id": eid, "type": "good", "title": "Done"},
+        "tags": [],
+    }
+
+
+def _link(nid: str, target: str, **over: object) -> dict[str, object]:
+    """Build a non-ending node with a single choice to ``target``."""
+    node: dict[str, object] = {
+        "id": nid,
+        "body": "x",
+        "on_enter": [],
+        "choices": [{"id": f"c_{nid}", "label": "go", "target": target, "effects": []}],
+        "is_ending": False,
+        "tags": [],
+    }
+    node.update(over)
+    return node
+
+
+def _story(
+    nodes: list[dict[str, object]],
+    *,
+    variables: list[dict[str, object]] | None = None,
+    meta: dict[str, object] | None = None,
+    start: str = "n_start",
+) -> dict[str, object]:
+    """Assemble a story mapping around the given nodes."""
+    return {
+        "schema_version": "1.0",
+        "id": "s_test",
+        "version": 1,
+        "title": "T",
+        "metadata": meta or _meta(),
+        "variables": variables or [],
+        "start_node": start,
+        "nodes": nodes,
+    }
+
+
+@pytest.mark.unit
+def test_effect_on_undeclared_variable_is_l1_6() -> None:
+    """An effect targeting an undeclared variable trips L1-6."""
+    node = _link(
+        "n_start", "n_end", on_enter=[{"op": "set", "var": "ghost", "value": True}]
+    )
+    report = validate_layer1(_story([node, _ending()]))
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_inc_on_bool_variable_is_l1_6() -> None:
+    """Applying ``inc`` to a bool variable trips L1-6."""
+    node = _link(
+        "n_start", "n_end", on_enter=[{"op": "inc", "var": "flag", "value": 1}]
+    )
+    variables = [{"name": "flag", "type": "bool", "initial": False}]
+    report = validate_layer1(
+        _story([node, _ending()], variables=variables, meta=_meta(tier=2))
+    )
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_set_bool_with_int_value_is_l1_6() -> None:
+    """A ``set`` of an int onto a bool variable trips L1-6."""
+    node = _link(
+        "n_start", "n_end", on_enter=[{"op": "set", "var": "flag", "value": 3}]
+    )
+    variables = [{"name": "flag", "type": "bool", "initial": False}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_ordering_operator_on_bool_variable_is_l1_6() -> None:
+    """Using an ordering operator on a bool variable trips L1-6."""
+    cond = {"<": [{"var": "flag"}, 1]}
+    node = _link("n_start", "n_end")
+    choices = node["choices"]
+    assert isinstance(choices, list)
+    choices[0]["condition"] = cond
+    variables = [{"name": "flag", "type": "bool", "initial": False}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_nested_ordering_on_bool_in_compound_is_l1_6() -> None:
+    """An ordering-on-bool nested inside an ``and`` is still caught (L1-6)."""
+    cond = {"and": [{"<": [{"var": "flag"}, 1]}, {"var": "flag"}]}
+    node = _link("n_start", "n_end")
+    choices = node["choices"]
+    assert isinstance(choices, list)
+    choices[0]["condition"] = cond
+    variables = [{"name": "flag", "type": "bool", "initial": False}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_variable_min_greater_than_max_is_l1_6() -> None:
+    """A variable whose min exceeds its max trips L1-6."""
+    variables = [{"name": "x", "type": "int", "initial": 0, "min": 5, "max": 2}]
+    report = validate_layer1(
+        _story([_link("n_start", "n_end"), _ending()], variables=variables)
+    )
+    assert "L1-6" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_node_count_above_upper_bound_is_error() -> None:
+    """Exceeding the tier's upper node-count bound is an L1-7 error."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(30)]
+    nodes = [*chain, _ending("n30")]
+    report = validate_layer1(
+        _story(nodes, meta=_meta(age_band="8-11", tier=1), start="n0")
+    )
+    assert any(
+        f.rule_id == "L1-7"
+        and f.severity is Severity.ERROR
+        and "node_count" in f.message
+        for f in report.errors
+    )
+
+
+@pytest.mark.unit
+def test_branch_depth_above_max_is_error() -> None:
+    """A chain deeper than the tier's max branch depth is an L1-7 error."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(8)]
+    nodes = [*chain, _ending("n8")]
+    report = validate_layer1(
+        _story(nodes, meta=_meta(age_band="8-11", tier=1), start="n0")
+    )
+    assert any(
+        f.rule_id == "L1-7"
+        and f.severity is Severity.ERROR
+        and "branch_depth" in f.message
+        for f in report.errors
+    )
+
+
+@pytest.mark.unit
+def test_ending_count_mismatch_is_l1_7_error() -> None:
+    """A metadata ending_count that disagrees with reality is an L1-7 error."""
+    nodes = [_link("n_start", "n_end"), _ending()]
+    report = validate_layer1(_story(nodes, meta=_meta(ending_count=2)))
+    assert any(
+        f.rule_id == "L1-7" and "ending_count" in f.message for f in report.errors
+    )
+
+
+@pytest.mark.unit
+def test_ending_node_with_choices_is_l1_4() -> None:
+    """An ending node that also carries choices trips L1-4."""
+    bad_ending = _ending()
+    bad_ending["choices"] = [
+        {"id": "c_x", "label": "go", "target": "n_start", "effects": []}
+    ]
+    report = validate_layer1(_story([_link("n_start", "n_end"), bad_ending]))
+    assert "L1-4" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_self_loop_with_no_escape_is_l1_5() -> None:
+    """A self-looping node that cannot reach an ending is a trap loop (L1-5)."""
+    loop = _link("n_loop", "n_loop")
+    nodes = [_link("n_start", "n_loop"), loop, _ending()]
+    report = validate_layer1(_story(nodes))
+    assert "L1-5" in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_missing_nodes_is_schema_error() -> None:
+    """A document with no nodes array fails L1-1 and skips graph rules."""
+    report = validate_layer1({"id": "s_test", "start_node": "x"})
+    assert not report.ok
+    assert "L1-1" in report.rule_ids()
