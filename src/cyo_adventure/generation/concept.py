@@ -19,10 +19,16 @@ content we want to generate.
 from __future__ import annotations
 
 from enum import StrEnum
+from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from cyo_adventure.storybook.models import AgeBand
+
+# Bounded free-text list item: non-empty and length-capped so a single brief
+# field cannot inflate prompt size unbounded or smuggle a large payload into a
+# generation prompt. Lists of these are themselves count-capped via Field.
+_BoundedText = Annotated[str, StringConstraints(min_length=1, max_length=200)]
 
 __all__ = [
     "ConceptBrief",
@@ -55,13 +61,21 @@ class Protagonist(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    name: str = Field(description="Fictional character name for the story.")
+    name: str = Field(
+        min_length=1,
+        max_length=100,
+        description="Fictional character name for the story.",
+    )
     age: int = Field(
         ge=0,
         le=18,
         description="Story character's age in years (0-18, for a children's app).",
     )
-    role: str = Field(description="Character's narrative role (e.g. 'young explorer').")
+    role: str = Field(
+        min_length=1,
+        max_length=200,
+        description="Character's narrative role (e.g. 'young explorer').",
+    )
 
 
 class ConceptBrief(BaseModel):
@@ -69,9 +83,11 @@ class ConceptBrief(BaseModel):
 
     Passed to the generation orchestrator after PII screening. Fields map
     directly to the intake spec in ``docs/planning/tech-spec.md`` (section
-    "Concept brief (intake fields)"). All free-text fields should be
-    length-limited and stripped of control characters by the API layer before
-    the brief reaches the orchestrator.
+    "Concept brief (intake fields)"). Free-text fields carry ``max_length``
+    bounds (and list fields a count cap) so a brief cannot inflate prompt size
+    or smuggle an oversized payload into a generation prompt; the API layer
+    should additionally strip control characters before the brief reaches the
+    orchestrator.
 
     ``extra="forbid"`` ensures that any unexpected field name is rejected at
     parse time, preventing accidental injection of undeclared data.
@@ -80,11 +96,12 @@ class ConceptBrief(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     # Optional story title supplied by the guardian.
-    title: str | None = None
+    title: str | None = Field(default=None, max_length=200)
 
     # Required story setup.
     premise: str = Field(
         min_length=1,
+        max_length=2000,
         description="Short story premise; the seed for generation.",
     )
     protagonist: Protagonist = Field(
@@ -92,6 +109,7 @@ class ConceptBrief(BaseModel):
     )
     point_of_view: str = Field(
         default="second",
+        max_length=50,
         description="Narrative POV (default: second person).",
     )
 
@@ -109,14 +127,18 @@ class ConceptBrief(BaseModel):
 
     # Tone and content guidance.
     tone: str = Field(
-        description="Desired narrative tone (e.g. 'adventurous', 'cosy')."
+        min_length=1,
+        max_length=100,
+        description="Desired narrative tone (e.g. 'adventurous', 'cosy').",
     )
-    themes_allowed: list[str] = Field(
+    themes_allowed: list[_BoundedText] = Field(
         default_factory=list,
+        max_length=20,
         description="Themes the story is allowed to explore.",
     )
-    content_nogo: list[str] = Field(
+    content_nogo: list[_BoundedText] = Field(
         default_factory=list,
+        max_length=20,
         description="Content categories explicitly prohibited in this story.",
     )
 
@@ -134,11 +156,13 @@ class ConceptBrief(BaseModel):
     )
 
     # Optional Tier-2 variable hints and free-form constraints.
-    desired_variables: list[str] = Field(
+    desired_variables: list[_BoundedText] = Field(
         default_factory=list,
+        max_length=20,
         description="Names of state variables the story should declare (Tier-2).",
     )
-    special_constraints: list[str] = Field(
+    special_constraints: list[_BoundedText] = Field(
         default_factory=list,
+        max_length=20,
         description="Free-text constraints passed to the generator as guidance.",
     )

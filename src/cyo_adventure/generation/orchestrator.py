@@ -181,10 +181,27 @@ def _gate_signature(
     Returns:
         A ``(findings_tuple, doc_hash)`` pair.
     """
+    # Only ERROR findings count toward no-progress: RL-13 (and any future
+    # advisory) emits WARNING findings whose message embeds the computed score,
+    # so prose-only edits between repairs would change the signature and defeat
+    # the abort even when the blocking errors are identical. This mirrors
+    # _get_failing_findings, which the repair loop uses to drive the prompt.
+    #
+    # node_id and choice_id are ``str | None``; two findings sharing a rule_id
+    # but differing in nullability (e.g. an L1-2 start-node finding with
+    # node_id=None alongside an L1-2 dangling-choice finding with a node_id)
+    # would make ``sorted`` compare ``None`` against ``str`` and raise
+    # TypeError. Sort by a None-safe key while preserving the original tuples.
     findings_tuple = tuple(
         sorted(
-            (f.rule_id, f.node_id, f.choice_id, f.message)
-            for f in gate_result.report.findings
+            (
+                (f.rule_id, f.node_id, f.choice_id, f.message)
+                for f in gate_result.report.findings
+                if f.severity is Severity.ERROR
+            ),
+            key=lambda finding: tuple(
+                "" if field is None else field for field in finding
+            ),
         )
     )
     return findings_tuple, _doc_hash(doc)
@@ -367,12 +384,10 @@ async def _run_repair_loop(
 
     while gate_result.blocked and attempts < ctx.max_repairs:
         failing_findings = _get_failing_findings(gate_result)
-        # #EDGE: data-integrity: when current_doc is None (Stage B parse failure),
-        # the repair prompt skeleton falls back to "{}", discarding Stage A's
-        # validated document. The repair loop has no access to the last valid doc.
-        # #VERIFY: a future improvement could thread the last valid doc through the
-        # repair context so a Stage-B parse failure can still repair from Stage A's
-        # skeleton rather than an empty object.
+        # #EDGE: data-integrity: generate_story seeds this loop with the last
+        # valid document (Stage A skeleton if Stage B parse-failed), so "{}" is
+        # only reached when no stage ever produced a parseable document.
+        # #VERIFY: covered by test_orchestrator stage-skeleton preservation cases.
         current_json = json.dumps(current_doc) if current_doc is not None else "{}"
 
         repair_prompt = build_repair_prompt(current_json, failing_findings)
@@ -491,6 +506,11 @@ async def generate_story(
     )
     _append_stage_log(stage_log, "stage_a", current_doc, gate_result)
 
+    # Track the most recent successfully parsed document so a later parse
+    # failure does not discard a usable skeleton. Stage A's validated structure
+    # is a better repair seed (and a better surfaced result) than an empty doc.
+    last_valid_doc = current_doc
+
     # If Stage A passed, proceed to Stage B; otherwise skip straight to repair.
     if not gate_result.blocked:
         # ------------------------------------------------------------------
@@ -505,6 +525,10 @@ async def generate_story(
             max_tokens=_MAX_TOKENS_PROSE,
         )
         _append_stage_log(stage_log, "stage_b", current_doc, gate_result)
+        # Prefer Stage B's fuller document, but keep Stage A's skeleton if
+        # Stage B failed to parse.
+        if current_doc is not None:
+            last_valid_doc = current_doc
 
     # ------------------------------------------------------------------
     # Stage C: Bounded repair loop (runs only when still blocked)
@@ -517,9 +541,13 @@ async def generate_story(
             max_repairs=max_repairs,
             stage_log=stage_log,
         )
+        # Seed the loop with the last valid document so a Stage B parse failure
+        # repairs from Stage A's skeleton rather than an empty object, and the
+        # surfaced outcome is needs_review (skeleton present) rather than failed.
+        repair_seed = current_doc if current_doc is not None else last_valid_doc
         current_doc, gate_result, attempts = await _run_repair_loop(
             gate_result,
-            current_doc,
+            repair_seed,
             repair_ctx,
         )
 

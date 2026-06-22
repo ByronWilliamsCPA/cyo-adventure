@@ -43,7 +43,7 @@ FIXTURE_DIR = Path(__file__).parent.parent / "fixtures" / "storybook"
 
 def _load_fixture(name: str) -> dict[str, object]:
     """Load a fixture JSON file as a dict."""
-    with (FIXTURE_DIR / name).open() as fh:
+    with (FIXTURE_DIR / name).open(encoding="utf-8") as fh:
         return json.load(fh)  # type: ignore[no-any-return]
 
 
@@ -551,3 +551,77 @@ async def test_status_never_passed_when_gate_blocked() -> None:
         "status must never be 'passed' when the final gate is blocked"
     )
     assert outcome.status in ("needs_review", "failed")
+
+
+def test_gate_signature_handles_mixed_nullability_findings() -> None:
+    """_gate_signature must not raise when findings share a rule_id but differ
+    in node_id nullability.
+
+    Regression test: two L1-2 findings (a start-node finding with node_id=None
+    and a dangling-choice finding with a concrete node_id) made the previous
+    ``sorted`` call compare ``None`` against ``str`` and raise TypeError,
+    crashing the repair loop instead of routing the malformed output to repair.
+    """
+    from cyo_adventure.generation.orchestrator import _gate_signature
+    from cyo_adventure.validator.gate import GateResult
+    from cyo_adventure.validator.report import (
+        Severity,
+        ValidationFinding,
+        ValidationReport,
+    )
+
+    report = ValidationReport()
+    report.add(
+        ValidationFinding(
+            rule_id="L1-2",
+            severity=Severity.ERROR,
+            story_id="s",
+            node_id=None,
+            message="L1-2 ref: start_node not found",
+        )
+    )
+    report.add(
+        ValidationFinding(
+            rule_id="L1-2",
+            severity=Severity.ERROR,
+            story_id="s",
+            node_id="n_start",
+            choice_id="c1",
+            message="L1-2 ref: dangling choice target",
+        )
+    )
+    gate = GateResult(report=report, blocked=True, safety_flagged=False)
+
+    findings_tuple, doc_hash = _gate_signature(gate, None)
+
+    assert len(findings_tuple) == 2
+    assert len(doc_hash) == 64
+    # Signature must be deterministic and order-independent of insertion.
+    assert _gate_signature(gate, None) == (findings_tuple, doc_hash)
+
+
+@pytest.mark.asyncio
+async def test_stage_b_parse_failure_preserves_stage_a_skeleton() -> None:
+    """A Stage B parse failure must not discard Stage A's validated skeleton.
+
+    Regression: Stage A produces a valid (passing) skeleton, then Stage B and
+    every repair return malformed JSON. The outcome must surface the Stage A
+    skeleton as needs_review rather than collapsing to failed/storybook=None.
+    """
+    provider = MockProvider(
+        responses=[
+            _valid_json(),  # Stage A: valid skeleton, passes the gate
+            "not valid json",  # Stage B: parse error
+            "still not json",  # Repair 1: parse error
+        ]
+    )
+    brief = _make_brief()
+    pii = _empty_pii()
+
+    outcome = await generate_story(brief, provider, pii, max_repairs=1)
+
+    assert outcome.status == "needs_review", (
+        "Stage A skeleton should be surfaced as needs_review, not failed"
+    )
+    assert outcome.storybook is not None, "Stage A skeleton must be preserved"
+    assert outcome.storybook["id"] == VALID_STORY["id"]
