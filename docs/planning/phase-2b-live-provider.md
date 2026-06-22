@@ -38,7 +38,7 @@ the defined extension points:
 | `build_provider` factory | `src/cyo_adventure/generation/provider.py` | Currently raises `ConfigurationError` for any non-mock provider |
 | `settings.generation_provider` | `src/cyo_adventure/core/config.py` | Config key that selects the active provider |
 | Staged orchestrator | `src/cyo_adventure/generation/orchestrator.py` | Provider-agnostic; calls `provider.complete()` |
-| PII egress guard | `src/cyo_adventure/generation/pii_guard.py` | Must run before every provider call |
+| PII egress guard | `src/cyo_adventure/generation/pii.py` (`assert_prompt_pii_safe`) | Must run before every provider call |
 | Yield harness | `scripts/yield_harness.py` | Accepts `--provider` flag; swap the provider and re-run |
 
 ---
@@ -56,8 +56,11 @@ the defined extension points:
 - Add network-level concerns per [ADR-003](./adr/adr-003-frontier-llm-generation.md):
   configurable timeout, exponential-backoff retry (max 3 attempts), and a provider-agnostic
   `ProviderError` mapped from HTTP/SDK exceptions.
-- Ensure the PII guard (`pii_guard.py`) still runs before every `complete()` call; no adapter
-  may call the provider SDK directly without going through the guard.
+- Ensure the PII guard (`pii.py`, `assert_prompt_pii_safe`) still runs before every
+  `complete()` call; no adapter may call the provider SDK directly without going through the
+  guard. The guard is currently a structural convention (all egress flows through the
+  orchestrator's `_run_one_stage`); when adding the first live adapter, move or re-assert the
+  screen at the provider boundary so a new adapter cannot bypass it.
 - Run `scripts/yield_harness.py` against the live Claude adapter over a 20-story sample and
   record the result.
 
@@ -80,7 +83,8 @@ Both criteria must be met for this work package to close Phase 2 fully:
    The orchestrator, harness, and API endpoints are unaffected.
 
 2. **Generation yield at least 60% over a 20-story sample.** Running
-   `scripts/yield_harness.py --provider claude --stories 20` against the live Claude adapter
+   `scripts/yield_harness.py --briefs <20-brief sample>.json --provider claude --threshold 0.60`
+   against the live Claude adapter (the sample size is the number of briefs in the file)
    produces a pass rate at or above 60% (stories that pass the full validation gate with zero
    structural edits, prose-only tweaks allowed). The harness output is committed to
    `docs/planning/yield-results/phase-2b-YYYY-MM-DD.json`.

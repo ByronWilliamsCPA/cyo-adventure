@@ -46,8 +46,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with an Alembic migration; an RQ async worker and provider factory (`build_provider`
   returns `MockProvider` by default; live providers raise `ConfigurationError` until
   Phase 2b wires them); guardian-only API endpoints for concept intake
-  (`POST /api/v1/concepts`), story generation (`POST /api/v1/generate`), job status
-  (`GET /api/v1/generation-jobs/{id}`), and validation (`POST /api/v1/validate`);
+  (`POST /api/v1/concepts`), story generation
+  (`POST /api/v1/concepts/{id}/generate`), job status
+  (`GET /api/v1/generation-jobs/{id}`), and re-validation
+  (`POST /api/v1/storybooks/{id}/versions/{version}/validate`);
   and a mock-driven generation yield harness (`scripts/yield_harness.py`, run with
   `--provider` to swap providers). Live provider wiring (Claude/Ollama/OpenRouter
   HTTP clients) and the 60% yield measurement over a 20-story sample are deferred
