@@ -333,12 +333,12 @@ def test_findings_ordered_l1_before_l2() -> None:
         elif f.rule_id == "SAFE-14":
             layer_order.append("SAFE")
 
-    # No L1 token should appear after an L2 token in the ordering.
+    # No L1 label should appear after an L2 label in the ordering.
     seen_l2 = False
-    for token in layer_order:
-        if token == "L2":
+    for layer in layer_order:
+        if layer == "L2":
             seen_l2 = True
-        if token == "L1" and seen_l2:
+        if layer == "L1" and seen_l2:
             pytest.fail("L1 finding appeared after an L2 finding in merged report")
 
 

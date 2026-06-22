@@ -212,7 +212,7 @@ async def test_make_canned_story_response_usable_as_queued_response() -> None:
         / "valid"
         / "03_tier2_lantern.json"
     )
-    with fixture_path.open() as fh:
+    with fixture_path.open(encoding="utf-8") as fh:
         story_dict = json.load(fh)
 
     canned = make_canned_story_response(story_dict)  # type: ignore[arg-type]

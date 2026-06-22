@@ -199,7 +199,7 @@ def test_linear_tier1_no_cap() -> None:
 
 def test_lantern_fixture_walk_completes() -> None:
     """03_tier2_lantern.json: walk must complete without hitting the cap."""
-    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text())
+    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)
@@ -209,7 +209,7 @@ def test_lantern_fixture_walk_completes() -> None:
 
 def test_lantern_fixture_treasure_node_reachable_only_with_lantern() -> None:
     """n_treasure must appear in configs only where has_lantern is True."""
-    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text())
+    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)
@@ -227,7 +227,7 @@ def test_lantern_fixture_treasure_node_reachable_only_with_lantern() -> None:
 
 def test_lantern_fixture_exit_node_reachable_regardless_of_lantern() -> None:
     """n_exit should be reachable from both has_lantern=True and has_lantern=False."""
-    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text())
+    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)
@@ -244,7 +244,7 @@ def test_lantern_fixture_config_count() -> None:
     """The lantern story has 4 nodes; the walk should find at most 6 distinct
     (node, var-state) configurations (variable branching at n_entrance produces
     2 var states at n_cave_fork)."""
-    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text())
+    data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)

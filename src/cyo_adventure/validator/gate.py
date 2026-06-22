@@ -127,8 +127,7 @@ def run_gate(data: Mapping[str, object]) -> GateResult:
 
     # --- Compute blocked and safety_flagged from the merged report ---
     blocked = any(
-        f.severity is Severity.ERROR
-        and (f.rule_id.startswith("L1") or f.rule_id.startswith("L2"))
+        f.severity is Severity.ERROR and f.rule_id.startswith(("L1", "L2"))
         for f in merged.findings
     )
     safety_flagged = any(f.rule_id == "SAFE-14" for f in merged.findings)
