@@ -3299,9 +3299,10 @@ and <a href="../adr/adr-002-client-pwa/">ADR-002</a>.</p>
 <p><strong>Dependencies</strong>: Requires Phase 0 schema and scaffold. Blocks Phase 2.</p>
 <hr />
 <h3 id="phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">Phase 2: Validation Gate and Authoring Pipeline (4-6 weeks)<a class="headerlink" href="#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks" title="Permanent link">&para;</a></h3>
-<p><strong>Branch</strong>: <code>feat/phase-2-generation-gate</code>
+<p><strong>Branch</strong>: <code>feat/phase-2-generation-gate</code> (PRs #5 and PR-c)
 <strong>Milestone</strong>: M2 - Concept-to-story pipeline passes the full gate
-<strong>Status</strong>: Planned</p>
+<strong>Status</strong>: Delivered (validation gate + mock-provider pipeline). Two criteria are deferred to
+Phase 2b; see the subsection below.</p>
 <p><strong>Objective</strong>: Generate stories that hold together, with the gate as the arbiter. This is the
 long pole of the project: generation reliability and the state-space validator absorb most of the
 iteration. First external LLM call, so the privacy controls and provider data-handling decision
@@ -3334,11 +3335,25 @@ from Phase 0 are preconditions. See <a href="../adr/adr-003-frontier-llm-generat
 <p><strong>Acceptance criteria</strong> (from <a href="../roadmap/">Roadmap Phase 2</a>):</p>
 <ul>
 <li>From a concept brief, the pipeline produces a story that passes the full gate with zero
-  structural edits at least 60% of the time over a 20-story sample.</li>
+  structural edits at least 60% of the time over a 20-story sample. (Deferred to Phase 2b.)</li>
 <li>The validator rejects 100% of the known-bad and Tier-2 corpora with correct rule and node
-  attribution.</li>
-<li>No prompt sent to the provider contains a real child name, birthdate, or sensitive trait.</li>
+  attribution. (Delivered.)</li>
+<li>No prompt sent to the provider contains a real child name, birthdate, or sensitive trait.
+  (Delivered.)</li>
 </ul>
+<p><strong>Deferred to Phase 2b</strong>:</p>
+<p>Two acceptance criteria were deliberately deferred after review. The decision was recorded
+because both require a live LLM provider, which was not wired in-phase:</p>
+<ol>
+<li><strong>60% generation yield over a 20-story sample</strong> - the mock-driven yield harness
+   (<code>scripts/yield_harness.py</code>) ships in Phase 2 and can be re-run once a live provider
+   is configured.</li>
+<li><strong>Concrete Claude/Ollama/OpenRouter provider adapters</strong> - the <code>GenerationProvider</code>
+   protocol and <code>build_provider</code> factory shipped; the HTTP client implementations did not.
+   Live providers currently raise <code>ConfigurationError</code>.</li>
+</ol>
+<p>Follow-up scope and acceptance criteria are in
+<a href="../phase-2b-live-provider/"><code>docs/planning/phase-2b-live-provider.md</code></a>.</p>
 <p><strong>Quality gates</strong>:</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 80% line / 70% branch coverage overall; 90% on the Layer-2 validator and generation
@@ -3948,7 +3963,7 @@ documents.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 12:49:17 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 20:01:21 UTC">June 22, 2026</span>
   </span>
 
     

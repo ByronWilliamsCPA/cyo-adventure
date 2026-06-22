@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/api-reference/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/phase-2b-live-provider/">
       
       
-        <link rel="prev" href="../guides/usage/">
-      
-      
-        <link rel="next" href="../development/architecture/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>API Reference - CYO Adventure</title>
+        <title>Phase 2b: Live Provider Wiring and Generation Yield - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#core-module" class="md-skip">
+        <a href="#purpose" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              API Reference
+              Phase 2b: Live Provider Wiring and Generation Yield
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,13 +274,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -306,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -328,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -350,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../planning/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -372,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -430,7 +424,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -460,7 +454,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -556,7 +550,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -591,7 +585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -626,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -665,10 +659,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -678,22 +670,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -711,7 +702,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -726,42 +717,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -784,119 +743,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#core-module" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Module
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cyo_adventure.core.config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label=" config">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cyo_adventure.core.config-classes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Classes
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#utils-module" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Utils Module
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Utils Module">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logging
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cyo_adventure.utils.logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;logging
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label=" logging">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cyo_adventure.utils.logging-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Functions:
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -980,7 +826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1015,7 +861,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1050,7 +896,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1085,7 +931,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1189,7 +1035,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1224,7 +1070,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1259,7 +1105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -1336,7 +1182,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1387,7 +1233,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -1422,7 +1268,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -1457,7 +1303,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1492,7 +1338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -1564,7 +1410,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/adr/" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -1615,7 +1461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1650,7 +1496,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1685,7 +1531,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1720,7 +1566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1755,7 +1601,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1790,7 +1636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -1904,7 +1750,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -1939,7 +1785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -1974,7 +1820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2009,7 +1855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../template_feedback/" class="md-nav__link">
+      <a href="../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2078,7 +1924,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2129,7 +1975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2189,10 +2035,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#core-module" class="md-nav__link">
+  <a href="#purpose" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Core Module
+        Purpose
       
     </span>
   </a>
@@ -2200,22 +2046,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cyo_adventure.core.config" class="md-nav__link">
+  <a href="#existing-seams-what-phase-2-already-ships" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;config
+        Existing Seams (what Phase 2 already ships)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label=" config">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#cyo_adventure.core.config-classes" class="md-nav__link">
+  <a href="#in-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Classes
+        In scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of scope
       
     </span>
   </a>
@@ -2228,58 +2096,35 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#utils-module" class="md-nav__link">
+  <a href="#acceptance-criteria" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Utils Module
+        Acceptance Criteria
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Utils Module">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Logging
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#cyo_adventure.utils.logging" class="md-nav__link">
+  <a href="#key-constraints-and-guidelines" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-module"></code>&nbsp;logging
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label=" logging">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cyo_adventure.utils.logging-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Functions:
+        Key Constraints and Guidelines
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2303,657 +2148,132 @@
   
 
 
-  <h1>Overview</h1>
-
-<p>Complete API documentation for CYO Adventure.</p>
-<h2 id="core-module">Core Module<a class="headerlink" href="#core-module" title="Permanent link">&para;</a></h2>
-
-
-<div class="doc doc-object doc-module">
-
-
-
-<h2 id="cyo_adventure.core.config" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <code>cyo_adventure.core.config</code>
-
-
-<a href="#cyo_adventure.core.config" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents first">
-
-        <p>Configuration settings for CYO Adventure.</p>
-<p>Settings are loaded from environment variables with the prefix 'CYO_ADVENTURE_'.
-Pydantic-settings handles the parsing and validation.</p>
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-<h3 id="cyo_adventure.core.config-classes">Classes<a href="#cyo_adventure.core.config-classes" class="headerlink" title="Permanent link">&para;</a></h3>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h4 id="cyo_adventure.core.config.Settings" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>            <code>Settings</code>
-
-
-<a href="#cyo_adventure.core.config.Settings" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-            <p class="doc doc-class-bases">
-              Bases: <code><span title="pydantic_settings.BaseSettings">BaseSettings</span></code></p>
-
-
-
-        <p>Configuration settings for the application, loaded from environment variables.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.model_config">model_config</span></code></td>
-            <td>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Pydantic settings configuration (env prefix and parsing).</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.environment">environment</span></code></td>
-            <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;local&#39;, &#39;dev&#39;, &#39;staging&#39;, &#39;production&#39;]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Deployment stage; gates the database_url fail-fast check.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.log_level">log_level</span></code></td>
-            <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;DEBUG&#39;, &#39;INFO&#39;, &#39;WARNING&#39;, &#39;ERROR&#39;, &#39;CRITICAL&#39;]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The logging level for the application.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.json_logs">json_logs</span></code></td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Flag to enable or disable JSON formatted logs.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.include_timestamp">include_timestamp</span></code></td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Flag to include timestamps in logs.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.database_url">database_url</span></code></td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Async SQLAlchemy connection URL for PostgreSQL.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.redis_url">redis_url</span></code></td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Redis connection URL for the RQ task queue.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="cyo_adventure.core.config.Settings.generation_provider">generation_provider</span></code></td>
-            <td>
-                  <code><span title="typing.Literal">Literal</span>[&#39;mock&#39;, &#39;claude&#39;, &#39;ollama&#39;, &#39;openrouter&#39;]</code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Which LLM provider to use for story generation.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-
-
-  </div>
-
-    </div>
-
-</div>
-
-
-
-
-  </div>
-
-    </div>
-
-</div><h2 id="utils-module">Utils Module<a class="headerlink" href="#utils-module" title="Permanent link">&para;</a></h2>
-<h3 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h3>
-
-
-<div class="doc doc-object doc-module">
-
-
-
-<h2 id="cyo_adventure.utils.logging" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-module"></code>            <code>cyo_adventure.utils.logging</code>
-
-
-<a href="#cyo_adventure.utils.logging" class="headerlink" title="Permanent link">&para;</a></h2>
-
-    <div class="doc doc-contents first">
-
-        <p>Structured logging configuration using structlog and rich.</p>
-<p>Provides JSON-formatted logs for production environments with rich console
-output for development. All logs include contextual information for debugging
-and monitoring.</p>
-<p>Features:
-- Rich console output for development
-- JSON-formatted logs for production
-- Correlation ID support for distributed tracing
-- Performance logging helpers</p>
-<p>Note: Module named "logging" intentionally shadows stdlib for project-specific
-configuration.</p>
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-<h3 id="cyo_adventure.utils.logging-functions">Functions:<a href="#cyo_adventure.utils.logging-functions" class="headerlink" title="Permanent link">&para;</a></h3>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="cyo_adventure.utils.logging.setup_logging" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="s1">&#39;INFO&#39;</span><span class="p">,</span> <span class="n">json_logs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">include_timestamp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">include_correlation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
-
-<a href="#cyo_adventure.utils.logging.setup_logging" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Configure structured logging for the application.</p>
-<p>Sets up both standard logging and structlog with appropriate handlers
-for the environment (JSON for production, rich console for development).</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>level</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL).
-Defaults to INFO.</p>
-              </div>
-            </td>
-            <td>
-                  <code>&#39;INFO&#39;</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>json_logs</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If True, output JSON logs (production mode). If False,
-use rich console formatting (development mode). Defaults to False.</p>
-              </div>
-            </td>
-            <td>
-                  <code>False</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>include_timestamp</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Whether to include timestamps in log output.
-Defaults to True.</p>
-              </div>
-            </td>
-            <td>
-                  <code>True</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>include_correlation</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Whether to include correlation IDs from request
-context in log output. Defaults to True. Requires API framework.</p>
-              </div>
-            </td>
-            <td>
-                  <code>True</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="example" open>
-  <summary>Example</summary>
-  <blockquote>
-<blockquote>
-<blockquote>
-<h5 id="cyo_adventure.utils.logging.setup_logging--development-setup">Development setup<a class="headerlink" href="#cyo_adventure.utils.logging.setup_logging--development-setup" title="Permanent link">&para;</a></h5>
-<p>setup_logging(level="DEBUG", json_logs=False)</p>
-<h5 id="cyo_adventure.utils.logging.setup_logging--production-setup-with-correlation">Production setup with correlation<a class="headerlink" href="#cyo_adventure.utils.logging.setup_logging--production-setup-with-correlation" title="Permanent link">&para;</a></h5>
-<p>setup_logging(level="INFO", json_logs=True, include_correlation=True)</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</details>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="cyo_adventure.utils.logging.get_logger" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></code>
-
-<a href="#cyo_adventure.utils.logging.get_logger" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Get a structured logger instance.</p>
-<p>Creates or retrieves a structlog logger with the given name. This should
-typically be called with <strong>name</strong> to create module-specific loggers.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>name</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Logger name (typically <strong>name</strong> of the module).</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-    <p><span class="doc-section-title">Returns:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Configured structlog logger instance with methods like:</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
-<li>logger.info()</li>
+  <h1>Phase 2b: Live Provider Wiring and Generation Yield</h1>
+
+<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
+<p>Phase 2 delivered the <code>GenerationProvider</code> protocol, the staged orchestrator, the mock-driven
+yield harness, and all backend scaffolding for async generation. Two acceptance criteria were
+deliberately deferred because they require a live LLM provider:</p>
+<ol>
+<li>Concrete HTTP-client adapters for Claude (primary), Ollama, and OpenRouter.</li>
+<li>Measured generation yield of at least 60% over a 20-story sample against a live provider.</li>
+</ol>
+<p>This document defines the scope, acceptance criteria, and key constraints for the follow-up
+work package that closes those two items.</p>
+<hr />
+<h2 id="existing-seams-what-phase-2-already-ships">Existing Seams (what Phase 2 already ships)<a class="headerlink" href="#existing-seams-what-phase-2-already-ships" title="Permanent link">&para;</a></h2>
+<p>All of the following are in place and must not be changed by this work package except through
+the defined extension points:</p>
+<table>
+<thead>
+<tr>
+<th>Seam</th>
+<th>Location</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GenerationProvider</code> protocol</td>
+<td><code>src/cyo_adventure/generation/provider.py</code></td>
+<td>Defines <code>complete(prompt, ...)</code></td>
+</tr>
+<tr>
+<td><code>build_provider</code> factory</td>
+<td><code>src/cyo_adventure/generation/provider.py</code></td>
+<td>Currently raises <code>ConfigurationError</code> for any non-mock provider</td>
+</tr>
+<tr>
+<td><code>settings.generation_provider</code></td>
+<td><code>src/cyo_adventure/core/config.py</code></td>
+<td>Config key that selects the active provider</td>
+</tr>
+<tr>
+<td>Staged orchestrator</td>
+<td><code>src/cyo_adventure/generation/orchestrator.py</code></td>
+<td>Provider-agnostic; calls <code>provider.complete()</code></td>
+</tr>
+<tr>
+<td>PII egress guard</td>
+<td><code>src/cyo_adventure/generation/pii.py</code> (<code>assert_prompt_pii_safe</code>)</td>
+<td>Must run before every provider call</td>
+</tr>
+<tr>
+<td>Yield harness</td>
+<td><code>scripts/yield_harness.py</code></td>
+<td>Accepts <code>--provider</code> flag; swap the provider and re-run</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h2>
+<h3 id="in-scope">In scope<a class="headerlink" href="#in-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Implement <code>complete()</code> for three providers behind the existing <code>GenerationProvider</code> protocol:</li>
+<li><strong>Claude</strong> (Anthropic SDK, primary): target the model specified by <code>settings.llm_model</code>.</li>
+<li><strong>Ollama</strong> (local P40, fallback): target the model specified by <code>settings.ollama_model</code>.</li>
+<li><strong>OpenRouter</strong> (HTTP fallback): target the model specified by <code>settings.openrouter_model</code>.</li>
+<li>Wire <code>build_provider</code> so that <code>settings.generation_provider</code> returns the correct live adapter
+  instead of raising <code>ConfigurationError</code>.</li>
+<li>Add network-level concerns per <a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a>:
+  configurable timeout, exponential-backoff retry (max 3 attempts), and a provider-agnostic
+  <code>ProviderError</code> mapped from HTTP/SDK exceptions.</li>
+<li>Ensure the PII guard (<code>pii.py</code>, <code>assert_prompt_pii_safe</code>) still runs before every
+  <code>complete()</code> call; no adapter may call the provider SDK directly without going through the
+  guard. The guard is currently a structural convention (all egress flows through the
+  orchestrator's <code>_run_one_stage</code>); when adding the first live adapter, move or re-assert the
+  screen at the provider boundary so a new adapter cannot bypass it.</li>
+<li>Run <code>scripts/yield_harness.py</code> against the live Claude adapter over a 20-story sample and
+  record the result.</li>
 </ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
-<li>logger.debug()</li>
+<h3 id="out-of-scope">Out of scope<a class="headerlink" href="#out-of-scope" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Changes to the orchestrator, validator, or PII guard logic.</li>
+<li>New story-format features or schema changes.</li>
+<li>Prompt-template authoring (templates ship in Phase 2; adjust them only if yield measurement
+  reveals a systematic failure pattern, and document the change in the harness output).</li>
+<li>Provider billing, quota, or rate-limit dashboards (operational concern, not code).</li>
 </ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
-<li>logger.warning()</li>
+<hr />
+<h2 id="acceptance-criteria">Acceptance Criteria<a class="headerlink" href="#acceptance-criteria" title="Permanent link">&para;</a></h2>
+<p>Both criteria must be met for this work package to close Phase 2 fully:</p>
+<ol>
+<li>
+<p><strong>Provider swap is a config change only.</strong> Setting <code>settings.generation_provider</code> to
+   <code>claude</code>, <code>ollama</code>, or <code>openrouter</code> selects the corresponding adapter with no code changes.
+   The orchestrator, harness, and API endpoints are unaffected.</p>
+</li>
+<li>
+<p><strong>Generation yield at least 60% over a 20-story sample.</strong> Running
+   <code>scripts/yield_harness.py --briefs &lt;20-brief sample&gt;.json --provider claude --threshold 0.60</code>
+   against the live Claude adapter (the sample size is the number of briefs in the file)
+   produces a pass rate at or above 60% (stories that pass the full validation gate with zero
+   structural edits, prose-only tweaks allowed). The harness output is committed to
+   <code>docs/planning/yield-results/phase-2b-YYYY-MM-DD.json</code>.</p>
+</li>
+</ol>
+<hr />
+<h2 id="key-constraints-and-guidelines">Key Constraints and Guidelines<a class="headerlink" href="#key-constraints-and-guidelines" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>ADR-003</strong> governs provider selection rationale and the interface contract. Any deviation
+  from the interface requires an ADR amendment before implementation.</li>
+<li><strong>Timeout defaults</strong>: 120 s per <code>complete()</code> call; configurable via
+  <code>settings.llm_timeout_seconds</code>.</li>
+<li><strong>Retry policy</strong>: 3 attempts with exponential backoff (2 s, 4 s, 8 s); on exhaustion, raise
+  <code>ProviderError</code> and let the orchestrator route to <code>needs_revision</code>.</li>
+<li><strong>No PII in prompts</strong>: the PII guard is the enforcement point; adapters must not construct
+  prompts independently of the orchestrator.</li>
+<li><strong>MockProvider remains the default</strong> in CI and local development until
+  <code>settings.generation_provider</code> is explicitly set to a live value. This prevents accidental
+  LLM calls during automated test runs.</li>
 </ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
-<li>logger.error()</li>
+<hr />
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../adr/adr-003-frontier-llm-generation/">ADR-003: Frontier LLM for generation</a></li>
+<li><a href="../roadmap/#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">Phase 2 roadmap entry</a></li>
+<li><a href="../PROJECT-PLAN/#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">PROJECT-PLAN.md Phase 2 section</a></li>
 </ul>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <ul>
-<li>logger.exception()</li>
-</ul>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="example" open>
-  <summary>Example</summary>
-  <blockquote>
-<blockquote>
-<blockquote>
-<p>logger = get_logger(<strong>name</strong>)
-logger.info("Processing started", document_id="doc_001")
-logger.warning("Low confidence", confidence=0.45, threshold=0.5)
-logger.error("Processing failed", error="file_not_found")</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</details>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="cyo_adventure.utils.logging.log_performance" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code>            <code class="highlight language-python"><span class="n">log_performance</span><span class="p">(</span><span class="n">logger</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="n">duration_ms</span><span class="p">,</span> <span class="n">success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">context</span><span class="p">)</span></code>
-
-<a href="#cyo_adventure.utils.logging.log_performance" class="headerlink" title="Permanent link">&para;</a></h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Log performance metrics for an operation.</p>
-<p>Provides a standardized way to log performance data with operation name,
-duration, success status, and additional context.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>logger</code>
-            </td>
-            <td>
-                  <code><span title="structlog.stdlib.BoundLogger">BoundLogger</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Structlog logger instance from get_logger().</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>operation</code>
-            </td>
-            <td>
-                  <code><span title="str">str</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Name of the operation being timed.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>duration_ms</code>
-            </td>
-            <td>
-                  <code><span title="float">float</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Duration in milliseconds.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>success</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Whether the operation succeeded. Defaults to True.</p>
-              </div>
-            </td>
-            <td>
-                  <code>True</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>**context</code>
-            </td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Additional context key-value pairs to include in the log.</p>
-              </div>
-            </td>
-            <td>
-                  <code>{}</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-
-<details class="example" open>
-  <summary>Example</summary>
-  <blockquote>
-<blockquote>
-<blockquote>
-<p>logger = get_logger(<strong>name</strong>)
-log_performance(
-...     logger,
-...     operation="image_processing",
-...     duration_ms=42.5,
-...     success=True,
-...     image_count=10,
-...     output_dir="/results",
-... )</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</details>
-
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
 
 
 
@@ -2976,7 +2296,7 @@ log_performance(
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 20:01:21 UTC">June 22, 2026</span>
   </span>
 
     
@@ -2986,7 +2306,7 @@ log_performance(
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 20:01:21 UTC">June 22, 2026</span>
   </span>
 
     
@@ -3063,10 +2383,10 @@ log_performance(
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
