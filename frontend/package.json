@@ -15,7 +15,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "typecheck": "tsc --noEmit",
-    "generate-client": "openapi-ts"
+    "generate-client": "openapi-ts",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@xstate/react": "^6.1.0",
@@ -29,6 +30,7 @@
     "@eslint/js": "^9.17.0",
     "@hey-api/client-axios": "^0.9.1",
     "@hey-api/openapi-ts": "^0.98.2",
+    "@playwright/test": "^1.61.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/node": "^22.9.0",

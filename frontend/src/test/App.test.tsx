@@ -1,30 +1,59 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import App from '../App'
+import 'fake-indexeddb/auto'
 
-// Mock the ApiStatus component to avoid API calls in tests
-vi.mock('@/components/ApiStatus', () => ({
-  ApiStatus: () => <div data-testid="api-status">API Status Mock</div>,
+import { render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import App from '../App'
+import { _resetDbHandle } from '../offline/db'
+
+// Mock the API adapters so the App mounts deterministically without a backend.
+vi.mock('../api/readerApi', () => ({
+  makeSyncApi: () => ({
+    putReadingState: () => Promise.resolve({ status: 200, row: { state_revision: 1 } }),
+  }),
+  makeFetchStory: () => () =>
+    Promise.resolve({
+      schema_version: '1.0',
+      id: 's_demo',
+      version: 1,
+      title: 'Demo',
+      metadata: {},
+      variables: [],
+      start_node: 'n0',
+      nodes: [
+        {
+          id: 'n0',
+          body: 'Hello reader',
+          is_ending: false,
+          choices: [{ id: 'c', label: 'Go', target: 'n1' }],
+        },
+        {
+          id: 'n1',
+          body: 'The end',
+          is_ending: true,
+          ending: { id: 'e', type: 'good', title: 'End' },
+          choices: [],
+        },
+      ],
+    }),
 }))
 
+beforeEach(() => {
+  globalThis.indexedDB = new IDBFactory()
+  _resetDbHandle()
+})
+
 describe('App', () => {
-  it('renders the project name', () => {
+  it('renders the reader for the configured story', async () => {
     render(<App />)
-    expect(screen.getByText('{{ cookiecutter.project_name }}')).toBeInTheDocument()
+    expect(await screen.findByTestId('reader')).toBeInTheDocument()
+    expect(screen.getByText('Hello reader')).toBeInTheDocument()
   })
 
-  it('renders the project description', () => {
+  it('shows the app title', async () => {
     render(<App />)
-    expect(screen.getByText('{{ cookiecutter.project_short_description }}')).toBeInTheDocument()
-  })
-
-  it('renders the counter button', () => {
-    render(<App />)
-    expect(screen.getByRole('button', { name: /count is/i })).toBeInTheDocument()
-  })
-
-  it('renders the API status component', () => {
-    render(<App />)
-    expect(screen.getByTestId('api-status')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'CYO Adventure' })).toBeInTheDocument()
+    // Let the async story load settle so no state update lands after teardown.
+    await screen.findByTestId('reader')
   })
 })

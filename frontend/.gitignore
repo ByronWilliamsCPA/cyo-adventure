@@ -27,6 +27,12 @@ yarn-error.log*
 # Test coverage
 coverage/
 
+# Playwright E2E artifacts
+playwright-report/
+test-results/
+blob-report/
+/playwright/.cache/
+
 # Environment files (use .env.example as template)
 .env
 .env.local

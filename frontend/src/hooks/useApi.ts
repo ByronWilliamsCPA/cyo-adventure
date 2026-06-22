@@ -24,9 +24,7 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
     const instance = axios.create({
       // In development, Vite proxies /api to the backend
       // In production, use the full API URL
-      baseURL: import.meta.env.PROD
-        ? import.meta.env.VITE_API_URL || '/api'
-        : '/api',
+      baseURL: import.meta.env.PROD ? import.meta.env.VITE_API_URL || '/api' : '/api',
       timeout: 10000,
       headers: {
         'Content-Type': 'application/json',

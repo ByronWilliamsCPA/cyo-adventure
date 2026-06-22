@@ -1,4 +1,4 @@
-import { defineConfig } from '@hey-api/openapi-ts';
+import { defineConfig } from '@hey-api/openapi-ts'
 
 // Generates the type-safe API client into src/client from the backend's OpenAPI
 // schema. Treat src/client as build output: regenerate with `npm run
@@ -9,4 +9,4 @@ export default defineConfig({
     path: './src/client',
   },
   plugins: ['@hey-api/client-axios', '@hey-api/typescript', '@hey-api/sdk'],
-});
+})

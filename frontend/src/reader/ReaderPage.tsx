@@ -1,0 +1,140 @@
+/**
+ * The reader page: loads a story (cache-first, then network), resumes saved
+ * progress, plays it, persists each step, and reconciles multi-device conflicts.
+ *
+ * The engine owns no server revision (its ReadingState.state_revision is always
+ * 0), so this page tracks the last known server revision and stamps each save
+ * with it; that is what makes sequential saves and 409 detection work.
+ */
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+import { cacheStorybook, getCachedStorybook, getReadingState } from '../offline/db'
+import { type SyncApi, resolveConflict, saveProgress } from '../offline/sync'
+import type { ReadingState, Storybook } from '../player/types'
+import { ConflictDialog } from './ConflictDialog'
+import { DownloadNeeded } from './DownloadNeeded'
+import { Reader } from './Reader'
+
+export interface ReaderPageProps {
+  api: SyncApi
+  fetchStory: (storybookId: string, version: number) => Promise<Storybook>
+  profileId: string
+  storybookId: string
+  version: number
+  deviceId?: string
+}
+
+type Phase = 'loading' | 'reading' | 'download-needed'
+
+interface ConflictState {
+  local: ReadingState
+  server: ReadingState
+}
+
+export function ReaderPage({
+  api,
+  fetchStory,
+  profileId,
+  storybookId,
+  version,
+  deviceId,
+}: ReaderPageProps) {
+  const [story, setStory] = useState<Storybook | null>(null)
+  const [initialReading, setInitialReading] = useState<ReadingState | undefined>(undefined)
+  const [phase, setPhase] = useState<Phase>('loading')
+  const [conflict, setConflict] = useState<ConflictState | null>(null)
+  const revisionRef = useRef(0)
+
+  const load = useCallback(async () => {
+    setPhase('loading')
+    let cached = await getCachedStorybook(storybookId, version)
+    if (!cached) {
+      try {
+        cached = await fetchStory(storybookId, version)
+        await cacheStorybook(cached)
+      } catch {
+        setPhase('download-needed')
+        return
+      }
+    }
+    const saved = await getReadingState(profileId, storybookId)
+    revisionRef.current = saved?.state_revision ?? 0
+    setStory(cached)
+    setInitialReading(saved)
+    setPhase('reading')
+  }, [fetchStory, profileId, storybookId, version])
+
+  useEffect(() => {
+    void load()
+  }, [load])
+
+  const persist = useCallback(
+    async (reading: ReadingState) => {
+      const stamped: ReadingState = {
+        ...reading,
+        state_revision: revisionRef.current,
+      }
+      const result = await saveProgress(api, profileId, storybookId, stamped, {
+        deviceId,
+      })
+      if (result.kind === 'saved') {
+        revisionRef.current = result.row.state_revision
+      } else if (result.kind === 'conflict') {
+        setConflict({ local: stamped, server: result.currentRow })
+      }
+    },
+    [api, profileId, storybookId, deviceId]
+  )
+
+  const keepThisDevice = useCallback(async () => {
+    if (!conflict) return
+    const result = await resolveConflict(
+      api,
+      profileId,
+      storybookId,
+      conflict.local,
+      conflict.server,
+      'continue_from_this_device',
+      { deviceId }
+    )
+    if (result.kind === 'saved') {
+      revisionRef.current = result.row.state_revision
+    }
+    setConflict(null)
+  }, [api, conflict, deviceId, profileId, storybookId])
+
+  const adoptNewest = useCallback(async () => {
+    if (!conflict) return
+    await resolveConflict(
+      api,
+      profileId,
+      storybookId,
+      conflict.local,
+      conflict.server,
+      'use_newer_progress',
+      { deviceId }
+    )
+    revisionRef.current = conflict.server.state_revision
+    setInitialReading(conflict.server)
+    setConflict(null)
+  }, [api, conflict, deviceId, profileId, storybookId])
+
+  if (phase === 'loading') {
+    return <p data-testid="loading">Loading...</p>
+  }
+  if (phase === 'download-needed' || !story) {
+    return <DownloadNeeded onRetry={() => void load()} />
+  }
+  return (
+    <>
+      <Reader story={story} initialReading={initialReading} onProgress={(r) => void persist(r)} />
+      {conflict ? (
+        <ConflictDialog
+          onKeepThisDevice={() => void keepThisDevice()}
+          onUseNewest={() => void adoptNewest()}
+        />
+      ) : null}
+    </>
+  )
+}
