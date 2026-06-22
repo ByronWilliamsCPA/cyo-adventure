@@ -33,6 +33,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   validation when the value falls outside the variable's declared `min`/`max`.
 - Foreign-key constraint linking `reading_state` to its `storybook_version` row so a
   saved state cannot pin to a version that does not exist.
+- Phase 2 validation gate: a breadth-first config-walk closure (`validator/walk.py`)
+  driving the pure `StoryEngine`, Layer-2 state-space rules L2-9 through L2-12
+  (`validator/layer2.py`), an advisory reading-level check (RL-13) using a
+  dependency-free Flesch-Kincaid implementation, a Phase-2 safety stub (SAFE-14),
+  and a combined `run_gate` runner ordering L1 -> L2 -> RL -> SAFE.
+- Phase 2 authoring pipeline: a `GenerationProvider` protocol with a deterministic
+  `MockProvider`, a `ConceptBrief` intake model with bounded free-text fields, a PII
+  egress guard, bundled stage-prompt templates, and a staged orchestrator with a
+  bounded repair loop and no-progress abort.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are
