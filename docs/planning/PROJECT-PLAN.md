@@ -274,7 +274,8 @@ No app code until this gate passes.
 shared conformance), Layer-1 validator, deterministic player (Python + TS,
 cross-impl trace conformance), reader API (reading-state with 409 reconciliation,
 IDOR-tested), PWA reader (XState, IndexedDB, offline sync, conflict UX), Playwright
-E2E, and two hand-authored stories are complete and green.
+E2E, and two hand-authored stories are complete and pass locally; PR review and
+CI are in progress.
 
 **Objective**: Prove the format and the player with human-written stories before any LLM is
 involved. This phase has no external network egress. See [ADR-001](./adr/adr-001-story-format-json-storybook.md)

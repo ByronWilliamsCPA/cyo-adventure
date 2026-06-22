@@ -3,7 +3,10 @@ title: "Offline and Conflict UX (Phase 1 Reader)"
 schema_type: common
 status: draft
 owner: core-maintainer
-purpose: "Define the copy and wireframes for the multi-device 409 conflict dialog and the iOS post-eviction download-needed state, so the Playwright reconciliation test asserts the real UX."
+purpose: >-
+  Define the copy and wireframes for the multi-device 409 conflict dialog and the
+  iOS post-eviction download-needed state, so the Playwright reconciliation test
+  asserts the real UX.
 tags:
   - architecture
   - specifications
