@@ -42,6 +42,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `MockProvider`, a `ConceptBrief` intake model with bounded free-text fields, a PII
   egress guard, bundled stage-prompt templates, and a staged orchestrator with a
   bounded repair loop and no-progress abort.
+- Phase 2 async worker and API (PR-c): `concept` and `generation_job` database tables
+  with an Alembic migration; an RQ async worker and provider factory (`build_provider`
+  returns `MockProvider` by default; live providers raise `ConfigurationError` until
+  Phase 2b wires them); guardian-only API endpoints for concept intake
+  (`POST /api/v1/concepts`), story generation (`POST /api/v1/generate`), job status
+  (`GET /api/v1/generation-jobs/{id}`), and validation (`POST /api/v1/validate`);
+  and a mock-driven generation yield harness (`scripts/yield_harness.py`, run with
+  `--provider` to swap providers). Live provider wiring (Claude/Ollama/OpenRouter
+  HTTP clients) and the 60% yield measurement over a 20-story sample are deferred
+  to Phase 2b; see `docs/planning/phase-2b-live-provider.md`.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are
