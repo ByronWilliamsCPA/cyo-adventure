@@ -88,6 +88,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (Playwright)
+        run: npm run test:e2e
+
       - name: Upload frontend coverage
         uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
         with:

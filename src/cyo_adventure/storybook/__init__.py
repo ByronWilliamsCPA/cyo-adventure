@@ -12,6 +12,11 @@ from cyo_adventure.storybook.condition import (
     referenced_vars,
     validate_condition,
 )
+from cyo_adventure.storybook.evaluator import (
+    VarState,
+    VarValue,
+    evaluate,
+)
 from cyo_adventure.storybook.models import (
     SCHEMA_VERSION,
     AgeBand,
@@ -44,8 +49,11 @@ __all__ = [
     "ReadingLevel",
     "StoryMetadata",
     "Storybook",
+    "VarState",
+    "VarValue",
     "Variable",
     "VariableType",
+    "evaluate",
     "referenced_vars",
     "validate_condition",
 ]

@@ -1,52 +1,49 @@
-import { useState } from 'react'
+import { useMemo } from 'react'
+
 import './App.css'
-import { ApiStatus } from '@/components/ApiStatus'
+import { makeFetchStory, makeSyncApi } from './api/readerApi'
+import { useApi } from './hooks/useApi'
+import { ReaderPage } from './reader/ReaderPage'
+
+interface DemoConfig {
+  profileId: string
+  storybookId: string
+  version: number
+}
+
+/**
+ * Reader target. Profile/story selection is the Phase 4a library flow; for the
+ * Phase 1 reader these come from build-time env with sensible demo defaults.
+ */
+function demoConfig(): DemoConfig {
+  const env = import.meta.env
+  return {
+    profileId: env.VITE_DEMO_PROFILE_ID ?? 'demo-profile',
+    storybookId: env.VITE_DEMO_STORYBOOK_ID ?? 's_lantern_cave',
+    version: Number(env.VITE_DEMO_VERSION ?? '1'),
+  }
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const api = useApi()
+  const syncApi = useMemo(() => makeSyncApi(api), [api])
+  const fetchStory = useMemo(() => makeFetchStory(api), [api])
+  const cfg = demoConfig()
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>{'{{ cookiecutter.project_name }}'}</h1>
-        <p>{'{{ cookiecutter.project_short_description }}'}</p>
+        <h1>CYO Adventure</h1>
       </header>
-
       <main className="app-main">
-        <section className="demo-section">
-          <h2>React + TypeScript + Vite</h2>
-          <div className="card">
-            <button onClick={() => setCount((count) => count + 1)}>
-              Count is {count}
-            </button>
-            <p>
-              Edit <code>src/App.tsx</code> and save to test HMR
-            </p>
-          </div>
-        </section>
-
-        <section className="api-section">
-          <h2>Backend API Status</h2>
-          <ApiStatus />
-        </section>
+        <ReaderPage
+          api={syncApi}
+          fetchStory={fetchStory}
+          profileId={cfg.profileId}
+          storybookId={cfg.storybookId}
+          version={cfg.version}
+        />
       </main>
-
-      <footer className="app-footer">
-        <p>
-          Built with{' '}
-          <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
-            Vite
-          </a>
-          {' + '}
-          <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-            React
-          </a>
-          {' + '}
-          <a href="https://fastapi.tiangolo.com" target="_blank" rel="noopener noreferrer">
-            FastAPI
-          </a>
-        </p>
-      </footer>
     </div>
   )
 }

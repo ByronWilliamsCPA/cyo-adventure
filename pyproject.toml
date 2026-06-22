@@ -70,6 +70,7 @@ dependencies = [
     #
     # UV handles these automatically based on the Python version being used.
     # See: https://docs.astral.sh/uv/concepts/dependencies/#dependency-specifiers
+    "networkx>=3.6.1",
 ]
 
 # Optional dependency groups
@@ -83,6 +84,8 @@ dev = [
     "pytest-xdist>=3.3.0",
     "pytest-randomly>=3.15.0",
     "hypothesis>=6.82.0",
+    "testcontainers>=4",  # Ephemeral Postgres for integration tests
+    "psycopg[binary]>=3",  # Sync driver used by testcontainers readiness checks
 
     # Code Quality (always included)
     "ruff>=0.9.0",
@@ -165,6 +168,7 @@ exclude = [
     "__pycache__",
     "dist",
     "build",
+    "migrations",
 ]
 
 [tool.ruff.format]
@@ -281,6 +285,16 @@ max-statements = 100   # Function length hard limit
 max-branches = 12      # Nesting/branching limit
 max-nested-blocks = 4  # Explicit nesting limit
 max-returns = 6        # Return statement limit
+
+[tool.ruff.lint.flake8-type-checking]
+# Pydantic and SQLAlchemy evaluate annotations at runtime to build their models,
+# so imports used in their subclasses' annotations must remain runtime imports.
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "pydantic_settings.BaseSettings",
+    "sqlalchemy.orm.DeclarativeBase",
+    "cyo_adventure.core.database.Base",
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

@@ -1,0 +1,188 @@
+{
+  "description": "Cross-implementation conformance fixtures for the condition DSL (ADR-006). The Python and TypeScript evaluators must return identical results for every case.",
+  "schema_version": "1.0",
+  "cases": [
+    {
+      "name": "bare_var_true",
+      "condition": { "var": "has_lantern" },
+      "var_state": { "has_lantern": true },
+      "expected": true
+    },
+    {
+      "name": "bare_var_false",
+      "condition": { "var": "has_lantern" },
+      "var_state": { "has_lantern": false },
+      "expected": false
+    },
+    {
+      "name": "eq_bool_true",
+      "condition": { "==": [{ "var": "has_lantern" }, true] },
+      "var_state": { "has_lantern": true },
+      "expected": true
+    },
+    {
+      "name": "eq_bool_false",
+      "condition": { "==": [{ "var": "has_lantern" }, true] },
+      "var_state": { "has_lantern": false },
+      "expected": false
+    },
+    {
+      "name": "neq_int",
+      "condition": { "!=": [{ "var": "courage" }, 0] },
+      "var_state": { "courage": 3 },
+      "expected": true
+    },
+    {
+      "name": "ge_int_true",
+      "condition": { ">=": [{ "var": "courage" }, 3] },
+      "var_state": { "courage": 3 },
+      "expected": true
+    },
+    {
+      "name": "ge_int_false",
+      "condition": { ">=": [{ "var": "courage" }, 3] },
+      "var_state": { "courage": 2 },
+      "expected": false
+    },
+    {
+      "name": "lt_int_true",
+      "condition": { "<": [{ "var": "courage" }, 5] },
+      "var_state": { "courage": 4 },
+      "expected": true
+    },
+    {
+      "name": "le_int_true",
+      "condition": { "<=": [{ "var": "courage" }, 5] },
+      "var_state": { "courage": 5 },
+      "expected": true
+    },
+    {
+      "name": "gt_int_true",
+      "condition": { ">": [{ "var": "courage" }, 3] },
+      "var_state": { "courage": 4 },
+      "expected": true
+    },
+    {
+      "name": "and_both_true",
+      "condition": {
+        "and": [
+          { "==": [{ "var": "has_key" }, true] },
+          { ">=": [{ "var": "trust" }, 2] }
+        ]
+      },
+      "var_state": { "has_key": true, "trust": 2 },
+      "expected": true
+    },
+    {
+      "name": "and_one_false",
+      "condition": {
+        "and": [
+          { "==": [{ "var": "has_key" }, true] },
+          { ">=": [{ "var": "trust" }, 2] }
+        ]
+      },
+      "var_state": { "has_key": true, "trust": 1 },
+      "expected": false
+    },
+    {
+      "name": "or_one_true",
+      "condition": { "or": [{ "var": "a" }, { "var": "b" }] },
+      "var_state": { "a": false, "b": true },
+      "expected": true
+    },
+    {
+      "name": "not_false_is_true",
+      "condition": { "!": { "var": "has_curse" } },
+      "var_state": { "has_curse": false },
+      "expected": true
+    },
+    {
+      "name": "nested_not_and",
+      "condition": { "!": { "and": [{ "var": "a" }, { "var": "b" }] } },
+      "var_state": { "a": true, "b": false },
+      "expected": true
+    },
+    {
+      "name": "ordering_on_string_is_false",
+      "condition": { "<": [{ "var": "name" }, 5] },
+      "var_state": { "name": "bob" },
+      "expected": false
+    },
+    {
+      "name": "eq_across_types_is_false",
+      "condition": { "==": [{ "var": "x" }, 5] },
+      "var_state": { "x": "5" },
+      "expected": false
+    },
+    {
+      "name": "var_literal_comparison_both_sides",
+      "condition": { "==": [{ "var": "score" }, { "var": "target" }] },
+      "var_state": { "score": 7, "target": 7 },
+      "expected": true
+    },
+    {
+      "name": "eq_bool_int_is_false",
+      "condition": { "==": [{ "var": "flag" }, 1] },
+      "var_state": { "flag": true },
+      "expected": false
+    },
+    {
+      "name": "eq_int_int_is_true",
+      "condition": { "==": [{ "var": "n" }, 1] },
+      "var_state": { "n": 1 },
+      "expected": true
+    },
+    {
+      "name": "neq_bool_int_is_true",
+      "condition": { "!=": [{ "var": "flag" }, 1] },
+      "var_state": { "flag": true },
+      "expected": true
+    },
+    {
+      "name": "ge_at_min_boundary",
+      "condition": { ">=": [{ "var": "courage" }, 0] },
+      "var_state": { "courage": 0 },
+      "expected": true
+    },
+    {
+      "name": "le_at_max_boundary",
+      "condition": { "<=": [{ "var": "courage" }, 5] },
+      "var_state": { "courage": 5 },
+      "expected": true
+    },
+    {
+      "name": "lt_below_min_boundary_false",
+      "condition": { "<": [{ "var": "courage" }, 0] },
+      "var_state": { "courage": 0 },
+      "expected": false
+    },
+    {
+      "name": "gt_above_max_boundary_false",
+      "condition": { ">": [{ "var": "courage" }, 5] },
+      "var_state": { "courage": 5 },
+      "expected": false
+    },
+    {
+      "name": "compound_and_with_negation_false",
+      "condition": {
+        "and": [
+          { ">=": [{ "var": "courage" }, 3] },
+          { "!": { "var": "has_curse" } }
+        ]
+      },
+      "var_state": { "courage": 2, "has_curse": false },
+      "expected": false
+    },
+    {
+      "name": "compound_or_both_false",
+      "condition": {
+        "or": [
+          { "==": [{ "var": "has_lantern" }, true] },
+          { ">": [{ "var": "courage" }, 4] }
+        ]
+      },
+      "var_state": { "has_lantern": false, "courage": 2 },
+      "expected": false
+    }
+  ]
+}

@@ -23,6 +23,7 @@ path = [
     "*.py",
     "noxfile.py",
     "schema/**",  # JSON Schema generated from the MIT-licensed Pydantic models
+    "migrations/**",  # Alembic migration environment, templates, and versions
 ]
 SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "2025 Byron Williams"
@@ -31,6 +32,7 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 [[annotations]]
 path = [
     "frontend/src/**",
+    "frontend/e2e/**",  # Playwright end-to-end specs
     "frontend/*.ts",
     "frontend/*.js",
     "frontend/eslint.config.js",
@@ -146,6 +148,7 @@ path = [
     ".yamllint",  # yamllint configuration
     "Dockerfile",  # Container build definition
     "uv.lock",  # UV dependency lockfile for reproducible builds
+    "alembic.ini",  # Alembic migration tool configuration
 ]
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileCopyrightText = "2025 Byron Williams"
