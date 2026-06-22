@@ -38,6 +38,11 @@ def evaluate(condition: dict[str, JsonValue], var_state: VarState) -> bool:
         bool: The boolean value of the condition. Never raises for a
             schema-valid condition.
     """
+    # #ASSUME: data integrity: callers pass a shape-validated single-key condition
+    # (validate_condition / Layer-1). The single-key and operand-shape casts below
+    # rely on that precondition; an unknown operator falls through to _ordered,
+    # which fails closed (returns False) rather than computing an arbitrary order.
+    # #VERIFY: the engine only evaluates conditions on a parsed, validated story.
     operator, operand = next(iter(condition.items()))
     if operator == "var":
         return _truthy(_lookup(cast("str", operand), var_state))
@@ -149,7 +154,8 @@ def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
         right (VarValue): The right operand value.
 
     Returns:
-        bool: The ordering result, or False if either operand is not numeric.
+        bool: The ordering result, or False if either operand is not numeric or
+            the operator is not a recognised ordering operator.
     """
     if not (isinstance(left, int) and isinstance(right, int)):
         return False
@@ -159,4 +165,7 @@ def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
         return left <= right
     if operator == ">":
         return left > right
-    return left >= right
+    if operator == ">=":
+        return left >= right
+    # Unknown operator: fail closed rather than computing an arbitrary comparison.
+    return False

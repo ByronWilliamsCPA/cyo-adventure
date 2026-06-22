@@ -20,6 +20,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   spec, authorization matrix, and privacy/data-handling model.
 - Effect/variable type-agreement validation (`inc`/`dec` require an int target; a `set`
   value must match the target variable type) and a `schema_version` compatibility check.
+- Phase 1 reader MVP: a deterministic story player (Python reference engine plus a
+  TypeScript port sharing a conformance corpus), a condition evaluator in both languages
+  over the ADR-006 DSL, and the Layer-1 graph validator (rules L1-1 through L1-7).
+- Reader API: SQLAlchemy models, the initial Alembic migration, a role-aware auth seam
+  (dev stub), and reading-state GET/PUT with revision-based 409 reconciliation, version
+  pinning, and `event_id` idempotency, plus completion recording.
+- PWA reader: XState player machine, reader UI, IndexedDB cache, an offline write queue
+  with idempotent replay, multi-device conflict reconciliation, and a service worker.
+- Two hand-authored stories (Tier 1 and Tier 2) with a development seed script.
+- Set effects on bounded int variables are now clamped at runtime and rejected at
+  validation when the value falls outside the variable's declared `min`/`max`.
+- Foreign-key constraint linking `reading_state` to its `storybook_version` row so a
+  saved state cannot pin to a version that does not exist.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are

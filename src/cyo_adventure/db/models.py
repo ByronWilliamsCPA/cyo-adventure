@@ -131,6 +131,14 @@ class ReadingState(Base):
     """
 
     __tablename__ = "reading_state"
+    __table_args__ = (
+        # A saved state is pinned to a concrete published version; the composite
+        # FK prevents persisting a reading state for a version that does not exist.
+        ForeignKeyConstraint(
+            ["storybook_id", "version"],
+            ["storybook_version.storybook_id", "storybook_version.version"],
+        ),
+    )
 
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE), primary_key=True
@@ -168,7 +176,7 @@ class Completion(Base):
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE), primary_key=True
     )
-    storybook_id: Mapped[str] = mapped_column(primary_key=True)
+    storybook_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     version: Mapped[int] = mapped_column(primary_key=True)
     ending_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     found_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())

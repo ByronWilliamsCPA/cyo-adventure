@@ -44,7 +44,7 @@ def _status_for(exc: ProjectBaseError) -> int:
     return 400
 
 
-async def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
+def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
     """Render a core exception as a JSON error response.
 
     Args:

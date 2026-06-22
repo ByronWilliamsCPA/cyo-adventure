@@ -12,7 +12,7 @@ import uuid
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
-from sqlalchemy import select
+from sqlalchemy import select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
@@ -75,7 +75,7 @@ def _library_item(
     )
 
 
-@router.get("/library", response_model=LibraryView)
+@router.get("/library")
 async def list_library(
     profile_id: str,
     principal: CurrentPrincipal,
@@ -91,6 +91,10 @@ async def list_library(
     Returns:
         LibraryView: The published stories in the profile's family.
     """
+    # #CRITICAL: security: the library is scoped to the principal's own family and
+    # the requested profile is authorized, so a child cannot list another family's
+    # or profile's stories (IDOR).
+    # #VERIFY: authorize_profile raises -> 403; the query filters on family_id.
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
     rows = await session.scalars(
@@ -100,14 +104,28 @@ async def list_library(
             Storybook.current_published_version.is_not(None),
         )
     )
-    items: list[LibraryItem] = []
-    for book in rows.all():
-        published_version = book.current_published_version
-        if published_version is None:
-            continue
-        version_row = await session.get(StorybookVersion, (book.id, published_version))
-        if version_row is not None:
-            items.append(_library_item(book.id, version_row.blob, published_version))
+    books = [
+        (book.id, book.current_published_version)
+        for book in rows.all()
+        if book.current_published_version is not None
+    ]
+    if not books:
+        return LibraryView(stories=[])
+    # #ASSUME: external resources: load every published version in one query to
+    # avoid an N+1 round-trip per story as a family's library grows.
+    # #VERIFY: a composite (storybook_id, version) IN filter selects only the
+    # published rows.
+    version_rows = await session.scalars(
+        select(StorybookVersion).where(
+            tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(books)
+        )
+    )
+    blobs = {(row.storybook_id, row.version): row.blob for row in version_rows}
+    items = [
+        _library_item(storybook_id, blobs[(storybook_id, version)], version)
+        for storybook_id, version in books
+        if (storybook_id, version) in blobs
+    ]
     return LibraryView(stories=items)
 
 
@@ -132,6 +150,9 @@ async def get_storybook_version(
     Raises:
         ResourceNotFoundError: If the story or version does not exist.
     """
+    # #CRITICAL: security: family ownership is authorized before the blob is
+    # returned, so a token for one family cannot fetch another family's story.
+    # #VERIFY: authorize_family raises AuthorizationError -> 403.
     book = await session.get(Storybook, storybook_id)
     if book is None:
         msg = f"storybook '{storybook_id}' not found"

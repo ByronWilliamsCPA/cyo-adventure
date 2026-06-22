@@ -170,7 +170,13 @@ class StoryEngine:
         """
         op = effect.op.value
         if op == "set":
-            var_state[effect.var] = effect.value if effect.value is not None else 0
+            value = effect.value if effect.value is not None else 0
+            # A set to a bounded int variable is clamped like inc/dec so a story
+            # cannot seed an out-of-range value that conditions later compare
+            # against (runtime-semantics section 3); non-int values pass through.
+            if isinstance(value, int) and not isinstance(value, bool):
+                value = self._clamp(effect.var, value)
+            var_state[effect.var] = value
             return
         current = var_state.get(effect.var, 0)
         delta = effect.value if isinstance(effect.value, int) else 0
@@ -247,5 +253,7 @@ class StoryEngine:
             visit_set=set(state.visit_set),
             version=state.version,
             state_revision=state.state_revision,
-            save_slots=dict(state.save_slots),
+            # Copy each snapshot, not just the dict, so a cloned timeline cannot
+            # mutate a save slot shared with the original (purity guarantee).
+            save_slots={name: snap.copy() for name, snap in state.save_slots.items()},
         )

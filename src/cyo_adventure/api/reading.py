@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context, authorize_family, authorize_profile
 from cyo_adventure.api.schemas import (
@@ -72,6 +73,10 @@ def _conflict(row: ReadingState, detail: str) -> JSONResponse:
 
 async def _load_owned_storybook(ctx: Context, storybook_id: str) -> Storybook:
     """Load a storybook and assert the principal's family owns it."""
+    # #CRITICAL: security: every reading-state/completion path gates on family
+    # ownership before touching the row, so a valid token for family A cannot
+    # reach family B's stories (authorization-matrix.md).
+    # #VERIFY: authorize_family raises AuthorizationError -> 403 on mismatch.
     book = await ctx.session.get(Storybook, storybook_id)
     if book is None:
         msg = f"storybook '{storybook_id}' not found"
@@ -80,9 +85,7 @@ async def _load_owned_storybook(ctx: Context, storybook_id: str) -> Storybook:
     return book
 
 
-@router.get(
-    "/reading-state/{profile_id}/{storybook_id}", response_model=ReadingStateView
-)
+@router.get("/reading-state/{profile_id}/{storybook_id}")
 async def get_reading_state(
     profile_id: str,
     storybook_id: str,
@@ -101,6 +104,11 @@ async def get_reading_state(
     Raises:
         ResourceNotFoundError: If the story or reading state does not exist.
     """
+    # #CRITICAL: security: profile access is authorized before any row read so a
+    # child cannot read another profile's state (IDOR); the path profile is
+    # authoritative (the body carries no profile_id).
+    # #VERIFY: authorize_profile raises AuthorizationError -> 403; covered by
+    # tests/integration/test_authorization.py.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     await _load_owned_storybook(ctx, storybook_id)
@@ -111,7 +119,19 @@ async def get_reading_state(
     return _view(row)
 
 
-@router.put("/reading-state/{profile_id}/{storybook_id}", response_model=None)
+@router.put(
+    "/reading-state/{profile_id}/{storybook_id}",
+    response_model=ReadingStateView,
+    responses={
+        409: {
+            "model": ConflictView,
+            "description": (
+                "Revision or version conflict; the body carries the current row "
+                "for client-side reconciliation."
+            ),
+        }
+    },
+)
 async def put_reading_state(
     profile_id: str,
     storybook_id: str,
@@ -129,11 +149,29 @@ async def put_reading_state(
     Returns:
         ReadingStateView | JSONResponse: The saved row on success, or a 409
             conflict body carrying the current row on a revision/version clash.
+
+    Raises:
+        ValidationError: If a first (create) save does not start at revision 0.
     """
+    # #CRITICAL: security: profile access is authorized before any row read or
+    # write so a child cannot write another profile's state (IDOR).
+    # #VERIFY: authorize_profile raises AuthorizationError -> 403.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     await _load_owned_storybook(ctx, storybook_id)
-    row = await ctx.session.get(ReadingState, (parsed, storybook_id))
+    # #CRITICAL: concurrency: lock the row for the read-modify-write so two
+    # concurrent saves for the same profile/story serialize instead of racing the
+    # revision check (optimistic concurrency, tech-spec multi-device sync rules).
+    # #VERIFY: SELECT ... FOR UPDATE on Postgres; a concurrent first-write race
+    # still relies on the primary key (single reader per profile in Phase 1).
+    row = await ctx.session.scalar(
+        select(ReadingState)
+        .where(
+            ReadingState.child_profile_id == parsed,
+            ReadingState.storybook_id == storybook_id,
+        )
+        .with_for_update()
+    )
     if row is None:
         return _create_reading_state(ctx, parsed, storybook_id, body)
     # Idempotent replay: the same event was already applied; return current row.
@@ -150,7 +188,19 @@ async def put_reading_state(
 def _create_reading_state(
     ctx: Context, profile_id: uuid.UUID, storybook_id: str, body: ReadingStateBody
 ) -> ReadingStateView:
-    """Create the first reading-state row for a profile/story pair."""
+    """Create the first reading-state row for a profile/story pair.
+
+    Raises:
+        ValidationError: If the first save does not start at ``state_revision`` 0;
+            the server owns the counter, so a client may not seed an arbitrary
+            starting revision.
+    """
+    # #ASSUME: data integrity: the first save for a profile/story pair must start
+    # at revision 0 so the server, not the client, owns the revision counter.
+    # #VERIFY: reject a nonzero starting revision before inserting the row.
+    if body.state_revision != 0:
+        msg = "first reading-state save must start at state_revision 0"
+        raise ValidationError(msg, field="state_revision", value=body.state_revision)
     row = ReadingState(
         child_profile_id=profile_id,
         storybook_id=storybook_id,
@@ -191,7 +241,7 @@ def _version_ending_ids(blob: Mapping[str, object]) -> set[str]:
     return found
 
 
-@router.post("/completions", response_model=CompletionView)
+@router.post("/completions")
 async def record_completion(body: CompletionBody, ctx: Context) -> CompletionView:
     """Record that a child reached an ending of a story version.
 
@@ -206,6 +256,11 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         ResourceNotFoundError: If the story or version does not exist.
         ValidationError: If the ending id is not part of the cited version.
     """
+    # #CRITICAL: security: profile access and family ownership are authorized
+    # before the completion is recorded so a child cannot write completions for
+    # another profile or family (IDOR).
+    # #VERIFY: authorize_profile/authorize_family raise -> 403; ending_id is
+    # validated against the cited version's blob (data integrity).
     parsed = _parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     await _load_owned_storybook(ctx, body.storybook_id)
@@ -220,13 +275,21 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         raise ValidationError(msg, field="ending_id", value=body.ending_id)
     key = (parsed, body.storybook_id, body.version, body.ending_id)
     existing = await ctx.session.get(Completion, key)
-    row = existing or _new_completion(ctx, parsed, body)
+    if existing is not None:
+        row = existing
+    else:
+        row = _new_completion(ctx, parsed, body)
+        # Flush so the DB server_default populates found_at, then read it back so
+        # the response timestamp matches the persisted value rather than the app
+        # clock at request time.
+        await ctx.session.flush()
+        await ctx.session.refresh(row, ["found_at"])
     return CompletionView(
         child_profile_id=str(row.child_profile_id),
         storybook_id=row.storybook_id,
         version=row.version,
         ending_id=row.ending_id,
-        found_at=row.found_at if existing else datetime.now(UTC),
+        found_at=row.found_at,
     )
 
 

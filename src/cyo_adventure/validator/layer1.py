@@ -17,7 +17,7 @@ configuration cap) is intentionally out of scope here and lands in Phase 2.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, TypeAlias, cast
 
 import networkx as nx
 from jsonschema import Draft202012Validator
@@ -47,6 +47,28 @@ _BUDGETS: dict[str, tuple[int, int, int]] = {
 }
 
 _ORDERING_OPERATORS: frozenset[str] = frozenset({"<", "<=", ">", ">="})
+
+# Cast shapes for raw decoded JSON, named once to avoid duplicated type literals.
+_ObjectMap: TypeAlias = dict[str, object]
+_ObjectList: TypeAlias = list[object]
+
+
+def _as_map(value: object) -> _ObjectMap:
+    """Narrow a raw-JSON value to a string-keyed mapping (caller-checked shape)."""
+    return cast("dict[str, object]", value)
+
+
+def _as_list(value: object) -> _ObjectList:
+    """Narrow a raw-JSON value to a list (caller-checked shape)."""
+    return cast("list[object]", value)
+
+
+@dataclass(frozen=True, slots=True)
+class _VarInfo:
+    """Declared variable types and int bounds, bundled for the L1-6 effect checks."""
+
+    types: dict[str, str]
+    bounds: dict[str, tuple[int | None, int | None]]
 
 
 @dataclass(frozen=True, slots=True)
@@ -114,6 +136,26 @@ class _Story:
             vtype = var.get("type")
             if isinstance(name, str) and isinstance(vtype, str):
                 out[name] = vtype
+        return out
+
+    def declared_int_bounds(self) -> dict[str, tuple[int | None, int | None]]:
+        """Return declared ``(min, max)`` bounds for each int variable.
+
+        Returns:
+            dict[str, tuple[int | None, int | None]]: ``name -> (min, max)`` for
+                int variables; a bound is ``None`` when not declared.
+        """
+        out: dict[str, tuple[int | None, int | None]] = {}
+        for var in self.variables:
+            name = var.get("name")
+            if var.get("type") != "int" or not isinstance(name, str):
+                continue
+            low = var.get("min")
+            high = var.get("max")
+            out[name] = (
+                low if isinstance(low, int) and not isinstance(low, bool) else None,
+                high if isinstance(high, int) and not isinstance(high, bool) else None,
+            )
         return out
 
 
@@ -264,11 +306,12 @@ def _report_duplicates(
 def _check_logic(story: _Story, report: ValidationReport) -> None:
     """L1-6: operator whitelist, variable declarations, types, and tier rule."""
     declared = story.declared_var_types()
+    var_info = _VarInfo(types=declared, bounds=story.declared_int_bounds())
     _check_variable_declarations(story, report)
     _check_tier_variables(story, declared, report)
     for node in story.nodes:
         _check_node_conditions(node, declared, story.story_id, report)
-        _check_node_effects(node, declared, story.story_id, report)
+        _check_node_effects(node, var_info, story.story_id, report)
 
 
 def _check_variable_declarations(story: _Story, report: ValidationReport) -> None:
@@ -357,7 +400,7 @@ def _check_node_conditions(
             continue
         raw_choice_id = choice.get("id")
         choice_id = raw_choice_id if isinstance(raw_choice_id, str) else None
-        typed_condition = cast("dict[str, object]", condition)
+        typed_condition = _as_map(condition)
         detail = _condition_error(typed_condition, declared)
         if detail is not None:
             report.add(
@@ -396,17 +439,28 @@ def _comparison_type_error(
     """Return an ordering-on-bool type error inside a condition, or None."""
     for operator, operand in condition.items():
         if operator in _ORDERING_OPERATORS and isinstance(operand, list):
-            for side in cast("list[object]", operand):
-                if isinstance(side, dict):
-                    name = cast("dict[str, object]", side).get("var")
-                    if isinstance(name, str) and declared.get(name) == "bool":
-                        return f"ordering operator '{operator}' applied to bool variable '{name}'"
+            detail = _ordering_bool_error(operator, _as_list(operand), declared)
         elif operator not in COMPARISON_OPERATORS and isinstance(operand, list):
-            nested = _scan_nested(cast("list[object]", operand), declared)
-            if nested is not None:
-                return nested
+            detail = _scan_nested(_as_list(operand), declared)
         elif operator == "!" and isinstance(operand, dict):
-            return _comparison_type_error(cast("dict[str, object]", operand), declared)
+            detail = _comparison_type_error(_as_map(operand), declared)
+        else:
+            detail = None
+        if detail is not None:
+            return detail
+    return None
+
+
+def _ordering_bool_error(
+    operator: str, operand: list[object], declared: dict[str, str]
+) -> str | None:
+    """Return an error if an ordering operator is applied to a bool variable."""
+    for side in operand:
+        if not isinstance(side, dict):
+            continue
+        name = _as_map(side).get("var")
+        if isinstance(name, str) and declared.get(name) == "bool":
+            return f"ordering operator '{operator}' applied to bool variable '{name}'"
     return None
 
 
@@ -414,7 +468,7 @@ def _scan_nested(operand: list[object], declared: dict[str, str]) -> str | None:
     """Scan an n-ary operand list for a nested comparison type error."""
     for clause in operand:
         if isinstance(clause, dict):
-            nested = _comparison_type_error(cast("dict[str, object]", clause), declared)
+            nested = _comparison_type_error(_as_map(clause), declared)
             if nested is not None:
                 return nested
     return None
@@ -422,7 +476,7 @@ def _scan_nested(operand: list[object], declared: dict[str, str]) -> str | None:
 
 def _check_node_effects(
     node: dict[str, object],
-    declared: dict[str, str],
+    var_info: _VarInfo,
     story_id: str,
     report: ValidationReport,
 ) -> None:
@@ -434,7 +488,7 @@ def _check_node_effects(
         var = effect.get("var")
         if not isinstance(var, str):
             continue
-        detail = _effect_error(effect, var, declared)
+        detail = _effect_error(effect, var, var_info)
         if detail is not None:
             report.add(
                 ValidationFinding(
@@ -445,7 +499,7 @@ def _check_node_effects(
                     message=(
                         f"L1-6 logic: invalid effect in story '{story_id}' at "
                         f"node '{node_id}': {detail} (var='{var}', "
-                        f"declared_type={declared.get(var, 'undeclared')})"
+                        f"declared_type={var_info.types.get(var, 'undeclared')})"
                     ),
                 )
             )
@@ -462,32 +516,61 @@ def _gather_effects(node: dict[str, object]) -> list[dict[str, object]]:
         for choice in raw_choices:
             if isinstance(choice, dict) and isinstance(choice.get("effects"), list):
                 out.extend(
-                    e
-                    for e in cast("list[object]", choice["effects"])
-                    if isinstance(e, dict)
+                    e for e in _as_list(choice["effects"]) if isinstance(e, dict)
                 )
     return out
 
 
 def _effect_error(
-    effect: dict[str, object], var: str, declared: dict[str, str]
+    effect: dict[str, object], var: str, var_info: _VarInfo
 ) -> str | None:
     """Return a description of a bad effect, or None if valid."""
-    if var not in declared:
+    if var not in var_info.types:
         return "references undeclared variable"
     op = effect.get("op")
     value = effect.get("value")
-    vtype = declared[var]
+    vtype = var_info.types[var]
     if op in {"inc", "dec"}:
-        if vtype != "int":
-            return f"'{op}' may only target an int variable"
+        return _inc_dec_effect_error(op, vtype, value)
+    if op == "set":
+        return _set_effect_error(var, vtype, value, var_info.bounds)
+    return None
+
+
+def _inc_dec_effect_error(op: object, vtype: str, value: object) -> str | None:
+    """Return an error for a bad ``inc``/``dec`` effect, or None if valid."""
+    if vtype != "int":
+        return f"'{op}' may only target an int variable"
+    if isinstance(value, bool) or not isinstance(value, int):
+        return f"'{op}' requires an integer value"
+    return None
+
+
+def _set_effect_error(
+    var: str,
+    vtype: str,
+    value: object,
+    bounds: dict[str, tuple[int | None, int | None]],
+) -> str | None:
+    """Return an error for a bad ``set`` effect, or None if valid."""
+    if vtype == "bool" and not isinstance(value, bool):
+        return "'set' on a bool variable requires a boolean value"
+    if vtype == "int":
         if isinstance(value, bool) or not isinstance(value, int):
-            return f"'{op}' requires an integer value"
-    elif op == "set":
-        if vtype == "bool" and not isinstance(value, bool):
-            return "'set' on a bool variable requires a boolean value"
-        if vtype == "int" and (isinstance(value, bool) or not isinstance(value, int)):
             return "'set' on an int variable requires an integer value"
+        return _set_bounds_error(var, value, bounds)
+    return None
+
+
+def _set_bounds_error(
+    var: str, value: int, bounds: dict[str, tuple[int | None, int | None]]
+) -> str | None:
+    """Return an error if a ``set`` value falls outside the variable's bounds."""
+    low, high = bounds.get(var, (None, None))
+    if low is not None and value < low:
+        return f"'set' value {value} below min {low}"
+    if high is not None and value > high:
+        return f"'set' value {value} above max {high}"
     return None
 
 
@@ -604,7 +687,7 @@ def _check_trap_loops(
             continue
         if component & can_reach:
             continue
-        anchor = sorted(component)[0]
+        anchor = min(component)
         report.add(
             ValidationFinding(
                 rule_id="L1-5",

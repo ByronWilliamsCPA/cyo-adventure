@@ -31,6 +31,20 @@ class Snapshot:
     path: list[str]
     visit_set: set[str]
 
+    def copy(self) -> Snapshot:
+        """Return a deep copy whose mutable containers are independent.
+
+        Returns:
+            Snapshot: A snapshot that shares no mutable state with this one, so a
+                save slot cannot be mutated through a cloned reading state.
+        """
+        return Snapshot(
+            current_node=self.current_node,
+            var_state=dict(self.var_state),
+            path=list(self.path),
+            visit_set=set(self.visit_set),
+        )
+
     def to_dict(self) -> dict[str, object]:
         """Return the snapshot as a JSON-serializable mapping.
 
