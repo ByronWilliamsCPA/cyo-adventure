@@ -1,0 +1,3122 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/plans/phase-2-generation-gate/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Phase 2 Implementation Plan (Validation Gate and Authoring Pipeline) - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#context" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 2 Implementation Plan (Validation Gate and Authoring Pipeline)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../planning/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../planning/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../planning/adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#locked-decisions-this-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Locked decisions (this session)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#governing-specs-read-before-each-work-package" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Governing specs (read before each work package)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-phase-1-already-provides-reuse-map-do-not-re-derive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Phase 1 already provides (reuse map; do not re-derive)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-boundary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope boundary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope boundary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-scope-phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In scope (Phase 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#explicitly-deferred-recorded-not-silently-dropped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Explicitly deferred (recorded, not silently dropped)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#out-of-scope-later-phases-unchanged" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Out of scope (later phases, unchanged)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sub-pr-structure-stacked-on-featphase-2-generation-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sub-PR structure (stacked on feat/phase-2-generation-gate)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pr-a-validation-gate-wp1-wp5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR-a: Validation gate (WP1-WP5)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PR-a: Validation gate (WP1-WP5)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wp1-configuration-walk-core-reuse-storyengine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP1: Configuration-walk core (reuse StoryEngine)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp2-layer-2-rules-l2-9l2-12-over-the-walk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP2: Layer-2 rules (L2-9..L2-12) over the walk
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp3-reading-level-advisory-rl-13-safe-14-stub" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP3: Reading-level advisory (RL-13) + SAFE-14 stub
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp4-combined-gate-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP4: Combined gate runner
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp5-tier-2-state-corpus-known-bad-corpus-subagent-authored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP5: Tier-2 state corpus + known-bad corpus (subagent-authored)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pr-b-generation-provider-orchestrator-wp6-wp9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR-b: Generation provider + orchestrator (WP6-WP9)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PR-b: Generation provider + orchestrator (WP6-WP9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wp6-generationprovider-protocol-mockprovider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP6: GenerationProvider protocol + MockProvider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp7-concept-brief-model-pii-guard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP7: Concept brief model + PII guard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp8-orchestrator-stage-abc-repair-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP8: Orchestrator (Stage A/B/C) + repair loop
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp9-stage-prompt-assembly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP9: Stage prompt assembly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pr-c-async-worker-api-wp10-wp13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR-c: Async worker + API (WP10-WP13)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PR-c: Async worker + API (WP10-WP13)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wp10-concept-generation_job-tables-alembic-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP10: concept + generation_job tables + Alembic migration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp11-rq-queue-worker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP11: RQ queue + worker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp12-generationvalidation-api-endpoints-authz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP12: Generation/validation API endpoints + authz
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp13-regenerate-the-frontend-api-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP13: Regenerate the frontend API client
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pr-d-yield-harness-phase-exit-wp14-wp15" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PR-d: Yield harness + phase exit (WP14-WP15)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PR-d: Yield harness + phase exit (WP14-WP15)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wp14-mock-driven-yield-harness-methodology-live-deferred" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP14: Mock-driven yield harness (methodology, live deferred)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wp15-phase-2-exit-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WP15: Phase 2 exit documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-cutting-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cross-cutting notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#self-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Self-review
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#execution-handoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution handoff
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Phase 2 Implementation Plan (Validation Gate and Authoring Pipeline)</h1>
+
+<blockquote>
+<p><strong>For agentic workers:</strong> REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
+(recommended) or superpowers:executing-plans to implement this plan work-package by
+work-package. Each work package is executed test-first (TDD): write the failing test, run
+it red, implement minimally, run it green, commit. Steps use checkbox (<code>- [ ]</code>) syntax.</p>
+</blockquote>
+<p><strong>Goal:</strong> Make the validation gate the arbiter of generated stories: add the Layer-2
+state-space validator, a combined gate runner, and a staged generation orchestrator with a
+bounded repair loop, all provably correct against a mock provider and a curated corpus, with
+no external network egress.</p>
+<p><strong>Architecture:</strong> The Layer-2 validator is a breadth-first closure over <code>(node, var_state)</code>
+configurations that <strong>reuses the existing pure <code>StoryEngine</code></strong> as its transition function, so
+the validator and player can never disagree. The generation orchestrator drives three staged
+passes (Structure, Prose, Repair) behind a <code>GenerationProvider</code> protocol; Phase 2 ships only a
+deterministic <code>MockProvider</code>, and an async RQ worker exposes generation through guardian-only
+API endpoints. Live provider adapters (Claude/Ollama/OpenRouter) and the 60% live-yield
+measurement are deferred (see Scope Boundary).</p>
+<p><strong>Tech Stack:</strong> Python 3.12 (3.10-3.14 in CI), Pydantic v2, networkx, SQLAlchemy 2.x async +
+Alembic, FastAPI, RQ + Redis (async worker), textstat (reading level), pytest + testcontainers.</p>
+<hr />
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>CYO Adventure is a family choose-your-own-adventure reader plus content pipeline. Phase 0
+locked the specs and the Storybook schema. Phase 1 (PR #4, branch
+<code>feat/phase-1-schema-reader-v2</code>, under review at the time of writing) delivered the
+deterministic player, the Layer-1 graph validator, the reader API, the PWA reader with offline
+sync, and a starter fixture corpus. <strong>This plan begins once PR #4 merges to <code>main</code>.</strong></p>
+<p>Phase 2 is the project's honest long pole (roadmap "Critical Path"): generation reliability and
+the state-space validator absorb most of the iteration. This plan traces every work package to
+a Phase 2 acceptance criterion in <a href="../../../planning/PROJECT-PLAN/">PROJECT-PLAN.md</a> section 5
+and adds no scope beyond the source documents, except the two deliberate deferrals recorded
+under Scope Boundary.</p>
+<h3 id="locked-decisions-this-session">Locked decisions (this session)<a class="headerlink" href="#locked-decisions-this-session" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Live LLM wiring is deferred.</strong> Build and test the entire pipeline against a deterministic
+   <code>MockProvider</code>. The real <code>GenerationProvider</code> adapters and the 60% live-yield measurement
+   ship in a follow-up (<code>feat/phase-2b-live-provider</code>). Rationale: keeps Phase 2 fully offline,
+   deterministic, and free in CI; isolates the cost/key-dependent and flaky-external concerns
+   into one small follow-up; and makes the "no child PII reaches the provider" guarantee
+   structural (the PII guard is the only egress, and there is no egress in-phase).</li>
+<li><strong>Test stories are subagent-authored, not LLM-generated.</strong> A Sonnet subagent authors the
+   Tier-2 state corpus, the known-bad corpus, and additional valid fixtures as a one-time,
+   checked-in deliverable (WP5). These also seed the <code>MockProvider</code>'s canned outputs (WP6).
+   They are fixtures, <strong>not</strong> a substitute for the pipeline-yield metric (see Scope Boundary).</li>
+<li><strong>Stacked sub-PRs on one integration branch.</strong> Work lands on <code>feat/phase-2-generation-gate</code>
+   (the branch named in PROJECT-PLAN section 6) as four reviewable sub-PRs (PR-a..PR-d below),
+   each green on its own. The integration branch opens the final phase PR once PR-d merges into
+   it, or PR-d itself targets <code>main</code> if the sub-PRs were merged progressively. (Owner picks the
+   exact merge cadence at PR-a time; the work-package order is unaffected.)</li>
+<li><strong>Autonomous execution, minimal check-ins.</strong> Run the work packages end-to-end, surfacing
+   only on a blocker or at a sub-PR boundary. Mirrors the Phase 1B execution decision.</li>
+</ol>
+<h3 id="governing-specs-read-before-each-work-package">Governing specs (read before each work package)<a class="headerlink" href="#governing-specs-read-before-each-work-package" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="../../../planning/validator-rules/">validator-rules.md</a>: rule ids L2-8..L2-12, RL-13,
+  SAFE-14, failure-message templates, rule application order, failure-report format.</li>
+<li><a href="../../../planning/configuration-cap/">configuration-cap.md</a>: the configuration walk, why
+  reachable &lt;&lt; theoretical, the 100,000 cap, the variable budget.</li>
+<li><a href="../../../planning/runtime-semantics/">runtime-semantics.md</a>: transition order, <code>once: true</code>,
+  bounds clamping, hidden choices. The walk must reproduce this exactly (it reuses <code>StoryEngine</code>).</li>
+<li><a href="../../../planning/tech-spec/">tech-spec.md</a> sections "Authoring Pipeline (staged generation)",
+  "Validation gate", "Data Model" (concept, generation_job), "API Specification".</li>
+<li><a href="../../../planning/drafting-guide/">drafting-guide.md</a> and
+  <a href="../../planning/stage-prompts/">stage-prompts/{structure,prose,repair}.md</a>: prompt scaffolds
+  and the node/depth/variable budgets the generator must respect.</li>
+<li><a href="../../../planning/privacy-model/">privacy-model.md</a>: the data classification and the PII
+  constraint on prompts (WP7).</li>
+<li><a href="../../../planning/adr/adr-003-frontier-llm-generation/">adr-003-frontier-llm-generation.md</a>:
+  the <code>GenerationProvider</code> interface decision and its mock-provider testing strategy.</li>
+</ul>
+<h3 id="what-phase-1-already-provides-reuse-map-do-not-re-derive">What Phase 1 already provides (reuse map; do not re-derive)<a class="headerlink" href="#what-phase-1-already-provides-reuse-map-do-not-re-derive" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Need in Phase 2</th>
+<th>Reuse from Phase 1</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Transition function for the walk</td>
+<td><code>StoryEngine.start/visible_choices/choose/is_ending</code> (pure, no I/O)</td>
+<td><code>src/cyo_adventure/player/engine.py</code></td>
+</tr>
+<tr>
+<td>Reading-state carrier for the walk</td>
+<td><code>ReadingState</code> (current_node, var_state, path, visit_set, version)</td>
+<td><code>src/cyo_adventure/player/state.py</code></td>
+</tr>
+<tr>
+<td>Condition evaluation</td>
+<td><code>evaluate(condition, var_state)</code> (total, never raises)</td>
+<td><code>src/cyo_adventure/storybook/evaluator.py</code></td>
+</tr>
+<tr>
+<td>Report types</td>
+<td><code>ValidationReport</code>, <code>ValidationFinding</code>, <code>Severity</code> (<code>to_dict</code>, <code>errors</code>, <code>ok</code>, <code>rule_ids</code>)</td>
+<td><code>src/cyo_adventure/validator/report.py</code></td>
+</tr>
+<tr>
+<td>Layer-1 gate (runs first)</td>
+<td><code>validate_layer1(data) -&gt; ValidationReport</code></td>
+<td><code>src/cyo_adventure/validator/layer1.py</code></td>
+</tr>
+<tr>
+<td>Parsed story model</td>
+<td><code>Storybook</code> (+ <code>Node</code>, <code>Choice</code>, <code>Effect</code>, <code>Variable</code>)</td>
+<td><code>src/cyo_adventure/storybook/models.py</code></td>
+</tr>
+<tr>
+<td>Provenance columns (already present)</td>
+<td><code>storybook_version.model/prompt_version/validation_report/moderation_report</code></td>
+<td><code>src/cyo_adventure/db/models.py</code></td>
+</tr>
+<tr>
+<td>Guardian authz seam</td>
+<td><code>Principal.is_guardian</code>, <code>authorize_family</code>, <code>Context</code>, <code>CurrentPrincipal</code></td>
+<td><code>src/cyo_adventure/api/deps.py</code></td>
+</tr>
+<tr>
+<td>Router registration</td>
+<td><code>create_app().include_router(...)</code></td>
+<td><code>src/cyo_adventure/app.py</code></td>
+</tr>
+<tr>
+<td>DB integration harness</td>
+<td>testcontainers Postgres + seed in <code>tests/integration/conftest.py</code></td>
+<td><code>tests/integration/conftest.py</code></td>
+</tr>
+<tr>
+<td>Existing fixtures</td>
+<td>7 valid (4 Tier-2) + invalid graph/schema, incl. <code>stateful_dead_end.json</code></td>
+<td><code>tests/fixtures/storybook/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="scope-boundary">Scope boundary<a class="headerlink" href="#scope-boundary" title="Permanent link">&para;</a></h2>
+<h3 id="in-scope-phase-2">In scope (Phase 2)<a class="headerlink" href="#in-scope-phase-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Layer-2 state-space validator (L2-8..L2-12) reusing <code>StoryEngine</code>.</li>
+<li>Reading-level advisory check (RL-13, textstat) and a SAFE-14 <strong>stub</strong> that always returns no
+  findings but establishes the seam (real moderation is Phase 3).</li>
+<li>A combined gate runner that orders L1 -&gt; L2 (Tier-2 only) -&gt; RL -&gt; SAFE per validator-rules
+  section "Rule Application Order".</li>
+<li><code>GenerationProvider</code> protocol and a deterministic <code>MockProvider</code>.</li>
+<li>Staged orchestrator (Structure / Prose / Repair) with the 3-attempt cap and no-progress abort.</li>
+<li>Concept brief model + PII guard (the only would-be egress path).</li>
+<li><code>concept</code> and <code>generation_job</code> DB tables + Alembic migration.</li>
+<li>RQ worker queue and the guardian-only generation/validation API endpoints.</li>
+<li>Subagent-authored Tier-2 state corpus and known-bad corpus, with rejection tests asserting
+  correct rule and node attribution.</li>
+<li>A mock-driven yield harness that demonstrates the measurement methodology end-to-end.</li>
+</ul>
+<h3 id="explicitly-deferred-recorded-not-silently-dropped">Explicitly deferred (recorded, not silently dropped)<a class="headerlink" href="#explicitly-deferred-recorded-not-silently-dropped" title="Permanent link">&para;</a></h3>
+<p>Per CLAUDE.md scope tracing, these two roadmap Phase 2 acceptance criteria are <strong>not</strong> met by
+this plan and move to <code>feat/phase-2b-live-provider</code>:</p>
+<ol>
+<li><strong>"...passes the full gate with zero structural edits at least 60% of the time over a
+   20-story sample."</strong> Requires real generations; deferred with the live provider. WP14 builds
+   the harness so the follow-up only swaps <code>MockProvider</code> for the real one.</li>
+<li><strong>Concrete Claude/Ollama/OpenRouter adapters.</strong> The protocol and config seam ship in Phase 2;
+   the HTTP clients ship in 2b.</li>
+</ol>
+<h3 id="out-of-scope-later-phases-unchanged">Out of scope (later phases, unchanged)<a class="headerlink" href="#out-of-scope-later-phases-unchanged" title="Permanent link">&para;</a></h3>
+<p>Moderation model + per-age-band policy and the publish state machine + guardian approval UI
+(Phase 3); library profile-cap enforcement UI (Phase 4a); node editor, TTS (Phase 4b); MinIO
+blob storage, Sentry (Phase 5). Code seams (SAFE-14 stub, <code>moderation_report</code> column,
+<code>storybook.status</code>) are left in place so these plug in without rework.</p>
+<hr />
+<h2 id="sub-pr-structure-stacked-on-featphase-2-generation-gate">Sub-PR structure (stacked on <code>feat/phase-2-generation-gate</code>)<a class="headerlink" href="#sub-pr-structure-stacked-on-featphase-2-generation-gate" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>feat/phase-2-generation-gate            (integration branch off main, post-PR#4)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  PR-a  Validation gate                  WP1  WP2  WP3  WP4  WP5
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  PR-b  Generation provider + orchestrator  WP6  WP7  WP8  WP9
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>  PR-c  Async worker + API               WP10 WP11 WP12 WP13
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>  PR-d  Yield harness + phase exit       WP14 WP15
+</span></code></pre></div>
+<p>Each PR is independently green (Ruff, BasedPyright strict, pytest &gt;=80% line / 70% branch, 90%
+on Layer-2 + orchestrator, Bandit, pip-audit, pre-commit, signed conventional commits) before
+the next begins. PR-a has no new runtime dependencies; PR-b adds <code>textstat</code> only if WP3 lands
+in PR-a (it does) so PR-b adds none; PR-c adds <code>rq</code> + <code>redis</code>.</p>
+<hr />
+<h2 id="pr-a-validation-gate-wp1-wp5">PR-a: Validation gate (WP1-WP5)<a class="headerlink" href="#pr-a-validation-gate-wp1-wp5" title="Permanent link">&para;</a></h2>
+<h3 id="wp1-configuration-walk-core-reuse-storyengine">WP1: Configuration-walk core (reuse <code>StoryEngine</code>)<a class="headerlink" href="#wp1-configuration-walk-core-reuse-storyengine" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> L2-8 (configuration walk), configuration-cap.md.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/validator/walk.py</code>
+- Test: <code>tests/unit/test_config_walk.py</code></p>
+<p><strong>What it does.</strong> Enumerate every reachable configuration from <code>(start_node, initial var_state)</code>
+by driving the existing <code>StoryEngine</code>. A configuration is keyed for deduplication by:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># config key = (node_id, frozen var_state, visited-once-effect nodes)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">ConfigKey</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">VarValue</span><span class="p">],</span> <span class="o">...</span><span class="p">],</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+</span></code></pre></div>
+<p><strong>Design decision (resolve here, note for the validator owner).</strong> validator-rules.md L2-8 names
+the configuration <code>(node_id, var_state)</code>. That key is <strong>not strictly sound for dedup</strong> when a
+story has <code>once: true</code> on_enter effects: two readers at the same <code>(node, var_state)</code> with
+different visit histories can diverge later, because a once-effect on some <em>other</em> node fires
+for one and is suppressed for the other. The fix keys the visited set on
+<code>visit_set ∩ {nodes that carry a once on_enter effect}</code>. For the common case (no once-effects)
+this collapses to exactly <code>(node, var_state)</code>, honoring the spec's intent while staying
+provably correct. Tag with <code># #CRITICAL: data integrity: ...</code> and <code># #VERIFY:</code> and reference
+this decision. If the owner prefers the literal spec key, that is a one-line change isolated to
+this module.</p>
+<p><strong>Interface:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">WalkResult</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">configs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ConfigKey</span><span class="p">,</span> <span class="n">ReadingState</span><span class="p">]</span>      <span class="c1"># representative state per config</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">edges</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">ConfigKey</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">ConfigKey</span><span class="p">]]</span>     <span class="c1"># config -&gt; reachable successor configs</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">capped</span><span class="p">:</span> <span class="nb">bool</span>                                 <span class="c1"># True if the cap aborted the walk</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">walk_configurations</span><span class="p">(</span><span class="n">story</span><span class="p">:</span> <span class="n">Storybook</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cap</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">100_000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WalkResult</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p>The walk uses a queue of <code>ReadingState</code>; for each, compute <code>engine.visible_choices(state)</code>, and
+for each visible choice <code>engine.choose(state, choice.id)</code> to produce the successor state; dedup
+by <code>ConfigKey</code>; abort and set <code>capped=True</code> the instant <code>len(configs)</code> would exceed <code>cap</code>.
+Ending configurations have no successors (<code>engine.is_ending</code> true).</p>
+<p><strong>Test obligations (red-first):</strong>
+- Linear 3-node story -&gt; 3 configs, no cap.
+- <code>tests/fixtures/storybook/valid/03_tier2_lantern.json</code>: walk completes; lantern-gated branch
+  appears in exactly the configs where <code>has_lantern</code> is true.
+- A synthetic story with a tiny cap (<code>cap=5</code>) -&gt; <code>capped is True</code> and the walk stops promptly.
+- A story with a <code>once: true</code> on_enter effect: two paths into the same node yield distinct
+  configs only when the downstream once-effect would differ (guards the soundness decision).</p>
+<p><strong>Acceptance:</strong> walk reproduces engine semantics exactly (no separate transition logic);
+<code>capped</code> fires deterministically; 90% line coverage on this module.</p>
+<h3 id="wp2-layer-2-rules-l2-9l2-12-over-the-walk">WP2: Layer-2 rules (L2-9..L2-12) over the walk<a class="headerlink" href="#wp2-layer-2-rules-l2-9l2-12-over-the-walk" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> L2-9 dead-end, L2-10 escape, L2-11 conditional usefulness, L2-12 cap.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/validator/layer2.py</code>
+- Test: <code>tests/unit/test_layer2_validator.py</code></p>
+<p><strong>Interface:</strong> <code>def validate_layer2(story: Storybook) -&gt; ValidationReport</code> (mirrors
+<code>validate_layer1</code>). Internally calls <code>walk_configurations</code>. Tier gate: if
+<code>story.metadata.tier == 1</code>, return an empty report immediately (validator-rules: "Layer 2
+applies to Tier-2 stories only ... must not produce false failures").</p>
+<p><strong>Rules:</strong>
+- <strong>L2-12 (checked first):</strong> if <code>WalkResult.capped</code>, emit one <code>L2-12</code> error with the cap
+  message and stop (the walk is incomplete, so the other rules cannot run).
+- <strong>L2-9 dead-end:</strong> any non-ending config with zero visible choices -&gt; <code>L2-9</code> error, message
+  template with <code>node_id</code> and the offending <code>var_state</code>.
+- <strong>L2-10 escape:</strong> compute the set of configs from which an ending config is reachable over
+  <code>WalkResult.edges</code> (reverse reachability from ending configs); any reachable config not in
+  that set -&gt; <code>L2-10</code> error. This subsumes the trap-cycle case at configuration granularity.
+- <strong>L2-11 conditional usefulness:</strong> for every choice carrying a non-<code>None</code> <code>condition</code>, if it is
+  visible in no reachable config -&gt; <code>L2-11</code> error attributed to <code>node_id</code>/<code>choice_id</code>.</p>
+<p>Use the exact failure-message templates from validator-rules.md so reports are stable for
+repair prompts. <code>var_state</code> is rendered as a sorted, JSON-serializable mapping.</p>
+<p><strong>Test obligations:</strong> one targeted test per rule using a minimal synthetic Tier-2 story plus the
+corpus from WP5 (cross-referenced once WP5 lands). Assert <code>report.rule_ids()</code> and the attributed
+<code>node_id</code>/<code>choice_id</code>, not just <code>report.ok</code>.</p>
+<p><strong>Acceptance:</strong> each L2 rule fires on its dedicated case and stays silent on a clean story; 90%
+coverage on <code>layer2.py</code>.</p>
+<h3 id="wp3-reading-level-advisory-rl-13-safe-14-stub">WP3: Reading-level advisory (RL-13) + SAFE-14 stub<a class="headerlink" href="#wp3-reading-level-advisory-rl-13-safe-14-stub" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> RL-13 advisory, SAFE-14 seam.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/validator/reading_level.py</code>, <code>src/cyo_adventure/validator/safety.py</code>
+- Modify: <code>pyproject.toml</code> (add <code>textstat</code> to runtime deps)
+- Test: <code>tests/unit/test_reading_level.py</code>, <code>tests/unit/test_safety_stub.py</code></p>
+<p><strong>RL-13:</strong> <code>def check_reading_level(story: Storybook) -&gt; ValidationReport</code>. For each node <code>body</code>,
+compute Flesch-Kincaid grade via <code>textstat.text_standard(..., float_output=True)</code> (or
+<code>flesch_kincaid_grade</code>); compare to <code>metadata.reading_level.target ± tolerance</code>; emit
+<code>Severity.WARNING</code> findings only (never blocks). Skip ending-only short bodies below a small
+word-count floor to reduce noise (document the floor).</p>
+<p><strong>SAFE-14 stub:</strong> <code>def check_safety(story: Storybook) -&gt; ValidationReport</code> returns an empty
+report in Phase 2 but exists so the gate runner (WP4) and the Phase 3 moderation pass share one
+call site. Add a module docstring stating it is a Phase 2 stub and Phase 3 replaces the body.</p>
+<p><strong>Acceptance:</strong> RL-13 produces warnings (not errors) and never sets <code>report.ok = False</code>; the
+stub is wired and covered.</p>
+<h3 id="wp4-combined-gate-runner">WP4: Combined gate runner<a class="headerlink" href="#wp4-combined-gate-runner" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> validator-rules "Rule Application Order"; tech-spec "Validation gate".</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/validator/gate.py</code>
+- Test: <code>tests/unit/test_gate.py</code></p>
+<p><strong>Interface:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">GateResult</span><span class="p">:</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">report</span><span class="p">:</span> <span class="n">ValidationReport</span>      <span class="c1"># merged findings across all layers</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">blocked</span><span class="p">:</span> <span class="nb">bool</span>                 <span class="c1"># True if any error-severity finding (L1 or L2)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">safety_flagged</span><span class="p">:</span> <span class="nb">bool</span>          <span class="c1"># True if any SAFE-14 finding (Phase 3 will populate)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="k">def</span><span class="w"> </span><span class="nf">run_gate</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">GateResult</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p>Order: run <code>validate_layer1(data)</code>; <strong>if it has errors, stop</strong> (graph must be sound before a
+state walk is meaningful, per validator-rules section "Layer 2"). Else parse to <code>Storybook</code>,
+run <code>validate_layer2</code> (Tier-2 only), then <code>check_reading_level</code>, then <code>check_safety</code>; merge all
+findings into one report. <code>blocked = not report_excluding_safety.ok</code>. Keep RL warnings and SAFE
+flags out of <code>blocked</code> (advisory / human-routed respectively).</p>
+<p><strong>Acceptance:</strong> a clean Tier-2 story -&gt; <code>blocked is False</code>; an L1 failure short-circuits before
+the walk (assert no L2 finding present); an L2 failure on an L1-clean story -&gt; <code>blocked is True</code>.</p>
+<h3 id="wp5-tier-2-state-corpus-known-bad-corpus-subagent-authored">WP5: Tier-2 state corpus + known-bad corpus (subagent-authored)<a class="headerlink" href="#wp5-tier-2-state-corpus-known-bad-corpus-subagent-authored" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> Phase 2 deliverable "Known-bad corpus and Tier-2 state corpus"; acceptance
+"rejects 100% of the known-bad and Tier-2 corpora with correct rule and node attribution".</p>
+<p><strong>Files:</strong>
+- Create: <code>tests/fixtures/storybook/invalid/state/*.json</code> (one per L2 rule)
+- Create/extend: <code>tests/fixtures/storybook/valid/08_*..N_*.json</code> (additional valid Tier-2 stories)
+- Test: <code>tests/unit/test_corpus_layer2.py</code></p>
+<p><strong>Authoring step (subagent).</strong> Dispatch a Sonnet subagent (<code>subagent_type: general-purpose</code>,
+<code>model: sonnet</code>) with the drafting guide, the schema, and validator-rules as context. Required
+deliverables, one fixture each, with a short sibling <code>.md</code> note naming the rule it targets:
+- <code>silver_door_dead_end.json</code> -&gt; L2-9 (extend the existing <code>invalid/graph/stateful_dead_end.json</code>
+  case to a true stateful dead end).
+- <code>trap_cycle.json</code> -&gt; L2-10 (state-reachable cycle with no escape toward an ending).
+- <code>unsatisfiable_condition.json</code> -&gt; L2-11 (a conditional choice no reachable config exposes).
+- <code>bound_overflow.json</code> -&gt; L1-6 reachable transition pushing an int past <code>max</code> (graph-layer,
+  but belongs to the curated bad set; assert L1 catches it before L2 runs).
+- <code>config_cap_blowup.json</code> -&gt; L2-12 (enough booleans/dense effects to exceed a <em>test-lowered</em>
+  cap; the test passes <code>cap=...</code> rather than authoring 100k configs).</p>
+<p><strong>Curation step (executor, not the subagent).</strong> Every fixture is validated by a human-reviewed
+test, never trusted blind: each <code>invalid/state/*.json</code> must (a) pass Layer 1 where intended and
+(b) fail the specific L2 rule with the expected <code>rule_id</code> and <code>node_id</code>. Treat subagent output
+as untrusted draft content; fix any fixture that fails its own assertion.</p>
+<p><strong>Test obligations:</strong> parametrized test iterating <code>invalid/state/*.json</code> asserting the expected
+rule id fires with correct attribution; a test asserting every <code>valid/*</code> Tier-2 fixture passes
+<code>run_gate</code> with <code>blocked is False</code>.</p>
+<p><strong>Acceptance:</strong> 100% of the curated bad corpus rejected with correct rule + node attribution;
+100% of valid Tier-2 fixtures pass clean.</p>
+<hr />
+<h2 id="pr-b-generation-provider-orchestrator-wp6-wp9">PR-b: Generation provider + orchestrator (WP6-WP9)<a class="headerlink" href="#pr-b-generation-provider-orchestrator-wp6-wp9" title="Permanent link">&para;</a></h2>
+<h3 id="wp6-generationprovider-protocol-mockprovider">WP6: <code>GenerationProvider</code> protocol + <code>MockProvider</code><a class="headerlink" href="#wp6-generationprovider-protocol-mockprovider" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> Phase 2 deliverable "Provider interface (Claude primary; ...fallback)"; ADR-003.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/generation/__init__.py</code>, <code>src/cyo_adventure/generation/provider.py</code>
+- Test: <code>tests/unit/test_mock_provider.py</code></p>
+<p><strong>Interface (structural typing; no provider SDK imported in-phase):</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">GenerationProvider</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nd">@dataclass</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">class</span><span class="w"> </span><span class="nc">MockProvider</span><span class="p">:</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Deterministic provider for tests. Returns queued responses in order;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="sd">    a callable response may inspect the prompt to return stage-appropriate JSON.&quot;&quot;&quot;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">responses</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]]</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="n">calls</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>   <span class="c1"># captured prompts, for assertions</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">system</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">max_tokens</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p><code>MockProvider</code> records every prompt in <code>calls</code> (so WP7 can assert no PII leaked) and pops
+responses in order. Seed canned responses from the WP5 subagent-authored stories (a valid
+skeleton JSON for Stage A, a full Storybook JSON for Stage B) plus deliberately malformed
+strings (truncated JSON, wrong-shaped skeleton) to drive the repair path in WP8.</p>
+<p><strong>Acceptance:</strong> mock returns queued responses deterministically; <code>calls</code> captures prompts; 90%
+coverage.</p>
+<h3 id="wp7-concept-brief-model-pii-guard">WP7: Concept brief model + PII guard<a class="headerlink" href="#wp7-concept-brief-model-pii-guard" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> Phase 2 deliverable "Concept intake (no real child PII)"; acceptance "No prompt
+sent to the provider contains a real child name, birthdate, or sensitive trait";
+privacy-model.md.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/generation/concept.py</code>, <code>src/cyo_adventure/generation/pii.py</code>
+- Test: <code>tests/unit/test_concept.py</code>, <code>tests/unit/test_pii_guard.py</code></p>
+<p><strong>Concept brief (Pydantic v2, <code>extra="forbid"</code>):</strong> the intake fields from tech-spec
+"Concept brief": <code>title?</code>, <code>premise</code>, <code>protagonist</code> (name/age/role), <code>point_of_view</code> (default
+2<sup>nd</sup> person), <code>age_band</code> (<code>AgeBand</code>), <code>reading_level_target</code>, <code>tier</code> (1|2), <code>tone</code>,
+<code>themes_allowed[]</code>, <code>content_nogo[]</code>, <code>target_node_count</code>, <code>ending_count</code>, <code>structure_pattern</code>
+(enum: time_cave | gauntlet | branch_and_bottleneck | quest | loop_and_grow),
+<code>desired_variables[]?</code>, <code>special_constraints[]?</code>.</p>
+<p><strong>PII guard:</strong> <code>def assert_prompt_pii_safe(prompt: str, *, forbidden: PiiContext) -&gt; None</code> where
+<code>PiiContext</code> carries the family's real child names / birthdates pulled from the request context
+(never from the brief). Raises <code>ValidationError</code> (core hierarchy) if any forbidden token appears.
+The orchestrator (WP8) calls this on <strong>every</strong> assembled prompt before handing it to the
+provider. This is the only egress chokepoint; tag <code># #CRITICAL: security: ...</code> /
+<code># #VERIFY: assert_prompt_pii_safe runs on every prompt; test proves it raises</code>.</p>
+<p><code>protagonist.name</code> in the brief is the <em>story</em> protagonist, not a real child; document that the
+guard checks against the family's real-child names (the leak risk), not the brief's chosen
+character name.</p>
+<p><strong>Acceptance:</strong> a prompt containing a seeded real child name raises; a clean prompt passes;
+brief rejects unknown fields and out-of-range tiers.</p>
+<h3 id="wp8-orchestrator-stage-abc-repair-loop">WP8: Orchestrator (Stage A/B/C) + repair loop<a class="headerlink" href="#wp8-orchestrator-stage-abc-repair-loop" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> Phase 2 deliverable "Generation orchestrator with staged passes"; quality gate
+"pipeline with mocked provider returning canned and malformed outputs, proving repair loop and
+no-progress abort"; 90% coverage on the orchestrator.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/generation/orchestrator.py</code>
+- Test: <code>tests/unit/test_orchestrator.py</code></p>
+<p><strong>Interface:</strong></p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">slots</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">class</span><span class="w"> </span><span class="nc">GenerationOutcome</span><span class="p">:</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">status</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">,</span> <span class="s2">&quot;needs_review&quot;</span><span class="p">,</span> <span class="s2">&quot;failed&quot;</span><span class="p">]</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">storybook</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span>     <span class="c1"># decoded final Storybook JSON, if any</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">report</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span>               <span class="c1"># final GateResult.report.to_dict()</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>    <span class="n">attempts</span><span class="p">:</span> <span class="nb">int</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>    <span class="n">stage_log</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>                    <span class="c1"># human-readable trail for the job record</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">generate_story</span><span class="p">(</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>    <span class="n">brief</span><span class="p">:</span> <span class="n">ConceptBrief</span><span class="p">,</span> <span class="n">provider</span><span class="p">:</span> <span class="n">GenerationProvider</span><span class="p">,</span> <span class="n">pii</span><span class="p">:</span> <span class="n">PiiContext</span><span class="p">,</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="o">*</span><span class="p">,</span> <span class="n">max_repairs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenerationOutcome</span><span class="p">:</span> <span class="o">...</span>
+</span></code></pre></div>
+<p><strong>Flow (validator runs deterministically between every stage; tech-spec "Authoring Pipeline"):</strong>
+1. <strong>Stage A (Structure):</strong> assemble the structure prompt (WP9), PII-guard it, call provider,
+   parse the skeleton JSON, expand to a minimal Storybook-shaped doc, run <code>run_gate</code>. If the
+   graph is unsound, go straight to repair (do not spend Stage B tokens).
+2. <strong>Stage B (Prose):</strong> assemble the prose prompt from the approved skeleton, PII-guard, call,
+   parse full Storybook JSON, run <code>run_gate</code>.
+3. <strong>Stage C (Repair), bounded:</strong> while <code>blocked</code> and <code>attempts &lt; max_repairs</code>: assemble the
+   repair prompt naming <strong>only</strong> the failing <code>node_id</code>s and <code>rule_id</code>s from the report (the
+   report's <code>to_dict()</code> is already this shape), PII-guard, call, re-parse, re-gate. <strong>No-progress
+   abort:</strong> if the new report's findings or the output hash equals the previous attempt's, stop
+   immediately (an extra attempt cannot help). On exhaustion or no-progress, return
+   <code>status="needs_review"</code> (never auto-publish, per ADR-005 and the deliverable note).
+4. Map outcome: gate clean -&gt; <code>passed</code>; safety-flagged-but-otherwise-clean -&gt; <code>needs_review</code>
+   (Phase 3 owns moderation, but the seam returns the right status now); still blocked -&gt;
+   <code>needs_review</code> or <code>failed</code> per whether any structural output was produced.</p>
+<p>No-progress detector: compare <code>(sorted_finding_tuples, sha256(canonical_json(output)))</code> between
+consecutive attempts.</p>
+<p><strong>Test obligations (all against <code>MockProvider</code>, offline):</strong>
+- Happy path: Stage A valid skeleton, Stage B valid Storybook -&gt; <code>passed</code>, <code>attempts == 0</code>
+  repairs, <code>run_gate</code> clean.
+- Repair success: Stage B returns a story with one L2-9 dead end; repair response fixes it -&gt;
+  <code>passed</code> after 1 repair; assert the repair prompt contained the failing node id.
+- Repair exhaustion: provider keeps returning the same broken story -&gt; <code>needs_review</code>,
+  <code>attempts == 3</code>.
+- No-progress abort: provider returns an identical broken story twice -&gt; stops at attempt 2,
+  not 3 (assert <code>attempts &lt; max_repairs</code>).
+- Malformed output: Stage B returns truncated JSON -&gt; handled as a gate failure routed to
+  repair, never an unhandled exception.
+- PII: a brief whose assembled prompt would contain a seeded real child name -&gt; raises before
+  any provider call (assert <code>provider.calls == []</code>).</p>
+<p><strong>Acceptance:</strong> all six behaviors proven against the mock; 90% coverage on <code>orchestrator.py</code>.</p>
+<h3 id="wp9-stage-prompt-assembly">WP9: Stage prompt assembly<a class="headerlink" href="#wp9-stage-prompt-assembly" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> stage-prompts/{structure,prose,repair}.md; drafting-guide.md as <code>{drafting_guide}</code>.</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/generation/prompts.py</code>
+- Test: <code>tests/unit/test_prompts.py</code></p>
+<p>Load the three stage-prompt templates (checked-in markdown) and fill their placeholders
+(<code>{drafting_guide}</code>, concept fields, <code>{skeleton}</code>, <code>{validation_report}</code>, the failing-node list)
+deterministically. Pure string assembly; no I/O beyond reading the bundled template files
+(package them under <code>src/cyo_adventure/generation/templates/</code> copied from
+<code>docs/planning/stage-prompts/</code> so runtime does not depend on <code>docs/</code>). Assert each placeholder is
+filled and the repair prompt enumerates exactly the failing node ids and rule ids.</p>
+<p><strong>Acceptance:</strong> every placeholder substituted; repair prompt names only flagged nodes; no
+<code>docs/</code> path read at runtime.</p>
+<hr />
+<h2 id="pr-c-async-worker-api-wp10-wp13">PR-c: Async worker + API (WP10-WP13)<a class="headerlink" href="#pr-c-async-worker-api-wp10-wp13" title="Permanent link">&para;</a></h2>
+<h3 id="wp10-concept-generation_job-tables-alembic-migration">WP10: <code>concept</code> + <code>generation_job</code> tables + Alembic migration<a class="headerlink" href="#wp10-concept-generation_job-tables-alembic-migration" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> tech-spec "Data Model -&gt; Operational entities (Postgres)".</p>
+<p><strong>Files:</strong>
+- Modify: <code>src/cyo_adventure/db/models.py</code> (add <code>Concept</code>, <code>GenerationJob</code>)
+- Create: <code>alembic/versions/&lt;rev&gt;_add_concept_and_generation_job.py</code>
+- Test: <code>tests/integration/test_generation_models.py</code></p>
+<p><code>Concept</code>: <code>id (uuid pk)</code>, <code>family_id (fk family)</code>, <code>brief (JSONB)</code>, <code>created_by (fk user)</code>,
+<code>created_at</code>. <code>GenerationJob</code>: <code>id (uuid pk)</code>, <code>concept_id (fk concept)</code>, <code>model (str|None)</code>,
+<code>provider (str|None)</code>, <code>prompt_version (str|None)</code>, <code>status (str, default "queued")</code>,
+<code>report (JSONB|None)</code>, <code>storybook_id (str|None)</code>, <code>version (int|None)</code>, <code>error (str|None)</code>,
+<code>created_at</code>, <code>updated_at</code>. Follow the existing string-enum-as-validated-string convention (no
+native PG enums) and the <code>_TS</code> timestamp pattern already in the module.</p>
+<p>Generate the migration with <code>alembic revision --autogenerate</code> against the testcontainers schema
+and hand-verify it (autogenerate is a starting point, not trusted output); record the
+down-revision per the TECHNICAL_BASELINE convention. Add a CI migration check only if one does
+not already exist (do not duplicate).</p>
+<p><strong>Test obligations (integration, testcontainers Postgres):</strong> insert a concept + job, read back,
+assert FK integrity; assert <code>alembic upgrade head</code> then <code>downgrade -1</code> round-trips on an empty DB.</p>
+<p><strong>Acceptance:</strong> tables created via migration (not just <code>Base.metadata.create_all</code>); round-trip
+green.</p>
+<h3 id="wp11-rq-queue-worker">WP11: RQ queue + worker<a class="headerlink" href="#wp11-rq-queue-worker" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> Phase 2 deliverable "RQ worker queue for async generation".</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/generation/queue.py</code>, <code>src/cyo_adventure/generation/worker.py</code>
+- Modify: <code>pyproject.toml</code> (add <code>rq</code>, <code>redis</code>), <code>src/cyo_adventure/core/config.py</code> (add
+  <code>redis_url</code>, <code>generation_provider: Literal["mock","claude","ollama","openrouter"] = "mock"</code>)
+- Test: <code>tests/unit/test_worker.py</code>, <code>tests/integration/test_generation_queue.py</code></p>
+<p><code>queue.py</code> exposes <code>enqueue_generation(job_id) -&gt; str</code> behind a thin interface so the worker
+body is testable synchronously. <code>worker.py</code>'s <code>run_generation_job(job_id)</code> loads the concept,
+builds the configured provider (in-phase: always <code>MockProvider</code>; the factory raises a clear
+<code>ConfigurationError</code> for <code>claude/ollama/openrouter</code> with "deferred to Phase 2b"), runs
+<code>generate_story</code>, and writes the <code>GenerationOutcome</code> to the <code>generation_job</code> row (status,
+report) and, on <code>passed</code>, creates a <code>storybook</code> + <code>storybook_version</code> row with provenance
+columns populated (<code>model</code>, <code>prompt_version</code>, <code>validation_report</code>).</p>
+<p>Worker DB access uses its own session (not the request unit-of-work); set a correlation id at
+job start (<code>set_correlation_id(generate_correlation_id())</code>, per the project background-job
+pattern). Tag async/external/concurrency RAD markers per <code>src/cyo_adventure/CLAUDE.md</code>.</p>
+<p><strong>Test obligations:</strong> unit test runs <code>run_generation_job</code> against a fake/in-process queue + mock
+provider, asserting the job row transitions <code>queued -&gt; running -&gt; passed|needs_review</code> and a
+<code>storybook_version</code> is written on success; an integration test exercises the real enqueue path
+(Redis via testcontainers, marked <code>integration</code>, skipped if Docker is unavailable, mirroring the
+Postgres harness).</p>
+<p><strong>Acceptance:</strong> worker produces a persisted, provenance-stamped version on success; provider
+factory cleanly refuses deferred providers.</p>
+<h3 id="wp12-generationvalidation-api-endpoints-authz">WP12: Generation/validation API endpoints + authz<a class="headerlink" href="#wp12-generationvalidation-api-endpoints-authz" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> tech-spec "API Specification" rows for concepts, generate, generation-jobs,
+validate; authorization-matrix.md (guardian-only; IDOR negatives).</p>
+<p><strong>Files:</strong>
+- Create: <code>src/cyo_adventure/api/generation.py</code>
+- Modify: <code>src/cyo_adventure/app.py</code> (<code>include_router(generation.router)</code>),
+  <code>src/cyo_adventure/api/schemas.py</code> (request/response models)
+- Test: <code>tests/integration/test_generation_api.py</code></p>
+<p>Endpoints (all guardian-only; reuse <code>Context</code>/<code>CurrentPrincipal</code> and <code>authorize_family</code>):
+- <code>POST /api/v1/concepts</code> -&gt; create a concept brief (validate <code>ConceptBrief</code>; PII guard the brief
+  text against the family's real-child names).
+- <code>POST /api/v1/concepts/{id}/generate</code> -&gt; enqueue a <code>GenerationJob</code>; 202 with job id.
+- <code>GET /api/v1/generation-jobs/{id}</code> -&gt; status + report (family-scoped).
+- <code>POST /api/v1/storybooks/{id}/versions/{v}/validate</code> -&gt; re-run <code>run_gate</code> on a stored version,
+  returning <code>GateResult.report.to_dict()</code>.</p>
+<p>Child tokens must be rejected (403) on all four. IDOR: a guardian from family B cannot read
+family A's concept, job, or storybook (404/403 per the matrix).</p>
+<p><strong>Test obligations (integration):</strong> guardian happy path for each endpoint; child token -&gt; 403 on
+each; cross-family guardian -&gt; not-found/forbidden; a generate call enqueues and the job row
+appears. Extend the existing seed in <code>tests/integration/conftest.py</code> rather than duplicating it.</p>
+<p><strong>Acceptance:</strong> all four endpoints function and enforce family scope + role; IDOR negatives green.</p>
+<h3 id="wp13-regenerate-the-frontend-api-client">WP13: Regenerate the frontend API client<a class="headerlink" href="#wp13-regenerate-the-frontend-api-client" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> CLAUDE.md Architecture rule "OpenAPI schema is the source of truth for the
+frontend".</p>
+<p><strong>Files:</strong> Modify: <code>frontend/src/client/**</code> (generated output, do not hand-edit)</p>
+<p>After the new routes exist, regenerate: start the backend, then
+<code>cd frontend &amp;&amp; npm run generate-client</code>. Commit the regenerated client as build output. Run
+<code>npm run lint &amp;&amp; npm run typecheck</code> to confirm the client compiles. No hand-written types.</p>
+<p><strong>Acceptance:</strong> generated client includes the generation endpoints; frontend type-check passes.</p>
+<hr />
+<h2 id="pr-d-yield-harness-phase-exit-wp14-wp15">PR-d: Yield harness + phase exit (WP14-WP15)<a class="headerlink" href="#pr-d-yield-harness-phase-exit-wp14-wp15" title="Permanent link">&para;</a></h2>
+<h3 id="wp14-mock-driven-yield-harness-methodology-live-deferred">WP14: Mock-driven yield harness (methodology, live deferred)<a class="headerlink" href="#wp14-mock-driven-yield-harness-methodology-live-deferred" title="Permanent link">&para;</a></h3>
+<p><strong>Traces to:</strong> acceptance "60% over a 20-story sample" (built now, measured in Phase 2b).</p>
+<p><strong>Files:</strong>
+- Create: <code>scripts/yield_harness.py</code>
+- Test: <code>tests/unit/test_yield_harness.py</code></p>
+<p>A runnable harness that takes N concept briefs, runs <code>generate_story</code> against a provider, and
+reports the pass rate (<code>passed / N</code>) with per-story rule-failure breakdown. In Phase 2 it runs
+against <code>MockProvider</code> seeded from WP5 stories, so it demonstrates the measurement end-to-end and
+is unit-tested deterministically (e.g. 8 passing + 2 needs_review canned -&gt; reported 80%). The
+follow-up (<code>feat/phase-2b-live-provider</code>) swaps the provider and runs the real 20-story sample;
+the harness code does not change. Document the run command:
+<code>PYTHONPATH=. uv run python scripts/yield_harness.py --briefs &lt;dir&gt; --provider mock</code>.</p>
+<p><strong>Acceptance:</strong> harness computes and prints a correct pass rate on canned input; documented run
+command works as written (PYTHONPATH explicit).</p>
+<h3 id="wp15-phase-2-exit-documentation">WP15: Phase 2 exit documentation<a class="headerlink" href="#wp15-phase-2-exit-documentation" title="Permanent link">&para;</a></h3>
+<p><strong>Files:</strong>
+- Modify: <code>docs/planning/PROJECT-PLAN.md</code> and <code>docs/planning/roadmap.md</code> (mark Phase 2 status,
+  note the two deferred criteria and the <code>feat/phase-2b-live-provider</code> follow-up)
+- Create: <code>docs/planning/phase-2b-live-provider.md</code> (a short follow-up spec: implement
+  Claude/Ollama/OpenRouter <code>complete()</code>, wire <code>generation_provider</code> config, run the 20-story
+  yield, gate on &gt;=60%)
+- Modify: <code>CHANGELOG.md</code> (OpenSSF: features documented)
+- Template feedback: if any template gap surfaced, append to <code>docs/template_feedback.md</code>.</p>
+<p><strong>Acceptance:</strong> roadmap/plan reflect reality (no silently-dropped criteria); follow-up spec
+exists so Phase 2b is a small, well-scoped task.</p>
+<hr />
+<h2 id="cross-cutting-notes">Cross-cutting notes<a class="headerlink" href="#cross-cutting-notes" title="Permanent link">&para;</a></h2>
+<p><strong>Dependencies to add</strong> (one per the PR that first needs it, keep <code>uv.lock</code> updated):
+<code>textstat</code> (WP3), <code>rq</code> + <code>redis</code> (WP11). No provider SDK (<code>anthropic</code>, etc.) in Phase 2.</p>
+<p><strong>Config additions</strong> (<code>core/config.py</code>): <code>redis_url</code> (dev default localhost, same fail-fast
+posture as <code>database_url</code> for non-local), <code>generation_provider</code> (default <code>"mock"</code>).</p>
+<p><strong>RAD markers (mandatory in this package, per <code>src/cyo_adventure/CLAUDE.md</code>):</strong> the PII guard
+(security), the worker DB session + correlation (concurrency/timing), the provider factory
+(external resources), and the walk soundness decision (data integrity) each need a
+<code>#CRITICAL</code>/<code>#ASSUME</code> + <code>#VERIFY</code> pair.</p>
+<p><strong>Definition of Done per WP (roadmap):</strong> code reviewed; tests pass (&gt;=80% line, 70% branch; 90%
+on Layer-2 + orchestrator); docs updated; Ruff + BasedPyright strict clean; Bandit + pip-audit
+no high/critical; signed conventional commits.</p>
+<hr />
+<h2 id="self-review">Self-review<a class="headerlink" href="#self-review" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Spec coverage:</strong> every Phase 2 PROJECT-PLAN deliverable maps to a WP: Layer-2 validator
+  (WP1-WP2), config cap (WP1-WP2), staged orchestrator + repair (WP8-WP9), provider interface
+  (WP6), concept intake + PII (WP7), RQ worker (WP11), known-bad + Tier-2 corpora (WP5),
+  validate endpoint (WP12). The two unmet acceptance criteria (60% yield, real adapters) are
+  explicitly deferred under Scope Boundary, not dropped.</li>
+<li><strong>Type consistency:</strong> <code>run_gate -&gt; GateResult</code>, <code>GenerationProvider.complete</code>,
+  <code>generate_story -&gt; GenerationOutcome</code>, <code>walk_configurations -&gt; WalkResult</code> are referenced
+  consistently across WPs. <code>ValidationReport</code>/<code>Severity</code>/<code>Storybook</code>/<code>ReadingState</code> reuse the
+  exact Phase-1 signatures read from source.</li>
+<li><strong>Shell commands:</strong> the only documented CLI (WP14) includes <code>PYTHONPATH=.</code>; pytest sets
+  <code>pythonpath</code> itself via <code>pyproject</code> so test commands need no prefix; <code>npm run generate-client</code>
+  runs from <code>frontend/</code>.</li>
+<li><strong>No live-API capability probe needed in-phase:</strong> there is no managed-cloud bulk operation in
+  Phase 2 (live wiring deferred); the equivalent probe belongs in Phase 2b before the 20-story run.</li>
+</ul>
+<hr />
+<h2 id="execution-handoff">Execution handoff<a class="headerlink" href="#execution-handoff" title="Permanent link">&para;</a></h2>
+<p>Per the locked decision (autonomous, minimal check-ins): once PR #4 merges, create
+<code>feat/phase-2-generation-gate</code> off <code>main</code>, then execute WP1-&gt;WP15 in order via
+<strong>superpowers:subagent-driven-development</strong> (a fresh subagent per work package, TDD within each,
+two-stage review between WPs). Surface to the owner only at sub-PR boundaries (after WP5, WP9,
+WP13, WP15) or on a blocker. The corpus-authoring step in WP5 dispatches a Sonnet subagent as a
+fixture factory; its output is curated by a reviewing test before it is trusted.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 16:38:15 UTC">June 22, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 16:38:15 UTC">June 22, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
