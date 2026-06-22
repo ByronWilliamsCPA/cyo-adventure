@@ -71,6 +71,7 @@ dependencies = [
     # UV handles these automatically based on the Python version being used.
     # See: https://docs.astral.sh/uv/concepts/dependencies/#dependency-specifiers
     "networkx>=3.6.1",
+    "textstat>=0.7.13",
 ]
 
 # Optional dependency groups
