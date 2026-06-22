@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import model_validator
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -39,6 +39,10 @@ class Settings(BaseSettings):
         env_prefix="cyo_adventure_",
         case_sensitive=False,
         extra="ignore",
+        # Allow population by field name in addition to validation_alias, so
+        # openrouter_api_key can be set directly (tests, DI) as well as via the
+        # unprefixed OPENROUTER_API_KEY env var.
+        populate_by_name=True,
     )
 
     environment: Literal["local", "dev", "staging", "production"] = "local"
@@ -84,6 +88,38 @@ class Settings(BaseSettings):
     # deep reasoning, so default low to avoid billing thinking tokens at the
     # output rate; raise only if yield measurement shows it helps.
     llm_effort: Literal["low", "medium", "high"] = "low"
+
+    # Per-call wall-clock timeout for a single live provider completion. Generation
+    # responses are large (a full story is thousands of tokens), so the default is
+    # generous; the adapter's transient-retry backoff stacks on top of this.
+    # #ASSUME: external-resources: a live LLM call can hang; without a timeout a
+    # stuck request would block a worker indefinitely.
+    # #VERIFY: Phase 2b adapter passes this to httpx.AsyncClient(timeout=...).
+    llm_timeout_seconds: int = 120
+
+    # Cascade switch. True (default) lets FallbackProvider fail over across legs.
+    # The yield/leg-comparison runs set this False to measure each leg in
+    # isolation (no failover masking a leg's true yield).
+    provider_fallback_enabled: bool = True
+
+    # Provider endpoints. OpenRouter's base url is stable; Ollama targets the
+    # local host. Both are configurable so staging/tests can point elsewhere.
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    ollama_base_url: str = "http://localhost:11434"
+
+    # OpenRouter credential. Read from the UNPREFIXED ``OPENROUTER_API_KEY`` env
+    # var (validation_alias bypasses the cyo_adventure_ prefix) to match the
+    # operator's existing key naming. Optional and None by default: only the
+    # openrouter provider needs it, and the mock default never does, so a missing
+    # key surfaces as a ConfigurationError in build_provider at call time rather
+    # than blocking startup. Ollama (local) needs no credential.
+    # #CRITICAL: security: this is a secret; never log its value or echo it in an
+    # error message. build_provider checks presence only.
+    # #VERIFY: ProviderError/ConfigurationError messages reference the key by name
+    # only, never by value.
+    openrouter_api_key: str | None = Field(
+        default=None, validation_alias="OPENROUTER_API_KEY"
+    )
 
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:

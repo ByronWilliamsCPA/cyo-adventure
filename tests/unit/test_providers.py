@@ -1,0 +1,457 @@
+"""Unit tests for the live generation provider adapters and fallback cascade.
+
+All HTTP is faked with ``httpx.MockTransport`` (no network, no live LLM). Retry
+backoff is set to ``0`` so transient-retry paths run instantly. The tests assert
+the three-layer failure model:
+
+- Layer 1 (adapter): transient failures retry the same model; leg-fatal failures
+  raise immediately.
+- Layer 2 (FallbackProvider): cross-leg failover, leg-fatal circuit breaker,
+  exhaustion, and that a non-ProviderError (e.g. a PII ValidationError) is never
+  caught.
+"""
+
+from __future__ import annotations
+
+import json
+from typing import TYPE_CHECKING
+
+import httpx
+import pytest
+
+from cyo_adventure.core.exceptions import ProviderError, ValidationError
+from cyo_adventure.generation.providers import (
+    FallbackProvider,
+    OllamaProvider,
+    OpenRouterProvider,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _client(handler: Callable[[httpx.Request], httpx.Response]) -> httpx.AsyncClient:
+    """Return an AsyncClient backed by a MockTransport running ``handler``."""
+    return httpx.AsyncClient(transport=httpx.MockTransport(handler))
+
+
+def _openrouter_ok_body(content: str) -> dict[str, object]:
+    """Return a minimal OpenRouter chat-completions success payload."""
+    return {"choices": [{"message": {"role": "assistant", "content": content}}]}
+
+
+def _ollama_ok_body(content: str) -> dict[str, object]:
+    """Return a minimal Ollama chat success payload."""
+    return {"message": {"role": "assistant", "content": content}}
+
+
+def _openrouter(
+    handler: Callable[[httpx.Request], httpx.Response],
+    *,
+    model: str = "anthropic/claude-sonnet-4.6",
+    max_retries: int = 3,
+) -> OpenRouterProvider:
+    """Build an OpenRouterProvider wired to a mock client with no backoff sleep."""
+    return OpenRouterProvider(
+        api_key="test-key",
+        model=model,
+        base_url="https://openrouter.ai/api/v1",
+        timeout_seconds=30,
+        effort="low",
+        max_retries=max_retries,
+        backoff_base_seconds=0,
+        client=_client(handler),
+    )
+
+
+def _ollama(
+    handler: Callable[[httpx.Request], httpx.Response],
+    *,
+    model: str = "qwen3",
+    max_retries: int = 3,
+) -> OllamaProvider:
+    """Build an OllamaProvider wired to a mock client with no backoff sleep."""
+    return OllamaProvider(
+        model=model,
+        base_url="http://localhost:11434",
+        timeout_seconds=30,
+        max_retries=max_retries,
+        backoff_base_seconds=0,
+        client=_client(handler),
+    )
+
+
+# ---------------------------------------------------------------------------
+# OpenRouterProvider
+# ---------------------------------------------------------------------------
+
+
+class TestOpenRouterProvider:
+    """OpenRouter adapter: success, error mapping, retry, caching, reasoning."""
+
+    @pytest.mark.asyncio
+    async def test_success_returns_content_verbatim(self) -> None:
+        """A 200 response returns the model content with no fence stripping."""
+        raw = '{"id": "s_x", "title": "T"}'
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body(raw))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == raw
+
+    @pytest.mark.asyncio
+    async def test_request_sends_model_reasoning_and_max_tokens(self) -> None:
+        """The request body carries model, reasoning.effort, and max_tokens."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _openrouter(handler)
+        await provider.complete(system="s", prompt="u", max_tokens=4096)
+        assert captured["model"] == "anthropic/claude-sonnet-4.6"
+        assert captured["max_tokens"] == 4096
+        assert captured["reasoning"] == {"effort": "low"}
+
+    @pytest.mark.asyncio
+    async def test_anthropic_model_marks_system_block_cacheable(self) -> None:
+        """For anthropic/* models the system block carries cache_control."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _openrouter(handler, model="anthropic/claude-sonnet-4.6")
+        await provider.complete(system="SCHEMA", prompt="u", max_tokens=100)
+        messages = captured["messages"]
+        assert isinstance(messages, list)
+        system_msg = messages[0]
+        assert isinstance(system_msg["content"], list)
+        block = system_msg["content"][0]
+        assert block["text"] == "SCHEMA"
+        assert block["cache_control"] == {"type": "ephemeral"}
+
+    @pytest.mark.asyncio
+    async def test_non_anthropic_model_uses_plain_system_string(self) -> None:
+        """For non-anthropic models the system content is a plain string."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _openrouter(handler, model="google/gemma-4-31b-it:free")
+        await provider.complete(system="SCHEMA", prompt="u", max_tokens=100)
+        messages = captured["messages"]
+        assert isinstance(messages, list)
+        assert messages[0]["content"] == "SCHEMA"
+
+    @pytest.mark.asyncio
+    async def test_404_is_leg_fatal_without_retry(self) -> None:
+        """An invalid/unavailable model (404) raises leg-fatal and does not retry."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(404, json={"error": "no such model"})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_401_is_leg_fatal(self) -> None:
+        """An auth failure (401) raises leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(401, json={"error": "bad key"})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
+    async def test_429_retries_then_succeeds(self) -> None:
+        """A rate-limit (429) is transient: retry then succeed."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(429, json={"error": "slow down"})
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_persistent_5xx_exhausts_to_transient_error(self) -> None:
+        """A persistent 500 exhausts retries and raises a non-leg-fatal error."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(500, json={"error": "boom"})
+
+        provider = _openrouter(handler, max_retries=3)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+        assert calls == 3
+
+    @pytest.mark.asyncio
+    async def test_connect_error_is_transient_and_retried(self) -> None:
+        """A transport error (connect/timeout) is transient and retried."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.ConnectError("refused")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_empty_content_raises_transient(self) -> None:
+        """A 200 with empty content raises a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body(""))
+
+        provider = _openrouter(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_malformed_payload_raises_transient(self) -> None:
+        """A 200 missing the choices array raises a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json={"unexpected": True})
+
+        provider = _openrouter(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    def test_name_includes_model(self) -> None:
+        """The leg name combines provider and model id."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _openrouter(handler, model="anthropic/claude-sonnet-4.6")
+        assert provider.name == "openrouter:anthropic/claude-sonnet-4.6"
+
+
+# ---------------------------------------------------------------------------
+# OllamaProvider
+# ---------------------------------------------------------------------------
+
+
+class TestOllamaProvider:
+    """Ollama adapter: success, error mapping, retry, request shape."""
+
+    @pytest.mark.asyncio
+    async def test_success_returns_content(self) -> None:
+        """A 200 response returns the message content."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_ollama_ok_body("story"))
+
+        provider = _ollama(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "story"
+
+    @pytest.mark.asyncio
+    async def test_request_maps_max_tokens_to_num_predict(self) -> None:
+        """max_tokens is forwarded as options.num_predict, stream is False."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_ollama_ok_body("x"))
+
+        provider = _ollama(handler)
+        await provider.complete(system="s", prompt="u", max_tokens=2048)
+        assert captured["options"] == {"num_predict": 2048}
+        assert captured["stream"] is False
+        assert captured["model"] == "qwen3"
+
+    @pytest.mark.asyncio
+    async def test_404_missing_model_is_leg_fatal(self) -> None:
+        """A missing/unpulled model (404) raises leg-fatal without retry."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(404, json={"error": "model not found"})
+
+        provider = _ollama(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_503_retries_then_succeeds(self) -> None:
+        """A transient 503 is retried then succeeds."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(503, json={"error": "loading"})
+            return httpx.Response(200, json=_ollama_ok_body("ok"))
+
+        provider = _ollama(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_empty_content_raises_transient(self) -> None:
+        """An empty message content raises a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_ollama_ok_body(""))
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+
+# ---------------------------------------------------------------------------
+# FallbackProvider
+# ---------------------------------------------------------------------------
+
+
+class _StubLeg:
+    """A scripted GenerationProvider leg for cascade tests."""
+
+    def __init__(self, name: str, outcomes: list[object]) -> None:
+        """Build a stub leg.
+
+        Args:
+            name: The leg name (used in cascade labels/logs).
+            outcomes: Per-call outcomes; each is a ``str`` to return or an
+                ``Exception`` to raise, consumed in order.
+        """
+        self.name = name
+        self._outcomes = outcomes
+        self.calls = 0
+
+    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        """Return or raise the next scripted outcome."""
+        _ = (system, prompt, max_tokens)
+        outcome = self._outcomes[self.calls]
+        self.calls += 1
+        if isinstance(outcome, Exception):
+            raise outcome
+        return str(outcome)
+
+
+class TestFallbackProvider:
+    """Composite cascade: failover, circuit breaker, exhaustion, propagation."""
+
+    @pytest.mark.asyncio
+    async def test_first_leg_success_skips_others(self) -> None:
+        """When the first leg succeeds, later legs are not called."""
+        leg_a = _StubLeg("a", ["ok"])
+        leg_b = _StubLeg("b", ["never"])
+        cascade = FallbackProvider(legs=[leg_a, leg_b])
+        result = await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert result == "ok"
+        assert leg_b.calls == 0
+
+    @pytest.mark.asyncio
+    async def test_transient_failover_to_next_leg(self) -> None:
+        """A leg's ProviderError fails over to the next live leg."""
+        leg_a = _StubLeg("a", [ProviderError("down", leg_fatal=False)])
+        leg_b = _StubLeg("b", ["ok"])
+        cascade = FallbackProvider(legs=[leg_a, leg_b])
+        result = await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert result == "ok"
+        assert leg_a.calls == 1
+        assert leg_b.calls == 1
+
+    @pytest.mark.asyncio
+    async def test_leg_fatal_marks_leg_dead_for_subsequent_calls(self) -> None:
+        """A leg-fatal failure marks the leg dead so it is skipped next call."""
+        leg_a = _StubLeg("a", [ProviderError("gone", leg_fatal=True), "should-not-run"])
+        leg_b = _StubLeg("b", ["first", "second"])
+        cascade = FallbackProvider(legs=[leg_a, leg_b])
+
+        first = await cascade.complete(system="s", prompt="u", max_tokens=10)
+        second = await cascade.complete(system="s", prompt="u", max_tokens=10)
+
+        assert first == "first"
+        assert second == "second"
+        # leg_a was tried exactly once (the leg-fatal call) and never again.
+        assert leg_a.calls == 1
+        assert leg_b.calls == 2
+
+    @pytest.mark.asyncio
+    async def test_all_legs_exhausted_raises_provider_error(self) -> None:
+        """When every leg fails, the cascade raises ProviderError."""
+        leg_a = _StubLeg("a", [ProviderError("a down", leg_fatal=False)])
+        leg_b = _StubLeg("b", [ProviderError("b down", leg_fatal=False)])
+        cascade = FallbackProvider(legs=[leg_a, leg_b])
+        with pytest.raises(ProviderError) as exc_info:
+            await cascade.complete(system="s", prompt="u", max_tokens=10)
+        assert "exhausted" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_non_provider_error_propagates_uncaught(self) -> None:
+        """A non-ProviderError (e.g. a PII ValidationError) is never caught."""
+        leg_a = _StubLeg("a", [ValidationError("PII", field="prompt")])
+        leg_b = _StubLeg("b", ["should-not-run"])
+        cascade = FallbackProvider(legs=[leg_a, leg_b])
+        with pytest.raises(ValidationError):
+            await cascade.complete(system="s", prompt="u", max_tokens=10)
+        # The cascade did not fail over past the raising leg.
+        assert leg_b.calls == 0
+
+    @pytest.mark.asyncio
+    async def test_attempt_cap_raises(self) -> None:
+        """The per-run attempt cap bounds total leg invocations."""
+        leg_a = _StubLeg("a", [ProviderError("x", leg_fatal=False)] * 5)
+        leg_b = _StubLeg("b", [ProviderError("y", leg_fatal=False)] * 5)
+        cascade = FallbackProvider(legs=[leg_a, leg_b], max_total_attempts=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await cascade.complete(system="s", prompt="u", max_tokens=10)
+        # Cap is 1: the first leg consumes the only allowed attempt, then the cap
+        # trips before the second leg runs.
+        assert "attempt cap" in str(exc_info.value)
+        assert leg_a.calls == 1
+        assert leg_b.calls == 0
+
+    def test_name_lists_legs_in_order(self) -> None:
+        """The cascade name lists its legs in order."""
+        cascade = FallbackProvider(legs=[_StubLeg("a", []), _StubLeg("b", [])])
+        assert cascade.name == "fallback[a,b]"
