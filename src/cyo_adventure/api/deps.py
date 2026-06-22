@@ -42,12 +42,15 @@ class Principal:
 
     Attributes:
         subject: The verified token subject (OIDC ``sub`` in production).
+        user_id: The resolved ``User.id`` for the subject, used to stamp
+            creator provenance (``created_by``) on rows this principal writes.
         role: ``"guardian"`` or ``"child"``.
         family_id: The family the principal belongs to.
         profile_ids: The child-profile ids this principal may read or write.
     """
 
     subject: str
+    user_id: uuid.UUID
     role: str
     family_id: uuid.UUID
     profile_ids: frozenset[uuid.UUID]
@@ -145,6 +148,7 @@ async def require_principal(
     profile_ids = await _resolve_profiles(session, user)
     return Principal(
         subject=subject,
+        user_id=user.id,
         role=user.role,
         family_id=user.family_id,
         profile_ids=profile_ids,

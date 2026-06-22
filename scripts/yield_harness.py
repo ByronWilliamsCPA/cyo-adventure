@@ -33,6 +33,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from pydantic import ValidationError as PydanticValidationError
+
 from cyo_adventure.core.config import Settings
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import generate_story
@@ -140,7 +142,23 @@ async def run_yield(
 
     for idx, brief in enumerate(briefs):
         provider = provider_factory()
-        outcome = await generate_story(brief, provider, pii)
+        try:
+            outcome = await generate_story(brief, provider, pii)
+        except Exception as exc:  # isolate one brief's failure (best-effort harness)
+            # A measurement harness must not let a single brief's exception
+            # abort the batch and discard every prior result. Record this brief
+            # as an error and continue so the pass rate reflects the whole
+            # sample, not the prefix before the first failure.
+            per_story.append(
+                {
+                    "index": idx,
+                    "status": "error",
+                    "attempts": 0,
+                    "failing_rule_ids": [],
+                    "error": str(exc)[:512],
+                }
+            )
+            continue
 
         if outcome.status == "passed":
             passed += 1
@@ -263,7 +281,7 @@ def _load_briefs(briefs_path: Path) -> list[ConceptBrief]:
         item: object = raw_item  # pyright: ignore[reportUnknownVariableType]
         try:
             briefs.append(ConceptBrief.model_validate(item))
-        except Exception as exc:
+        except PydanticValidationError as exc:
             print(f"Error validating brief #{i}: {exc}", file=sys.stderr)
             sys.exit(1)
 

@@ -66,7 +66,49 @@ __all__ = [
 # worker. Bump when prompt templates change in a way that affects output shape.
 _PROMPT_VERSION = "v1"
 
+# Each generation job produces a fresh Storybook, so its sole version is 1.
+# Re-running generation creates a new job and a new Storybook id, not a new
+# version under an existing id.
+_FIRST_VERSION = 1
+
+# Fallback model label for a provider that exposes no real model identifier
+# (the in-phase mock). Phase 2b providers carry their own model name.
+_MOCK_MODEL_LABEL = "mock"
+
 logger = get_logger(__name__)
+
+
+def _model_label(provider: GenerationProvider) -> str:
+    """Return the model identifier for the provider that actually ran.
+
+    The mock provider has no real model name, so it falls back to a stable
+    ``"mock"`` label rather than ``None``. Phase 2b providers may expose a
+    ``model`` attribute carrying the real model id.
+
+    Args:
+        provider: The provider used for this generation run.
+
+    Returns:
+        str: The model identifier, never ``None``.
+    """
+    return getattr(provider, "model", None) or _MOCK_MODEL_LABEL
+
+
+def _provider_label(provider: GenerationProvider) -> str:
+    """Return the provider name for the provider that actually ran.
+
+    Prefers a ``name`` attribute on the provider so an injected non-default
+    provider is recorded accurately; falls back to the configured default
+    provider name only when the provider exposes no name.
+
+    Args:
+        provider: The provider used for this generation run.
+
+    Returns:
+        str: The provider name actually used for this run.
+    """
+    return getattr(provider, "name", None) or _default_settings.generation_provider
+
 
 # #CRITICAL: concurrency: the worker owns its own session/transaction, separate
 # from any request unit-of-work. Never pass a request-scoped session into this
@@ -164,7 +206,14 @@ async def run_generation_job(
         # ------------------------------------------------------------------
         concept_row = await session.get(Concept, job_row.concept_id)
         if concept_row is None:
+            # Record the failure on the job row before raising. Without this
+            # commit the "running" flush above is discarded on session close,
+            # leaving the job visibly "queued" with no error while RQ marks it
+            # failed; the row and the queue would disagree permanently.
             msg = f"Concept {job_row.concept_id} not found"
+            job_row.status = "failed"
+            job_row.error = msg[:512]
+            await session.commit()
             raise ResourceNotFoundError(
                 msg,
                 resource_type="Concept",
@@ -197,7 +246,7 @@ async def run_generation_job(
             error_text = str(exc)[:512]
             job_row.status = "failed"
             job_row.error = error_text
-            job_row.provider = _default_settings.generation_provider
+            job_row.provider = _provider_label(effective_provider)
             job_row.prompt_version = _PROMPT_VERSION
             await session.commit()
             logger.exception(
@@ -212,15 +261,23 @@ async def run_generation_job(
         # ------------------------------------------------------------------
         job_row.status = outcome.status
         job_row.report = dict(outcome.report)
-        job_row.provider = _default_settings.generation_provider
+        job_row.provider = _provider_label(effective_provider)
         job_row.prompt_version = _PROMPT_VERSION
-        # "mock" provider has no real model identifier; Phase 2b will carry
-        # the actual model name from the provider response.
-        job_row.model = "mock" if provider is not None else None
+        # Record the model of the provider that actually ran. Deriving this from
+        # the injected-arg presence recorded None in production (where provider
+        # is None but the mock still runs); _model_label reflects the real run.
+        job_row.model = _model_label(effective_provider)
 
         if outcome.status == "passed" and outcome.storybook is not None:
+            # Mint a per-job storybook id so successive passing jobs never
+            # collide on the storybook primary key. The mock provider returns a
+            # fixed blob id ("s_mock_generated"), so reusing it would raise an
+            # IntegrityError on the second passing job. Stamp the same id back
+            # onto the stored blob so the blob's "id" matches its DB row.
+            story_id = f"s_{job_id}"
+            story_blob = {**outcome.storybook, "id": story_id}
+
             # Create Storybook then StorybookVersion (FK order: Storybook first).
-            story_id = str(outcome.storybook.get("id", f"s_{job_id}"))
             storybook_row = Storybook(
                 id=story_id,
                 family_id=concept_row.family_id,
@@ -232,8 +289,8 @@ async def run_generation_job(
 
             version_row = StorybookVersion(
                 storybook_id=story_id,
-                version=1,
-                blob=outcome.storybook,
+                version=_FIRST_VERSION,
+                blob=story_blob,
                 validation_report=dict(outcome.report),
                 model=job_row.model,
                 prompt_version=_PROMPT_VERSION,
@@ -242,7 +299,7 @@ async def run_generation_job(
             await session.flush()
 
             job_row.storybook_id = story_id
-            job_row.version = 1
+            job_row.version = _FIRST_VERSION
 
             logger.info(
                 "generation_job.passed",

@@ -24,6 +24,11 @@ __all__ = [
 # tests and callers always reference the same entrypoint string.
 _WORKER_ENTRYPOINT = "cyo_adventure.generation.worker.run_generation_job_sync"
 
+# Bound the synchronous Redis client so a slow or unreachable Redis fails fast
+# instead of hanging the caller (the enqueue runs in a request background task;
+# an unbounded connect would tie up a threadpool worker indefinitely).
+_REDIS_TIMEOUT_SECONDS = 2.0
+
 
 def get_queue(settings: Settings) -> Queue:
     """Build an RQ :class:`~rq.Queue` from the application settings.
@@ -39,9 +44,14 @@ def get_queue(settings: Settings) -> Queue:
         configured Redis instance.
     """
     # #ASSUME: external-resources: Redis must be reachable at settings.redis_url;
-    # connection failures surface lazily when the first job is enqueued.
+    # connection failures surface (within the bounded timeout) when the first
+    # job is enqueued.
     # #VERIFY: Phase 2b adds a health-check probe for Redis on worker startup.
-    conn = redis.Redis.from_url(settings.redis_url)
+    conn = redis.Redis.from_url(
+        settings.redis_url,
+        socket_connect_timeout=_REDIS_TIMEOUT_SECONDS,
+        socket_timeout=_REDIS_TIMEOUT_SECONDS,
+    )
     return Queue("generation", connection=conn)
 
 

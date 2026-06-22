@@ -29,8 +29,9 @@ worker restart or retry can process it later.
 from __future__ import annotations
 
 import logging
+import uuid
 
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context, authorize_family
@@ -42,7 +43,11 @@ from cyo_adventure.api.schemas import (
     ValidateResponse,
 )
 from cyo_adventure.core.config import settings
-from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
@@ -59,6 +64,55 @@ router = APIRouter(prefix="/api/v1", tags=["generation"])
 _log = logging.getLogger(__name__)
 
 _GUARDIAN_REQUIRED = "guardian role required for this endpoint"
+
+
+def _parse_uuid(raw: str, field: str) -> uuid.UUID:
+    """Parse a UUID path value, mapping a malformed value to a 422 error.
+
+    Mirrors ``reading.py``'s helper so a non-UUID path parameter raises a
+    client-friendly ``ValidationError`` (422) instead of leaking a driver error
+    as a 500.
+
+    Args:
+        raw: The raw path value.
+        field: The name of the path parameter, for the error payload.
+
+    Returns:
+        uuid.UUID: The parsed UUID.
+
+    Raises:
+        ValidationError: If ``raw`` is not a valid UUID (-> 422).
+    """
+    try:
+        return uuid.UUID(raw)
+    except ValueError as exc:
+        msg = f"{field} must be a UUID"
+        raise ValidationError(msg, field=field, value=raw) from exc
+
+
+def _enqueue_safely(job_id: str) -> None:
+    """Best-effort RQ enqueue, run as a background task after the commit.
+
+    Running here (a FastAPI ``BackgroundTask``) rather than inline fixes two
+    issues: it runs AFTER the request unit-of-work commits, so the worker can
+    never observe a job row that is not yet durable; and FastAPI runs a sync
+    background callable in its threadpool, keeping the blocking Redis client off
+    the event loop.
+
+    Args:
+        job_id: The UUID string of the GenerationJob row to enqueue.
+    """
+    # #ASSUME: external-resources: Redis may be unreachable; the GenerationJob
+    # row is the durable record, so a failed enqueue is logged, not raised.
+    # #VERIFY: Phase 2b adds a reclaim sweeper that re-queues rows stranded in
+    # the "queued" state by a Redis outage.
+    try:
+        enqueue_generation(job_id, settings)
+    except Exception:  # noqa: BLE001 -- best-effort enqueue; row is the source of truth
+        _log.exception(
+            "enqueue_generation failed for job %s; row committed but not queued",
+            job_id,
+        )
 
 
 @router.post("/concepts", status_code=201)
@@ -108,6 +162,9 @@ async def create_concept(
     concept = Concept(
         family_id=ctx.principal.family_id,
         brief=body.brief.model_dump(mode="json"),
+        # Stamp creator provenance: the worker later propagates this into
+        # Storybook.created_by, so an unset value loses attribution end-to-end.
+        created_by=ctx.principal.user_id,
     )
     ctx.session.add(concept)
     await ctx.session.flush()
@@ -118,16 +175,19 @@ async def create_concept(
 async def enqueue_concept_generation(
     concept_id: str,
     ctx: Context,
+    background_tasks: BackgroundTasks,
 ) -> GenerationEnqueuedResponse:
     """Enqueue a generation job for an existing concept.
 
-    Creates a ``GenerationJob`` row with status ``queued`` and attempts to
-    push the job onto the RQ queue. If Redis is unreachable the row is still
-    created and a 202 is returned (best-effort enqueue).
+    Creates a ``GenerationJob`` row with status ``queued`` and schedules a
+    best-effort RQ enqueue as a background task. If Redis is unreachable the row
+    is still created and a 202 is returned.
 
     Args:
         concept_id: The UUID string of the concept to generate from.
         ctx: The request context (principal and session).
+        background_tasks: FastAPI background-task collector; the enqueue runs
+            here so it fires after the request unit-of-work commits.
 
     Returns:
         GenerationEnqueuedResponse: The new job id and initial status.
@@ -136,6 +196,7 @@ async def enqueue_concept_generation(
         AuthorizationError: If the principal is not a guardian (-> 403) or if
             the concept belongs to another family (-> 403).
         ResourceNotFoundError: If the concept does not exist (-> 404).
+        ValidationError: If ``concept_id`` is not a valid UUID (-> 422).
     """
     # #CRITICAL: security: guardian-only (authorization-matrix.md).
     # #VERIFY: test_generation_api::test_child_token_rejected.
@@ -145,7 +206,8 @@ async def enqueue_concept_generation(
     # #CRITICAL: security: family-scoped IDOR guard -- must verify the concept
     # belongs to the principal's family before creating a job row.
     # #VERIFY: test_generation_api::test_cross_family_blocked.
-    concept = await ctx.session.get(Concept, concept_id)
+    concept_uuid = _parse_uuid(concept_id, "concept_id")
+    concept = await ctx.session.get(Concept, concept_uuid)
     if concept is None:
         msg = f"concept '{concept_id}' not found"
         raise ResourceNotFoundError(msg)
@@ -155,19 +217,12 @@ async def enqueue_concept_generation(
     ctx.session.add(job)
     await ctx.session.flush()
 
-    # Best-effort enqueue: a Redis connection error must not 500 the request
-    # because the job row is the durable record. The worker can consume it
-    # once Redis is available.
-    # #ASSUME: external-resources: Redis may be unreachable in test/dev
-    # environments; the row is the source of truth, not the queue entry.
+    # Enqueue AFTER the request commits (background task) so the worker never
+    # races the not-yet-durable row, and so the blocking Redis client stays off
+    # the event loop. Best-effort: a Redis outage logs but does not 500 the
+    # request, because the job row is the durable source of truth.
     # #VERIFY: test_generation_api::test_enqueue_returns_202_without_redis.
-    try:
-        enqueue_generation(str(job.id), settings)
-    except Exception:  # noqa: BLE001
-        _log.warning(
-            "enqueue_generation failed for job %s; row created but not queued",
-            job.id,
-        )
+    background_tasks.add_task(_enqueue_safely, str(job.id))
 
     return GenerationEnqueuedResponse(job_id=str(job.id), status=job.status)
 
@@ -190,6 +245,7 @@ async def get_generation_job(
         AuthorizationError: If the principal is not a guardian (-> 403) or if
             the job's concept belongs to another family (-> 403).
         ResourceNotFoundError: If the job or its concept does not exist (-> 404).
+        ValidationError: If ``job_id`` is not a valid UUID (-> 422).
     """
     # #CRITICAL: security: guardian-only (authorization-matrix.md).
     # #VERIFY: test_generation_api::test_child_token_rejected.
@@ -199,7 +255,8 @@ async def get_generation_job(
     # #CRITICAL: security: IDOR guard -- load the job then its concept to check
     # family ownership. A valid token for family B must not read family A's jobs.
     # #VERIFY: test_generation_api::test_cross_family_blocked.
-    job = await ctx.session.get(GenerationJob, job_id)
+    job_uuid = _parse_uuid(job_id, "job_id")
+    job = await ctx.session.get(GenerationJob, job_uuid)
     if job is None:
         msg = f"generation job '{job_id}' not found"
         raise ResourceNotFoundError(msg)

@@ -32,7 +32,11 @@ class _FakeSession:
 def _principal(role: str, profiles: frozenset[uuid.UUID]) -> Principal:
     """Build a Principal for tests."""
     return Principal(
-        subject="s", role=role, family_id=uuid.uuid4(), profile_ids=profiles
+        subject="s",
+        user_id=uuid.uuid4(),
+        role=role,
+        family_id=uuid.uuid4(),
+        profile_ids=profiles,
     )
 
 
