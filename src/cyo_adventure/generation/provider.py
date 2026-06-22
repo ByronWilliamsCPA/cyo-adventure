@@ -1,8 +1,9 @@
 """Generation provider protocol and deterministic mock test double.
 
 Defines the ``GenerationProvider`` structural protocol that all LLM backend
-adapters must satisfy, and the ``MockProvider`` test double used in unit and
-integration tests for the orchestrator.
+adapters must satisfy, the ``MockProvider`` test double used in unit and
+integration tests for the orchestrator, and ``build_provider`` which
+constructs the appropriate backend from the application settings.
 """
 
 from __future__ import annotations
@@ -14,13 +15,71 @@ from typing import TYPE_CHECKING, Protocol
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-from cyo_adventure.core.exceptions import BusinessLogicError
+    from cyo_adventure.core.config import Settings
+
+from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
 
 # #ASSUME: external-resources: concrete GenerationProvider implementations
 # perform network I/O to an LLM endpoint (timeouts, retries, authentication).
 # #VERIFY: Phase 2b wiring adds timeout/retry/backoff logic and credentials
 # management before any real provider is injected. MockProvider is pure and
 # performs no I/O; the note above applies only to future concrete adapters.
+
+# ---------------------------------------------------------------------------
+# Phase-2 canned story: the minimal valid Tier-1 Storybook used by the mock
+# provider so the full pipeline runs end-to-end deterministically in-phase.
+# Phase 2b swaps this for real LLM-generated content.
+# ---------------------------------------------------------------------------
+_CANNED_STORY: dict[str, object] = {
+    "schema_version": "1.0",
+    "id": "s_mock_generated",
+    "version": 1,
+    "title": "The Forest Path",
+    "metadata": {
+        "age_band": "8-11",
+        "reading_level": {"scheme": "flesch_kincaid", "target": 3.0, "tolerance": 1.0},
+        "tier": 1,
+        "themes": ["adventure", "friendship"],
+        "estimated_minutes": 5,
+        "ending_count": 1,
+        "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+    },
+    "variables": [],
+    "start_node": "n_start",
+    "nodes": [
+        {
+            "id": "n_start",
+            "body": (
+                "You step onto the forest path. Sunlight filters through the leaves. "
+                "A small rabbit hops across the trail ahead of you."
+            ),
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": "c_follow",
+                    "label": "Follow the rabbit.",
+                    "target": "n_happy_end",
+                }
+            ],
+        },
+        {
+            "id": "n_happy_end",
+            "body": (
+                "The rabbit leads you to a clearing filled with wildflowers. "
+                "You spend a perfect afternoon exploring together."
+            ),
+            "is_ending": True,
+            "ending": {
+                "id": "e_meadow",
+                "type": "happy",
+                "title": "The Flower Meadow",
+            },
+            "choices": [],
+        },
+    ],
+}
+
+_CANNED_STORY_JSON: str = json.dumps(_CANNED_STORY)
 
 
 class GenerationProvider(Protocol):
@@ -128,6 +187,47 @@ class MockProvider:
         if callable(response):
             return response(prompt)
         return response
+
+
+def build_provider(settings: Settings) -> GenerationProvider:
+    """Construct a :class:`GenerationProvider` from application settings.
+
+    In Phase 2 only ``"mock"`` is operational; real providers are deferred to
+    Phase 2b when network I/O, retries, authentication, and timeouts will be
+    added. Requesting any other provider raises :class:`ConfigurationError`
+    immediately so the misconfiguration surfaces at job dispatch time.
+
+    The mock provider is seeded with enough copies of the canned story JSON to
+    cover Stage A + Stage B + several repair rounds without exhausting the
+    response queue, making a single ``mock`` worker run produce a deterministic
+    ``"passed"`` outcome.
+
+    Args:
+        settings: The application settings instance.
+
+    Returns:
+        A :class:`GenerationProvider` ready for injection into the worker.
+
+    Raises:
+        ConfigurationError: If ``settings.generation_provider`` is not
+            ``"mock"`` (deferred providers raise immediately).
+    """
+    if settings.generation_provider == "mock":
+        # Queue enough copies for Stage A + Stage B + up to 3 repairs.
+        # Extra copies are safe: MockProvider raises only if the queue is
+        # exhausted before the pipeline finishes, not if there are leftovers.
+        return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    # #ASSUME: external-resources: "claude", "ollama", and "openrouter" require
+    # network I/O, credentials, retries, and timeout handling that are deferred
+    # to Phase 2b. Raising here prevents silent mis-configuration in-phase.
+    # #VERIFY: Phase 2b adds real adapters for each provider and removes this
+    # guard, replacing it with per-provider credential validation at startup.
+    msg = (
+        f"provider '{settings.generation_provider}' is deferred to Phase 2b; "
+        "set generation_provider=mock"
+    )
+    raise ConfigurationError(msg)
 
 
 def make_canned_story_response(story_dict: dict[str, object]) -> str:
