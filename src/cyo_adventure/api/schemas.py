@@ -1,4 +1,4 @@
-"""Pydantic request and response models for the reader API.
+"""Pydantic request and response models for the reader and generation APIs.
 
 These are the wire contracts the frontend client is generated from. The
 reading-state PUT body never carries a ``profile_id``: the profile is taken from
@@ -11,6 +11,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.storybook.evaluator import VarState
 
 
@@ -93,3 +94,50 @@ class CompletionView(BaseModel):
     version: int
     ending_id: str
     found_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Generation / concept schemas
+# ---------------------------------------------------------------------------
+
+
+class ConceptCreateRequest(BaseModel):
+    """Guardian request to create a concept brief.
+
+    ``extra="forbid"`` propagates ConceptBrief's strictness at the API boundary.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    brief: ConceptBrief
+
+
+class ConceptCreatedResponse(BaseModel):
+    """Response returned after a concept is persisted."""
+
+    concept_id: str
+
+
+class GenerationEnqueuedResponse(BaseModel):
+    """Response returned after a generation job is created and enqueued."""
+
+    job_id: str
+    status: str = "queued"
+
+
+class GenerationJobResponse(BaseModel):
+    """Full status payload for a generation job."""
+
+    id: str
+    status: str
+    report: dict[str, object] | None = None
+    storybook_id: str | None = None
+    version: int | None = None
+    error: str | None = None
+
+
+class ValidateResponse(BaseModel):
+    """Response returned by the re-validate endpoint."""
+
+    blocked: bool
+    report: dict[str, object]
