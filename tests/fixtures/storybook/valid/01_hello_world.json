@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "id": "s_hello_world",
+  "version": 1,
+  "title": "Hello World",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 3.0, "tolerance": 1.0},
+    "tier": 1,
+    "themes": ["adventure"],
+    "estimated_minutes": 5,
+    "ending_count": 1,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You stand at a crossroads. A friendly fox waves at you.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_wave_back", "label": "Wave back at the fox.", "target": "n_happy_end"}
+      ]
+    },
+    {
+      "id": "n_happy_end",
+      "body": "The fox becomes your friend and you skip home together.",
+      "is_ending": true,
+      "ending": {"id": "e_friends", "type": "happy", "title": "New Friends"},
+      "choices": []
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "1.0",
+  "id": "s_orphan_node",
+  "version": 1,
+  "title": "Orphan Node",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 2
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You step into the room.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_door", "label": "Open the door.", "target": "n_end_a"}
+      ]
+    },
+    {
+      "id": "n_end_a",
+      "body": "You find the exit.",
+      "is_ending": true,
+      "ending": {"id": "e_exit", "type": "happy", "title": "Freedom"},
+      "choices": []
+    },
+    {
+      "id": "n_orphan",
+      "body": "Graph defect: no choice in the reachable graph ever targets this node. It is unreachable from start_node. Schema-valid because nodes is a list of valid Node objects.",
+      "is_ending": true,
+      "ending": {"id": "e_secret", "type": "hidden", "title": "Secret Ending"},
+      "choices": []
+    }
+  ]
+}

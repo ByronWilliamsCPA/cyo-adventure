@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "id": "s_dangling_target",
+  "version": 1,
+  "title": "Dangling Target",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 1
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You stand at a crossroads.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Go left.",
+          "target": "n_does_not_exist"
+        }
+      ]
+    },
+    {
+      "id": "n_end",
+      "body": "Graph defect: n_start choice targets n_does_not_exist which is absent from nodes. Schema-valid because choice.target is just a non-empty string.",
+      "is_ending": true,
+      "ending": {"id": "e_done", "type": "happy", "title": "Arrived"},
+      "choices": []
+    }
+  ]
+}

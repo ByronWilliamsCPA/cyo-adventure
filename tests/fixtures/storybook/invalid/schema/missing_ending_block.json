@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "id": "s_missing_ending",
+  "version": 1,
+  "title": "Missing Ending Block",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 1
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "You stand at a door.",
+      "is_ending": false,
+      "choices": [{"id": "c1", "label": "Open it.", "target": "n_end"}]
+    },
+    {
+      "id": "n_end",
+      "body": "DEFECT: is_ending true but no ending block provided.",
+      "is_ending": true,
+      "choices": []
+    }
+  ]
+}

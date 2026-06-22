@@ -1,0 +1,432 @@
+{
+  "$defs": {
+    "AgeBand": {
+      "description": "The reading age band a story targets.",
+      "enum": [
+        "8-11",
+        "10-13",
+        "13-16"
+      ],
+      "title": "AgeBand",
+      "type": "string"
+    },
+    "Choice": {
+      "additionalProperties": false,
+      "description": "A reader-facing choice edge from one node to a target node.",
+      "properties": {
+        "condition": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "$ref": "#/$defs/JsonValue"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Condition"
+        },
+        "effects": {
+          "items": {
+            "$ref": "#/$defs/Effect"
+          },
+          "title": "Effects",
+          "type": "array"
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "target": {
+          "minLength": 1,
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "target"
+      ],
+      "title": "Choice",
+      "type": "object"
+    },
+    "ContentFlagLevel": {
+      "description": "The intensity level of a content sensitivity flag.",
+      "enum": [
+        "none",
+        "mild",
+        "moderate"
+      ],
+      "title": "ContentFlagLevel",
+      "type": "string"
+    },
+    "ContentFlags": {
+      "additionalProperties": false,
+      "description": "Per-story content sensitivity flags scored per age band.",
+      "properties": {
+        "peril": {
+          "$ref": "#/$defs/ContentFlagLevel",
+          "default": "none"
+        },
+        "scariness": {
+          "$ref": "#/$defs/ContentFlagLevel",
+          "default": "none"
+        },
+        "violence": {
+          "$ref": "#/$defs/ContentFlagLevel",
+          "default": "none"
+        }
+      },
+      "title": "ContentFlags",
+      "type": "object"
+    },
+    "Effect": {
+      "additionalProperties": false,
+      "description": "A state change applied on node entry or when a choice is taken.",
+      "properties": {
+        "once": {
+          "default": false,
+          "title": "Once",
+          "type": "boolean"
+        },
+        "op": {
+          "$ref": "#/$defs/EffectOp"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "var": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Var",
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "var"
+      ],
+      "title": "Effect",
+      "type": "object"
+    },
+    "EffectOp": {
+      "description": "A state mutation operation.",
+      "enum": [
+        "set",
+        "inc",
+        "dec"
+      ],
+      "title": "EffectOp",
+      "type": "string"
+    },
+    "Ending": {
+      "additionalProperties": false,
+      "description": "A terminal outcome, identified by a stable id across prose edits.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "type": {
+          "minLength": 1,
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "title"
+      ],
+      "title": "Ending",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "Node": {
+      "additionalProperties": false,
+      "description": "A passage: prose plus either choices (branch) or an ending (terminal).",
+      "properties": {
+        "body": {
+          "title": "Body",
+          "type": "string"
+        },
+        "choices": {
+          "items": {
+            "$ref": "#/$defs/Choice"
+          },
+          "title": "Choices",
+          "type": "array"
+        },
+        "ending": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ending"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "id": {
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "is_ending": {
+          "default": false,
+          "title": "Is Ending",
+          "type": "boolean"
+        },
+        "on_enter": {
+          "items": {
+            "$ref": "#/$defs/Effect"
+          },
+          "title": "On Enter",
+          "type": "array"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Tags",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "body"
+      ],
+      "title": "Node",
+      "type": "object"
+    },
+    "ReadingLevel": {
+      "additionalProperties": false,
+      "description": "Target readability for a story (advisory at validation time).",
+      "properties": {
+        "scheme": {
+          "default": "flesch_kincaid",
+          "title": "Scheme",
+          "type": "string"
+        },
+        "target": {
+          "minimum": 0.0,
+          "title": "Target",
+          "type": "number"
+        },
+        "tolerance": {
+          "default": 1.0,
+          "minimum": 0.0,
+          "title": "Tolerance",
+          "type": "number"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "title": "ReadingLevel",
+      "type": "object"
+    },
+    "StoryMetadata": {
+      "additionalProperties": false,
+      "description": "Descriptive metadata carried by every Storybook.",
+      "properties": {
+        "age_band": {
+          "$ref": "#/$defs/AgeBand"
+        },
+        "content_flags": {
+          "$ref": "#/$defs/ContentFlags"
+        },
+        "ending_count": {
+          "minimum": 1,
+          "title": "Ending Count",
+          "type": "integer"
+        },
+        "estimated_minutes": {
+          "minimum": 1,
+          "title": "Estimated Minutes",
+          "type": "integer"
+        },
+        "reading_level": {
+          "$ref": "#/$defs/ReadingLevel"
+        },
+        "themes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Themes",
+          "type": "array"
+        },
+        "tier": {
+          "maximum": 2,
+          "minimum": 1,
+          "title": "Tier",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "age_band",
+        "reading_level",
+        "tier",
+        "estimated_minutes",
+        "ending_count"
+      ],
+      "title": "StoryMetadata",
+      "type": "object"
+    },
+    "Variable": {
+      "additionalProperties": false,
+      "description": "A declared story state variable with a type-consistent initial value.",
+      "properties": {
+        "description": {
+          "default": "",
+          "title": "Description",
+          "type": "string"
+        },
+        "initial": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            }
+          ],
+          "title": "Initial"
+        },
+        "max": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max"
+        },
+        "min": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/VariableType"
+        }
+      },
+      "required": [
+        "name",
+        "type",
+        "initial"
+      ],
+      "title": "Variable",
+      "type": "object"
+    },
+    "VariableType": {
+      "description": "The type of a story state variable (v1 supports bool and int only).",
+      "enum": [
+        "bool",
+        "int"
+      ],
+      "title": "VariableType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A complete, versioned branching story graph.",
+  "properties": {
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "metadata": {
+      "$ref": "#/$defs/StoryMetadata"
+    },
+    "nodes": {
+      "items": {
+        "$ref": "#/$defs/Node"
+      },
+      "minItems": 1,
+      "title": "Nodes",
+      "type": "array"
+    },
+    "schema_version": {
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "start_node": {
+      "minLength": 1,
+      "title": "Start Node",
+      "type": "string"
+    },
+    "title": {
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    },
+    "variables": {
+      "items": {
+        "$ref": "#/$defs/Variable"
+      },
+      "title": "Variables",
+      "type": "array"
+    },
+    "version": {
+      "minimum": 1,
+      "title": "Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "id",
+    "version",
+    "title",
+    "metadata",
+    "start_node",
+    "nodes"
+  ],
+  "title": "Storybook",
+  "type": "object"
+}

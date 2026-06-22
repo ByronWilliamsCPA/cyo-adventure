@@ -1,0 +1,50 @@
+{
+  "schema_version": "1.0",
+  "id": "s_three_endings",
+  "version": 1,
+  "title": "The Three Doors",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 3.5, "tolerance": 1.0},
+    "tier": 1,
+    "themes": ["mystery", "choice"],
+    "estimated_minutes": 10,
+    "ending_count": 3,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [],
+  "start_node": "n_hall",
+  "nodes": [
+    {
+      "id": "n_hall",
+      "body": "You stand in a hallway before three doors: red, green, and blue.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_red",   "label": "Open the red door.",   "target": "n_fire"},
+        {"id": "c_green", "label": "Open the green door.", "target": "n_garden"},
+        {"id": "c_blue",  "label": "Open the blue door.",  "target": "n_ocean"}
+      ]
+    },
+    {
+      "id": "n_fire",
+      "body": "Flames leap at you. You back away just in time and find safety.",
+      "is_ending": true,
+      "ending": {"id": "e_fire_escape", "type": "bittersweet", "title": "Close Call"},
+      "choices": []
+    },
+    {
+      "id": "n_garden",
+      "body": "A sunlit garden full of flowers stretches before you. You smile.",
+      "is_ending": true,
+      "ending": {"id": "e_garden_bliss", "type": "happy", "title": "Garden of Peace"},
+      "choices": []
+    },
+    {
+      "id": "n_ocean",
+      "body": "The smell of salt air fills your lungs as you gaze at the sea.",
+      "is_ending": true,
+      "ending": {"id": "e_ocean_wonder", "type": "wonder", "title": "Ocean Horizon"},
+      "choices": []
+    }
+  ]
+}

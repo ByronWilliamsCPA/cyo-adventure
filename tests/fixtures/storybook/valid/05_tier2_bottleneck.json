@@ -1,0 +1,145 @@
+{
+  "schema_version": "1.0",
+  "id": "s_bottleneck",
+  "version": 1,
+  "title": "The Silver Bottleneck",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 7.0, "tolerance": 2.0},
+    "tier": 2,
+    "themes": ["mystery", "trust", "identity"],
+    "estimated_minutes": 25,
+    "ending_count": 3,
+    "content_flags": {"violence": "none", "scariness": "mild", "peril": "mild"}
+  },
+  "variables": [
+    {
+      "name": "has_key",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the player holds the silver key"
+    },
+    {
+      "name": "trust",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 10,
+      "description": "The keeper's trust level in the player"
+    }
+  ],
+  "start_node": "n_arrive",
+  "nodes": [
+    {
+      "id": "n_arrive",
+      "body": "You arrive at the silver tower. A keeper watches you from the doorway.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_greet_keeper",
+          "label": "Greet the keeper with a bow.",
+          "target": "n_keeper_hall",
+          "effects": [{"op": "inc", "var": "trust", "value": 2}]
+        },
+        {
+          "id": "c_sneak_in",
+          "label": "Try to slip past without being noticed.",
+          "target": "n_caught"
+        }
+      ]
+    },
+    {
+      "id": "n_caught",
+      "body": "The keeper steps into your path. You were not subtle.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_apologise",
+          "label": "Apologise honestly.",
+          "target": "n_keeper_hall",
+          "effects": [{"op": "inc", "var": "trust", "value": 1}]
+        }
+      ]
+    },
+    {
+      "id": "n_keeper_hall",
+      "body": "The keeper leads you into the hall. A silver key hangs on the far wall.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ask_key",
+          "label": "Ask if you may take the key.",
+          "target": "n_key_offered",
+          "condition": {">=": [{"var": "trust"}, 2]}
+        },
+        {
+          "id": "c_admire_hall",
+          "label": "Admire the hall and say nothing about the key.",
+          "target": "n_bottleneck"
+        }
+      ]
+    },
+    {
+      "id": "n_key_offered",
+      "body": "The keeper smiles and hands you the key freely.",
+      "is_ending": false,
+      "on_enter": [{"op": "set", "var": "has_key", "value": true}],
+      "choices": [
+        {
+          "id": "c_go_vault",
+          "label": "Go to the vault.",
+          "target": "n_bottleneck"
+        }
+      ]
+    },
+    {
+      "id": "n_bottleneck",
+      "body": "You reach the vault door. Three paths diverge before you.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_silver_door",
+          "label": "Use the silver key on the sealed door.",
+          "target": "n_treasure_vault",
+          "condition": {
+            "and": [
+              {"==": [{"var": "has_key"}, true]},
+              {">=": [{"var": "trust"}, 2]}
+            ]
+          }
+        },
+        {
+          "id": "c_left_passage",
+          "label": "Take the left passage.",
+          "target": "n_riddle_end"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Retreat from the vault entirely.",
+          "target": "n_retreat_end"
+        }
+      ]
+    },
+    {
+      "id": "n_treasure_vault",
+      "body": "The vault holds a lifetime of knowledge. You are changed forever.",
+      "is_ending": true,
+      "ending": {"id": "e_vault_opened", "type": "triumph", "title": "The Vault of Knowledge"},
+      "choices": []
+    },
+    {
+      "id": "n_riddle_end",
+      "body": "The left passage ends at a riddle carved in stone. You answer it correctly and walk free.",
+      "is_ending": true,
+      "ending": {"id": "e_riddle_solved", "type": "clever", "title": "The Riddler's Reward"},
+      "choices": []
+    },
+    {
+      "id": "n_retreat_end",
+      "body": "You leave the tower and the silver key behind. Some doors are not yours to open.",
+      "is_ending": true,
+      "ending": {"id": "e_graceful_exit", "type": "peaceful", "title": "Graceful Departure"},
+      "choices": []
+    }
+  ]
+}

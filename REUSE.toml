@@ -22,6 +22,7 @@ path = [
     ".claude/**/*.py",  # Claude skill helper scripts
     "*.py",
     "noxfile.py",
+    "schema/**",  # JSON Schema generated from the MIT-licensed Pydantic models
 ]
 SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "2025 Byron Williams"
