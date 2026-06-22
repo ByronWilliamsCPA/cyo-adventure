@@ -53,8 +53,10 @@ class OpenRouterProvider:
         model: OpenRouter model id (e.g. ``"anthropic/claude-sonnet-4.6"``).
         base_url: OpenRouter API base url (no trailing slash needed).
         timeout_seconds: Per-attempt wall-clock timeout for one HTTP call.
-        effort: Reasoning effort forwarded as OpenRouter's ``reasoning.effort``
-            (ignored by models that lack reasoning support).
+        effort: Reasoning effort. ``"off"`` omits the ``reasoning`` param entirely
+            (correct for structured-JSON generation); any other value is
+            forwarded as OpenRouter's ``reasoning.effort`` to opt the model into
+            extended thinking.
         max_retries: Number of attempts for transient failures (default 3).
         backoff_base_seconds: Base for exponential backoff between transient
             retries; attempt *n* waits ``backoff_base_seconds * 2**n`` seconds.
@@ -145,8 +147,13 @@ class OpenRouterProvider:
             "model": self._model,
             "messages": self._build_messages(system, prompt),
             "max_tokens": max_tokens,
-            "reasoning": {"effort": self._effort},
         }
+        # Only request reasoning when explicitly opted in. Story generation is
+        # structured-JSON output; enabling reasoning on Claude spends the whole
+        # max_tokens budget on thinking tokens and returns empty content
+        # (finish_reason=length). "off" therefore omits the param entirely.
+        if self._effort != "off":
+            body["reasoning"] = {"effort": self._effort}
         headers = {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",

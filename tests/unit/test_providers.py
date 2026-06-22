@@ -54,6 +54,7 @@ def _openrouter(
     *,
     model: str = "anthropic/claude-sonnet-4.6",
     max_retries: int = 3,
+    effort: str = "off",
 ) -> OpenRouterProvider:
     """Build an OpenRouterProvider wired to a mock client with no backoff sleep."""
     return OpenRouterProvider(
@@ -61,7 +62,7 @@ def _openrouter(
         model=model,
         base_url="https://openrouter.ai/api/v1",
         timeout_seconds=30,
-        effort="low",
+        effort=effort,
         max_retries=max_retries,
         backoff_base_seconds=0,
         client=_client(handler),
@@ -106,8 +107,8 @@ class TestOpenRouterProvider:
         assert result == raw
 
     @pytest.mark.asyncio
-    async def test_request_sends_model_reasoning_and_max_tokens(self) -> None:
-        """The request body carries model, reasoning.effort, and max_tokens."""
+    async def test_request_sends_model_and_max_tokens(self) -> None:
+        """The request body carries model and max_tokens."""
         captured: dict[str, object] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
@@ -118,7 +119,36 @@ class TestOpenRouterProvider:
         await provider.complete(system="s", prompt="u", max_tokens=4096)
         assert captured["model"] == "anthropic/claude-sonnet-4.6"
         assert captured["max_tokens"] == 4096
-        assert captured["reasoning"] == {"effort": "low"}
+
+    @pytest.mark.asyncio
+    async def test_effort_off_omits_reasoning_param(self) -> None:
+        """With effort='off' (the default) no reasoning param is sent.
+
+        Story generation is structured-JSON; enabling reasoning on Claude burns
+        the max_tokens budget on thinking and returns empty content.
+        """
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _openrouter(handler, effort="off")
+        await provider.complete(system="s", prompt="u", max_tokens=4096)
+        assert "reasoning" not in captured
+
+    @pytest.mark.asyncio
+    async def test_explicit_effort_sends_reasoning_param(self) -> None:
+        """A non-off effort is forwarded as reasoning.effort (opt-in)."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _openrouter(handler, effort="high")
+        await provider.complete(system="s", prompt="u", max_tokens=4096)
+        assert captured["reasoning"] == {"effort": "high"}
 
     @pytest.mark.asyncio
     async def test_anthropic_model_marks_system_block_cacheable(self) -> None:

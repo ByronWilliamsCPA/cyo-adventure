@@ -117,6 +117,44 @@ def _extract_failing_rule_ids(report: dict[str, object]) -> list[str]:
     return sorted(set(rule_ids))
 
 
+def _error_entry(idx: int, exc: Exception, started: float) -> dict[str, object]:
+    """Build a per-story entry for a brief whose generation raised.
+
+    Args:
+        idx: The 0-based brief index.
+        exc: The exception raised by :func:`generate_story`.
+        started: ``time.monotonic()`` captured before the attempt.
+
+    Returns:
+        A per-story entry with ``status="error"`` and the truncated message.
+    """
+    return {
+        "index": idx,
+        "status": "error",
+        "attempts": 0,
+        "failing_rule_ids": [],
+        "latency_s": round(time.monotonic() - started, 2),
+        "error": str(exc)[:512],
+    }
+
+
+def _print_progress(entry: dict[str, object], idx: int, total: int) -> None:
+    """Print a one-line per-brief progress message to stderr.
+
+    Args:
+        entry: The per-story result entry just recorded.
+        idx: The 0-based brief index.
+        total: The total number of briefs in the run.
+    """
+    print(
+        f"[{idx + 1}/{total}] status={entry['status']} "
+        f"attempts={entry['attempts']} latency={entry['latency_s']}s "
+        f"rules={entry['failing_rule_ids']}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 async def run_yield(
     briefs: list[ConceptBrief],
     provider_factory: Callable[[], GenerationProvider],
@@ -124,6 +162,7 @@ async def run_yield(
     *,
     threshold: float = 0.60,
     delay_between: float = 0.0,
+    verbose: bool = False,
 ) -> YieldReport:
     """Run the generation pipeline for each brief and return a yield summary.
 
@@ -147,6 +186,8 @@ async def run_yield(
         delay_between: Seconds to sleep after each brief. Use a small value for
             live free-tier runs to stay under per-minute request limits; the
             default ``0.0`` is correct for mock runs.
+        verbose: When ``True``, print a one-line progress message per brief to
+            stderr (so a long live run is monitorable from its log).
 
     Returns:
         A :class:`YieldReport` with aggregate and per-story results. Each
@@ -164,36 +205,22 @@ async def run_yield(
         except Exception as exc:  # isolate one brief's failure (best-effort harness)
             # A measurement harness must not let a single brief's exception
             # abort the batch and discard every prior result. Record this brief
-            # as an error and continue so the pass rate reflects the whole
-            # sample, not the prefix before the first failure.
-            per_story.append(
-                {
-                    "index": idx,
-                    "status": "error",
-                    "attempts": 0,
-                    "failing_rule_ids": [],
-                    "latency_s": round(time.monotonic() - started, 2),
-                    "error": str(exc)[:512],
-                }
-            )
-            if delay_between > 0:
-                await asyncio.sleep(delay_between)
-            continue
-
-        if outcome.status == "passed":
-            passed += 1
-
-        failing_rule_ids = _extract_failing_rule_ids(outcome.report)
-
-        per_story.append(
-            {
+            # as an error so the pass rate reflects the whole sample, not the
+            # prefix before the first failure.
+            entry = _error_entry(idx, exc, started)
+        else:
+            if outcome.status == "passed":
+                passed += 1
+            entry = {
                 "index": idx,
                 "status": outcome.status,
                 "attempts": outcome.attempts,
-                "failing_rule_ids": failing_rule_ids,
+                "failing_rule_ids": _extract_failing_rule_ids(outcome.report),
                 "latency_s": round(time.monotonic() - started, 2),
             }
-        )
+        per_story.append(entry)
+        if verbose:
+            _print_progress(entry, idx, total)
         if delay_between > 0:
             await asyncio.sleep(delay_between)
 
@@ -521,7 +548,14 @@ def main() -> None:
 
     pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
     report = asyncio.run(
-        run_yield(briefs, factory, pii, threshold=threshold_val, delay_between=throttle)
+        run_yield(
+            briefs,
+            factory,
+            pii,
+            threshold=threshold_val,
+            delay_between=throttle,
+            verbose=True,
+        )
     )
     _print_summary(report, threshold_val)
 

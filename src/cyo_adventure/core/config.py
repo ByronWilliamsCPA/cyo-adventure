@@ -83,11 +83,14 @@ class Settings(BaseSettings):
     # billed Anthropic API account is ever used directly (for Opus 4.8 / prompt
     # caching without the OpenRouter markup).
     #
-    # Reasoning effort for live generation, forwarded to OpenRouter's `reasoning`
-    # param (ignored by models that lack it). Generation is structured-JSON, not
-    # deep reasoning, so default low to avoid billing thinking tokens at the
-    # output rate; raise only if yield measurement shows it helps.
-    llm_effort: Literal["low", "medium", "high"] = "low"
+    # Reasoning effort for live generation. "off" (default) sends NO `reasoning`
+    # param: story generation is structured-JSON output, and a live smoke showed
+    # that enabling reasoning on Claude (even "low") spends the whole max_tokens
+    # budget on thinking tokens and returns finish_reason=length with empty
+    # content. Set to low/medium/high only to deliberately opt a model into
+    # extended thinking; the adapter forwards it as OpenRouter's `reasoning.effort`
+    # (ignored by models that lack it).
+    llm_effort: Literal["off", "low", "medium", "high"] = "off"
 
     # Per-call wall-clock timeout for a single live provider completion. Generation
     # responses are large (a full story is thousands of tokens), so the default is
