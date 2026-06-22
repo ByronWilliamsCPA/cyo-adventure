@@ -268,9 +268,13 @@ No app code until this gate passes.
 
 ### Phase 1: Schema, Runtime, and Reader MVP (3-5 weeks)
 
-**Branch**: `feat/phase-1-schema-reader`
+**Branch**: `feat/phase-1-schema-reader-v2`
 **Milestone**: M1 - Reader plays hand-authored stories offline
-**Status**: Planned
+**Status**: Implemented (PR pending review). Condition evaluator (Python + TS,
+shared conformance), Layer-1 validator, deterministic player (Python + TS,
+cross-impl trace conformance), reader API (reading-state with 409 reconciliation,
+IDOR-tested), PWA reader (XState, IndexedDB, offline sync, conflict UX), Playwright
+E2E, and two hand-authored stories are complete and green.
 
 **Objective**: Prove the format and the player with human-written stories before any LLM is
 involved. This phase has no external network egress. See [ADR-001](./adr/adr-001-story-format-json-storybook.md)

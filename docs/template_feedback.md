@@ -284,3 +284,44 @@ set `strict: true` in config), and ship a nav that covers every generated page, 
 set `validation.nav.omitted_files` so intentional orphans do not fail strict builds.
 
 **Affected Files**: `mkdocs.yml`, `.github/workflows/docs.yml`
+
+### Frontend `App.tsx` ships unrendered cookiecutter placeholders
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-06-21
+
+**Issue**: The generated `frontend/src/App.tsx` contains literal
+`{{ cookiecutter.project_name }}` and `{{ cookiecutter.project_short_description }}`
+strings rendered into the JSX, so a fresh frontend shows raw template tags.
+
+**Context**: Discovered while replacing the demo App with the Phase 1 reader.
+
+**Suggested Fix**: Render the cookiecutter variables in `App.tsx` at generation
+time (or use the project name/description values), the same way other generated
+files are templated.
+
+**Affected Files**: `frontend/src/App.tsx`
+
+### Generated API client is gitignored but CI never regenerates it
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-06-21
+
+**Issue**: `frontend/.gitignore` ignores `src/client/` (the hey-api generated
+client) and the CLAUDE.md architecture treats it as the source of truth for API
+types, but the frontend CI job runs `typecheck`/`build` without a step that
+regenerates the client. Any app code importing `src/client` would fail CI on a
+fresh checkout because the directory does not exist and no backend is running to
+generate it.
+
+**Context**: Discovered in Phase 1 when wiring the reader to the backend; worked
+around by adding a small hand-written axios adapter instead of importing the
+generated client.
+
+**Suggested Fix**: Either commit the generated client, or add a CI step that
+starts the backend and runs `npm run generate-client` before typecheck/build, and
+document which approach the template intends.
+
+**Affected Files**: `frontend/.gitignore`, `.github/workflows/ci.yml`, `CLAUDE.md`
