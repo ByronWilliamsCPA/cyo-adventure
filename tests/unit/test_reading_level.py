@@ -142,7 +142,8 @@ class TestReadingLevelAboveBand:
     def test_warning_finding_present(self) -> None:
         """A complex body against a low target band produces an RL-13 WARNING."""
         # Use a very low target (grade 2) with tight tolerance; the hard body
-        # should score well above grade 3 on any textstat version.
+        # (many polysyllabic words) scores well above grade 3 under the
+        # dependency-free Flesch-Kincaid implementation.
         story = _make_story(_HARD_BODY, target=2.0, tolerance=1.0)
         report = check_reading_level(story)
         rl13_findings = [f for f in report.findings if f.rule_id == "RL-13"]
@@ -233,12 +234,16 @@ class TestReadingLevelFromFixture:
 
     def test_fixture_report_ok(self) -> None:
         """hello_world fixture: report.ok is always True regardless of FK score."""
-        story = Storybook.model_validate(json.loads(_VALID_FIXTURE.read_text()))
+        story = Storybook.model_validate(
+            json.loads(_VALID_FIXTURE.read_text(encoding="utf-8"))
+        )
         report = check_reading_level(story)
         assert report.ok is True
 
     def test_fixture_no_error_findings(self) -> None:
         """hello_world fixture: no ERROR findings exist in the report."""
-        story = Storybook.model_validate(json.loads(_VALID_FIXTURE.read_text()))
+        story = Storybook.model_validate(
+            json.loads(_VALID_FIXTURE.read_text(encoding="utf-8"))
+        )
         report = check_reading_level(story)
         assert report.errors == []
