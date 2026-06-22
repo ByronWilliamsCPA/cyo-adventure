@@ -1,0 +1,128 @@
+{
+  "schema_version": "1.0",
+  "id": "s_starfall",
+  "version": 1,
+  "title": "Starfall Observatory",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.5, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["science", "discovery", "wonder"],
+    "estimated_minutes": 20,
+    "ending_count": 3,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "star_charts",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 3,
+      "description": "Number of star charts collected"
+    },
+    {
+      "name": "telescope_fixed",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the broken telescope has been repaired"
+    }
+  ],
+  "start_node": "n_entrance",
+  "nodes": [
+    {
+      "id": "n_entrance",
+      "body": "The hilltop observatory is dark and dusty. A broken telescope points at the cloudy sky.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_library",
+          "label": "Search the library for star charts.",
+          "target": "n_library"
+        },
+        {
+          "id": "c_workshop",
+          "label": "Look for tools in the workshop.",
+          "target": "n_workshop"
+        }
+      ]
+    },
+    {
+      "id": "n_library",
+      "body": "Dusty shelves hold rolled charts and notebooks filled with observations.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_charts",
+          "label": "Collect the star charts.",
+          "target": "n_dome",
+          "effects": [{"op": "inc", "var": "star_charts", "value": 2}]
+        },
+        {
+          "id": "c_read_logs",
+          "label": "Read the observation logs.",
+          "target": "n_dome",
+          "effects": [{"op": "inc", "var": "star_charts", "value": 1}]
+        }
+      ]
+    },
+    {
+      "id": "n_workshop",
+      "body": "A bench holds spare lenses and a set of fine brass tools.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_fix_telescope",
+          "label": "Use the tools to repair the telescope.",
+          "target": "n_dome",
+          "effects": [{"op": "set", "var": "telescope_fixed", "value": true}]
+        }
+      ]
+    },
+    {
+      "id": "n_dome",
+      "body": "The great dome opens to a clearing sky. What will you attempt tonight?",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_map_stars",
+          "label": "Use the charts to map a new constellation.",
+          "target": "n_discovery_end",
+          "condition": {">=": [{"var": "star_charts"}, 2]}
+        },
+        {
+          "id": "c_observe_comet",
+          "label": "Track the comet through the repaired telescope.",
+          "target": "n_comet_end",
+          "condition": {"==": [{"var": "telescope_fixed"}, true]}
+        },
+        {
+          "id": "c_just_watch",
+          "label": "Sit quietly under the open dome and watch the sky.",
+          "target": "n_peace_end"
+        }
+      ]
+    },
+    {
+      "id": "n_discovery_end",
+      "body": "Your charts reveal a pattern no one has named. You write it down and feel the universe grow slightly smaller.",
+      "is_ending": true,
+      "ending": {"id": "e_new_constellation", "type": "clever", "title": "A New Name in the Sky"},
+      "choices": []
+    },
+    {
+      "id": "n_comet_end",
+      "body": "The comet blazes across your lens. You record its path and the observatory lights up with life again.",
+      "is_ending": true,
+      "ending": {"id": "e_comet_tracked", "type": "triumph", "title": "The Comet's Path"},
+      "choices": []
+    },
+    {
+      "id": "n_peace_end",
+      "body": "Stars wheel overhead as the clouds part. Some evenings need no discovery, only stillness.",
+      "is_ending": true,
+      "ending": {"id": "e_quiet_night", "type": "peaceful", "title": "A Night of Stars"},
+      "choices": []
+    }
+  ]
+}

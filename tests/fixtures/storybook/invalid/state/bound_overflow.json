@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "id": "s_bound_overflow",
+  "version": 1,
+  "title": "The Overflow Chamber",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["challenge"],
+    "estimated_minutes": 10,
+    "ending_count": 1,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "courage",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 2,
+      "description": "Player courage, bounded 0..2"
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "A lever on the wall promises to fill you with courage beyond measure.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pull_lever",
+          "label": "Pull the lever.",
+          "target": "n_end",
+          "effects": [{"op": "set", "var": "courage", "value": 5}]
+        }
+      ]
+    },
+    {
+      "id": "n_end",
+      "body": "You feel unstoppable as you stride through the final door.",
+      "is_ending": true,
+      "ending": {"id": "e_overflow", "type": "triumph", "title": "Beyond the Limit"},
+      "choices": []
+    }
+  ]
+}

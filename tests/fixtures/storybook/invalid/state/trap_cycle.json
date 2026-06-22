@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "id": "s_trap_cycle",
+  "version": 1,
+  "title": "The Trap Cycle",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["mystery"],
+    "estimated_minutes": 10,
+    "ending_count": 1,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "escaped",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the player has found the escape route"
+    }
+  ],
+  "start_node": "n_entry",
+  "nodes": [
+    {
+      "id": "n_entry",
+      "body": "You descend into a maze of twisting corridors that loop back on themselves.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter_maze",
+          "label": "Step into the first corridor.",
+          "target": "n_loop_a"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_a",
+      "body": "Corridor A circles back to Corridor B. A hatch is visible but sealed from the outside.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_exit_hatch",
+          "label": "Push open the escape hatch.",
+          "target": "n_outside",
+          "condition": {"==": [{"var": "escaped"}, true]}
+        },
+        {
+          "id": "c_to_loop_b",
+          "label": "Continue to Corridor B.",
+          "target": "n_loop_b"
+        }
+      ]
+    },
+    {
+      "id": "n_loop_b",
+      "body": "Corridor B bends back toward Corridor A. The hatch is still sealed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_loop_a",
+          "label": "Return to Corridor A.",
+          "target": "n_loop_a"
+        }
+      ]
+    },
+    {
+      "id": "n_outside",
+      "body": "You burst into daylight, free at last.",
+      "is_ending": true,
+      "ending": {"id": "e_escape", "type": "triumph", "title": "Escaped"},
+      "choices": []
+    }
+  ]
+}

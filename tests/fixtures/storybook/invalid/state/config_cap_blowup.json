@@ -1,0 +1,125 @@
+{
+  "schema_version": "1.0",
+  "id": "s_config_cap_blowup",
+  "version": 1,
+  "title": "The Four Keys",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "tier": 2,
+    "themes": ["exploration"],
+    "estimated_minutes": 15,
+    "ending_count": 1,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [
+    {
+      "name": "key_a",
+      "type": "bool",
+      "initial": false,
+      "description": "First key"
+    },
+    {
+      "name": "key_b",
+      "type": "bool",
+      "initial": false,
+      "description": "Second key"
+    },
+    {
+      "name": "key_c",
+      "type": "bool",
+      "initial": false,
+      "description": "Third key"
+    },
+    {
+      "name": "key_d",
+      "type": "bool",
+      "initial": false,
+      "description": "Fourth key"
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "A chamber holds four pedestals, each bearing a different key.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_a",
+          "label": "Pick up the iron key.",
+          "target": "n_mid",
+          "effects": [{"op": "set", "var": "key_a", "value": true}]
+        },
+        {
+          "id": "c_take_b",
+          "label": "Pick up the brass key.",
+          "target": "n_mid",
+          "effects": [{"op": "set", "var": "key_b", "value": true}]
+        },
+        {
+          "id": "c_take_c",
+          "label": "Pick up the copper key.",
+          "target": "n_mid",
+          "effects": [{"op": "set", "var": "key_c", "value": true}]
+        },
+        {
+          "id": "c_take_d",
+          "label": "Pick up the silver key.",
+          "target": "n_mid",
+          "effects": [{"op": "set", "var": "key_d", "value": true}]
+        }
+      ]
+    },
+    {
+      "id": "n_mid",
+      "body": "A second chamber. You may collect more keys or proceed.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_grab_a2",
+          "label": "Also take the iron key.",
+          "target": "n_door",
+          "effects": [{"op": "set", "var": "key_a", "value": true}]
+        },
+        {
+          "id": "c_grab_b2",
+          "label": "Also take the brass key.",
+          "target": "n_door",
+          "effects": [{"op": "set", "var": "key_b", "value": true}]
+        },
+        {
+          "id": "c_grab_c2",
+          "label": "Also take the copper key.",
+          "target": "n_door",
+          "effects": [{"op": "set", "var": "key_c", "value": true}]
+        },
+        {
+          "id": "c_grab_d2",
+          "label": "Also take the silver key.",
+          "target": "n_door",
+          "effects": [{"op": "set", "var": "key_d", "value": true}]
+        }
+      ]
+    },
+    {
+      "id": "n_door",
+      "body": "The great door awaits. One key will open it.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open_door",
+          "label": "Try whichever key you have.",
+          "target": "n_end"
+        }
+      ]
+    },
+    {
+      "id": "n_end",
+      "body": "The door swings open into brilliant light.",
+      "is_ending": true,
+      "ending": {"id": "e_open", "type": "triumph", "title": "The Door Opens"},
+      "choices": []
+    }
+  ]
+}
