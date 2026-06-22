@@ -17,9 +17,10 @@ generation prompts as story content, and it does not identify a real child.
 
 Matching strategy
 -----------------
-Name matching uses word-boundary anchors (``\b``) so that a name token such as
-"Mia" does not match inside a longer word like "amiable". Matching is
-case-insensitive.
+Name matching uses negative-lookaround anchors so that a name token such as
+"Mia" does not match inside a longer word like "amiable", while also handling
+names whose edge characters are non-word characters (e.g. "J.R." ends with a
+period, which ``\b`` cannot anchor against). Matching is case-insensitive.
 
 Birthdate matching uses plain substring matching. Date strings are distinctive
 enough (e.g. "2018-04-07" or "April 7, 2018") that a false positive inside a
@@ -73,24 +74,36 @@ class PiiContext:
 
 
 def _compile_name_pattern(name: str) -> re.Pattern[str]:
-    """Return a word-boundary regex for ``name``.
+    r"""Return a lookaround-anchored regex for ``name``.
+
+    Uses ``(?<!\w)`` and ``(?!\w)`` instead of ``\b`` so that names ending or
+    starting with a non-word character (e.g. "J.R." has a trailing period) are
+    still matched. ``\b`` only fires at a word/non-word transition, which means
+    it cannot anchor against the period at the end of "J.R." -- a PII value
+    that would otherwise slip through the guard. Lookaround anchors assert only
+    that the character immediately outside the match is NOT a word character (or
+    is the start/end of the string), which works regardless of the name's own
+    edge characters.
 
     Args:
         name: The child's display name to screen for.
 
     Returns:
-        A compiled pattern that matches ``name`` as a standalone word token,
-        case-insensitively.
+        A compiled pattern that matches ``name`` as a standalone token,
+        case-insensitively, even when the name contains non-word edge characters.
     """
-    return re.compile(r"\b" + re.escape(name) + r"\b", re.IGNORECASE)
+    # (?<!\w) -- no word character immediately before the match
+    # (?!\w)  -- no word character immediately after the match
+    # re.escape ensures metacharacters in the name are treated as literals.
+    return re.compile(r"(?<!\w)" + re.escape(name) + r"(?!\w)", re.IGNORECASE)
 
 
 def assert_prompt_pii_safe(prompt: str, *, forbidden: PiiContext) -> None:
     """Raise ValidationError if the prompt contains any forbidden real-child token.
 
-    Checks each name in ``forbidden.child_names`` using word-boundary matching
-    (case-insensitive), and each entry in ``forbidden.birthdates`` using
-    substring matching.
+    Checks each name in ``forbidden.child_names`` using lookaround-anchored
+    matching (case-insensitive), and each entry in ``forbidden.birthdates``
+    using substring matching.
 
     Empty ``child_names`` and ``birthdates`` are no-ops; no exception is raised.
 
@@ -116,7 +129,7 @@ def assert_prompt_pii_safe(prompt: str, *, forbidden: PiiContext) -> None:
         >>> assert_prompt_pii_safe("Write a story about Emma.", forbidden=ctx)
         ValidationError: ...
     """
-    # Screen name tokens with word-boundary matching.
+    # Screen name tokens with lookaround-anchored matching.
     for name in forbidden.child_names:
         if not name:
             continue

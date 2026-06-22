@@ -231,3 +231,64 @@ def test_real_child_name_in_prompt_raises_even_when_protagonist_present() -> Non
     )
     with pytest.raises(ValidationError):
         assert_prompt_pii_safe(prompt, forbidden=ctx)
+
+
+# ---------------------------------------------------------------------------
+# Adversarial / robustness tests (lookaround anchor correctness)
+# ---------------------------------------------------------------------------
+
+
+def test_name_with_regex_metacharacters_matches_literally() -> None:
+    """A child name containing regex metacharacters is matched as a literal string.
+
+    re.escape ensures '.' is not treated as a wildcard, so 'A.B' only matches
+    the literal sequence A-period-B, not 'AxB' or 'AyB'.
+    """
+    # "A.B" -- the period is a regex metacharacter (matches any char) without
+    # re.escape.  With re.escape it becomes a literal period match.
+    ctx = make_ctx(names=frozenset({"A.B"}))
+
+    # Literal match: 'A.B' present in prompt -> must raise.
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe("Hello A.B today", forbidden=ctx)
+
+    # Dot-as-wildcard would match 'AxB', but re.escape prevents that.
+    assert_prompt_pii_safe("Hello AxB today", forbidden=ctx)
+
+    # Additional metacharacter: '+' in name must be literal.
+    ctx2 = make_ctx(names=frozenset({"C+C"}))
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe("Music by C+C Factory.", forbidden=ctx2)
+    # 'CxC' should not trigger the 'C+C' guard.
+    assert_prompt_pii_safe("Music by CxC Factory.", forbidden=ctx2)
+
+
+def test_name_with_trailing_nonword_char_matches() -> None:
+    """A child name whose trailing character is non-word (e.g. 'J.R.') is matched.
+
+    This is the regression case: the old r'\\b...\\b' anchors could not fire
+    after the trailing '.' in 'J.R.', so 'Ask J.R. about it' would slip through.
+    The lookaround anchors fix this because they only require that no WORD
+    character appears immediately outside the match, regardless of whether the
+    name's own edge character is a word character.
+    """
+    ctx = make_ctx(names=frozenset({"J.R."}))
+
+    # 'J.R.' appears as a standalone token surrounded by spaces/sentence end.
+    with pytest.raises(ValidationError):
+        assert_prompt_pii_safe("Ask J.R. about it", forbidden=ctx)
+
+    # Verify the non-match case: 'JR' (no dots) should not trigger 'J.R.' guard.
+    assert_prompt_pii_safe("Ask JR about it", forbidden=ctx)
+
+
+def test_name_as_substring_still_not_matched_after_lookaround_fix() -> None:
+    """Confirm the substring false-positive rejection still holds after the fix.
+
+    'Mia' inside 'amiable': the 'a' immediately before 'mia' is a word char,
+    so (?<!\\w) fails and the guard correctly does not fire.  This is the same
+    property that \\b provided, now verified against the lookaround implementation.
+    """
+    ctx = make_ctx(names=frozenset({"Mia"}))
+    # 'amiable' contains 'mia' (case-insensitive) but preceded by 'a' (word char).
+    assert_prompt_pii_safe("The character was amiable and brave.", forbidden=ctx)
