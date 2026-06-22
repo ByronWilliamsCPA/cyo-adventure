@@ -103,9 +103,8 @@ def validate_layer2(story: Storybook, *, cap: int = 100_000) -> ValidationReport
         engine=StoryEngine(story),
     )
 
-    _check_dead_ends(ctx, report)
-    dead_end_nodes = {f.node_id for f in report.findings if f.rule_id == "L2-9"}
-    _check_loop_escape(ctx, dead_end_nodes, report)
+    dead_end_keys = _check_dead_ends(ctx, report)
+    _check_loop_escape(ctx, dead_end_keys, report)
     _check_dead_branches(ctx, story.nodes, report)
 
     return report
@@ -238,22 +237,36 @@ def _configs_as_reading_states(
     return list(ctx.result.configs.items())
 
 
-def _check_dead_ends(ctx: _WalkContext, report: ValidationReport) -> None:
+def _check_dead_ends(ctx: _WalkContext, report: ValidationReport) -> set[ConfigKey]:
     """L2-9: flag every reachable non-ending config with zero visible choices.
 
     Args:
         ctx: The walk context (story id, result, engine).
         report: The report to append findings to.
+
+    Returns:
+        set[ConfigKey]: The exact configuration keys that triggered an L2-9
+            finding. L2-10 uses this to suppress duplicate reports for the
+            same configuration (not the same node), so a non-dead-end config
+            sharing a node id with a dead-end config is still checked.
     """
+    dead_end_keys: set[ConfigKey] = set()
     for key, rs in _configs_as_reading_states(ctx):
         if ctx.engine.is_ending(rs):
             continue
+        # #ASSUME: data integrity: edges[key] is an empty list (not absent) for
+        # every recorded config, including dead-ends -- a KeyError here means
+        # walk.py broke its invariant set(edges)==set(configs).
+        # #VERIFY: walk.py WalkResult guarantees set(edges)==set(configs);
+        # see walk_configurations invariant.
         if ctx.result.edges[key]:
             continue
         # Non-ending node with no successors: stateful dead end.
         node_id = rs.current_node
         var_state = dict(sorted(rs.var_state.items()))
         report.add(_l2_9_finding(ctx.story_id, node_id, var_state))
+        dead_end_keys.add(key)
+    return dead_end_keys
 
 
 def _build_reverse_edges(ctx: _WalkContext) -> dict[ConfigKey, set[ConfigKey]]:
@@ -306,7 +319,7 @@ def _ending_reachable_set(ctx: _WalkContext) -> set[ConfigKey]:
 
 def _check_loop_escape(
     ctx: _WalkContext,
-    dead_end_nodes: set[str | None],
+    dead_end_keys: set[ConfigKey],
     report: ValidationReport,
 ) -> None:
     """L2-10: flag every reachable config from which no ending is reachable.
@@ -315,17 +328,24 @@ def _check_loop_escape(
 
     Args:
         ctx: The walk context (story id, result, engine).
-        dead_end_nodes: Set of node ids already attributed to an L2-9 finding.
+        dead_end_keys: Set of configuration keys already attributed to an L2-9
+            finding.
         report: The report to append findings to.
     """
+    # #ASSUME: data integrity: suppression is per ConfigKey, not per node id; a
+    # node may be reachable in both a dead-end config (L2-9) and a separate
+    # trapped config (L2-10 must still fire for it), so only the exact dead-end
+    # ConfigKey is skipped.
+    # #VERIFY: the two-config-same-node scenario is exercised by the regression
+    # test for a non-dead-end config that shares a node with a dead-end config.
     can_reach_ending = _ending_reachable_set(ctx)
 
     for key, rs in _configs_as_reading_states(ctx):
         if key in can_reach_ending:
             continue
-        node_id = rs.current_node
-        if node_id in dead_end_nodes:
+        if key in dead_end_keys:
             continue  # already reported as L2-9
+        node_id = rs.current_node
         var_state = dict(sorted(rs.var_state.items()))
         report.add(_l2_10_finding(ctx.story_id, node_id, var_state))
 

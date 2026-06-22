@@ -341,6 +341,93 @@ def test_l2_10_finding_not_emitted_for_ending_configs() -> None:
     assert "L2-10" not in report.rule_ids()
 
 
+@pytest.mark.unit
+def test_l2_10_fires_for_non_dead_end_config_sharing_node() -> None:
+    """L2-10 must fire per ConfigKey, not be suppressed by a shared node id.
+
+    Regression for the node-id suppression bug: node ``gate`` is reachable in
+    two configurations at the same node.
+
+    * ``(gate, flag=False)``: its only choice is conditioned ``flag==True``, so
+      no choice is visible. This is a stateful dead end (L2-9).
+    * ``(gate, flag=True)``: the conditioned choice IS visible and leads into a
+      self-looping ``trap`` node that can never reach an ending. This config is
+      NOT a dead end, but it cannot terminate, so it must raise L2-10.
+
+    Suppressing L2-10 by node id would silently drop the ``(gate, flag=True)``
+    finding because ``gate`` is already in the L2-9 node set. Suppressing by
+    ConfigKey keeps it.
+    """
+    story = _tier2_story(
+        nodes=[
+            {
+                "id": "start",
+                "body": "Start.",
+                "is_ending": False,
+                "choices": [
+                    # Reach gate with flag still False.
+                    {"id": "c_keep", "label": "Keep.", "target": "gate"},
+                    # Reach gate with flag set True.
+                    {
+                        "id": "c_set",
+                        "label": "Set flag.",
+                        "target": "gate",
+                        "effects": [{"op": "set", "var": "flag", "value": True}],
+                    },
+                    # A genuine ending exists so the story is otherwise sane.
+                    {"id": "c_win", "label": "Win.", "target": "end"},
+                ],
+            },
+            {
+                "id": "gate",
+                "body": "Gate.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": "c_through",
+                        "label": "Through (only when flag).",
+                        "target": "trap",
+                        "condition": {"==": [{"var": "flag"}, True]},
+                    }
+                ],
+            },
+            {
+                "id": "trap",
+                "body": "Trap.",
+                "is_ending": False,
+                "choices": [
+                    # Self-loop: always visible (not L2-9) but never reaches end.
+                    {"id": "c_spin", "label": "Spin.", "target": "trap"},
+                ],
+            },
+            {
+                "id": "end",
+                "body": "End.",
+                "is_ending": True,
+                "ending": {"id": "e1", "type": "happy", "title": "Done"},
+                "choices": [],
+            },
+        ],
+        start="start",
+        variables=[{"name": "flag", "type": "bool", "initial": False}],
+        ending_count=1,
+    )
+    report = validate_layer2(story)
+
+    # L2-9 fires for (gate, flag=False): no visible choice, not an ending.
+    l2_9_nodes = {f.node_id for f in report.findings if f.rule_id == "L2-9"}
+    assert "gate" in l2_9_nodes, "expected L2-9 on the (gate, flag=False) dead end"
+
+    # L2-10 must still fire for the non-dead-end (gate, flag=True) config and
+    # for the trap configs, all of which cannot reach an ending.
+    l2_10_nodes = {f.node_id for f in report.findings if f.rule_id == "L2-10"}
+    assert "gate" in l2_10_nodes, (
+        "L2-10 was suppressed for (gate, flag=True) because the node id 'gate' "
+        "was already flagged by L2-9; suppression must be per ConfigKey"
+    )
+    assert "trap" in l2_10_nodes, "expected L2-10 for the non-terminating trap"
+
+
 # ---------------------------------------------------------------------------
 # Test 5: L2-11 conditional dead branch
 # ---------------------------------------------------------------------------
@@ -348,7 +435,7 @@ def test_l2_10_finding_not_emitted_for_ending_configs() -> None:
 
 @pytest.mark.unit
 def test_l2_11_dead_branch_detected() -> None:
-    """A conditional choice whose condition is unsatisfiable in all reachable configs -> L2-11."""
+    """A conditional choice unsatisfiable in all reachable configs raises L2-11."""
     # choice c_secret requires flag==true; flag starts false and nothing sets it.
     # The choice is never visible in any reachable config.
     story = _tier2_story(
@@ -418,7 +505,7 @@ def test_l2_11_unconditional_choice_not_flagged() -> None:
 
 @pytest.mark.unit
 def test_l2_11_visible_conditional_not_flagged() -> None:
-    """A conditional choice that IS visible in at least one config must not trigger L2-11."""
+    """A conditional choice visible in at least one config must not trigger L2-11."""
     # The condition can be satisfied because flag starts True.
     story = _tier2_story(
         nodes=[
@@ -459,7 +546,7 @@ def test_l2_11_visible_conditional_not_flagged() -> None:
 
 @pytest.mark.unit
 def test_l2_12_cap_returns_exactly_one_finding() -> None:
-    """When the walk caps, exactly one L2-12 finding is returned with no other L2 findings."""
+    """When the walk caps, exactly one L2-12 finding returns with no other findings."""
     # A branching Tier-2 story with enough variable combinations to trigger a
     # small cap. Two independent bool variables produce 4 possible var states;
     # the start node alone triggers at least 1 config. Using cap=1 forces a cap
