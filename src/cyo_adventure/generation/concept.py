@@ -1,0 +1,144 @@
+"""Concept brief intake model for the CYO Adventure generation pipeline.
+
+A ConceptBrief captures the guardian-supplied creative parameters that drive
+a single story-generation job. All fields in this model represent story design
+decisions, NOT real-child identifying data.
+
+Privacy note on protagonist.name
+---------------------------------
+The ``protagonist.name`` field is a FICTIONAL character name chosen by the
+guardian for the story (e.g. "Captain Rosa"). It is entirely separate from
+any real child's display name stored in a ``child_profile`` row. The PII guard
+in ``cyo_adventure.generation.pii`` screens prompts against real-child names
+supplied via ``PiiContext`` (populated from the authenticated family's child
+profiles). It does NOT screen against ``protagonist.name``, because that is
+not a real-child identifier and screening it would incorrectly block the very
+content we want to generate.
+"""
+
+from __future__ import annotations
+
+from enum import StrEnum
+
+from pydantic import BaseModel, ConfigDict, Field
+
+from cyo_adventure.storybook.models import AgeBand
+
+__all__ = [
+    "ConceptBrief",
+    "Protagonist",
+    "StructurePattern",
+]
+
+
+class StructurePattern(StrEnum):
+    """Narrative-structure templates available for story generation.
+
+    Patterns follow the vocabulary from "Choose Your Own Adventure" design
+    theory. Each describes how branches and convergence points are arranged.
+    """
+
+    TIME_CAVE = "time_cave"
+    GAUNTLET = "gauntlet"
+    BRANCH_AND_BOTTLENECK = "branch_and_bottleneck"
+    QUEST = "quest"
+    LOOP_AND_GROW = "loop_and_grow"
+
+
+class Protagonist(BaseModel):
+    """The fictional story character whose role the reader takes.
+
+    This is a STORY character defined by the guardian for the narrative. It is
+    not a real child's profile. The ``name`` field here is a fictional character
+    name and is not subject to PII screening (see module docstring).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(description="Fictional character name for the story.")
+    age: int = Field(
+        ge=0,
+        le=18,
+        description="Story character's age in years (0-18, for a children's app).",
+    )
+    role: str = Field(description="Character's narrative role (e.g. 'young explorer').")
+
+
+class ConceptBrief(BaseModel):
+    """Guardian-supplied creative brief for a single story-generation job.
+
+    Passed to the generation orchestrator after PII screening. Fields map
+    directly to the intake spec in ``docs/planning/tech-spec.md`` (section
+    "Concept brief (intake fields)"). All free-text fields should be
+    length-limited and stripped of control characters by the API layer before
+    the brief reaches the orchestrator.
+
+    ``extra="forbid"`` ensures that any unexpected field name is rejected at
+    parse time, preventing accidental injection of undeclared data.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # Optional story title supplied by the guardian.
+    title: str | None = None
+
+    # Required story setup.
+    premise: str = Field(
+        min_length=1,
+        description="Short story premise; the seed for generation.",
+    )
+    protagonist: Protagonist = Field(
+        description="Fictional story character (name/age/role). NOT a real child."
+    )
+    point_of_view: str = Field(
+        default="second",
+        description="Narrative POV (default: second person).",
+    )
+
+    # Reading and audience targeting.
+    age_band: AgeBand = Field(description="Target reading age band.")
+    reading_level_target: float = Field(
+        ge=0.0,
+        description="Target Flesch-Kincaid grade level.",
+    )
+    tier: int = Field(
+        ge=1,
+        le=2,
+        description="Story tier: 1 = simple (no variables), 2 = stateful.",
+    )
+
+    # Tone and content guidance.
+    tone: str = Field(
+        description="Desired narrative tone (e.g. 'adventurous', 'cosy')."
+    )
+    themes_allowed: list[str] = Field(
+        default_factory=list,
+        description="Themes the story is allowed to explore.",
+    )
+    content_nogo: list[str] = Field(
+        default_factory=list,
+        description="Content categories explicitly prohibited in this story.",
+    )
+
+    # Structural parameters.
+    target_node_count: int = Field(
+        ge=1,
+        description="Desired number of passage nodes.",
+    )
+    ending_count: int = Field(
+        ge=1,
+        description="Number of distinct endings to generate.",
+    )
+    structure_pattern: StructurePattern = Field(
+        description="Narrative-structure template to apply.",
+    )
+
+    # Optional Tier-2 variable hints and free-form constraints.
+    desired_variables: list[str] = Field(
+        default_factory=list,
+        description="Names of state variables the story should declare (Tier-2).",
+    )
+    special_constraints: list[str] = Field(
+        default_factory=list,
+        description="Free-text constraints passed to the generator as guidance.",
+    )
