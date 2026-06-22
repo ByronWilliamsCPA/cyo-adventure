@@ -1,14 +1,15 @@
 You are generating the skeleton (Stage A: Structure) of a branching story for a
 choose-your-own-adventure reading app used by children.
 
-## Concept Brief
-
-{concept_brief}
+The concept brief and the mandatory budget for this specific story are in the
+user message that follows these instructions. Read the schema, the drafting
+guide, and these rules first; then build a skeleton for that brief that stays
+inside the stated budget.
 
 ## Schema and Validator Rules
 
-The skeleton you produce must satisfy all Layer-1 graph rules. The rules are listed
-below. Read them before generating; do not produce a skeleton that violates them.
+The skeleton you produce must satisfy all Layer-1 graph rules. Read the schema
+below before generating; do not produce a skeleton that violates it.
 
 {schema_rules}
 
@@ -26,7 +27,8 @@ must contain:
 1. The top-level metadata fields: `schema_version`, `id` (use a UUID v4), `version`
    (set to 1), `title` (propose one if not in the brief), and the `metadata` block
    (`age_band`, `reading_level`, `tier`, `themes`, `estimated_minutes`,
-   `ending_count`, `content_flags`).
+   `ending_count`, `content_flags`). Set `metadata.ending_count` to the exact number
+   of endings stated in the Budget section of the user message.
 
 2. A `variables` array (empty for Tier 1; for Tier 2, declare each variable with
    `name`, `type`, `initial`, `min` and `max` for integers, and `description`).
@@ -51,11 +53,15 @@ must contain:
      (`success`, `failure`, `bittersweet`, or `open`), and `title`.
    - `tags`: an array (may be empty).
 
-5. At least `ending_count` ending nodes (from the concept brief), each with a
-   distinct `ending.id`.
+5. Exactly as many ending nodes as the Budget section requires, each with a
+   distinct `ending.id`. The number of ending nodes must equal
+   `metadata.ending_count`.
 
 ## Constraints
 
+- Stay within the node-count and branch-depth budget stated in the user message.
+  These are hard limits enforced by the validator (rule L1-7); a skeleton that
+  exceeds them is rejected. Build shallow, converging trees rather than deep ones.
 - Every node id referenced in a `choice.target` must be a node id that exists in the
   `nodes` array of this skeleton. Do not generate forward references.
 - Every node must be reachable from `start_node` by following choice targets.
@@ -68,11 +74,19 @@ must contain:
   `<`, `<=`, `>`, `>=`, `and`, `or`, `!`). Every variable referenced in a condition
   must be declared in the `variables` array. Do not use arithmetic, string operators,
   or `if`/ternary.
-- Stay within the node count and depth budgets from the drafting guide for the
-  requested `age_band` and `tier`.
 
 ## Output
 
 Respond with valid JSON only. Do not include prose before or after the JSON. Do not
 include markdown fences. The validator will parse your response as JSON; any non-JSON
 content will cause the job to fail.
+
+<!-- @user -->
+
+## Concept Brief
+
+{concept_brief}
+
+## Budget (MANDATORY: the validator enforces these exactly)
+
+{budget_constraints}

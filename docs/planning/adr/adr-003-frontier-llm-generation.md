@@ -202,3 +202,24 @@ Generation remains negligible: one Sonnet-4.6 Stage-A call billed $0.077; a full
 story is ~$0.13-0.16 on Sonnet and $0 on free Gemma. Phase 2b completion (debug on free,
 measure on a paid model) is well under $20. The schema embedded in every prompt (~5k
 tokens) is a static prefix that prompt caching would discount ~90% on the paid path.
+
+### Phase 2b implementation note: R1 prompt restructure (interface-adjacent)
+
+ADR-003 records that deviations from the staged-generation interface require an
+amendment. Phase 2b R1 makes one such deviation, approved for this phase, and notes it
+here:
+
+- **Budget stated inline (the yield fix).** `build_structure_prompt` now injects the
+  brief-specific L1-7 limits (node-count band, max branch depth, exact ending count) into
+  the Stage A user block, read from a single source of truth,
+  `validator.layer1.band_budget`, so the prompt promises exactly what the gate enforces.
+  A 2026-06-22 re-probe confirmed the lift: Sonnet and gemma-4-31b Stage A, previously
+  blocked on L1-7 budget overshoot, now pass the budget dimension cleanly.
+- **System/user split for prompt caching.** The three stage builders now return a
+  `StagePrompt(system, user)`: static reference content (role, JSON Schema, drafting
+  guide, fixed instructions) sits in the cacheable `system` block, and per-job volatile
+  content (brief, budget, skeleton, repair payload) sits in the `user` block. The
+  orchestrator forwards these to the unchanged `GenerationProvider.complete(system,
+  prompt)` protocol, and the PII guard now runs on both blocks before egress. This
+  positions the static schema (~5k tokens) for the Anthropic `cache_control` discount the
+  cost section anticipates, without changing the provider protocol.

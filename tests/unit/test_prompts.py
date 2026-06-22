@@ -3,11 +3,15 @@
 Tests verify:
 - Correct placeholder substitution for each builder.
 - No unfilled known placeholder tokens remain in builder output.
+- The system/user split: static reference content (schema, drafting guide)
+  lands in the cacheable ``system`` block; per-job volatile content (brief,
+  budget, skeleton, repair payload) lands in the ``user`` block.
+- The Stage A budget block states the exact L1-7 limits from
+  ``band_budget`` so the prompt and the gate cannot drift.
 - Brace-safety: JSON payloads with literal ``{`` / ``}`` do not break
   substitution.
 - Determinism: identical inputs produce identical outputs.
-- Runtime uses importlib.resources (not a docs/ path) -- confirmed by calling
-  builders successfully without any docs/ dependency.
+- Runtime uses importlib.resources (not a docs/ path).
 - Repair prompt includes only failing node ids and excludes non-failing nodes.
 """
 
@@ -19,11 +23,13 @@ import pytest
 
 from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
 from cyo_adventure.generation.prompts import (
+    StagePrompt,
     build_prose_prompt,
     build_repair_prompt,
     build_structure_prompt,
 )
 from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.validator.layer1 import band_budget
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -126,94 +132,104 @@ def failing_findings() -> list[dict[str, object]]:
 class TestBuildStructurePrompt:
     """Tests for build_structure_prompt."""
 
-    def test_contains_premise(self, minimal_brief: ConceptBrief) -> None:
-        """The prompt contains the brief's premise text."""
+    def test_returns_stage_prompt(self, minimal_brief: ConceptBrief) -> None:
+        """The builder returns a StagePrompt with non-empty system and user."""
         result = build_structure_prompt(minimal_brief)
-        assert minimal_brief.premise in result
+        assert isinstance(result, StagePrompt)
+        assert len(result.system) > 0
+        assert len(result.user) > 0
 
-    def test_contains_drafting_guide_content(self, minimal_brief: ConceptBrief) -> None:
-        """The prompt contains text from the bundled drafting guide."""
+    def test_brief_in_user_block(self, minimal_brief: ConceptBrief) -> None:
+        """The brief's premise lands in the volatile user block, not system."""
+        result = build_structure_prompt(minimal_brief)
+        assert minimal_brief.premise in result.user
+
+    def test_schema_in_system_not_user(self, minimal_brief: ConceptBrief) -> None:
+        """The JSON Schema is in the cacheable system block, never the user block.
+
+        This is the caching boundary: a per-job user block must not carry the
+        large static schema, or the cached prefix would be defeated.
+        """
+        result = build_structure_prompt(minimal_brief)
+        assert "properties" in result.system
+        assert "properties" not in result.user
+
+    def test_drafting_guide_in_system(self, minimal_brief: ConceptBrief) -> None:
+        """The drafting guide content lands in the system block."""
         result = build_structure_prompt(minimal_brief)
         # The drafting guide includes this distinctive section heading.
-        assert "Node and Depth Budgets" in result
+        assert "Node and Depth Budgets" in result.system
 
-    def test_concept_brief_placeholder_replaced(
+    def test_budget_block_matches_band_budget(
         self, minimal_brief: ConceptBrief
     ) -> None:
-        """The {concept_brief} placeholder is replaced with the JSON brief.
+        """The user block states the exact L1-7 limits from band_budget.
 
-        The bundled drafting guide contains the text ``{concept_brief}`` in
-        its Concept Brief Field List section (describing its own slot name).
-        After template substitution the premise text must appear in the result,
-        proving the slot was filled. We cannot assert the token is absent
-        because it appears in the inserted guide text.
+        Binds the prompt to the validator's enforced budget; if the two ever
+        drift this test fails. (#VERIFY for the band_budget data-integrity tag.)
         """
         result = build_structure_prompt(minimal_brief)
-        assert minimal_brief.premise in result
+        budget = band_budget(minimal_brief.age_band)
+        assert budget is not None
+        min_nodes, max_nodes, max_depth = budget
+        assert f"between {min_nodes} and {max_nodes} nodes" in result.user
+        assert f"at most {max_depth} choices deep" in result.user
+        assert f"EXACTLY {minimal_brief.ending_count} ending" in result.user
 
-    def test_drafting_guide_placeholder_replaced(
-        self, minimal_brief: ConceptBrief
-    ) -> None:
-        """The {drafting_guide} placeholder is replaced with the guide content.
-
-        The drafting guide itself contains the text ``{drafting_guide}`` in its
-        Purpose section (describing its own role). We therefore cannot assert
-        that ``{drafting_guide}`` is absent from the assembled prompt. Instead
-        we verify that the guide's actual section content is present, proving
-        the substitution happened.
-        """
-        result = build_structure_prompt(minimal_brief)
-        # The structure template has exactly one {drafting_guide} slot. After
-        # substitution the guide text -- which includes "Node and Depth Budgets"
-        # -- must appear in the result.
-        assert "Node and Depth Budgets" in result
-        # The raw placeholder no longer occupies the template slot: after
-        # substitution the guide text is far longer than the placeholder token.
-        # We can confirm by checking the result is longer than just the template.
-        from importlib.resources import files as _files
-
-        template_text = (
-            _files("cyo_adventure.generation.templates")
-            .joinpath("structure.md")
-            .read_text(encoding="utf-8")
+    @pytest.mark.parametrize("band", list(AgeBand))
+    def test_budget_block_for_every_band(self, band: AgeBand) -> None:
+        """Every AgeBand renders a budget that matches its band_budget entry."""
+        brief = ConceptBrief(
+            premise="A test premise for the band budget check.",
+            protagonist=Protagonist(name="Hero", age=10, role="explorer"),
+            age_band=band,
+            reading_level_target=4.0,
+            tier=1,
+            tone="adventurous",
+            target_node_count=20,
+            ending_count=2,
+            structure_pattern=StructurePattern.QUEST,
         )
-        assert len(result) > len(template_text)
+        result = build_structure_prompt(brief)
+        budget = band_budget(band)
+        assert budget is not None
+        min_nodes, max_nodes, max_depth = budget
+        assert f"between {min_nodes} and {max_nodes} nodes" in result.user
+        assert f"at most {max_depth} choices deep" in result.user
 
-    def test_non_empty(self, minimal_brief: ConceptBrief) -> None:
-        """Builder returns a non-empty string."""
+    def test_no_unfilled_placeholders(self, minimal_brief: ConceptBrief) -> None:
+        """No owned slot token remains unfilled.
+
+        The drafting guide documents ``{concept_brief}`` and ``{drafting_guide}``
+        as literal text, so those tokens legitimately appear in the system block
+        after substitution (their slot-fill is verified by other tests). We
+        assert absence only for the tokens the guide does not self-reference.
+        """
         result = build_structure_prompt(minimal_brief)
-        assert len(result) > 0
+        for token in ("{schema_rules}", "{budget_constraints}"):
+            assert token not in result.combined
+
+    def test_marker_consumed(self, minimal_brief: ConceptBrief) -> None:
+        """The split marker is not present in the assembled output."""
+        result = build_structure_prompt(minimal_brief)
+        assert "<!-- @user -->" not in result.combined
 
     def test_deterministic(self, minimal_brief: ConceptBrief) -> None:
-        """Two calls with the same brief return identical strings."""
+        """Two calls with the same brief return equal StagePrompts."""
         first = build_structure_prompt(minimal_brief)
         second = build_structure_prompt(minimal_brief)
         assert first == second
 
     def test_brace_safety_from_json_in_brief(self, minimal_brief: ConceptBrief) -> None:
         """Brief serialised to JSON contains braces; substitution must not raise."""
-        # model_dump_json produces JSON with {} braces; ensure no KeyError.
         result = build_structure_prompt(minimal_brief)
-        assert "{" in result  # JSON braces are preserved in the output
+        assert "{" in result.user  # JSON braces from the serialised brief
 
     def test_brief_json_fields_present(self, minimal_brief: ConceptBrief) -> None:
-        """The serialised brief includes key field values."""
+        """The serialised brief includes key field values in the user block."""
         result = build_structure_prompt(minimal_brief)
-        assert "adventurous" in result  # tone field
-        assert "8-11" in result  # age_band value
-
-    def test_no_unfilled_schema_rules_placeholder(
-        self, minimal_brief: ConceptBrief
-    ) -> None:
-        """The {schema_rules} placeholder is filled; the literal token must not remain."""
-        result = build_structure_prompt(minimal_brief)
-        assert "{schema_rules}" not in result
-
-    def test_schema_content_present(self, minimal_brief: ConceptBrief) -> None:
-        """The rendered schema content appears in the structure prompt."""
-        result = build_structure_prompt(minimal_brief)
-        # build_schema() returns a dict with a "properties" key at top level.
-        assert "properties" in result
+        assert "adventurous" in result.user  # tone field
+        assert "8-11" in result.user  # age_band value
 
 
 # ---------------------------------------------------------------------------
@@ -224,103 +240,65 @@ class TestBuildStructurePrompt:
 class TestBuildProsePrompt:
     """Tests for build_prose_prompt."""
 
-    def test_contains_skeleton_json(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+    def test_returns_stage_prompt(
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
-        """The prompt contains the skeleton JSON verbatim."""
+        """The builder returns a StagePrompt with non-empty blocks."""
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert skeleton_json_with_braces in result
+        assert isinstance(result, StagePrompt)
+        assert len(result.system) > 0
+        assert len(result.user) > 0
 
-    def test_contains_drafting_guide_content(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+    def test_skeleton_in_user_block(
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
-        """The prompt contains text from the bundled drafting guide."""
+        """The skeleton JSON lands verbatim in the volatile user block."""
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert "Node and Depth Budgets" in result
+        assert skeleton_json_with_braces in result.user
 
-    def test_no_unfilled_approved_skeleton_placeholder(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+    def test_schema_in_system_not_user(
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
-        """The {approved_skeleton} placeholder is replaced."""
+        """Schema and guide are in the cacheable system block, not the user block."""
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert "{approved_skeleton}" not in result
+        assert "properties" in result.system
+        assert "Node and Depth Budgets" in result.system
+        assert "properties" not in result.user
 
-    def test_drafting_guide_placeholder_replaced(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+    def test_no_unfilled_placeholders(
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
-        """The {drafting_guide} placeholder is replaced with the guide content.
+        """No owned slot token remains unfilled.
 
-        The bundled drafting guide mentions ``{drafting_guide}`` in its own
-        Purpose section. We verify the substitution by checking the guide's
-        section content is present and the assembled prompt is larger than the
-        raw template.
+        The drafting guide documents ``{drafting_guide}`` as literal text, so
+        that token legitimately appears in the system block after substitution.
+        We assert absence only for the tokens the guide does not self-reference.
         """
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert "Node and Depth Budgets" in result
-        from importlib.resources import files as _files
+        for token in ("{approved_skeleton}", "{schema_rules}"):
+            assert token not in result.combined
 
-        template_text = (
-            _files("cyo_adventure.generation.templates")
-            .joinpath("prose.md")
-            .read_text(encoding="utf-8")
-        )
-        assert len(result) > len(template_text)
+    def test_marker_consumed(
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
+    ) -> None:
+        """The split marker is not present in the assembled output."""
+        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
+        assert "<!-- @user -->" not in result.combined
 
     def test_brace_safety(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
         """JSON containing braces does not cause a substitution error."""
-        # skeleton_json_with_braces is real JSON with many { } characters.
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert "n_start" in result  # a node id from the skeleton
+        assert "n_start" in result.user  # a node id from the skeleton
 
     def test_deterministic(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
-        """Two calls with the same inputs return identical strings."""
+        """Two calls with the same inputs return equal StagePrompts."""
         first = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
         second = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
         assert first == second
-
-    def test_non_empty(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
-    ) -> None:
-        """Builder returns a non-empty string."""
-        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert len(result) > 0
-
-    def test_no_unfilled_schema_rules_placeholder(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
-    ) -> None:
-        """The {schema_rules} placeholder is filled; the literal token must not remain."""
-        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert "{schema_rules}" not in result
-
-    def test_schema_content_present(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
-    ) -> None:
-        """The rendered schema content appears in the prose prompt."""
-        result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        # build_schema() returns a dict with a "properties" key at top level.
-        assert "properties" in result
 
 
 # ---------------------------------------------------------------------------
@@ -331,76 +309,71 @@ class TestBuildProsePrompt:
 class TestBuildRepairPrompt:
     """Tests for build_repair_prompt."""
 
-    def test_contains_storybook_json(
+    def test_returns_stage_prompt(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """The prompt contains the storybook JSON verbatim."""
+        """The builder returns a StagePrompt; repair carries no schema."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert storybook_json_with_braces in result
+        assert isinstance(result, StagePrompt)
+        # Repair is lean: no JSON Schema embedded in either block.
+        assert "properties" not in result.combined
 
-    def test_contains_failing_node_ids(
+    def test_storybook_in_user_block(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """The prompt includes the failing node ids from the findings."""
+        """The storybook JSON lands verbatim in the user block."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "n_orphan_node" in result
-        assert "n_dead_end" in result
+        assert storybook_json_with_braces in result.user
+
+    def test_failing_node_ids_in_user_block(
+        self,
+        storybook_json_with_braces: str,
+        failing_findings: list[dict[str, object]],
+    ) -> None:
+        """The failing node ids appear in the user block, not the static system."""
+        result = build_repair_prompt(storybook_json_with_braces, failing_findings)
+        assert "n_orphan_node" in result.user
+        assert "n_dead_end" in result.user
+        # The static system block must stay job-independent (cacheable): no
+        # substituted node ids leak into it.
+        assert "n_orphan_node" not in result.system
 
     def test_excludes_non_failing_node_id(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """A node id NOT in the failing findings does not appear in the node-id list.
-
-        We assert that the fabricated id ``n_perfectly_fine_node`` does not
-        appear anywhere in the repair prompt (it is not in the storybook JSON
-        either, so the only way it could appear is if the builder introduced it,
-        which it must not).
-        """
+        """A node id NOT in the failing findings does not appear anywhere."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "n_perfectly_fine_node" not in result
+        assert "n_perfectly_fine_node" not in result.combined
 
     def test_contains_rule_ids(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """The prompt includes the rule ids from the findings."""
+        """The user block includes the rule ids from the findings."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "L1-03" in result
-        assert "L1-04" in result
+        assert "L1-03" in result.user
+        assert "L1-04" in result.user
 
-    def test_no_unfilled_approved_skeleton_placeholder(
+    def test_no_unfilled_placeholders(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """The {approved_skeleton} placeholder is replaced."""
+        """No owned placeholder token remains in the assembled output."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "{approved_skeleton}" not in result
-
-    def test_no_unfilled_validator_report_placeholder(
-        self,
-        storybook_json_with_braces: str,
-        failing_findings: list[dict[str, object]],
-    ) -> None:
-        """The {validator_report} placeholder is replaced."""
-        result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "{validator_report}" not in result
-
-    def test_no_unfilled_failing_node_ids_placeholder(
-        self,
-        storybook_json_with_braces: str,
-        failing_findings: list[dict[str, object]],
-    ) -> None:
-        """All occurrences of {failing_node_ids} are replaced."""
-        result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "{failing_node_ids}" not in result
+        for token in (
+            "{approved_skeleton}",
+            "{validator_report}",
+            "{failing_node_ids}",
+        ):
+            assert token not in result.combined
 
     def test_brace_safety(
         self,
@@ -409,38 +382,29 @@ class TestBuildRepairPrompt:
     ) -> None:
         """JSON containing braces does not cause a substitution error."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert "n_start" in result  # node id from the storybook JSON
+        assert "n_start" in result.user  # node id from the storybook JSON
 
     def test_deterministic(
         self,
         storybook_json_with_braces: str,
         failing_findings: list[dict[str, object]],
     ) -> None:
-        """Two calls with the same inputs return identical strings."""
+        """Two calls with the same inputs return equal StagePrompts."""
         first = build_repair_prompt(storybook_json_with_braces, failing_findings)
         second = build_repair_prompt(storybook_json_with_braces, failing_findings)
         assert first == second
 
-    def test_non_empty(
-        self,
-        storybook_json_with_braces: str,
-        failing_findings: list[dict[str, object]],
-    ) -> None:
-        """Builder returns a non-empty string."""
-        result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert len(result) > 0
-
     def test_empty_findings_list(self, storybook_json_with_braces: str) -> None:
         """Builder handles an empty findings list without error."""
         result = build_repair_prompt(storybook_json_with_braces, [])
-        assert len(result) > 0
-        assert "{validator_report}" not in result
-        assert "{failing_node_ids}" not in result
+        assert len(result.user) > 0
+        assert "{validator_report}" not in result.combined
+        assert "{failing_node_ids}" not in result.combined
 
     def test_finding_without_node_id_excluded_from_node_list(
         self, storybook_json_with_braces: str
     ) -> None:
-        """A finding without a node_id (e.g. schema error) does not corrupt the node list."""
+        """A finding without a node_id does not corrupt the node list."""
         findings: list[dict[str, object]] = [
             {
                 "rule_id": "L1-01",
@@ -449,14 +413,13 @@ class TestBuildRepairPrompt:
             }
         ]
         result = build_repair_prompt(storybook_json_with_braces, findings)
-        assert "{failing_node_ids}" not in result
-        # None should not appear as a node id in the node-id section.
-        assert "L1-01" in result  # still in the validator report section
+        assert "{failing_node_ids}" not in result.combined
+        assert "L1-01" in result.user  # still in the validator report section
 
     def test_finding_with_choice_id_included_in_report(
         self, storybook_json_with_braces: str
     ) -> None:
-        """A finding with a choice_id includes that choice_id in the validator report."""
+        """A finding with a choice_id includes that choice_id in the report."""
         findings: list[dict[str, object]] = [
             {
                 "rule_id": "L1-07",
@@ -466,8 +429,8 @@ class TestBuildRepairPrompt:
             }
         ]
         result = build_repair_prompt(storybook_json_with_braces, findings)
-        assert "c_go_left" in result
-        assert "L1-07" in result
+        assert "c_go_left" in result.user
+        assert "L1-07" in result.user
 
 
 # ---------------------------------------------------------------------------
@@ -483,16 +446,14 @@ class TestRuntimeLoading:
     ) -> None:
         """build_structure_prompt runs successfully (templates are bundled)."""
         result = build_structure_prompt(minimal_brief)
-        assert len(result) > 100
+        assert len(result.combined) > 100
 
     def test_prose_works_without_docs_path(
-        self,
-        skeleton_json_with_braces: str,
-        minimal_brief: ConceptBrief,
+        self, skeleton_json_with_braces: str, minimal_brief: ConceptBrief
     ) -> None:
         """build_prose_prompt runs successfully (templates are bundled)."""
         result = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
-        assert len(result) > 100
+        assert len(result.combined) > 100
 
     def test_repair_works_without_docs_path(
         self,
@@ -501,43 +462,19 @@ class TestRuntimeLoading:
     ) -> None:
         """build_repair_prompt runs successfully (templates are bundled)."""
         result = build_repair_prompt(storybook_json_with_braces, failing_findings)
-        assert len(result) > 100
+        assert len(result.combined) > 100
 
-    def test_importlib_resources_loads_structure_template(self) -> None:
-        """importlib.resources can load structure.md from the templates package."""
+    @pytest.mark.parametrize("name", ["structure.md", "prose.md", "repair.md"])
+    def test_template_has_exactly_one_user_marker(self, name: str) -> None:
+        """Each stage template carries exactly one system/user split marker."""
         from importlib.resources import files
 
         text = (
             files("cyo_adventure.generation.templates")
-            .joinpath("structure.md")
+            .joinpath(name)
             .read_text(encoding="utf-8")
         )
-        assert len(text) > 0
-        assert "{concept_brief}" in text
-
-    def test_importlib_resources_loads_prose_template(self) -> None:
-        """importlib.resources can load prose.md from the templates package."""
-        from importlib.resources import files
-
-        text = (
-            files("cyo_adventure.generation.templates")
-            .joinpath("prose.md")
-            .read_text(encoding="utf-8")
-        )
-        assert len(text) > 0
-        assert "{approved_skeleton}" in text
-
-    def test_importlib_resources_loads_repair_template(self) -> None:
-        """importlib.resources can load repair.md from the templates package."""
-        from importlib.resources import files
-
-        text = (
-            files("cyo_adventure.generation.templates")
-            .joinpath("repair.md")
-            .read_text(encoding="utf-8")
-        )
-        assert len(text) > 0
-        assert "{approved_skeleton}" in text
+        assert text.count("<!-- @user -->") == 1
 
     def test_importlib_resources_loads_drafting_guide(self) -> None:
         """importlib.resources can load drafting_guide.md from the templates package."""
