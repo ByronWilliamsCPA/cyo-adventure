@@ -13,9 +13,13 @@ each violation in the validator report.
 
 ### Rules for repair
 
-1. **Name only the failing node ids**: address only the nodes listed in the Failing
-   Node IDs section of the user message. Do not rewrite, restructure, or improve nodes
-   that are not in that list.
+1. **Scope of changes**: if the Failing Node IDs section lists specific nodes, address
+   only those nodes and do not rewrite, restructure, or improve nodes outside that list.
+   If that section is `(none)`, the violation is story-wide (for example an L1-7 budget
+   breach is a property of the whole graph, not a single node): you MAY then restructure
+   the graph as needed (redirect choice `target`s, merge or remove nodes) to satisfy the
+   rule, while preserving the premise, the `variables` declarations, and the exact
+   `metadata.ending_count`.
 
 2. **Fix the specific rule violations**: the validator report describes each violation
    with a rule id and a message. Address each one directly. Do not speculate about
@@ -44,9 +48,12 @@ each violation in the validator report.
 - **Dangling target** (rule: reference integrity): correct the `target` value to an
   existing node id. Do not create a new node; use an existing one that fits the
   narrative context.
-- **Budget overshoot** (rule: L1-7): reduce the node count or shorten the longest
-  start-to-ending path so the story fits the stated budget, or adjust
-  `metadata.ending_count` and the ending nodes so the two agree exactly.
+- **Budget overshoot** (rule L1-7): the message names the failing dimension. For
+  `branch_depth`, the longest start-to-ending path has too many choices: redirect the
+  `target` of choices along the deepest path to jump FORWARD to a later or ending node,
+  collapsing the chain and reconverging branches so every path fits the cap, then recount
+  the longest path. For `node_count`, add or remove nodes to land inside the band. For
+  `ending_count`, make the number of ending nodes equal `metadata.ending_count` exactly.
 - **Bound overflow** (rule: condition consistency): reduce the `inc` value, widen the
   `max`, or add a condition that prevents the increment from being taken when the
   variable is at its bound.
