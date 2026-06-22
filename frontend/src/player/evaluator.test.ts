@@ -31,10 +31,24 @@ describe('condition evaluator conformance', () => {
     }
   )
 
-  it('covers every whitelisted operator', () => {
-    const blob = readFileSync(conformancePath, 'utf-8')
+  it('exercises every whitelisted operator in the corpus conditions', () => {
+    // Collect the operator KEYS actually present in the evaluated conditions,
+    // not substrings of the JSON text, so a dropped operator cannot false-pass.
+    const used = new Set<string>()
+    const collect = (node: unknown): void => {
+      if (node === null || typeof node !== 'object') return
+      for (const [key, value] of Object.entries(node)) {
+        used.add(key)
+        if (Array.isArray(value)) {
+          value.forEach(collect)
+        } else {
+          collect(value)
+        }
+      }
+    }
+    for (const testCase of corpus.cases) collect(testCase.condition)
     for (const op of ['var', '==', '!=', '<', '<=', '>', '>=', 'and', 'or', '!']) {
-      expect(blob).toContain(op)
+      expect(used).toContain(op)
     }
   })
 })

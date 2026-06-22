@@ -97,7 +97,11 @@ function ordered(operator: string, left: VarValue, right: VarValue): boolean {
       return left <= right
     case '>':
       return left > right
-    default:
+    case '>=':
       return left >= right
+    default:
+      // Unknown operator: fail closed (matches the Python evaluator) rather than
+      // computing an arbitrary comparison.
+      return false
   }
 }

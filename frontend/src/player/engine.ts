@@ -19,7 +19,6 @@ import type {
   Storybook,
   StoryNode,
   VarState,
-  VarValue,
 } from './types'
 
 function nodeIndex(story: Storybook): Map<string, StoryNode> {
@@ -53,7 +52,10 @@ function applyEffect(
   bounds: Map<string, [number | null, number | null]>
 ): void {
   if (effect.op === 'set') {
-    varState[effect.var] = (effect.value ?? 0) as VarValue
+    const value = effect.value ?? 0
+    // Clamp a numeric set to the variable's bounds, like inc/dec, so the TS and
+    // Python engines agree and a story cannot seed an out-of-range value.
+    varState[effect.var] = typeof value === 'number' ? clamp(bounds, effect.var, value) : value
     return
   }
   const current = varState[effect.var]
@@ -74,7 +76,12 @@ function enterNode(
     state.visit_set.push(nodeId)
   }
   const node = nodeIndex(story).get(nodeId)
-  for (const effect of node?.on_enter ?? []) {
+  // Mirror the Python engine: entering an unknown node id is an error, not a
+  // silent no-op, so a dangling choice target fails loudly in both runtimes.
+  if (!node) {
+    throw new Error(`node '${nodeId}' does not exist in the story`)
+  }
+  for (const effect of node.on_enter ?? []) {
     if (effect.once && !firstEntry) continue
     applyEffect(state.var_state, effect, bounds)
   }

@@ -28,13 +28,20 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'storybook-blobs',
-              expiration: { maxEntries: 50 },
+              // Immutable blobs: keep a bounded set for a month.
+              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
             },
           },
           {
             urlPattern: /\/api\/v1\/.*/,
             handler: 'NetworkFirst',
-            options: { cacheName: 'api-cache' },
+            options: {
+              cacheName: 'api-cache',
+              // Fall back to cache quickly on a flaky network, and bound the cache
+              // so it cannot grow without limit.
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
+            },
           },
         ],
       },

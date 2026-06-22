@@ -8,7 +8,7 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { PutResponse, SaveBody, SyncApi } from '../offline/sync'
+import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 
 interface ConflictBody {
@@ -29,9 +29,17 @@ export function makeSyncApi(api: AxiosInstance): SyncApi {
         )
         return { status: 200, row: res.data }
       } catch (error) {
-        if (isAxiosError(error) && error.response?.status === 409) {
-          const data = error.response.data as ConflictBody
-          return { status: 409, currentRow: data.current_row }
+        if (isAxiosError(error)) {
+          if (error.response?.status === 409) {
+            const data = error.response.data as ConflictBody
+            return { status: 409, currentRow: data.current_row }
+          }
+          // No HTTP response means a transport failure (offline/timeout); signal
+          // it distinctly so the sync layer queues only true offline writes. An
+          // HTTP error response (auth/validation/server) propagates as itself.
+          if (!error.response) {
+            throw new OfflineError()
+          }
         }
         throw error
       }

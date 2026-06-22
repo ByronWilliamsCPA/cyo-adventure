@@ -9,7 +9,13 @@ import { _resetDbHandle } from '../offline/db'
 // Mock the API adapters so the App mounts deterministically without a backend.
 vi.mock('../api/readerApi', () => ({
   makeSyncApi: () => ({
-    putReadingState: () => Promise.resolve({ status: 200, row: { state_revision: 1 } }),
+    // Echo a full ReadingState row (revision bumped) so the mock matches the real
+    // adapter contract; a truncated row would hide write-back regressions.
+    putReadingState: (_profileId: string, _storybookId: string, body: { state_revision?: number }) =>
+      Promise.resolve({
+        status: 200,
+        row: { ...body, state_revision: (body.state_revision ?? 0) + 1 },
+      }),
   }),
   makeFetchStory: () => () =>
     Promise.resolve({

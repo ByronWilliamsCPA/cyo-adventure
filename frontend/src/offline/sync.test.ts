@@ -4,7 +4,14 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import type { ReadingState } from '../player/types'
 import { _resetDbHandle, getReadingState, listQueue } from './db'
-import { type PutResponse, type SyncApi, replayQueue, resolveConflict, saveProgress } from './sync'
+import {
+  OfflineError,
+  type PutResponse,
+  type SyncApi,
+  replayQueue,
+  resolveConflict,
+  saveProgress,
+} from './sync'
 
 function makeState(node: string, revision: number): ReadingState {
   return {
@@ -68,7 +75,7 @@ describe('saveProgress', () => {
 
   it('queues the write when the network is unavailable', async () => {
     const api = fakeApi(() => {
-      throw new Error('offline')
+      throw new OfflineError()
     })
     const result = await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), {
       newId: ids,
@@ -77,6 +84,16 @@ describe('saveProgress', () => {
     const queue = await listQueue()
     expect(queue).toHaveLength(1)
     expect(queue[0].event_id).toBe('evt-1')
+  })
+
+  it('propagates a non-offline HTTP error instead of queueing it', async () => {
+    const api = fakeApi(() => {
+      throw new Error('500 server error')
+    })
+    await expect(
+      saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    ).rejects.toThrow('500 server error')
+    expect(await listQueue()).toHaveLength(0)
   })
 })
 
@@ -121,7 +138,7 @@ describe('resolveConflict', () => {
 describe('replayQueue', () => {
   it('drains queued writes on success and dedupes by event_id', async () => {
     const offline = fakeApi(() => {
-      throw new Error('offline')
+      throw new OfflineError()
     })
     await saveProgress(offline, 'p1', 's1', makeState('a', 0), { newId: ids })
     await saveProgress(offline, 'p1', 's1', makeState('b', 1), { newId: ids })
@@ -140,16 +157,68 @@ describe('replayQueue', () => {
 
   it('stops replay at the first network error, leaving the rest queued', async () => {
     const offline = fakeApi(() => {
-      throw new Error('offline')
+      throw new OfflineError()
     })
     await saveProgress(offline, 'p1', 's1', makeState('a', 0), { newId: ids })
     await saveProgress(offline, 'p1', 's1', makeState('b', 1), { newId: ids })
 
     const stillOffline = fakeApi(() => {
-      throw new Error('offline')
+      throw new OfflineError()
     })
     const outcome = await replayQueue(stillOffline)
     expect(outcome.replayed).toBe(0)
     expect(await listQueue()).toHaveLength(2)
+  })
+
+  it('replays sequential same-base offline writes as a chain (latest wins)', async () => {
+    const offline = fakeApi(() => {
+      throw new OfflineError()
+    })
+    // The revision does not advance while offline, so both writes share base 0.
+    await saveProgress(offline, 'p1', 's1', makeState('a', 0), { newId: ids })
+    await saveProgress(offline, 'p1', 's1', makeState('b', 0), { newId: ids })
+
+    let serverRevision = 0
+    const sent: number[] = []
+    const online: SyncApi = {
+      putReadingState(_p, _s, body) {
+        sent.push(body.state_revision)
+        if (body.state_revision !== serverRevision) {
+          return Promise.resolve({
+            status: 409,
+            currentRow: makeState('server', serverRevision),
+          })
+        }
+        serverRevision += 1
+        return Promise.resolve({ status: 200, row: makeState(body.current_node, serverRevision) })
+      },
+    }
+    const outcome = await replayQueue(online)
+    // Without rebasing, the second write would 409 and drop; rebasing applies it.
+    expect(outcome.replayed).toBe(2)
+    expect(outcome.conflicts).toHaveLength(0)
+    expect(sent).toEqual([0, 1])
+    expect(await listQueue()).toHaveLength(0)
+  })
+
+  it('drops a write that fails with a non-offline error without wedging the queue', async () => {
+    const offline = fakeApi(() => {
+      throw new OfflineError()
+    })
+    await saveProgress(offline, 'p1', 's1', makeState('a', 0), { newId: ids })
+    await saveProgress(offline, 'p1', 's1', makeState('b', 0), { newId: ids })
+
+    const online: SyncApi = {
+      putReadingState(_p, _s, body) {
+        if (body.event_id === 'evt-1') {
+          return Promise.reject(new Error('422 invalid'))
+        }
+        return Promise.resolve({ status: 200, row: makeState('b', 1) })
+      },
+    }
+    const outcome = await replayQueue(online)
+    expect(outcome.failed.map((w) => w.event_id)).toEqual(['evt-1'])
+    expect(outcome.replayed).toBe(1)
+    expect(await listQueue()).toHaveLength(0)
   })
 })

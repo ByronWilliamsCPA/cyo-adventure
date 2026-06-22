@@ -44,6 +44,9 @@ export function ReaderPage({
   const [initialReading, setInitialReading] = useState<ReadingState | undefined>(undefined)
   const [phase, setPhase] = useState<Phase>('loading')
   const [conflict, setConflict] = useState<ConflictState | null>(null)
+  // Bumped to remount the Reader (and re-seed its machine) when we adopt the
+  // server's state; the machine reads its input only at creation.
+  const [readerKey, setReaderKey] = useState(0)
   const revisionRef = useRef(0)
 
   const load = useCallback(async () => {
@@ -87,6 +90,10 @@ export function ReaderPage({
     [api, profileId, storybookId, deviceId]
   )
 
+  // Stable handler so the Reader's progress effect does not re-fire (and re-save
+  // unchanged state) on every ReaderPage re-render.
+  const handleProgress = useCallback((reading: ReadingState) => void persist(reading), [persist])
+
   const keepThisDevice = useCallback(async () => {
     if (!conflict) return
     const result = await resolveConflict(
@@ -117,6 +124,9 @@ export function ReaderPage({
     )
     revisionRef.current = conflict.server.state_revision
     setInitialReading(conflict.server)
+    // Remount the Reader so its machine re-initialises from the adopted server
+    // state; without this the reader keeps playing from the local position.
+    setReaderKey((key) => key + 1)
     setConflict(null)
   }, [api, conflict, deviceId, profileId, storybookId])
 
@@ -128,7 +138,12 @@ export function ReaderPage({
   }
   return (
     <>
-      <Reader story={story} initialReading={initialReading} onProgress={(r) => void persist(r)} />
+      <Reader
+        key={readerKey}
+        story={story}
+        initialReading={initialReading}
+        onProgress={handleProgress}
+      />
       {conflict ? (
         <ConflictDialog
           onKeepThisDevice={() => void keepThisDevice()}
