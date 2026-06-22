@@ -1,0 +1,550 @@
+[
+  {
+    "title": "The Lighthouse Key",
+    "premise": "A child finds an old brass key on the beach and follows clues to a locked lighthouse.",
+    "protagonist": {
+      "name": "Maya",
+      "age": 9,
+      "role": "curious beachcomber"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.5,
+    "tier": 1,
+    "tone": "gentle mystery",
+    "themes_allowed": [
+      "curiosity",
+      "friendship"
+    ],
+    "content_nogo": [
+      "graphic violence",
+      "death of a parent"
+    ],
+    "target_node_count": 18,
+    "ending_count": 2,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "Garden of Tiny Doors",
+    "premise": "A girl discovers miniature doors among the vegetables and meets the creatures who live behind them.",
+    "protagonist": {
+      "name": "Iris",
+      "age": 8,
+      "role": "young gardener"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.0,
+    "tier": 1,
+    "tone": "whimsical",
+    "themes_allowed": [
+      "kindness",
+      "wonder"
+    ],
+    "content_nogo": [
+      "scary monsters"
+    ],
+    "target_node_count": 16,
+    "ending_count": 3,
+    "structure_pattern": "time_cave",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Sleepy Dragon",
+    "premise": "A village child must wake a friendly dragon before the winter frost without startling it.",
+    "protagonist": {
+      "name": "Tomas",
+      "age": 10,
+      "role": "village helper"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 4.0,
+    "tier": 1,
+    "tone": "cosy adventure",
+    "themes_allowed": [
+      "patience",
+      "courage"
+    ],
+    "content_nogo": [
+      "graphic violence"
+    ],
+    "target_node_count": 22,
+    "ending_count": 2,
+    "structure_pattern": "quest",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "Lost on the Tide Pools",
+    "premise": "Two friends explore tide pools and must find their way back before the tide comes in.",
+    "protagonist": {
+      "name": "Priya",
+      "age": 9,
+      "role": "tide-pool explorer"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.5,
+    "tier": 1,
+    "tone": "adventurous",
+    "themes_allowed": [
+      "teamwork",
+      "problem solving"
+    ],
+    "content_nogo": [
+      "drowning peril"
+    ],
+    "target_node_count": 20,
+    "ending_count": 3,
+    "structure_pattern": "gauntlet",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Paper Airplane Pilot",
+    "premise": "A boy's paper airplane carries him on a tiny flight over the neighbourhood rooftops.",
+    "protagonist": {
+      "name": "Leo",
+      "age": 8,
+      "role": "daydreaming inventor"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.0,
+    "tier": 1,
+    "tone": "playful",
+    "themes_allowed": [
+      "imagination",
+      "bravery"
+    ],
+    "content_nogo": [
+      "falling injury"
+    ],
+    "target_node_count": 15,
+    "ending_count": 2,
+    "structure_pattern": "loop_and_grow",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Midnight Library Cat",
+    "premise": "A student stays late and follows the library's cat through shelves that rearrange themselves into puzzles.",
+    "protagonist": {
+      "name": "Noor",
+      "age": 11,
+      "role": "bookish detective"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 5.0,
+    "tier": 1,
+    "tone": "mysterious",
+    "themes_allowed": [
+      "cleverness",
+      "perseverance"
+    ],
+    "content_nogo": [
+      "graphic violence"
+    ],
+    "target_node_count": 30,
+    "ending_count": 3,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "Signal from the Old Radio",
+    "premise": "A kid repairs a vintage radio and starts receiving messages from a research team stranded on a mountain.",
+    "protagonist": {
+      "name": "Dev",
+      "age": 12,
+      "role": "amateur tinkerer"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 5.5,
+    "tier": 1,
+    "tone": "suspenseful",
+    "themes_allowed": [
+      "responsibility",
+      "courage"
+    ],
+    "content_nogo": [
+      "graphic injury",
+      "character death"
+    ],
+    "target_node_count": 34,
+    "ending_count": 3,
+    "structure_pattern": "quest",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Marble Championship",
+    "premise": "A new kid enters the schoolyard marble tournament and must earn the trust of rival teams.",
+    "protagonist": {
+      "name": "Sam",
+      "age": 11,
+      "role": "new student"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 5.0,
+    "tier": 1,
+    "tone": "upbeat",
+    "themes_allowed": [
+      "fair play",
+      "belonging"
+    ],
+    "content_nogo": [
+      "bullying that is not resolved"
+    ],
+    "target_node_count": 28,
+    "ending_count": 2,
+    "structure_pattern": "gauntlet",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Greenhouse on Mars",
+    "premise": "A colony kid tends the only greenhouse and must save the seedlings during a dust storm.",
+    "protagonist": {
+      "name": "Ada",
+      "age": 12,
+      "role": "junior botanist"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 6.0,
+    "tier": 1,
+    "tone": "hopeful sci-fi",
+    "themes_allowed": [
+      "resourcefulness",
+      "stewardship"
+    ],
+    "content_nogo": [
+      "life-threatening peril"
+    ],
+    "target_node_count": 32,
+    "ending_count": 3,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Understudy",
+    "premise": "A shy teen must step into the lead role on opening night when the star loses their voice.",
+    "protagonist": {
+      "name": "Jordan",
+      "age": 13,
+      "role": "theatre understudy"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 7.0,
+    "tier": 1,
+    "tone": "warm coming-of-age",
+    "themes_allowed": [
+      "self-confidence",
+      "friendship"
+    ],
+    "content_nogo": [
+      "graphic content"
+    ],
+    "target_node_count": 36,
+    "ending_count": 3,
+    "structure_pattern": "quest",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "Trail of the River Map",
+    "premise": "A teen guides a younger sibling down a marked river trail after the main bridge washes out.",
+    "protagonist": {
+      "name": "Wren",
+      "age": 14,
+      "role": "weekend trail guide"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 7.5,
+    "tier": 1,
+    "tone": "grounded adventure",
+    "themes_allowed": [
+      "leadership",
+      "caution"
+    ],
+    "content_nogo": [
+      "serious injury",
+      "character death"
+    ],
+    "target_node_count": 40,
+    "ending_count": 4,
+    "structure_pattern": "gauntlet",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Coral Census",
+    "premise": "A teen volunteer surveys a reef and uncovers why one section is quietly recovering.",
+    "protagonist": {
+      "name": "Kai",
+      "age": 14,
+      "role": "reef volunteer"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 7.5,
+    "tier": 1,
+    "tone": "curious and reflective",
+    "themes_allowed": [
+      "science",
+      "patience"
+    ],
+    "content_nogo": [
+      "graphic content"
+    ],
+    "target_node_count": 34,
+    "ending_count": 3,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Repair Shop After Hours",
+    "premise": "A teen apprentice locks up the bike shop and must solve a chain of small mysteries to find a missing delivery.",
+    "protagonist": {
+      "name": "Esme",
+      "age": 15,
+      "role": "bike-shop apprentice"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 8.0,
+    "tier": 1,
+    "tone": "light mystery",
+    "themes_allowed": [
+      "diligence",
+      "honesty"
+    ],
+    "content_nogo": [
+      "graphic violence"
+    ],
+    "target_node_count": 38,
+    "ending_count": 3,
+    "structure_pattern": "time_cave",
+    "desired_variables": [],
+    "special_constraints": []
+  },
+  {
+    "title": "The Clockmaker's Apprentice",
+    "premise": "An apprentice must wind the town's great clock, gathering the right gears in the right order before noon.",
+    "protagonist": {
+      "name": "Otto",
+      "age": 10,
+      "role": "clock apprentice"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 4.0,
+    "tier": 2,
+    "tone": "ticking adventure",
+    "themes_allowed": [
+      "precision",
+      "courage"
+    ],
+    "content_nogo": [
+      "graphic violence"
+    ],
+    "target_node_count": 24,
+    "ending_count": 3,
+    "structure_pattern": "loop_and_grow",
+    "desired_variables": [
+      "gears_collected",
+      "clock_wound"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "The Lantern Festival",
+    "premise": "A child collects three coloured flames to light the festival lantern without letting any go out.",
+    "protagonist": {
+      "name": "Lin",
+      "age": 9,
+      "role": "festival helper"
+    },
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.5,
+    "tier": 2,
+    "tone": "festive",
+    "themes_allowed": [
+      "generosity",
+      "care"
+    ],
+    "content_nogo": [
+      "fire injury"
+    ],
+    "target_node_count": 20,
+    "ending_count": 2,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [
+      "flames_lit",
+      "has_oil"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "The Backpack Inventory",
+    "premise": "A scout must pack exactly the right supplies, trading items at camp to be ready for an overnight hike.",
+    "protagonist": {
+      "name": "Remy",
+      "age": 11,
+      "role": "junior scout"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 5.0,
+    "tier": 2,
+    "tone": "practical adventure",
+    "themes_allowed": [
+      "preparation",
+      "teamwork"
+    ],
+    "content_nogo": [
+      "serious injury"
+    ],
+    "target_node_count": 30,
+    "ending_count": 3,
+    "structure_pattern": "gauntlet",
+    "desired_variables": [
+      "supplies",
+      "has_map",
+      "morale"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "Currents and Codes",
+    "premise": "A young diver collects code fragments from sunken buoys to unlock a weather station before a storm.",
+    "protagonist": {
+      "name": "Talia",
+      "age": 12,
+      "role": "junior diver"
+    },
+    "point_of_view": "second",
+    "age_band": "10-13",
+    "reading_level_target": 6.0,
+    "tier": 2,
+    "tone": "tense sci-fi",
+    "themes_allowed": [
+      "focus",
+      "bravery"
+    ],
+    "content_nogo": [
+      "drowning peril",
+      "character death"
+    ],
+    "target_node_count": 34,
+    "ending_count": 3,
+    "structure_pattern": "quest",
+    "desired_variables": [
+      "code_fragments",
+      "air_reserve"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "The Debate Cup",
+    "premise": "A teen earns confidence points through practice rounds, deciding when to take risks before the final debate.",
+    "protagonist": {
+      "name": "Mara",
+      "age": 13,
+      "role": "debate team rookie"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 7.0,
+    "tier": 2,
+    "tone": "motivational",
+    "themes_allowed": [
+      "self-confidence",
+      "preparation"
+    ],
+    "content_nogo": [
+      "humiliation that is not resolved"
+    ],
+    "target_node_count": 36,
+    "ending_count": 3,
+    "structure_pattern": "loop_and_grow",
+    "desired_variables": [
+      "confidence",
+      "rounds_won"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "The Relay Beacon",
+    "premise": "A teen ranger lights a chain of mountain beacons, managing fuel and daylight to signal the valley in time.",
+    "protagonist": {
+      "name": "Soren",
+      "age": 14,
+      "role": "trainee ranger"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 7.5,
+    "tier": 2,
+    "tone": "determined adventure",
+    "themes_allowed": [
+      "endurance",
+      "responsibility"
+    ],
+    "content_nogo": [
+      "serious injury",
+      "character death"
+    ],
+    "target_node_count": 42,
+    "ending_count": 4,
+    "structure_pattern": "gauntlet",
+    "desired_variables": [
+      "beacons_lit",
+      "fuel",
+      "daylight"
+    ],
+    "special_constraints": []
+  },
+  {
+    "title": "The Archive Restoration",
+    "premise": "A teen intern restores damaged records, choosing which to repair first as a deadline and budget shrink.",
+    "protagonist": {
+      "name": "Quinn",
+      "age": 15,
+      "role": "archive intern"
+    },
+    "point_of_view": "second",
+    "age_band": "13-16",
+    "reading_level_target": 8.0,
+    "tier": 2,
+    "tone": "thoughtful",
+    "themes_allowed": [
+      "judgement",
+      "diligence"
+    ],
+    "content_nogo": [
+      "graphic content"
+    ],
+    "target_node_count": 40,
+    "ending_count": 3,
+    "structure_pattern": "branch_and_bottleneck",
+    "desired_variables": [
+      "records_saved",
+      "budget"
+    ],
+    "special_constraints": []
+  }
+]
