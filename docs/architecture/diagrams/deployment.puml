@@ -1,0 +1,97 @@
+@startuml deployment
+' ============================================================
+' Deployment View: Homelab-first Docker deployment
+' CYO Adventure
+'
+' Source files:
+'   docs/planning/adr/adr-004-homelab-first-deployment.md
+'   docs/planning/tech-spec.md  (Infrastructure section)
+'   CLAUDE.md (Docker, Pangolin zero-trust, Authentik, Dockge)
+'
+' Note: MinIO shown as planned (deferred Phase 5).
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+
+node "Family Devices\n[browsers, tablets]" as devices #E3F2FD {
+  component "PWA\n(React 19 SPA)\nService Worker\n+ IndexedDB" as pwa_client #DDEEFF
+}
+
+cloud "OpenRouter API\nhttps://openrouter.ai" as openrouter_cloud #F3E5F5
+cloud "Authentik\n[OIDC provider]\nhomelab or cloud" as authentik_cloud #E0F7FA
+
+node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
+
+  node "Pangolin\n[Zero-trust reverse proxy\nTailscale / Cloudflare Tunnel]" as pangolin #CCEECC {
+    component "TLS termination\nHTTPS -> internal HTTP" as tls #CCEECC
+  }
+
+  node "cyo-backend\n[Docker container\ncyo-backend:latest]" as backend_container #B2DFDB {
+    component "FastAPI app\n(uvicorn, port 8000)\nsrc/cyo_adventure/\ncorrelation + security MW" as fastapi_app #B2DFDB
+    component "Static PWA assets\n(served by FastAPI\nor separate nginx)" as static_assets #B2DFDB
+  }
+
+  node "cyo-worker\n[Docker container\ncyo-worker:latest]" as worker_container #FFF3E0 {
+    component "RQ Worker\ngeneration/worker.py\nasync, long-running\nno inbound HTTP" as rq_worker #FFF3E0
+  }
+
+  node "cyo-postgres\n[Docker container\npostgres:16-alpine]" as postgres_container #FFF8E1 {
+    database "PostgreSQL 16\nport 5432\n9 tables\nAlembic migrations" as pg_db #FFF8E1
+  }
+
+  node "cyo-redis\n[Docker container\nredis:7-alpine]" as redis_container #E0E0E0 {
+    database "Redis 7\nport 6379\nRQ job queue\n(no persistence required)" as redis_db #E0E0E0
+  }
+
+  node "cyo-ollama\n[Docker container\nollama/ollama:latest]" as ollama_container #FFEBEE {
+    component "Ollama\nport 11434\nlocal LLM fallback\n(GPU if available)" as ollama_svc #FFEBEE
+  }
+
+  node "cyo-minio [planned Phase 5]\n[Docker container\nminio/minio]" as minio_container #E0E0E0 {
+    database "MinIO\nS3-compatible\nStorybook blob storage\nblog_ref column" as minio_db #E0E0E0
+  }
+
+}
+
+' --- Network flows ---
+pwa_client --> tls : "HTTPS (443)"
+tls --> fastapi_app : "HTTP (8000)"
+fastapi_app --> pg_db : "async SQLAlchemy\n5432"
+fastapi_app --> redis_db : "rq.Queue\n6379"
+fastapi_app --> ollama_svc : "HTTP\n11434"
+rq_worker --> redis_db : "dequeue\n6379"
+rq_worker --> pg_db : "update job\n5432"
+rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
+rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
+rq_worker ..> minio_db : "[Phase 5]\nS3 API"
+pwa_client --> authentik_cloud : "OIDC auth flow"
+fastapi_app --> authentik_cloud : "OIDC token validation\n[prod; dev uses token-as-subject]"
+
+note right of worker_container
+  The worker runs in a separate container
+  so long-running generation (30-120s) does
+  not block the API event loop.
+  Worker and API share the same image
+  or a shared base; Dockge manages the
+  compose stack.
+end note
+
+note right of minio_container
+  Phase 1: blob stored inline as JSONB
+  on storybook_version.blob.
+  Phase 5: MinIO container added;
+  blob_ref column set to S3 object key.
+end note
+
+note bottom of pwa_client
+  PWA assets cached by service worker
+  (Workbox via vite-plugin-pwa).
+  IndexedDB stores reading state for
+  offline play. Offline write queue
+  replays on reconnect with event_id
+  idempotency.
+end note
+
+@enduml

@@ -1,0 +1,156 @@
+@startuml er-diagram
+' ============================================================
+' Entity-Relationship Diagram: 9 ORM Tables
+' CYO Adventure
+'
+' Source file:
+'   src/cyo_adventure/db/models.py  (SQLAlchemy ORM, all tables, columns, FKs)
+'
+' Note: all timestamps are TIMESTAMP WITH TIME ZONE (timezone-aware).
+' Enum columns (role, status, age_band) are stored as strings (simple Alembic
+' migrations; validated at the application boundary).
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+
+entity "family" as family #E8F5E9 {
+  * id : UUID <<PK>>
+  --
+  name : VARCHAR(200)
+  created_at : TIMESTAMPTZ
+}
+
+entity "user" as user_t #E3F2FD {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  role : VARCHAR(16) [guardian | child]
+  authn_subject : VARCHAR(255) <<UNIQUE>>
+  child_profile_id : UUID <<FK child_profile.id, NULL>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "child_profile" as child_profile #FFF3E0 {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  display_name : VARCHAR(120)
+  age_band : VARCHAR(16) [8-11 | 10-13 | 13-16]
+  reading_level_cap : FLOAT [default 99.0]
+  allowed_content_flags : JSONB
+  tts_enabled : BOOLEAN
+  avatar : VARCHAR(255) NULL
+  created_at : TIMESTAMPTZ
+}
+
+entity "storybook" as storybook #F3E5F5 {
+  * id : VARCHAR(120) <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  current_published_version : INT NULL
+  status : VARCHAR(20) [draft|generating|auto_check|in_review|approved|published|archived|needs_revision]
+  created_by : UUID <<FK user.id, NULL>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "storybook_version" as storybook_version #F3E5F5 {
+  * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
+  * version : INT <<PK>>
+  --
+  blob : JSONB [Storybook JSON content]
+  blob_ref : VARCHAR(512) NULL [MinIO key, Phase 5]
+  validation_report : JSONB NULL
+  moderation_report : JSONB NULL
+  approved_by : UUID <<FK user.id, NULL>>
+  published_at : TIMESTAMPTZ NULL
+  model : VARCHAR(120) NULL [LLM model id]
+  prompt_version : VARCHAR(120) NULL
+  created_at : TIMESTAMPTZ
+}
+
+entity "reading_state" as reading_state #E0F7FA {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
+  --
+  version : INT [pinned to storybook_version via composite FK]
+  current_node : VARCHAR(120)
+  var_state : JSONB
+  path : JSONB
+  visit_set : JSONB [drives once:true effects]
+  save_slots : JSONB
+  state_revision : INT [server-owned OCC counter]
+  last_event_id : VARCHAR(64) NULL [idempotency key]
+  updated_by_device_id : VARCHAR(64) NULL
+  last_synced_at : TIMESTAMPTZ NULL
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+}
+
+entity "completion" as completion #DCEDC8 {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * storybook_id : VARCHAR(120) <<PK>>
+  * version : INT <<PK>>
+  * ending_id : VARCHAR(120) <<PK>>
+  --
+  found_at : TIMESTAMPTZ
+}
+
+entity "concept" as concept #FFF8E1 {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  brief : JSONB [ConceptBrief payload]
+  created_by : UUID <<FK user.id, NULL>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "generation_job" as generation_job #FFEBEE {
+  * id : UUID <<PK>>
+  --
+  * concept_id : UUID <<FK concept.id>>
+  status : VARCHAR(20) [queued|running|passed|needs_review|failed]
+  model : VARCHAR(120) NULL
+  provider : VARCHAR(120) NULL
+  prompt_version : VARCHAR(120) NULL
+  report : JSONB NULL [GenerationOutcome JSON]
+  storybook_id : VARCHAR(120) NULL [NOT FK, see note]
+  version : INT NULL
+  error : VARCHAR(512) NULL
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+}
+
+' --- Relationships ---
+family ||--o{ user_t : "1 family\nhas many users"
+family ||--o{ child_profile : "1 family\nhas many profiles"
+family ||--o{ storybook : "1 family\nhas many storybooks"
+family ||--o{ concept : "1 family\nhas many concepts"
+user_t }o--o| child_profile : "child user\nassigned to 1 profile\n(NULL for guardians)"
+storybook ||--|{ storybook_version : "1 storybook\n1+ versions"
+child_profile ||--o{ reading_state : "1 profile\nmany reading states"
+storybook ||--o{ reading_state : "1 story\nmany reader states"
+storybook_version ||--o{ reading_state : "(storybook_id, version)\ncomposite FK"
+child_profile ||--o{ completion : "1 profile\nmany completions"
+storybook_version ||--o{ completion : "(storybook_id, version)\ncomposite FK"
+concept ||--o{ generation_job : "1 concept\nmany job attempts"
+
+note right of generation_job
+  storybook_id is NOT a foreign key.
+  A job may fail before any storybook
+  row exists; a hard FK would block
+  inserting the failure record.
+  Application layer verifies the
+  storybook row exists when reading
+  this field.
+end note
+
+note bottom of reading_state
+  Composite FK (storybook_id, version)
+  references storybook_version (pk).
+  Prevents saving state for a version
+  that does not exist.
+end note
+
+@enduml

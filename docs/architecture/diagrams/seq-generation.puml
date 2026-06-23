@@ -1,0 +1,121 @@
+@startuml seq-generation
+' ============================================================
+' Sequence Diagram: Staged Generation Pipeline
+' Structure -> Prose -> Repair with provider fallback cascade
+' and validation gate outcomes
+'
+' Source files:
+'   src/cyo_adventure/generation/orchestrator.py  (module docstring + generate_story)
+'   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
+'   src/cyo_adventure/generation/pii.py
+'   src/cyo_adventure/generation/prompts.py
+'   src/cyo_adventure/validator/gate.py
+'   src/cyo_adventure/generation/worker.py
+'   docs/planning/adr/adr-003-frontier-llm-generation.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam sequenceMessageAlign center
+
+actor "Guardian" as guardian
+participant "API\ngeneration.py" as api
+participant "RQ Worker\nworker.py" as worker
+participant "Orchestrator\norchestrator.py" as orch
+participant "Prompt Builder\nprompts.py" as prompts
+participant "PII Guard\npii.py" as pii
+participant "FallbackProvider\nfallback.py" as fallback
+participant "OpenRouter\n[primary leg]" as or_provider
+participant "Ollama\n[fallback leg]" as ol_provider
+participant "Validator Gate\ngate.py" as gate
+database "PostgreSQL\nGenerationJob" as pg
+
+guardian -> api : "POST /concepts/{id}/generate\n(bearer token)"
+api -> pg : "INSERT GenerationJob\nstatus='queued'"
+api -> api : "BackgroundTask:\n_enqueue_safely(job_id)"
+api --> guardian : "202 Accepted\n{job_id, status:'queued'}"
+api -> worker : "[RQ] enqueue job_id"
+
+worker -> pg : "UPDATE status='running'"
+worker -> orch : "generate_story(brief, provider=fallback, pii)"
+
+' --- Stage A ---
+orch -> prompts : "build_structure_prompt(brief)"
+prompts --> orch : "StagePrompt (system + user)"
+orch -> pii : "assert_prompt_pii_safe(system)\nassert_prompt_pii_safe(user)"
+pii --> orch : "OK (or raises ValidationError -> abort)"
+orch -> fallback : "provider.complete(system, user, max_tokens=16384)"
+fallback -> or_provider : "attempt leg 0 (OpenRouter)"
+
+alt transient failure (429/5xx)
+  or_provider --> fallback : "httpx error / HTTP 429"
+  fallback -> fallback : "retry same leg\n(exp. backoff)"
+  or_provider --> fallback : "success after retry"
+else leg-fatal failure (401/400)
+  or_provider --> fallback : "HTTP 401/400"
+  fallback -> fallback : "mark leg 0 dead\nfail over to leg 1"
+  fallback -> ol_provider : "attempt leg 1 (Ollama)"
+  ol_provider --> fallback : "raw text"
+end
+
+fallback --> orch : "raw text"
+orch -> orch : "json.loads(raw)\n[parse error -> synthetic blocked gate]"
+orch -> gate : "run_gate(parsed_doc)"
+gate --> orch : "GateResult(blocked, safety_flagged)"
+
+alt Stage A blocked
+  orch -> orch : "stage_log: 'stage_a:blocked'\nskip Stage B, go to repair"
+else Stage A clean
+  orch -> orch : "stage_log: 'stage_a:gate_ok'"
+
+  ' --- Stage B ---
+  orch -> prompts : "build_prose_prompt(skeleton_json, brief)"
+  prompts --> orch : "StagePrompt"
+  orch -> pii : "assert_prompt_pii_safe(both blocks)"
+  pii --> orch : "OK"
+  orch -> fallback : "provider.complete(max_tokens=32000)"
+  fallback -> or_provider : "attempt (or next live leg)"
+  or_provider --> fallback : "raw text"
+  fallback --> orch : "raw text"
+  orch -> gate : "run_gate(parsed_doc)"
+  gate --> orch : "GateResult"
+  orch -> orch : "stage_log: 'stage_b:gate_ok|blocked'"
+end
+
+' --- Stage C (Repair loop, runs when blocked) ---
+group "Stage C: Repair Loop [while blocked AND attempts < max_repairs=3]"
+  orch -> prompts : "build_repair_prompt(current_json, failing_findings)"
+  prompts --> orch : "StagePrompt"
+  orch -> pii : "assert_prompt_pii_safe()"
+  pii --> orch : "OK"
+  orch -> fallback : "provider.complete(max_tokens=32000)"
+  fallback --> orch : "raw text"
+  orch -> gate : "run_gate(new_doc)"
+  gate --> orch : "GateResult"
+  orch -> orch : "check no-progress signature\n(same findings + same doc hash -> abort)"
+  orch -> orch : "stage_log: 'repair:N' or 'repair:no_progress_abort'"
+end
+
+' --- Outcome mapping ---
+orch -> orch : "_build_outcome(gate_result, doc, attempts)"
+
+alt passed: gate clean, not safety_flagged
+  orch --> worker : "GenerationOutcome(status='passed', storybook=doc)"
+  worker -> pg : "UPDATE status='passed'\nstorybook_id, version, report"
+else needs_review: gate clean but safety_flagged
+  orch --> worker : "GenerationOutcome(status='needs_review')"
+  worker -> pg : "UPDATE status='needs_review'"
+else needs_review: blocked after exhausting repairs (doc present)
+  orch --> worker : "GenerationOutcome(status='needs_review')"
+  worker -> pg : "UPDATE status='needs_review'"
+else failed: blocked, no parseable doc produced
+  orch --> worker : "GenerationOutcome(status='failed')"
+  worker -> pg : "UPDATE status='failed', error=..."
+end
+
+guardian -> api : "GET /generation-jobs/{job_id}"
+api -> pg : "SELECT GenerationJob"
+api --> guardian : "{status, report, storybook_id}"
+
+@enduml
