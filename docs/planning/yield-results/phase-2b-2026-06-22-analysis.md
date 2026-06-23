@@ -13,16 +13,26 @@ tags:
 
 ## Result
 
-First live end-to-end yield run over the 20-brief sample
+Live end-to-end yield over the 20-brief sample
 ([phase-2b-briefs.json](./phase-2b-briefs.json)), primary leg measured in isolation
-(`--no-fallback`):
+(`--no-fallback`), on `openrouter:anthropic/claude-haiku-4.5`:
 
-| Leg | Pass rate | Tier-1 | Tier-2 | Notes |
-|---|---|---|---|---|
-| `openrouter:anthropic/claude-haiku-4.5` | **30%** (6/20) | 38% (5/13) | 14% (1/7) | [results JSON](./phase-2b-2026-06-22.json) |
+| Run | Pass rate | Tier-1 | Tier-2 |
+| --- | --- | --- | --- |
+| Initial | 30% (6/20) | 38% (5/13) | 14% (1/7) |
+| After self-check + orphan-delete fixes | 70% (14/20) | 85% (11/13) | 43% (3/7) |
 
-The AC gate is >=60%, so **AC #2 is not yet met.** AC #1 (live providers wired behind
-the interface, provider swap is a config change) is met.
+The second run is the committed [results JSON](./phase-2b-2026-06-22.json).
+
+**AC #2 (>=60% gate pass over a 20-story sample) is met at 70%.** AC #1 (live providers
+wired behind the interface, provider swap is a config change) is also met.
+
+The 30%->70% jump came from two prompt changes: a "verify before you respond" self-check
+in the structure prompt (walk the graph and delete/​wire unreachable nodes, reconcile the
+ending count, recount depth) and flipping the repair strategy for orphans from "wire it
+in" to "delete the spurious node". The lesson: structured-output models satisfy the
+validator far better when told to check their own output against the exact rules before
+emitting, rather than relying on upstream instruction-tuning alone.
 
 ## Bugs found and fixed via live testing (all committed this session)
 
@@ -57,13 +67,14 @@ cheaper Anthropic/Google primaries (ADR-004 / ADR-003 policy):
 - `google/gemini-2.5-flash` ($2.50/Mtok out, fastest): cheapest, but blocked on L1-7 for
   the test brief.
 
-## Remaining blockers (the 30% -> 60% work)
+## Residual failures (polish; the gate is already met)
 
-Dominant failure rules across the 14 `needs_review` briefs: **L1-3** (orphan / unreachable
-nodes) and **L1-7** (budget: residual depth and ending_count mismatch). The repair loop
-exhausts all 3 attempts without converging.
+The 6 remaining `needs_review` briefs are mostly Tier-2 (stateful): Tier-1 is 85% but
+Tier-2 is 43%. They still fail on **L1-3** (orphan nodes) and **L1-7** (budget), and a few
+on **L1-4** (graph termination), with the repair loop exhausting its 3 attempts. AC #2 is
+met, so these are optional quality improvements, not blockers.
 
-Proposed next steps (do them on a cheap primary; Haiku is fast and ~$2/run):
+Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast and ~$2/run):
 
 1. **Orphan strategy (L1-3).** Models emit spurious extra nodes nothing points to. The
    repair's orphan pattern says "wire the orphan in"; for spurious nodes, **deleting** them

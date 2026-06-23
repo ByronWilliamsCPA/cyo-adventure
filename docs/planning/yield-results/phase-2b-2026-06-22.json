@@ -6,69 +6,59 @@
   "tier_split": {
     "tier1": {
       "total": 13,
-      "passed": 5
+      "passed": 11
     },
     "tier2": {
       "total": 7,
-      "passed": 1
+      "passed": 3
     }
   },
   "total": 20,
-  "passed": 6,
-  "pass_rate": 0.3,
-  "meets_threshold": false,
+  "passed": 14,
+  "pass_rate": 0.7,
+  "meets_threshold": true,
   "per_story": [
     {
       "index": 0,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-7"
-      ],
-      "latency_s": 56.42
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 34.71
     },
     {
       "index": 1,
       "status": "passed",
-      "attempts": 3,
+      "attempts": 1,
       "failing_rule_ids": [],
-      "latency_s": 53.95
+      "latency_s": 27.75
     },
     {
       "index": 2,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3"
-      ],
-      "latency_s": 72.95
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 23.84
     },
     {
       "index": 3,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3",
-        "L1-7"
-      ],
-      "latency_s": 64.2
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 26.93
     },
     {
       "index": 4,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3",
-        "L1-7"
-      ],
-      "latency_s": 59.97
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 50.06
     },
     {
       "index": 5,
       "status": "passed",
-      "attempts": 1,
+      "attempts": 0,
       "failing_rule_ids": [],
-      "latency_s": 37.56
+      "latency_s": 63.63
     },
     {
       "index": 6,
@@ -76,33 +66,31 @@
       "attempts": 3,
       "failing_rule_ids": [
         "L1-3",
+        "L1-4",
         "L1-7"
       ],
-      "latency_s": 85.16
+      "latency_s": 98.53
     },
     {
       "index": 7,
       "status": "passed",
       "attempts": 2,
       "failing_rule_ids": [],
-      "latency_s": 68.56
+      "latency_s": 54.96
     },
     {
       "index": 8,
       "status": "passed",
-      "attempts": 1,
+      "attempts": 0,
       "failing_rule_ids": [],
-      "latency_s": 38.01
+      "latency_s": 43.62
     },
     {
       "index": 9,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3",
-        "L1-7"
-      ],
-      "latency_s": 111.74
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 52.0
     },
     {
       "index": 10,
@@ -112,42 +100,38 @@
         "L1-3",
         "L1-7"
       ],
-      "latency_s": 124.04
+      "latency_s": 120.68
     },
     {
       "index": 11,
       "status": "passed",
-      "attempts": 0,
+      "attempts": 2,
       "failing_rule_ids": [],
-      "latency_s": 63.09
+      "latency_s": 54.94
     },
     {
       "index": 12,
-      "status": "needs_review",
-      "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3",
-        "L1-7"
-      ],
-      "latency_s": 104.14
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 55.91
     },
     {
       "index": 13,
-      "status": "needs_review",
+      "status": "passed",
       "attempts": 3,
-      "failing_rule_ids": [
-        "L1-7"
-      ],
-      "latency_s": 86.83
+      "failing_rule_ids": [],
+      "latency_s": 83.68
     },
     {
       "index": 14,
       "status": "needs_review",
       "attempts": 3,
       "failing_rule_ids": [
+        "L1-3",
         "L1-7"
       ],
-      "latency_s": 87.26
+      "latency_s": 77.94
     },
     {
       "index": 15,
@@ -155,19 +139,17 @@
       "attempts": 3,
       "failing_rule_ids": [
         "L1-3",
+        "L1-4",
         "L1-7"
       ],
-      "latency_s": 126.78
+      "latency_s": 139.99
     },
     {
       "index": 16,
-      "status": "needs_review",
+      "status": "passed",
       "attempts": 3,
-      "failing_rule_ids": [
-        "L1-3",
-        "L1-7"
-      ],
-      "latency_s": 114.42
+      "failing_rule_ids": [],
+      "latency_s": 78.8
     },
     {
       "index": 17,
@@ -177,23 +159,24 @@
         "L1-3",
         "L1-7"
       ],
-      "latency_s": 109.27
+      "latency_s": 85.36
     },
     {
       "index": 18,
       "status": "needs_review",
       "attempts": 3,
       "failing_rule_ids": [
-        "L1-3"
+        "L1-3",
+        "L1-7"
       ],
-      "latency_s": 127.0
+      "latency_s": 113.59
     },
     {
       "index": 19,
       "status": "passed",
       "attempts": 1,
       "failing_rule_ids": [],
-      "latency_s": 49.34
+      "latency_s": 57.8
     }
   ]
 }
