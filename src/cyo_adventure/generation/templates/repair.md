@@ -40,8 +40,12 @@ each violation in the validator report.
 
 ### Common repair patterns
 
-- **Orphan node** (rule: reachability): add a `target` on an existing choice in a
-  reachable node pointing to the orphan node. Do not delete the orphan.
+- **Orphan node** (rule L1-3 reachability): a node that nothing points to. If it is a
+  spurious extra node (a duplicate, or one clearly left unwired), DELETE it from the
+  `nodes` array; this is usually the right fix and the most reliable way to clear the
+  violation. Only if the node is genuine, needed content, instead add a `target` on an
+  existing choice in a reachable node that points to it. After editing, re-walk from
+  `start_node` and confirm no node remains unreachable.
 - **Dead end** (rule: stateful dead-end or graph termination): add a choice to the
   dead-end node that leads toward an existing ending. The choice label must make
   narrative sense in context.

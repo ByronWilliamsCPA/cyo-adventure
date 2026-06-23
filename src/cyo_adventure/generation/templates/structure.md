@@ -75,6 +75,24 @@ must contain:
   must be declared in the `variables` array. Do not use arithmetic, string operators,
   or `if`/ternary.
 
+## Final Self-Check (do this before you respond)
+
+Before emitting the JSON, trace your own graph and fix any problem you find. The
+validator rejects the whole story on any of these, so do not skip this step:
+
+1. **No orphan nodes.** Every node id must be either the `start_node` or appear as the
+   `target` of at least one choice on a reachable node. Walk from `start_node` following
+   choice targets and mark every node you can reach. Any node you did NOT reach is an
+   orphan: either DELETE it from the `nodes` array (preferred for spurious or duplicate
+   nodes) or add a choice on a reachable node whose `target` is that node. Do not leave a
+   single unreachable node.
+2. **Ending count is exact.** Count the nodes with `"is_ending": true`. That count must
+   equal `metadata.ending_count` and the number of endings the Budget section requires,
+   exactly. Add or remove ending nodes until they match.
+3. **Depth fits.** Trace the longest path from `start_node` to any ending and count its
+   choices. If it exceeds the Budget's max depth, redirect choice targets to jump forward
+   and reconverge until every path fits.
+
 ## Output
 
 Respond with valid JSON only. Do not include prose before or after the JSON. Do not
