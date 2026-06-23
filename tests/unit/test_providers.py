@@ -25,6 +25,7 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
+from cyo_adventure.generation.providers._base import strip_code_fences
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -294,6 +295,43 @@ class TestOpenRouterProvider:
 
         provider = _openrouter(handler, model="anthropic/claude-sonnet-4.6")
         assert provider.name == "openrouter:anthropic/claude-sonnet-4.6"
+
+    @pytest.mark.asyncio
+    async def test_strips_markdown_code_fence(self) -> None:
+        """A model that wraps JSON in a ```json fence is normalized to raw JSON.
+
+        Gemini Flash and Haiku wrap output despite instructions; the orchestrator
+        parses with json.loads, so the adapter must return de-fenced content.
+        """
+        fenced = '```json\n{"schema_version": "1.0"}\n```'
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body(fenced))
+
+        provider = _openrouter(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == '{"schema_version": "1.0"}'
+        assert json.loads(result) == {"schema_version": "1.0"}
+
+
+class TestStripCodeFences:
+    """Unit tests for the shared fence-stripping helper."""
+
+    def test_plain_json_unchanged(self) -> None:
+        """Raw JSON without a fence is returned unchanged (original models)."""
+        assert strip_code_fences('{"a": 1}') == '{"a": 1}'
+
+    def test_json_language_fence(self) -> None:
+        """A ```json fence is removed."""
+        assert strip_code_fences('```json\n{"a": 1}\n```') == '{"a": 1}'
+
+    def test_bare_fence(self) -> None:
+        """A bare ``` fence (no language tag) is removed."""
+        assert strip_code_fences('```\n{"a": 1}\n```') == '{"a": 1}'
+
+    def test_surrounding_whitespace(self) -> None:
+        """Leading/trailing whitespace around the fence is trimmed."""
+        assert strip_code_fences('  \n```json\n{"a": 1}\n```\n  ') == '{"a": 1}'
 
 
 # ---------------------------------------------------------------------------

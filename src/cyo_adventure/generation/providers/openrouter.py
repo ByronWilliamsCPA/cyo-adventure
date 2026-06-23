@@ -25,6 +25,7 @@ from cyo_adventure.generation.providers._base import (
     DEFAULT_MAX_RETRIES,
     as_str_map,
     run_with_retries,
+    strip_code_fences,
 )
 
 if TYPE_CHECKING:
@@ -276,7 +277,9 @@ class OpenRouterProvider:
             raise ProviderError(
                 msg, provider="openrouter", model=self._model, leg_fatal=False
             )
-        return content
+        # Normalize away any markdown code fence so the orchestrator's json.loads
+        # parses models (e.g. Gemini Flash) that wrap output despite instructions.
+        return strip_code_fences(content)
 
 
 def _dig_content(payload: object) -> str | None:

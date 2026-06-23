@@ -22,6 +22,7 @@ from cyo_adventure.generation.providers._base import (
     DEFAULT_MAX_RETRIES,
     as_str_map,
     run_with_retries,
+    strip_code_fences,
 )
 
 if TYPE_CHECKING:
@@ -208,4 +209,6 @@ class OllamaProvider:
             raise ProviderError(
                 msg, provider="ollama", model=self._model, leg_fatal=False
             )
-        return content
+        # Normalize away any markdown code fence so the orchestrator's json.loads
+        # parses local models that wrap output despite instructions.
+        return strip_code_fences(content)

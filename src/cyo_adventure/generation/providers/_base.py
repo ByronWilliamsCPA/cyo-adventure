@@ -24,6 +24,33 @@ DEFAULT_MAX_RETRIES: Final[int] = 3
 DEFAULT_BACKOFF_BASE_SECONDS: Final[float] = 2.0
 
 
+def strip_code_fences(text: str) -> str:
+    """Remove a wrapping markdown code fence from a model's JSON output.
+
+    Some models (e.g. Gemini Flash, Haiku) wrap their JSON in a ```json ... ```
+    fence even when told not to; the orchestrator parses with ``json.loads`` and
+    would reject the leading backticks. This strips a leading fence line
+    (``` or ```json) and a matching trailing ```; non-fenced output is returned
+    unchanged, so models that already emit raw JSON are unaffected.
+
+    Args:
+        text: The raw completion text from a model.
+
+    Returns:
+        The text with a wrapping code fence removed, if present.
+    """
+    stripped = text.strip()
+    if not stripped.startswith("```"):
+        return stripped
+    newline = stripped.find("\n")
+    # Drop the opening fence line (everything up to and including the newline).
+    stripped = stripped[newline + 1 :] if newline != -1 else stripped[3:]
+    stripped = stripped.rstrip()
+    if stripped.endswith("```"):
+        stripped = stripped[:-3].rstrip()
+    return stripped
+
+
 def as_str_map(value: object) -> dict[str, object] | None:
     """Narrow an untrusted decoded-JSON value to a string-keyed mapping.
 
