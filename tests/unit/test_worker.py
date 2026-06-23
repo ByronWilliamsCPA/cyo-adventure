@@ -146,8 +146,9 @@ class TestSplitBasicAuth:
     @pytest.mark.parametrize(
         ("value", "expected"),
         [
+            # The real username is exactly svc-cyo (the Authentik service account).
             ("svc-cyo:app-pw", ("svc-cyo", "app-pw")),
-            # Per-device service account naming, the operator's real shape.
+            # A username containing hyphens still splits on the first colon.
             ("svc-cyo-laptop:abc123", ("svc-cyo-laptop", "abc123")),
             # First-colon split keeps a password that itself contains colons.
             ("user:p:a:ss", ("user", "p:a:ss")),
