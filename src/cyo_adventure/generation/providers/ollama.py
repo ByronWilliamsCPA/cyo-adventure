@@ -40,6 +40,7 @@ from cyo_adventure.generation.providers._base import (
 )
 
 if TYPE_CHECKING:
+    import ssl
     from collections.abc import Mapping
 
 # HTTP statuses worth retrying against the same local model. 5xx is also treated
@@ -65,6 +66,10 @@ class OllamaProvider:
         username: Optional HTTP Basic-auth user. Basic auth is attached only when
             both ``username`` and ``password`` are provided.
         password: Optional HTTP Basic-auth password (a secret; never logged).
+        verify: TLS verification for self-created clients. ``True`` uses the
+            public CA store; pass an ``ssl.SSLContext`` (e.g. system CAs plus the
+            Homelab CA bundle) to verify a privately-signed homelab cert. Not a
+            bypass. Ignored when ``client`` is injected.
         max_retries: Number of attempts for transient failures (default 3).
         backoff_base_seconds: Base for exponential backoff between transient
             retries. Set to ``0`` in tests to avoid real sleeping.
@@ -81,6 +86,7 @@ class OllamaProvider:
         timeout_seconds: int,
         username: str | None = None,
         password: str | None = None,
+        verify: ssl.SSLContext | bool = True,
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
@@ -88,6 +94,10 @@ class OllamaProvider:
         self._model: Final[str] = model
         self._base_url: Final[str] = base_url.rstrip("/")
         self._timeout_seconds: Final[int] = timeout_seconds
+        # TLS verification for self-created clients: True uses the public CA store;
+        # an SSLContext (system CAs + Homelab bundle) verifies the privately-signed
+        # homelab cert. Ignored when a client is injected (tests own their context).
+        self._verify: Final[ssl.SSLContext | bool] = verify
         # Attach Basic auth only when both halves are present; a partial
         # credential is treated as no credential (the 302 path then surfaces a
         # clear leg-fatal error rather than a confusing half-authenticated call).
@@ -161,7 +171,9 @@ class OllamaProvider:
         try:
             if self._client is not None:
                 return await self._stream(self._client, url, body)
-            async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
+            async with httpx.AsyncClient(
+                timeout=self._timeout_seconds, verify=self._verify
+            ) as client:
                 return await self._stream(client, url, body)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             msg = f"ollama request failed: {type(exc).__name__}"

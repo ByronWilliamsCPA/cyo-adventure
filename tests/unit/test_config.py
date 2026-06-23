@@ -82,6 +82,26 @@ class TestOllamaProviderSettings:
         assert Settings().ollama_auth is None
 
     @pytest.mark.unit
+    def test_ollama_ca_bundle_default_is_none(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With no OLLAMA_CA_BUNDLE set, ollama_ca_bundle is None (system CAs)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("OLLAMA_CA_BUNDLE", raising=False)
+        assert Settings().ollama_ca_bundle is None
+
+    @pytest.mark.unit
+    def test_ollama_ca_bundle_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ollama_ca_bundle is read from the unprefixed OLLAMA_CA_BUNDLE var."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("OLLAMA_CA_BUNDLE", "certs/homelab-ca.pem")
+        assert Settings().ollama_ca_bundle == "certs/homelab-ca.pem"
+
+    @pytest.mark.unit
     def test_ollama_base_url_default_is_localhost(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:

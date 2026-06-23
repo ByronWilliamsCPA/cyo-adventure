@@ -169,6 +169,17 @@ class Settings(BaseSettings):
     # ProviderError message includes the credential.
     ollama_auth: str | None = Field(default=None, validation_alias="OLLAMA_AUTH")
 
+    # Optional path to a CA bundle for verifying the Ollama host's TLS cert. The
+    # homelab host is fronted by Traefik serving a privately-signed cert (Homelab
+    # CA) until the public wildcard is in place, so the public CA store alone
+    # cannot verify it. Point this at the Homelab root+intermediate bundle to
+    # verify properly (NOT a verification bypass). build_provider loads it ON TOP
+    # of the system CAs, so the same setting keeps working once the host serves a
+    # publicly-trusted cert. Leave unset for a direct local Ollama (plain http).
+    ollama_ca_bundle: str | None = Field(
+        default=None, validation_alias="OLLAMA_CA_BUNDLE"
+    )
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.

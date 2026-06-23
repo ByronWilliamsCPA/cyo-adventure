@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and defaults `ollama_model` to the team-recommended tuned `qwen-assistant:latest`
   alias (raw `qwen3` is a reasoning model that can return empty content under a
   tight token budget).
+- Optional `OLLAMA_CA_BUNDLE` setting: when the homelab host serves a
+  privately-signed (Homelab CA) TLS cert, point this at the CA bundle and the
+  adapter loads it on top of the system CA store so verification succeeds without
+  disabling TLS verification. Unset uses the public CA store; the same setting
+  keeps working once the host serves a publicly-trusted cert.
 - Initial project setup and structure
 - `environment` setting plus a fail-fast guard that refuses to start outside a
   local environment when the development default database URL is still in use
