@@ -14,7 +14,7 @@ the three-layer failure model:
 from __future__ import annotations
 
 import json
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import httpx
 import pytest
@@ -55,7 +55,7 @@ def _openrouter(
     *,
     model: str = "anthropic/claude-sonnet-4.6",
     max_retries: int = 3,
-    effort: str = "off",
+    effort: Literal["off", "low", "medium", "high"] = "off",
 ) -> OpenRouterProvider:
     """Build an OpenRouterProvider wired to a mock client with no backoff sleep."""
     return OpenRouterProvider(
@@ -212,6 +212,25 @@ class TestOpenRouterProvider:
         with pytest.raises(ProviderError) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [400, 402, 403])
+    async def test_other_4xx_are_leg_fatal_without_retry(self, status: int) -> None:
+        """400 (bad request), 402 (out of credits), and 403 (forbidden) are
+        leg-fatal and must not retry against the same model."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(status, json={"error": "fatal"})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert exc_info.value.status_code == status
+        assert calls == 1
 
     @pytest.mark.asyncio
     async def test_429_retries_then_succeeds(self) -> None:
@@ -523,3 +542,34 @@ class TestFallbackProvider:
         """The cascade name lists its legs in order."""
         cascade = FallbackProvider(legs=[_StubLeg("a", []), _StubLeg("b", [])])
         assert cascade.name == "fallback[a,b]"
+
+
+# ---------------------------------------------------------------------------
+# ProviderError construction invariant
+# ---------------------------------------------------------------------------
+
+
+class TestProviderErrorInvariant:
+    """The leg_fatal/status_code pairing guard that protects the circuit breaker."""
+
+    def test_provider_error_rejects_fatal_success_status(self) -> None:
+        """leg_fatal=True with a successful (< 400) status_code is rejected: a
+        2xx/3xx response cannot represent a fatal leg failure."""
+        with pytest.raises(ValueError, match="contradictory"):
+            ProviderError(
+                "impossible", provider="openrouter", status_code=200, leg_fatal=True
+            )
+
+    def test_provider_error_allows_fatal_4xx(self) -> None:
+        """leg_fatal=True with a 4xx status_code is the normal leg-fatal case."""
+        err = ProviderError(
+            "bad model", provider="openrouter", status_code=404, leg_fatal=True
+        )
+        assert err.leg_fatal is True
+        assert err.status_code == 404
+
+    def test_provider_error_allows_transient_without_status(self) -> None:
+        """A transient error (leg_fatal=False) needs no status_code."""
+        err = ProviderError("timeout", provider="ollama", leg_fatal=False)
+        assert err.leg_fatal is False
+        assert err.status_code is None
