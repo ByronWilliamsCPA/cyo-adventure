@@ -6,8 +6,13 @@ comparison target against the OpenRouter legs.
 
 Like the OpenRouter adapter it owns **Layer 1**: transient failures (connection
 refused when Ollama is down, timeout, HTTP 5xx) are retried with backoff; a
-missing model (HTTP 404) is leg-fatal. Ollama needs no credential and does its
-own KV caching via ``keep_alive``, so there is no prompt-cache control here.
+missing model (HTTP 404) is leg-fatal. A direct local Ollama needs no credential
+and does its own KV caching via ``keep_alive``, so there is no prompt-cache
+control here. When the server is fronted by an auth proxy (the homelab host runs
+Traefik + Authentik), optional HTTP Basic credentials are attached; an
+unauthenticated request to that path answers ``302`` (redirect to the login
+flow), which this adapter maps to a leg-fatal error rather than parsing the
+redirect body as a completion.
 """
 
 from __future__ import annotations
@@ -43,9 +48,14 @@ class OllamaProvider:
     Satisfies the ``GenerationProvider`` protocol structurally.
 
     Args:
-        model: Ollama model name (e.g. ``"qwen3"``).
-        base_url: Ollama server base url (e.g. ``"http://localhost:11434"``).
+        model: Ollama model name (e.g. ``"qwen3:30b"``).
+        base_url: Ollama server base url. Either a direct host
+            (``"http://localhost:11434"``) or an auth-proxied HTTPS vhost
+            (``"https://ollama.svc.williamshome.family"``, no explicit port).
         timeout_seconds: Per-attempt wall-clock timeout for one HTTP call.
+        username: Optional HTTP Basic-auth user. Basic auth is attached only when
+            both ``username`` and ``password`` are provided.
+        password: Optional HTTP Basic-auth password (a secret; never logged).
         max_retries: Number of attempts for transient failures (default 3).
         backoff_base_seconds: Base for exponential backoff between transient
             retries. Set to ``0`` in tests to avoid real sleeping.
@@ -60,6 +70,8 @@ class OllamaProvider:
         model: str,
         base_url: str,
         timeout_seconds: int,
+        username: str | None = None,
+        password: str | None = None,
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
@@ -67,6 +79,14 @@ class OllamaProvider:
         self._model: Final[str] = model
         self._base_url: Final[str] = base_url.rstrip("/")
         self._timeout_seconds: Final[int] = timeout_seconds
+        # Attach Basic auth only when both halves are present; a partial
+        # credential is treated as no credential (the 302 path then surfaces a
+        # clear leg-fatal error rather than a confusing half-authenticated call).
+        self._auth: Final[httpx.BasicAuth | None] = (
+            httpx.BasicAuth(username, password)
+            if username is not None and password is not None
+            else None
+        )
         self._max_retries: Final[int] = max_retries
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
         self._client: Final[httpx.AsyncClient | None] = client
@@ -131,10 +151,10 @@ class OllamaProvider:
         """
         try:
             if self._client is not None:
-                response = await self._client.post(url, json=body)
+                response = await self._post(self._client, url, body)
             else:
                 async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
-                    response = await client.post(url, json=body)
+                    response = await self._post(client, url, body)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             msg = f"ollama request failed: {type(exc).__name__}"
             raise ProviderError(
@@ -144,6 +164,29 @@ class OllamaProvider:
         self._raise_for_status(response)
         return self._extract_content(response)
 
+    async def _post(
+        self, client: httpx.AsyncClient, url: str, body: Mapping[str, object]
+    ) -> httpx.Response:
+        """POST ``body`` to ``url`` on ``client``, attaching Basic auth if set.
+
+        ``auth`` is passed only when a credential is configured: httpx's ``auth``
+        parameter type does not admit ``None`` (its "no override" sentinel is
+        ``UseClientDefault``), so omitting the keyword is the type-clean way to
+        send no credential.
+
+        Args:
+            client: The AsyncClient to use (injected for tests, or per-call).
+            url: The Ollama chat endpoint url.
+            body: The JSON request body.
+
+        Returns:
+            The HTTP response (status not yet inspected).
+        """
+        auth = self._auth
+        if auth is None:
+            return await client.post(url, json=body)
+        return await client.post(url, json=body, auth=auth)
+
     def _raise_for_status(self, response: httpx.Response) -> None:
         """Map a non-2xx HTTP status to a ProviderError with the right fatality.
 
@@ -151,12 +194,31 @@ class OllamaProvider:
             response: The HTTP response to inspect.
 
         Raises:
-            ProviderError: Transient for 5xx/enumerated codes; leg-fatal for
-                missing-model/bad-request and other non-retryable 4xx.
+            ProviderError: Transient for 5xx/enumerated codes; leg-fatal for an
+                auth-proxy redirect (3xx), missing-model/bad-request, and other
+                non-retryable 4xx.
         """
         status = response.status_code
-        if status < 400:
+        if status < 300:
             return
+        if status < 400:
+            # The auth proxy (Authentik) answers an unauthenticated request with a
+            # 302 to its login flow. httpx does not follow redirects, so we see the
+            # 3xx directly. Retrying cannot help (the credential is missing or
+            # wrong), so mark the leg dead with a credential-pointing message.
+            # status_code is intentionally omitted: a 3xx is < 400, and the
+            # ProviderError invariant forbids pairing leg_fatal with a
+            # successful/redirect status; the code is already in the message.
+            msg = (
+                f"ollama returned leg-fatal HTTP {status} (unexpected redirect; "
+                "authentication required or credentials rejected)"
+            )
+            raise ProviderError(
+                msg,
+                provider="ollama",
+                model=self._model,
+                leg_fatal=True,
+            )
         if status in _TRANSIENT_STATUS or status >= 500:
             msg = f"ollama returned transient HTTP {status}"
             raise ProviderError(

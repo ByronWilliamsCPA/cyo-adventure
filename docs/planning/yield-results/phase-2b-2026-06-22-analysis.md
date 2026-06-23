@@ -92,9 +92,11 @@ Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast an
 
 ## Infra / policy notes
 
-- **Ollama** leg unmeasured: `ollama.williamshome.family` (192.168.1.209:11434) is
-  reachable by DNS but TCP-times-out from the WSL2 env (firewall dropping packets). Needs
-  a network-side fix before the local leg can be compared.
+- **Ollama** leg: network access provisioned 2026-06-23. The raw `:11434` path TCP-timed-out
+  from WSL2; the host is now reached over HTTPS at `https://ollama.svc.williamshome.family`
+  (Traefik + Authentik), no explicit port. The adapter reads `OLLAMA_BASE_URL` + `OLLAMA_AUTH`
+  (HTTP Basic) and maps the unauthenticated 302 to a leg-fatal error. Server serves `qwen3:30b`.
+  Leg yield still to be measured now that the path is open.
 - **Provider data policy**: the Anthropic/Google allowlist is worth revisiting as a
   criteria-based policy (no real child data reaches the model; only fictional briefs do).
   A follow-up, not a Phase 2b blocker.
