@@ -80,7 +80,10 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
     openrouter_model: str = "anthropic/claude-haiku-4.5"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
-    ollama_model: str = "qwen3"
+    # Tagged to match the model actually served by the homelab Ollama host
+    # (qwen3:30b); a bare "qwen3" tag would 404 (leg-fatal) against it. Override
+    # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
+    ollama_model: str = "qwen3:30b"
     # No direct Anthropic SDK setting: Claude is reached via OpenRouter
     # (both legs are anthropic/* models). A direct-Anthropic adapter
     # is deferred; the GenerationProvider seam makes it a trivial future add if a
@@ -109,10 +112,18 @@ class Settings(BaseSettings):
     # isolation (no failover masking a leg's true yield).
     provider_fallback_enabled: bool = True
 
-    # Provider endpoints. OpenRouter's base url is stable; Ollama targets the
-    # local host. Both are configurable so staging/tests can point elsewhere.
+    # Provider endpoints. OpenRouter's base url is stable; Ollama defaults to the
+    # local host. The homelab Ollama is fronted by Traefik+Authentik, so
+    # production points this at the HTTPS vhost WITHOUT a port (TLS terminates on
+    # :443, so an explicit :11434 is wrong for that path) and supplies the
+    # Basic-auth credential below. Read from the UNPREFIXED ``OLLAMA_BASE_URL`` to
+    # match the operator's existing .env naming (same pattern as
+    # ``openrouter_api_key``); ``populate_by_name`` keeps the field settable by
+    # name in tests/DI.
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(
+        default="http://localhost:11434", validation_alias="OLLAMA_BASE_URL"
+    )
 
     # OpenRouter credential. Read from the UNPREFIXED ``OPENROUTER_API_KEY`` env
     # var (validation_alias bypasses the cyo_adventure_ prefix) to match the
@@ -127,6 +138,22 @@ class Settings(BaseSettings):
     openrouter_api_key: str | None = Field(
         default=None, validation_alias="OPENROUTER_API_KEY"
     )
+
+    # Ollama HTTP Basic-auth credential, as a single ``user:password`` string to
+    # match the operator's ``OLLAMA_AUTH`` .env entry (and the native HTTP Basic
+    # shape). Read from the UNPREFIXED ``OLLAMA_AUTH``. The local-dev default
+    # (http://localhost:11434) needs none, so it is optional and None by default;
+    # the Traefik+Authentik-fronted homelab host requires it and answers an
+    # unauthenticated request with a 302 redirect to the login flow (which the
+    # adapter maps to a leg-fatal ProviderError). build_provider splits it on the
+    # first ``:`` (RFC 7617: the userid has no colon, the password may), and the
+    # adapter sends Basic auth only when both halves are present.
+    # #CRITICAL: security: ollama_auth contains a password; never log its value or
+    # echo it in an error message. It must be supplied from a secret manager
+    # (env var / Infisical), never committed to source control.
+    # #VERIFY: build_provider passes the split halves to httpx.BasicAuth and no
+    # ProviderError message includes the credential.
+    ollama_auth: str | None = Field(default=None, validation_alias="OLLAMA_AUTH")
 
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:

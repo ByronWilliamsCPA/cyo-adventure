@@ -18,6 +18,7 @@ from cyo_adventure.generation.provider import (
     _CANNED_STORY,
     _CANNED_STORY_JSON,
     MockProvider,
+    _split_basic_auth,
     build_provider,
 )
 from cyo_adventure.generation.providers import (
@@ -131,10 +132,39 @@ class TestBuildProviderLive:
 
     def test_ollama_returns_bare_ollama_leg(self) -> None:
         """generation_provider='ollama' returns the local Ollama leg alone."""
-        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama", ollama_model="qwen3:30b"
+        )
         provider = build_provider(settings)
         assert isinstance(provider, OllamaProvider)
-        assert provider.name == "ollama:qwen3"
+        assert provider.name == "ollama:qwen3:30b"
+
+
+class TestSplitBasicAuth:
+    """_split_basic_auth turns an OLLAMA_AUTH string into (username, password)."""
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("svc-cyo:app-pw", ("svc-cyo", "app-pw")),
+            # Per-device service account naming, the operator's real shape.
+            ("svc-cyo-laptop:abc123", ("svc-cyo-laptop", "abc123")),
+            # First-colon split keeps a password that itself contains colons.
+            ("user:p:a:ss", ("user", "p:a:ss")),
+            # Missing/blank/half values yield no credential.
+            (None, (None, None)),
+            ("", (None, None)),
+            ("   ", (None, None)),
+            ("no-colon", (None, None)),
+            (":only-password", (None, None)),
+            ("only-user:", (None, None)),
+        ],
+    )
+    def test_split(
+        self, value: str | None, expected: tuple[str | None, str | None]
+    ) -> None:
+        """A well-formed user:password splits on the first colon; else (None, None)."""
+        assert _split_basic_auth(value) == expected
 
 
 class TestCannedStorySchemaValid:

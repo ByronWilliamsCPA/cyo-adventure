@@ -50,6 +50,59 @@ class TestSettingsDefaults:
         assert s.database_url == _DEV_DB_URL
 
 
+class TestOllamaProviderSettings:
+    """Ollama endpoint/credential settings: defaults and unprefixed env aliases."""
+
+    @pytest.mark.unit
+    def test_ollama_model_default_is_served_tag(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The default ollama_model matches the homelab-served qwen3:30b tag."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_MODEL", raising=False)
+        assert Settings().ollama_model == "qwen3:30b"
+
+    @pytest.mark.unit
+    def test_ollama_auth_default_is_none(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """With no OLLAMA_AUTH set, ollama_auth is None (no credential sent)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("OLLAMA_AUTH", raising=False)
+        assert Settings().ollama_auth is None
+
+    @pytest.mark.unit
+    def test_ollama_base_url_default_is_localhost(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With no override, ollama_base_url is the local-dev default."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_BASE_URL", raising=False)
+        assert Settings().ollama_base_url == "http://localhost:11434"
+
+    @pytest.mark.unit
+    def test_ollama_base_url_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ollama_base_url is read from the unprefixed OLLAMA_BASE_URL var."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("OLLAMA_BASE_URL", "https://ollama.svc.williamshome.family")
+        assert Settings().ollama_base_url == "https://ollama.svc.williamshome.family"
+
+    @pytest.mark.unit
+    def test_ollama_auth_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ollama_auth is read from the unprefixed OLLAMA_AUTH var."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("OLLAMA_AUTH", "svc-cyo-laptop:app-pw")
+        assert Settings().ollama_auth == "svc-cyo-laptop:app-pw"
+
+
 class TestValidatorRejectDevUrlOutsideLocal:
     """Tests for the _reject_dev_database_url_outside_local model_validator."""
 

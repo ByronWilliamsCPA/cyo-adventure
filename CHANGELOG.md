@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Ollama provider HTTPS and HTTP Basic-auth support for the auth-proxied homelab
+  host (Traefik + Authentik): reads the unprefixed `OLLAMA_BASE_URL` and
+  `OLLAMA_AUTH` (`user:password`) env vars, attaches Basic credentials when
+  present, and maps the unauthenticated `302` redirect to a leg-fatal
+  `ProviderError` instead of parsing the redirect body as a completion. The
+  default `ollama_model` is now the served `qwen3:30b` tag.
 - Initial project setup and structure
 - `environment` setting plus a fail-fast guard that refuses to start outside a
   local environment when the development default database URL is still in use

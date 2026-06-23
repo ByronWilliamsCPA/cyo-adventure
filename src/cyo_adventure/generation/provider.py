@@ -228,6 +228,30 @@ def _build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
     )
 
 
+def _split_basic_auth(value: str | None) -> tuple[str | None, str | None]:
+    """Split an ``OLLAMA_AUTH`` ``user:password`` string into its two halves.
+
+    Splits on the FIRST colon only: per RFC 7617 a Basic-auth userid cannot
+    contain a colon, but the password may, so ``partition`` preserves a password
+    that itself contains colons. A ``None`` or empty/whitespace value, or one
+    with no colon, yields ``(None, None)`` so the adapter sends no credential
+    (and an auth-proxied host then answers the leg-fatal 302).
+
+    Args:
+        value: The raw ``ollama_auth`` setting (``user:password`` or ``None``).
+
+    Returns:
+        ``(username, password)`` when a well-formed pair is present, else
+        ``(None, None)``.
+    """
+    if value is None or not value.strip() or ":" not in value:
+        return None, None
+    username, _, password = value.partition(":")
+    if not username or not password:
+        return None, None
+    return username, password
+
+
 def _build_ollama_leg(settings: Settings) -> GenerationProvider:
     """Construct the local Ollama leg from settings.
 
@@ -237,10 +261,16 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
     Returns:
         An Ollama ``GenerationProvider`` adapter.
     """
+    # Basic-auth is optional: a direct local Ollama needs none, the auth-proxied
+    # homelab host needs it. The adapter attaches Basic auth only when both halves
+    # are present and maps the 302 auth challenge to a leg-fatal error.
+    username, password = _split_basic_auth(settings.ollama_auth)
     return OllamaProvider(
         model=settings.ollama_model,
         base_url=settings.ollama_base_url,
         timeout_seconds=settings.llm_timeout_seconds,
+        username=username,
+        password=password,
     )
 
 
