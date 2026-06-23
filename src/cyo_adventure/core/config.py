@@ -70,15 +70,19 @@ class Settings(BaseSettings):
     # config change. OpenRouter rosters churn weekly, so pin first-party families
     # (Anthropic, Google) that survive churn, and rely on the fallback below when
     # a pinned id 404s.
+    # Primary is Haiku 4.5: the 2026-06-22 yield run measured it at 70% over the
+    # 20-brief sample (clears the >=60% gate) at ~3x lower cost than Sonnet, which
+    # stays as the reliable quality fallback if Haiku is unavailable. (Results:
+    # docs/planning/yield-results/phase-2b-2026-06-22-analysis.md.)
     # #ASSUME: external-resources: these ids must be currently reachable on the
     # selected provider; build_provider/adapters map an unavailable model to
     # ProviderError so the orchestrator can fall back.
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
-    openrouter_model: str = "anthropic/claude-sonnet-4.6"
-    openrouter_fallback_model: str = "google/gemma-4-31b-it:free"
+    openrouter_model: str = "anthropic/claude-haiku-4.5"
+    openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
     ollama_model: str = "qwen3"
     # No direct Anthropic SDK setting: Claude is reached via OpenRouter
-    # (openrouter_model = anthropic/claude-sonnet-4.6). A direct-Anthropic adapter
+    # (both legs are anthropic/* models). A direct-Anthropic adapter
     # is deferred; the GenerationProvider seam makes it a trivial future add if a
     # billed Anthropic API account is ever used directly (for Opus 4.8 / prompt
     # caching without the OpenRouter markup).

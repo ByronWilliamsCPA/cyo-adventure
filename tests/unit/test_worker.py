@@ -127,7 +127,7 @@ class TestBuildProviderLive:
         )
         provider = build_provider(settings)
         assert isinstance(provider, OpenRouterProvider)
-        assert provider.name == "openrouter:anthropic/claude-sonnet-4.6"
+        assert provider.name == "openrouter:anthropic/claude-haiku-4.5"
 
     def test_ollama_returns_bare_ollama_leg(self) -> None:
         """generation_provider='ollama' returns the local Ollama leg alone."""
