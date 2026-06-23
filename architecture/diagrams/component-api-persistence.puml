@@ -1,0 +1,120 @@
+@startuml component-api-persistence
+' ============================================================
+' Component Diagram: Backend API and Persistence Layer
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/app.py                 (FastAPI app, middleware order)
+'   src/cyo_adventure/api/health.py          (liveness/readiness/startup probes)
+'   src/cyo_adventure/api/library.py         (story library endpoints)
+'   src/cyo_adventure/api/reading.py         (reading-state + completions)
+'   src/cyo_adventure/api/generation.py      (guardian-only: concepts, jobs, validate)
+'   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
+'   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam)
+'   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware, added first)
+'   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF)
+'   src/cyo_adventure/core/config.py         (Pydantic Settings)
+'   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
+'   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
+'   src/cyo_adventure/db/models.py           (9 ORM tables)
+'   docs/planning/authorization-matrix.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
+
+  package "Middleware Stack (applied first)" #CCEECC {
+    component "CorrelationMiddleware\nmiddleware/correlation.py\nAttaches X-Correlation-ID;\nmust be first middleware" as corr_mw #CCEECC
+    component "SecurityMiddleware\nmiddleware/security.py\nOWASP headers, HSTS,\nCSP, SSRF protection" as sec_mw #CCEECC
+  }
+
+  package "Dependencies\napi/deps.py" #DCEDC8 {
+    component "Auth Seam\n_extract_subject()\n[dev: token-as-subject]\n[prod: Authentik OIDC JWT]" as auth_seam #DCEDC8
+    component "Principal\nrole, family_id, profile_ids\nauthorize_profile()\nauthorize_family()" as principal #DCEDC8
+    component "DbSession\nasync unit-of-work\ncommit on success,\nrollback on exception" as db_session_dep #DCEDC8
+    component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
+  }
+
+  package "API Routers (all under /api/v1)" #B2DFDB {
+    component "health.py\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
+
+    component "library.py\nGET /library\n(filtered by age band,\nreading cap, published status)" as library_router #B2DFDB
+
+    component "reading.py\nGET /reading-state/{profile}/{story}\nPUT /reading-state/{profile}/{story}\n(revision-based OCC, idempotent event_id)\nPOST /completions" as reading_router #B2DFDB
+
+    component "generation.py [guardian-only]\nPOST /concepts (PII-screened)\nPOST /concepts/{id}/generate\nGET /generation-jobs/{id}\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
+  }
+
+  package "Core" #A5D6A7 {
+    component "config.py\nPydantic Settings\nenv vars + .env file\nfails on dev DB in prod" as config #A5D6A7
+    component "database.py\nAsync SQLAlchemy engine\nBase ORM class\nget_session() context mgr" as database #A5D6A7
+    component "exceptions.py\nValidationError\nResourceNotFoundError\nAuthenticationError\nAuthorizationError\nBusinessLogicError\nProviderError" as exceptions #A5D6A7
+  }
+
+}
+
+package "ORM Models\nsrc/cyo_adventure/db/models.py" #FFF8E1 {
+  component "Family\nUser\nChildProfile\nStorybook\nStorybookVersion" as models_a #FFF8E1
+  component "ReadingState\nCompletion\nConcept\nGenerationJob" as models_b #FFF8E1
+}
+
+database "PostgreSQL 16\nAsync SQLAlchemy 2 sessions\nAlembic migrations" as pg #FFF8E1
+
+' --- Relationships ---
+corr_mw --> sec_mw : "request chain"
+sec_mw --> auth_seam : "request chain"
+auth_seam --> principal
+db_session_dep --> database
+principal --> ctx
+db_session_dep --> ctx
+ctx --> reading_router
+ctx --> library_router
+ctx --> gen_router
+ctx --> health_router
+
+reading_router --> models_a
+reading_router --> models_b
+library_router --> models_a
+gen_router --> models_a
+gen_router --> models_b
+
+models_a --> pg
+models_b --> pg
+
+exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers"
+exceptions --> gen_router
+
+note right of auth_seam
+  dev seam: treats bearer token
+  as OIDC subject without signature check.
+  Replace _extract_subject() with
+  real Authentik JWT validation
+  before any non-local deployment.
+end note
+
+note right of reading_router
+  PUT /reading-state uses:
+  SELECT ... FOR UPDATE (row lock)
+  + state_revision check (OCC)
+  + event_id idempotency
+  Returns 409 + current row on conflict.
+end note
+
+note bottom of gen_router
+  All four endpoints are guardian-only
+  (checked before any DB access).
+  PII screen on concept creation
+  (child display_name must not
+  appear in the brief text).
+end note
+
+@enduml

@@ -1,0 +1,182 @@
+{
+  "provider": "openrouter",
+  "model": "anthropic/claude-haiku-4.5",
+  "fallback_enabled": false,
+  "threshold": 0.6,
+  "tier_split": {
+    "tier1": {
+      "total": 13,
+      "passed": 11
+    },
+    "tier2": {
+      "total": 7,
+      "passed": 3
+    }
+  },
+  "total": 20,
+  "passed": 14,
+  "pass_rate": 0.7,
+  "meets_threshold": true,
+  "per_story": [
+    {
+      "index": 0,
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 34.71
+    },
+    {
+      "index": 1,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 27.75
+    },
+    {
+      "index": 2,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 23.84
+    },
+    {
+      "index": 3,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 26.93
+    },
+    {
+      "index": 4,
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 50.06
+    },
+    {
+      "index": 5,
+      "status": "passed",
+      "attempts": 0,
+      "failing_rule_ids": [],
+      "latency_s": 63.63
+    },
+    {
+      "index": 6,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-4",
+        "L1-7"
+      ],
+      "latency_s": 98.53
+    },
+    {
+      "index": 7,
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 54.96
+    },
+    {
+      "index": 8,
+      "status": "passed",
+      "attempts": 0,
+      "failing_rule_ids": [],
+      "latency_s": 43.62
+    },
+    {
+      "index": 9,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 52.0
+    },
+    {
+      "index": 10,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-7"
+      ],
+      "latency_s": 120.68
+    },
+    {
+      "index": 11,
+      "status": "passed",
+      "attempts": 2,
+      "failing_rule_ids": [],
+      "latency_s": 54.94
+    },
+    {
+      "index": 12,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 55.91
+    },
+    {
+      "index": 13,
+      "status": "passed",
+      "attempts": 3,
+      "failing_rule_ids": [],
+      "latency_s": 83.68
+    },
+    {
+      "index": 14,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-7"
+      ],
+      "latency_s": 77.94
+    },
+    {
+      "index": 15,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-4",
+        "L1-7"
+      ],
+      "latency_s": 139.99
+    },
+    {
+      "index": 16,
+      "status": "passed",
+      "attempts": 3,
+      "failing_rule_ids": [],
+      "latency_s": 78.8
+    },
+    {
+      "index": 17,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-7"
+      ],
+      "latency_s": 85.36
+    },
+    {
+      "index": 18,
+      "status": "needs_review",
+      "attempts": 3,
+      "failing_rule_ids": [
+        "L1-3",
+        "L1-7"
+      ],
+      "latency_s": 113.59
+    },
+    {
+      "index": 19,
+      "status": "passed",
+      "attempts": 1,
+      "failing_rule_ids": [],
+      "latency_s": 57.8
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+@startuml seq-reading-state
+' ============================================================
+' Sequence Diagram: Reading-State PUT with Optimistic Concurrency
+' Returns 409 + reconciliation options on conflict
+'
+' Source files:
+'   src/cyo_adventure/api/reading.py       (put_reading_state, _conflict)
+'   src/cyo_adventure/api/schemas.py       (ReadingStateBody, ConflictView)
+'   src/cyo_adventure/db/models.py         (ReadingState.state_revision, last_event_id)
+'   docs/planning/tech-spec.md             (Multi-device sync rules)
+'   docs/design/offline-conflict-ux.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam sequenceMessageAlign center
+
+actor "PWA Client\n(Device A)" as client_a
+actor "PWA Client\n(Device B)" as client_b
+participant "FastAPI\nreading.py" as api
+participant "Auth\ndeps.py" as auth
+database "PostgreSQL\nReadingState" as pg
+
+' ========== Happy path: first save (create) ==========
+note over client_a,pg: Happy path: creating the first reading state
+
+client_a -> api : "PUT /reading-state/{profile}/{story}\nbody: {current_node, var_state, state_revision=0,\nevent_id='uuid-1', version=3, device_id='dev-A'}"
+api -> auth : "resolve Principal (bearer token)"
+auth --> api : "Principal(role, family_id, profile_ids)"
+api -> api : "authorize_profile() -> OK\nauthorize_family() -> OK"
+api -> pg : "SELECT ... WHERE pk FOR UPDATE\n[no existing row]"
+pg --> api : "None"
+api -> api : "_create_reading_state()\nvalidate state_revision == 0\n(server owns revision counter)"
+api -> pg : "INSERT ReadingState\nstate_revision=1\nlast_event_id='uuid-1'"
+pg --> api : "row created"
+api --> client_a : "200 OK\n{current_node, state_revision=1, ...}"
+
+' ========== Happy path: update ==========
+note over client_a,pg: Device A updates progress (state_revision=1 -> 2)
+
+client_a -> api : "PUT /reading-state/{profile}/{story}\nbody: {current_node='node-5', state_revision=1,\nevent_id='uuid-2', version=3}"
+api -> pg : "SELECT ... FOR UPDATE\n[row exists, state_revision=1]"
+pg --> api : "ReadingState(state_revision=1)"
+api -> api : "idempotency check:\nbody.event_id ('uuid-2') != row.last_event_id ('uuid-1')\n-> not a replay"
+api -> api : "version check: body.version (3) == row.version (3) -> OK"
+api -> api : "revision check: body.state_revision (1) == row.state_revision (1) -> OK"
+api -> api : "_apply_body(): row.state_revision = 1 + 1 = 2\nlast_event_id = 'uuid-2'"
+api -> pg : "UPDATE (implicit, SQLAlchemy tracks changes)"
+api --> client_a : "200 OK\n{current_node='node-5', state_revision=2}"
+
+' ========== Idempotent replay ==========
+note over client_a,pg: Offline queue replay: same event replayed (idempotent)
+
+client_a -> api : "PUT /reading-state/{profile}/{story}\nbody: {event_id='uuid-2', state_revision=1, ...}"
+api -> pg : "SELECT ... FOR UPDATE\n[row, state_revision=2, last_event_id='uuid-2']"
+pg --> api : "ReadingState(state_revision=2, last_event_id='uuid-2')"
+api -> api : "idempotency check:\nbody.event_id ('uuid-2') == row.last_event_id ('uuid-2')\n-> replay detected, return current row"
+api --> client_a : "200 OK (current row, no write)\n{state_revision=2}"
+
+' ========== Conflict: revision mismatch ==========
+note over client_a,pg: Conflict scenario: two devices diverge
+
+client_b -> api : "PUT /reading-state/{profile}/{story}\nbody: {state_revision=1, event_id='uuid-3', version=3}"
+note right of client_b: Device B is behind;\nit still has revision=1 while\nserver is at revision=2
+api -> pg : "SELECT ... FOR UPDATE\n[row, state_revision=2]"
+pg --> api : "ReadingState(state_revision=2)"
+api -> api : "revision check:\nbody.state_revision (1) != row.state_revision (2)\n-> CONFLICT"
+api --> client_b : "409 Conflict\n{detail:'reading_state revision mismatch',\ncurrent_row:{state_revision=2, current_node='node-5', ...}}"
+
+note over client_b: Client now has two states:\n- its local progress (node-12, revision=1)\n- server's current (node-5, revision=2)\nReconciliation options per offline-conflict-ux.md:
+client_b -> client_b : "show conflict UX:\n'continue_from_this_device'\n-> send PUT with server's revision=2\n(overwrite server with local progress)\n\n'use_newer_progress'\n-> discard local, follow server"
+
+' ========== Version mismatch ==========
+note over client_a,pg: Story republished: version mismatch (new story version available)
+
+client_a -> api : "PUT /reading-state/{profile}/{story}\nbody: {version=3, state_revision=2, ...}"
+note right: Server upgraded story\nto version=4 in a new\nStorybookVersion row
+api -> pg : "SELECT ... FOR UPDATE\n[row, version=4]"
+pg --> api : "ReadingState(version=4, state_revision=3)"
+api -> api : "version check:\nbody.version (3) != row.version (4)\n-> CONFLICT"
+api --> client_a : "409 Conflict\n{detail:'reading_state version mismatch',\ncurrent_row:{version=4, ...}}"
+
+@enduml

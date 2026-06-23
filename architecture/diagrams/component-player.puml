@@ -1,0 +1,104 @@
+@startuml component-player
+' ============================================================
+' Component Diagram: Player Engine and Storybook Evaluator
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/player/engine.py        (StoryEngine, Runtime Semantics v1)
+'   src/cyo_adventure/player/state.py         (ReadingState dataclass)
+'   src/cyo_adventure/storybook/models.py     (Storybook, Node, Choice, Effect)
+'   src/cyo_adventure/storybook/evaluator.py  (evaluate(), VarState, whitelisted ops)
+'   src/cyo_adventure/storybook/condition.py  (condition DSL validator)
+'   src/cyo_adventure/storybook/schema_export.py
+'   frontend/src/player/engine.ts             (TS mirror of engine.py)
+'   frontend/src/player/evaluator.ts          (TS mirror of evaluator.py)
+'   frontend/src/player/machine.ts            (XState machine)
+'   docs/planning/runtime-semantics.md
+'   docs/planning/adr/adr-006-conditions-inhouse-evaluator.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+package "Backend Player (Python)" #E3F2FD {
+
+  component "Storybook Pydantic Model\nstorybook/models.py\nStorybook, Node, Choice,\nEffect, Variable, Ending" as storybook_model #BBDEFB
+
+  component "Condition DSL Validator\nstorybook/condition.py\nvalidate_condition()\nwhitelisted-op check at schema time" as cond_validator #BBDEFB
+
+  component "Condition Evaluator\nstorybook/evaluator.py\nevaluate(condition, var_state)\nwhitelisted ops: eq, ne, lt, gt,\nlte, gte, and, or, not, var, literal\nstrict equality, no coercion" as evaluator #BBDEFB
+
+  component "Story Engine\nplayer/engine.py\nStoryEngine: start(), choose(),\nvisible_choices(), is_ending()\nPure: no I/O, no async" as engine #1565C0
+
+  component "ReadingState\nplayer/state.py\ncurrent_node, var_state,\npath, visit_set, version,\nstate_revision, save_slots" as reading_state #BBDEFB
+
+}
+
+package "Frontend Player (TypeScript)" #FFF3E0 {
+
+  component "TS Condition Evaluator\nfrontend/src/player/evaluator.ts\nMirrors Python evaluator exactly;\nconformance fixtures shared" as ts_evaluator #FFE0B2
+
+  component "TS Story Engine\nfrontend/src/player/engine.ts\nMirrors Python engine:\nsame transition order (RS v1)" as ts_engine #FFE0B2
+
+  component "XState Machine\nfrontend/src/player/machine.ts\nWraps TS engine in explicit\nstate machine for testability" as xstate #FFE0B2
+
+  component "Reader UI\nfrontend/src/reader/\nRenders node body, choices,\ntriggers transitions" as reader_ui #FFF3E0
+
+}
+
+package "Runtime Semantics v1\n(docs/planning/runtime-semantics.md)" as semantics_doc #F5F5F5 {
+  note as semantics_note
+    Transition order on every choice:
+    1. Evaluate choice condition vs var_state
+    2. Apply choice effects
+    3. Set current_node to choice target
+    4. Apply target on_enter effects
+       (once: true -> first entry only)
+
+    Bounds clamping (int vars):
+    - set/inc/dec all clamp to [min, max]
+
+    Hidden choices (section 4):
+    - condition false -> choice not shown
+    - condition true or absent -> visible
+  end note
+}
+
+' --- Relationships ---
+storybook_model --> engine : "Storybook\n(parsed, schema-valid)"
+storybook_model --> cond_validator : "condition DSL\nat schema time"
+engine --> evaluator : "evaluate(choice.condition,\nvar_state)"
+evaluator --> engine : "bool"
+engine --> reading_state : "produces / consumes\n(immutable: clone on each choose)"
+reading_state --> engine : "current state"
+
+ts_evaluator --> ts_engine : "evaluate()"
+ts_engine --> xstate : "step result"
+xstate --> reader_ui : "visible choices,\ncurrent node body"
+reader_ui --> xstate : "user choice"
+
+note bottom of engine
+  ADR-006: in-house evaluator
+  No third-party logic library.
+  Whitelisted operators only.
+  Strict equality, no type coercion.
+  Python + TypeScript share conformance
+  fixtures (cross-impl tests).
+end note
+
+note bottom of reading_state
+  save_slots: named snapshots
+  (a clone of state at save time).
+  visit_set drives once: true effects.
+  state_revision: server-owned counter
+  for optimistic concurrency.
+end note
+
+@enduml

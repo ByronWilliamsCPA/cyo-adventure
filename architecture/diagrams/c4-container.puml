@@ -1,0 +1,100 @@
+@startuml c4-container
+' ============================================================
+' C4 Level 2 - Container Diagram
+' CYO Adventure: containers and their interactions
+'
+' Source files:
+'   src/cyo_adventure/app.py           (FastAPI app wiring)
+'   src/cyo_adventure/api/             (routers)
+'   src/cyo_adventure/generation/worker.py  (RQ worker)
+'   src/cyo_adventure/core/database.py (async SQLAlchemy)
+'   frontend/src/client/               (generated OpenAPI client)
+'   frontend/src/offline/sync.ts       (offline queue)
+'   docs/planning/tech-spec.md
+'   docs/planning/adr/adr-002-client-pwa.md
+'   docs/planning/adr/adr-004-homelab-first-deployment.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+
+skinparam rectangle {
+  BorderColor #555555
+  FontColor #222222
+}
+
+actor "Child Reader" as child #E3F2FD
+actor "Guardian" as guardian #E8F5E9
+
+' --- PWA ---
+rectangle "PWA Container\n[React 19, TypeScript, Vite]\nServed as static assets" as pwa #E3F2FD {
+  rectangle "Reader UI\nfrontend/src/reader/" as reader #DDEEFF
+  rectangle "Library UI\nfrontend/src/api/" as library_ui #DDEEFF
+  rectangle "Player\nfrontend/src/player/\nTS evaluator + XState machine" as player_ui #DDEEFF
+  rectangle "Offline Layer\nfrontend/src/offline/\nIndexedDB + write queue" as offline #DDEEFF
+  rectangle "Generated API Client\nfrontend/src/client/ [BUILD OUTPUT]\nfrom OpenAPI schema via hey-api" as gen_client #E0E0E0
+}
+
+' --- Backend ---
+rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
+  rectangle "API Routers\napi/health.py, library.py,\nreading.py, generation.py" as routers #CCEECC
+  rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role" as auth #CCEECC
+  rectangle "Storybook Domain\nstorybook/models.py\nstorybook/evaluator.py\nstorybook/condition.py" as storybook_dom #CCEECC
+  rectangle "Player Engine\nplayer/engine.py\nRuntime Semantics v1 (pure)" as player_eng #CCEECC
+  rectangle "Validator Gate\nvalidator/gate.py\nL1+L2+RL+SAFE layers" as validator #CCEECC
+  rectangle "Generation Orchestrator\ngeneration/orchestrator.py\nStage A->B->C pipeline" as orchestrator #CCEECC
+  rectangle "Middleware\nmiddleware/correlation.py\nmiddleware/security.py" as middleware #CCEECC
+}
+
+' --- Generation Worker ---
+rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
+
+' --- Data stores ---
+database "PostgreSQL 16\n[Operational DB]\n9 ORM tables:\nFamily, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion,\nConcept, GenerationJob" as postgres #FFF8E1
+
+database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
+
+rectangle "MinIO\n[Object storage, deferred Phase 5]\nStorybook blobs via S3 API" as minio #E0E0E0
+
+' --- External LLMs ---
+rectangle "OpenRouter\n[Primary LLM]" as openrouter #F3E5F5
+rectangle "Ollama\n[Local fallback]" as ollama #FFEBEE
+rectangle "Authentik\n[OIDC]" as authentik #E0F7FA
+
+' --- Relationships ---
+child --> reader
+guardian --> library_ui
+reader --> player_ui
+player_ui --> offline : "local state\ncache"
+gen_client --> routers : "REST /api/v1\n(Bearer token)"
+offline ..> gen_client : "queue replay\n(event_id idempotency)"
+routers --> auth : "Depends()"
+routers --> orchestrator
+routers --> validator
+routers --> storybook_dom
+routers --> player_eng
+backend --> postgres : "async SQLAlchemy 2"
+backend --> redis : "enqueue job\n(BackgroundTask)"
+worker --> redis : "dequeue job"
+worker --> orchestrator : "generate_story()"
+worker --> openrouter : "provider.complete()"
+worker ..> ollama : "fallback"
+worker --> postgres : "update GenerationJob"
+worker ..> minio : "[planned Phase 5]\nblob_ref store"
+backend --> authentik : "OIDC validation\n[dev: token-as-subject seam]"
+
+note bottom of gen_client
+  Regenerated from http://localhost:8000/openapi.json
+  via: npm run generate-client
+  Never hand-edit files in frontend/src/client/
+end note
+
+note right of minio
+  Phase 1: blob stored inline
+  on storybook_version.blob (JSONB).
+  blob_ref column reserved for
+  MinIO object key (Phase 5).
+end note
+
+@enduml

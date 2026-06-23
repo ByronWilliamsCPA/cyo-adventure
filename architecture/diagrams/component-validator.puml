@@ -1,0 +1,90 @@
+@startuml component-validator
+' ============================================================
+' Component Diagram: Validator Gate
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/validator/gate.py          (run_gate, GateResult)
+'   src/cyo_adventure/validator/layer1.py        (L1-1..L1-7 graph rules)
+'   src/cyo_adventure/validator/layer2.py        (L2-9..L2-12 state-space)
+'   src/cyo_adventure/validator/reading_level.py (RL-13, advisory)
+'   src/cyo_adventure/validator/safety.py        (SAFE-14, Phase 2 stub)
+'   src/cyo_adventure/validator/walk.py          (state-space walk)
+'   src/cyo_adventure/validator/report.py        (ValidationReport, Finding, Severity)
+'   docs/planning/validator-rules.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+package "Validator Gate" #E8F5E9 {
+
+  component "Gate Entry\nvalidator/gate.py\nrun_gate(data) -> GateResult" as gate #A5D6A7
+
+  package "Layer 1: Graph Structure" #DCEDC8 {
+    component "validate_layer1()\nvalidator/layer1.py\nL1-1: schema conformance (jsonschema)\nL1-2: start_node exists\nL1-3: all nodes reachable\nL1-4: at least one ending\nL1-5: no dangling targets\nL1-6: variable usage consistent\nL1-7: depth budget enforced" as layer1 #DCEDC8
+  }
+
+  package "Layer 2: State-Space Walk (Tier-2 only)" #C8E6C9 {
+    component "validate_layer2()\nvalidator/layer2.py\nL2-9: every path reaches an ending\nL2-10..L2-12: reachability under\nconditions (networkx + walk)" as layer2 #C8E6C9
+    component "state_space_walk()\nvalidator/walk.py\nBFS/DFS over variable state\ncombinations" as walk_comp #C8E6C9
+  }
+
+  package "Advisory Checks" #B2DFDB {
+    component "check_reading_level()\nvalidator/reading_level.py\nRL-13: Flesch-Kincaid grade\n(textstat, WARNING only, never blocks)" as reading_level #B2DFDB
+
+    component "check_safety()\nvalidator/safety.py\nSAFE-14: content safety\n(Phase 2 stub, always empty)" as safety #B2DFDB
+  }
+
+  component "ValidationReport\nvalidator/report.py\nValidationFinding(rule_id, severity,\nnode_id, choice_id, message)\nSeverity: ERROR | WARNING" as report #E8F5E9
+
+}
+
+package "Caller" #F3F3F3 {
+  component "Generation Orchestrator\ngeneration/orchestrator.py" as orch_caller #FFF3E0
+  component "Validate Endpoint\napi/generation.py\nPOST /storybooks/{id}/versions/{v}/validate" as api_caller #E8F5E9
+}
+
+component "Storybook Model\nstorybook/models.py\n(Pydantic v2, parsed after L1 clean)" as storybook_model #E3F2FD
+
+' --- Relationships ---
+orch_caller --> gate : "run_gate(decoded JSON dict)"
+api_caller --> gate : "run_gate(sv.blob)"
+
+gate --> layer1 : "raw mapping\n[always runs first]"
+layer1 --> report : "L1 findings"
+gate ..> layer1 : "early exit if\nany L1 ERROR"
+gate --> storybook_model : "model_validate()\n[after L1 clean]"
+storybook_model --> gate : "Storybook"
+gate --> layer2 : "Storybook\n[Tier-2 only;\nTier-1 short-circuits]"
+layer2 --> walk_comp : "state-space exploration"
+layer2 --> report : "L2 findings"
+gate --> reading_level : "Storybook"
+reading_level --> report : "RL-13 WARNING\n(never blocks)"
+gate --> safety : "Storybook"
+safety --> report : "SAFE-14\n(stub empty in Phase 2)"
+
+gate --> orch_caller : "GateResult\n(report, blocked, safety_flagged)"
+
+note right of gate
+  Rule application order (validator-rules.md):
+  1. L1 (always): graph structure + schema
+  2. Early return on any L1 ERROR
+  3. L2 (Tier-2 only): state-space walk
+  4. RL-13: advisory reading-level (WARNING)
+  5. SAFE-14: safety stub (always empty now)
+
+  blocked = any ERROR with rule_id starting
+    with "L1" or "L2"
+  safety_flagged = any finding with
+    rule_id == "SAFE-14"
+end note
+
+@enduml
