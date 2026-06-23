@@ -95,7 +95,13 @@ async def run_with_retries(
     Raises:
         ProviderError: Immediately if an attempt raises a leg-fatal error; or
             with ``leg_fatal=False`` after all transient retries are exhausted.
+        ValueError: If ``max_retries`` is less than 1; a zero/negative count
+            would skip ``attempt`` entirely yet raise an exhaustion error,
+            misreporting a failure that never ran.
     """
+    if max_retries < 1:
+        msg = f"max_retries must be >= 1, got {max_retries}"
+        raise ValueError(msg)
     last_exc: ProviderError | None = None
     for index in range(max_retries):
         try:
@@ -114,6 +120,12 @@ async def run_with_retries(
             if index + 1 < max_retries:
                 await sleep(backoff_base_seconds * 2 ** (index + 1))
 
+    logger.warning(
+        "provider.retries_exhausted",
+        provider=f"{provider}:{model}",
+        attempts=max_retries,
+        error=str(last_exc),
+    )
     msg = f"{provider} transient failure persisted after {max_retries} attempts"
     raise ProviderError(
         msg, provider=provider, model=model, leg_fatal=False

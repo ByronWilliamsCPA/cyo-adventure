@@ -58,16 +58,18 @@ __all__ = [
     "generate_story",
 ]
 
-# #CRITICAL: security: assert_prompt_pii_safe runs before every provider.complete
-# call; a PII violation aborts generation before any external egress.
+# #CRITICAL: security: assert_prompt_pii_safe runs on BOTH the system and user
+# blocks before every provider.complete call (see _run_one_stage); a PII
+# violation aborts generation before any external egress.
 # #VERIFY: test_orchestrator asserts provider.calls is empty when a brief would
 # leak a seeded real-child name (PII abort test case).
 
 # #ASSUME: external-resources: provider.complete performs network I/O in real
 # impls (mocked here); the orchestrator is provider-agnostic via the
 # GenerationProvider protocol.
-# #VERIFY: Phase 2b wiring adds timeout/retry/backoff before any real provider
-# is injected.
+# #VERIFY: the Phase 2b adapters supply timeout/retry/backoff (see
+# providers/_base.run_with_retries and the OpenRouter/Ollama adapters);
+# build_provider injects them, covered by test_providers.
 
 # The role instruction and JSON-only directive now live in each stage template's
 # system block (the cacheable region), so no shared system constant is needed

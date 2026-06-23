@@ -58,6 +58,13 @@ class FallbackProvider:
 
     legs: list[GenerationProvider]
     max_total_attempts: int = _DEFAULT_MAX_TOTAL_ATTEMPTS
+    # #ASSUME: concurrency: _dead and _total_attempts are mutated without locking.
+    # Safe today because complete() is awaited sequentially within one story and a
+    # fresh FallbackProvider is constructed per generation job
+    # (worker.process_generation_job). A future caller that invokes complete()
+    # concurrently on one instance must add an asyncio.Lock or use one instance
+    # per concurrent call.
+    # #VERIFY: worker builds a per-job provider; tests construct one per scenario.
     _dead: set[int] = field(default_factory=set, init=False, repr=False)
     _total_attempts: int = field(default=0, init=False, repr=False)
 
@@ -117,5 +124,11 @@ class FallbackProvider:
             logger.info("fallback.leg_ok", leg=leg_name)
             return result
 
+        logger.error(
+            "fallback.all_legs_exhausted",
+            legs=len(self.legs),
+            dead_legs=len(self._dead),
+            total_attempts=self._total_attempts,
+        )
         msg = "all fallback legs exhausted"
         raise ProviderError(msg, provider="fallback", leg_fatal=False) from last_error

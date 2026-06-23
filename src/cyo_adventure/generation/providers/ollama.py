@@ -86,7 +86,7 @@ class OllamaProvider:
                 ``options.num_predict``.
 
         Returns:
-            The raw text completion from the model (no fence stripping).
+            The completion text with any wrapping markdown code fence stripped.
 
         Raises:
             ProviderError: On a leg-fatal failure (mapped immediately) or after
@@ -166,11 +166,19 @@ class OllamaProvider:
                 status_code=status,
                 leg_fatal=False,
             )
-        reason = (
-            "missing or unpulled model"
-            if status in _LEG_FATAL_STATUS
-            else "non-retryable client error"
-        )
+        # Distinguish the leg-fatal 4xx causes: 404 is a missing/unpulled model,
+        # 400 is a malformed request. Both mark the leg dead, but the operator
+        # message should not mislabel a bad request as a missing model. Any other
+        # 4xx outside the expected set (_LEG_FATAL_STATUS) is still leg-fatal,
+        # since retrying a client error against the same model cannot help.
+        if status == 404:
+            reason = "missing or unpulled model"
+        elif status == 400:
+            reason = "bad request"
+        elif status in _LEG_FATAL_STATUS:
+            reason = "non-retryable client error"
+        else:
+            reason = "unexpected non-retryable client error"
         msg = f"ollama returned leg-fatal HTTP {status} ({reason})"
         raise ProviderError(
             msg,

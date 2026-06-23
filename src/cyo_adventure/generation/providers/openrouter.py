@@ -1,6 +1,6 @@
 """OpenRouter generation provider adapter (Phase 2b primary leg).
 
-Calls the OpenRouter chat-completions API and returns the raw model text. This
+Calls the OpenRouter chat-completions API and returns the model text. This
 adapter owns **Layer 1** of the three-layer failure model: it retries TRANSIENT
 failures (connection error, timeout, HTTP 429, HTTP 5xx) against the *same*
 model with exponential backoff, and maps leg-fatal failures (invalid/unavailable
@@ -8,14 +8,16 @@ model, authentication) to :class:`~cyo_adventure.core.exceptions.ProviderError`
 immediately. It never inspects gate results or content quality; a schema-valid
 but gate-blocked response is a successful completion here (Layer 3 handles it).
 
-The adapter returns the model output verbatim (no markdown-fence stripping): the
-Phase 2b probe confirmed the pinned first-party models return raw JSON, so the
-orchestrator's ``json.loads`` parses it directly.
+The adapter normalizes the output through ``strip_code_fences`` before returning:
+the Phase 2b probe found the pinned first-party models usually emit raw JSON, but
+some models wrap output in a markdown fence despite instructions, so the
+normalization is applied unconditionally and the orchestrator's ``json.loads``
+always receives plain JSON.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 import httpx
 
@@ -40,6 +42,11 @@ _TRANSIENT_STATUS: Final[frozenset[int]] = frozenset({408, 409, 425, 429})
 # bad request / unavailable model (400, 404), out of credits (402), and auth
 # failures (401, 403). These mark the leg dead in the cascade's circuit breaker.
 _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 401, 402, 403, 404})
+
+# Reasoning-effort levels accepted by the adapter. Mirrors ``Settings.llm_effort``
+# so an out-of-range value is a type error at the call site, not a silent
+# forward of an invalid ``reasoning.effort`` to the API.
+_Effort = Literal["off", "low", "medium", "high"]
 
 
 class OpenRouterProvider:
@@ -74,7 +81,7 @@ class OpenRouterProvider:
         model: str,
         base_url: str,
         timeout_seconds: int,
-        effort: str,
+        effort: _Effort,
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
@@ -83,7 +90,7 @@ class OpenRouterProvider:
         self._model: Final[str] = model
         self._base_url: Final[str] = base_url.rstrip("/")
         self._timeout_seconds: Final[int] = timeout_seconds
-        self._effort: Final[str] = effort
+        self._effort: Final[_Effort] = effort
         self._max_retries: Final[int] = max_retries
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
         self._client: Final[httpx.AsyncClient | None] = client
@@ -132,7 +139,7 @@ class OpenRouterProvider:
             max_tokens: Upper bound on response length in tokens.
 
         Returns:
-            The raw text completion from the model (no fence stripping).
+            The completion text with any wrapping markdown code fence stripped.
 
         Raises:
             ProviderError: On a leg-fatal failure (mapped immediately) or after
