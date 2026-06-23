@@ -12,8 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   host (Traefik + Authentik): reads the unprefixed `OLLAMA_BASE_URL` and
   `OLLAMA_AUTH` (`user:password`) env vars, attaches Basic credentials when
   present, and maps the unauthenticated `302` redirect to a leg-fatal
-  `ProviderError` instead of parsing the redirect body as a completion. The
-  default `ollama_model` is now the served `qwen3:30b` tag.
+  `ProviderError` instead of parsing the redirect body as a completion.
+- Ollama requests now stream (`stream: true`): the adapter accumulates the
+  newline-delimited JSON chunks, so the timeout bounds time-between-chunks rather
+  than total generation time (the homelab host is single-parallel with a cold
+  start, so full stories can take minutes). Adds a dedicated
+  `ollama_timeout_seconds` (default 300) separate from the cloud `llm_timeout`,
+  and defaults `ollama_model` to the team-recommended tuned `qwen-assistant:latest`
+  alias (raw `qwen3` is a reasoning model that can return empty content under a
+  tight token budget).
 - Initial project setup and structure
 - `environment` setting plus a fail-fast guard that refuses to start outside a
   local environment when the development default database URL is still in use

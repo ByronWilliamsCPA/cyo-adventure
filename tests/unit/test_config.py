@@ -54,14 +54,24 @@ class TestOllamaProviderSettings:
     """Ollama endpoint/credential settings: defaults and unprefixed env aliases."""
 
     @pytest.mark.unit
-    def test_ollama_model_default_is_served_tag(
+    def test_ollama_model_default_is_tuned_alias(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """The default ollama_model matches the homelab-served qwen3:30b tag."""
+        """The default ollama_model is the team-recommended qwen-assistant alias."""
         from cyo_adventure.core.config import Settings
 
         monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_MODEL", raising=False)
-        assert Settings().ollama_model == "qwen3:30b"
+        assert Settings().ollama_model == "qwen-assistant:latest"
+
+    @pytest.mark.unit
+    def test_ollama_timeout_seconds_default(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The Ollama leg gets its own longer default timeout (cold start + queue)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_TIMEOUT_SECONDS", raising=False)
+        assert Settings().ollama_timeout_seconds == 300
 
     @pytest.mark.unit
     def test_ollama_auth_default_is_none(self, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -89,8 +99,8 @@ class TestOllamaProviderSettings:
         """ollama_base_url is read from the unprefixed OLLAMA_BASE_URL var."""
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.setenv("OLLAMA_BASE_URL", "https://ollama.svc.williamshome.family")
-        assert Settings().ollama_base_url == "https://ollama.svc.williamshome.family"
+        monkeypatch.setenv("OLLAMA_BASE_URL", "https://ollama.williamshome.family")
+        assert Settings().ollama_base_url == "https://ollama.williamshome.family"
 
     @pytest.mark.unit
     def test_ollama_auth_reads_unprefixed_env(
@@ -99,8 +109,8 @@ class TestOllamaProviderSettings:
         """ollama_auth is read from the unprefixed OLLAMA_AUTH var."""
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.setenv("OLLAMA_AUTH", "svc-cyo-laptop:app-pw")
-        assert Settings().ollama_auth == "svc-cyo-laptop:app-pw"
+        monkeypatch.setenv("OLLAMA_AUTH", "svc-cyo:app-pw")
+        assert Settings().ollama_auth == "svc-cyo:app-pw"
 
 
 class TestValidatorRejectDevUrlOutsideLocal:

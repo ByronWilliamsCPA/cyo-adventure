@@ -268,7 +268,9 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
     return OllamaProvider(
         model=settings.ollama_model,
         base_url=settings.ollama_base_url,
-        timeout_seconds=settings.llm_timeout_seconds,
+        # Ollama gets its own, longer timeout: the single-parallel homelab host can
+        # take minutes to first byte when a prior request holds the execution slot.
+        timeout_seconds=settings.ollama_timeout_seconds,
         username=username,
         password=password,
     )

@@ -13,10 +13,19 @@ Traefik + Authentik), optional HTTP Basic credentials are attached; an
 unauthenticated request to that path answers ``302`` (redirect to the login
 flow), which this adapter maps to a leg-fatal error rather than parsing the
 redirect body as a completion.
+
+Requests are made with ``stream: true``: the homelab host runs one generation at
+a time (``OLLAMA_NUM_PARALLEL=1``) with a multi-second cold start, so a full
+story can take minutes. Streaming the newline-delimited JSON chunks and
+accumulating their ``message.content`` means the per-call timeout bounds the gap
+between chunks (time-to-first-byte), not the whole generation, which avoids both
+a single wall-clock wall and intermediary idle timeouts. The accumulated text is
+returned as one string, so the orchestrator contract is unchanged.
 """
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Final
 
 import httpx
@@ -51,7 +60,7 @@ class OllamaProvider:
         model: Ollama model name (e.g. ``"qwen3:30b"``).
         base_url: Ollama server base url. Either a direct host
             (``"http://localhost:11434"``) or an auth-proxied HTTPS vhost
-            (``"https://ollama.svc.williamshome.family"``, no explicit port).
+            (``"https://ollama.williamshome.family"``, no explicit port).
         timeout_seconds: Per-attempt wall-clock timeout for one HTTP call.
         username: Optional HTTP Basic-auth user. Basic auth is attached only when
             both ``username`` and ``password`` are provided.
@@ -122,7 +131,7 @@ class OllamaProvider:
                 {"role": "system", "content": system},
                 {"role": "user", "content": prompt},
             ],
-            "stream": False,
+            "stream": True,
             "options": {"num_predict": max_tokens},
         }
         url = f"{self._base_url}/api/chat"
@@ -151,41 +160,98 @@ class OllamaProvider:
         """
         try:
             if self._client is not None:
-                response = await self._post(self._client, url, body)
-            else:
-                async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
-                    response = await self._post(client, url, body)
+                return await self._stream(self._client, url, body)
+            async with httpx.AsyncClient(timeout=self._timeout_seconds) as client:
+                return await self._stream(client, url, body)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             msg = f"ollama request failed: {type(exc).__name__}"
             raise ProviderError(
                 msg, provider="ollama", model=self._model, leg_fatal=False
             ) from exc
 
-        self._raise_for_status(response)
-        return self._extract_content(response)
-
-    async def _post(
+    async def _stream(
         self, client: httpx.AsyncClient, url: str, body: Mapping[str, object]
-    ) -> httpx.Response:
-        """POST ``body`` to ``url`` on ``client``, attaching Basic auth if set.
+    ) -> str:
+        """Stream ``/api/chat`` and accumulate the chunked completion text.
 
-        ``auth`` is passed only when a credential is configured: httpx's ``auth``
-        parameter type does not admit ``None`` (its "no override" sentinel is
-        ``UseClientDefault``), so omitting the keyword is the type-clean way to
-        send no credential.
+        Opens a streaming POST (attaching Basic auth only when configured, since
+        httpx's ``auth`` parameter type does not admit ``None``), maps a non-2xx
+        status to a :class:`ProviderError`, then concatenates the ``message.content``
+        of each newline-delimited JSON chunk until the stream ends.
 
         Args:
             client: The AsyncClient to use (injected for tests, or per-call).
             url: The Ollama chat endpoint url.
-            body: The JSON request body.
+            body: The JSON request body (with ``stream: true``).
 
         Returns:
-            The HTTP response (status not yet inspected).
+            The fence-stripped completion text accumulated across all chunks.
+
+        Raises:
+            ProviderError: Leg-fatal/transient per status (via _raise_for_status);
+                transient on a malformed chunk, an error chunk, or empty content.
         """
         auth = self._auth
         if auth is None:
-            return await client.post(url, json=body)
-        return await client.post(url, json=body, auth=auth)
+            request = client.stream("POST", url, json=body)
+        else:
+            request = client.stream("POST", url, json=body, auth=auth)
+        parts: list[str] = []
+        async with request as response:
+            if response.status_code >= 300:
+                # Drain the (non-streamed) error body so the connection closes
+                # cleanly, then map the status. _raise_for_status always raises here.
+                await response.aread()
+                self._raise_for_status(response)
+            async for line in response.aiter_lines():
+                stripped = line.strip()
+                if stripped:
+                    parts.append(self._chunk_content(stripped))
+        content = "".join(parts)
+        if not content:
+            # An empty accumulation usually means the budget was spent on a
+            # reasoning model's thinking tokens; treat as a retryable failure.
+            msg = "ollama stream returned no message content"
+            raise ProviderError(
+                msg, provider="ollama", model=self._model, leg_fatal=False
+            )
+        # Normalize away any markdown code fence so the orchestrator's json.loads
+        # parses local models that wrap output despite instructions.
+        return strip_code_fences(content)
+
+    def _chunk_content(self, line: str) -> str:
+        """Return the ``message.content`` of one NDJSON stream chunk.
+
+        Args:
+            line: One non-empty line of the streamed response body.
+
+        Returns:
+            The chunk's content fragment, or ``""`` when the chunk carries none
+            (e.g. the terminal ``done`` marker).
+
+        Raises:
+            ProviderError: Transient on a non-JSON line or an ``{"error": ...}``
+                chunk (Ollama signals mid-stream failures this way).
+        """
+        try:
+            chunk: object = json.loads(line)
+        except ValueError as exc:
+            msg = "ollama stream returned a non-JSON line"
+            raise ProviderError(
+                msg, provider="ollama", model=self._model, leg_fatal=False
+            ) from exc
+        top = as_str_map(chunk)
+        if top is None:
+            return ""
+        error = top.get("error")
+        if isinstance(error, str) and error:
+            msg = "ollama stream returned an error chunk"
+            raise ProviderError(
+                msg, provider="ollama", model=self._model, leg_fatal=False
+            )
+        message = as_str_map(top.get("message"))
+        content = message.get("content") if message is not None else None
+        return content if isinstance(content, str) else ""
 
     def _raise_for_status(self, response: httpx.Response) -> None:
         """Map a non-2xx HTTP status to a ProviderError with the right fatality.
@@ -249,36 +315,3 @@ class OllamaProvider:
             status_code=status,
             leg_fatal=True,
         )
-
-    def _extract_content(self, response: httpx.Response) -> str:
-        """Extract the completion text from a successful response.
-
-        Args:
-            response: A 2xx HTTP response.
-
-        Returns:
-            The ``message.content`` string.
-
-        Raises:
-            ProviderError: Transient if the response shape is unexpected or the
-                content is empty.
-        """
-        try:
-            payload: object = response.json()
-        except ValueError as exc:
-            msg = "ollama returned a non-JSON response body"
-            raise ProviderError(
-                msg, provider="ollama", model=self._model, leg_fatal=False
-            ) from exc
-
-        top = as_str_map(payload)
-        message = as_str_map(top.get("message")) if top is not None else None
-        content = message.get("content") if message is not None else None
-        if not isinstance(content, str) or not content:
-            msg = "ollama response had no message content"
-            raise ProviderError(
-                msg, provider="ollama", model=self._model, leg_fatal=False
-            )
-        # Normalize away any markdown code fence so the orchestrator's json.loads
-        # parses local models that wrap output despite instructions.
-        return strip_code_fences(content)

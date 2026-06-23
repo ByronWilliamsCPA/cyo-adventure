@@ -47,9 +47,22 @@ def _openrouter_ok_body(content: str) -> dict[str, object]:
     return {"choices": [{"message": {"role": "assistant", "content": content}}]}
 
 
-def _ollama_ok_body(content: str) -> dict[str, object]:
-    """Return a minimal Ollama chat success payload."""
-    return {"message": {"role": "assistant", "content": content}}
+def _ollama_stream(*pieces: str, done: bool = True) -> str:
+    """Build a newline-delimited JSON Ollama chat stream body.
+
+    Each piece becomes one chunk's ``message.content``; a terminal ``done`` marker
+    (with empty content) is appended unless ``done=False``. Mirrors the real
+    ``/api/chat`` streaming response the adapter accumulates.
+    """
+    lines = [
+        json.dumps({"message": {"role": "assistant", "content": piece}, "done": False})
+        for piece in pieces
+    ]
+    if done:
+        lines.append(
+            json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+        )
+    return "\n".join(lines) + "\n"
 
 
 def _openrouter(
@@ -368,11 +381,11 @@ class TestOllamaProvider:
     """Ollama adapter: success, error mapping, retry, request shape."""
 
     @pytest.mark.asyncio
-    async def test_success_returns_content(self) -> None:
-        """A 200 response returns the message content."""
+    async def test_success_accumulates_streamed_chunks(self) -> None:
+        """A streamed 200 response concatenates each chunk's message content."""
 
         def handler(_request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=_ollama_ok_body("story"))
+            return httpx.Response(200, text=_ollama_stream("st", "or", "y"))
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
@@ -380,17 +393,17 @@ class TestOllamaProvider:
 
     @pytest.mark.asyncio
     async def test_request_maps_max_tokens_to_num_predict(self) -> None:
-        """max_tokens is forwarded as options.num_predict, stream is False."""
+        """max_tokens is forwarded as options.num_predict, stream is True."""
         captured: dict[str, object] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured.update(json.loads(request.content))
-            return httpx.Response(200, json=_ollama_ok_body("x"))
+            return httpx.Response(200, text=_ollama_stream("x"))
 
         provider = _ollama(handler)
         await provider.complete(system="s", prompt="u", max_tokens=2048)
         assert captured["options"] == {"num_predict": 2048}
-        assert captured["stream"] is False
+        assert captured["stream"] is True
         assert captured["model"] == "qwen3"
 
     @pytest.mark.asyncio
@@ -419,7 +432,7 @@ class TestOllamaProvider:
             calls += 1
             if calls == 1:
                 return httpx.Response(503, json={"error": "loading"})
-            return httpx.Response(200, json=_ollama_ok_body("ok"))
+            return httpx.Response(200, text=_ollama_stream("ok"))
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
@@ -428,10 +441,35 @@ class TestOllamaProvider:
 
     @pytest.mark.asyncio
     async def test_empty_content_raises_transient(self) -> None:
-        """An empty message content raises a non-leg-fatal ProviderError."""
+        """A stream that yields no content raises a non-leg-fatal ProviderError."""
 
         def handler(_request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=_ollama_ok_body(""))
+            # Only the terminal done marker, no content chunks.
+            return httpx.Response(200, text=_ollama_stream(done=True))
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_error_chunk_raises_transient(self) -> None:
+        """An {\"error\": ...} chunk mid-stream raises a non-leg-fatal error."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text='{"error": "model is loading"}\n')
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_non_json_line_raises_transient(self) -> None:
+        """A malformed (non-JSON) stream line raises a non-leg-fatal error."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text="not json at all\n")
 
         provider = _ollama(handler, max_retries=1)
         with pytest.raises(ProviderError) as exc_info:
@@ -445,7 +483,7 @@ class TestOllamaProvider:
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured["authorization"] = request.headers.get("authorization", "")
-            return httpx.Response(200, json=_ollama_ok_body("ok"))
+            return httpx.Response(200, text=_ollama_stream("ok"))
 
         # Credentials are read from the environment, not hardcoded: secret
         # scanners (GitGuardian) do not flag env-sourced values, and this is a
@@ -466,7 +504,7 @@ class TestOllamaProvider:
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured["authorization"] = request.headers.get("authorization", "")
-            return httpx.Response(200, json=_ollama_ok_body("ok"))
+            return httpx.Response(200, text=_ollama_stream("ok"))
 
         provider = _ollama(handler)
         await provider.complete(system="s", prompt="u", max_tokens=100)

@@ -80,10 +80,13 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
     openrouter_model: str = "anthropic/claude-haiku-4.5"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
-    # Tagged to match the model actually served by the homelab Ollama host
-    # (qwen3:30b); a bare "qwen3" tag would 404 (leg-fatal) against it. Override
-    # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
-    ollama_model: str = "qwen3:30b"
+    # The homelab Ollama serves `qwen-assistant:latest` (a tuned alias), the raw
+    # `qwen3:30b`, and others. We default to qwen-assistant on the infra team's
+    # recommendation: raw qwen3 is a reasoning model that spends part of the
+    # num_predict budget on thinking tokens and can return empty content, which
+    # the adapter would treat as a failed leg. Override via
+    # CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
+    ollama_model: str = "qwen-assistant:latest"
     # No direct Anthropic SDK setting: Claude is reached via OpenRouter
     # (both legs are anthropic/* models). A direct-Anthropic adapter
     # is deferred; the GenerationProvider seam makes it a trivial future add if a
@@ -106,6 +109,17 @@ class Settings(BaseSettings):
     # stuck request would block a worker indefinitely.
     # #VERIFY: Phase 2b adapter passes this to httpx.AsyncClient(timeout=...).
     llm_timeout_seconds: int = 120
+
+    # Dedicated timeout for the Ollama leg, separate from the cloud llm_timeout
+    # because the homelab host has very different latency: it runs
+    # OLLAMA_NUM_PARALLEL=1 (one request at a time, others queue) with a ~28s cold
+    # start after OLLAMA_KEEP_ALIVE expires. With streaming this bounds the per-read
+    # gap (time-to-first-byte), not total generation time, so it mainly needs to
+    # cover a cold start plus waiting behind one queued request.
+    # #ASSUME: external-resources: time-to-first-byte can be minutes when a prior
+    # request holds the single execution slot; too short a timeout fails healthy calls.
+    # #VERIFY: _build_ollama_leg passes this (not llm_timeout_seconds) to the adapter.
+    ollama_timeout_seconds: int = 300
 
     # Cascade switch. True (default) lets FallbackProvider fail over across legs.
     # The yield/leg-comparison runs set this False to measure each leg in

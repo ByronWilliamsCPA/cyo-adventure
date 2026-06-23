@@ -92,11 +92,28 @@ Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast an
 
 ## Infra / policy notes
 
-- **Ollama** leg: network access provisioned 2026-06-23. The raw `:11434` path TCP-timed-out
-  from WSL2; the host is now reached over HTTPS at `https://ollama.svc.williamshome.family`
-  (Traefik + Authentik), no explicit port. The adapter reads `OLLAMA_BASE_URL` + `OLLAMA_AUTH`
-  (HTTP Basic) and maps the unauthenticated 302 to a leg-fatal error. Server serves `qwen3:30b`.
-  Leg yield still to be measured now that the path is open.
+- **Ollama** leg: access provisioned and verified live 2026-06-23 (authenticated `GET
+  /api/tags` and `POST /api/chat` both return 200 from the WSL2 host). The raw `:11434` path
+  TCP-timed-out from WSL2; the host is now reached over HTTPS at
+  `https://ollama.williamshome.family` (Traefik + Authentik), no explicit port. Use the
+  `ollama-api` host, NOT the `*.svc` wildcard (which is a shared provider that does not
+  authorize the `svc-cyo` identity and returns 302). The adapter reads `OLLAMA_BASE_URL` +
+  `OLLAMA_AUTH` (HTTP Basic, username exactly `svc-cyo`) and maps the unauthenticated 302 to a
+  leg-fatal error. Operational facts from the infra team (source of truth):
+  - **Model**: `qwen3:30b` is served, but `qwen-assistant:latest` is the recommended tuned
+    alias. `qwen3` is a reasoning model: with a small `num_predict` the budget is spent on
+    thinking tokens and `content` returns empty (the adapter treats empty as a transient
+    failure), so budget `num_predict` generously or prefer `qwen-assistant`.
+  - **Concurrency/cold start**: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`,
+    `OLLAMA_KEEP_ALIVE=15m`. One request at a time (concurrent calls queue); the first call
+    after 15 min idle cold-loads the model (~28s measured). Serialize calls and size the
+    timeout/retry budget for cold starts; `stream:true` is recommended for large generations
+    to avoid any single-call wall and intermediary idle timeouts.
+  - **Rate limit**: 10 req/s avg, burst 5, per source IP (retry-on-429 covers it).
+  - **Off-LAN/CI**: `*.williamshome.family` resolves only via on-LAN split-horizon DNS. CI/off-LAN
+    is not wired; the reliable path today is an on-LAN self-hosted runner. Exposing Ollama via
+    Pangolin ZTNA would be net-new work (Basic auth would still apply). Open decision.
+  - Leg yield still to be measured now that the path is open.
 - **Provider data policy**: the Anthropic/Google allowlist is worth revisiting as a
   criteria-based policy (no real child data reaches the model; only fictional briefs do).
   A follow-up, not a Phase 2b blocker.
