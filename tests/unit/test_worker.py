@@ -20,6 +20,11 @@ from cyo_adventure.generation.provider import (
     MockProvider,
     build_provider,
 )
+from cyo_adventure.generation.providers import (
+    FallbackProvider,
+    OllamaProvider,
+    OpenRouterProvider,
+)
 from cyo_adventure.storybook.models import Storybook
 
 
@@ -55,27 +60,81 @@ class TestBuildProviderMock:
             assert parsed["id"] == "s_mock_generated"
 
 
-class TestBuildProviderDeferred:
-    """Deferred providers raise ConfigurationError mentioning Phase 2b."""
+class TestBuildProviderLive:
+    """build_provider assembles the live cascade and isolated legs from settings."""
 
-    @pytest.mark.parametrize("provider_name", ["claude", "ollama", "openrouter"])
-    def test_deferred_provider_raises_configuration_error(
-        self, provider_name: str
-    ) -> None:
-        """Non-mock providers raise ConfigurationError."""
-        deferred_settings = Settings(generation_provider=provider_name)  # type: ignore[call-arg]
+    def test_claude_is_deferred(self) -> None:
+        """The direct-Anthropic ('claude') adapter is deferred and raises."""
+        settings = Settings(generation_provider="claude")  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
-            build_provider(deferred_settings)
-        assert "Phase 2b" in str(exc_info.value)
-        assert provider_name in str(exc_info.value)
+            build_provider(settings)
+        # Points the operator at the supported OpenRouter path.
+        assert "openrouter" in str(exc_info.value)
 
-    @pytest.mark.parametrize("provider_name", ["claude", "ollama", "openrouter"])
-    def test_deferred_provider_error_suggests_mock(self, provider_name: str) -> None:
-        """Error message tells the user to set generation_provider=mock."""
-        deferred_settings = Settings(generation_provider=provider_name)  # type: ignore[call-arg]
+    def test_openrouter_without_key_raises(self) -> None:
+        """openrouter without a credential raises ConfigurationError by key name."""
+        settings = Settings(generation_provider="openrouter", openrouter_api_key=None)  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
-            build_provider(deferred_settings)
-        assert "mock" in str(exc_info.value)
+            build_provider(settings)
+        message = str(exc_info.value)
+        assert "OPENROUTER_API_KEY" in message
+
+    def test_openrouter_key_value_not_leaked_in_error(self) -> None:
+        """A missing-key error never echoes any key value."""
+        settings = Settings(generation_provider="openrouter", openrouter_api_key=None)  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings)
+        # The message references the variable by name only.
+        assert "Bearer" not in str(exc_info.value)
+
+    def test_openrouter_with_key_builds_three_leg_cascade(self) -> None:
+        """openrouter + key + fallback enabled assembles the ordered cascade."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, FallbackProvider)
+        assert len(provider.legs) == 3
+        assert isinstance(provider.legs[0], OpenRouterProvider)
+        assert isinstance(provider.legs[1], OpenRouterProvider)
+        assert isinstance(provider.legs[2], OllamaProvider)
+
+    def test_openrouter_cascade_leg_order_matches_settings(self) -> None:
+        """The cascade legs target the primary, fallback, and ollama models in order."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            openrouter_model="anthropic/claude-sonnet-4.6",
+            openrouter_fallback_model="google/gemma-4-31b-it:free",
+            ollama_model="qwen3",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, FallbackProvider)
+        names = [leg.name for leg in provider.legs]  # type: ignore[attr-defined]
+        assert names == [
+            "openrouter:anthropic/claude-sonnet-4.6",
+            "openrouter:google/gemma-4-31b-it:free",
+            "ollama:qwen3",
+        ]
+
+    def test_openrouter_fallback_disabled_returns_bare_primary(self) -> None:
+        """With fallback disabled the bare primary leg is returned (isolation runs)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            provider_fallback_enabled=False,
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, OpenRouterProvider)
+        assert provider.name == "openrouter:anthropic/claude-haiku-4.5"
+
+    def test_ollama_returns_bare_ollama_leg(self) -> None:
+        """generation_provider='ollama' returns the local Ollama leg alone."""
+        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
+        provider = build_provider(settings)
+        assert isinstance(provider, OllamaProvider)
+        assert provider.name == "ollama:qwen3"
 
 
 class TestCannedStorySchemaValid:

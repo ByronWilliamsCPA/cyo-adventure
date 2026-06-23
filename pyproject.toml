@@ -314,6 +314,12 @@ known-first-party = ["cyo_adventure"]
 # Security middleware uses keyword-only args for a rich configuration surface
 "**/middleware/security.py" = ["PLR0913"]
 
+# Live provider adapters and the shared retry driver are configuration-heavy by
+# nature (credential, endpoint, timeout, reasoning effort, retry policy, and an
+# injectable client for tests); explicit keyword-only parameters are clearer and
+# safer here than a positional config object.
+"**/generation/providers/*.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

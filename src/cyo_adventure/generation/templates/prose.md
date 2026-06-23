@@ -2,14 +2,9 @@ You are writing the prose (Stage B: Prose) for a branching story for a
 choose-your-own-adventure reading app used by children. The story structure has already
 been validated; your task is to write the final prose without changing the structure.
 
-## Approved Story Skeleton
-
-The following JSON skeleton passed the validator. It contains one-line beat descriptions
-in each `body` field and action descriptions in each choice `label`. Replace every `body`
-with full passage prose. Replace every choice `label` with the final choice text shown
-to the reader. Change nothing else.
-
-{approved_skeleton}
+The approved story skeleton is in the user message that follows these instructions.
+Read the drafting guide and the validator rules first; then replace every `body` and
+every choice `label` in that skeleton with final prose, changing nothing else.
 
 ## Drafting Guide
 
@@ -66,3 +61,14 @@ job to Stage C (Repair).
 Respond with valid JSON only. Do not include prose before or after the JSON. Do not
 include markdown fences. The validator will parse your response as JSON; any non-JSON
 content will cause the job to fail.
+
+<!-- @user -->
+
+## Approved Story Skeleton
+
+The following JSON skeleton passed the validator. It contains one-line beat descriptions
+in each `body` field and action descriptions in each choice `label`. Replace every `body`
+with full passage prose. Replace every choice `label` with the final choice text shown
+to the reader. Change nothing else.
+
+{approved_skeleton}

@@ -279,8 +279,8 @@ results/
 output/
 
 # Temporary reference files (anti-compaction strategy)
-# Keep the directory, but ignore .tmp-* files inside it
-tmp_cleanup/.tmp-*
+# Keep the directory, but ignore everything inside it (scratch only)
+tmp_cleanup/*
 !tmp_cleanup/.gitkeep
 
 # SonarCloud

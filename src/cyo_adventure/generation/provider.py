@@ -18,6 +18,11 @@ if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
+from cyo_adventure.generation.providers import (
+    FallbackProvider,
+    OllamaProvider,
+    OpenRouterProvider,
+)
 
 # #ASSUME: external-resources: concrete GenerationProvider implementations
 # perform network I/O to an LLM endpoint (timeouts, retries, authentication).
@@ -189,18 +194,76 @@ class MockProvider:
         return response
 
 
+def _build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
+    """Construct a single OpenRouter leg for ``model`` from settings.
+
+    Args:
+        settings: The application settings instance.
+        model: The OpenRouter model id this leg targets.
+
+    Returns:
+        An OpenRouter ``GenerationProvider`` adapter.
+
+    Raises:
+        ConfigurationError: If ``OPENROUTER_API_KEY`` is not configured. The
+            message names the key only, never its value.
+    """
+    # #CRITICAL: security: fail fast (and by name only) when the credential is
+    # absent, rather than sending an unauthenticated request that leaks the
+    # prompt to a 401 round-trip.
+    # #VERIFY: test_build_provider asserts ConfigurationError when the key is None
+    # and that the message does not contain a key value.
+    if not settings.openrouter_api_key:
+        msg = (
+            "OPENROUTER_API_KEY is not set; required for generation_provider=openrouter"
+        )
+        raise ConfigurationError(msg)
+
+    return OpenRouterProvider(
+        api_key=settings.openrouter_api_key,
+        model=model,
+        base_url=settings.openrouter_base_url,
+        timeout_seconds=settings.llm_timeout_seconds,
+        effort=settings.llm_effort,
+    )
+
+
+def _build_ollama_leg(settings: Settings) -> GenerationProvider:
+    """Construct the local Ollama leg from settings.
+
+    Args:
+        settings: The application settings instance.
+
+    Returns:
+        An Ollama ``GenerationProvider`` adapter.
+    """
+    return OllamaProvider(
+        model=settings.ollama_model,
+        base_url=settings.ollama_base_url,
+        timeout_seconds=settings.llm_timeout_seconds,
+    )
+
+
 def build_provider(settings: Settings) -> GenerationProvider:
     """Construct a :class:`GenerationProvider` from application settings.
 
-    In Phase 2 only ``"mock"`` is operational; real providers are deferred to
-    Phase 2b when network I/O, retries, authentication, and timeouts will be
-    added. Requesting any other provider raises :class:`ConfigurationError`
-    immediately so the misconfiguration surfaces at job dispatch time.
+    Mapping from ``settings.generation_provider``:
 
-    The mock provider is seeded with enough copies of the canned story JSON to
-    cover Stage A + Stage B + several repair rounds without exhausting the
-    response queue, making a single ``mock`` worker run produce a deterministic
-    ``"passed"`` outcome.
+    - ``"mock"`` (default): a :class:`MockProvider` seeded with the canned story.
+      CI and local runs use this so they never make live calls.
+    - ``"openrouter"``: the primary OpenRouter leg. When
+      ``settings.provider_fallback_enabled`` is ``True`` (default) it is wrapped
+      in a :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
+      cascade ``[openrouter:primary, openrouter:fallback_model, ollama]``; when
+      ``False`` the bare primary leg is returned so a yield/comparison run can
+      measure one leg in isolation.
+    - ``"ollama"``: the local Ollama leg alone (offline path and comparison
+      target).
+    - ``"claude"``: a direct-Anthropic adapter is deferred; raises
+      :class:`ConfigurationError`. Reach Claude via OpenRouter instead.
+
+    Live adapters are constructed only for the provider actually selected, so the
+    default mock path opens no client and validates no credential.
 
     Args:
         settings: The application settings instance.
@@ -209,23 +272,36 @@ def build_provider(settings: Settings) -> GenerationProvider:
         A :class:`GenerationProvider` ready for injection into the worker.
 
     Raises:
-        ConfigurationError: If ``settings.generation_provider`` is not
-            ``"mock"`` (deferred providers raise immediately).
+        ConfigurationError: For ``"claude"`` (deferred) or when the OpenRouter
+            credential is missing.
     """
-    if settings.generation_provider == "mock":
+    provider = settings.generation_provider
+    if provider == "mock":
         # Queue enough copies for Stage A + Stage B + up to 3 repairs.
         # Extra copies are safe: MockProvider raises only if the queue is
         # exhausted before the pipeline finishes, not if there are leftovers.
         return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
 
-    # #ASSUME: external-resources: "claude", "ollama", and "openrouter" require
-    # network I/O, credentials, retries, and timeout handling that are deferred
-    # to Phase 2b. Raising here prevents silent mis-configuration in-phase.
-    # #VERIFY: Phase 2b adds real adapters for each provider and removes this
-    # guard, replacing it with per-provider credential validation at startup.
+    if provider == "ollama":
+        return _build_ollama_leg(settings)
+
+    if provider == "openrouter":
+        primary = _build_openrouter_leg(settings, settings.openrouter_model)
+        if not settings.provider_fallback_enabled:
+            return primary
+        return FallbackProvider(
+            legs=[
+                primary,
+                _build_openrouter_leg(settings, settings.openrouter_fallback_model),
+                _build_ollama_leg(settings),
+            ]
+        )
+
+    # "claude": a direct Anthropic SDK adapter is deferred (ADR-003); the seam
+    # stays so it is a trivial future add. Reach Claude via OpenRouter.
     msg = (
-        f"provider '{settings.generation_provider}' is deferred to Phase 2b; "
-        "set generation_provider=mock"
+        "generation_provider='claude' (direct Anthropic) is deferred; reach "
+        "Claude via generation_provider=openrouter with an anthropic/* model"
     )
     raise ConfigurationError(msg)
 

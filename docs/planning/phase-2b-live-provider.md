@@ -47,10 +47,15 @@ the defined extension points:
 
 ### In scope
 
-- Implement `complete()` for three providers behind the existing `GenerationProvider` protocol:
-  - **Claude** (Anthropic SDK, primary): target the model specified by `settings.llm_model`.
-  - **Ollama** (local P40, fallback): target the model specified by `settings.ollama_model`.
-  - **OpenRouter** (HTTP fallback): target the model specified by `settings.openrouter_model`.
+- Implement `complete()` for two live providers behind the existing `GenerationProvider`
+  protocol (primary/fallback roles per ADR-003 as amended 2026-06-22):
+  - **OpenRouter** (HTTP, primary): target the model specified by `settings.openrouter_model`,
+    with `settings.openrouter_fallback_model` as the in-provider fallback. Claude is reached
+    here (`anthropic/claude-sonnet-4.6`); there is no separate Anthropic SDK adapter.
+  - **Ollama** (local P40, final fallback): target the model specified by `settings.ollama_model`.
+  - A direct **Anthropic SDK** adapter is **deferred** (out of scope below): the operator routes
+    Claude through OpenRouter, so the standalone SDK path is unnecessary now. The seam remains for
+    a trivial future add (direct Opus 4.8 + prompt caching) if a billed Anthropic account is used.
 - Wire `build_provider` so that `settings.generation_provider` returns the correct live adapter
   instead of raising `ConfigurationError`.
 - Add network-level concerns per [ADR-003](./adr/adr-003-frontier-llm-generation.md):
@@ -61,8 +66,15 @@ the defined extension points:
   guard. The guard is currently a structural convention (all egress flows through the
   orchestrator's `_run_one_stage`); when adding the first live adapter, move or re-assert the
   screen at the provider boundary so a new adapter cannot bypass it.
-- Run `scripts/yield_harness.py` against the live Claude adapter over a 20-story sample and
+- Run `scripts/yield_harness.py` against the live OpenRouter adapter over a 20-story sample and
   record the result.
+- **Tighten the Stage A structure prompt's budget constraints.** The 2026-06-22 probe found the
+  dominant yield failure is L1-7 "budget" (`branch_depth` over the band cap, `ending_count` not
+  matching the brief): the structure prompt defers these numbers to the injected drafting guide
+  instead of stating them inline. State the hard band budget numerically and prominently (max
+  branch depth, min/max nodes from `layer1.py`'s band table, and "produce exactly `ending_count`
+  endings"). This is the highest-leverage yield lever and is model-independent. Document the
+  change in the harness output per the out-of-scope note below.
 
 ### Out of scope
 
@@ -71,6 +83,9 @@ the defined extension points:
 - Prompt-template authoring (templates ship in Phase 2; adjust them only if yield measurement
   reveals a systematic failure pattern, and document the change in the harness output).
 - Provider billing, quota, or rate-limit dashboards (operational concern, not code).
+- The direct **Anthropic SDK** adapter: deferred. Claude is reached via OpenRouter
+  (`anthropic/claude-sonnet-4.6`); a standalone SDK path is unnecessary while the operator routes
+  Claude through OpenRouter. Revisit only if a billed Anthropic account is used directly.
 
 ---
 
@@ -79,15 +94,20 @@ the defined extension points:
 Both criteria must be met for this work package to close Phase 2 fully:
 
 1. **Provider swap is a config change only.** Setting `settings.generation_provider` to
-   `claude`, `ollama`, or `openrouter` selects the corresponding adapter with no code changes.
-   The orchestrator, harness, and API endpoints are unaffected.
+   `openrouter` or `ollama` selects the corresponding adapter with no code changes (the
+   `claude` value stays in the enum for the deferred direct-Anthropic adapter and raises
+   `ConfigurationError` until that adapter is implemented). The orchestrator, harness, and API
+   endpoints are unaffected.
 
 2. **Generation yield at least 60% over a 20-story sample.** Running
-   `scripts/yield_harness.py --briefs <20-brief sample>.json --provider claude --threshold 0.60`
-   against the live Claude adapter (the sample size is the number of briefs in the file)
+   `scripts/yield_harness.py --briefs <20-brief sample>.json --provider openrouter --threshold 0.60`
+   against the live OpenRouter adapter (the primary per ADR-003 as amended 2026-06-22; model
+   pinned via `settings.openrouter_model`; the sample size is the number of briefs in the file)
    produces a pass rate at or above 60% (stories that pass the full validation gate with zero
    structural edits, prose-only tweaks allowed). The harness output is committed to
-   `docs/planning/yield-results/phase-2b-YYYY-MM-DD.json`.
+   `docs/planning/yield-results/phase-2b-YYYY-MM-DD.json`. Run debug iterations against a
+   `:free` model (e.g. `google/gemma-4-31b-it:free`) so paid measurement is a few confirmation
+   runs only.
 
 ---
 
@@ -99,6 +119,16 @@ Both criteria must be met for this work package to close Phase 2 fully:
   `settings.llm_timeout_seconds`.
 - **Retry policy**: 3 attempts with exponential backoff (2 s, 4 s, 8 s); on exhaustion, raise
   `ProviderError` and let the orchestrator route to `needs_revision`.
+- **Unavailable-model fallback (OpenRouter roster churns weekly)**: the adapter MUST map an
+  "invalid model" response (HTTP 400/404) to `ProviderError`, and `build_provider` cascades
+  `openrouter_model` -> `openrouter_fallback_model` -> `ollama` so a vanished pinned model is a
+  fallback trigger, not a crash. Pin first-party families (Anthropic, Google) that survive churn.
+- **OpenRouter free-tier limits**: `:free` models allow 20 req/min and 50 req/day under $10 of
+  purchased credits (1,000/day at >=$10). A 20-story run is ~100 calls, so a one-time $10 top-up is
+  required to complete a free-model run in a day; reserve free models for debug iterations.
+- **Acceptable model families (minors' content, ADR-004)**: production generation routes only to
+  providers with a defensible data policy (Anthropic, Google); other OpenRouter labs are for
+  local/free experimentation only.
 - **No PII in prompts**: the PII guard is the enforcement point; adapters must not construct
   prompts independently of the orchestrator.
 - **MockProvider remains the default** in CI and local development until

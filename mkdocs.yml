@@ -164,6 +164,14 @@ nav:
   - API Reference:
       - Overview: api-reference.md
 
+  - Architecture:
+      - Overview: architecture/README.md
+      - System Overview: architecture/system-overview.md
+      - Generation Pipeline: architecture/generation-pipeline.md
+      - Validation and Player: architecture/validation-and-player.md
+      - Data Model: architecture/data-model.md
+      - Deployment: architecture/deployment.md
+
   - Development:
       - Architecture: development/architecture.md
       - Testing: development/testing.md

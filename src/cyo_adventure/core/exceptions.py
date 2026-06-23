@@ -448,6 +448,102 @@ class DatabaseError(ExternalServiceError):
         )
 
 
+class ProviderError(ExternalServiceError):
+    """Generation provider (LLM backend) failure.
+
+    Raised by a concrete ``GenerationProvider`` adapter when a completion call
+    fails in a way the adapter cannot recover from on its own. Carries the
+    provider/leg identity and a ``leg_fatal`` flag that the composite
+    ``FallbackProvider`` uses as a circuit breaker:
+
+    - ``leg_fatal=False`` (default): a transient failure that survived the
+      adapter's own retry/backoff (connection error, timeout, HTTP 429, HTTP
+      5xx). The cascade fails over to the next leg for this call but may retry
+      this leg on a later call.
+    - ``leg_fatal=True``: a leg-fatal failure (invalid or unavailable model on
+      HTTP 400/404, authentication failure on HTTP 401/403). The cascade fails
+      over AND marks this leg dead for the remainder of the run so a vanished
+      model is not retried on every subsequent call.
+
+    This error must NEVER be raised for a gate-blocked-but-valid response: a
+    blocked gate is a content failure handled by the orchestrator repair loop
+    (Layer 3), not a provider failure (Layer 2).
+
+    Example:
+        >>> raise ProviderError(
+        ...     "model not found",
+        ...     provider="openrouter",
+        ...     model="anthropic/claude-sonnet-4.6",
+        ...     status_code=404,
+        ...     leg_fatal=True,
+        ... )
+    """
+
+    def __init__(
+        self,
+        message: str,
+        *,
+        provider: str | None = None,
+        model: str | None = None,
+        status_code: int | None = None,
+        leg_fatal: bool = False,
+        details: dict[str, Any] | None = None,
+        error_code: str | None = None,
+    ) -> None:
+        """Initialize a provider error.
+
+        Args:
+            message: Description of the provider failure (never include the
+                prompt text or any PII; the prompt may contain story content).
+            provider: The provider/leg name (e.g. ``"openrouter"``, ``"ollama"``).
+            model: The model id that failed, when known.
+            status_code: HTTP status code from the provider, when applicable.
+            leg_fatal: ``True`` when the leg should be marked dead by the
+                cascade's circuit breaker; ``False`` for a transient failure.
+            details: Additional context.
+            error_code: Machine-readable error code.
+
+        Raises:
+            ValueError: If ``leg_fatal`` is paired with a successful HTTP
+                ``status_code`` (< 400). ``leg_fatal`` is the foundation of the
+                cascade circuit breaker; a 2xx/3xx response cannot represent a
+                fatal leg failure, so the combination is a programming error and
+                is rejected at construction rather than silently corrupting the
+                breaker.
+        """
+        # #CRITICAL: data-integrity: leg_fatal drives the FallbackProvider
+        # circuit breaker; an inconsistent (successful status, leg_fatal=True)
+        # pairing would wrongly mark a live leg dead. Reject it at construction.
+        # #VERIFY: test_provider_error_rejects_fatal_success_status asserts the
+        # ValueError; adapters only set leg_fatal=True for 4xx codes.
+        if leg_fatal and status_code is not None and status_code < 400:
+            msg = (
+                f"leg_fatal=True is contradictory with successful HTTP "
+                f"status_code={status_code}: a 2xx/3xx response cannot be a "
+                f"fatal leg failure"
+            )
+            raise ValueError(msg)
+        self.leg_fatal: bool = leg_fatal
+        self.provider: str | None = provider
+        self.model: str | None = model
+        # Expose status_code directly (the ExternalServiceError base only records
+        # it in ``details``) so the cascade and tests can read it without digging.
+        self.status_code: int | None = status_code
+        details = _attach_optional_details(
+            details or {},
+            provider=provider,
+            model=model,
+            leg_fatal=leg_fatal,
+        )
+        super().__init__(
+            message,
+            service_name=provider,
+            status_code=status_code,
+            details=details,
+            error_code=error_code or "PROVIDER_ERROR",
+        )
+
+
 class BusinessLogicError(ProjectBaseError):
     """Business logic/domain rule violations.
 
@@ -500,6 +596,7 @@ __all__ = [
     "DatabaseError",
     "ExternalServiceError",
     "ProjectBaseError",
+    "ProviderError",
     "ResourceNotFoundError",
     "ValidationError",
 ]

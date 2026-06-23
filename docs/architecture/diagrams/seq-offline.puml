@@ -1,0 +1,118 @@
+@startuml seq-offline
+' ============================================================
+' Sequence Diagram: Offline Play and Reconnect
+' IndexedDB cache, offline queue replay with event_id idempotency
+'
+' Source files:
+'   frontend/src/offline/sync.ts   (saveProgress, replayQueue, OfflineError)
+'   frontend/src/offline/db.ts     (IndexedDB: putReadingState, enqueueWrite, dequeue)
+'   frontend/src/player/machine.ts (XState machine, triggers saveProgress)
+'   docs/design/offline-conflict-ux.md
+'   docs/planning/tech-spec.md  (Multi-device sync rules)
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam sequenceMessageAlign center
+
+actor "Child Reader" as child
+participant "XState Machine\nplayer/machine.ts" as machine
+participant "Sync Layer\noffline/sync.ts\nsaveProgress()" as sync
+database "IndexedDB\noffline/db.ts\n(local cache + queue)" as idb
+participant "SyncApi\n(Generated Client)\nfrontend/src/client/" as api_client
+participant "FastAPI Backend\nreading.py" as backend
+
+' ========== Online play: save reaches server ==========
+note over child,backend: Online play - save reaches server immediately
+
+child -> machine : "choose path / trigger auto-save"
+machine -> sync : "saveProgress(api, profileId, storybookId, state,\n{deviceId:'dev-A', eventId:undefined})"
+sync -> sync : "eventId = crypto.randomUUID() -> 'uuid-42'"
+sync -> idb : "putReadingState(profileId, storybookId, state)\n[update local cache first]"
+idb --> sync : "OK"
+sync -> api_client : "putReadingState(profileId, storybookId,\n{...state, device_id:'dev-A', event_id:'uuid-42'})"
+api_client -> backend : "PUT /api/v1/reading-state/{profile}/{story}\nbody includes event_id + state_revision"
+backend --> api_client : "200 OK {state_revision: N+1}"
+api_client --> sync : "{status:200, row: ReadingState}"
+sync --> machine : "{kind:'saved', row}"
+
+' ========== Offline play: write queued ==========
+note over child,backend: Network goes offline - writes queue in IndexedDB
+
+child -> machine : "choose another path"
+machine -> sync : "saveProgress(api, profileId, storybookId, state2,\n{deviceId:'dev-A'})"
+sync -> sync : "eventId = 'uuid-43'"
+sync -> idb : "putReadingState() [update local cache]"
+idb --> sync : "OK"
+sync -> api_client : "putReadingState(..., event_id:'uuid-43')"
+api_client -> backend : "PUT /api/v1/reading-state/..."
+note right of backend: Network unreachable;\nfetch throws (no HTTP response)
+backend --> api_client : "[OfflineError: network unavailable]"
+api_client --> sync : "[OfflineError thrown]"
+sync -> idb : "enqueueWrite({profileId, storybookId,\nbody:{...state2, event_id:'uuid-43'}})"
+idb --> sync : "OK"
+sync --> machine : "{kind:'queued', eventId:'uuid-43'}"
+machine -> machine : "local state continues;\nplayer works from IndexedDB cache"
+
+child -> machine : "choose another path (still offline)"
+machine -> sync : "saveProgress(api, ..., state3)"
+sync -> sync : "eventId = 'uuid-44'"
+sync -> idb : "putReadingState() [update local cache]"
+idb --> sync : "OK"
+sync -> api_client : "[OfflineError again]"
+api_client --> sync : "[OfflineError]"
+sync -> idb : "enqueueWrite({...state3, event_id:'uuid-44'})"
+idb --> sync : "OK"
+sync --> machine : "{kind:'queued', eventId:'uuid-44'}"
+
+' ========== Reconnect: ordered replay ==========
+note over child,backend: Network restored - replay queued writes in order
+
+machine -> sync : "replayQueue(api, profileId, storybookId)"
+sync -> idb : "listQueue(profileId, storybookId)"
+idb --> sync : "[{event_id:'uuid-43', ...state2},\n {event_id:'uuid-44', ...state3}]"
+
+loop "for each write in queue order"
+  sync -> api_client : "putReadingState(event_id:'uuid-43', state2)"
+  api_client -> backend : "PUT /api/v1/reading-state/..."
+  backend -> backend : "event_id check:\n'uuid-43' != last_event_id -> apply\nrow.state_revision = N+2"
+  backend --> api_client : "200 OK {state_revision: N+2}"
+  api_client --> sync : "{status:200, row}"
+  sync -> idb : "dequeue(uuid-43)"
+  idb --> sync : "OK"
+
+  sync -> api_client : "putReadingState(event_id:'uuid-44', state3)"
+  api_client -> backend : "PUT /api/v1/reading-state/..."
+  backend -> backend : "apply; state_revision = N+3"
+  backend --> api_client : "200 OK {state_revision: N+3}"
+  api_client --> sync : "{status:200, row}"
+  sync -> idb : "dequeue(uuid-44)"
+  idb --> sync : "OK"
+end
+
+sync --> machine : "{kind:'saved', row} (final state)"
+
+note over sync,backend
+  Idempotency guarantee:
+  If any queued write was already applied
+  (e.g., the connection dropped after server
+  wrote but before client got the response),
+  the replay finds body.event_id == row.last_event_id
+  and returns the current row without re-applying.
+  The queue entry is then safely dequeued.
+end note
+
+' ========== Replay yields conflict ==========
+note over child,backend: Conflict during replay (another device advanced while offline)
+
+alt "replay returns 409"
+  sync -> api_client : "putReadingState(event_id:'uuid-43', state_revision=N)"
+  api_client -> backend : "PUT ..."
+  backend --> api_client : "409 {detail:'revision mismatch', current_row:{state_revision:N+5}}"
+  api_client --> sync : "{status:409, currentRow}"
+  sync --> machine : "{kind:'conflict', currentRow}"
+  machine -> child : "show conflict UX\n(offline-conflict-ux.md options)"
+end
+
+@enduml

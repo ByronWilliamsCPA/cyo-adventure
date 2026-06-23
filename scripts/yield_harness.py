@@ -1,26 +1,30 @@
-"""Mock-driven generation yield harness for the CYO Adventure pipeline.
+"""Generation yield harness for the CYO Adventure pipeline.
 
-Demonstrates the >=60% acceptance methodology end-to-end against the
-deterministic MockProvider. In Phase 2 this script runs against the mock
-so the measurement path is validated without network I/O. Phase 2b swaps in
-a live provider to measure the real >=60% acceptance rate over a 20-story
-sample.
+Measures the gate pass rate over a brief sample against the deterministic
+MockProvider or, in Phase 2b, a live provider. ``briefs.json`` is a JSON array
+of concept-brief dicts (each matching the
+:class:`~cyo_adventure.generation.concept.ConceptBrief` schema).
 
-Usage::
+Mock run (deterministic, 100% pass, validates the measurement path)::
 
     PYTHONPATH=. .venv/bin/python scripts/yield_harness.py \\
         --briefs <briefs.json> --provider mock --threshold 0.60
 
-``briefs.json`` is a JSON array of concept-brief dicts (each matching the
-:class:`~cyo_adventure.generation.concept.ConceptBrief` schema). The mock
-provider returns the canned valid story for every brief, so a run against
-mock deterministically reports 100% pass rate, demonstrating the measurement
-path. Phase 2b swaps in a live provider (``--provider claude`` etc.) to
-measure the actual acceptance rate.
+Live run, OpenRouter cascade (the AC-closing measurement)::
 
-Important: live providers are deferred to Phase 2b. Requesting any provider
-other than ``mock`` via the CLI prints an informational message and exits
-with a non-zero status code.
+    PYTHONPATH=. .venv/bin/python scripts/yield_harness.py \\
+        --briefs <briefs.json> --provider openrouter --threshold 0.60 \\
+        --throttle 3 --out docs/planning/yield-results/<name>.json
+
+Isolated leg for the comparison matrix (no failover masks one leg's yield)::
+
+    PYTHONPATH=. .venv/bin/python scripts/yield_harness.py \\
+        --briefs <briefs.json> --provider openrouter --no-fallback \\
+        --model google/gemma-4-31b-it:free --out <name>.json
+
+Live providers read ``OPENROUTER_API_KEY`` from the environment; for local runs
+the harness sources it from the gitignored ``.env`` (``--env-file``). The mock
+default keeps CI and casual runs free of any network I/O.
 """
 
 from __future__ import annotations
@@ -28,7 +32,9 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -45,6 +51,10 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from cyo_adventure.generation.provider import GenerationProvider
+
+# Provider names the CLI accepts. Live providers were deferred in Phase 2; Phase
+# 2b enables them so the >=60% acceptance rate can be measured for real.
+_PROVIDER_CHOICES = ("mock", "openrouter", "ollama")
 
 __all__ = [
     "YieldReport",
@@ -107,19 +117,60 @@ def _extract_failing_rule_ids(report: dict[str, object]) -> list[str]:
     return sorted(set(rule_ids))
 
 
+def _error_entry(idx: int, exc: Exception, started: float) -> dict[str, object]:
+    """Build a per-story entry for a brief whose generation raised.
+
+    Args:
+        idx: The 0-based brief index.
+        exc: The exception raised by :func:`generate_story`.
+        started: ``time.monotonic()`` captured before the attempt.
+
+    Returns:
+        A per-story entry with ``status="error"`` and the truncated message.
+    """
+    return {
+        "index": idx,
+        "status": "error",
+        "attempts": 0,
+        "failing_rule_ids": [],
+        "latency_s": round(time.monotonic() - started, 2),
+        "error": str(exc)[:512],
+    }
+
+
+def _print_progress(entry: dict[str, object], idx: int, total: int) -> None:
+    """Print a one-line per-brief progress message to stderr.
+
+    Args:
+        entry: The per-story result entry just recorded.
+        idx: The 0-based brief index.
+        total: The total number of briefs in the run.
+    """
+    print(
+        f"[{idx + 1}/{total}] status={entry['status']} "
+        f"attempts={entry['attempts']} latency={entry['latency_s']}s "
+        f"rules={entry['failing_rule_ids']}",
+        file=sys.stderr,
+        flush=True,
+    )
+
+
 async def run_yield(
     briefs: list[ConceptBrief],
     provider_factory: Callable[[], GenerationProvider],
     pii: PiiContext,
     *,
     threshold: float = 0.60,
+    delay_between: float = 0.0,
+    verbose: bool = False,
 ) -> YieldReport:
     """Run the generation pipeline for each brief and return a yield summary.
 
     For each brief a FRESH provider is constructed via ``provider_factory()``
     so every story gets its own response queue and call log. This mirrors how
-    the Phase 2b live measurement will work: each generation job gets an
-    independent provider instance.
+    the Phase 2b live measurement works: each generation job gets an
+    independent provider instance (and, for the cascade, a fresh circuit
+    breaker).
 
     Args:
         briefs: The list of concept briefs to process. An empty list is valid
@@ -132,9 +183,15 @@ async def run_yield(
             (empty frozensets) when no real child data exists.
         threshold: The minimum pass rate required for ``meets_threshold`` to
             be ``True``. Defaults to ``0.60`` (60%).
+        delay_between: Seconds to sleep after each brief. Use a small value for
+            live free-tier runs to stay under per-minute request limits; the
+            default ``0.0`` is correct for mock runs.
+        verbose: When ``True``, print a one-line progress message per brief to
+            stderr (so a long live run is monitorable from its log).
 
     Returns:
-        A :class:`YieldReport` with aggregate and per-story results.
+        A :class:`YieldReport` with aggregate and per-story results. Each
+        per-story entry carries a wall-clock ``latency_s``.
     """
     total = len(briefs)
     passed = 0
@@ -142,37 +199,30 @@ async def run_yield(
 
     for idx, brief in enumerate(briefs):
         provider = provider_factory()
+        started = time.monotonic()
         try:
             outcome = await generate_story(brief, provider, pii)
         except Exception as exc:  # isolate one brief's failure (best-effort harness)
             # A measurement harness must not let a single brief's exception
             # abort the batch and discard every prior result. Record this brief
-            # as an error and continue so the pass rate reflects the whole
-            # sample, not the prefix before the first failure.
-            per_story.append(
-                {
-                    "index": idx,
-                    "status": "error",
-                    "attempts": 0,
-                    "failing_rule_ids": [],
-                    "error": str(exc)[:512],
-                }
-            )
-            continue
-
-        if outcome.status == "passed":
-            passed += 1
-
-        failing_rule_ids = _extract_failing_rule_ids(outcome.report)
-
-        per_story.append(
-            {
+            # as an error so the pass rate reflects the whole sample, not the
+            # prefix before the first failure.
+            entry = _error_entry(idx, exc, started)
+        else:
+            if outcome.status == "passed":
+                passed += 1
+            entry = {
                 "index": idx,
                 "status": outcome.status,
                 "attempts": outcome.attempts,
-                "failing_rule_ids": failing_rule_ids,
+                "failing_rule_ids": _extract_failing_rule_ids(outcome.report),
+                "latency_s": round(time.monotonic() - started, 2),
             }
-        )
+        per_story.append(entry)
+        if verbose:
+            _print_progress(entry, idx, total)
+        if delay_between > 0:
+            await asyncio.sleep(delay_between)
 
     pass_rate = passed / total if total > 0 else 0.0
     meets_threshold = pass_rate >= threshold
@@ -288,21 +338,120 @@ def _load_briefs(briefs_path: Path) -> list[ConceptBrief]:
     return briefs
 
 
-def main() -> None:
-    """CLI entry point for the generation yield harness.
+def _load_env_file(env_path: Path) -> None:
+    """Load ``KEY=VALUE`` lines from ``env_path`` into ``os.environ``.
 
-    Parses arguments, builds the appropriate provider factory, runs the
-    yield measurement, prints a summary, and exits 0 when
-    ``meets_threshold`` is True or 1 when it is not.
+    Existing environment variables are not overwritten. Live providers read
+    ``OPENROUTER_API_KEY`` from the environment; for local runs the key lives in
+    the gitignored project ``.env``, which ``Settings`` does not load
+    automatically, so the harness sources it here for live providers only.
 
-    Non-mock providers are deferred to Phase 2b. Requesting one prints an
-    informational message and exits with status 2.
+    Args:
+        env_path: Path to a dotenv-style file. A missing file is a no-op.
     """
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in stripped:
+            continue
+        key, _, value = stripped.partition("=")
+        key = key.strip()
+        if key and key not in os.environ:
+            os.environ[key] = value.strip()
+
+
+def _build_live_factory(
+    provider: str, *, model: str | None, fallback: bool
+) -> Callable[[], GenerationProvider]:
+    """Return a factory that builds a fresh live provider per brief.
+
+    Args:
+        provider: ``"openrouter"`` or ``"ollama"``.
+        model: Optional model-id override for the chosen provider; ``None`` keeps
+            the configured default.
+        fallback: Whether the openrouter cascade may fail over. ``False`` isolates
+            the primary leg (a comparison run), so no failover masks its yield.
+
+    Returns:
+        A zero-argument factory; each call builds an independent provider (and,
+        for the cascade, a fresh per-story circuit breaker).
+    """
+    kwargs: dict[str, object] = {"generation_provider": provider}
+    if provider == "openrouter":
+        kwargs["provider_fallback_enabled"] = fallback
+        if model is not None:
+            kwargs["openrouter_model"] = model
+    elif model is not None:
+        kwargs["ollama_model"] = model
+    settings = Settings(**kwargs)  # type: ignore[arg-type]
+
+    def _factory() -> GenerationProvider:
+        """Build a fresh live provider from the resolved settings."""
+        return build_provider(settings)
+
+    return _factory
+
+
+def _tier_split(
+    briefs: list[ConceptBrief], per_story: list[dict[str, object]]
+) -> dict[str, dict[str, int]]:
+    """Split pass/total counts by brief tier for the comparison matrix.
+
+    Args:
+        briefs: The briefs processed (indexed by each per-story ``index``).
+        per_story: The per-story result entries from a :class:`YieldReport`.
+
+    Returns:
+        A mapping ``{"tier1": {"total": n, "passed": m}, "tier2": {...}}``.
+    """
+    buckets: dict[str, dict[str, int]] = {
+        "tier1": {"total": 0, "passed": 0},
+        "tier2": {"total": 0, "passed": 0},
+    }
+    for entry in per_story:
+        index = entry["index"]
+        if not isinstance(index, int) or index >= len(briefs):
+            continue
+        key = f"tier{briefs[index].tier}"
+        bucket = buckets.setdefault(key, {"total": 0, "passed": 0})
+        bucket["total"] += 1
+        if entry["status"] == "passed":
+            bucket["passed"] += 1
+    return buckets
+
+
+def _write_results(
+    out_path: Path,
+    report: YieldReport,
+    meta: dict[str, object],
+) -> None:
+    """Write a results JSON capturing the run metadata and the yield report.
+
+    Args:
+        out_path: Destination path (parent directories are created).
+        report: The yield report to serialize.
+        meta: Run metadata (provider, model, fallback flag, threshold, tier
+            split) merged into the payload.
+    """
+    payload: dict[str, object] = {
+        **meta,
+        "total": report.total,
+        "passed": report.passed,
+        "pass_rate": round(report.pass_rate, 4),
+        "meets_threshold": report.meets_threshold,
+        "per_story": report.per_story,
+    }
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def _parse_args() -> argparse.Namespace:
+    """Build the argument parser and parse argv."""
     parser = argparse.ArgumentParser(
         description=(
-            "Mock-driven generation yield harness. "
-            "Demonstrates the >=60% acceptance methodology end-to-end. "
-            "Phase 2b swaps in a live provider to measure real acceptance rate."
+            "Generation yield harness. Measures the gate pass rate over a brief "
+            "sample against the mock or a live provider (Phase 2b)."
         )
     )
     parser.add_argument(
@@ -314,11 +463,42 @@ def main() -> None:
     parser.add_argument(
         "--provider",
         default="mock",
-        choices=["mock"],
-        help=(
-            "Provider to use. Only 'mock' is operational in Phase 2. "
-            "Live providers are deferred to Phase 2b."
-        ),
+        choices=list(_PROVIDER_CHOICES),
+        help="Provider to measure (default: mock).",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="Override the provider's model id (e.g. an isolated comparison leg).",
+    )
+    parser.add_argument(
+        "--no-fallback",
+        action="store_true",
+        help="Disable the openrouter cascade so one leg is measured in isolation.",
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        help="Process only the first N briefs (cheap debug iterations).",
+    )
+    parser.add_argument(
+        "--throttle",
+        type=float,
+        default=0.0,
+        help="Seconds to sleep between briefs (free-tier rate limits).",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="Optional path to write the results JSON (with run metadata).",
+    )
+    parser.add_argument(
+        "--env-file",
+        type=Path,
+        default=Path(".env"),
+        help="Dotenv file to source for live providers (default: .env).",
     )
     parser.add_argument(
         "--threshold",
@@ -326,29 +506,71 @@ def main() -> None:
         default=0.60,
         help="Minimum pass rate to consider the batch acceptable (default: 0.60).",
     )
+    return parser.parse_args()
 
-    args = parser.parse_args()
 
-    # argparse attributes are typed Any by the stdlib stubs; suppress here.
+def main() -> None:
+    """CLI entry point for the generation yield harness.
+
+    Parses arguments, builds the mock or a live provider factory, runs the yield
+    measurement, prints a summary, optionally writes a results JSON, and exits 0
+    when ``meets_threshold`` is True or 1 when it is not.
+    """
+    args = _parse_args()
+    # argparse attributes are typed Any by the stdlib stubs; narrow them here.
     provider_name: str = str(args.provider)  # pyright: ignore[reportAny]
     briefs_path: Path = Path(str(args.briefs))  # pyright: ignore[reportAny]
     threshold_val: float = float(args.threshold)  # pyright: ignore[reportAny]
-
-    if provider_name != "mock":
-        # Guard: live providers are deferred to Phase 2b.
-        msg = (
-            f"Provider '{provider_name}' is deferred to Phase 2b; "
-            "set --provider mock for the Phase 2 harness demonstration."
-        )
-        print(msg, file=sys.stderr)
-        sys.exit(2)
+    model_override: str | None = (
+        str(args.model) if args.model is not None else None  # pyright: ignore[reportAny]
+    )
+    fallback_enabled: bool = not bool(args.no_fallback)  # pyright: ignore[reportAny]
+    limit: int | None = int(args.limit) if args.limit is not None else None  # pyright: ignore[reportAny]
+    throttle: float = float(args.throttle)  # pyright: ignore[reportAny]
+    out_path: Path | None = (
+        Path(str(args.out)) if args.out is not None else None  # pyright: ignore[reportAny]
+    )
+    env_path: Path = Path(str(args.env_file))  # pyright: ignore[reportAny]
 
     briefs = _load_briefs(briefs_path)
-    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
-    factory = _build_mock_factory()
+    if limit is not None:
+        briefs = briefs[:limit]
 
-    report = asyncio.run(run_yield(briefs, factory, pii, threshold=threshold_val))
+    if provider_name == "mock":
+        factory = _build_mock_factory()
+    else:
+        # Live providers read OPENROUTER_API_KEY from the environment; source the
+        # dotenv file so a local run picks up the gitignored key.
+        _load_env_file(env_path)
+        factory = _build_live_factory(
+            provider_name, model=model_override, fallback=fallback_enabled
+        )
+
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    report = asyncio.run(
+        run_yield(
+            briefs,
+            factory,
+            pii,
+            threshold=threshold_val,
+            delay_between=throttle,
+            verbose=True,
+        )
+    )
     _print_summary(report, threshold_val)
+
+    if out_path is not None:
+        meta: dict[str, object] = {
+            "provider": provider_name,
+            "model": model_override,
+            "fallback_enabled": fallback_enabled
+            if provider_name == "openrouter"
+            else False,
+            "threshold": threshold_val,
+            "tier_split": _tier_split(briefs, report.per_story),
+        }
+        _write_results(out_path, report, meta)
+        print(f"Wrote results to {out_path}")
 
     sys.exit(0 if report.meets_threshold else 1)
 

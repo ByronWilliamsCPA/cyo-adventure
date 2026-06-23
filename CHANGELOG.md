@@ -54,6 +54,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `--provider` to swap providers). Live provider wiring (Claude/Ollama/OpenRouter
   HTTP clients) and the 60% yield measurement over a 20-story sample are deferred
   to Phase 2b; see `docs/planning/phase-2b-live-provider.md`.
+- Phase 2b live generation providers: async OpenRouter and Ollama adapters (httpx)
+  behind the existing `GenerationProvider` interface, a composite `FallbackProvider`
+  cascade (`haiku-4.5 -> sonnet-4.6 -> ollama`) with cross-leg failover and a
+  leg-fatal circuit breaker, and a `build_provider` assembler so the active backend
+  is a configuration change. Includes a prompt restructure into a cacheable
+  system/volatile-user split, a 20-brief live yield harness with provider isolation
+  flags, and a pre-output orchestrator self-check (orphan delete, ending-count and
+  depth reconciliation) that lifts the Tier-1 gate-pass yield to 70% (14/20) on the
+  Haiku 4.5 primary. Closes ADR-003 acceptance criteria AC#1 and AC#2.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are

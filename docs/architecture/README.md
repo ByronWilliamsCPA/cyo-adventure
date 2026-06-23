@@ -3,86 +3,103 @@ title: "Architecture Overview"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "System architecture overview and index of architecture decision records."
+purpose: "Index of architecture documentation, diagrams, and ADRs for CYO Adventure."
 tags:
   - architecture
   - overview
 ---
 
-CYO Adventure is a choose-your-own-adventure reading app for kids, built as a
-FastAPI service backed by PostgreSQL and deployed via Docker.
+CYO Adventure is a choose-your-own-adventure reading app for kids. A React 19 PWA
+lets children read branching stories offline; a FastAPI backend serves the library,
+manages reading progress, and runs an LLM-powered generation pipeline behind a
+deterministic validation gate and mandatory guardian approval (ADR-005).
 
-## System Layout
+## Architecture Pages
 
+| Page | Description |
+| ---- | ----------- |
+| [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
+| [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
+| [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
+| [Data Model](data-model.md) | 9 ORM tables, ER diagram, relationships |
+| [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Authentik, MinIO (Phase 5) |
+
+## Diagram Index
+
+All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/diagrams/`.
+
+| Diagram | File | Description |
+| ------- | ---- | ----------- |
+| C4 Context (L1) | [c4-context.puml](diagrams/c4-context.puml) / [.svg](diagrams/c4-context.svg) | Actors and external systems |
+| C4 Container (L2) | [c4-container.puml](diagrams/c4-container.puml) / [.svg](diagrams/c4-container.svg) | Runtime containers and data stores |
+| Generation Pipeline | [component-generation.puml](diagrams/component-generation.puml) / [.svg](diagrams/component-generation.svg) | Orchestrator, prompts, providers, gate |
+| Validator Gate | [component-validator.puml](diagrams/component-validator.puml) / [.svg](diagrams/component-validator.svg) | L1/L2/RL/SAFE layers |
+| Player Engine | [component-player.puml](diagrams/component-player.puml) / [.svg](diagrams/component-player.svg) | StoryEngine, evaluator, XState |
+| API and Persistence | [component-api-persistence.puml](diagrams/component-api-persistence.puml) / [.svg](diagrams/component-api-persistence.svg) | Routers, auth seam, ORM |
+| Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
+| Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
+| Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
+| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 9 ORM tables and FK relationships |
+| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Authentik |
+
+To regenerate SVGs after editing a PUML file:
+
+```bash
+java -jar /tmp/plantuml.jar -tsvg docs/architecture/diagrams/<file>.puml
 ```
-src/cyo_adventure/
-├── api/
-│   └── health.py          # Health-check endpoints
-├── core/
-│   ├── config.py          # Pydantic Settings configuration
-│   ├── database.py        # SQLAlchemy async engine and session factory
-│   └── exceptions.py      # Centralized exception hierarchy
-├── middleware/
-│   ├── security.py        # OWASP-aligned security headers and SSRF protection
-│   └── correlation.py     # Request correlation and distributed tracing IDs
-└── utils/
-    ├── financial.py       # Decimal-precision financial utilities
-    └── logging.py         # Structlog structured logging with correlation
+
+PlantUML version used to produce current SVGs: **1.2024.7** (jar at `/tmp/plantuml.jar`).
+
+## System at a Glance
+
+```text
+Family devices (browsers, tablets)
+  |  HTTPS (Pangolin zero-trust)
+  v
+PWA (React 19, TypeScript)
+  - Reader: XState + TS engine + TS evaluator
+  - Offline: IndexedDB cache + write queue (event_id idempotency)
+  - API client: generated from OpenAPI schema (not hand-written)
+  |  REST /api/v1 + Bearer token (OIDC via Authentik)
+  v
+FastAPI backend (Python 3.12)
+  - api/: health, library, reading, generation (guardian-only)
+  - api/deps.py: Principal (role/family/profile) auth seam
+  - storybook/: Pydantic models, condition DSL, evaluator
+  - player/: StoryEngine (Runtime Semantics v1, pure)
+  - validator/: gate (L1+L2+RL+SAFE), walk, report
+  - generation/: orchestrator (Stage A->B->C), prompts, PII guard,
+                 providers (OpenRouter primary, Ollama fallback),
+                 FallbackProvider cascade, queue, worker
+  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
+  |
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
+  +-- Redis 7 (RQ job queue)
+  |
+  +-- [worker container] RQ worker
+        -> OpenRouter (primary LLM)
+        -> Ollama (local fallback)
+        -> [Phase 5] MinIO (blob_ref object storage)
 ```
 
-The API layer delegates to core business logic in `core/`. All inbound requests
-pass through the middleware stack: correlation IDs are attached first, then
-security headers are applied. Configuration is loaded from environment variables
-and `.env` files via `core/config.py`.
+## Key Design Decisions
 
-Database access is handled through SQLAlchemy 2 async sessions defined in
-`core/database.py`. Alembic manages schema migrations.
+| Decision | Rationale |
+| -------- | --------- |
+| Mandatory guardian approval (ADR-005) | No story reaches a child without a human in the loop |
+| JSON Storybook format (ADR-001) | Deterministic, validatable, no runtime parsing ambiguity |
+| PWA offline-first (ADR-002) | Children can read without network connectivity |
+| Staged LLM generation with repair (ADR-003) | Improves schema conformance; bounded, not unbounded retries |
+| In-house condition evaluator (ADR-006) | No third-party logic library; whitelisted ops only |
+| Homelab-first deployment (ADR-004) | Family privacy; zero cloud dependency for core features |
 
 ## Architecture Decision Records
 
-The ADRs below capture the key design choices for this project. They are stored
-under `docs/planning/adr/` and should be consulted before changing the areas
-they govern.
-
 | ADR | Title | Status |
-|-----|-------|--------|
+| --- | ----- | ------ |
 | [ADR-001](../planning/adr/adr-001-story-format-json-storybook.md) | Story format: JSON Storybook | Accepted |
 | [ADR-002](../planning/adr/adr-002-client-pwa.md) | Client: Progressive Web App | Accepted |
 | [ADR-003](../planning/adr/adr-003-frontier-llm-generation.md) | Frontier LLM story generation | Accepted |
 | [ADR-004](../planning/adr/adr-004-homelab-first-deployment.md) | Homelab-first deployment | Accepted |
 | [ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) | Mandatory human approval gate | Accepted |
 | [ADR-006](../planning/adr/adr-006-conditions-inhouse-evaluator.md) | Conditions: in-house evaluator | Accepted |
-
-## Key Technology Choices
-
-| Layer | Choice | Rationale |
-|-------|--------|-----------|
-| Web framework | FastAPI | Async-native, typed, auto-generated OpenAPI docs |
-| ORM | SQLAlchemy 2 asyncio | Async support, Alembic migrations, type-safe queries |
-| Configuration | Pydantic Settings | Environment variable parsing with validation |
-| Logging | Structlog | JSON structured logs with automatic correlation ID injection |
-| Type checking | BasedPyright strict | Stricter than MyPy; catches more errors at development time |
-| Package manager | UV | Faster than pip/poetry; lock file ensures reproducible builds |
-
-## Security Posture
-
-Security middleware (`middleware/security.py`) enforces:
-
-- Strict Transport Security (HSTS)
-- Content-Security-Policy headers
-- SSRF protection: blocks requests to private IP ranges and loopback addresses
-- `X-Content-Type-Options: nosniff` and related OWASP-recommended headers
-
-All inputs are validated through Pydantic models before reaching business logic.
-Secrets are loaded from environment variables. The only credential-like default
-committed to the repository is the localhost-only development database URL; a
-`model_validator` in `core/config.py` raises `ConfigurationError` if that
-development default is used in any non-local environment, so it cannot leak into
-deployed environments.
-
-## Further Reading
-
-- [Project vision and scope](../planning/project-vision.md)
-- [Technical specification](../planning/tech-spec.md)
-- [Implementation roadmap](../planning/roadmap.md)
-- [ADR index](../planning/adr/README.md)

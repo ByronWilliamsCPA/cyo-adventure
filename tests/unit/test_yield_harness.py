@@ -26,8 +26,16 @@ from cyo_adventure.core.config import Settings
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import MockProvider, build_provider
+from cyo_adventure.generation.providers import FallbackProvider, OllamaProvider
 from cyo_adventure.storybook.models import AgeBand
-from scripts.yield_harness import YieldReport, run_yield
+from scripts.yield_harness import (
+    YieldReport,
+    _build_live_factory,
+    _load_env_file,
+    _tier_split,
+    _write_results,
+    run_yield,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -308,3 +316,88 @@ async def test_cli_smoke_run_yield_with_canned_story_factory() -> None:
         assert entry["status"] == "passed"
         assert entry["attempts"] == 0
         assert entry["failing_rule_ids"] == []
+
+
+# ---------------------------------------------------------------------------
+# Phase 2b live-harness helpers (no live calls)
+# ---------------------------------------------------------------------------
+
+
+class TestLiveHarnessHelpers:
+    """Live-factory, tier-split, results, and dotenv helpers (no network)."""
+
+    def test_live_factory_openrouter_isolated_leg(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """openrouter + no-fallback builds a bare primary leg with the override model."""
+        monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+        factory = _build_live_factory(
+            "openrouter", model="google/gemma-4-31b-it:free", fallback=False
+        )
+        provider = factory()
+        # Bare leg (no cascade) with the override model id.
+        assert provider.name == "openrouter:google/gemma-4-31b-it:free"  # type: ignore[attr-defined]
+
+    def test_live_factory_openrouter_cascade(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """openrouter + fallback builds the three-leg cascade."""
+        monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+        factory = _build_live_factory("openrouter", model=None, fallback=True)
+        provider = factory()
+        assert isinstance(provider, FallbackProvider)
+        assert len(provider.legs) == 3
+
+    def test_live_factory_ollama(self) -> None:
+        """ollama builds the local Ollama leg with the override model."""
+        factory = _build_live_factory("ollama", model="llama3", fallback=True)
+        provider = factory()
+        assert isinstance(provider, OllamaProvider)
+        assert provider.name == "ollama:llama3"
+
+    def test_tier_split_counts_by_tier(self) -> None:
+        """Tier split groups pass/total counts by each brief's tier."""
+        briefs = [_make_brief(), _make_brief()]
+        # Make brief 1 a Tier-2 brief so the split has one of each.
+        briefs[1] = briefs[1].model_copy(update={"tier": 2})
+        per_story: list[dict[str, object]] = [
+            {"index": 0, "status": "passed"},
+            {"index": 1, "status": "needs_review"},
+        ]
+        split = _tier_split(briefs, per_story)
+        assert split["tier1"] == {"total": 1, "passed": 1}
+        assert split["tier2"] == {"total": 1, "passed": 0}
+
+    def test_write_results_round_trips(self, tmp_path: Path) -> None:
+        """The results writer emits a JSON payload with metadata and report fields."""
+        report = YieldReport(
+            total=2,
+            passed=1,
+            pass_rate=0.5,
+            per_story=[{"index": 0, "status": "passed"}],
+            meets_threshold=False,
+        )
+        out = tmp_path / "nested" / "results.json"
+        _write_results(out, report, {"provider": "openrouter", "model": "m"})
+        loaded = json.loads(out.read_text(encoding="utf-8"))
+        assert loaded["provider"] == "openrouter"
+        assert loaded["total"] == 2
+        assert loaded["passed"] == 1
+        assert loaded["meets_threshold"] is False
+
+    def test_load_env_file_sets_missing_without_overwrite(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The dotenv loader sets unset keys and never overwrites existing ones."""
+        env = tmp_path / ".env"
+        env.write_text(
+            "# comment\nNEW_KEY=new-value\nEXISTING_KEY=from-file\n", encoding="utf-8"
+        )
+        monkeypatch.delenv("NEW_KEY", raising=False)
+        monkeypatch.setenv("EXISTING_KEY", "from-env")
+        _load_env_file(env)
+        import os
+
+        assert os.environ["NEW_KEY"] == "new-value"
+        # Existing value is preserved, not clobbered by the file.
+        assert os.environ["EXISTING_KEY"] == "from-env"

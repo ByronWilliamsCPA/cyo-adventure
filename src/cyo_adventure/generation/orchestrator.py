@@ -50,6 +50,7 @@ from cyo_adventure.validator.report import (
 if TYPE_CHECKING:
     from cyo_adventure.generation.concept import ConceptBrief
     from cyo_adventure.generation.pii import PiiContext
+    from cyo_adventure.generation.prompts import StagePrompt
     from cyo_adventure.generation.provider import GenerationProvider
 
 __all__ = [
@@ -57,26 +58,33 @@ __all__ = [
     "generate_story",
 ]
 
-# #CRITICAL: security: assert_prompt_pii_safe runs before every provider.complete
-# call; a PII violation aborts generation before any external egress.
+# #CRITICAL: security: assert_prompt_pii_safe runs on BOTH the system and user
+# blocks before every provider.complete call (see _run_one_stage); a PII
+# violation aborts generation before any external egress.
 # #VERIFY: test_orchestrator asserts provider.calls is empty when a brief would
 # leak a seeded real-child name (PII abort test case).
 
 # #ASSUME: external-resources: provider.complete performs network I/O in real
 # impls (mocked here); the orchestrator is provider-agnostic via the
 # GenerationProvider protocol.
-# #VERIFY: Phase 2b wiring adds timeout/retry/backoff before any real provider
-# is injected.
+# #VERIFY: the Phase 2b adapters supply timeout/retry/backoff (see
+# providers/_base.run_with_retries and the OpenRouter/Ollama adapters);
+# build_provider injects them, covered by test_providers.
 
-_SYSTEM_PROMPT = (
-    "You are a professional children's story author. "
-    "Return ONLY valid JSON matching the Storybook schema. "
-    "No prose outside the JSON object."
-)
+# The role instruction and JSON-only directive now live in each stage template's
+# system block (the cacheable region), so no shared system constant is needed
+# here; the orchestrator forwards StagePrompt.system to the provider verbatim.
 
-_MAX_TOKENS_STRUCTURE = 4096
-_MAX_TOKENS_PROSE = 8192
-_MAX_TOKENS_REPAIR = 8192
+# Output ceilings sized to the largest briefs, NOT a budget: providers bill the
+# tokens actually generated, so a high ceiling is free for small stories and only
+# prevents truncation for big ones. A 2026-06-22 live run showed the old 4096/8192
+# caps truncated mid-JSON for larger stories, surfacing as L1-1 "not valid JSON"
+# (a 30-node Stage A even produced no parseable doc at all). The band budgets allow
+# up to 60 nodes; a full-prose story of that size at 250 words/node runs well past
+# 8192 output tokens, and even the one-line Stage A skeleton exceeds 4096.
+_MAX_TOKENS_STRUCTURE = 16384
+_MAX_TOKENS_PROSE = 32000
+_MAX_TOKENS_REPAIR = 32000
 
 # Type alias: (sorted_findings_tuple, doc_sha256_hex)
 _Signature = tuple[tuple[tuple[str, str | None, str | None, str], ...], str]
@@ -227,7 +235,7 @@ def _empty_blocked_gate() -> GateResult:
 
 
 async def _run_one_stage(
-    prompt: str,
+    stage_prompt: StagePrompt,
     *,
     pii: PiiContext,
     provider: GenerationProvider,
@@ -240,7 +248,8 @@ async def _run_one_stage(
     propagates up immediately (no swallowing).
 
     Args:
-        prompt: The fully assembled prompt string for this stage.
+        stage_prompt: The assembled :class:`~cyo_adventure.generation.prompts.StagePrompt`
+            for this stage (a static system block and a volatile user block).
         pii: The PII context to guard the prompt against.
         provider: The generation provider to call.
         max_tokens: Maximum tokens for the provider completion.
@@ -253,18 +262,21 @@ async def _run_one_stage(
         failures.
 
     Raises:
-        ValidationError: If the prompt contains forbidden PII (propagates
+        ValidationError: If either block contains forbidden PII (propagates
             immediately; the provider is never called).
     """
-    # #CRITICAL: security: assert_prompt_pii_safe runs before every
-    # provider.complete call; a PII violation aborts generation before any
-    # external egress.
+    # #CRITICAL: security: assert_prompt_pii_safe runs on BOTH the system and
+    # user blocks before every provider.complete call; a PII violation aborts
+    # generation before any external egress. Brief-derived content lives in the
+    # user block, but the system block is guarded too so no future template
+    # change can smuggle PII past the guard.
     # #VERIFY: PII abort test asserts provider.calls is empty after the raise.
-    assert_prompt_pii_safe(prompt, forbidden=pii)
+    assert_prompt_pii_safe(stage_prompt.system, forbidden=pii)
+    assert_prompt_pii_safe(stage_prompt.user, forbidden=pii)
 
     raw = await provider.complete(
-        system=_SYSTEM_PROMPT,
-        prompt=prompt,
+        system=stage_prompt.system,
+        prompt=stage_prompt.user,
         max_tokens=max_tokens,
     )
 

@@ -46,6 +46,27 @@ _BUDGETS: dict[str, tuple[int, int, int]] = {
     "13-16": (30, 60, 10),
 }
 
+
+def band_budget(age_band: str) -> tuple[int, int, int] | None:
+    """Return the ``(min_nodes, max_nodes, max_branch_depth)`` budget for a band.
+
+    This is the single source of truth for the L1-7 node-count and branch-depth
+    budget. The Stage A prompt builder imports it so the prompt promises models
+    exactly what :func:`_check_budget` enforces; keeping one table prevents the
+    prompt and the gate from drifting apart (which would either over-constrain
+    generation or let overshoot through).
+
+    Args:
+        age_band: The story age band value (e.g. ``"8-11"``), matching an
+            :class:`~cyo_adventure.storybook.models.AgeBand` value.
+
+    Returns:
+        The ``(min_nodes, max_nodes, max_branch_depth)`` triple for the band,
+        or ``None`` when the band is not in the budget table.
+    """
+    return _BUDGETS.get(age_band)
+
+
 _ORDERING_OPERATORS: frozenset[str] = frozenset({"<", "<=", ">", ">="})
 
 # Cast shapes for raw decoded JSON, named once to avoid duplicated type literals.
