@@ -9,6 +9,7 @@ constructs the appropriate backend from the application settings.
 from __future__ import annotations
 
 import json
+import ssl
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Protocol
 
@@ -265,6 +266,15 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
     # homelab host needs it. The adapter attaches Basic auth only when both halves
     # are present and maps the 302 auth challenge to a leg-fatal error.
     username, password = _split_basic_auth(settings.ollama_auth)
+    # TLS verification: default to the public CA store. When a CA bundle is
+    # configured (the homelab host serves a Homelab-CA cert until the public
+    # wildcard lands), load it ON TOP of the system CAs so verification succeeds
+    # under either issuer. This is proper verification, not a bypass.
+    verify: ssl.SSLContext | bool = True
+    if settings.ollama_ca_bundle:
+        ctx = ssl.create_default_context()
+        ctx.load_verify_locations(settings.ollama_ca_bundle)
+        verify = ctx
     return OllamaProvider(
         model=settings.ollama_model,
         base_url=settings.ollama_base_url,
@@ -273,6 +283,7 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
         timeout_seconds=settings.ollama_timeout_seconds,
         username=username,
         password=password,
+        verify=verify,
     )
 
 

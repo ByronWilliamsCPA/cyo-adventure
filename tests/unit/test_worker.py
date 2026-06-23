@@ -139,6 +139,25 @@ class TestBuildProviderLive:
         assert isinstance(provider, OllamaProvider)
         assert provider.name == "ollama:qwen3:30b"
 
+    def test_ollama_ca_bundle_valid_path_builds_leg(self) -> None:
+        """A valid CA bundle path builds the leg (SSLContext loads without error)."""
+        import certifi
+
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama", ollama_ca_bundle=certifi.where()
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, OllamaProvider)
+
+    def test_ollama_ca_bundle_bad_path_raises(self) -> None:
+        """A nonexistent CA bundle path fails fast: the bundle is really loaded."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama",
+            ollama_ca_bundle="/nonexistent/homelab-ca.pem",
+        )
+        with pytest.raises((FileNotFoundError, OSError)):
+            build_provider(settings)
+
 
 class TestSplitBasicAuth:
     """_split_basic_auth turns an OLLAMA_AUTH string into (username, password)."""

@@ -110,6 +110,11 @@ Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast an
     timeout/retry budget for cold starts; `stream:true` is recommended for large generations
     to avoid any single-call wall and intermediary idle timeouts.
   - **Rate limit**: 10 req/s avg, burst 5, per source IP (retry-on-429 covers it).
+  - **TLS**: the `ollama.williamshome.family` route is served with a privately-signed Homelab CA
+    cert. The client verifies it via `OLLAMA_CA_BUNDLE` (a CA bundle loaded on top of the system
+    store), so TLS verification stays ON (no `verify=False`). Full secure path verified live
+    2026-06-23: authenticated `/api/tags` 200, bad-auth 302 and missing-model 404 both leg-fatal,
+    and a real `qwen-assistant:latest` streaming generation returned clean content.
   - **Off-LAN/CI**: `*.williamshome.family` resolves only via on-LAN split-horizon DNS. CI/off-LAN
     is not wired; the reliable path today is an on-LAN self-hosted runner. Exposing Ollama via
     Pangolin ZTNA would be net-new work (Basic auth would still apply). Open decision.
