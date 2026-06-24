@@ -320,11 +320,6 @@ known-first-party = ["cyo_adventure"]
 # safer here than a positional config object.
 "**/generation/providers/*.py" = ["PLR0913"]
 
-# The persist_storybook helper accepts all storybook-version fields as explicit
-# keyword-only parameters so callers are self-documenting and safe from
-# positional mis-ordering; a config object would add indirection with no gain.
-"**/generation/persistence.py" = ["PLR0913"]
-
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

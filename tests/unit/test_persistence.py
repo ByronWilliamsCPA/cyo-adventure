@@ -12,7 +12,7 @@ import uuid
 import pytest
 
 from cyo_adventure.db.models import Storybook, StorybookVersion
-from cyo_adventure.generation.persistence import persist_storybook
+from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 
 
 class _FakeSession:
@@ -39,14 +39,14 @@ async def test_persist_creates_storybook_and_version() -> None:
     family_id = uuid.uuid4()
     blob = {"id": "ignored", "title": "T", "nodes": []}
 
-    story_id = await persist_storybook(
-        session,
+    params = StorybookParams(
         story_id="s_demo",
         blob=blob,
         family_id=family_id,
         model="opus-4.8",
         prompt_version="skeleton-fill-v1",
     )
+    story_id = await persist_storybook(session, params)
 
     assert story_id == "s_demo"
     books = _added(session, Storybook)
@@ -54,8 +54,10 @@ async def test_persist_creates_storybook_and_version() -> None:
     assert len(books) == 1
     assert books[0].id == "s_demo"
     assert books[0].family_id == family_id
+    assert books[0].status == "draft"
     assert len(versions) == 1
     assert versions[0].storybook_id == "s_demo"
     assert versions[0].version == 1
     assert versions[0].blob["id"] == "s_demo"
     assert versions[0].model == "opus-4.8"
+    assert versions[0].prompt_version == "skeleton-fill-v1"
