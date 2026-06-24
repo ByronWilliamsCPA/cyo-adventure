@@ -108,3 +108,58 @@ async def test_rating_foreign_storybook_forbidden(
         headers=auth(seed.other_child_token),
     )
     assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_ratings_returns_profile_ratings(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A recorded rating appears in the profile's rating list."""
+    await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "value": 5,
+        },
+        headers=auth(seed.child_token),
+    )
+    resp = await client.get(
+        f"/api/v1/ratings/{seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+    ratings = resp.json()["ratings"]
+    assert any(
+        r["storybook_id"] == seed.storybook_id and r["value"] == 5 for r in ratings
+    )
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_ratings_other_profile_forbidden(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A child cannot list another profile's ratings (403)."""
+    resp = await client.get(
+        f"/api/v1/ratings/{seed.other_child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_rating_below_range_rejected(client: AsyncClient, seed: Seed) -> None:
+    """A value below 1 is rejected at the schema boundary (422)."""
+    resp = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "value": 0,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 422, resp.text
