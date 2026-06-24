@@ -36,14 +36,17 @@ def load_skeleton(path: Path) -> dict[str, object]:
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     result = run_gate(data)
     if result.blocked:
-        messages = "; ".join(f.message for f in result.report.errors)
+        messages = (
+            "; ".join(f.message for f in result.report.errors)
+            or "no error details available"
+        )
         msg = f"skeleton {path} failed structural validation: {messages}"
         raise ValueError(msg)
     return data
 
 
 def has_unfilled_directives(story: dict[str, object]) -> bool:
-    """Return True if any node body still contains a ``<<FILL>>`` directive."""
+    """Return True if any node body still contains a ``<<FILL``-prefixed directive."""
     nodes = story.get("nodes")
     if not isinstance(nodes, list):
         return False
