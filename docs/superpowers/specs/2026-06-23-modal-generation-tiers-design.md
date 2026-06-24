@@ -84,8 +84,8 @@ Branch-and-Bottleneck, Loop-and-Grow.
 
 | Band | Topology | Nodes | Endings | Decisions/path | State (tier) | Fail-state | Primary backend |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 3-5 read-aloud | linear / Loop-and-Grow | ~10-20 very short | 3-6 | ~2-4 | none (Tier 1) | **no death; comic, always-recover** | Local Ollama / Modal Gemma 12B |
-| 5-8 early | near-pure tree / Loop-and-Grow | ~42-46 short | 9-12 | ~3-6 | none (Tier 1) | **no death; try-again, comic** | Local Ollama / Modal Gemma 12B |
+| 3-5 read-aloud | linear / Loop-and-Grow | ~10-20 very short | 3-6 | ~2-4 | none (Tier 1) | **no death; comic, always-recover** | Modal Gemma 12B / OpenRouter / Claude Code |
+| 5-8 early | near-pure tree / Loop-and-Grow | ~42-46 short | 9-12 | ~3-6 | none (Tier 1) | **no death; try-again, comic** | Modal Gemma 12B / OpenRouter / Claude Code |
 | 8-11 core | tree-dominant, light reconvergence | ~90-120 short (or ~45 at 250w) | ~20 | ~4-5 (max 7) | none (Tier 1) | failure/entrapment, adventure-forward | Modal Gemma 26B-A4B |
 | 10-13 | Branch-and-Bottleneck (reconvergent leaves) | ~110-180 | ~19-28 | ~5-10 | light (item/flag) | horror variety, logical | Modal gpt-oss-120b |
 | 13-16 | Gauntlet / Branch-and-Bottleneck (stateful) | 350-456 sections | 1 win + many fails | ~12-25 section hops | full (stats, inventory, dice) | resource-based, lethal | gpt-oss-120b / Opus authoring skill |
@@ -99,8 +99,8 @@ measured only 9-12). The schema already enforces the state boundary: Tier 1 stor
 must declare no variables (`_check_tier_variables`); higher tiers carry state.
 
 **Bands are config-driven, not a hardcoded enum.** A band is a profile bundling
-`{age_range, reading_level (Lexile/FK target), node/ending/decision budget, topology
-family, fail-state policy, default model tier}`. Modeling the band set as a
+`{age_range, reading_level (Lexile/FK target), words_per_node target, node/ending/
+decision budget, topology family, fail-state policy, default model tier}`. Modeling the band set as a
 configuration table (seeded with the six above) means adding or tuning a band is a
 config change, not a schema migration. The current schema hardcodes three bands
 (8-11/10-13/13-16); migrating to the config table and adding 3-5, 5-8, and 16+ is
@@ -108,10 +108,11 @@ part of this work.
 
 ### Genre-faithful targets (from the reconciled four-source matrix)
 
-- **Node word-size: ~150 words/node recommended** (the genre's flip-and-choose
-  beat), versus the current 250-word assumption (1.7-2.5x the genre beat). Shorter
-  nodes also yield more nodes, hence more room for reconvergent leaves and endings.
-  Confirmable product choice; 250 stays valid as a modern-prose identity.
+- **Node word-size scales by reading level**, ~100 words/node at the youngest bands
+  (short flip-and-choose beats) rising to ~250 at the top band (paragraph-length
+  passages). Gradient: 3-5 ~75-100, 5-8 ~100, 8-11 ~125-150, 10-13 ~175, 13-16 ~225,
+  16+ ~250. Words/node is a per-band profile field. Shorter young-band nodes also
+  yield more nodes, hence more room for reconvergent leaves and endings.
 - **Endings via reconvergent leaves, not depth.** To raise ending count, add short
   leaves and bottlenecks, not deeper paths.
 - **Depth budgets unchanged and correct** (~4-5 decisions average, ~7 longest).
@@ -172,9 +173,10 @@ Schema additions (data model now; full series generation is a later phase):
   flags); the next book's entry point declares the state it expects. Series continuity
   IS state continuity, so series ride the existing variable/effect/condition machinery.
 
-Recommended design: let **state carry the difference** between paths rather than
-exploding book N+1 into many variants; support a small number of named entry points
-only for genuinely divergent continuations. This bounds combinatorial growth.
+**v1 rule (decided):** any successful-completion ending of book A continues to the
+**same single entry point** in book B; the exported state snapshot still carries the
+difference between paths. Distinct entry points per completion ending are deferred.
+This gives book B exactly one opening to author and validate.
 
 Dual value across tiers: for young readers, a near-stateless **leveled-reader series**
 (same characters, reading level rising book to book) needs only "you succeeded ->
@@ -285,8 +287,11 @@ other story.
 - **Monthly regime flip** (`generation_provider`) picks Modal-primary (credits) vs
   OpenRouter-primary (spent), not a per-request fallover. Manual; no credit-balance
   auto-detection (YAGNI).
-- Per-tier cascade: `[Modal open model] -> [Gemini 3 Flash] -> [local Ollama, light
-  tier only]`.
+- Per-tier runtime cascade: `[Modal open model] -> [Gemini 3 Flash via OpenRouter]`.
+  **Local Ollama is an opt-in leg** (callable via config), not the default tail; its
+  homelab TLS/throughput blockers keep it off the primary path for now. The Claude
+  Code authoring skill is a separate offline path. Primary backends are
+  Modal/OpenRouter/Claude Code.
 
 ## 7. Model Alignment (Empirical)
 
@@ -383,9 +388,10 @@ trees. Factor exposure into per-story value, not just raw generation cost.
 
 ## 12. Phased Rollout
 
-1. **Authoring skill + one hand-authored skeleton per class** -> concept test on
-   Opus, importing the filled story into the `Storybook`/`StorybookVersion` store.
-   (Minimal app code; fastest validation of the core bet.)
+1. **Authoring skill + at least one hand-authored skeleton and filled sample per
+   band (all six)** -> concept test on Opus via Claude Code, importing each filled
+   story into the `Storybook`/`StorybookVersion` store. (Minimal app code; fastest
+   validation of the core bet and the per-band word-size and topology targets.)
 2. **Skeleton schema/metadata + skeleton store + seed library** per (band, scale,
    topology) cell; validate with existing L1 gates; add coverage tracking.
 3. **Validator floors** (endings, decisions) + **age-gated fail-state gate** +
@@ -401,18 +407,24 @@ trees. Factor exposure into per-story value, not just raw generation cost.
    state-export contract) as a forward-compatible data model now; **series manifest,
    series-linkage validator, and series generation** in a later phase.
 
-## 13. Open Questions
+## 13. Decisions and Open Questions
 
-- Node word-size: ~150 (genre-faithful, more leaves) vs 250 (modern prose). Leaning
-  ~150; confirm.
-- Per-tier reconvergence target (max indegree / state-variable count) before fill
-  coherence degrades; resolve in calibration.
-- Whether to add the 5-8 band to the schema/budgets in v1 or stage it after the
-  8-11/10-13 tiers are proven.
-- Whether the light tier defaults to local Ollama or Modal L4 once homelab
-  TLS/throughput blockers clear.
-- Series entry-point model: state-carries-the-difference with a few named entry
-  points (recommended) versus a distinct entry point per completion ending.
+Resolved (2026-06-23):
+
+- **Node word-size scales by band**, ~100 (youngest) to ~250 (top); per-band gradient
+  in Section 3.
+- **All six bands ship in v1** with at least one authored sample each.
+- **Primary backends are Modal / OpenRouter / Claude Code**; local Ollama is an opt-in
+  leg, not the default.
+- **Series v1:** any successful-completion ending of book A continues to the same
+  single entry point in book B (state still carries).
+
+Open:
+
+- Per-tier **reconvergence ceiling** (max indegree / state-variable count) before fill
+  coherence degrades: deferred, set empirically in the calibration run.
+- Whether to later promote local Ollama to a default light-tier backend once its
+  homelab TLS/throughput blockers clear.
 
 ## References
 
