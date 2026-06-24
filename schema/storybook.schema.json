@@ -3,9 +3,12 @@
     "AgeBand": {
       "description": "The reading age band a story targets.",
       "enum": [
+        "3-5",
+        "5-8",
         "8-11",
         "10-13",
-        "13-16"
+        "13-16",
+        "16+"
       ],
       "title": "AgeBand",
       "type": "string"

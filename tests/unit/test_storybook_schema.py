@@ -474,6 +474,16 @@ def test_unsupported_schema_version_rejected() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize("band", ["3-5", "5-8", "16+"])
+def test_new_age_bands_are_valid(band: str) -> None:
+    """The three added bands parse on a minimal Tier 1 story."""
+    story = _minimal_tier1()
+    story["metadata"]["age_band"] = band
+    book = Storybook.model_validate(story)
+    assert book.metadata.age_band == band
+
+
+@pytest.mark.unit
 def test_committed_schema_is_current() -> None:
     """The committed JSON Schema matches the model (guards against drift)."""
     committed_path = (

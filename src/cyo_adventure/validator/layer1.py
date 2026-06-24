@@ -41,9 +41,12 @@ if TYPE_CHECKING:
 
 # Age band -> (min nodes, max nodes, max branch depth). From the drafting guide.
 _BUDGETS: dict[str, tuple[int, int, int]] = {
+    "3-5": (8, 20, 4),
+    "5-8": (12, 30, 6),
     "8-11": (15, 30, 6),
     "10-13": (25, 50, 8),
     "13-16": (30, 60, 10),
+    "16+": (30, 60, 12),
 }
 
 

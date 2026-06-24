@@ -318,3 +318,15 @@ def test_missing_nodes_is_schema_error() -> None:
     report = validate_layer1({"id": "s_test", "start_node": "x"})
     assert not report.ok
     assert "L1-1" in report.rule_ids()
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("band", "expected"),
+    [("3-5", (8, 20, 4)), ("5-8", (12, 30, 6)), ("16+", (30, 60, 12))],
+)
+def test_new_bands_have_budgets(band: str, expected: tuple[int, int, int]) -> None:
+    """band_budget returns the configured tuple for each new band."""
+    from cyo_adventure.validator.layer1 import band_budget
+
+    assert band_budget(band) == expected

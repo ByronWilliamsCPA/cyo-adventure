@@ -27,9 +27,12 @@ SCHEMA_VERSION = "1.0"
 class AgeBand(StrEnum):
     """The reading age band a story targets."""
 
+    BAND_3_5 = "3-5"
+    BAND_5_8 = "5-8"
     BAND_8_11 = "8-11"
     BAND_10_13 = "10-13"
     BAND_13_16 = "13-16"
+    BAND_16_PLUS = "16+"
 
 
 class VariableType(StrEnum):
