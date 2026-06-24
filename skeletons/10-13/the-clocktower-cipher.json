@@ -1,16 +1,30 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "sk_clocktower_cipher",
   "version": 1,
   "title": "The Clocktower Cipher",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.5, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
     "tier": 1,
-    "themes": ["mystery", "puzzles", "friendship", "history"],
+    "themes": [
+      "mystery",
+      "puzzles",
+      "friendship",
+      "history"
+    ],
     "estimated_minutes": 18,
     "ending_count": 8,
-    "content_flags": {"violence": "none", "scariness": "mild", "peril": "mild"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "branch_and_bottleneck"
   },
   "variables": [],
   "start_node": "n_start",
@@ -20,9 +34,21 @@
       "body": "<<FILL role=setup words=175 beats='Three friends find the old town clocktower locked, with a coded note pinned to the door; establish the cipher mystery and the friends'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_examine", "label": "Examine the cipher note pinned to the door.", "target": "n_note"},
-        {"id": "c_door", "label": "Search the building for another way in.", "target": "n_door"},
-        {"id": "c_keeper", "label": "Find the old clockkeeper and ask for help.", "target": "n_keeper"}
+        {
+          "id": "c_examine",
+          "label": "Examine the cipher note pinned to the door.",
+          "target": "n_note"
+        },
+        {
+          "id": "c_door",
+          "label": "Search the building for another way in.",
+          "target": "n_door"
+        },
+        {
+          "id": "c_keeper",
+          "label": "Find the old clockkeeper and ask for help.",
+          "target": "n_keeper"
+        }
       ]
     },
     {
@@ -30,8 +56,16 @@
       "body": "<<FILL role=rising words=175 beats='The note is a substitution cipher; decoding the first line reveals a hint about a hidden key and a loose grate'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_note_key", "label": "Follow the clue to hunt for the hidden key.", "target": "n_keyhunt"},
-        {"id": "c_note_inside", "label": "Try the loose grate the note mentions.", "target": "n_inside"}
+        {
+          "id": "c_note_key",
+          "label": "Follow the clue to hunt for the hidden key.",
+          "target": "n_keyhunt"
+        },
+        {
+          "id": "c_note_inside",
+          "label": "Try the loose grate the note mentions.",
+          "target": "n_inside"
+        }
       ]
     },
     {
@@ -39,8 +73,16 @@
       "body": "<<FILL role=rising words=175 beats='A stiff side door and a high cracked window offer two ways in; mild tension, nothing dangerous'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_door_force", "label": "Shoulder the stiff side door open.", "target": "n_inside"},
-        {"id": "c_door_window", "label": "Climb up to the high window.", "target": "n_window"}
+        {
+          "id": "c_door_force",
+          "label": "Shoulder the stiff side door open.",
+          "target": "n_inside"
+        },
+        {
+          "id": "c_door_window",
+          "label": "Climb up to the high window.",
+          "target": "n_window"
+        }
       ]
     },
     {
@@ -48,8 +90,16 @@
       "body": "<<FILL role=rising words=175 beats='The gruff but kind clockkeeper warns the tower is tricky; offers to let them in, or to tell who built the cipher'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_keeper_enter", "label": "Go inside with the keeper.", "target": "n_inside"},
-        {"id": "c_keeper_story", "label": "Ask who built the cipher.", "target": "n_keeper_story"}
+        {
+          "id": "c_keeper_enter",
+          "label": "Go inside with the keeper.",
+          "target": "n_inside"
+        },
+        {
+          "id": "c_keeper_story",
+          "label": "Ask who built the cipher.",
+          "target": "n_keeper_story"
+        }
       ]
     },
     {
@@ -57,7 +107,11 @@
       "body": "<<FILL role=rising words=175 beats='Searching the steps, the friends find a brass key under a loose brick, exactly where the decoded clue pointed'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_keyhunt_in", "label": "Unlock the front door with the brass key.", "target": "n_inside"}
+        {
+          "id": "c_keyhunt_in",
+          "label": "Unlock the front door with the brass key.",
+          "target": "n_inside"
+        }
       ]
     },
     {
@@ -65,7 +119,11 @@
       "body": "<<FILL role=rising words=175 beats='The keeper explains the clockmaker hid a secret in the tower decades ago; useful background that makes later clues clearer'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_story_in", "label": "Head inside with what you have learned.", "target": "n_inside"}
+        {
+          "id": "c_story_in",
+          "label": "Head inside with what you have learned.",
+          "target": "n_inside"
+        }
       ]
     },
     {
@@ -73,7 +131,11 @@
       "body": "<<FILL role=rising words=175 beats='Squeezing through the high window is a small thrill; they drop safely onto a landing inside the tower'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_window_in", "label": "Drop down into the tower.", "target": "n_inside"}
+        {
+          "id": "c_window_in",
+          "label": "Drop down into the tower.",
+          "target": "n_inside"
+        }
       ]
     },
     {
@@ -81,10 +143,26 @@
       "body": "<<FILL role=choice words=175 beats='Bottleneck: inside the dim tower with a spiral stair, a clockmakers study, a swaying pendulum pit, and a dark basement; four ways onward'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_inside_stairs", "label": "Climb the spiral stair.", "target": "n_stairs"},
-        {"id": "c_inside_study", "label": "Open the clockmaker's study.", "target": "n_study"},
-        {"id": "c_inside_pendulum", "label": "Edge along the pendulum pit.", "target": "n_pendulum"},
-        {"id": "c_inside_basement", "label": "Go down to the basement.", "target": "n_basement"}
+        {
+          "id": "c_inside_stairs",
+          "label": "Climb the spiral stair.",
+          "target": "n_stairs"
+        },
+        {
+          "id": "c_inside_study",
+          "label": "Open the clockmaker's study.",
+          "target": "n_study"
+        },
+        {
+          "id": "c_inside_pendulum",
+          "label": "Edge along the pendulum pit.",
+          "target": "n_pendulum"
+        },
+        {
+          "id": "c_inside_basement",
+          "label": "Go down to the basement.",
+          "target": "n_basement"
+        }
       ]
     },
     {
@@ -92,7 +170,11 @@
       "body": "<<FILL role=rising words=175 beats='The spiral stair climbs toward the clockface; a loose step hides a small gear-token they can pocket'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_stairs_face", "label": "Climb up to the great clockface.", "target": "n_clockface"}
+        {
+          "id": "c_stairs_face",
+          "label": "Climb up to the great clockface.",
+          "target": "n_clockface"
+        }
       ]
     },
     {
@@ -100,8 +182,16 @@
       "body": "<<FILL role=rising words=175 beats='The clockmakers study holds a cipher wheel that explains the code, plus stacks of tempting old logbooks'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_study_face", "label": "Take the cipher wheel up to the clockface.", "target": "n_clockface"},
-        {"id": "c_study_logs", "label": "Stay and read the fascinating logbooks.", "target": "n_end_library"}
+        {
+          "id": "c_study_face",
+          "label": "Take the cipher wheel up to the clockface.",
+          "target": "n_clockface"
+        },
+        {
+          "id": "c_study_logs",
+          "label": "Stay and read the fascinating logbooks.",
+          "target": "n_end_library"
+        }
       ]
     },
     {
@@ -109,8 +199,16 @@
       "body": "<<FILL role=rising words=175 beats='A narrow ledge runs past the swinging pendulum; an oil can sits at the far end; mild peril, a careful crossing'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_pendulum_oil", "label": "Cross carefully and grab the oil can.", "target": "n_clockface"},
-        {"id": "c_pendulum_giveup", "label": "Decide the ledge is too risky and back out.", "target": "n_end_giveup"}
+        {
+          "id": "c_pendulum_oil",
+          "label": "Cross carefully and grab the oil can.",
+          "target": "n_clockface"
+        },
+        {
+          "id": "c_pendulum_giveup",
+          "label": "Decide the ledge is too risky and back out.",
+          "target": "n_end_giveup"
+        }
       ]
     },
     {
@@ -118,7 +216,11 @@
       "body": "<<FILL role=rising words=175 beats='The basement holds the tower machinery and a service ladder that rises straight to the clockface'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_basement_face", "label": "Take the service ladder up to the clockface.", "target": "n_clockface"}
+        {
+          "id": "c_basement_face",
+          "label": "Take the service ladder up to the clockface.",
+          "target": "n_clockface"
+        }
       ]
     },
     {
@@ -126,10 +228,26 @@
       "body": "<<FILL role=choice words=175 beats='Bottleneck: the giant clockface; the cipher must be set onto the hands; options to set it correctly, force it, search a back panel, or try random settings'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_face_correct", "label": "Set the hands using the cipher.", "target": "n_setcorrect"},
-        {"id": "c_face_jam", "label": "Force the hands by guesswork.", "target": "n_setjam"},
-        {"id": "c_face_panel", "label": "Search for a back panel behind the face.", "target": "n_backpanel"},
-        {"id": "c_face_random", "label": "Spin the hands at random and hope.", "target": "n_end_timeout"}
+        {
+          "id": "c_face_correct",
+          "label": "Set the hands using the cipher.",
+          "target": "n_setcorrect"
+        },
+        {
+          "id": "c_face_jam",
+          "label": "Force the hands by guesswork.",
+          "target": "n_setjam"
+        },
+        {
+          "id": "c_face_panel",
+          "label": "Search for a back panel behind the face.",
+          "target": "n_backpanel"
+        },
+        {
+          "id": "c_face_random",
+          "label": "Spin the hands at random and hope.",
+          "target": "n_end_timeout"
+        }
       ]
     },
     {
@@ -137,7 +255,11 @@
       "body": "<<FILL role=climax words=175 beats='Setting the cipher time exactly, gears click and a hidden panel slides open to reveal the vault; a triumphant beat'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_correct_vault", "label": "Step through to the vault.", "target": "n_vault"}
+        {
+          "id": "c_correct_vault",
+          "label": "Step through to the vault.",
+          "target": "n_vault"
+        }
       ]
     },
     {
@@ -145,8 +267,16 @@
       "body": "<<FILL role=climax words=175 beats='Forcing the hands jams the gears with a screech; with the oil can they can free it, otherwise it stays stuck'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_jam_oil", "label": "Free the jammed gears with the oil can.", "target": "n_vault"},
-        {"id": "c_jam_stuck", "label": "Give up; the gears will not move.", "target": "n_end_stuck"}
+        {
+          "id": "c_jam_oil",
+          "label": "Free the jammed gears with the oil can.",
+          "target": "n_vault"
+        },
+        {
+          "id": "c_jam_stuck",
+          "label": "Give up; the gears will not move.",
+          "target": "n_end_stuck"
+        }
       ]
     },
     {
@@ -154,8 +284,16 @@
       "body": "<<FILL role=rising words=175 beats='Behind the clockface is a second tiny cipher panel; solving it opens the vault, or reveals a hidden workshop instead'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_panel_vault", "label": "Open the panel into the vault.", "target": "n_vault"},
-        {"id": "c_panel_secret", "label": "Slip into the clockmaker's hidden workshop.", "target": "n_end_secret"}
+        {
+          "id": "c_panel_vault",
+          "label": "Open the panel into the vault.",
+          "target": "n_vault"
+        },
+        {
+          "id": "c_panel_secret",
+          "label": "Slip into the clockmaker's hidden workshop.",
+          "target": "n_end_secret"
+        }
       ]
     },
     {
@@ -163,58 +301,110 @@
       "body": "<<FILL role=choice words=175 beats='Bottleneck: the vault holds the clockmakers letter, a music-box automaton, and a small treasure; choose how to handle the secret'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_vault_share", "label": "Decode the final message and bring it to the town.", "target": "n_end_hero"},
-        {"id": "c_vault_keep", "label": "Keep the clockmaker's secret among friends.", "target": "n_end_keepsake"},
-        {"id": "c_vault_grab", "label": "Stuff the treasure in your bag and run.", "target": "n_end_caught"}
+        {
+          "id": "c_vault_share",
+          "label": "Decode the final message and bring it to the town.",
+          "target": "n_end_hero"
+        },
+        {
+          "id": "c_vault_keep",
+          "label": "Keep the clockmaker's secret among friends.",
+          "target": "n_end_keepsake"
+        },
+        {
+          "id": "c_vault_grab",
+          "label": "Stuff the treasure in your bag and run.",
+          "target": "n_end_caught"
+        }
       ]
     },
     {
       "id": "n_end_library",
       "body": "<<FILL role=failure words=160 beats='Lost in the logbooks, the friends look up to find the tower closing for the night; they leave clever but empty-handed, free to return; non-death, gentle'>>",
       "is_ending": true,
-      "ending": {"id": "e_library", "type": "neutral", "title": "Lost in the Logbooks"}
+      "ending": {
+        "id": "e_library",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Lost in the Logbooks"
+      }
     },
     {
       "id": "n_end_giveup",
       "body": "<<FILL role=failure words=160 beats='Backing away from the pendulum, they decide some risks are not worth it; they go home safe, the cipher unsolved for now; non-death'>>",
       "is_ending": true,
-      "ending": {"id": "e_giveup", "type": "failure", "title": "Too Risky"}
+      "ending": {
+        "id": "e_giveup",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Risky"
+      }
     },
     {
       "id": "n_end_timeout",
       "body": "<<FILL role=failure words=160 beats='Random settings jam the whole mechanism; the closing bells ring and they must leave; the tower keeps its secret; non-death, a learning beat'>>",
       "is_ending": true,
-      "ending": {"id": "e_timeout", "type": "failure", "title": "Out of Time"}
+      "ending": {
+        "id": "e_timeout",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out of Time"
+      }
     },
     {
       "id": "n_end_stuck",
       "body": "<<FILL role=failure words=160 beats='The forced gears stay jammed; the friends leave for the night, planning to come back with the right tools; non-death'>>",
       "is_ending": true,
-      "ending": {"id": "e_stuck", "type": "failure", "title": "Locked Out for the Night"}
+      "ending": {
+        "id": "e_stuck",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Locked Out for the Night"
+      }
     },
     {
       "id": "n_end_secret",
       "body": "<<FILL role=completion words=170 beats='The hidden workshop is a wonder of half-finished clockwork; they become its quiet keepers; a warm, satisfying discovery'>>",
       "is_ending": true,
-      "ending": {"id": "e_secret", "type": "good", "title": "The Hidden Workshop"}
+      "ending": {
+        "id": "e_secret",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Workshop"
+      }
     },
     {
       "id": "n_end_hero",
       "body": "<<FILL role=completion words=170 beats='The decoded message restores something lost to the town; the friends are quiet heroes and the clock runs true again; the main triumphant, series-advancing ending'>>",
       "is_ending": true,
-      "ending": {"id": "e_hero", "type": "completion", "title": "The Cipher Revealed"}
+      "ending": {
+        "id": "e_hero",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Cipher Revealed"
+      }
     },
     {
       "id": "n_end_keepsake",
       "body": "<<FILL role=completion words=170 beats='They keep the secret among themselves, a bond that is theirs alone; a happy, private ending'>>",
       "is_ending": true,
-      "ending": {"id": "e_keepsake", "type": "good", "title": "A Secret Kept"}
+      "ending": {
+        "id": "e_keepsake",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Secret Kept"
+      }
     },
     {
       "id": "n_end_caught",
       "body": "<<FILL role=failure words=160 beats='Grabbing the treasure springs a harmless cage of jingling bells; the keeper finds them and they sheepishly put it all back; comic, non-death failure'>>",
       "is_ending": true,
-      "ending": {"id": "e_caught", "type": "failure", "title": "Caught Red-Handed"}
+      "ending": {
+        "id": "e_caught",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught Red-Handed"
+      }
     }
   ]
 }

@@ -27,3 +27,23 @@ def test_load_skeleton_rejects_structurally_broken_shell(tmp_path: Path) -> None
     path.write_text(json.dumps(broken))
     with pytest.raises(ValidationError, match="structural"):
         load_skeleton(path)
+
+
+_DEMO_SKELETONS = [
+    "skeletons/3-5/the-lost-mitten.json",
+    "skeletons/10-13/the-clocktower-cipher.json",
+    "skeletons/16+/the-sunken-signal.json",
+]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+def test_skeletons_load_under_schema_2_0(rel: str) -> None:
+    """Each demo skeleton parses under schema 2.0 with typed endings."""
+    data = load_skeleton(Path(rel))
+    assert data["schema_version"] == "2.0"
+    assert "topology" in data["metadata"]
+    for node in data["nodes"]:
+        ending = node.get("ending")
+        if ending is not None:
+            assert set(ending) == {"id", "valence", "kind", "title"}

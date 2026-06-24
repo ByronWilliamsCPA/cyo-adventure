@@ -1,16 +1,29 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "sk_lost_mitten",
   "version": 1,
   "title": "The Lost Mitten",
   "metadata": {
     "age_band": "3-5",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 1.0, "tolerance": 1.0},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
     "tier": 1,
-    "themes": ["friendship", "winter", "problem-solving"],
+    "themes": [
+      "friendship",
+      "winter",
+      "problem-solving"
+    ],
     "estimated_minutes": 5,
     "ending_count": 3,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow"
   },
   "variables": [],
   "start_node": "n_start",
@@ -20,9 +33,21 @@
       "body": "<<FILL role=setup words=85 beats='Pip the fox cub is playing on the snowy hill and notices one red mitten is gone; one bare hand is cold; Pip decides to look for it'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_pine", "label": "Look under the big pine tree.", "target": "n_pine"},
-        {"id": "c_rabbit", "label": "Ask Hoppy the rabbit.", "target": "n_rabbit"},
-        {"id": "c_sled", "label": "Check the sledding track.", "target": "n_sled"}
+        {
+          "id": "c_pine",
+          "label": "Look under the big pine tree.",
+          "target": "n_pine"
+        },
+        {
+          "id": "c_rabbit",
+          "label": "Ask Hoppy the rabbit.",
+          "target": "n_rabbit"
+        },
+        {
+          "id": "c_sled",
+          "label": "Check the sledding track.",
+          "target": "n_sled"
+        }
       ]
     },
     {
@@ -30,8 +55,16 @@
       "body": "<<FILL role=rising words=80 beats='No mitten under the pine, but Pip spots little footprints in the snow heading toward the creek; a gentle clue, never scary'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_pine_creek", "label": "Follow the footprints to the creek.", "target": "n_creek"},
-        {"id": "c_pine_back", "label": "Go back to the snowy hill.", "target": "n_start"}
+        {
+          "id": "c_pine_creek",
+          "label": "Follow the footprints to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_pine_back",
+          "label": "Go back to the snowy hill.",
+          "target": "n_start"
+        }
       ]
     },
     {
@@ -39,8 +72,16 @@
       "body": "<<FILL role=rising words=80 beats='Hoppy the rabbit has not seen the mitten but says she heard birds chirping by the creek about something red'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_rabbit_creek", "label": "Hop down to the creek.", "target": "n_creek"},
-        {"id": "c_rabbit_back", "label": "Look again on the hill.", "target": "n_start"}
+        {
+          "id": "c_rabbit_creek",
+          "label": "Hop down to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_rabbit_back",
+          "label": "Look again on the hill.",
+          "target": "n_start"
+        }
       ]
     },
     {
@@ -48,8 +89,16 @@
       "body": "<<FILL role=rising words=80 beats='The mitten is not on the sled track, but a single red thread is caught on a twig pointing toward the creek'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_sled_creek", "label": "Follow the red thread to the creek.", "target": "n_creek"},
-        {"id": "c_sled_back", "label": "Try the hill one more time.", "target": "n_start"}
+        {
+          "id": "c_sled_creek",
+          "label": "Follow the red thread to the creek.",
+          "target": "n_creek"
+        },
+        {
+          "id": "c_sled_back",
+          "label": "Try the hill one more time.",
+          "target": "n_start"
+        }
       ]
     },
     {
@@ -57,9 +106,21 @@
       "body": "<<FILL role=choice words=85 beats='At the frozen creek Pip sees a flash of red in the snow, hears birds chirping above, and smells warm cocoa from home; three friendly paths'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_creek_red", "label": "Reach for the red thing in the snow.", "target": "n_found"},
-        {"id": "c_creek_birds", "label": "Look up at the chirping birds.", "target": "n_birds"},
-        {"id": "c_creek_home", "label": "Follow the smell of cocoa home.", "target": "n_cocoa"}
+        {
+          "id": "c_creek_red",
+          "label": "Reach for the red thing in the snow.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_creek_birds",
+          "label": "Look up at the chirping birds.",
+          "target": "n_birds"
+        },
+        {
+          "id": "c_creek_home",
+          "label": "Follow the smell of cocoa home.",
+          "target": "n_cocoa"
+        }
       ]
     },
     {
@@ -67,8 +128,16 @@
       "body": "<<FILL role=rising words=80 beats='The birds show Pip the red mitten snagged on a low branch, just out of reach; Pip can stretch up or call for help'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_birds_lift", "label": "Gently lift the mitten down.", "target": "n_found"},
-        {"id": "c_birds_help", "label": "Call your friends to help.", "target": "n_help"}
+        {
+          "id": "c_birds_lift",
+          "label": "Gently lift the mitten down.",
+          "target": "n_found"
+        },
+        {
+          "id": "c_birds_help",
+          "label": "Call your friends to help.",
+          "target": "n_help"
+        }
       ]
     },
     {
@@ -76,7 +145,11 @@
       "body": "<<FILL role=rising words=80 beats='Pips friends Hoppy and the squirrels make a wobbly, giggly chain to reach the high branch together'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_help_together", "label": "Reach the mitten together.", "target": "n_together"}
+        {
+          "id": "c_help_together",
+          "label": "Reach the mitten together.",
+          "target": "n_together"
+        }
       ]
     },
     {
@@ -84,26 +157,45 @@
       "body": "<<FILL role=rising words=80 beats='At home Mama Fox has warm cocoa; as Pip pulls off the snowy boots, something red tumbles out of a boot'>>",
       "is_ending": false,
       "choices": [
-        {"id": "c_cocoa_surprise", "label": "See what fell out of the boot.", "target": "n_surprise"}
+        {
+          "id": "c_cocoa_surprise",
+          "label": "See what fell out of the boot.",
+          "target": "n_surprise"
+        }
       ]
     },
     {
       "id": "n_found",
       "body": "<<FILL role=completion words=80 beats='Pip picks up the red mitten and slips it on; both hands are warm again; a happy, cozy resolution'>>",
       "is_ending": true,
-      "ending": {"id": "e_found", "type": "completion", "title": "The Red Mitten"}
+      "ending": {
+        "id": "e_found",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Red Mitten"
+      }
     },
     {
       "id": "n_together",
       "body": "<<FILL role=completion words=80 beats='The friends lift the mitten down all together and cheer; Pip is warm and grateful for good friends'>>",
       "is_ending": true,
-      "ending": {"id": "e_together", "type": "completion", "title": "Found Together"}
+      "ending": {
+        "id": "e_together",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Found Together"
+      }
     },
     {
       "id": "n_surprise",
       "body": "<<FILL role=ending words=80 beats='The lost mitten was tucked inside Pips boot the whole time; everyone laughs and shares cocoa; a gentle, funny ending'>>",
       "is_ending": true,
-      "ending": {"id": "e_surprise", "type": "good", "title": "A Cozy Surprise"}
+      "ending": {
+        "id": "e_surprise",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Cozy Surprise"
+      }
     }
   ]
 }
