@@ -35,7 +35,7 @@ def _minimal_tier1_story(
 ) -> Storybook:
     """Build a minimal Tier-1 Storybook from a node list."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Test Story",
@@ -64,7 +64,7 @@ def _minimal_tier2_story(
 ) -> Storybook:
     """Build a minimal Tier-2 Storybook from node and variable lists."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Test Story",

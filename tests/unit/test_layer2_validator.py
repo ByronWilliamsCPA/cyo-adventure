@@ -49,7 +49,7 @@ def _tier1_story(
 ) -> Storybook:
     """Build a minimal Tier-1 Storybook."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Tier-1 Test",
@@ -78,7 +78,7 @@ def _tier2_story(
 ) -> Storybook:
     """Build a minimal Tier-2 Storybook."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Tier-2 Test",

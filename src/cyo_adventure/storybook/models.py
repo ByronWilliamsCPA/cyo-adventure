@@ -21,7 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from cyo_adventure.storybook.condition import Condition, referenced_vars
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "2.0"
 
 
 class AgeBand(StrEnum):

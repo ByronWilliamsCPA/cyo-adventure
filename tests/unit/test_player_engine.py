@@ -49,7 +49,7 @@ def _build(
     """Assemble and validate a synthetic Tier-2 story."""
     return Storybook.model_validate(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "id": "s_syn",
             "version": 1,
             "title": "Synthetic",

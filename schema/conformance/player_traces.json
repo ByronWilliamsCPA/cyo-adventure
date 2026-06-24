@@ -1,6 +1,6 @@
 {
   "description": "Cross-implementation player conformance: replaying the same choices through the Python and TypeScript engines must reach an identical state. visit_set is compared as a set (order-independent).",
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "traces": [
     {
       "name": "lantern_take_then_dark_passage",
@@ -21,7 +21,7 @@
         "ending_id": "e_treasure_found"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_lantern_cave",
         "version": 1,
         "title": "The Lantern Cave",
@@ -147,7 +147,7 @@
         "ending_id": "e_safe_exit"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_lantern_cave",
         "version": 1,
         "title": "The Lantern Cave",
@@ -273,7 +273,7 @@
         "ending_id": "e_done"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_once_loop",
         "version": 1,
         "title": "Once Loop",

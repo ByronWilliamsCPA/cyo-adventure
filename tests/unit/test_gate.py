@@ -200,7 +200,7 @@ def test_warning_only_report_does_not_block() -> None:
     # while the target is set at grade 3 with tight tolerance (0.5), making
     # an RL-13 warning almost certain on a high-grade passage.
     story_data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_rl13_test",
         "version": 1,
         "title": "RL-13 Advisory Test",

@@ -37,7 +37,7 @@ from cyo_adventure.generation.providers import (
 # Phase 2b swaps this for real LLM-generated content.
 # ---------------------------------------------------------------------------
 _CANNED_STORY: dict[str, object] = {
-    "schema_version": "1.0",
+    "schema_version": "2.0",
     "id": "s_mock_generated",
     "version": 1,
     "title": "The Forest Path",

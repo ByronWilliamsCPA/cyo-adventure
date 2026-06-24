@@ -27,7 +27,7 @@ from cyo_adventure.storybook.schema_export import build_schema, export_schema
 def _minimal_tier1() -> dict[str, Any]:
     """Return a minimal, schema-valid Tier 1 story as a plain dict."""
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_min",
         "version": 1,
         "title": "Minimal",
@@ -484,7 +484,7 @@ def test_set_effect_type_mismatch_rejected() -> None:
 def test_unsupported_schema_version_rejected() -> None:
     """A story declaring an unsupported schema_version is rejected."""
     story = _minimal_tier1()
-    story["schema_version"] = "2.0"
+    story["schema_version"] = "9.9"
     with pytest.raises(ValidationError, match="unsupported schema_version"):
         Storybook.model_validate(story)
 

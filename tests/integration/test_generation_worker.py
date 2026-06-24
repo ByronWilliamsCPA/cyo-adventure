@@ -48,7 +48,7 @@ if TYPE_CHECKING:
 # choices; this dict has a non-ending node with no choices, which triggers L1.
 _INVALID_STORY_JSON = json.dumps(
     {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_bad_story",
         "version": 1,
         "title": "Bad Story",

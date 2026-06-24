@@ -176,7 +176,7 @@ def _story(
 ) -> dict[str, object]:
     """Assemble a story mapping around the given nodes."""
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_test",
         "version": 1,
         "title": "T",

@@ -83,7 +83,7 @@ def _make_story(body: str, target: float, tolerance: float = 1.0) -> Storybook:
     """
     return Storybook.model_validate(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "id": "test_story",
             "version": 1,
             "title": "Test Story",

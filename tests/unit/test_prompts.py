@@ -60,7 +60,7 @@ def skeleton_json_with_braces() -> str:
     return json.dumps(
         {
             "id": "aaaaaaaa-0000-4000-8000-000000000001",
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "version": 1,
             "start_node": "n_start",
             "variables": [],

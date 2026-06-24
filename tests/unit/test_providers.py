@@ -340,15 +340,15 @@ class TestOpenRouterProvider:
         Gemini Flash and Haiku wrap output despite instructions; the orchestrator
         parses with json.loads, so the adapter must return de-fenced content.
         """
-        fenced = '```json\n{"schema_version": "1.0"}\n```'
+        fenced = '```json\n{"schema_version": "2.0"}\n```'
 
         def handler(_request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, json=_openrouter_ok_body(fenced))
 
         provider = _openrouter(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert result == '{"schema_version": "1.0"}'
-        assert json.loads(result) == {"schema_version": "1.0"}
+        assert result == '{"schema_version": "2.0"}'
+        assert json.loads(result) == {"schema_version": "2.0"}
 
 
 class TestStripCodeFences:

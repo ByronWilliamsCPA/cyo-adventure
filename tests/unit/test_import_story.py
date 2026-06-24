@@ -20,7 +20,7 @@ class _FakeSession:
 
 def _filled_story() -> dict[str, object]:
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_filled",
         "version": 1,
         "title": "Filled",

@@ -1,9 +1,13 @@
 """Unit tests for the Storybook schema models (schema 2.0)."""
 
+import json
+from pathlib import Path
+
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import (
+    SCHEMA_VERSION,
     Choice,
     ContentFlagLevel,
     Ending,
@@ -15,6 +19,7 @@ from cyo_adventure.storybook.models import (
     Valence,
     level_rank,
 )
+from cyo_adventure.storybook.schema_export import build_schema
 
 
 def test_new_enum_values():
@@ -89,3 +94,13 @@ def test_node_safety_scope_defaults_empty_and_accepts_values():
         safety_scope=[SafetyScope.PERIL],
     )
     assert scoped.safety_scope == [SafetyScope.PERIL]
+
+
+def test_schema_version_is_2_0():
+    assert SCHEMA_VERSION == "2.0"
+
+
+def test_exported_schema_file_matches_model():
+    path = Path(__file__).resolve().parents[2] / "schema" / "storybook.schema.json"
+    on_disk = json.loads(path.read_text(encoding="utf-8"))
+    assert on_disk == build_schema()
