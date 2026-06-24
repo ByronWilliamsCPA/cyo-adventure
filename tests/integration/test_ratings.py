@@ -96,6 +96,8 @@ async def test_rating_foreign_storybook_forbidden(
     client: AsyncClient, seed: Seed
 ) -> None:
     """A child in family B cannot rate a storybook owned by family A (403)."""
+    # child-b owns this profile (authorize_profile passes); the storybook is
+    # family A's, so authorize_family is what fires here.
     resp = await client.post(
         "/api/v1/ratings",
         json={

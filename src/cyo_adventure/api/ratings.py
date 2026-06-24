@@ -21,13 +21,13 @@ from cyo_adventure.db.models import Rating, Storybook
 router = APIRouter(prefix="/api/v1", tags=["ratings"])
 
 
-def _parse_profile_id(raw: str) -> uuid.UUID:
-    """Parse a profile id, raising a 422-mapped error on bad input."""
+def _parse_uuid(raw: str, field: str) -> uuid.UUID:
+    """Parse a UUID field, raising a 422-mapped error on bad input."""
     try:
         return uuid.UUID(raw)
     except ValueError as exc:
-        msg = "profile_id must be a UUID"
-        raise ValidationError(msg, field="profile_id", value=raw) from exc
+        msg = f"{field} must be a UUID"
+        raise ValidationError(msg, field=field, value=raw) from exc
 
 
 def _rating_view(row: Rating) -> RatingView:
@@ -61,16 +61,20 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     # before any write, so a child cannot rate another profile's or family's
     # book (IDOR).
     # #VERIFY: authorize_profile / authorize_family raise AuthorizationError -> 403.
-    profile_id = _parse_profile_id(body.profile_id)
+    profile_id = _parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, profile_id)
     book = await ctx.session.get(Storybook, body.storybook_id)
     if book is None:
         msg = f"storybook '{body.storybook_id}' not found"
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, book.family_id)
-    # #ASSUME: data integrity: re-rating overwrites in place (upsert); the
-    # composite PK (child_profile_id, storybook_id) guarantees one row per pair.
-    # #VERIFY: the get-then-update path below never inserts a duplicate.
+    # #EDGE: concurrency: two simultaneous first-ratings for the same
+    # (child_profile_id, storybook_id) can both see no existing row and both
+    # INSERT, raising a PK violation at flush (a 500). This is vanishingly rare
+    # for a single child's rating UI, so we accept it rather than locking.
+    # #VERIFY: if concurrent first-ratings become real, switch to a Postgres
+    # INSERT ... ON CONFLICT DO UPDATE (true upsert), or SELECT FOR UPDATE as in
+    # reading.py's reading-state handler.
     row = await ctx.session.get(Rating, (profile_id, body.storybook_id))
     if row is None:
         row = Rating(
@@ -105,7 +109,7 @@ async def list_ratings(profile_id: str, ctx: Context) -> RatingListView:
     """
     # #CRITICAL: security: a caller may only read ratings for a profile it owns.
     # #VERIFY: authorize_profile raises AuthorizationError -> 403.
-    parsed = _parse_profile_id(profile_id)
+    parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     rows = await ctx.session.scalars(
         select(Rating).where(Rating.child_profile_id == parsed)
