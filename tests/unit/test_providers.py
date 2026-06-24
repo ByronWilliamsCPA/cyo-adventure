@@ -490,6 +490,57 @@ class TestOllamaProvider:
         assert exc_info.value.leg_fatal is False
 
     @pytest.mark.asyncio
+    async def test_error_chunk_after_partial_content_raises_transient(self) -> None:
+        """An error chunk arriving after valid content chunks raises transient."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            body = (
+                json.dumps(
+                    {"message": {"role": "assistant", "content": "par"}, "done": False}
+                )
+                + "\n"
+                + json.dumps({"error": "model unloaded mid-stream"})
+                + "\n"
+            )
+            return httpx.Response(200, text=body)
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_retry_after_mid_stream_error_discards_partial_content(self) -> None:
+        """After a mid-stream error, the retry returns only the second attempt's text."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(
+                    200,
+                    text=(
+                        json.dumps(
+                            {
+                                "message": {"role": "assistant", "content": "PARTIAL"},
+                                "done": False,
+                            }
+                        )
+                        + "\n"
+                        + json.dumps({"error": "boom"})
+                        + "\n"
+                    ),
+                )
+            return httpx.Response(200, text=_ollama_stream("clean"))
+
+        provider = _ollama(handler, max_retries=2)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "clean"
+        assert "PARTIAL" not in result
+        assert calls == 2
+
+    @pytest.mark.asyncio
     async def test_basic_auth_header_sent_when_credentials_present(self) -> None:
         """Both username and password produce an HTTP Basic Authorization header."""
         captured: dict[str, str] = {}

@@ -106,6 +106,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Windows compatibility matrix `ParserError` (test step pinned to `shell: bash`)
 - REUSE compliance coverage for newly added files
 - Documentation consistency (SECURITY.md SLA, requires-python, docs claims)
+- Yield-harness dotenv loader now strips surrounding quotes, so a quoted
+  `OLLAMA_AUTH="user:pass"` entry (as documented in `.env.example`) no longer
+  leaks the literal quote characters into the Basic-auth credential.
+- `_split_basic_auth` trims surrounding whitespace on each half so a stray-space
+  `OLLAMA_AUTH` entry no longer produces a silent auth failure.
+- An unusable `OLLAMA_CA_BUNDLE` path now raises a `ConfigurationError` naming the
+  setting instead of a raw `FileNotFoundError`/`SSLError`.
+
+### Security
+- Refuse to send Ollama HTTP Basic credentials over a cleartext, non-loopback
+  `http://` URL: a misconfigured `OLLAMA_BASE_URL` paired with `OLLAMA_AUTH` now
+  raises a `ConfigurationError` rather than transmitting the password in
+  reversible base64 over the wire.
+- Stop tracking the empty `stack.env` file and add it to `.gitignore` (a
+  Docker/Portainer stack env file that may hold real secrets).
 
 ## [0.1.0] - TBD
 
