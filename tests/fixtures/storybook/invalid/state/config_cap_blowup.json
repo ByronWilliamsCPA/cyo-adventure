@@ -15,13 +15,13 @@
       "exploration"
     ],
     "estimated_minutes": 15,
-    "ending_count": 1,
+    "ending_count": 3,
     "content_flags": {
       "violence": "none",
       "scariness": "none",
       "peril": "none"
     },
-    "topology": "gauntlet"
+    "topology": "time_cave"
   },
   "variables": [
     {
@@ -103,6 +103,11 @@
               "value": true
             }
           ]
+        },
+        {
+          "id": "xc_s_0",
+          "label": "A new path",
+          "target": "xn_dec_0"
         }
       ]
     },
@@ -182,6 +187,47 @@
         "valence": "positive",
         "kind": "success",
         "title": "The Door Opens"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "left",
+          "target": "xn_e_0a"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "right",
+          "target": "xn_e_0b"
+        }
+      ]
+    },
+    {
+      "id": "xn_e_0a",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_0a",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_e_0b",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_1b",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
       },
       "choices": []
     }

@@ -214,8 +214,8 @@ def test_warning_only_report_does_not_block() -> None:
             "tier": 1,
             "themes": ["test"],
             "estimated_minutes": 5,
-            "ending_count": 1,
-            "topology": "branch_and_bottleneck",
+            "ending_count": 4,
+            "topology": "time_cave",
             "content_flags": {
                 "violence": "none",
                 "scariness": "none",
@@ -241,7 +241,30 @@ def test_warning_only_report_does_not_block() -> None:
                         "id": "c1",
                         "label": "Continue.",
                         "target": "n_end",
-                    }
+                    },
+                    {
+                        "id": "c_branch",
+                        "label": "Consider an alternative.",
+                        "target": "n_d1",
+                    },
+                ],
+            },
+            {
+                "id": "n_d1",
+                "body": "A side decision.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_d1a", "label": "left", "target": "n_d2"},
+                    {"id": "c_d1b", "label": "right", "target": "n_alt1"},
+                ],
+            },
+            {
+                "id": "n_d2",
+                "body": "Another side decision.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_d2a", "label": "up", "target": "n_alt2"},
+                    {"id": "c_d2b", "label": "down", "target": "n_alt3"},
                 ],
             },
             {
@@ -253,6 +276,42 @@ def test_warning_only_report_does_not_block() -> None:
                     "valence": "positive",
                     "kind": "success",
                     "title": "Done",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_alt1",
+                "body": "An alternative resolution.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_alt1",
+                    "valence": "neutral",
+                    "kind": "discovery",
+                    "title": "Aside One",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_alt2",
+                "body": "Another resolution.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_alt2",
+                    "valence": "positive",
+                    "kind": "completion",
+                    "title": "Aside Two",
+                },
+                "choices": [],
+            },
+            {
+                "id": "n_alt3",
+                "body": "A final resolution.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_alt3",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Aside Three",
                 },
                 "choices": [],
             },

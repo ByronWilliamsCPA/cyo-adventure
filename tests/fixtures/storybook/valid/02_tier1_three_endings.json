@@ -16,13 +16,13 @@
       "choice"
     ],
     "estimated_minutes": 10,
-    "ending_count": 3,
+    "ending_count": 6,
     "content_flags": {
       "violence": "none",
       "scariness": "none",
       "peril": "none"
     },
-    "topology": "gauntlet"
+    "topology": "time_cave"
   },
   "variables": [],
   "start_node": "n_hall",
@@ -46,6 +46,11 @@
           "id": "c_blue",
           "label": "Open the blue door.",
           "target": "n_ocean"
+        },
+        {
+          "id": "xc_start_extra",
+          "label": "Wander off",
+          "target": "xn_dec_0"
         }
       ]
     },
@@ -84,6 +89,73 @@
         "title": "Ocean Horizon"
       },
       "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "This way",
+          "target": "xn_dec_1"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "That way",
+          "target": "xn_end_d0"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d0",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      }
+    },
+    {
+      "id": "xn_dec_1",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_1_a",
+          "label": "This way",
+          "target": "xn_end_term"
+        },
+        {
+          "id": "xc_1_b",
+          "label": "That way",
+          "target": "xn_end_d1"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d1",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      }
+    },
+    {
+      "id": "xn_end_term",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_term",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Extra Ending 3"
+      }
     }
   ]
 }

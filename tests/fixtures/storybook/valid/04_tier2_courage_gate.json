@@ -16,7 +16,7 @@
       "challenge"
     ],
     "estimated_minutes": 20,
-    "ending_count": 2,
+    "ending_count": 4,
     "content_flags": {
       "violence": "none",
       "scariness": "mild",
@@ -57,6 +57,11 @@
           "id": "c_decline_trial",
           "label": "Politely decline and help in the village instead.",
           "target": "n_village_help"
+        },
+        {
+          "id": "xc_start_extra",
+          "label": "Wander off",
+          "target": "xn_dec_0"
         }
       ]
     },
@@ -146,6 +151,45 @@
         "title": "A Quiet Life"
       },
       "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "This way",
+          "target": "xn_end_term"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "That way",
+          "target": "xn_end_d0"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d0",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      }
+    },
+    {
+      "id": "xn_end_term",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_term",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      }
     }
   ]
 }

@@ -258,18 +258,21 @@ def test_lantern_fixture_exit_node_reachable_regardless_of_lantern() -> None:
 
 
 def test_lantern_fixture_config_count() -> None:
-    """The lantern story has 4 nodes; the walk should find at most 6 distinct
-    (node, var-state) configurations (variable branching at n_entrance produces
-    2 var states at n_cave_fork)."""
+    """The lantern walk should find a small, bounded set of distinct
+    (node, var-state) configurations.
+
+    The original lantern core (n_entrance, n_cave_fork, n_treasure, n_exit)
+    contributes up to 6 configs via the has_lantern branching. The schema-2.0
+    policy-compliance branch (an extra variable-free decision and its endings)
+    adds a few more single-state configs, all reachable with has_lantern=False.
+    """
     data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)
 
-    # n_entrance (1 config), n_cave_fork (2 configs: lantern/no-lantern),
-    # n_treasure (1 config, lantern=True only), n_exit (2 configs: lantern/no-lantern).
-    # Total: at most 6 distinct (node, var_state) pairs.
-    assert 1 <= len(result.configs) <= 6
+    # 6 from the stateful core plus the variable-free compliance branch.
+    assert 1 <= len(result.configs) <= 10
 
 
 # ---------------------------------------------------------------------------

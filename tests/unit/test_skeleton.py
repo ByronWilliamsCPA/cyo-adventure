@@ -47,3 +47,16 @@ def test_skeletons_load_under_schema_2_0(rel: str) -> None:
         ending = node.get("ending")
         if ending is not None:
             assert set(ending) == {"id", "valence", "kind", "title"}
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
+    """Each demo skeleton passes the full gate, including the policy layer."""
+    import json
+
+    from cyo_adventure.validator.gate import run_gate
+
+    data = json.loads(Path(rel).read_text(encoding="utf-8"))
+    result = run_gate(data)
+    assert not result.blocked, [f.message for f in result.report.errors]

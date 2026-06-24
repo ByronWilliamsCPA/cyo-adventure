@@ -47,8 +47,8 @@ _CANNED_STORY: dict[str, object] = {
         "tier": 1,
         "themes": ["adventure", "friendship"],
         "estimated_minutes": 5,
-        "ending_count": 1,
-        "topology": "branch_and_bottleneck",
+        "ending_count": 4,
+        "topology": "time_cave",
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
     },
     "variables": [],
@@ -64,9 +64,54 @@ _CANNED_STORY: dict[str, object] = {
             "choices": [
                 {
                     "id": "c_follow",
-                    "label": "Follow the rabbit.",
+                    "label": "Follow the rabbit into the trees.",
+                    "target": "n_clearing_fork",
+                },
+                {
+                    "id": "c_rest",
+                    "label": "Sit on a mossy log to rest.",
+                    "target": "n_rest_fork",
+                },
+            ],
+        },
+        {
+            "id": "n_clearing_fork",
+            "body": (
+                "The rabbit pauses where the path splits. One way smells of flowers; "
+                "the other hums with running water."
+            ),
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": "c_meadow",
+                    "label": "Walk toward the flowers.",
                     "target": "n_happy_end",
-                }
+                },
+                {
+                    "id": "c_stream",
+                    "label": "Follow the sound of water.",
+                    "target": "n_stream_end",
+                },
+            ],
+        },
+        {
+            "id": "n_rest_fork",
+            "body": (
+                "On the log you catch your breath. A sleepy warmth tugs at you, "
+                "but a hollow tree nearby looks worth a closer look."
+            ),
+            "is_ending": False,
+            "choices": [
+                {
+                    "id": "c_nap",
+                    "label": "Close your eyes for a moment.",
+                    "target": "n_nap_end",
+                },
+                {
+                    "id": "c_explore",
+                    "label": "Peek inside the hollow tree.",
+                    "target": "n_explore_end",
+                },
             ],
         },
         {
@@ -81,6 +126,51 @@ _CANNED_STORY: dict[str, object] = {
                 "valence": "positive",
                 "kind": "success",
                 "title": "The Flower Meadow",
+            },
+            "choices": [],
+        },
+        {
+            "id": "n_stream_end",
+            "body": (
+                "The stream opens into a pool where silver fish dart. "
+                "You skip stones until the sun dips low."
+            ),
+            "is_ending": True,
+            "ending": {
+                "id": "e_stream",
+                "valence": "neutral",
+                "kind": "discovery",
+                "title": "The Hidden Pool",
+            },
+            "choices": [],
+        },
+        {
+            "id": "n_nap_end",
+            "body": (
+                "You doze in a patch of sun. When you wake, the forest feels like "
+                "an old friend, and the path home is easy to find."
+            ),
+            "is_ending": True,
+            "ending": {
+                "id": "e_nap",
+                "valence": "positive",
+                "kind": "completion",
+                "title": "A Restful Afternoon",
+            },
+            "choices": [],
+        },
+        {
+            "id": "n_explore_end",
+            "body": (
+                "Inside the hollow tree you find a tiny door no taller than your hand. "
+                "You leave it be, but you will be back tomorrow."
+            ),
+            "is_ending": True,
+            "ending": {
+                "id": "e_explore",
+                "valence": "positive",
+                "kind": "success",
+                "title": "The Tiny Door",
             },
             "choices": [],
         },

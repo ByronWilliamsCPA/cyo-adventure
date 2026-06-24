@@ -195,7 +195,7 @@ class TestCannedStorySchemaValid:
         book = Storybook.model_validate(_CANNED_STORY)
         assert book.id == "s_mock_generated"
         assert book.metadata.tier == 1
-        assert len(book.nodes) == 2
+        assert len(book.nodes) == 7
 
     def test_canned_story_json_round_trips(self) -> None:
         """JSON-serialised canned story round-trips through Storybook validation."""
@@ -203,12 +203,12 @@ class TestCannedStorySchemaValid:
         book = Storybook.model_validate(parsed)
         assert book.id == "s_mock_generated"
 
-    def test_canned_story_has_one_ending(self) -> None:
-        """The canned story has exactly one ending node."""
+    def test_canned_story_ending_count_matches_nodes(self) -> None:
+        """The canned story's ending nodes agree with metadata.ending_count."""
         book = Storybook.model_validate(_CANNED_STORY)
         ending_nodes = [node for node in book.nodes if node.is_ending]
-        assert len(ending_nodes) == 1
-        assert book.metadata.ending_count == 1
+        assert len(ending_nodes) == book.metadata.ending_count
+        assert book.metadata.ending_count >= 3
 
     def test_canned_story_start_node_exists(self) -> None:
         """start_node references an existing node id."""
