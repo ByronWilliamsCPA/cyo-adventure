@@ -54,14 +54,14 @@ class TestOllamaProviderSettings:
     """Ollama endpoint/credential settings: defaults and unprefixed env aliases."""
 
     @pytest.mark.unit
-    def test_ollama_model_default_is_tuned_alias(
+    def test_ollama_model_default_is_fast_valid_model(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """The default ollama_model is the team-recommended qwen-assistant alias."""
+        """The default ollama_model is qwen2.5:14b (fast and structurally valid live)."""
         from cyo_adventure.core.config import Settings
 
         monkeypatch.delenv("CYO_ADVENTURE_OLLAMA_MODEL", raising=False)
-        assert Settings().ollama_model == "qwen-assistant:latest"
+        assert Settings().ollama_model == "qwen2.5:14b"
 
     @pytest.mark.unit
     def test_ollama_timeout_seconds_default(
