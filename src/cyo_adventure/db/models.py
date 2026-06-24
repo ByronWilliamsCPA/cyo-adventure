@@ -183,6 +183,34 @@ class Completion(Base):
     found_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
+class Rating(Base):
+    """A child's 1-5 rating of a storybook.
+
+    Unlike ``Completion``, which pins to an immutable ``storybook_version`` via a
+    composite FK, a rating is about the *book* as a whole and is **mutable**: a
+    child may re-rate, overwriting the prior value. The coarser
+    ``(child_profile_id, storybook_id)`` grain is also what the cross-family
+    lineage join in Phase B will need.
+    """
+
+    __tablename__ = "rating"
+
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+    )
+    storybook_id: Mapped[str] = mapped_column(
+        String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
+    )
+    # #ASSUME: data integrity: ``value`` is constrained to 1-5 by the RatingBody
+    # Pydantic model at the API boundary; the column itself stores any integer.
+    # #VERIFY: every write path goes through RatingBody validation before insert.
+    value: Mapped[int] = mapped_column()
+    rated_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+
 class Concept(Base):
     """A generation concept brief: the intake form for a story request.
 
