@@ -58,12 +58,27 @@ def test_pl15_allows_death_in_older_band():
     assert not any(f.rule_id == "PL-15" for f in report.errors)
 
 
+def test_pl15_blocks_capture_ending_in_young_band():
+    # capture is the other forbidden kind for the young bands.
+    report = validate_policy(_story(age_band="3-5", kind=EndingKind.CAPTURE))
+    assert any(f.rule_id == "PL-15" for f in report.errors)
+
+
 def test_pl16_blocks_content_over_band_ceiling():
     # 3-5 scariness ceiling is "mild"; "intense" exceeds it.
     report = validate_policy(
         _story(age_band="3-5", kind=EndingKind.SUCCESS, scariness="intense")
     )
     assert any(f.rule_id == "PL-16" for f in report.errors)
+
+
+def test_pl16_allows_content_at_band_ceiling():
+    # 3-5 scariness ceiling is exactly "mild"; a flag AT the ceiling must pass
+    # (the rule uses strict ">" against the ceiling rank, not ">=").
+    report = validate_policy(
+        _story(age_band="3-5", kind=EndingKind.SUCCESS, scariness="mild")
+    )
+    assert not any(f.rule_id == "PL-16" for f in report.errors)
 
 
 def _two_ending_story(age_band: str, topology: Topology) -> Storybook:
@@ -123,3 +138,17 @@ def test_pl18_blocks_mislabelled_topology():
 def test_pl18_accepts_admissible_topology():
     report = validate_policy(_two_ending_story("3-5", Topology.TIME_CAVE))
     assert not any(f.rule_id == "PL-18" for f in report.errors)
+
+
+def test_pl17_blocks_too_few_decisions():
+    # 13-16 requires 4 decision nodes; this story has 1.
+    report = validate_policy(_two_ending_story("13-16", Topology.TIME_CAVE))
+    assert any(f.rule_id == "PL-17" and "decision" in f.message for f in report.errors)
+
+
+def test_fully_compliant_story_has_no_policy_findings():
+    # 3-5 needs 2 endings / 1 decision; this story meets every floor, ceiling,
+    # forbidden-kind and topology rule, so the policy report is empty.
+    report = validate_policy(_two_ending_story("3-5", Topology.TIME_CAVE))
+    assert report.ok
+    assert report.findings == []

@@ -33,8 +33,12 @@ def validate_policy(story: Storybook) -> ValidationReport:
     report = ValidationReport()
     profile = profile_for(story.metadata.age_band.value)
     if profile is None:
-        # No profile configured for this band: nothing to enforce here. The band
-        # budget guard in Layer 1 already covers unconfigured bands separately.
+        # #CRITICAL: security: a band with no configured profile makes this gate
+        # fail OPEN, every age-safety check (PL-15/16/17) is skipped for that
+        # band, so a forbidden ending or over-ceiling content would pass review.
+        # #VERIFY: test_every_age_band_has_a_profile asserts the AgeBand enum and
+        # band_profile._PROFILES keys stay in lockstep, so this branch is
+        # unreachable for any valid (enum-constrained) age_band.
         return report
     _check_forbidden_kinds(story, profile, report)
     _check_content_ceiling(story, profile, report)
@@ -47,6 +51,10 @@ def _check_forbidden_kinds(
     story: Storybook, profile: BandProfile, report: ValidationReport
 ) -> None:
     """PL-15: no ending may use a kind forbidden for the band."""
+    # #CRITICAL: security: this is the age-safety boundary, an ending whose kind
+    # is forbidden for the band (e.g. a 'death' ending for ages 3-5) must block.
+    # #VERIFY: profile.forbidden_ending_kinds is the per-band denylist; tests
+    # cover both forbidden kinds (death and capture) for the young bands.
     for node in story.nodes:
         if (
             node.ending is None

@@ -1,12 +1,24 @@
 """Unit tests for the per-band policy profile."""
 
-from cyo_adventure.storybook.models import ContentFlagLevel, EndingKind
-from cyo_adventure.validator.band_profile import BandProfile, profile_for
+from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
+from cyo_adventure.validator.band_profile import _PROFILES, BandProfile, profile_for
 
 
 def test_every_band_has_a_profile():
     for band in ("3-5", "5-8", "8-11", "10-13", "13-16", "16+"):
         assert isinstance(profile_for(band), BandProfile)
+
+
+def test_profiles_match_age_band_enum_exactly():
+    """Every AgeBand has a profile and vice versa (guards the fail-open gate).
+
+    validate_policy fails open (skips all PL-15/16/17 checks) for a band with
+    no profile; this lockstep assertion makes that branch unreachable for any
+    valid, enum-constrained age_band.
+    """
+    assert set(_PROFILES) == {band.value for band in AgeBand}
+    for band in AgeBand:
+        assert isinstance(profile_for(band.value), BandProfile)
 
 
 def test_unknown_band_returns_none():
