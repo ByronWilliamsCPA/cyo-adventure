@@ -7,7 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Breaking (schema 2.0):** `Ending` now carries typed `valence` and `kind`
+  instead of a free-form `type`; `StoryMetadata` requires `topology`. The
+  exported JSON schema and the entire story/fixture corpus were migrated.
+
 ### Added
+- Config-driven six-band policy profile (`validator/band_profile.py`), now the
+  single source of truth for per-band budgets (absorbing `layer1._BUDGETS`).
+- Policy gate layer PL-15..PL-18, run in `run_gate` between Layer 1 and Layer 2
+  and blocking on error: forbidden-ending-kind (age-gated no-death/capture),
+  per-band content ceiling, ending/decision floors, and topology verification
+  against a deterministic Ashwell classifier (`validator/topology.py`).
+- Optional `Node.safety_scope` for downstream review scoping.
 - Ollama provider HTTPS and HTTP Basic-auth support for the auth-proxied homelab
   host (Traefik + Authentik): reads the unprefixed `OLLAMA_BASE_URL` and
   `OLLAMA_AUTH` (`user:password`) env vars, attaches Basic credentials when
