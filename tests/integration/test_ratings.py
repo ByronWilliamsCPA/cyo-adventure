@@ -179,3 +179,34 @@ async def test_rating_unknown_storybook_is_404(client: AsyncClient, seed: Seed) 
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 404, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_rating_invalid_profile_uuid_rejected(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-UUID profile_id on POST is rejected by _parse_uuid (422)."""
+    resp = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": "not-a-uuid",
+            "storybook_id": seed.storybook_id,
+            "value": 3,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_ratings_invalid_profile_uuid_rejected(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-UUID profile_id on GET is rejected by _parse_uuid (422)."""
+    resp = await client.get(
+        "/api/v1/ratings/not-a-uuid",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 422, resp.text
