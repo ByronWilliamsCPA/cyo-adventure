@@ -117,10 +117,12 @@ async def list_ratings(profile_id: str, ctx: Context) -> RatingListView:
     authorize_profile(ctx.principal, parsed)
     # Order by most-recently-updated so the response is deterministic across
     # calls; an unordered SELECT returns DB-dependent row order, which causes
-    # client-side list flicker and defeats response diffing/caching.
+    # client-side list flicker and defeats response diffing/caching. storybook_id
+    # (unique per profile via the PK) is a stable tie-breaker when two ratings
+    # share an updated_at timestamp.
     rows = await ctx.session.scalars(
         select(Rating)
         .where(Rating.child_profile_id == parsed)
-        .order_by(Rating.updated_at.desc())
+        .order_by(Rating.updated_at.desc(), Rating.storybook_id.asc())
     )
     return RatingListView(ratings=[_rating_view(row) for row in rows.all()])

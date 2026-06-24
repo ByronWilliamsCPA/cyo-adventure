@@ -55,10 +55,12 @@ class _FakeSession:
         self._list_rows = list_rows or []
         self.added: list[object] = []
         self.flush_count = 0
+        self.get_calls: list[tuple[type[object], object]] = []
+        self.scalars_calls: list[object] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Return the seeded Storybook or existing Rating by model type."""
-        _ = key
+        self.get_calls.append((model, key))
         if model is Storybook:
             return self._storybook
         if model is Rating:
@@ -80,7 +82,7 @@ class _FakeSession:
 
     async def scalars(self, statement: object) -> _FakeScalars:
         """Return the seeded rating rows for the list endpoint."""
-        _ = statement
+        self.scalars_calls.append(statement)
         return _FakeScalars(self._list_rows)
 
 
@@ -114,6 +116,8 @@ async def test_record_rating_inserts_new() -> None:
     assert view.rated_at == _FIXED_TS
     added = [obj for obj in session.added if isinstance(obj, Rating)]
     assert len(added) == 1
+    # The Rating lookup must use the composite (profile_id, storybook_id) key.
+    assert (Rating, (profile_id, "book-1")) in session.get_calls
 
 
 @pytest.mark.unit
@@ -218,6 +222,8 @@ async def test_list_ratings_returns_views() -> None:
     assert len(result.ratings) == 1
     assert result.ratings[0].storybook_id == "book-1"
     assert result.ratings[0].value == 5
+    # The list handler must issue exactly one scalars() query for the profile.
+    assert len(session.scalars_calls) == 1
 
 
 @pytest.mark.unit
