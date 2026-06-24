@@ -406,6 +406,19 @@ class TestOllamaProvider:
         assert captured["model"] == "qwen3"
 
     @pytest.mark.asyncio
+    async def test_request_disables_response_compression(self) -> None:
+        """The stream request sends Accept-Encoding: identity (Traefik compress no-op)."""
+        captured: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["accept_encoding"] = request.headers.get("accept-encoding", "")
+            return httpx.Response(200, text=_ollama_stream("ok"))
+
+        provider = _ollama(handler)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert captured["accept_encoding"] == "identity"
+
+    @pytest.mark.asyncio
     async def test_404_missing_model_is_leg_fatal(self) -> None:
         """A missing/unpulled model (404) raises leg-fatal without retry."""
         calls = 0
