@@ -141,3 +141,34 @@ class ValidateResponse(BaseModel):
 
     blocked: bool
     report: dict[str, object]
+
+
+# ---------------------------------------------------------------------------
+# Rating schemas
+# ---------------------------------------------------------------------------
+
+
+class RatingBody(BaseModel):
+    """A request to set or update a child's rating of a storybook."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    storybook_id: str
+    value: int = Field(ge=1, le=5)
+
+
+class RatingView(BaseModel):
+    """A child's recorded rating of a storybook."""
+
+    child_profile_id: str
+    storybook_id: str
+    value: int
+    rated_at: datetime
+    updated_at: datetime
+
+
+class RatingListView(BaseModel):
+    """All ratings recorded by a single child profile."""
+
+    ratings: list[RatingView]

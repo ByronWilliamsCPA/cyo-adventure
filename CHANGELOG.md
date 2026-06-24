@@ -63,6 +63,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flags, and a pre-output orchestrator self-check (orphan delete, ending-count and
   depth reconciliation) that lifts the Tier-1 gate-pass yield to 70% (14/20) on the
   Haiku 4.5 primary. Closes ADR-003 acceptance criteria AC#1 and AC#2.
+- Ratings: a child can rate a storybook 1-5 (`POST /api/v1/ratings`) and read back
+  their ratings (`GET /api/v1/ratings/{profile_id}`). Ratings are per-child,
+  per-book, mutable (re-rating overwrites), and family-scoped (a child cannot rate
+  or list another profile's or family's books). Backed by a new `rating` table and
+  Alembic migration. First phase of the ratings-and-family-sharing design.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are
