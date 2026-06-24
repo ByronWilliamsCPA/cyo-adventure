@@ -285,6 +285,7 @@ async def run_generation_job(
                     model=job_row.model,
                     prompt_version=_PROMPT_VERSION,
                     validation_report=dict(outcome.report),
+                    version=_FIRST_VERSION,
                 ),
             )
 
