@@ -300,6 +300,7 @@ class Node(BaseModel):
     is_ending: bool = False
     ending: Ending | None = None
     tags: list[str] = Field(default_factory=list)
+    safety_scope: list[SafetyScope] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _check_ending_consistency(self) -> Self:

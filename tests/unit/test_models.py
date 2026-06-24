@@ -4,9 +4,11 @@ import pytest
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import (
+    Choice,
     ContentFlagLevel,
     Ending,
     EndingKind,
+    Node,
     SafetyScope,
     StoryMetadata,
     Topology,
@@ -75,3 +77,15 @@ def _meta_kwargs() -> dict[str, object]:
 def test_story_metadata_requires_topology():
     meta = StoryMetadata.model_validate(_meta_kwargs())
     assert meta.topology is Topology.BRANCH_AND_BOTTLENECK
+
+
+def test_node_safety_scope_defaults_empty_and_accepts_values():
+    plain = Node(id="n1", body="x", choices=[Choice(id="c1", label="go", target="n2")])
+    assert plain.safety_scope == []
+    scoped = Node(
+        id="n1",
+        body="x",
+        choices=[Choice(id="c1", label="go", target="n2")],
+        safety_scope=[SafetyScope.PERIL],
+    )
+    assert scoped.safety_scope == [SafetyScope.PERIL]
