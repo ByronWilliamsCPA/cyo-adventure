@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.validator import Severity, validate_layer1
+from cyo_adventure.validator.layer1 import band_budget
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -327,6 +328,6 @@ def test_missing_nodes_is_schema_error() -> None:
 )
 def test_new_bands_have_budgets(band: str, expected: tuple[int, int, int]) -> None:
     """band_budget returns the configured tuple for each new band."""
-    from cyo_adventure.validator.layer1 import band_budget
-
-    assert band_budget(band) == expected
+    budget = band_budget(band)
+    assert budget is not None, f"No budget entry found for band {band!r}"
+    assert budget == expected
