@@ -18,6 +18,7 @@ from cyo_adventure.generation.provider import (
     _CANNED_STORY,
     _CANNED_STORY_JSON,
     MockProvider,
+    _split_basic_auth,
     build_provider,
 )
 from cyo_adventure.generation.providers import (
@@ -131,10 +132,102 @@ class TestBuildProviderLive:
 
     def test_ollama_returns_bare_ollama_leg(self) -> None:
         """generation_provider='ollama' returns the local Ollama leg alone."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama", ollama_model="qwen3:30b"
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, OllamaProvider)
+        assert provider.name == "ollama:qwen3:30b"
+
+    def test_ollama_ca_bundle_valid_path_builds_leg(self) -> None:
+        """A valid CA bundle path builds the leg with an SSLContext verifier."""
+        import ssl
+
+        import certifi
+
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama", ollama_ca_bundle=certifi.where()
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, OllamaProvider)
+        # The CA bundle must be threaded through as an SSLContext (verify=),
+        # not silently dropped; this is the leg's whole TLS-to-homelab purpose.
+        assert isinstance(provider._verify, ssl.SSLContext)
+
+    def test_ollama_no_ca_bundle_uses_default_verification(self) -> None:
+        """Without a CA bundle the leg verifies against the public store (verify=True)."""
         settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
         provider = build_provider(settings)
         assert isinstance(provider, OllamaProvider)
-        assert provider.name == "ollama:qwen3"
+        assert provider._verify is True
+
+    def test_ollama_ca_bundle_bad_path_raises_configuration_error(self) -> None:
+        """A nonexistent CA bundle path maps to ConfigurationError, not a raw OSError."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama",
+            ollama_ca_bundle="/nonexistent/homelab-ca.pem",
+        )
+        with pytest.raises(ConfigurationError, match="OLLAMA_CA_BUNDLE"):
+            build_provider(settings)
+
+    def test_ollama_auth_over_http_remote_raises(self) -> None:
+        """Basic auth over plaintext http to a remote host is rejected (cleartext leak)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama",
+            ollama_base_url="http://ollama.example.com",
+            ollama_auth="svc-cyo:app-pw",
+        )
+        with pytest.raises(ConfigurationError, match="cleartext"):
+            build_provider(settings)
+
+    def test_ollama_auth_over_https_is_allowed(self) -> None:
+        """Basic auth over https builds the leg (credential is encrypted in transit)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama",
+            ollama_base_url="https://ollama.example.com",
+            ollama_auth="svc-cyo:app-pw",
+        )
+        assert isinstance(build_provider(settings), OllamaProvider)
+
+    def test_ollama_auth_over_http_loopback_is_allowed(self) -> None:
+        """Basic auth over http to loopback is allowed (never crosses the network)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="ollama",
+            ollama_base_url="http://localhost:11434",
+            ollama_auth="svc-cyo:app-pw",
+        )
+        assert isinstance(build_provider(settings), OllamaProvider)
+
+
+class TestSplitBasicAuth:
+    """_split_basic_auth turns an OLLAMA_AUTH string into (username, password)."""
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            # The real username is exactly svc-cyo (the Authentik service account).
+            ("svc-cyo:app-pw", ("svc-cyo", "app-pw")),
+            # A username containing hyphens still splits on the first colon.
+            ("svc-cyo-laptop:abc123", ("svc-cyo-laptop", "abc123")),
+            # First-colon split keeps a password that itself contains colons.
+            ("user:p:a:ss", ("user", "p:a:ss")),
+            # Missing/blank/half values yield no credential.
+            (None, (None, None)),
+            ("", (None, None)),
+            ("   ", (None, None)),
+            ("no-colon", (None, None)),
+            (":only-password", (None, None)),
+            ("only-user:", (None, None)),
+            # Surrounding whitespace on either half is trimmed (stray-space typo).
+            (" svc-cyo : app-pw ", ("svc-cyo", "app-pw")),
+            (" : ", (None, None)),
+        ],
+    )
+    def test_split(
+        self, value: str | None, expected: tuple[str | None, str | None]
+    ) -> None:
+        """A well-formed user:password splits on the first colon; else (None, None)."""
+        assert _split_basic_auth(value) == expected
 
 
 class TestCannedStorySchemaValid:

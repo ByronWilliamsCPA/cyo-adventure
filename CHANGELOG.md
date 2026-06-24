@@ -8,6 +8,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Ollama provider HTTPS and HTTP Basic-auth support for the auth-proxied homelab
+  host (Traefik + Authentik): reads the unprefixed `OLLAMA_BASE_URL` and
+  `OLLAMA_AUTH` (`user:password`) env vars, attaches Basic credentials when
+  present, and maps the unauthenticated `302` redirect to a leg-fatal
+  `ProviderError` instead of parsing the redirect body as a completion.
+- Ollama requests now stream (`stream: true`): the adapter accumulates the
+  newline-delimited JSON chunks, so the timeout bounds time-between-chunks rather
+  than total generation time (the homelab host is single-parallel with a cold
+  start, so full stories can take minutes). Adds a dedicated
+  `ollama_timeout_seconds` (default 300) separate from the cloud `llm_timeout`,
+  and defaults `ollama_model` to `qwen2.5:14b` (a ~9GB general instruct model that
+  live-tested as both fast and structurally valid; the 30B tags are too slow on the
+  single-parallel host and the reasoning models waste the token budget on thinking).
+  The stream request sends `Accept-Encoding: identity` so the
+  homelab proxy's gzip-compress middleware is a no-op; compressing the stream
+  buffered and dropped long (multi-minute) generations mid-stream.
+- Optional `OLLAMA_CA_BUNDLE` setting: when the homelab host serves a
+  privately-signed (Homelab CA) TLS cert, point this at the CA bundle and the
+  adapter loads it on top of the system CA store so verification succeeds without
+  disabling TLS verification. Unset uses the public CA store; the same setting
+  keeps working once the host serves a publicly-trusted cert.
 - Initial project setup and structure
 - `environment` setting plus a fail-fast guard that refuses to start outside a
   local environment when the development default database URL is still in use
@@ -85,6 +106,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Windows compatibility matrix `ParserError` (test step pinned to `shell: bash`)
 - REUSE compliance coverage for newly added files
 - Documentation consistency (SECURITY.md SLA, requires-python, docs claims)
+- Yield-harness dotenv loader now strips surrounding quotes, so a quoted
+  `OLLAMA_AUTH="user:pass"` entry (as documented in `.env.example`) no longer
+  leaks the literal quote characters into the Basic-auth credential.
+- `_split_basic_auth` trims surrounding whitespace on each half so a stray-space
+  `OLLAMA_AUTH` entry no longer produces a silent auth failure.
+- An unusable `OLLAMA_CA_BUNDLE` path now raises a `ConfigurationError` naming the
+  setting instead of a raw `FileNotFoundError`/`SSLError`.
+
+### Security
+- Refuse to send Ollama HTTP Basic credentials over a cleartext, non-loopback
+  `http://` URL: a misconfigured `OLLAMA_BASE_URL` paired with `OLLAMA_AUTH` now
+  raises a `ConfigurationError` rather than transmitting the password in
+  reversible base64 over the wire.
+- Stop tracking the empty `stack.env` file and add it to `.gitignore` (a
+  Docker/Portainer stack env file that may hold real secrets).
 
 ## [0.1.0] - TBD
 

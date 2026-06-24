@@ -9,8 +9,10 @@ constructs the appropriate backend from the application settings.
 from __future__ import annotations
 
 import json
+import ssl
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Final, Protocol
+from urllib.parse import urlsplit
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -228,6 +230,70 @@ def _build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
     )
 
 
+def _split_basic_auth(value: str | None) -> tuple[str | None, str | None]:
+    """Split an ``OLLAMA_AUTH`` ``user:password`` string into its two halves.
+
+    Splits on the FIRST colon only: per RFC 7617 a Basic-auth userid cannot
+    contain a colon, but the password may, so ``partition`` preserves a password
+    that itself contains colons. A ``None`` or empty/whitespace value, or one
+    with no colon, yields ``(None, None)`` so the adapter sends no credential
+    (and an auth-proxied host then answers the leg-fatal 302). Each half is
+    stripped of surrounding whitespace: a dotenv entry with stray spaces around
+    the value is far more likely a typo than an intentional whitespace
+    credential, and an unstripped half would silently produce an auth failure.
+
+    Args:
+        value: The raw ``ollama_auth`` setting (``user:password`` or ``None``).
+
+    Returns:
+        ``(username, password)`` when a well-formed pair is present, else
+        ``(None, None)``.
+    """
+    if value is None or not value.strip() or ":" not in value:
+        return None, None
+    raw_username, _, raw_password = value.partition(":")
+    username, password = raw_username.strip(), raw_password.strip()
+    if not username or not password:
+        return None, None
+    return username, password
+
+
+# Loopback hosts where HTTP Basic auth never crosses a network boundary, so
+# cleartext is acceptable; any other host over plain http would put the
+# credential on the wire in reversible base64.
+_LOOPBACK_HOSTS: Final[frozenset[str]] = frozenset({"localhost", "127.0.0.1", "::1"})
+
+
+def _reject_cleartext_basic_auth(base_url: str) -> None:
+    """Refuse to send HTTP Basic credentials over a cleartext, non-loopback URL.
+
+    Basic auth base64-encodes ``user:password`` reversibly, so an ``http://``
+    request to a remote host ships the credential in the clear. A misconfigured
+    ``OLLAMA_BASE_URL`` (http to a remote host) paired with ``OLLAMA_AUTH`` is a
+    credential-exposure bug, so fail fast rather than leak the password.
+
+    Args:
+        base_url: The configured Ollama base url.
+
+    Raises:
+        ConfigurationError: When the scheme is not https and the host is not a
+            loopback address.
+    """
+    # #CRITICAL: security: Basic auth over plaintext http leaks the credential on
+    # the wire; only loopback (never on the network) is exempt.
+    # #VERIFY: build raises ConfigurationError for an http://<remote-host> + auth
+    # combination (tests/unit/test_worker.py).
+    parsed = urlsplit(base_url)
+    if parsed.scheme == "https" or parsed.hostname in _LOOPBACK_HOSTS:
+        return
+    msg = (
+        "OLLAMA_AUTH is set but OLLAMA_BASE_URL is not https; HTTP Basic auth "
+        "would send the credential in cleartext. Use an https URL, or a local "
+        "loopback host for unauthenticated dev."
+    )
+    raise ConfigurationError(msg)
+
+
 def _build_ollama_leg(settings: Settings) -> GenerationProvider:
     """Construct the local Ollama leg from settings.
 
@@ -236,11 +302,45 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
 
     Returns:
         An Ollama ``GenerationProvider`` adapter.
+
+    Raises:
+        ConfigurationError: When auth is set over cleartext http to a non-loopback
+            host, or when ``OLLAMA_CA_BUNDLE`` points at an unusable bundle.
     """
+    # Basic-auth is optional: a direct local Ollama needs none, the auth-proxied
+    # homelab host needs it. The adapter attaches Basic auth only when both halves
+    # are present and maps the 302 auth challenge to a leg-fatal error.
+    username, password = _split_basic_auth(settings.ollama_auth)
+    if username is not None and password is not None:
+        _reject_cleartext_basic_auth(settings.ollama_base_url)
+    # TLS verification: default to the public CA store. When a CA bundle is
+    # configured (the homelab host serves a Homelab-CA cert until the public
+    # wildcard lands), load it ON TOP of the system CAs so verification succeeds
+    # under either issuer. This is proper verification, not a bypass.
+    verify: ssl.SSLContext | bool = True
+    if settings.ollama_ca_bundle:
+        ctx = ssl.create_default_context()
+        try:
+            # ssl.SSLError subclasses OSError, so OSError covers a missing path
+            # and a malformed/unreadable PEM. Map both to ConfigurationError so a
+            # misconfigured operator gets a named setting, not a raw traceback.
+            ctx.load_verify_locations(settings.ollama_ca_bundle)
+        except OSError as exc:
+            msg = (
+                "OLLAMA_CA_BUNDLE points at an unusable CA bundle "
+                f"({settings.ollama_ca_bundle!r}): {type(exc).__name__}"
+            )
+            raise ConfigurationError(msg) from exc
+        verify = ctx
     return OllamaProvider(
         model=settings.ollama_model,
         base_url=settings.ollama_base_url,
-        timeout_seconds=settings.llm_timeout_seconds,
+        # Ollama gets its own, longer timeout: the single-parallel homelab host can
+        # take minutes to first byte when a prior request holds the execution slot.
+        timeout_seconds=settings.ollama_timeout_seconds,
+        username=username,
+        password=password,
+        verify=verify,
     )
 
 

@@ -92,9 +92,35 @@ Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast an
 
 ## Infra / policy notes
 
-- **Ollama** leg unmeasured: `ollama.williamshome.family` (192.168.1.209:11434) is
-  reachable by DNS but TCP-times-out from the WSL2 env (firewall dropping packets). Needs
-  a network-side fix before the local leg can be compared.
+- **Ollama** leg: access provisioned and verified live 2026-06-23 (authenticated `GET
+  /api/tags` and `POST /api/chat` both return 200 from the WSL2 host). The raw `:11434` path
+  TCP-timed-out from WSL2; the host is now reached over HTTPS at
+  `https://ollama.williamshome.family` (Traefik + Authentik), no explicit port. Use the
+  `ollama-api` host, NOT the `*.svc` wildcard (which is a shared provider that does not
+  authorize the `svc-cyo` identity and returns 302). The adapter reads `OLLAMA_BASE_URL` +
+  `OLLAMA_AUTH` (HTTP Basic, username exactly `svc-cyo`) and maps the unauthenticated 302 to a
+  leg-fatal error. Operational facts from the infra team (source of truth):
+  - **Model**: default is now `qwen2.5:14b` (~9GB general instruct). Live model bake-off
+    2026-06-23 on one Tier-1 brief: the 30B reasoning tags (`qwen3:30b`, `qwen-assistant:latest`)
+    are too slow (~1hr/story) and waste budget on thinking tokens (empty `content`);
+    `story-assistant:latest` (9GB, prose-tuned) was fast but produced structurally invalid
+    graphs (depth 11 vs 6, dangling refs, orphan; repair made no progress); `qwen2.5:14b` (9GB)
+    was fast AND passed the gates (repair loop converged in 3, only a soft node-count warning).
+  - **Concurrency/cold start**: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`,
+    `OLLAMA_KEEP_ALIVE=15m`. One request at a time (concurrent calls queue); the first call
+    after 15 min idle cold-loads the model (~28s measured). Serialize calls and size the
+    timeout/retry budget for cold starts; `stream:true` is recommended for large generations
+    to avoid any single-call wall and intermediary idle timeouts.
+  - **Rate limit**: 10 req/s avg, burst 5, per source IP (retry-on-429 covers it).
+  - **TLS**: the `ollama.williamshome.family` route is served with a privately-signed Homelab CA
+    cert. The client verifies it via `OLLAMA_CA_BUNDLE` (a CA bundle loaded on top of the system
+    store), so TLS verification stays ON (no `verify=False`). Full secure path verified live
+    2026-06-23: authenticated `/api/tags` 200, bad-auth 302 and missing-model 404 both leg-fatal,
+    and a real `qwen-assistant:latest` streaming generation returned clean content.
+  - **Off-LAN/CI**: `*.williamshome.family` resolves only via on-LAN split-horizon DNS. CI/off-LAN
+    is not wired; the reliable path today is an on-LAN self-hosted runner. Exposing Ollama via
+    Pangolin ZTNA would be net-new work (Basic auth would still apply). Open decision.
+  - Leg yield still to be measured now that the path is open.
 - **Provider data policy**: the Anthropic/Google allowlist is worth revisiting as a
   criteria-based policy (no real child data reaches the model; only fictional briefs do).
   A follow-up, not a Phase 2b blocker.

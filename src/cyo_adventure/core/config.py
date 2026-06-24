@@ -80,7 +80,15 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
     openrouter_model: str = "anthropic/claude-haiku-4.5"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
-    ollama_model: str = "qwen3"
+    # Default to qwen2.5:14b: a ~9GB general instruct model that, in live testing
+    # (2026-06-23), was both fast and produced a valid, gate-passing story graph
+    # (the repair loop converged). The larger 30B tags are too slow on the
+    # single-parallel host (~1hr/story), and the reasoning models (`qwen3:30b`,
+    # `qwen-assistant:latest`) waste the num_predict budget on thinking tokens and
+    # can return empty content; the prose-tuned `story-assistant:latest` was fast
+    # but produced structurally invalid graphs (over-depth, dangling refs). Override
+    # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
+    ollama_model: str = "qwen2.5:14b"
     # No direct Anthropic SDK setting: Claude is reached via OpenRouter
     # (both legs are anthropic/* models). A direct-Anthropic adapter
     # is deferred; the GenerationProvider seam makes it a trivial future add if a
@@ -104,15 +112,34 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter passes this to httpx.AsyncClient(timeout=...).
     llm_timeout_seconds: int = 120
 
+    # Dedicated timeout for the Ollama leg, separate from the cloud llm_timeout
+    # because the homelab host has very different latency: it runs
+    # OLLAMA_NUM_PARALLEL=1 (one request at a time, others queue) with a ~28s cold
+    # start after OLLAMA_KEEP_ALIVE expires. With streaming this bounds the per-read
+    # gap (time-to-first-byte), not total generation time, so it mainly needs to
+    # cover a cold start plus waiting behind one queued request.
+    # #ASSUME: external-resources: time-to-first-byte can be minutes when a prior
+    # request holds the single execution slot; too short a timeout fails healthy calls.
+    # #VERIFY: _build_ollama_leg passes this (not llm_timeout_seconds) to the adapter.
+    ollama_timeout_seconds: int = 300
+
     # Cascade switch. True (default) lets FallbackProvider fail over across legs.
     # The yield/leg-comparison runs set this False to measure each leg in
     # isolation (no failover masking a leg's true yield).
     provider_fallback_enabled: bool = True
 
-    # Provider endpoints. OpenRouter's base url is stable; Ollama targets the
-    # local host. Both are configurable so staging/tests can point elsewhere.
+    # Provider endpoints. OpenRouter's base url is stable; Ollama defaults to the
+    # local host. The homelab Ollama is fronted by Traefik+Authentik, so
+    # production points this at the HTTPS vhost WITHOUT a port (TLS terminates on
+    # :443, so an explicit :11434 is wrong for that path) and supplies the
+    # Basic-auth credential below. Read from the UNPREFIXED ``OLLAMA_BASE_URL`` to
+    # match the operator's existing .env naming (same pattern as
+    # ``openrouter_api_key``); ``populate_by_name`` keeps the field settable by
+    # name in tests/DI.
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
-    ollama_base_url: str = "http://localhost:11434"
+    ollama_base_url: str = Field(
+        default="http://localhost:11434", validation_alias="OLLAMA_BASE_URL"
+    )
 
     # OpenRouter credential. Read from the UNPREFIXED ``OPENROUTER_API_KEY`` env
     # var (validation_alias bypasses the cyo_adventure_ prefix) to match the
@@ -126,6 +153,33 @@ class Settings(BaseSettings):
     # only, never by value.
     openrouter_api_key: str | None = Field(
         default=None, validation_alias="OPENROUTER_API_KEY"
+    )
+
+    # Ollama HTTP Basic-auth credential, as a single ``user:password`` string to
+    # match the operator's ``OLLAMA_AUTH`` .env entry (and the native HTTP Basic
+    # shape). Read from the UNPREFIXED ``OLLAMA_AUTH``. The local-dev default
+    # (http://localhost:11434) needs none, so it is optional and None by default;
+    # the Traefik+Authentik-fronted homelab host requires it and answers an
+    # unauthenticated request with a 302 redirect to the login flow (which the
+    # adapter maps to a leg-fatal ProviderError). build_provider splits it on the
+    # first ``:`` (RFC 7617: the userid has no colon, the password may), and the
+    # adapter sends Basic auth only when both halves are present.
+    # #CRITICAL: security: ollama_auth contains a password; never log its value or
+    # echo it in an error message. It must be supplied from a secret manager
+    # (env var / Infisical), never committed to source control.
+    # #VERIFY: build_provider passes the split halves to httpx.BasicAuth and no
+    # ProviderError message includes the credential.
+    ollama_auth: str | None = Field(default=None, validation_alias="OLLAMA_AUTH")
+
+    # Optional path to a CA bundle for verifying the Ollama host's TLS cert. The
+    # homelab host is fronted by Traefik serving a privately-signed cert (Homelab
+    # CA) until the public wildcard is in place, so the public CA store alone
+    # cannot verify it. Point this at the Homelab root+intermediate bundle to
+    # verify properly (NOT a verification bypass). build_provider loads it ON TOP
+    # of the system CAs, so the same setting keeps working once the host serves a
+    # publicly-trusted cert. Leave unset for a direct local Ollama (plain http).
+    ollama_ca_bundle: str | None = Field(
+        default=None, validation_alias="OLLAMA_CA_BUNDLE"
     )
 
     @model_validator(mode="after")

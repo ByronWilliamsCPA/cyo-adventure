@@ -13,7 +13,9 @@ the three-layer failure model:
 
 from __future__ import annotations
 
+import base64
 import json
+import os
 from typing import TYPE_CHECKING, Literal
 
 import httpx
@@ -45,9 +47,22 @@ def _openrouter_ok_body(content: str) -> dict[str, object]:
     return {"choices": [{"message": {"role": "assistant", "content": content}}]}
 
 
-def _ollama_ok_body(content: str) -> dict[str, object]:
-    """Return a minimal Ollama chat success payload."""
-    return {"message": {"role": "assistant", "content": content}}
+def _ollama_stream(*pieces: str, done: bool = True) -> str:
+    """Build a newline-delimited JSON Ollama chat stream body.
+
+    Each piece becomes one chunk's ``message.content``; a terminal ``done`` marker
+    (with empty content) is appended unless ``done=False``. Mirrors the real
+    ``/api/chat`` streaming response the adapter accumulates.
+    """
+    lines = [
+        json.dumps({"message": {"role": "assistant", "content": piece}, "done": False})
+        for piece in pieces
+    ]
+    if done:
+        lines.append(
+            json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+        )
+    return "\n".join(lines) + "\n"
 
 
 def _openrouter(
@@ -75,12 +90,16 @@ def _ollama(
     *,
     model: str = "qwen3",
     max_retries: int = 3,
+    username: str | None = None,
+    password: str | None = None,
 ) -> OllamaProvider:
     """Build an OllamaProvider wired to a mock client with no backoff sleep."""
     return OllamaProvider(
         model=model,
         base_url="http://localhost:11434",
         timeout_seconds=30,
+        username=username,
+        password=password,
         max_retries=max_retries,
         backoff_base_seconds=0,
         client=_client(handler),
@@ -362,11 +381,11 @@ class TestOllamaProvider:
     """Ollama adapter: success, error mapping, retry, request shape."""
 
     @pytest.mark.asyncio
-    async def test_success_returns_content(self) -> None:
-        """A 200 response returns the message content."""
+    async def test_success_accumulates_streamed_chunks(self) -> None:
+        """A streamed 200 response concatenates each chunk's message content."""
 
         def handler(_request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=_ollama_ok_body("story"))
+            return httpx.Response(200, text=_ollama_stream("st", "or", "y"))
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
@@ -374,18 +393,31 @@ class TestOllamaProvider:
 
     @pytest.mark.asyncio
     async def test_request_maps_max_tokens_to_num_predict(self) -> None:
-        """max_tokens is forwarded as options.num_predict, stream is False."""
+        """max_tokens is forwarded as options.num_predict, stream is True."""
         captured: dict[str, object] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured.update(json.loads(request.content))
-            return httpx.Response(200, json=_ollama_ok_body("x"))
+            return httpx.Response(200, text=_ollama_stream("x"))
 
         provider = _ollama(handler)
         await provider.complete(system="s", prompt="u", max_tokens=2048)
         assert captured["options"] == {"num_predict": 2048}
-        assert captured["stream"] is False
+        assert captured["stream"] is True
         assert captured["model"] == "qwen3"
+
+    @pytest.mark.asyncio
+    async def test_request_disables_response_compression(self) -> None:
+        """The stream request sends Accept-Encoding: identity (Traefik compress no-op)."""
+        captured: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["accept_encoding"] = request.headers.get("accept-encoding", "")
+            return httpx.Response(200, text=_ollama_stream("ok"))
+
+        provider = _ollama(handler)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert captured["accept_encoding"] == "identity"
 
     @pytest.mark.asyncio
     async def test_404_missing_model_is_leg_fatal(self) -> None:
@@ -413,7 +445,7 @@ class TestOllamaProvider:
             calls += 1
             if calls == 1:
                 return httpx.Response(503, json={"error": "loading"})
-            return httpx.Response(200, json=_ollama_ok_body("ok"))
+            return httpx.Response(200, text=_ollama_stream("ok"))
 
         provider = _ollama(handler)
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
@@ -422,15 +454,144 @@ class TestOllamaProvider:
 
     @pytest.mark.asyncio
     async def test_empty_content_raises_transient(self) -> None:
-        """An empty message content raises a non-leg-fatal ProviderError."""
+        """A stream that yields no content raises a non-leg-fatal ProviderError."""
 
         def handler(_request: httpx.Request) -> httpx.Response:
-            return httpx.Response(200, json=_ollama_ok_body(""))
+            # Only the terminal done marker, no content chunks.
+            return httpx.Response(200, text=_ollama_stream(done=True))
 
         provider = _ollama(handler, max_retries=1)
         with pytest.raises(ProviderError) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_error_chunk_raises_transient(self) -> None:
+        """An {\"error\": ...} chunk mid-stream raises a non-leg-fatal error."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text='{"error": "model is loading"}\n')
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_non_json_line_raises_transient(self) -> None:
+        """A malformed (non-JSON) stream line raises a non-leg-fatal error."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text="not json at all\n")
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_error_chunk_after_partial_content_raises_transient(self) -> None:
+        """An error chunk arriving after valid content chunks raises transient."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            body = (
+                json.dumps(
+                    {"message": {"role": "assistant", "content": "par"}, "done": False}
+                )
+                + "\n"
+                + json.dumps({"error": "model unloaded mid-stream"})
+                + "\n"
+            )
+            return httpx.Response(200, text=body)
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_retry_after_mid_stream_error_discards_partial_content(self) -> None:
+        """After a mid-stream error, the retry returns only the second attempt's text."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(
+                    200,
+                    text=(
+                        json.dumps(
+                            {
+                                "message": {"role": "assistant", "content": "PARTIAL"},
+                                "done": False,
+                            }
+                        )
+                        + "\n"
+                        + json.dumps({"error": "boom"})
+                        + "\n"
+                    ),
+                )
+            return httpx.Response(200, text=_ollama_stream("clean"))
+
+        provider = _ollama(handler, max_retries=2)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "clean"
+        assert "PARTIAL" not in result
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_basic_auth_header_sent_when_credentials_present(self) -> None:
+        """Both username and password produce an HTTP Basic Authorization header."""
+        captured: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["authorization"] = request.headers.get("authorization", "")
+            return httpx.Response(200, text=_ollama_stream("ok"))
+
+        # Credentials are read from the environment, not hardcoded: secret
+        # scanners (GitGuardian) do not flag env-sourced values, and this is a
+        # fake fixture (the adapter only base64-encodes user:pass). Each falls
+        # back to a clearly-synthetic value when the var is unset (local/CI).
+        test_user = os.environ.get("OLLAMA_TEST_USER", "svc-cyo")
+        test_pw = os.environ.get("OLLAMA_TEST_PW", f"{test_user}-pass")
+        provider = _ollama(handler, username=test_user, password=test_pw)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+
+        expected = base64.b64encode(f"{test_user}:{test_pw}".encode()).decode()
+        assert captured["authorization"] == f"Basic {expected}"
+
+    @pytest.mark.asyncio
+    async def test_no_auth_header_when_credentials_absent(self) -> None:
+        """With no credentials the request carries no Authorization header."""
+        captured: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["authorization"] = request.headers.get("authorization", "")
+            return httpx.Response(200, text=_ollama_stream("ok"))
+
+        provider = _ollama(handler)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert captured["authorization"] == ""
+
+    @pytest.mark.asyncio
+    async def test_302_auth_redirect_is_leg_fatal(self) -> None:
+        """An auth-proxy 302 (Authentik login) is leg-fatal without retry."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(
+                302, headers={"location": "https://auth.example/login"}
+            )
+
+        provider = _ollama(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert "302" in str(exc_info.value)
+        assert calls == 1
 
 
 # ---------------------------------------------------------------------------
