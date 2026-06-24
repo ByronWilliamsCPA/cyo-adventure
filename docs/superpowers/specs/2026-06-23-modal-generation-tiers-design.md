@@ -84,17 +84,27 @@ Branch-and-Bottleneck, Loop-and-Grow.
 
 | Band | Topology | Nodes | Endings | Decisions/path | State (tier) | Fail-state | Primary backend |
 | --- | --- | --- | --- | --- | --- | --- | --- |
+| 3-5 read-aloud | linear / Loop-and-Grow | ~10-20 very short | 3-6 | ~2-4 | none (Tier 1) | **no death; comic, always-recover** | Local Ollama / Modal Gemma 12B |
 | 5-8 early | near-pure tree / Loop-and-Grow | ~42-46 short | 9-12 | ~3-6 | none (Tier 1) | **no death; try-again, comic** | Local Ollama / Modal Gemma 12B |
 | 8-11 core | tree-dominant, light reconvergence | ~90-120 short (or ~45 at 250w) | ~20 | ~4-5 (max 7) | none (Tier 1) | failure/entrapment, adventure-forward | Modal Gemma 26B-A4B |
 | 10-13 | Branch-and-Bottleneck (reconvergent leaves) | ~110-180 | ~19-28 | ~5-10 | light (item/flag) | horror variety, logical | Modal gpt-oss-120b |
 | 13-16 | Gauntlet / Branch-and-Bottleneck (stateful) | 350-456 sections | 1 win + many fails | ~12-25 section hops | full (stats, inventory, dice) | resource-based, lethal | gpt-oss-120b / Opus authoring skill |
+| 16+ advanced | deep Gauntlet / B&B (stateful) | 400+ sections | many fails + few wins | ~20-30+ | full (stats, inventory, dice) | lethal, resource-based, mature | gpt-oss-120b / Opus authoring skill |
 
 The graph-theory study (ages 9-12) validates the tree-dominant shape for 5-8 and
 8-11 (two measured sources agree on node counts). It does **not** cover the
-teen/stateful tier; Fighting Fantasy gamebooks are a deliberate teen-band product,
-calibrated separately. The schema already enforces the state boundary: Tier 1
-stories must declare no variables (`_check_tier_variables`); higher tiers carry
-state. The 5-8 band is a new addition (current schema bands start at 8-11).
+teen/stateful tiers; Fighting Fantasy gamebooks are a deliberate older-band product,
+calibrated separately. The 3-5 and 16+ bands are product-defined (the research
+measured only 9-12). The schema already enforces the state boundary: Tier 1 stories
+must declare no variables (`_check_tier_variables`); higher tiers carry state.
+
+**Bands are config-driven, not a hardcoded enum.** A band is a profile bundling
+`{age_range, reading_level (Lexile/FK target), node/ending/decision budget, topology
+family, fail-state policy, default model tier}`. Modeling the band set as a
+configuration table (seeded with the six above) means adding or tuning a band is a
+config change, not a schema migration. The current schema hardcodes three bands
+(8-11/10-13/13-16); migrating to the config table and adding 3-5, 5-8, and 16+ is
+part of this work.
 
 ### Genre-faithful targets (from the reconciled four-source matrix)
 
@@ -170,6 +180,37 @@ Dual value across tiers: for young readers, a near-stateless **leveled-reader se
 (same characters, reading level rising book to book) needs only "you succeeded ->
 next book"; for teens, a full **D&D-style campaign** carries stats and inventory
 across books on the stateful tier.
+
+### 4.2 Persistence and Stores
+
+The repo already persists generated stories and runtime state; this design reuses
+that and adds two artifact stores plus one import step.
+
+Existing (reuse, do not rebuild):
+
+- **Story store:** `db/models.py` `Storybook` + `StorybookVersion` tables; the
+  generation worker validates then commits the finished story
+  ([worker.py](../../../src/cyo_adventure/generation/worker.py)). Every worker-path
+  generation already writes through this, so "once generated, it is saved" holds.
+- **Runtime state:** the `ReadingState` table persists per-reader variables and
+  `visit_set` (drives `once: true` effects); `player/engine.py` + `state.py` run the
+  stateful machine. Tier 2+ in-story state is already durable.
+- **Completion:** the `Completion` table records finished playthroughs, the natural
+  substrate for series progression (a completion of book N unlocks and seeds N+1).
+
+New for this design:
+
+- **Skeleton store:** versioned, validated skeleton shells (templates) with the
+  Section 4 classification metadata for coverage-aware selection.
+- **Series manifest store:** ordered book list, completion-to-entry links, and the
+  state-export contract (Section 4.1).
+- **Authoring-skill import (the gap to close):** the offline Opus authoring path
+  emits a Storybook JSON; it MUST be imported into the same
+  `Storybook`/`StorybookVersion` store, not left as a loose file, so skill-authored
+  and worker-generated stories are saved identically and share the library,
+  versioning, and series wiring.
+- Optional: **generation checkpointing** for long fills (skeleton + filled-so-far) so
+  an interrupted Opus or gamebook run resumes instead of restarting.
 
 ## 5. Generation Flow
 
@@ -343,9 +384,10 @@ trees. Factor exposure into per-story value, not just raw generation cost.
 ## 12. Phased Rollout
 
 1. **Authoring skill + one hand-authored skeleton per class** -> concept test on
-   Opus. (No app code; fastest validation of the core bet.)
-2. **Skeleton schema/metadata + seed library** per (band, scale, topology) cell;
-   validate with existing L1 gates; add coverage tracking.
+   Opus, importing the filled story into the `Storybook`/`StorybookVersion` store.
+   (Minimal app code; fastest validation of the core bet.)
+2. **Skeleton schema/metadata + skeleton store + seed library** per (band, scale,
+   topology) cell; validate with existing L1 gates; add coverage tracking.
 3. **Validator floors** (endings, decisions) + **age-gated fail-state gate** +
    **compact budget profile** (the latter in flight on the Ollama session).
 4. **`ModalProvider` + settings + `build_provider` branch**, behind
@@ -353,7 +395,8 @@ trees. Factor exposure into per-story value, not just raw generation cost.
 5. **Deploy standard then heavy Modal endpoints**; calibrate; build the alignment
    table.
 6. **Procedural skeleton generator** for scale.
-7. **ADR-003 update**; add the 5-8 band; reading-level -> tier/skeleton routing.
+7. **ADR-003 update**; migrate to the config-driven band table and add the 3-5,
+   5-8, and 16+ bands; reading-level -> tier/skeleton routing.
 8. **Series schema** (ending taxonomy with `completion`, named entry points,
    state-export contract) as a forward-compatible data model now; **series manifest,
    series-linkage validator, and series generation** in a later phase.
