@@ -1,6 +1,7 @@
 """Unit tests for the age-policy gate layer (PL-15..PL-18)."""
 
 from cyo_adventure.storybook.models import (
+    Choice,
     ContentFlags,
     Ending,
     EndingKind,
@@ -63,3 +64,62 @@ def test_pl16_blocks_content_over_band_ceiling():
         _story(age_band="3-5", kind=EndingKind.SUCCESS, scariness="intense")
     )
     assert any(f.rule_id == "PL-16" for f in report.errors)
+
+
+def _two_ending_story(age_band: str, topology: Topology) -> Storybook:
+    e1 = Node(
+        id="e1n",
+        body="a",
+        is_ending=True,
+        ending=Ending(
+            id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="A"
+        ),
+    )
+    e2 = Node(
+        id="e2n",
+        body="b",
+        is_ending=True,
+        ending=Ending(
+            id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="B"
+        ),
+    )
+    start = Node(
+        id="n0",
+        body="go",
+        choices=[
+            Choice(id="c1", label="x", target="e1n"),
+            Choice(id="c2", label="y", target="e2n"),
+        ],
+    )
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=[start, e1, e2],
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=topology,
+        ),
+    )
+
+
+def test_pl17_blocks_too_few_endings():
+    # 13-16 requires 4 endings; this story has 2.
+    report = validate_policy(_two_ending_story("13-16", Topology.TIME_CAVE))
+    assert any(f.rule_id == "PL-17" and "ending" in f.message for f in report.errors)
+
+
+def test_pl18_blocks_mislabelled_topology():
+    # A pure two-branch tree is TIME_CAVE; label it LOOP_AND_GROW and PL-18 fires.
+    report = validate_policy(_two_ending_story("3-5", Topology.LOOP_AND_GROW))
+    assert any(f.rule_id == "PL-18" for f in report.errors)
+
+
+def test_pl18_accepts_admissible_topology():
+    report = validate_policy(_two_ending_story("3-5", Topology.TIME_CAVE))
+    assert not any(f.rule_id == "PL-18" for f in report.errors)
