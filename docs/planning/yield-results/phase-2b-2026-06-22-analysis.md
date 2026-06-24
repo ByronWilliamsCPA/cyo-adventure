@@ -100,10 +100,12 @@ Proposed next steps to lift Tier-2 (do them on a cheap primary; Haiku is fast an
   authorize the `svc-cyo` identity and returns 302). The adapter reads `OLLAMA_BASE_URL` +
   `OLLAMA_AUTH` (HTTP Basic, username exactly `svc-cyo`) and maps the unauthenticated 302 to a
   leg-fatal error. Operational facts from the infra team (source of truth):
-  - **Model**: `qwen3:30b` is served, but `qwen-assistant:latest` is the recommended tuned
-    alias. `qwen3` is a reasoning model: with a small `num_predict` the budget is spent on
-    thinking tokens and `content` returns empty (the adapter treats empty as a transient
-    failure), so budget `num_predict` generously or prefer `qwen-assistant`.
+  - **Model**: default is now `qwen2.5:14b` (~9GB general instruct). Live model bake-off
+    2026-06-23 on one Tier-1 brief: the 30B reasoning tags (`qwen3:30b`, `qwen-assistant:latest`)
+    are too slow (~1hr/story) and waste budget on thinking tokens (empty `content`);
+    `story-assistant:latest` (9GB, prose-tuned) was fast but produced structurally invalid
+    graphs (depth 11 vs 6, dangling refs, orphan; repair made no progress); `qwen2.5:14b` (9GB)
+    was fast AND passed the gates (repair loop converged in 3, only a soft node-count warning).
   - **Concurrency/cold start**: `OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1`,
     `OLLAMA_KEEP_ALIVE=15m`. One request at a time (concurrent calls queue); the first call
     after 15 min idle cold-loads the model (~28s measured). Serialize calls and size the

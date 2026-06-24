@@ -80,13 +80,15 @@ class Settings(BaseSettings):
     # #VERIFY: Phase 2b adapter raises ProviderError on HTTP 400/404 invalid-model.
     openrouter_model: str = "anthropic/claude-haiku-4.5"
     openrouter_fallback_model: str = "anthropic/claude-sonnet-4.6"
-    # The homelab Ollama serves `qwen-assistant:latest` (a tuned alias), the raw
-    # `qwen3:30b`, and others. We default to qwen-assistant on the infra team's
-    # recommendation: raw qwen3 is a reasoning model that spends part of the
-    # num_predict budget on thinking tokens and can return empty content, which
-    # the adapter would treat as a failed leg. Override via
-    # CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
-    ollama_model: str = "qwen-assistant:latest"
+    # Default to qwen2.5:14b: a ~9GB general instruct model that, in live testing
+    # (2026-06-23), was both fast and produced a valid, gate-passing story graph
+    # (the repair loop converged). The larger 30B tags are too slow on the
+    # single-parallel host (~1hr/story), and the reasoning models (`qwen3:30b`,
+    # `qwen-assistant:latest`) waste the num_predict budget on thinking tokens and
+    # can return empty content; the prose-tuned `story-assistant:latest` was fast
+    # but produced structurally invalid graphs (over-depth, dangling refs). Override
+    # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
+    ollama_model: str = "qwen2.5:14b"
     # No direct Anthropic SDK setting: Claude is reached via OpenRouter
     # (both legs are anthropic/* models). A direct-Anthropic adapter
     # is deferred; the GenerationProvider seam makes it a trivial future add if a

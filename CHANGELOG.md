@@ -18,9 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   than total generation time (the homelab host is single-parallel with a cold
   start, so full stories can take minutes). Adds a dedicated
   `ollama_timeout_seconds` (default 300) separate from the cloud `llm_timeout`,
-  and defaults `ollama_model` to the team-recommended tuned `qwen-assistant:latest`
-  alias (raw `qwen3` is a reasoning model that can return empty content under a
-  tight token budget). The stream request sends `Accept-Encoding: identity` so the
+  and defaults `ollama_model` to `qwen2.5:14b` (a ~9GB general instruct model that
+  live-tested as both fast and structurally valid; the 30B tags are too slow on the
+  single-parallel host and the reasoning models waste the token budget on thinking).
+  The stream request sends `Accept-Encoding: identity` so the
   homelab proxy's gzip-compress middleware is a no-op; compressing the stream
   buffered and dropped long (multi-minute) generations mid-stream.
 - Optional `OLLAMA_CA_BUNDLE` setting: when the homelab host serves a
