@@ -28,6 +28,7 @@ from cyo_adventure.storybook.condition import (
     validate_condition,
 )
 from cyo_adventure.storybook.schema_export import build_schema
+from cyo_adventure.validator.band_profile import profile_for
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -39,25 +40,14 @@ if TYPE_CHECKING:
 
     from pydantic import JsonValue
 
-# Age band -> (min nodes, max nodes, max branch depth). From the drafting guide.
-_BUDGETS: dict[str, tuple[int, int, int]] = {
-    "3-5": (8, 20, 4),
-    "5-8": (12, 30, 6),
-    "8-11": (15, 30, 6),
-    "10-13": (25, 50, 8),
-    "13-16": (30, 60, 10),
-    "16+": (30, 60, 12),
-}
-
 
 def band_budget(age_band: str) -> tuple[int, int, int] | None:
     """Return the ``(min_nodes, max_nodes, max_branch_depth)`` budget for a band.
 
-    This is the single source of truth for the L1-7 node-count and branch-depth
-    budget. The Stage A prompt builder imports it so the prompt promises models
-    exactly what :func:`_check_budget` enforces; keeping one table prevents the
-    prompt and the gate from drifting apart (which would either over-constrain
-    generation or let overshoot through).
+    Delegates to :func:`band_profile.profile_for` so the L1-7 node-count and
+    branch-depth budget and the policy gate read one source and cannot drift.
+    The Stage A prompt builder imports this so the prompt promises models
+    exactly what :func:`_check_budget` enforces.
 
     Args:
         age_band: The story age band value (e.g. ``"8-11"``), matching an
@@ -65,9 +55,12 @@ def band_budget(age_band: str) -> tuple[int, int, int] | None:
 
     Returns:
         The ``(min_nodes, max_nodes, max_branch_depth)`` triple for the band,
-        or ``None`` when the band is not in the budget table.
+        or ``None`` when the band is not configured.
     """
-    return _BUDGETS.get(age_band)
+    profile = profile_for(age_band)
+    if profile is None:
+        return None
+    return (profile.min_nodes, profile.max_nodes, profile.max_depth)
 
 
 _ORDERING_OPERATORS: frozenset[str] = frozenset({"<", "<=", ">", ">="})
@@ -741,9 +734,10 @@ def _check_budget(
     """L1-7: ending_count match, node-count band, and max branch depth."""
     _check_ending_count(story, report)
     band = story.metadata.get("age_band")
-    if not isinstance(band, str) or band not in _BUDGETS:
+    budget = band_budget(band) if isinstance(band, str) else None
+    if budget is None:
         return
-    min_nodes, max_nodes, max_depth = _BUDGETS[band]
+    min_nodes, max_nodes, max_depth = budget
     count = len(story.node_ids())
     if count > max_nodes:
         report.add(

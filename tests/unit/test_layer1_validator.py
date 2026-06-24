@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.validator import Severity, validate_layer1
+from cyo_adventure.validator import Severity, layer1, validate_layer1
 from cyo_adventure.validator.layer1 import band_budget
 
 if TYPE_CHECKING:
@@ -114,6 +114,19 @@ def test_severity_enum_values() -> None:
     """Severity serializes to the documented wire strings."""
     assert str(Severity.ERROR) == "error"
     assert str(Severity.WARNING) == "warning"
+
+
+@pytest.mark.unit
+def test_band_budget_delegates_to_profile() -> None:
+    """band_budget reads the band profile and returns the budget triple."""
+    assert band_budget("13-16") == (30, 60, 10)
+    assert band_budget("99-100") is None
+
+
+@pytest.mark.unit
+def test_legacy_budgets_table_is_gone() -> None:
+    """The legacy module-level _BUDGETS table has been removed."""
+    assert not hasattr(layer1, "_BUDGETS")
 
 
 # --- Synthetic stories for branch coverage -------------------------------------
