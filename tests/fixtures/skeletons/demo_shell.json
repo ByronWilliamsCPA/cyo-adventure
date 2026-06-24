@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "id": "sk_demo",
+  "version": 1,
+  "title": "Demo Skeleton",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {"target": 3.0},
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 1
+  },
+  "variables": [],
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "body": "<<FILL role=setup words=120 beats='introduce the hero at the forest edge'>>",
+      "is_ending": false,
+      "choices": [{"id": "c1", "label": "Enter the forest", "target": "end"}]
+    },
+    {
+      "id": "end",
+      "body": "<<FILL role=ending words=80 beats='a warm, safe resolution'>>",
+      "is_ending": true,
+      "ending": {"id": "e_home", "type": "completion", "title": "Safely Home"}
+    }
+  ]
+}
