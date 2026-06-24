@@ -10,16 +10,18 @@ Rule application order (per ``docs/planning/validator-rules.md``
 1. Layer 1 (L1-1..L1-7): graph structure, schema conformance, logic.
 2. **Early return on any L1 ERROR**: the graph must be sound before a
    state-space walk is meaningful, and the document may not even parse.
-3. Layer 2 (L2-9..L2-12): state-space walk, Tier-2 only (Tier-1 skips).
-4. RL-13: advisory reading-level check (WARNING, never blocks).
-5. SAFE-14: safety content check (Phase-2 stub, always empty).
+3. Policy (PL-15..PL-18): age-safety and shape invariants on the parsed
+   model (forbidden ending kinds, content ceilings, floors, topology).
+4. Layer 2 (L2-9..L2-12): state-space walk, Tier-2 only (Tier-1 skips).
+5. RL-13: advisory reading-level check (WARNING, never blocks).
+6. SAFE-14: safety content check (Phase-2 stub, always empty).
 
 Blocking semantics
 ------------------
 ``blocked`` is ``True`` when any ERROR-severity finding whose ``rule_id``
-starts with ``"L1"`` or ``"L2"`` is present in the merged report. RL-13
-findings are WARNING and must not set ``blocked``. SAFE-14 findings route
-to human review and are tracked separately via ``safety_flagged``.
+starts with ``"L1"``, ``"L2"``, or ``"PL"`` is present in the merged report.
+RL-13 findings are WARNING and must not set ``blocked``. SAFE-14 findings
+route to human review and are tracked separately via ``safety_flagged``.
 
 ``safety_flagged`` is ``True`` when any finding with ``rule_id == "SAFE-14"``
 exists in the merged report. In Phase 2 the safety stub is empty, so this
@@ -37,6 +39,7 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.storybook.models import Storybook
 from cyo_adventure.validator.layer1 import validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
+from cyo_adventure.validator.policy import validate_policy
 from cyo_adventure.validator.reading_level import check_reading_level
 from cyo_adventure.validator.report import (
     Severity,
@@ -57,8 +60,8 @@ class GateResult:
         report: Merged findings across all layers run, in order: L1, L2,
             RL, SAFE.
         blocked: ``True`` when any ERROR-severity finding whose rule_id
-            starts with ``"L1"`` or ``"L2"`` is present. RL-13 warnings
-            and SAFE-14 findings never set this flag.
+            starts with ``"L1"``, ``"L2"``, or ``"PL"`` is present. RL-13
+            warnings and SAFE-14 findings never set this flag.
         safety_flagged: ``True`` when any finding with rule_id ``"SAFE-14"``
             is present. Always ``False`` in Phase 2 (stub is empty), but
             computed honestly so Phase 3 does not require changes here.
@@ -110,6 +113,11 @@ def run_gate(data: Mapping[str, object]) -> GateResult:
             safety_flagged=False,
         )
 
+    # --- Policy layer: age-safety and shape invariants (PL-15..PL-18) ---
+    policy_report = validate_policy(story)
+    for finding in policy_report.findings:
+        merged.add(finding)
+
     # --- Layer 2: state-space walk (Tier-2 only; Tier-1 short-circuits) ---
     l2_report = validate_layer2(story)
     for finding in l2_report.findings:
@@ -127,7 +135,7 @@ def run_gate(data: Mapping[str, object]) -> GateResult:
 
     # --- Compute blocked and safety_flagged from the merged report ---
     blocked = any(
-        f.severity is Severity.ERROR and f.rule_id.startswith(("L1", "L2"))
+        f.severity is Severity.ERROR and f.rule_id.startswith(("L1", "L2", "PL"))
         for f in merged.findings
     )
     safety_flagged = any(f.rule_id == "SAFE-14" for f in merged.findings)

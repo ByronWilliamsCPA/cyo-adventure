@@ -436,3 +436,72 @@ def test_defensive_parse_failure_no_l2_findings() -> None:
 
     l2_ids = [f.rule_id for f in result.report.findings if f.rule_id.startswith("L2")]
     assert l2_ids == [], f"L2 must not run on a parse failure: {l2_ids}"
+
+
+# ---------------------------------------------------------------------------
+# 10. Policy layer (PL-15..PL-18) blocks through the gate
+# ---------------------------------------------------------------------------
+
+
+def _policy_story_with_death_ending() -> dict[str, object]:
+    """A structurally valid 5-8 story whose only paths reach a death ending.
+
+    Passes Layer 1 (reachable, terminating, ending_count matches) so the policy
+    layer runs, but the death ending is forbidden for the 5-8 band (PL-15).
+    """
+    return {
+        "schema_version": "2.0",
+        "id": "s_policy_death",
+        "version": 1,
+        "title": "Policy Death",
+        "metadata": {
+            "age_band": "5-8",
+            "reading_level": {"target": 2.0},
+            "tier": 1,
+            "estimated_minutes": 5,
+            "ending_count": 2,
+            "topology": "time_cave",
+        },
+        "start_node": "n0",
+        "nodes": [
+            {
+                "id": "n0",
+                "body": "A fork in the path.",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c1", "label": "left", "target": "n_dead"},
+                    {"id": "c2", "label": "right", "target": "n_safe"},
+                ],
+            },
+            {
+                "id": "n_dead",
+                "body": "It ends badly.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_dead",
+                    "valence": "negative",
+                    "kind": "death",
+                    "title": "The End",
+                },
+            },
+            {
+                "id": "n_safe",
+                "body": "Home safe.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_safe",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Safe",
+                },
+            },
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_gate_blocks_on_policy_violation() -> None:
+    """A 5-8 story with a death ending is blocked with a PL-15 finding."""
+    result = run_gate(_policy_story_with_death_ending())
+    assert result.blocked
+    assert any(f.rule_id == "PL-15" for f in result.report.errors)
