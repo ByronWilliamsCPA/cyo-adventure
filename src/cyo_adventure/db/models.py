@@ -16,7 +16,15 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, String, Uuid, func
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    String,
+    Uuid,
+    func,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -181,6 +189,40 @@ class Completion(Base):
     version: Mapped[int] = mapped_column(primary_key=True)
     ending_id: Mapped[str] = mapped_column(String(120), primary_key=True)
     found_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class Rating(Base):
+    """A child's 1-5 rating of a storybook.
+
+    Unlike ``Completion``, which pins to an immutable ``storybook_version`` via a
+    composite FK, a rating is about the *book* as a whole and is **mutable**: a
+    child may re-rate, overwriting the prior value. The coarser
+    ``(child_profile_id, storybook_id)`` grain is also what the cross-family
+    lineage join in Phase B will need.
+    """
+
+    __tablename__ = "rating"
+    __table_args__ = (
+        CheckConstraint("value BETWEEN 1 AND 5", name="ck_rating_value_range"),
+    )
+
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+    )
+    storybook_id: Mapped[str] = mapped_column(
+        String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
+    )
+    # #CRITICAL: data integrity: ``value`` is bounded 1-5 at the API boundary by
+    # RatingBody and enforced at rest by the ck_rating_value_range CHECK above,
+    # so a non-API write path (admin script, backfill, raw SQL) cannot persist an
+    # out-of-range value that would then be served back to clients.
+    # #VERIFY: RatingBody schema tests cover the boundary; the DB CHECK is the
+    # at-rest backstop.
+    value: Mapped[int] = mapped_column()
+    rated_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
 
 
 class Concept(Base):

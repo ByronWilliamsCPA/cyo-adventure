@@ -357,8 +357,14 @@ def _load_env_file(env_path: Path) -> None:
             continue
         key, _, value = stripped.partition("=")
         key = key.strip()
+        value = value.strip()
+        # Strip matching surrounding quotes. .env.example documents quoted values
+        # (e.g. OLLAMA_AUTH="svc-cyo:<app-password>"); without unquoting, the
+        # literal quotes become part of the credential and break Basic auth.
+        if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
+            value = value[1:-1]
         if key and key not in os.environ:
-            os.environ[key] = value.strip()
+            os.environ[key] = value
 
 
 def _build_live_factory(

@@ -401,3 +401,26 @@ class TestLiveHarnessHelpers:
         assert os.environ["NEW_KEY"] == "new-value"
         # Existing value is preserved, not clobbered by the file.
         assert os.environ["EXISTING_KEY"] == "from-env"
+
+    def test_load_env_file_strips_surrounding_quotes(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Quoted dotenv values are unquoted so the literal quotes do not leak.
+
+        .env.example documents OLLAMA_AUTH="svc-cyo:<app-password>" with double
+        quotes; without unquoting, the quotes would become part of the credential
+        and break Basic auth.
+        """
+        env = tmp_path / ".env"
+        env.write_text(
+            "DQ_KEY=\"svc-cyo:app-pw\"\nSQ_KEY='plain'\nBARE_KEY=raw\n",
+            encoding="utf-8",
+        )
+        for key in ("DQ_KEY", "SQ_KEY", "BARE_KEY"):
+            monkeypatch.delenv(key, raising=False)
+        _load_env_file(env)
+        import os
+
+        assert os.environ["DQ_KEY"] == "svc-cyo:app-pw"
+        assert os.environ["SQ_KEY"] == "plain"
+        assert os.environ["BARE_KEY"] == "raw"

@@ -96,6 +96,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   flags, and a pre-output orchestrator self-check (orphan delete, ending-count and
   depth reconciliation) that lifts the Tier-1 gate-pass yield to 70% (14/20) on the
   Haiku 4.5 primary. Closes ADR-003 acceptance criteria AC#1 and AC#2.
+- Ratings: a child can rate a storybook 1-5 (`POST /api/v1/ratings`) and read back
+  their ratings (`GET /api/v1/ratings/{profile_id}`). Ratings are per-child,
+  per-book, mutable (re-rating overwrites), and family-scoped (a child cannot rate
+  or list another profile's or family's books). Backed by a new `rating` table and
+  Alembic migration. First phase of the ratings-and-family-sharing design.
 
 ### Changed
 - Readiness probes no longer return raw exception text to clients; failures are
@@ -113,6 +118,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Windows compatibility matrix `ParserError` (test step pinned to `shell: bash`)
 - REUSE compliance coverage for newly added files
 - Documentation consistency (SECURITY.md SLA, requires-python, docs claims)
+- Yield-harness dotenv loader now strips surrounding quotes, so a quoted
+  `OLLAMA_AUTH="user:pass"` entry (as documented in `.env.example`) no longer
+  leaks the literal quote characters into the Basic-auth credential.
+- `_split_basic_auth` trims surrounding whitespace on each half so a stray-space
+  `OLLAMA_AUTH` entry no longer produces a silent auth failure.
+- An unusable `OLLAMA_CA_BUNDLE` path now raises a `ConfigurationError` naming the
+  setting instead of a raw `FileNotFoundError`/`SSLError`.
+
+### Security
+- Refuse to send Ollama HTTP Basic credentials over a cleartext, non-loopback
+  `http://` URL: a misconfigured `OLLAMA_BASE_URL` paired with `OLLAMA_AUTH` now
+  raises a `ConfigurationError` rather than transmitting the password in
+  reversible base64 over the wire.
+- Stop tracking the empty `stack.env` file and add it to `.gitignore` (a
+  Docker/Portainer stack env file that may hold real secrets).
 
 ## [0.1.0] - TBD
 
