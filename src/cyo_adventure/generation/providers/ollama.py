@@ -175,6 +175,13 @@ class OllamaProvider:
             ProviderError: Transient on network/timeout/5xx; leg-fatal on
                 missing-model/bad-request.
         """
+        # #CRITICAL: external-resources: this opens the live Ollama HTTP call. A
+        # self-created client must carry TLS verification (self._verify) and a
+        # bounded per-attempt timeout, or a hung or MITM homelab host stalls the
+        # leg or weakens transport security.
+        # #VERIFY: verify=self._verify and timeout=self._timeout_seconds are
+        # passed to httpx.AsyncClient below; tests/unit/test_worker.py asserts the
+        # _verify wiring (SSLContext when a CA bundle is set, else True).
         try:
             if self._client is not None:
                 return await self._stream(self._client, url, body)
@@ -210,6 +217,12 @@ class OllamaProvider:
             ProviderError: Leg-fatal/transient per status (via _raise_for_status);
                 transient on a malformed chunk, an error chunk, or empty content.
         """
+        # #CRITICAL: security: HTTP Basic credentials are attached to this
+        # streaming request; the password must never be logged or echoed into a
+        # ProviderError, and is sent only over the verified client built in
+        # _attempt (the cleartext-http guard runs earlier, at build time).
+        # #VERIFY: auth is passed only when self._auth is set, and no raise below
+        # interpolates the credential (only HTTP status and static text).
         auth = self._auth
         if auth is None:
             request = client.stream("POST", url, json=body, headers=_STREAM_HEADERS)

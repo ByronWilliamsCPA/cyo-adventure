@@ -140,7 +140,9 @@ class TestBuildProviderLive:
         assert provider.name == "ollama:qwen3:30b"
 
     def test_ollama_ca_bundle_valid_path_builds_leg(self) -> None:
-        """A valid CA bundle path builds the leg (SSLContext loads without error)."""
+        """A valid CA bundle path builds the leg with an SSLContext verifier."""
+        import ssl
+
         import certifi
 
         settings = Settings(  # type: ignore[call-arg]
@@ -148,6 +150,16 @@ class TestBuildProviderLive:
         )
         provider = build_provider(settings)
         assert isinstance(provider, OllamaProvider)
+        # The CA bundle must be threaded through as an SSLContext (verify=),
+        # not silently dropped; this is the leg's whole TLS-to-homelab purpose.
+        assert isinstance(provider._verify, ssl.SSLContext)
+
+    def test_ollama_no_ca_bundle_uses_default_verification(self) -> None:
+        """Without a CA bundle the leg verifies against the public store (verify=True)."""
+        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
+        provider = build_provider(settings)
+        assert isinstance(provider, OllamaProvider)
+        assert provider._verify is True
 
     def test_ollama_ca_bundle_bad_path_raises_configuration_error(self) -> None:
         """A nonexistent CA bundle path maps to ConfigurationError, not a raw OSError."""
