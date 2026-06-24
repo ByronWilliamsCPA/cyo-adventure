@@ -5,7 +5,9 @@
   "title": "Duplicate Node",
   "metadata": {
     "age_band": "8-11",
-    "reading_level": {"target": 3.0},
+    "reading_level": {
+      "target": 3.0
+    },
     "tier": 1,
     "estimated_minutes": 5,
     "ending_count": 1
@@ -17,13 +19,24 @@
       "id": "n_start",
       "body": "You stand at a door.",
       "is_ending": false,
-      "choices": [{"id": "c1", "label": "Open it.", "target": "n_end"}]
+      "choices": [
+        {
+          "id": "c1",
+          "label": "Open it.",
+          "target": "n_end"
+        }
+      ]
     },
     {
       "id": "n_start",
       "body": "DEFECT: same id as first node (duplicate_node_id).",
       "is_ending": true,
-      "ending": {"id": "e_end", "type": "happy", "title": "Done"},
+      "ending": {
+        "id": "e_end",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Done"
+      },
       "choices": []
     }
   ]

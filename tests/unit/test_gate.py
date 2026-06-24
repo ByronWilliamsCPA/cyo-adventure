@@ -247,7 +247,12 @@ def test_warning_only_report_does_not_block() -> None:
                 "id": "n_end",
                 "body": "The end.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "Done"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
                 "choices": [],
             },
         ],

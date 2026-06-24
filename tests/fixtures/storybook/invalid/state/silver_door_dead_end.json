@@ -5,12 +5,23 @@
   "title": "The Silver Door",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["exploration", "mystery"],
+    "themes": [
+      "exploration",
+      "mystery"
+    ],
     "estimated_minutes": 10,
     "ending_count": 2,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    }
   },
   "variables": [
     {
@@ -31,7 +42,13 @@
           "id": "c_approach_with_key",
           "label": "Take the key from the alcove and go to the door.",
           "target": "n_silver_door",
-          "effects": [{"op": "set", "var": "has_key", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_key",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_approach_without",
@@ -54,7 +71,14 @@
           "id": "c_use_key",
           "label": "Unlock the door with the silver key.",
           "target": "n_beyond",
-          "condition": {"==": [{"var": "has_key"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "has_key"
+              },
+              true
+            ]
+          }
         }
       ]
     },
@@ -62,14 +86,24 @@
       "id": "n_beyond",
       "body": "Beyond the door, light floods in from a high window.",
       "is_ending": true,
-      "ending": {"id": "e_freedom", "type": "triumph", "title": "Into the Light"},
+      "ending": {
+        "id": "e_freedom",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Into the Light"
+      },
       "choices": []
     },
     {
       "id": "n_side_end",
       "body": "The side passage leads you outside into the open air.",
       "is_ending": true,
-      "ending": {"id": "e_side", "type": "peaceful", "title": "The Open Air"},
+      "ending": {
+        "id": "e_side",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Open Air"
+      },
       "choices": []
     }
   ]

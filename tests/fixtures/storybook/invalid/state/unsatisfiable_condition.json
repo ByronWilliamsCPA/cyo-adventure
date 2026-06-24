@@ -5,12 +5,22 @@
   "title": "The Impossible Gate",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["challenge"],
+    "themes": [
+      "challenge"
+    ],
     "estimated_minutes": 10,
     "ending_count": 2,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    }
   },
   "variables": [
     {
@@ -33,7 +43,13 @@
           "id": "c_train",
           "label": "Train hard to build courage.",
           "target": "n_training",
-          "effects": [{"op": "inc", "var": "courage", "value": 2}]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "courage",
+              "value": 2
+            }
+          ]
         },
         {
           "id": "c_safe_path",
@@ -51,7 +67,14 @@
           "id": "c_champion_gate",
           "label": "Enter the champion's arena.",
           "target": "n_champion_end",
-          "condition": {">=": [{"var": "courage"}, 5]}
+          "condition": {
+            ">=": [
+              {
+                "var": "courage"
+              },
+              5
+            ]
+          }
         },
         {
           "id": "c_retreat_safe",
@@ -64,14 +87,24 @@
       "id": "n_champion_end",
       "body": "You stride through the champion's gate to glory beyond.",
       "is_ending": true,
-      "ending": {"id": "e_champion", "type": "triumph", "title": "Champion"},
+      "ending": {
+        "id": "e_champion",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Champion"
+      },
       "choices": []
     },
     {
       "id": "n_safe_end",
       "body": "The long road leads you safely home.",
       "is_ending": true,
-      "ending": {"id": "e_safe", "type": "peaceful", "title": "Safe Return"},
+      "ending": {
+        "id": "e_safe",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Safe Return"
+      },
       "choices": []
     }
   ]

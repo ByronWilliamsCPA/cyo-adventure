@@ -277,12 +277,13 @@ class Choice(BaseModel):
 
 
 class Ending(BaseModel):
-    """A terminal outcome, identified by a stable id across prose edits."""
+    """A terminal outcome, typed on two axes: how it feels and what happened."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str = Field(min_length=1)
-    type: str = Field(min_length=1)
+    valence: Valence
+    kind: EndingKind
     title: str = Field(min_length=1)
 
 

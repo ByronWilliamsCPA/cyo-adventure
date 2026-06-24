@@ -44,7 +44,12 @@ def _filled_story() -> dict[str, object]:
                 "id": "end",
                 "body": "The rabbit leads you to a sunny clearing. You feel happy.",
                 "is_ending": True,
-                "ending": {"id": "e_home", "type": "completion", "title": "Home"},
+                "ending": {
+                    "id": "e_home",
+                    "valence": "positive",
+                    "kind": "completion",
+                    "title": "Home",
+                },
             },
         ],
     }

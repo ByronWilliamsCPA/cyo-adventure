@@ -77,7 +77,8 @@ _CANNED_STORY: dict[str, object] = {
             "is_ending": True,
             "ending": {
                 "id": "e_meadow",
-                "type": "happy",
+                "valence": "positive",
+                "kind": "success",
                 "title": "The Flower Meadow",
             },
             "choices": [],

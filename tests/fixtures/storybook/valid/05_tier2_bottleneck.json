@@ -5,12 +5,24 @@
   "title": "The Silver Bottleneck",
   "metadata": {
     "age_band": "13-16",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 7.0, "tolerance": 2.0},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 2.0
+    },
     "tier": 2,
-    "themes": ["mystery", "trust", "identity"],
+    "themes": [
+      "mystery",
+      "trust",
+      "identity"
+    ],
     "estimated_minutes": 25,
     "ending_count": 3,
-    "content_flags": {"violence": "none", "scariness": "mild", "peril": "mild"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    }
   },
   "variables": [
     {
@@ -39,7 +51,13 @@
           "id": "c_greet_keeper",
           "label": "Greet the keeper with a bow.",
           "target": "n_keeper_hall",
-          "effects": [{"op": "inc", "var": "trust", "value": 2}]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 2
+            }
+          ]
         },
         {
           "id": "c_sneak_in",
@@ -57,7 +75,13 @@
           "id": "c_apologise",
           "label": "Apologise honestly.",
           "target": "n_keeper_hall",
-          "effects": [{"op": "inc", "var": "trust", "value": 1}]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "trust",
+              "value": 1
+            }
+          ]
         }
       ]
     },
@@ -70,7 +94,14 @@
           "id": "c_ask_key",
           "label": "Ask if you may take the key.",
           "target": "n_key_offered",
-          "condition": {">=": [{"var": "trust"}, 2]}
+          "condition": {
+            ">=": [
+              {
+                "var": "trust"
+              },
+              2
+            ]
+          }
         },
         {
           "id": "c_admire_hall",
@@ -83,7 +114,13 @@
       "id": "n_key_offered",
       "body": "The keeper smiles and hands you the key freely.",
       "is_ending": false,
-      "on_enter": [{"op": "set", "var": "has_key", "value": true}],
+      "on_enter": [
+        {
+          "op": "set",
+          "var": "has_key",
+          "value": true
+        }
+      ],
       "choices": [
         {
           "id": "c_go_vault",
@@ -103,8 +140,22 @@
           "target": "n_treasure_vault",
           "condition": {
             "and": [
-              {"==": [{"var": "has_key"}, true]},
-              {">=": [{"var": "trust"}, 2]}
+              {
+                "==": [
+                  {
+                    "var": "has_key"
+                  },
+                  true
+                ]
+              },
+              {
+                ">=": [
+                  {
+                    "var": "trust"
+                  },
+                  2
+                ]
+              }
             ]
           }
         },
@@ -124,21 +175,36 @@
       "id": "n_treasure_vault",
       "body": "The vault holds a lifetime of knowledge. You are changed forever.",
       "is_ending": true,
-      "ending": {"id": "e_vault_opened", "type": "triumph", "title": "The Vault of Knowledge"},
+      "ending": {
+        "id": "e_vault_opened",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Vault of Knowledge"
+      },
       "choices": []
     },
     {
       "id": "n_riddle_end",
       "body": "The left passage ends at a riddle carved in stone. You answer it correctly and walk free.",
       "is_ending": true,
-      "ending": {"id": "e_riddle_solved", "type": "clever", "title": "The Riddler's Reward"},
+      "ending": {
+        "id": "e_riddle_solved",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Riddler's Reward"
+      },
       "choices": []
     },
     {
       "id": "n_retreat_end",
       "body": "You leave the tower and the silver key behind. Some doors are not yours to open.",
       "is_ending": true,
-      "ending": {"id": "e_graceful_exit", "type": "peaceful", "title": "Graceful Departure"},
+      "ending": {
+        "id": "e_graceful_exit",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Graceful Departure"
+      },
       "choices": []
     }
   ]

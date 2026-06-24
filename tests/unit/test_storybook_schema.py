@@ -51,7 +51,12 @@ def _minimal_tier1() -> dict[str, Any]:
                 "id": "end",
                 "body": "The end.",
                 "is_ending": True,
-                "ending": {"id": "e_good", "type": "happy", "title": "Home"},
+                "ending": {
+                    "id": "e_good",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Home",
+                },
             },
         ],
     }
@@ -125,7 +130,12 @@ def test_duplicate_ending_id_rejected() -> None:
             "id": "end2",
             "body": "Also the end.",
             "is_ending": True,
-            "ending": {"id": "e_good", "type": "happy", "title": "Home Again"},
+            "ending": {
+                "id": "e_good",
+                "valence": "positive",
+                "kind": "success",
+                "title": "Home Again",
+            },
         }
     )
     with pytest.raises(ValidationError, match="duplicate ending id"):
@@ -145,7 +155,12 @@ def test_missing_ending_block_rejected() -> None:
 def test_non_ending_with_ending_block_rejected() -> None:
     """A non-ending node carrying an ending block fails validation."""
     story = _minimal_tier1()
-    story["nodes"][0]["ending"] = {"id": "e_x", "type": "happy", "title": "X"}
+    story["nodes"][0]["ending"] = {
+        "id": "e_x",
+        "valence": "positive",
+        "kind": "success",
+        "title": "X",
+    }
     with pytest.raises(ValidationError, match="must not carry an ending block"):
         Storybook.model_validate(story)
 

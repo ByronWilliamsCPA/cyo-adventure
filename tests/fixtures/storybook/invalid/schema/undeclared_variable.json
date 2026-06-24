@@ -5,13 +5,21 @@
   "title": "Undeclared Variable",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"target": 5.0},
+    "reading_level": {
+      "target": 5.0
+    },
     "tier": 2,
     "estimated_minutes": 10,
     "ending_count": 1
   },
   "variables": [
-    {"name": "courage", "type": "int", "initial": 0, "min": 0, "max": 5}
+    {
+      "name": "courage",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 5
+    }
   ],
   "start_node": "n_start",
   "nodes": [
@@ -24,7 +32,14 @@
           "id": "c_open",
           "label": "Use the magic key.",
           "target": "n_end",
-          "condition": {"==": [{"var": "magic_key"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "magic_key"
+              },
+              true
+            ]
+          }
         }
       ]
     },
@@ -32,7 +47,12 @@
       "id": "n_end",
       "body": "DEFECT: condition references magic_key which is not declared in variables.",
       "is_ending": true,
-      "ending": {"id": "e_done", "type": "happy", "title": "Done"},
+      "ending": {
+        "id": "e_done",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Done"
+      },
       "choices": []
     }
   ]

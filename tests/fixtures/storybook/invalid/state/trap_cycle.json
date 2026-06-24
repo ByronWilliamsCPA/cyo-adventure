@@ -5,12 +5,22 @@
   "title": "The Trap Cycle",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["mystery"],
+    "themes": [
+      "mystery"
+    ],
     "estimated_minutes": 10,
     "ending_count": 1,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    }
   },
   "variables": [
     {
@@ -43,7 +53,14 @@
           "id": "c_exit_hatch",
           "label": "Push open the escape hatch.",
           "target": "n_outside",
-          "condition": {"==": [{"var": "escaped"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "escaped"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_to_loop_b",
@@ -68,7 +85,12 @@
       "id": "n_outside",
       "body": "You burst into daylight, free at last.",
       "is_ending": true,
-      "ending": {"id": "e_escape", "type": "triumph", "title": "Escaped"},
+      "ending": {
+        "id": "e_escape",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Escaped"
+      },
       "choices": []
     }
   ]

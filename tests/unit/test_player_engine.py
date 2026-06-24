@@ -66,7 +66,12 @@ def _end(nid: str = "n_end", eid: str = "e_end") -> dict[str, object]:
         "id": nid,
         "body": "Done.",
         "is_ending": True,
-        "ending": {"id": eid, "type": "good", "title": "End"},
+        "ending": {
+            "id": eid,
+            "valence": "positive",
+            "kind": "success",
+            "title": "End",
+        },
         "choices": [],
     }
 

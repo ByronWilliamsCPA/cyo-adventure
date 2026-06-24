@@ -5,16 +5,39 @@
   "title": "The Clockwork Garden",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["mystery", "courage"],
+    "themes": [
+      "mystery",
+      "courage"
+    ],
     "estimated_minutes": 12,
     "ending_count": 4,
-    "content_flags": { "violence": "none", "scariness": "mild", "peril": "mild" }
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    }
   },
   "variables": [
-    { "name": "has_key", "type": "bool", "initial": false, "description": "Whether you carry the brass key" },
-    { "name": "courage", "type": "int", "initial": 0, "min": 0, "max": 3, "description": "How bold you feel" }
+    {
+      "name": "has_key",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether you carry the brass key"
+    },
+    {
+      "name": "courage",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 3,
+      "description": "How bold you feel"
+    }
   ],
   "start_node": "n_start",
   "nodes": [
@@ -23,8 +46,16 @@
       "body": "Behind your grandmother's house stands a locked iron gate, ticking softly like a clock.",
       "is_ending": false,
       "choices": [
-        { "id": "c_shed", "label": "Search the leaning garden shed.", "target": "n_shed" },
-        { "id": "c_hedge", "label": "Peer through the tall hedge.", "target": "n_hedge" }
+        {
+          "id": "c_shed",
+          "label": "Search the leaning garden shed.",
+          "target": "n_shed"
+        },
+        {
+          "id": "c_hedge",
+          "label": "Peer through the tall hedge.",
+          "target": "n_hedge"
+        }
       ]
     },
     {
@@ -32,8 +63,16 @@
       "body": "Dust hangs in the light. A toolbox sits beside a wall of strange brass gears.",
       "is_ending": false,
       "choices": [
-        { "id": "c_toolbox", "label": "Open the rusty toolbox.", "target": "n_toolbox" },
-        { "id": "c_gears", "label": "Wind the brass gears.", "target": "n_gears" }
+        {
+          "id": "c_toolbox",
+          "label": "Open the rusty toolbox.",
+          "target": "n_toolbox"
+        },
+        {
+          "id": "c_gears",
+          "label": "Wind the brass gears.",
+          "target": "n_gears"
+        }
       ]
     },
     {
@@ -45,9 +84,19 @@
           "id": "c_squeeze",
           "label": "Squeeze bravely through the gap.",
           "target": "n_clearing",
-          "effects": [{ "op": "inc", "var": "courage", "value": 1 }]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "courage",
+              "value": 1
+            }
+          ]
         },
-        { "id": "c_path", "label": "Take the long, safe path.", "target": "n_path" }
+        {
+          "id": "c_path",
+          "label": "Take the long, safe path.",
+          "target": "n_path"
+        }
       ]
     },
     {
@@ -59,18 +108,39 @@
           "id": "c_take_key",
           "label": "Take the brass key.",
           "target": "n_gate",
-          "effects": [{ "op": "set", "var": "has_key", "value": true }]
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_key",
+              "value": true
+            }
+          ]
         }
       ]
     },
     {
       "id": "n_gears",
       "body": "The gears spin and a bold feeling fills your chest.",
-      "on_enter": [{ "op": "inc", "var": "courage", "value": 1, "once": true }],
+      "on_enter": [
+        {
+          "op": "inc",
+          "var": "courage",
+          "value": 1,
+          "once": true
+        }
+      ],
       "is_ending": false,
       "choices": [
-        { "id": "c_to_gate", "label": "Walk to the iron gate.", "target": "n_gate" },
-        { "id": "c_to_fountain", "label": "Visit the fountain.", "target": "n_fountain" }
+        {
+          "id": "c_to_gate",
+          "label": "Walk to the iron gate.",
+          "target": "n_gate"
+        },
+        {
+          "id": "c_to_fountain",
+          "label": "Visit the fountain.",
+          "target": "n_fountain"
+        }
       ]
     },
     {
@@ -82,13 +152,25 @@
           "id": "c_to_fountain2",
           "label": "Stride boldly to the fountain.",
           "target": "n_fountain",
-          "effects": [{ "op": "inc", "var": "courage", "value": 1 }]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "courage",
+              "value": 1
+            }
+          ]
         },
         {
           "id": "c_to_gate2",
           "label": "Stride boldly to the gate.",
           "target": "n_gate",
-          "effects": [{ "op": "inc", "var": "courage", "value": 1 }]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "courage",
+              "value": 1
+            }
+          ]
         }
       ]
     },
@@ -97,7 +179,11 @@
       "body": "The winding path leads gently down to a mossy fountain.",
       "is_ending": false,
       "choices": [
-        { "id": "c_to_fountain3", "label": "Sit by the fountain.", "target": "n_fountain" }
+        {
+          "id": "c_to_fountain3",
+          "label": "Sit by the fountain.",
+          "target": "n_fountain"
+        }
       ]
     },
     {
@@ -109,15 +195,33 @@
           "id": "c_unlock",
           "label": "Unlock the gate with the brass key.",
           "target": "n_tower",
-          "condition": { "==": [{ "var": "has_key" }, true] }
+          "condition": {
+            "==": [
+              {
+                "var": "has_key"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_climb",
           "label": "Climb over the bars.",
           "target": "n_tower",
-          "condition": { ">=": [{ "var": "courage" }, 2] }
+          "condition": {
+            ">=": [
+              {
+                "var": "courage"
+              },
+              2
+            ]
+          }
         },
-        { "id": "c_wait", "label": "Sit and wait in the garden.", "target": "n_garden_end" }
+        {
+          "id": "c_wait",
+          "label": "Sit and wait in the garden.",
+          "target": "n_garden_end"
+        }
       ]
     },
     {
@@ -129,9 +233,20 @@
           "id": "c_dive",
           "label": "Dive deep for the bright thing.",
           "target": "n_treasure",
-          "condition": { ">=": [{ "var": "courage" }, 2] }
+          "condition": {
+            ">=": [
+              {
+                "var": "courage"
+              },
+              2
+            ]
+          }
         },
-        { "id": "c_coin", "label": "Toss a coin and make a wish.", "target": "n_wish_end" }
+        {
+          "id": "c_coin",
+          "label": "Toss a coin and make a wish.",
+          "target": "n_wish_end"
+        }
       ]
     },
     {
@@ -139,35 +254,59 @@
       "body": "Inside the tower a great clock waits, its hands frozen at midnight.",
       "is_ending": false,
       "choices": [
-        { "id": "c_wind", "label": "Wind the great clock.", "target": "n_clock_end" }
+        {
+          "id": "c_wind",
+          "label": "Wind the great clock.",
+          "target": "n_clock_end"
+        }
       ]
     },
     {
       "id": "n_clock_end",
       "body": "The clock chimes and the whole garden wakes, birds and blossoms and all.",
       "is_ending": true,
-      "ending": { "id": "e_clock", "type": "triumph", "title": "The Garden Wakes" },
+      "ending": {
+        "id": "e_clock",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Garden Wakes"
+      },
       "choices": []
     },
     {
       "id": "n_garden_end",
       "body": "You rest in the quiet garden until your grandmother calls you for supper.",
       "is_ending": true,
-      "ending": { "id": "e_garden", "type": "peaceful", "title": "A Quiet Afternoon" },
+      "ending": {
+        "id": "e_garden",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Quiet Afternoon"
+      },
       "choices": []
     },
     {
       "id": "n_treasure",
       "body": "Your fingers close around a silver pocket watch, ticking just like the gate.",
       "is_ending": true,
-      "ending": { "id": "e_treasure2", "type": "triumph", "title": "The Silver Watch" },
+      "ending": {
+        "id": "e_treasure2",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Silver Watch"
+      },
       "choices": []
     },
     {
       "id": "n_wish_end",
       "body": "The coin sinks, and for a moment you are sure the fountain winks back.",
       "is_ending": true,
-      "ending": { "id": "e_wish", "type": "happy", "title": "The Fountain's Wish" },
+      "ending": {
+        "id": "e_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Fountain's Wish"
+      },
       "choices": []
     }
   ]

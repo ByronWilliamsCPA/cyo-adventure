@@ -5,12 +5,22 @@
   "title": "The Four Keys",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["exploration"],
+    "themes": [
+      "exploration"
+    ],
     "estimated_minutes": 15,
     "ending_count": 1,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    }
   },
   "variables": [
     {
@@ -49,25 +59,49 @@
           "id": "c_take_a",
           "label": "Pick up the iron key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_a", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_a",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_b",
           "label": "Pick up the brass key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_b", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_b",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_c",
           "label": "Pick up the copper key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_c", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_c",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_d",
           "label": "Pick up the silver key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_d", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_d",
+              "value": true
+            }
+          ]
         }
       ]
     },
@@ -80,25 +114,49 @@
           "id": "c_grab_a2",
           "label": "Also take the iron key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_a", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_a",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_b2",
           "label": "Also take the brass key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_b", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_b",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_c2",
           "label": "Also take the copper key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_c", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_c",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_d2",
           "label": "Also take the silver key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_d", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_d",
+              "value": true
+            }
+          ]
         }
       ]
     },
@@ -118,7 +176,12 @@
       "id": "n_end",
       "body": "The door swings open into brilliant light.",
       "is_ending": true,
-      "ending": {"id": "e_open", "type": "triumph", "title": "The Door Opens"},
+      "ending": {
+        "id": "e_open",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Door Opens"
+      },
       "choices": []
     }
   ]

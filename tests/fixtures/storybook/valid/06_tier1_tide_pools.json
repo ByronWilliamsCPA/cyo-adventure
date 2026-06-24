@@ -5,12 +5,23 @@
   "title": "The Tide Pool Mystery",
   "metadata": {
     "age_band": "8-11",
-    "reading_level": { "scheme": "flesch_kincaid", "target": 3.0, "tolerance": 1.5 },
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 3.0,
+      "tolerance": 1.5
+    },
     "tier": 1,
-    "themes": ["adventure", "nature"],
+    "themes": [
+      "adventure",
+      "nature"
+    ],
     "estimated_minutes": 8,
     "ending_count": 3,
-    "content_flags": { "violence": "none", "scariness": "none", "peril": "mild" }
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    }
   },
   "variables": [],
   "start_node": "n_start",
@@ -20,8 +31,16 @@
       "body": "Low tide leaves shiny pools on the beach. A gull lands and tilts its head at you.",
       "is_ending": false,
       "choices": [
-        { "id": "c_pools", "label": "Look in the tide pools.", "target": "n_pools" },
-        { "id": "c_gull", "label": "Follow the gull.", "target": "n_gull" }
+        {
+          "id": "c_pools",
+          "label": "Look in the tide pools.",
+          "target": "n_pools"
+        },
+        {
+          "id": "c_gull",
+          "label": "Follow the gull.",
+          "target": "n_gull"
+        }
       ]
     },
     {
@@ -29,8 +48,16 @@
       "body": "The pools are full of darting fish and waving green weed.",
       "is_ending": false,
       "choices": [
-        { "id": "c_rock", "label": "Lift the flat rock.", "target": "n_crab" },
-        { "id": "c_deep", "label": "Wade to the deeper pool.", "target": "n_deep" }
+        {
+          "id": "c_rock",
+          "label": "Lift the flat rock.",
+          "target": "n_crab"
+        },
+        {
+          "id": "c_deep",
+          "label": "Wade to the deeper pool.",
+          "target": "n_deep"
+        }
       ]
     },
     {
@@ -38,8 +65,16 @@
       "body": "The gull hops toward the dunes, then stops and waits for you.",
       "is_ending": false,
       "choices": [
-        { "id": "c_dunes", "label": "Climb the sandy dunes.", "target": "n_dunes" },
-        { "id": "c_echo", "label": "Call out to the gull.", "target": "n_echo" }
+        {
+          "id": "c_dunes",
+          "label": "Climb the sandy dunes.",
+          "target": "n_dunes"
+        },
+        {
+          "id": "c_echo",
+          "label": "Call out to the gull.",
+          "target": "n_echo"
+        }
       ]
     },
     {
@@ -47,8 +82,16 @@
       "body": "A small crab scuttles out and points its claw at a dark gap in the rocks.",
       "is_ending": false,
       "choices": [
-        { "id": "c_cave", "label": "Peek into the gap.", "target": "n_cave_mouth" },
-        { "id": "c_shell", "label": "Pick up the spotted shell.", "target": "n_shell" }
+        {
+          "id": "c_cave",
+          "label": "Peek into the gap.",
+          "target": "n_cave_mouth"
+        },
+        {
+          "id": "c_shell",
+          "label": "Pick up the spotted shell.",
+          "target": "n_shell"
+        }
       ]
     },
     {
@@ -56,8 +99,16 @@
       "body": "The water is cold and clear. Something glints at the bottom.",
       "is_ending": false,
       "choices": [
-        { "id": "c_lagoon", "label": "Swim to the still lagoon.", "target": "n_lagoon" },
-        { "id": "c_current", "label": "Let the current carry you.", "target": "n_current" }
+        {
+          "id": "c_lagoon",
+          "label": "Swim to the still lagoon.",
+          "target": "n_lagoon"
+        },
+        {
+          "id": "c_current",
+          "label": "Let the current carry you.",
+          "target": "n_current"
+        }
       ]
     },
     {
@@ -65,8 +116,16 @@
       "body": "From the top of the dunes you can see the whole curve of the bay.",
       "is_ending": false,
       "choices": [
-        { "id": "c_lookout", "label": "Use the old lookout tower.", "target": "n_lookout" },
-        { "id": "c_lagoon2", "label": "Head down to the lagoon.", "target": "n_lagoon" }
+        {
+          "id": "c_lookout",
+          "label": "Use the old lookout tower.",
+          "target": "n_lookout"
+        },
+        {
+          "id": "c_lagoon2",
+          "label": "Head down to the lagoon.",
+          "target": "n_lagoon"
+        }
       ]
     },
     {
@@ -74,8 +133,16 @@
       "body": "Your call echoes back twice. The gull flaps toward a basking seal.",
       "is_ending": false,
       "choices": [
-        { "id": "c_lookout2", "label": "Climb to the lookout.", "target": "n_lookout" },
-        { "id": "c_seal", "label": "Visit the seal.", "target": "n_seal" }
+        {
+          "id": "c_lookout2",
+          "label": "Climb to the lookout.",
+          "target": "n_lookout"
+        },
+        {
+          "id": "c_seal",
+          "label": "Visit the seal.",
+          "target": "n_seal"
+        }
       ]
     },
     {
@@ -83,8 +150,16 @@
       "body": "Inside the gap, a box wrapped in old rope rests on dry sand.",
       "is_ending": false,
       "choices": [
-        { "id": "c_open_box", "label": "Open the rope-wrapped box.", "target": "n_treasure_end" },
-        { "id": "c_walk_back", "label": "Walk back to the warm sun.", "target": "n_back_safe" }
+        {
+          "id": "c_open_box",
+          "label": "Open the rope-wrapped box.",
+          "target": "n_treasure_end"
+        },
+        {
+          "id": "c_walk_back",
+          "label": "Walk back to the warm sun.",
+          "target": "n_back_safe"
+        }
       ]
     },
     {
@@ -92,7 +167,11 @@
       "body": "The spotted shell hides a pale, round pearl that catches the light.",
       "is_ending": false,
       "choices": [
-        { "id": "c_keep_pearl", "label": "Keep the pearl safe.", "target": "n_pearl_end" }
+        {
+          "id": "c_keep_pearl",
+          "label": "Keep the pearl safe.",
+          "target": "n_pearl_end"
+        }
       ]
     },
     {
@@ -100,8 +179,16 @@
       "body": "The lagoon is calm as glass. A pearl rests on a smooth stone.",
       "is_ending": false,
       "choices": [
-        { "id": "c_take_pearl", "label": "Take the pearl.", "target": "n_pearl_end" },
-        { "id": "c_meet_seal", "label": "Greet the friendly seal.", "target": "n_seal" }
+        {
+          "id": "c_take_pearl",
+          "label": "Take the pearl.",
+          "target": "n_pearl_end"
+        },
+        {
+          "id": "c_meet_seal",
+          "label": "Greet the friendly seal.",
+          "target": "n_seal"
+        }
       ]
     },
     {
@@ -109,7 +196,11 @@
       "body": "The gentle current sweeps you back toward the warm, shallow sand.",
       "is_ending": false,
       "choices": [
-        { "id": "c_rest", "label": "Rest on the sand.", "target": "n_back_safe" }
+        {
+          "id": "c_rest",
+          "label": "Rest on the sand.",
+          "target": "n_back_safe"
+        }
       ]
     },
     {
@@ -117,8 +208,16 @@
       "body": "The lookout tower has a brass spyglass. You spot a glint in the rocks.",
       "is_ending": false,
       "choices": [
-        { "id": "c_chase_glint", "label": "Climb down to the glint.", "target": "n_treasure_end" },
-        { "id": "c_stay_safe", "label": "Wave to your family and head home.", "target": "n_back_safe" }
+        {
+          "id": "c_chase_glint",
+          "label": "Climb down to the glint.",
+          "target": "n_treasure_end"
+        },
+        {
+          "id": "c_stay_safe",
+          "label": "Wave to your family and head home.",
+          "target": "n_back_safe"
+        }
       ]
     },
     {
@@ -126,28 +225,47 @@
       "body": "The seal barks softly and nudges you back toward the beach path.",
       "is_ending": false,
       "choices": [
-        { "id": "c_follow_seal", "label": "Follow the seal home.", "target": "n_back_safe" }
+        {
+          "id": "c_follow_seal",
+          "label": "Follow the seal home.",
+          "target": "n_back_safe"
+        }
       ]
     },
     {
       "id": "n_treasure_end",
       "body": "Inside the box are old coins and a sailor's map. What a find!",
       "is_ending": true,
-      "ending": { "id": "e_treasure", "type": "triumph", "title": "The Hidden Treasure" },
+      "ending": {
+        "id": "e_treasure",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Treasure"
+      },
       "choices": []
     },
     {
       "id": "n_pearl_end",
       "body": "You bring the shining pearl home. It will be your favorite keepsake.",
       "is_ending": true,
-      "ending": { "id": "e_pearl", "type": "happy", "title": "The Lagoon Pearl" },
+      "ending": {
+        "id": "e_pearl",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Lagoon Pearl"
+      },
       "choices": []
     },
     {
       "id": "n_back_safe",
       "body": "Warm and happy, you walk back up the beach as the tide rolls in.",
       "is_ending": true,
-      "ending": { "id": "e_safe", "type": "peaceful", "title": "Safe and Sound" },
+      "ending": {
+        "id": "e_safe",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Safe and Sound"
+      },
       "choices": []
     }
   ]

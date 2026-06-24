@@ -5,12 +5,23 @@
   "title": "The Bridge Builder",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.5, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["ingenuity", "teamwork"],
+    "themes": [
+      "ingenuity",
+      "teamwork"
+    ],
     "estimated_minutes": 18,
     "ending_count": 3,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "mild"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "mild"
+    }
   },
   "variables": [
     {
@@ -39,13 +50,25 @@
           "id": "c_gather_planks",
           "label": "Drag the logs to the riverbank.",
           "target": "n_workshop",
-          "effects": [{"op": "inc", "var": "planks", "value": 3}]
+          "effects": [
+            {
+              "op": "inc",
+              "var": "planks",
+              "value": 3
+            }
+          ]
         },
         {
           "id": "c_find_rope",
           "label": "Search the scraps for usable rope.",
           "target": "n_workshop",
-          "effects": [{"op": "set", "var": "has_rope", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_rope",
+              "value": true
+            }
+          ]
         }
       ]
     },
@@ -58,13 +81,27 @@
           "id": "c_build_plank_bridge",
           "label": "Lash the planks together into a footbridge.",
           "target": "n_crossing",
-          "condition": {">=": [{"var": "planks"}, 3]}
+          "condition": {
+            ">=": [
+              {
+                "var": "planks"
+              },
+              3
+            ]
+          }
         },
         {
           "id": "c_build_rope_bridge",
           "label": "String the rope between the banks.",
           "target": "n_crossing",
-          "condition": {"==": [{"var": "has_rope"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "has_rope"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_wait_for_help",
@@ -94,21 +131,36 @@
       "id": "n_village_end",
       "body": "The village cheers as you arrive. Your bridge stands, and a new path is open.",
       "is_ending": true,
-      "ending": {"id": "e_hero_builder", "type": "triumph", "title": "Hero of the River"},
+      "ending": {
+        "id": "e_hero_builder",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Hero of the River"
+      },
       "choices": []
     },
     {
       "id": "n_ruins_end",
       "body": "The ruins conceal a hidden spring that fills the river downstream. Your discovery changes everything.",
       "is_ending": true,
-      "ending": {"id": "e_discovery", "type": "clever", "title": "The Hidden Spring"},
+      "ending": {
+        "id": "e_discovery",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Spring"
+      },
       "choices": []
     },
     {
       "id": "n_rescue_end",
       "body": "A traveller with a boat finds you at dusk and ferries you across. Not every problem needs a bridge.",
       "is_ending": true,
-      "ending": {"id": "e_rescued", "type": "peaceful", "title": "Unexpected Help"},
+      "ending": {
+        "id": "e_rescued",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Unexpected Help"
+      },
       "choices": []
     }
   ]

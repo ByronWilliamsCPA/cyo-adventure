@@ -5,7 +5,9 @@
   "title": "Dangling Target",
   "metadata": {
     "age_band": "8-11",
-    "reading_level": {"target": 3.0},
+    "reading_level": {
+      "target": 3.0
+    },
     "tier": 1,
     "estimated_minutes": 5,
     "ending_count": 1
@@ -29,7 +31,12 @@
       "id": "n_end",
       "body": "Graph defect: n_start choice targets n_does_not_exist which is absent from nodes. Schema-valid because choice.target is just a non-empty string.",
       "is_ending": true,
-      "ending": {"id": "e_done", "type": "happy", "title": "Arrived"},
+      "ending": {
+        "id": "e_done",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Arrived"
+      },
       "choices": []
     }
   ]

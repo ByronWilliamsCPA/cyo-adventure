@@ -121,7 +121,8 @@ def _make_story(body: str, target: float, tolerance: float = 1.0) -> Storybook:
                     "is_ending": True,
                     "ending": {
                         "id": "e_done",
-                        "type": "happy",
+                        "valence": "positive",
+                        "kind": "success",
                         "title": "Done",
                     },
                     "choices": [],

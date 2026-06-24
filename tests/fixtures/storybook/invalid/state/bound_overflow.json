@@ -5,12 +5,22 @@
   "title": "The Overflow Chamber",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["challenge"],
+    "themes": [
+      "challenge"
+    ],
     "estimated_minutes": 10,
     "ending_count": 1,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    }
   },
   "variables": [
     {
@@ -33,7 +43,13 @@
           "id": "c_pull_lever",
           "label": "Pull the lever.",
           "target": "n_end",
-          "effects": [{"op": "set", "var": "courage", "value": 5}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "courage",
+              "value": 5
+            }
+          ]
         }
       ]
     },
@@ -41,7 +57,12 @@
       "id": "n_end",
       "body": "You feel unstoppable as you stride through the final door.",
       "is_ending": true,
-      "ending": {"id": "e_overflow", "type": "triumph", "title": "Beyond the Limit"},
+      "ending": {
+        "id": "e_overflow",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Beyond the Limit"
+      },
       "choices": []
     }
   ]

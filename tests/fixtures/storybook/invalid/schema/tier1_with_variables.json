@@ -5,7 +5,9 @@
   "title": "Tier 1 With Variables",
   "metadata": {
     "age_band": "8-11",
-    "reading_level": {"target": 3.0},
+    "reading_level": {
+      "target": 3.0
+    },
     "tier": 1,
     "estimated_minutes": 5,
     "ending_count": 1
@@ -23,13 +25,24 @@
       "id": "n_start",
       "body": "You stand at a door.",
       "is_ending": false,
-      "choices": [{"id": "c1", "label": "Open it.", "target": "n_end"}]
+      "choices": [
+        {
+          "id": "c1",
+          "label": "Open it.",
+          "target": "n_end"
+        }
+      ]
     },
     {
       "id": "n_end",
       "body": "DEFECT: tier 1 story declares a variable (has_lantern).",
       "is_ending": true,
-      "ending": {"id": "e_done", "type": "happy", "title": "Done"},
+      "ending": {
+        "id": "e_done",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Done"
+      },
       "choices": []
     }
   ]
