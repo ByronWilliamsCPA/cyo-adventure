@@ -138,6 +138,39 @@ Creation: a small **hand-authored seed set** per cell first (proves the pipeline
 against the real validator), then a **procedural skeleton generator** that emits
 valid topologies (validated by the same gates) as the scaling step.
 
+### 4.1 Series and Campaign Continuity
+
+A story may belong to a **series**: a subset of its endings are flagged
+**successful-completion** endings, and a completion ending of book N continues into
+book N+1 (the D&D-campaign model). This extends the architecture fractally: a series
+is a **meta-skeleton** (books as nodes, completion-to-entry links as edges), authored
+and validated the same way a book skeleton is.
+
+Schema additions (data model now; full series generation is a later phase):
+
+- **Ending taxonomy** becomes an explicit enum: `completion` (success;
+  series-advancing) versus `good` / `neutral` / `failure` / `death` (terminal). This
+  generalizes the age-gated fail-state types in Section 8; only `completion` endings
+  continue a series, and they are inherently positive and safe.
+- **Series manifest:** a separate pre-authored artifact (not embedded in each book,
+  so books stay reusable and standalone), holding the ordered book list and, per
+  completion ending, a `continuation = {next_book, entry_point, state_export}` edge.
+- **Entry points:** a book declares named `entry_points` (default: the single
+  `start_node`); a prior book's completion ending targets one.
+- **State carry-over (the D&D part):** a completion ending exports a typed **state
+  snapshot** (a subset of the book's Tier 2+ `variables`: inventory, stats, pivotal
+  flags); the next book's entry point declares the state it expects. Series continuity
+  IS state continuity, so series ride the existing variable/effect/condition machinery.
+
+Recommended design: let **state carry the difference** between paths rather than
+exploding book N+1 into many variants; support a small number of named entry points
+only for genuinely divergent continuations. This bounds combinatorial growth.
+
+Dual value across tiers: for young readers, a near-stateless **leveled-reader series**
+(same characters, reading level rising book to book) needs only "you succeeded ->
+next book"; for teens, a full **D&D-style campaign** carries stats and inventory
+across books on the stateful tier.
+
 ## 5. Generation Flow
 
 ```text
@@ -254,6 +287,12 @@ skeleton-class -> cheapest-model-that-passes mapping.
 - Structural gates (references, orphans, reachability, termination) become
   invariants for skeleton-authored stories. State gates (variable/condition/effect)
   already exist and serve Tier 2+ gamebooks unchanged.
+- **Series validation** (Section 4.1): within a book, a completion ending's
+  `state_export` and an entry point's `expected_state` must reference declared
+  variables (reuses existing variable checks). Cross-book **series-linkage** (every
+  non-final book has >=1 completion ending; each completion targets a valid
+  (next_book, entry_point); exported state is a superset of the next entry's expected
+  state) is a new validator layer, deferred with the series-generation phase.
 
 ## 9. Cost Model
 
@@ -315,6 +354,9 @@ trees. Factor exposure into per-story value, not just raw generation cost.
    table.
 6. **Procedural skeleton generator** for scale.
 7. **ADR-003 update**; add the 5-8 band; reading-level -> tier/skeleton routing.
+8. **Series schema** (ending taxonomy with `completion`, named entry points,
+   state-export contract) as a forward-compatible data model now; **series manifest,
+   series-linkage validator, and series generation** in a later phase.
 
 ## 13. Open Questions
 
@@ -326,6 +368,8 @@ trees. Factor exposure into per-story value, not just raw generation cost.
   8-11/10-13 tiers are proven.
 - Whether the light tier defaults to local Ollama or Modal L4 once homelab
   TLS/throughput blockers clear.
+- Series entry-point model: state-carries-the-difference with a few named entry
+  points (recommended) versus a distinct entry point per completion ending.
 
 ## References
 
