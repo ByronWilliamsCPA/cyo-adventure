@@ -1,0 +1,113 @@
+"""Rating endpoints: a child rates a storybook 1-5.
+
+A rating is a per-child fact about a *book* (not a specific version) and is
+mutable: re-rating overwrites the prior value. This is a deliberately coarser
+grain than ``Completion``; see the ``Rating`` model docstring. All access is
+scoped to the principal's own family and profile.
+"""
+
+from __future__ import annotations
+
+import uuid
+
+from fastapi import APIRouter
+from sqlalchemy import select
+
+from cyo_adventure.api.deps import Context, authorize_family, authorize_profile
+from cyo_adventure.api.schemas import RatingBody, RatingListView, RatingView
+from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
+from cyo_adventure.db.models import Rating, Storybook
+
+router = APIRouter(prefix="/api/v1", tags=["ratings"])
+
+
+def _parse_profile_id(raw: str) -> uuid.UUID:
+    """Parse a profile id, raising a 422-mapped error on bad input."""
+    try:
+        return uuid.UUID(raw)
+    except ValueError as exc:
+        msg = "profile_id must be a UUID"
+        raise ValidationError(msg, field="profile_id", value=raw) from exc
+
+
+def _rating_view(row: Rating) -> RatingView:
+    """Build the response view from a Rating row."""
+    return RatingView(
+        child_profile_id=str(row.child_profile_id),
+        storybook_id=row.storybook_id,
+        value=row.value,
+        rated_at=row.rated_at,
+        updated_at=row.updated_at,
+    )
+
+
+@router.post("/ratings")
+async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
+    """Set or update the calling child's rating of a storybook.
+
+    Args:
+        body: The rating request (profile, storybook, value 1-5).
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        RatingView: The stored rating.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID.
+        AuthorizationError: If the profile or storybook is not the caller's.
+        ResourceNotFoundError: If the storybook does not exist.
+    """
+    # #CRITICAL: security: authorize the profile AND the storybook's family
+    # before any write, so a child cannot rate another profile's or family's
+    # book (IDOR).
+    # #VERIFY: authorize_profile / authorize_family raise AuthorizationError -> 403.
+    profile_id = _parse_profile_id(body.profile_id)
+    authorize_profile(ctx.principal, profile_id)
+    book = await ctx.session.get(Storybook, body.storybook_id)
+    if book is None:
+        msg = f"storybook '{body.storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    authorize_family(ctx.principal, book.family_id)
+    # #ASSUME: data integrity: re-rating overwrites in place (upsert); the
+    # composite PK (child_profile_id, storybook_id) guarantees one row per pair.
+    # #VERIFY: the get-then-update path below never inserts a duplicate.
+    row = await ctx.session.get(Rating, (profile_id, body.storybook_id))
+    if row is None:
+        row = Rating(
+            child_profile_id=profile_id,
+            storybook_id=body.storybook_id,
+            value=body.value,
+        )
+        ctx.session.add(row)
+    else:
+        row.value = body.value
+    # The unit-of-work dependency commits on success; flush + refresh to read
+    # back server-generated timestamps without an explicit commit here.
+    await ctx.session.flush()
+    await ctx.session.refresh(row, ["rated_at", "updated_at"])
+    return _rating_view(row)
+
+
+@router.get("/ratings/{profile_id}")
+async def list_ratings(profile_id: str, ctx: Context) -> RatingListView:
+    """List all ratings recorded by a child profile.
+
+    Args:
+        profile_id: The child profile whose ratings are requested.
+        ctx: The request context (principal + session).
+
+    Returns:
+        RatingListView: The profile's ratings.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID.
+        AuthorizationError: If the profile is not the caller's.
+    """
+    # #CRITICAL: security: a caller may only read ratings for a profile it owns.
+    # #VERIFY: authorize_profile raises AuthorizationError -> 403.
+    parsed = _parse_profile_id(profile_id)
+    authorize_profile(ctx.principal, parsed)
+    rows = await ctx.session.scalars(
+        select(Rating).where(Rating.child_profile_id == parsed)
+    )
+    return RatingListView(ratings=[_rating_view(row) for row in rows.all()])
