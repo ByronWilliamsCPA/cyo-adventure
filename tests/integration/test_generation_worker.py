@@ -63,6 +63,7 @@ _INVALID_STORY_JSON = json.dumps(
             "themes": [],
             "estimated_minutes": 5,
             "ending_count": 1,
+            "topology": "branch_and_bottleneck",
             "content_flags": {
                 "violence": "none",
                 "scariness": "none",

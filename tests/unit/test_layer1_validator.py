@@ -131,6 +131,7 @@ def _meta(
         "estimated_minutes": 5,
         "ending_count": ending_count,
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+        "topology": "branch_and_bottleneck",
     }
 
 

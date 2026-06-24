@@ -8,6 +8,7 @@ from cyo_adventure.storybook.models import (
     Ending,
     EndingKind,
     SafetyScope,
+    StoryMetadata,
     Topology,
     Valence,
     level_rank,
@@ -56,3 +57,21 @@ def test_ending_requires_valence_and_kind():
 def test_ending_rejects_free_form_type():
     with pytest.raises(PydanticValidationError):
         Ending(id="e1", type="good", title="Won")  # type: ignore[call-arg]
+
+
+def _meta_kwargs() -> dict[str, object]:
+    return {
+        "age_band": "10-13",
+        "reading_level": {"scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0},
+        "tier": 2,
+        "themes": [],
+        "estimated_minutes": 5,
+        "ending_count": 1,
+        "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+        "topology": "branch_and_bottleneck",
+    }
+
+
+def test_story_metadata_requires_topology():
+    meta = StoryMetadata.model_validate(_meta_kwargs())
+    assert meta.topology is Topology.BRANCH_AND_BOTTLENECK

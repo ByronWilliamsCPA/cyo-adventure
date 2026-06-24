@@ -150,6 +150,7 @@ class StoryMetadata(BaseModel):
     estimated_minutes: int = Field(ge=1)
     ending_count: int = Field(ge=1)
     content_flags: ContentFlags = Field(default_factory=ContentFlags)
+    topology: Topology
 
 
 class Variable(BaseModel):

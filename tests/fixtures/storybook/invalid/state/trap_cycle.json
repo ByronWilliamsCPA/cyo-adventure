@@ -20,7 +20,8 @@
       "violence": "none",
       "scariness": "none",
       "peril": "none"
-    }
+    },
+    "topology": "loop_and_grow"
   },
   "variables": [
     {

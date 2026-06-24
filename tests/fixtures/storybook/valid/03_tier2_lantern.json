@@ -21,7 +21,8 @@
       "violence": "none",
       "scariness": "mild",
       "peril": "none"
-    }
+    },
+    "topology": "gauntlet"
   },
   "variables": [
     {

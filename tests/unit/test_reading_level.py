@@ -98,6 +98,7 @@ def _make_story(body: str, target: float, tolerance: float = 1.0) -> Storybook:
                 "themes": [],
                 "estimated_minutes": 5,
                 "ending_count": 1,
+                "topology": "branch_and_bottleneck",
                 "content_flags": {
                     "violence": "none",
                     "scariness": "none",

@@ -34,6 +34,7 @@ def _meta(tier: int = 2, ending_count: int = 1) -> dict[str, object]:
         "themes": [],
         "estimated_minutes": 5,
         "ending_count": ending_count,
+        "topology": "branch_and_bottleneck",
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
     }
 

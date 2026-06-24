@@ -22,7 +22,8 @@
       "violence": "none",
       "scariness": "none",
       "peril": "none"
-    }
+    },
+    "topology": "branch_and_bottleneck"
   },
   "variables": [
     {

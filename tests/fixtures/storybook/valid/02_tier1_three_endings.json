@@ -21,7 +21,8 @@
       "violence": "none",
       "scariness": "none",
       "peril": "none"
-    }
+    },
+    "topology": "gauntlet"
   },
   "variables": [],
   "start_node": "n_hall",

@@ -215,6 +215,7 @@ def test_warning_only_report_does_not_block() -> None:
             "themes": ["test"],
             "estimated_minutes": 5,
             "ending_count": 1,
+            "topology": "branch_and_bottleneck",
             "content_flags": {
                 "violence": "none",
                 "scariness": "none",

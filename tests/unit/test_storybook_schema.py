@@ -37,6 +37,7 @@ def _minimal_tier1() -> dict[str, Any]:
             "tier": 1,
             "estimated_minutes": 5,
             "ending_count": 1,
+            "topology": "branch_and_bottleneck",
         },
         "variables": [],
         "start_node": "start",

@@ -10,7 +10,8 @@
     },
     "tier": 2,
     "estimated_minutes": 10,
-    "ending_count": 1
+    "ending_count": 1,
+    "topology": "gauntlet"
   },
   "variables": [
     {

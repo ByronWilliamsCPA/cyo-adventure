@@ -30,6 +30,7 @@ def _filled_story() -> dict[str, object]:
             "tier": 1,
             "estimated_minutes": 5,
             "ending_count": 1,
+            "topology": "branch_and_bottleneck",
         },
         "variables": [],
         "start_node": "start",
