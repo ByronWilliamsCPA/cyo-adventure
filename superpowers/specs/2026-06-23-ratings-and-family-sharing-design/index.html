@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/template_feedback/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-23-ratings-and-family-sharing-design/">
       
       
-        <link rel="prev" href="../PYTHON_COMPATIBILITY/">
-      
-      
-        <link rel="next" href="../ADRs/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Template Feedback - CYO Adventure</title>
+        <title>Ratings and Family Sharing: Design Spec - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#how-to-use-this-file" class="md-skip">
+        <a href="#1-goal" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Template Feedback
+              Ratings and Family Sharing: Design Spec
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -370,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../planning/" class="md-tabs__link">
+        <a href="../../../planning/" class="md-tabs__link">
           
   
   
@@ -388,13 +384,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../PROJECT_SETUP/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -825,7 +819,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -876,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -911,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -946,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -981,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1016,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1122,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1157,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1192,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1227,7 +1221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1331,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1366,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1401,7 +1395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1478,7 +1472,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/" class="md-nav__link ">
+            <a href="../../../planning/" class="md-nav__link ">
               
   
   
@@ -1529,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/project-vision/" class="md-nav__link">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1564,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/tech-spec/" class="md-nav__link">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1599,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1634,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/roadmap/" class="md-nav__link">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1706,7 +1700,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/adr/" class="md-nav__link ">
+            <a href="../../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1757,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1792,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1827,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1862,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1897,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1932,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -1979,10 +1973,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1998,22 +1990,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -2031,7 +2022,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2049,7 +2040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2084,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2119,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2151,42 +2142,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Template Feedback
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2209,212 +2168,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#how-to-use-this-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to Use This File
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#feedback-items" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Feedback Items
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Feedback Items">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#check-json-pre-commit-hook-fails-on-frontend-tsconfig-jsonc-files" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        check-json pre-commit hook fails on frontend tsconfig JSONC files
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Required pre-commit hooks are missing or fail-open in the generated config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Planning document templates generate markdown that violates the repo markdownlint config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#submitting-feedback" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Submitting Feedback
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Submitting Feedback">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#docker-compose-image-tags-fall-back-to-latest" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docker compose image tags fall back to latest
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        requires-python range lets local venvs drift off the target interpreter
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        pydoclint config requires typed docstrings the template itself does not provide
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        test_example.py imports a cli module that the template does not ship
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docs CI runs mkdocs build --strict but most pages are not in the nav
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#frontend-apptsx-ships-unrendered-cookiecutter-placeholders" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frontend App.tsx ships unrendered cookiecutter placeholders
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Generated API client is gitignored but CI never regenerates it
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2461,7 +2214,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2512,7 +2265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2572,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-this-file" class="md-nav__link">
+  <a href="#1-goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to Use This File
+        1. Goal
       
     </span>
   </a>
@@ -2583,22 +2336,44 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#feedback-items" class="md-nav__link">
+  <a href="#2-settled-decisions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Feedback Items
+        2. Settled decisions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Feedback Items">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-phasing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Phasing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-data-model-additions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Data model additions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Data model additions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#check-json-pre-commit-hook-fails-on-frontend-tsconfig-jsonc-files" class="md-nav__link">
+  <a href="#41-rating-phase-a" class="md-nav__link">
     <span class="md-ellipsis">
       
-        check-json pre-commit hook fails on frontend tsconfig JSONC files
+        4.1 rating (Phase A)
       
     </span>
   </a>
@@ -2606,10 +2381,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" class="md-nav__link">
+  <a href="#42-storybooklineage_id-phase-b-new-column" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
+        4.2 Storybook.lineage_id (Phase B, new column)
       
     </span>
   </a>
@@ -2617,10 +2392,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" class="md-nav__link">
+  <a href="#43-family_link-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Required pre-commit hooks are missing or fail-open in the generated config
+        4.3 family_link (Phase B)
       
     </span>
   </a>
@@ -2628,10 +2403,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" class="md-nav__link">
+  <a href="#44-family_invite-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder
+        4.4 family_invite (Phase B)
       
     </span>
   </a>
@@ -2639,21 +2414,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" class="md-nav__link">
+  <a href="#45-book_share-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Planning document templates generate markdown that violates the repo markdownlint config
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)
+        4.5 book_share (Phase B)
       
     </span>
   </a>
@@ -2666,22 +2430,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#submitting-feedback" class="md-nav__link">
+  <a href="#5-flows" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Submitting Feedback
+        5. Flows
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Submitting Feedback">
+    <nav class="md-nav" aria-label="5. Flows">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#docker-compose-image-tags-fall-back-to-latest" class="md-nav__link">
+  <a href="#51-connect-two-families-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Docker compose image tags fall back to latest
+        5.1 Connect two families (Phase B)
       
     </span>
   </a>
@@ -2689,10 +2453,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" class="md-nav__link">
+  <a href="#52-share-a-book-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        requires-python range lets local venvs drift off the target interpreter
+        5.2 Share a book (Phase B)
       
     </span>
   </a>
@@ -2700,54 +2464,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" class="md-nav__link">
+  <a href="#53-see-relative-ratings-on-open-phase-b" class="md-nav__link">
     <span class="md-ellipsis">
       
-        pydoclint config requires typed docstrings the template itself does not provide
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        test_example.py imports a cli module that the template does not ship
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Docs CI runs mkdocs build --strict but most pages are not in the nav
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#frontend-apptsx-ships-unrendered-cookiecutter-placeholders" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Frontend App.tsx ships unrendered cookiecutter placeholders
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Generated API client is gitignored but CI never regenerates it
+        5.3 See relative ratings on open (Phase B)
       
     </span>
   </a>
@@ -2756,6 +2476,50 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-error-handling-edges-and-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Error handling, edges, and security
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-deferred-flexible-not-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Deferred / flexible (not v1)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-open-questions-for-planning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Open questions for planning
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2779,287 +2543,419 @@
   
 
 
-  <h1>Template Feedback</h1>
+  <h1>Ratings and Family Sharing: Design Spec</h1>
 
 <blockquote>
-<p><strong>Purpose</strong>: Document issues discovered in this project that should be addressed in the <a href="https://github.com/ByronWilliamsCPA/cookiecutter-python-template">cookiecutter-python-template</a>.</p>
-<p><strong>Generated From</strong>: cookiecutter-python-template v0.1.0
-<strong>Project Created</strong>: 2026-06-20</p>
+<p><strong>Status</strong>: Draft (awaiting review). Brainstormed and converged via the
+<code>brainstorming</code> skill. This is a design for a later version, not work scheduled
+into the current generation redesign.</p>
 </blockquote>
-<hr />
-<h2 id="how-to-use-this-file">How to Use This File<a class="headerlink" href="#how-to-use-this-file" title="Permanent link">&para;</a></h2>
-<p>When working on this project, if you discover any issue that originates from the template itself (not project-specific), add it here with the following format:</p>
-<div class="language-markdown highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gu">### [Short Title]</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Priority**</span>: Critical / High / Medium / Low
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Category**</span>: [Configuration / Documentation / Tooling / Structure / CI/CD / Security / Other]
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Discovered**</span>: YYYY-MM-DD
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gs">**Issue**</span>: [Clear description of what&#39;s wrong or missing]
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gs">**Context**</span>: [How was this discovered? What were you trying to do?]
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gs">**Suggested Fix**</span>: [What should the template do differently?]
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="gs">**Affected Files**</span>: [List template files that need changes]
-</span></code></pre></div>
-<hr />
-<h2 id="feedback-items">Feedback Items<a class="headerlink" href="#feedback-items" title="Permanent link">&para;</a></h2>
-<!-- Add your feedback below this line -->
-
-<h3 id="check-json-pre-commit-hook-fails-on-frontend-tsconfig-jsonc-files">check-json pre-commit hook fails on frontend tsconfig JSONC files<a class="headerlink" href="#check-json-pre-commit-hook-fails-on-frontend-tsconfig-jsonc-files" title="Permanent link">&para;</a></h3>
+<h2 id="1-goal">1. Goal<a class="headerlink" href="#1-goal" title="Permanent link">&para;</a></h2>
+<p>Let a young reader rate a book they finished, and let them share books they like
+with their cousins. The product value is social: a child sees which books their
+relatives loved, and can pass along a favorite. Constraint that shapes every
+decision below: the only expected users are one real extended family, a small,
+mutually-trusted group. This lets us apply YAGNI hard. No public discovery, no
+abuse-at-scale hardening, no friend-of-friend graphs.</p>
+<h2 id="2-settled-decisions">2. Settled decisions<a class="headerlink" href="#2-settled-decisions" title="Permanent link">&para;</a></h2>
+<p>These were decided during brainstorming and are fixed inputs to the design:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Decision</th>
+<th>Choice</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td>Account model for cousins</td>
+<td>Separate <code>Family</code> accounts that can be <strong>connected</strong></td>
+<td>Matches real-world cousins (different households); collapsing to one extended-family account remains a fallback if linking ever feels like overkill.</td>
+</tr>
+<tr>
+<td>D2</td>
+<td>Who shares, who approves</td>
+<td><strong>Child initiates; the receiving child's guardian approves</strong></td>
+<td>Keeps the kid-facing "share with my cousin" experience while putting the safety call with the adult responsible for the receiving child.</td>
+</tr>
+<tr>
+<td>D3</td>
+<td>What lands when a book is shared</td>
+<td><strong>A copy</strong> (a snapshot imported into the cousin's family)</td>
+<td><code>StorybookVersion</code> is already immutable (no live-update benefit from a reference) and the reader is offline-first; copy keeps the family-scoped IDOR invariant literally unchanged and lets the safety re-check happen once, at import.</td>
+</tr>
+<tr>
+<td>D4</td>
+<td>Ratings on share</td>
+<td>The <strong>sender's rating snapshots onto the share</strong> ("Maya shared this, gave it 5 stars")</td>
+<td>Informative, travels with the copy, always available.</td>
+</tr>
+<tr>
+<td>D5</td>
+<td>Ratings on open</td>
+<td>The reader sees a live, online-only strip of <strong>attributed individual</strong> relative ratings for the same book</td>
+<td>No averaging, no leaderboard. Attribution by first name sidesteps the age-comparability problem (a 5-year-old's 5 stars is not a 9-year-old's 5 stars).</td>
+</tr>
+<tr>
+<td>D6</td>
+<td>How families connect</td>
+<td><strong>Invite code</strong> (guardian generates, cousin's guardian enters, both confirm)</td>
+<td>No email/SMS infrastructure needed; self-serve; fits a small trusted group.</td>
+</tr>
+<tr>
+<td>D7</td>
+<td>Safety gate at import</td>
+<td><strong>Re-validate + inform</strong></td>
+<td>Re-run existing safety + reading-level validators against the receiving child's profile, surface flags, guardian makes the final call (override allowed, not a hard block).</td>
+</tr>
+<tr>
+<td>D8</td>
+<td>Cross-family rating visibility</td>
+<td>First name of the rater is visible <strong>only within connected families</strong></td>
+<td>The minimum exposure that turns a star count into "oh, Maya loved this."</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-phasing">3. Phasing<a class="headerlink" href="#3-phasing" title="Permanent link">&para;</a></h2>
+<p>Two features, sequenced because one enables the other. Each can become its own
+implementation plan.</p>
 <ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-23</li>
+<li><strong>Phase A: Ratings.</strong> Small and standalone. A child rates a finished book 1-5;
+  private to the family until sharing exists. Shippable alone. "Finished"
+  describes the expected reading flow, not an enforced precondition: Phase A
+  deliberately does NOT gate <code>POST /ratings</code> on an existing <code>Completion</code> row, so
+  any storybook in the child's own family may be rated. A completion gate, if
+  wanted, is a follow-up; it is intentionally out of scope here.</li>
+<li><strong>Phase B: Connected families, sharing, and visible relative ratings.</strong> The
+  large, security-significant half. Depends on Phase A.</li>
 </ul>
-<p><strong>Issue</strong>: The generated <code>.pre-commit-config.yaml</code> includes the standard
-<code>check-json</code> hook with no exclude pattern. In a full-stack project the frontend
-ships <code>tsconfig.app.json</code> and <code>tsconfig.node.json</code>, which are JSONC (JSON with
-comments) as TypeScript and Vite require. <code>check-json</code> uses a strict JSON parser
-and fails on the comments, so <code>pre-commit run --all-files</code> reports a permanent
-failure unrelated to any change being committed.</p>
-<p><strong>Context</strong>: Discovered while running the full gate (<code>pre-commit run
---all-files</code>) at the end of an unrelated backend feature. The only failure was
-<code>check-json</code> on <code>frontend/tsconfig.node.json</code> and <code>frontend/tsconfig.app.json</code>;
-no committed change touched those files.</p>
-<p><strong>Suggested Fix</strong>: For the full-stack template variant, either exclude
-<code>tsconfig*.json</code> (and other known JSONC) from the <code>check-json</code> hook via an
-<code>exclude:</code> regex, or replace <code>check-json</code> with a JSONC-aware check (e.g.
-<code>check-json5</code>) for the frontend paths.</p>
-<p><strong>Affected Files</strong>: <code>.pre-commit-config.yaml</code></p>
-<h3 id="ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map">ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map<a class="headerlink" href="#ciyml-ships-with-frontend-and-ci-gate-jobs-dedented-outside-the-jobs-map" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Critical</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: In the generated <code>.github/workflows/ci.yml</code>, the <code>frontend:</code> and
-<code>ci-gate:</code> job blocks are indented at column 0, placing them as top-level
-workflow keys instead of members of <code>jobs:</code>. GitHub Actions parses only the
-<code>test</code> job; <code>frontend</code> and <code>ci-gate</code> are silently ignored, so the <code>CI Gate</code>
-required status check is never produced.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit via <code>yaml.safe_load</code>, which
-reported top-level keys <code>[name, on, concurrency, permissions, env, jobs,
-frontend, ci-gate]</code> with <code>jobs</code> containing only <code>test</code>.</p>
-<p><strong>Suggested Fix</strong>: Correct the indentation in the template's <code>ci.yml</code> so all
-jobs nest under <code>jobs:</code>. Add a <code>yamllint</code>/parse check in the template CI to
-catch dedented job blocks.</p>
-<p><strong>Affected Files</strong>: <code>.github/workflows/ci.yml</code></p>
-<h3 id="required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config">Required pre-commit hooks are missing or fail-open in the generated config<a class="headerlink" href="#required-pre-commit-hooks-are-missing-or-fail-open-in-the-generated-config" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Security</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: The generated <code>.pre-commit-config.yaml</code> omits the <code>basedpyright</code>
-hook (PC-003, critical), the <code>no-em-dash</code> hook (PC-011), <code>commitizen</code>,
-<code>yamllint</code>, and <code>markdownlint</code>, and wraps <code>trufflehog</code> in a fail-open
-silent-skip (<code>command -v trufflehog ... || echo "...skipping"</code>) that passes
-when the tool is absent, defeating PC-005.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit; corroborated by two
-independent auditors.</p>
-<p><strong>Suggested Fix</strong>: Ship the full required hook set SHA-pinned, and make secret
-scanning fail closed (no <code>|| echo</code> fallback).</p>
-<p><strong>Affected Files</strong>: <code>.pre-commit-config.yaml</code></p>
-<h3 id="misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder">Misc template drift: AGENTS.md absent, known-vulnerabilities misplaced, stray template artifact, unfilled placeholder<a class="headerlink" href="#misc-template-drift-agentsmd-absent-known-vulnerabilities-misplaced-stray-template-artifact-unfilled-placeholder" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Structure</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: Several baseline items drift from the standards manifest:
-<code>AGENTS.md</code> is not scaffolded at root (FOUND-010); <code>known-vulnerabilities.md</code>
-is placed at <code>.github/</code> instead of <code>docs/</code> (FOUND-009); a Jinja2 artifact
-<code>README.md.j2</code> is emitted into <code>.github/workflows/</code> (CI-013); <code>requires-python</code>
-carries a <code>&lt;3.15</code> upper bound (FOUND-008); and <code>docs/template_feedback.md</code>
-ships with an unsubstituted <code>__PROJECT_CREATION_DATE__</code> placeholder.</p>
-<p><strong>Context</strong>: Found during a repo-compliance audit of a freshly generated
-project.</p>
-<p><strong>Suggested Fix</strong>: Scaffold <code>AGENTS.md</code>; output <code>known-vulnerabilities.md</code>
-under <code>docs/</code>; keep template-only files out of <code>.github/workflows/</code>; drop the
-<code>requires-python</code> upper bound; substitute the creation-date placeholder in the
-post-generation hook.</p>
-<p><strong>Affected Files</strong>: <code>AGENTS.md</code>, <code>docs/known-vulnerabilities.md</code>,
-<code>.github/workflows/README.md.j2</code>, <code>pyproject.toml</code>, <code>docs/template_feedback.md</code></p>
-<h3 id="planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config">Planning document templates generate markdown that violates the repo markdownlint config<a class="headerlink" href="#planning-document-templates-generate-markdown-that-violates-the-repo-markdownlint-config" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Low</li>
-<li><strong>Category</strong>: Documentation</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: The planning templates in <code>.claude/skills/project-planning/templates/</code>
-(pvs, tech-spec, roadmap, adr) prescribe an H1 heading in the document body, while the
-placeholder files in <code>docs/planning/</code> carry a <code>title:</code> field in their YAML frontmatter.
-With the repo <code>.markdownlint.json</code> settings, this trips <code>MD025</code> (multiple top-level
-headings) on every generated planning doc. The ADR template's <code>**Pros**:</code> / <code>**Cons**:</code>
-labels placed directly above a list also trip <code>MD032</code> (lists should be surrounded by
-blank lines), and ASCII diagrams plus dense tables trip <code>MD060</code> (table column style).</p>
-<p><strong>Context</strong>: Discovered while generating the four foundational planning documents
-(project-vision, tech-spec, roadmap, and six ADRs) from the project scoping handoff. The
-committed gate already excludes <code>docs/planning/</code> via the pre-commit pattern
-<code>^docs/(?!planning/).*\.md$</code>, so these are IDE-only warnings and do not block commits,
-but they are noise for anyone authoring planning docs in an editor.</p>
-<p><strong>Suggested Fix</strong>: Either (a) set <code>MD025: { front_matter_title: "" }</code> in
-<code>.markdownlint.json</code> so the frontmatter <code>title</code> is not treated as a competing H1, or
-(b) drop the <code>title:</code> field from the planning placeholder frontmatter and rely on the
-body H1. Additionally, add a blank line between the <code>**Pros**:</code> / <code>**Cons**:</code> labels and
-their lists in <code>adr-template.md</code> so generated ADRs are MD032-clean.</p>
-<p><strong>Affected Files</strong>: <code>.markdownlint.json</code>;
-<code>.claude/skills/project-planning/templates/adr-template.md</code>;
-<code>docs/planning/*.md</code> placeholder frontmatter.</p>
-<h3 id="template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box">Template ships docs/ADRs/adr-template.md with a schema_type the validator rejects (breaks pre-commit out of the box)<a class="headerlink" href="#template-ships-docsadrsadr-templatemd-with-a-schema_type-the-validator-rejects-breaks-pre-commit-out-of-the-box" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: A freshly generated project fails <code>pre-commit</code> immediately. The
-<code>validate-front-matter</code> hook (wired in <code>.pre-commit-config.yaml</code> with
-<code>files: ^docs/(?!planning/).*\.md$</code>) only accepts <code>schema_type</code> values of
-<code>script</code>, <code>knowledge</code>, <code>planning</code>, or <code>common</code>, but the template ships
-<code>docs/ADRs/adr-template.md</code> with <code>schema_type: adr</code>. Because the hook validates
-the whole non-planning docs tree (not just staged files), this one file blocks
-every commit in the repo until it is corrected.</p>
-<p><strong>Context</strong>: Discovered when committing the generated planning documents. The
-hook failed on <code>docs/ADRs/adr-template.md</code> even though it was not part of the
-change set, blocking the commit. Fixed locally by changing <code>schema_type: adr</code>
-to <code>schema_type: planning</code> (matching the value used by
-<code>docs/planning/adr/README.md</code>).</p>
-<p>There is a deeper mismatch underneath: even after correcting <code>schema_type</code> to
-<code>planning</code>, the <code>planning</code> schema's <code>status</code> enum is <code>draft | in-review |
-published</code>, which excludes the natural ADR statuses (<code>proposed</code>, <code>accepted</code>,
-<code>superseded</code>). So no <code>schema_type</code> + <code>status</code> combination cleanly fits an ADR
-under the current validator. Locally this was resolved by setting
-<code>schema_type: planning</code> and <code>status: draft</code> on the template placeholder.</p>
-<p><strong>Suggested Fix</strong>: Add a dedicated <code>adr</code> schema to the front-matter validator
-with an ADR-appropriate status enum (<code>proposed | accepted | deprecated |
-superseded</code>) and set <code>docs/ADRs/adr-template.md</code> to use it; or, if a separate
-schema is not wanted, ship the template file with a combination the existing
-validator accepts (<code>schema_type: planning</code>, <code>status: draft</code>). Add a CI smoke
-test that runs <code>pre-commit run --all-files</code> on a freshly rendered project so this
-class of out-of-the-box breakage is caught in the template repo.</p>
-<p><strong>Affected Files</strong>: <code>docs/ADRs/adr-template.md</code>; the front-matter validation
-script and its allowed-tags list.</p>
-<hr />
-<h2 id="submitting-feedback">Submitting Feedback<a class="headerlink" href="#submitting-feedback" title="Permanent link">&para;</a></h2>
-<p>Once you've collected feedback, you can:</p>
+<h2 id="4-data-model-additions">4. Data model additions<a class="headerlink" href="#4-data-model-additions" title="Permanent link">&para;</a></h2>
+<p>All new tables hang off the existing <code>Family</code> ownership boundary in
+<code>src/cyo_adventure/db/models.py</code>. None weaken that boundary; cross-family reads
+are added as narrow, explicitly-scoped, link-gated operations beside it.</p>
+<h3 id="41-rating-phase-a">4.1 <code>rating</code> (Phase A)<a class="headerlink" href="#41-rating-phase-a" title="Permanent link">&para;</a></h3>
+<p>Mirrors the grain of the existing <code>Completion</code> table (a per-child fact about a
+story).</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>child_profile_id</code></td>
+<td>uuid, PK, FK -&gt; <code>child_profile.id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>storybook_id</code></td>
+<td>str, PK, FK -&gt; <code>storybook.id</code></td>
+<td>The family-local (possibly copied) book.</td>
+</tr>
+<tr>
+<td><code>value</code></td>
+<td>smallint</td>
+<td>Validated 1-5 at the application boundary.</td>
+</tr>
+<tr>
+<td><code>rated_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+<tr>
+<td><code>updated_at</code></td>
+<td>timestamptz</td>
+<td>A re-rating overwrites in place.</td>
+</tr>
+</tbody>
+</table>
+<p>Syncs like reading state, so rating works offline.</p>
+<h3 id="42-storybooklineage_id-phase-b-new-column">4.2 <code>Storybook.lineage_id</code> (Phase B, new column)<a class="headerlink" href="#42-storybooklineage_id-phase-b-new-column" title="Permanent link">&para;</a></h3>
+<p>The identity that survives copying. A freshly generated book receives a new
+<code>lineage_id</code> (uuid); every shared copy <strong>inherits the source's</strong> <code>lineage_id</code>.
+"Same book across families" is defined as "same <code>lineage_id</code>." This column is the
+linchpin that makes visible relative ratings possible under copy semantics.</p>
+<blockquote>
+<p>Add this column when Phase B lands. Newly generated books from that point get a
+fresh <code>lineage_id</code>; a one-time backfill assigns each pre-existing storybook its
+own <code>lineage_id</code> (each is its own lineage root).</p>
+</blockquote>
+<h3 id="43-family_link-phase-b">4.3 <code>family_link</code> (Phase B)<a class="headerlink" href="#43-family_link-phase-b" title="Permanent link">&para;</a></h3>
+<p>A durable, mutual connection between two families.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>uuid, PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>family_low_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code></td>
+<td>Canonicalized so <code>family_low_id &lt; family_high_id</code>.</td>
+</tr>
+<tr>
+<td><code>family_high_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code></td>
+<td>Prevents duplicate links for the same pair.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>str</td>
+<td><code>active</code> (created already-confirmed via the invite flow).</td>
+</tr>
+<tr>
+<td><code>created_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Every cross-family operation requires an <strong>active</strong> link between the two
+families.</p>
+<h3 id="44-family_invite-phase-b">4.4 <code>family_invite</code> (Phase B)<a class="headerlink" href="#44-family_invite-phase-b" title="Permanent link">&para;</a></h3>
+<p>Ephemeral. Redemption plus confirmation creates the <code>family_link</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>uuid, PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>code</code></td>
+<td>str, unique</td>
+<td>Sufficiently random; not trivially guessable.</td>
+</tr>
+<tr>
+<td><code>issuing_family_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>created_by</code></td>
+<td>uuid, FK -&gt; <code>user.id</code></td>
+<td>Issuing guardian.</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>str</td>
+<td><code>pending</code> / <code>redeemed</code> / <code>expired</code>.</td>
+</tr>
+<tr>
+<td><code>redeemed_by_family_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code>, nullable</td>
+<td>Set on redemption.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-book_share-phase-b">4.5 <code>book_share</code> (Phase B)<a class="headerlink" href="#45-book_share-phase-b" title="Permanent link">&para;</a></h3>
+<p>The child-initiates / guardian-approves workflow record. Snapshots make the share
+message correct forever.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>id</code></td>
+<td>uuid, PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>lineage_id</code></td>
+<td>uuid</td>
+<td>Of the shared book.</td>
+</tr>
+<tr>
+<td><code>source_storybook_id</code></td>
+<td>str</td>
+<td></td>
+</tr>
+<tr>
+<td><code>source_version</code></td>
+<td>int</td>
+<td>Pins the immutable version cloned on approval.</td>
+</tr>
+<tr>
+<td><code>from_family_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>from_profile_id</code></td>
+<td>uuid, FK -&gt; <code>child_profile.id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>from_profile_name</code></td>
+<td>str</td>
+<td>Snapshot of the sharer's display name.</td>
+</tr>
+<tr>
+<td><code>sender_rating</code></td>
+<td>smallint, nullable</td>
+<td>Snapshot of the sharer's rating at share time.</td>
+</tr>
+<tr>
+<td><code>to_family_id</code></td>
+<td>uuid, FK -&gt; <code>family.id</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>to_profile_id</code></td>
+<td>uuid, FK -&gt; <code>child_profile.id</code></td>
+<td>Target cousin.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>str</td>
+<td><code>pending</code> / <code>approved</code> / <code>declined</code>.</td>
+</tr>
+<tr>
+<td><code>approved_by</code></td>
+<td>uuid, FK -&gt; <code>user.id</code>, nullable</td>
+<td>Receiving guardian.</td>
+</tr>
+<tr>
+<td><code>resulting_storybook_id</code></td>
+<td>str, nullable</td>
+<td>The copy created on approval.</td>
+</tr>
+<tr>
+<td><code>created_at</code> / <code>decided_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-flows">5. Flows<a class="headerlink" href="#5-flows" title="Permanent link">&para;</a></h2>
+<h3 id="51-connect-two-families-phase-b">5.1 Connect two families (Phase B)<a class="headerlink" href="#51-connect-two-families-phase-b" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Create an issue</strong> in the <a href="https://github.com/ByronWilliamsCPA/cookiecutter-python-template/issues">cookiecutter-python-template repository</a></li>
-<li><strong>Submit a PR</strong> if you have fixes for the template</li>
-<li><strong>Share this file</strong> with the template maintainers</li>
+<li>A guardian generates an invite code in-app (<code>family_invite</code>, status <code>pending</code>,
+   with an expiry).</li>
+<li>The cousin's guardian enters the code; the app validates it (exists, not
+   expired, not already redeemed) and shows who is inviting.</li>
+<li>On confirmation, a <code>family_link</code> is created <code>active</code> and the invite is marked
+   <code>redeemed</code>.</li>
 </ol>
-<p>When submitting, reference this project as the source of the feedback.</p>
-<h3 id="docker-compose-image-tags-fall-back-to-latest">Docker compose image tags fall back to <code>latest</code><a class="headerlink" href="#docker-compose-image-tags-fall-back-to-latest" title="Permanent link">&para;</a></h3>
+<h3 id="52-share-a-book-phase-b">5.2 Share a book (Phase B)<a class="headerlink" href="#52-share-a-book-phase-b" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Child shares.</strong> In the reader, the child taps "share with cousin," picks a
+   profile from a <strong>connected</strong> family (visible only because the families are
+   linked), optionally attaching their rating. Creates a <code>book_share</code>
+   (status <code>pending</code>) with the name and rating snapshots. Online action.</li>
+<li><strong>Receiving guardian approves.</strong> That cousin's guardian sees pending shares.
+   The approval screen re-runs the existing safety and reading-level validators
+   (<code>src/cyo_adventure/validator/</code>) <strong>against the receiving child's profile</strong>,
+   shows age band / reading level / content flags plus any new flags, and the
+   guardian approves or declines. Override is allowed; mismatch is not a hard
+   block.</li>
+<li><strong>Import on approval.</strong> Server-side, link-and-approval-gated, the source
+   <code>StorybookVersion.blob</code> is cloned into the receiving family as a new owned
+   <code>Storybook</code> (published), carrying the <code>lineage_id</code>. <code>resulting_storybook_id</code>
+   is set. The book appears in the cousin's library tagged "Shared by Maya,
+   5 stars."</li>
+</ol>
+<p>Because it is a <strong>copy</strong>, the IDOR-protected content path in
+<code>src/cyo_adventure/api/library.py</code> stays literally unchanged: the cousin's
+library still only contains cousin-owned rows.</p>
+<h3 id="53-see-relative-ratings-on-open-phase-b">5.3 See relative ratings on open (Phase B)<a class="headerlink" href="#53-see-relative-ratings-on-open-phase-b" title="Permanent link">&para;</a></h3>
+<p>New endpoint, e.g. <code>GET /api/v1/storybooks/{storybook_id}/relative-ratings?profile_id=...</code>:</p>
+<ol>
+<li>Authorize the requester owns the opened book; read its <code>lineage_id</code>.</li>
+<li>Find <strong>active</strong> <code>family_link</code>s for the requester's family.</li>
+<li>Return ratings joined to storybooks in those connected families with the same
+   <code>lineage_id</code>, as attributed individuals: <code>[{first_name, rating}]</code>. No
+   averaging, no leaderboard.</li>
+<li>Online-only enhancement: offline, the strip is absent and the book (a copy)
+   still reads fine.</li>
+<li>Minimal exposure: only <code>display_name</code> and the star value cross the boundary,
+   never story content or any other child data.</li>
+</ol>
+<p>Siblings (same family) may appear in the same strip as cousins; this is free and
+expected.</p>
+<h2 id="6-error-handling-edges-and-security">6. Error handling, edges, and security<a class="headerlink" href="#6-error-handling-edges-and-security" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: CI/CD</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
+<li><strong>Revocation.</strong> Deleting a <code>family_link</code> stops future shares and future
+  relative-rating reads; already-imported copies remain (a clean consequence of
+  copy semantics).</li>
+<li><strong>Re-share / duplicate.</strong> On approval, if the target family already holds that
+  <code>lineage_id</code>, skip the clone and refresh provenance instead, to avoid library
+  clutter.</li>
+<li><strong>Invites.</strong> Expiring, single-redemption, sufficiently random codes. Guessing
+  is low-risk in a trusted group but the code is still not trivial.</li>
+<li><strong>Offline.</strong> Rating writes sync like reading state; sharing and approval
+  require online; relative ratings degrade gracefully to absent.</li>
+<li><strong>RAD / security markers</strong> (mandatory per <code>src/cyo_adventure/CLAUDE.md</code>): every
+  cross-family operation asserts an active link first. The relative-ratings query
+  is the highest IDOR-risk surface and gets explicit <code>#CRITICAL: security</code> tags
+  plus negative tests. Mandatory categories touched: security (cross-family
+  authorization, input validation on codes and ratings), data integrity (ORM
+  boundary, snapshot correctness), external resources (database), timing
+  dependencies (all async routes).</li>
 </ul>
-<p><strong>Issue</strong>: <code>docker-compose.yml</code> tags the app and frontend images as
-<code>${VERSION:-latest}</code>. The project standard forbids the <code>latest</code> tag in any
-environment, so the default fallback violates the policy whenever <code>VERSION</code> is
-unset.</p>
-<p><strong>Context</strong>: Discovered while writing <code>TECHNICAL_BASELINE.md</code> (Phase 0, P0-07),
-which records that container images are pinned by tag and <code>latest</code> is never used.</p>
-<p><strong>Suggested Fix</strong>: Drop the <code>:-latest</code> fallback and require <code>VERSION</code> to be set
-(fail fast if missing), or default to a pinned placeholder tag rather than
-<code>latest</code>.</p>
-<p><strong>Affected Files</strong>: <code>docker-compose.yml</code>, <code>docker-compose.prod.yml</code></p>
-<h3 id="requires-python-range-lets-local-venvs-drift-off-the-target-interpreter"><code>requires-python</code> range lets local venvs drift off the target interpreter<a class="headerlink" href="#requires-python-range-lets-local-venvs-drift-off-the-target-interpreter" title="Permanent link">&para;</a></h3>
+<h2 id="7-testing">7. Testing<a class="headerlink" href="#7-testing" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Priority</strong>: Low</li>
-<li><strong>Category</strong>: Configuration</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
+<li><strong>Unit:</strong> <code>family_link</code> canonicalization; invite redemption state machine;
+  rating validation (1-5); <code>lineage_id</code> inheritance on clone; relative-ratings
+  query scoping.</li>
+<li><strong>Integration:</strong> full share -&gt; approve -&gt; import -&gt; appears-in-library; safety
+  re-validation surfaces flags against the receiving child; revocation stops new
+  reads but preserves copies.</li>
+<li><strong>Security (negative):</strong> an unlinked family cannot receive shares, cannot read
+  relative ratings, and cannot fetch content for another family's lineage.</li>
 </ul>
-<p><strong>Issue</strong>: <code>requires-python = "&gt;=3.10,&lt;3.15"</code> permits uv to build a local venv on
-Python 3.14 even though <code>target-version</code> and CI pin 3.12. Local test runs then
-execute on a different interpreter than CI.</p>
-<p><strong>Context</strong>: The worktree venv resolved to Python 3.14 during Phase 0 schema work;
-CI runs 3.12.</p>
-<p><strong>Suggested Fix</strong>: Either pin a <code>.python-version</code> to 3.12 for local development, or
-document that the broad range is intentional for library compatibility testing.</p>
-<p><strong>Affected Files</strong>: <code>pyproject.toml</code>, optionally <code>.python-version</code></p>
-<h3 id="pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide">pydoclint config requires typed docstrings the template itself does not provide<a class="headerlink" href="#pydoclint-config-requires-typed-docstrings-the-template-itself-does-not-provide" title="Permanent link">&para;</a></h3>
+<p>Coverage stays at the project minimum (80% line); the cross-family authorization
+paths are critical and should be at or above the critical-path bar.</p>
+<h2 id="8-deferred-flexible-not-v1">8. Deferred / flexible (not v1)<a class="headerlink" href="#8-deferred-flexible-not-v1" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
+<li><strong>Rating widget</strong>: 5 stars vs kid-friendly faces is a UI-time decision; the
+  backend (smallint 1-5) does not constrain it.</li>
+<li><strong>Live cross-family leaderboard / aggregation</strong> (the rejected "C2"): a real-time
+  family-wide ranking. Explicitly out of scope; the attributed per-book strip
+  delivers the value without the cross-family read surface and the
+  age-comparability problem of averaging.</li>
+<li><strong>Email/SMS invites</strong>: deferred in favor of invite codes.</li>
+<li><strong>Reference (live) sharing</strong> instead of copy: rejected in D3.</li>
 </ul>
-<p><strong>Issue</strong>: <code>[tool.pydoclint]</code> sets <code>arg-type-hints-in-docstring = true</code>, but the
-template's own modules (for example <code>src/cyo_adventure/core/exceptions.py</code>) ship
-Google-style docstrings without docstring type hints. Running pydoclint on the
-template code reports many violations, so any new code must adopt a docstring
-style the template does not itself model.</p>
-<p><strong>Context</strong>: A Phase 0 commit was blocked by pydoclint until the new schema module
-docstrings were rewritten to include parenthesized arg types and typed Returns.</p>
-<p><strong>Suggested Fix</strong>: Either set <code>arg-type-hints-in-docstring = false</code> (types live in
-signatures already), or update the template's shipped modules to the typed style so
-there is a working example to copy.</p>
-<p><strong>Affected Files</strong>: <code>pyproject.toml</code>, <code>src/**/*.py</code></p>
-<h3 id="test_examplepy-imports-a-cli-module-that-the-template-does-not-ship"><code>test_example.py</code> imports a <code>cli</code> module that the template does not ship<a class="headerlink" href="#test_examplepy-imports-a-cli-module-that-the-template-does-not-ship" title="Permanent link">&para;</a></h3>
+<h2 id="9-open-questions-for-planning">9. Open questions for planning<a class="headerlink" href="#9-open-questions-for-planning" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Priority</strong>: High</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
+<li>Exact invite code length / expiry window.</li>
+<li>Whether Phase A ratings ship in a release ahead of Phase B, or both land
+  together.</li>
+<li>Whether the relative-ratings strip caps the number of names shown (likely
+  unnecessary at extended-family scale).</li>
 </ul>
-<p><strong>Issue</strong>: <code>tests/test_example.py</code> contains a <code>TestCLI</code> class importing
-<code>from cyo_adventure.cli import cli</code>, but no <code>cli</code> module exists, so 12 tests fail
-with <code>ModuleNotFoundError</code> on a fresh checkout.</p>
-<p><strong>Context</strong>: Discovered when running the full test suite during Phase 0.</p>
-<p><strong>Suggested Fix</strong>: Either include a minimal <code>cli</code> module in the template, or gate
-the CLI tests behind the feature flag that generates the CLI, or remove them when
-no CLI is selected.</p>
-<p><strong>Affected Files</strong>: <code>tests/test_example.py</code>, <code>src/{{package}}/cli.py</code></p>
-<h3 id="docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav">Docs CI runs <code>mkdocs build --strict</code> but most pages are not in the nav<a class="headerlink" href="#docs-ci-runs-mkdocs-build-strict-but-most-pages-are-not-in-the-nav" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Documentation</li>
-<li><strong>Discovered</strong>: 2026-06-20</li>
-</ul>
-<p><strong>Issue</strong>: <code>mkdocs.yml</code> sets <code>strict: false</code>, yet <code>.github/workflows/docs.yml</code> runs
-<code>mkdocs build --strict</code>. The starter nav lists only a subset of pages, so every
-page outside it (the whole <code>docs/planning/</code> tree, the ADR pages, several root docs)
-is an orphan that fails the strict CLI build.</p>
-<p><strong>Context</strong>: Discovered while wiring Phase 0 specification docs; the docs job is red
-on the base independent of any new content.</p>
-<p><strong>Suggested Fix</strong>: Make the config and CI agree (either drop <code>--strict</code> from CI or
-set <code>strict: true</code> in config), and ship a nav that covers every generated page, or
-set <code>validation.nav.omitted_files</code> so intentional orphans do not fail strict builds.</p>
-<p><strong>Affected Files</strong>: <code>mkdocs.yml</code>, <code>.github/workflows/docs.yml</code></p>
-<h3 id="frontend-apptsx-ships-unrendered-cookiecutter-placeholders">Frontend <code>App.tsx</code> ships unrendered cookiecutter placeholders<a class="headerlink" href="#frontend-apptsx-ships-unrendered-cookiecutter-placeholders" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-21</li>
-</ul>
-<p><strong>Issue</strong>: The generated <code>frontend/src/App.tsx</code> contains literal
-<code>{{ cookiecutter.project_name }}</code> and <code>{{ cookiecutter.project_short_description }}</code>
-strings rendered into the JSX, so a fresh frontend shows raw template tags.</p>
-<p><strong>Context</strong>: Discovered while replacing the demo App with the Phase 1 reader.</p>
-<p><strong>Suggested Fix</strong>: Render the cookiecutter variables in <code>App.tsx</code> at generation
-time (or use the project name/description values), the same way other generated
-files are templated.</p>
-<p><strong>Affected Files</strong>: <code>frontend/src/App.tsx</code></p>
-<h3 id="generated-api-client-is-gitignored-but-ci-never-regenerates-it">Generated API client is gitignored but CI never regenerates it<a class="headerlink" href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Priority</strong>: Medium</li>
-<li><strong>Category</strong>: Tooling</li>
-<li><strong>Discovered</strong>: 2026-06-21</li>
-</ul>
-<p><strong>Issue</strong>: <code>frontend/.gitignore</code> ignores <code>src/client/</code> (the hey-api generated
-client) and the CLAUDE.md architecture treats it as the source of truth for API
-types, but the frontend CI job runs <code>typecheck</code>/<code>build</code> without a step that
-regenerates the client. Any app code importing <code>src/client</code> would fail CI on a
-fresh checkout because the directory does not exist and no backend is running to
-generate it.</p>
-<p><strong>Context</strong>: Discovered in Phase 1 when wiring the reader to the backend; worked
-around by adding a small hand-written axios adapter instead of importing the
-generated client.</p>
-<p><strong>Suggested Fix</strong>: Either commit the generated client, or add a CI step that
-starts the backend and runs <code>npm run generate-client</code> before typecheck/build, and
-document which approach the template intends.</p>
-<p><strong>Affected Files</strong>: <code>frontend/.gitignore</code>, <code>.github/workflows/ci.yml</code>, <code>CLAUDE.md</code></p>
 
 
 
@@ -3092,7 +2988,7 @@ document which approach the template intends.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 24, 2026 17:26:32 UTC">June 24, 2026</span>
   </span>
 
     
@@ -3169,10 +3065,10 @@ document which approach the template intends.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
