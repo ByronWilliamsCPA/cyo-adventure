@@ -42,6 +42,31 @@ When working on this project, if you discover any issue that originates from the
 
 <!-- Add your feedback below this line -->
 
+### check-json pre-commit hook fails on frontend tsconfig JSONC files
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-06-23
+
+**Issue**: The generated `.pre-commit-config.yaml` includes the standard
+`check-json` hook with no exclude pattern. In a full-stack project the frontend
+ships `tsconfig.app.json` and `tsconfig.node.json`, which are JSONC (JSON with
+comments) as TypeScript and Vite require. `check-json` uses a strict JSON parser
+and fails on the comments, so `pre-commit run --all-files` reports a permanent
+failure unrelated to any change being committed.
+
+**Context**: Discovered while running the full gate (`pre-commit run
+--all-files`) at the end of an unrelated backend feature. The only failure was
+`check-json` on `frontend/tsconfig.node.json` and `frontend/tsconfig.app.json`;
+no committed change touched those files.
+
+**Suggested Fix**: For the full-stack template variant, either exclude
+`tsconfig*.json` (and other known JSONC) from the `check-json` hook via an
+`exclude:` regex, or replace `check-json` with a JSONC-aware check (e.g.
+`check-json5`) for the frontend paths.
+
+**Affected Files**: `.pre-commit-config.yaml`
+
 ### ci.yml ships with frontend and ci-gate jobs dedented outside the jobs map
 
 - **Priority**: Critical
