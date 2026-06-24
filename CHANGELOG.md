@@ -20,7 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ollama_timeout_seconds` (default 300) separate from the cloud `llm_timeout`,
   and defaults `ollama_model` to the team-recommended tuned `qwen-assistant:latest`
   alias (raw `qwen3` is a reasoning model that can return empty content under a
-  tight token budget).
+  tight token budget). The stream request sends `Accept-Encoding: identity` so the
+  homelab proxy's gzip-compress middleware is a no-op; compressing the stream
+  buffered and dropped long (multi-minute) generations mid-stream.
 - Optional `OLLAMA_CA_BUNDLE` setting: when the homelab host serves a
   privately-signed (Homelab CA) TLS cert, point this at the CA bundle and the
   adapter loads it on top of the system CA store so verification succeeds without

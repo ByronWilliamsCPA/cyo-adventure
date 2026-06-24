@@ -51,6 +51,13 @@ _TRANSIENT_STATUS: Final[frozenset[int]] = frozenset({408, 425, 429, 503})
 # retrying: mark the leg dead.
 _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 404})
 
+# Opt out of response compression. The homelab proxy (Traefik) has a compress
+# middleware that buffers a gzipped streaming response, which stalls and then
+# drops long generations mid-stream. Requesting ``identity`` makes compress a
+# no-op so the NDJSON stream flows to completion; NDJSON gzips poorly and the
+# per-chunk payloads are tiny, so this costs effectively nothing.
+_STREAM_HEADERS: Final[dict[str, str]] = {"Accept-Encoding": "identity"}
+
 
 class OllamaProvider:
     """A ``GenerationProvider`` that calls a local Ollama server's chat API.
@@ -205,9 +212,11 @@ class OllamaProvider:
         """
         auth = self._auth
         if auth is None:
-            request = client.stream("POST", url, json=body)
+            request = client.stream("POST", url, json=body, headers=_STREAM_HEADERS)
         else:
-            request = client.stream("POST", url, json=body, auth=auth)
+            request = client.stream(
+                "POST", url, json=body, auth=auth, headers=_STREAM_HEADERS
+            )
         parts: list[str] = []
         async with request as response:
             if response.status_code >= 300:
