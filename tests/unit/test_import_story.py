@@ -3,7 +3,7 @@ import uuid
 import pytest
 
 from cyo_adventure.db.models import StorybookVersion
-from cyo_adventure.generation.import_story import import_filled_story
+from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
 
 class _FakeSession:
@@ -53,9 +53,10 @@ def _filled_story() -> dict[str, object]:
 @pytest.mark.asyncio
 async def test_import_persists_a_valid_filled_story() -> None:
     session = _FakeSession()
-    story_id = await import_filled_story(
-        session, blob=_filled_story(), family_id=uuid.uuid4(), model="opus-4.8"
+    request = ImportRequest(
+        blob=_filled_story(), family_id=uuid.uuid4(), model="opus-4.8"
     )
+    story_id = await import_filled_story(session, request)
     assert story_id == "s_filled"
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
     assert len(versions) == 1
@@ -68,6 +69,7 @@ async def test_import_rejects_a_blocked_story() -> None:
     session = _FakeSession()
     broken = _filled_story()
     broken["nodes"][0]["choices"][0]["target"] = "missing"
+    request = ImportRequest(blob=broken, family_id=uuid.uuid4())
     with pytest.raises(ValueError, match="blocked"):
-        await import_filled_story(session, blob=broken, family_id=uuid.uuid4())
+        await import_filled_story(session, request)
     assert session.added == []

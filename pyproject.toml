@@ -320,11 +320,6 @@ known-first-party = ["cyo_adventure"]
 # safer here than a positional config object.
 "**/generation/providers/*.py" = ["PLR0913"]
 
-# import_filled_story is a bridge function whose keyword-only parameters map
-# directly to StorybookParams fields; grouping them into an intermediate config
-# object would add a layer with no benefit at this call site.
-"**/generation/import_story.py" = ["PLR0913"]
-
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
