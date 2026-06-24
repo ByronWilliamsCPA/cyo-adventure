@@ -56,6 +56,66 @@ class ContentFlagLevel(StrEnum):
     NONE = "none"
     MILD = "mild"
     MODERATE = "moderate"
+    INTENSE = "intense"
+
+
+# Ordered rank for ContentFlagLevel. StrEnum is not orderable, and the per-band
+# ceiling check (PL-16) needs "<=" semantics, so the order is defined once here.
+_LEVEL_RANK: dict[ContentFlagLevel, int] = {
+    ContentFlagLevel.NONE: 0,
+    ContentFlagLevel.MILD: 1,
+    ContentFlagLevel.MODERATE: 2,
+    ContentFlagLevel.INTENSE: 3,
+}
+
+
+def level_rank(level: ContentFlagLevel) -> int:
+    """Return the ordinal rank of a content-flag level (none=0 .. intense=3).
+
+    Args:
+        level: The content-flag level.
+
+    Returns:
+        int: The level's rank, for ``<=`` comparisons against a band ceiling.
+    """
+    return _LEVEL_RANK[level]
+
+
+class Valence(StrEnum):
+    """How an ending feels, independent of what mechanically happened."""
+
+    POSITIVE = "positive"
+    NEUTRAL = "neutral"
+    NEGATIVE = "negative"
+
+
+class EndingKind(StrEnum):
+    """What mechanically happened at an ending (closed set)."""
+
+    SUCCESS = "success"
+    SETBACK = "setback"
+    DEATH = "death"
+    CAPTURE = "capture"
+    COMPLETION = "completion"
+    DISCOVERY = "discovery"
+
+
+class Topology(StrEnum):
+    """The branching shape of a story graph (Ashwell vocabulary)."""
+
+    TIME_CAVE = "time_cave"
+    GAUNTLET = "gauntlet"
+    BRANCH_AND_BOTTLENECK = "branch_and_bottleneck"
+    LOOP_AND_GROW = "loop_and_grow"
+
+
+class SafetyScope(StrEnum):
+    """A per-node hint marking a sensitive scene for the safety reviewer."""
+
+    PERIL = "peril"
+    SCARY_IMAGERY = "scary_imagery"
+    CONFLICT = "conflict"
+    SAD_MOMENT = "sad_moment"
 
 
 class ReadingLevel(BaseModel):
