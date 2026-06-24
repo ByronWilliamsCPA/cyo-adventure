@@ -16,7 +16,15 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, ForeignKeyConstraint, String, Uuid, func
+from sqlalchemy import (
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    ForeignKeyConstraint,
+    String,
+    Uuid,
+    func,
+)
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -194,6 +202,9 @@ class Rating(Base):
     """
 
     __tablename__ = "rating"
+    __table_args__ = (
+        CheckConstraint("value BETWEEN 1 AND 5", name="ck_rating_value_range"),
+    )
 
     child_profile_id: Mapped[uuid.UUID] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE), primary_key=True
@@ -201,9 +212,12 @@ class Rating(Base):
     storybook_id: Mapped[str] = mapped_column(
         String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
     )
-    # #ASSUME: data integrity: ``value`` is constrained to 1-5 by the RatingBody
-    # Pydantic model at the API boundary; the column itself stores any integer.
-    # #VERIFY: every write path goes through RatingBody validation before insert.
+    # #CRITICAL: data integrity: ``value`` is bounded 1-5 at the API boundary by
+    # RatingBody and enforced at rest by the ck_rating_value_range CHECK above,
+    # so a non-API write path (admin script, backfill, raw SQL) cannot persist an
+    # out-of-range value that would then be served back to clients.
+    # #VERIFY: RatingBody schema tests cover the boundary; the DB CHECK is the
+    # at-rest backstop.
     value: Mapped[int] = mapped_column()
     rated_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(

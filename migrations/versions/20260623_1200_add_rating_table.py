@@ -25,6 +25,7 @@ def upgrade() -> None:
     sa.Column('value', sa.Integer(), nullable=False),
     sa.Column('rated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.CheckConstraint('value BETWEEN 1 AND 5', name='ck_rating_value_range'),
     sa.ForeignKeyConstraint(['child_profile_id'], ['child_profile.id'], ),
     sa.ForeignKeyConstraint(['storybook_id'], ['storybook.id'], ),
     sa.PrimaryKeyConstraint('child_profile_id', 'storybook_id')
