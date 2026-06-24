@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 from typing import TYPE_CHECKING
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
@@ -31,7 +32,7 @@ def load_skeleton(path: Path) -> dict[str, object]:
         The decoded skeleton as a dict.
 
     Raises:
-        ValueError: If the skeleton fails the gate's blocking (L1/L2) layers.
+        ValidationError: If the skeleton fails the gate's blocking (L1/L2) layers.
     """
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     result = run_gate(data)
@@ -41,7 +42,7 @@ def load_skeleton(path: Path) -> dict[str, object]:
             or "no error details available"
         )
         msg = f"skeleton {path} failed structural validation: {messages}"
-        raise ValueError(msg)
+        raise ValidationError(msg)
     return data
 
 

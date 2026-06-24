@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.validator.gate import run_gate
 
@@ -48,8 +49,8 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         The persisted story id (the blob's ``id``).
 
     Raises:
-        ValueError: If the validation gate blocks the story, or the blob has no
-            string id.
+        ValidationError: If the validation gate blocks the story, or the blob has
+            no string id.
     """
     # #CRITICAL: data-integrity: the gate result and the blob must agree on id;
     # if the blob's id is missing or wrong, the stored version row is unreachable.
@@ -61,12 +62,12 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
             or "no error details available"
         )
         msg = f"filled story blocked by validation gate: {messages}"
-        raise ValueError(msg)
+        raise ValidationError(msg)
 
     story_id = request.blob.get("id")
     if not isinstance(story_id, str) or not story_id:
         msg = "filled story has no string id"
-        raise ValueError(msg)
+        raise ValidationError(msg)
 
     return await persist_storybook(
         session,

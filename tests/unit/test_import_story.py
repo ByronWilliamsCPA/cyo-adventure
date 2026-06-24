@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
@@ -70,6 +71,6 @@ async def test_import_rejects_a_blocked_story() -> None:
     broken = _filled_story()
     broken["nodes"][0]["choices"][0]["target"] = "missing"
     request = ImportRequest(blob=broken, family_id=uuid.uuid4())
-    with pytest.raises(ValueError, match="blocked"):
+    with pytest.raises(ValidationError, match="blocked"):
         await import_filled_story(session, request)
     assert session.added == []

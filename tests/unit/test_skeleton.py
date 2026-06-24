@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.skeleton import has_unfilled_directives, load_skeleton
 
 _SKELETON = Path("tests/fixtures/skeletons/demo_shell.json")
@@ -24,5 +25,5 @@ def test_load_skeleton_rejects_structurally_broken_shell(tmp_path: Path) -> None
     broken["nodes"][0]["choices"][0]["target"] = "does_not_exist"
     path = tmp_path / "broken.json"
     path.write_text(json.dumps(broken))
-    with pytest.raises(ValueError, match="structural"):
+    with pytest.raises(ValidationError, match="structural"):
         load_skeleton(path)
