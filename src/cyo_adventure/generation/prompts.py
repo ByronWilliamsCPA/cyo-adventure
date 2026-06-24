@@ -33,7 +33,7 @@ from typing import TYPE_CHECKING
 
 from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.storybook.schema_export import build_schema
-from cyo_adventure.validator.layer1 import band_budget
+from cyo_adventure.validator.layer1 import Scale, band_budget
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.concept import ConceptBrief
@@ -153,7 +153,7 @@ def _schema_rules() -> str:
     return json.dumps(build_schema(), indent=2)
 
 
-def _budget_block(brief: ConceptBrief) -> str:
+def _budget_block(brief: ConceptBrief, scale: Scale = "standard") -> str:
     """Render the brief-specific L1-7 budget constraints as prompt text.
 
     Binds the prompt to the validator's budget table (via
@@ -164,6 +164,8 @@ def _budget_block(brief: ConceptBrief) -> str:
 
     Args:
         brief: The validated concept brief for this generation job.
+        scale: Story-size profile (``"standard"`` or ``"compact"``) whose budget
+            numbers are stated; must match the scale the gate enforces.
 
     Returns:
         A markdown block stating the hard budget limits for this brief.
@@ -177,7 +179,7 @@ def _budget_block(brief: ConceptBrief) -> str:
     # sync (an unreachable state given AgeBand is constrained to known bands).
     # #VERIFY: test_prompts asserts the rendered budget numbers equal
     # band_budget(brief.age_band) for every AgeBand member.
-    budget = band_budget(brief.age_band)
+    budget = band_budget(brief.age_band, scale)
     if budget is None:
         msg = f"no L1-7 budget defined for age band {brief.age_band!r}"
         raise BusinessLogicError(msg, rule="band_budget_missing")
@@ -208,7 +210,9 @@ def _budget_block(brief: ConceptBrief) -> str:
 # ---------------------------------------------------------------------------
 
 
-def build_structure_prompt(brief: ConceptBrief) -> StagePrompt:
+def build_structure_prompt(
+    brief: ConceptBrief, scale: Scale = "standard"
+) -> StagePrompt:
     """Build the Stage A (Structure) generation prompt.
 
     Loads ``structure.md`` from the bundled templates package, substitutes all
@@ -222,6 +226,9 @@ def build_structure_prompt(brief: ConceptBrief) -> StagePrompt:
 
     Args:
         brief: The validated concept brief for this generation job.
+        scale: Story-size profile (``"standard"`` or ``"compact"``). The same
+            scale MUST be passed to the gate (run_gate) so the budget the prompt
+            promises matches what L1-7 enforces.
 
     Returns:
         The Stage A :class:`StagePrompt` (no unfilled tokens).
@@ -235,7 +242,7 @@ def build_structure_prompt(brief: ConceptBrief) -> StagePrompt:
         .replace("{schema_rules}", _schema_rules())
         .replace("{drafting_guide}", _drafting_guide())
         .replace("{concept_brief}", brief.model_dump_json(indent=2))
-        .replace("{budget_constraints}", _budget_block(brief))
+        .replace("{budget_constraints}", _budget_block(brief, scale))
     )
     return _split_stage_prompt(text)
 
