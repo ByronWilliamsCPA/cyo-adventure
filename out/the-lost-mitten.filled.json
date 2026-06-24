@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "id": "sk_lost_mitten",
+  "version": 1,
+  "title": "The Lost Mitten",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 1.0, "tolerance": 1.0},
+    "tier": 1,
+    "themes": ["friendship", "winter", "problem-solving"],
+    "estimated_minutes": 5,
+    "ending_count": 3,
+    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "Pip the little fox played in the snow. Up the hill! Down the hill! Pip had two red mittens. They were warm and soft. But wait. One mitten was gone! Pip looked at one bare paw. It was cold, cold, cold. \"Oh no,\" said Pip. \"Where is my red mitten?\" Pip wanted to find it. The snow was deep and white. Pip could look by the big pine tree. Pip could ask Hoppy the rabbit. Or Pip could check the sled track. Where should Pip look first?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_pine", "label": "Look under the big pine tree.", "target": "n_pine"},
+        {"id": "c_rabbit", "label": "Ask Hoppy the rabbit.", "target": "n_rabbit"},
+        {"id": "c_sled", "label": "Check the sledding track.", "target": "n_sled"}
+      ]
+    },
+    {
+      "id": "n_pine",
+      "body": "Pip ran to the big pine tree. The branches were full of snow. Pip looked down low. Pip looked up high. No red mitten was here. But look! Little paw prints went through the snow. They went down, down, down. They went all the way to the creek. \"A clue!\" said Pip. Pip felt happy. Maybe the mitten was that way. But the hill was warm and near. Should Pip follow the prints to the creek? Or go back to the snowy hill?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_pine_creek", "label": "Follow the footprints to the creek.", "target": "n_creek"},
+        {"id": "c_pine_back", "label": "Go back to the snowy hill.", "target": "n_start"}
+      ]
+    },
+    {
+      "id": "n_rabbit",
+      "body": "Pip hopped over to Hoppy the rabbit. Hoppy had big, soft ears. \"Hello, Hoppy,\" said Pip. \"Have you seen my red mitten?\" Hoppy shook her head. \"No, Pip. I have not. But I heard the birds today. They were by the creek. They chirped and chirped. They saw something red!\" \"Thank you, Hoppy!\" said Pip. The creek was not far. But maybe the mitten was still on the hill. Should Pip go down to the creek? Or look again on the hill?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_rabbit_creek", "label": "Hop down to the creek.", "target": "n_creek"},
+        {"id": "c_rabbit_back", "label": "Look again on the hill.", "target": "n_start"}
+      ]
+    },
+    {
+      "id": "n_sled",
+      "body": "Pip went to the sled track. The snow was smooth and fast here. Pip looked all around. No red mitten. But wait! On a little twig, Pip saw one red thread. It was soft and fuzzy. \"This is from my mitten!\" said Pip. The red thread pointed one way. It pointed down to the creek. Pip could follow it. Or Pip could try the hill again. What should Pip do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_sled_creek", "label": "Follow the red thread to the creek.", "target": "n_creek"},
+        {"id": "c_sled_back", "label": "Try the hill one more time.", "target": "n_start"}
+      ]
+    },
+    {
+      "id": "n_creek",
+      "body": "Pip came to the creek. The water was cold and still. Pip stopped and looked. Something red was in the snow! Up above, the birds went chirp, chirp, chirp. And far away, Pip could smell warm cocoa from home. Yum, yum! So many things to do. Pip could grab the red thing in the snow. Pip could look up at the birds. Or Pip could go home for cocoa. What should Pip do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_creek_red", "label": "Reach for the red thing in the snow.", "target": "n_found"},
+        {"id": "c_creek_birds", "label": "Look up at the chirping birds.", "target": "n_birds"},
+        {"id": "c_creek_home", "label": "Follow the smell of cocoa home.", "target": "n_cocoa"}
+      ]
+    },
+    {
+      "id": "n_birds",
+      "body": "Pip looked up at the birds. They sang and flapped their wings. Then Pip saw it. The red mitten was stuck on a low branch! It was just out of reach. Pip jumped up. Pip stretched tall. So close! But not close enough. Maybe Pip could reach it alone. Or maybe Pip's friends could help. Should Pip lift the mitten down? Or call friends to help?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_birds_lift", "label": "Gently lift the mitten down.", "target": "n_found"},
+        {"id": "c_birds_help", "label": "Call your friends to help.", "target": "n_help"}
+      ]
+    },
+    {
+      "id": "n_help",
+      "body": "Pip called out, \"Friends! I need help!\" Hoppy came hopping fast. The squirrels came running. They all wanted to help Pip. \"Let's make a chain!\" said Hoppy. So they did. Pip held Hoppy. Hoppy held a squirrel. They wobbled. They giggled. Up, up, up they reached, all together. The branch was close now. It was time to get the red mitten!",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_help_together", "label": "Reach the mitten together.", "target": "n_together"}
+      ]
+    },
+    {
+      "id": "n_cocoa",
+      "body": "Pip followed the cocoa smell home. Mama Fox was waiting at the door. \"Come in, Pip! It is warm in here.\" Pip sat down by the fire. It felt so good. Pip pulled off one snowy boot. Then Pip pulled off the other boot. Plop! Something red fell out onto the floor. \"What is that?\" said Pip. Pip leaned down to look.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_cocoa_surprise", "label": "See what fell out of the boot.", "target": "n_surprise"}
+      ]
+    },
+    {
+      "id": "n_found",
+      "body": "Pip reached down and picked it up. It was the red mitten! It was a little snowy. But it was still soft and warm. Pip slipped it on. Now both paws were warm again! \"I found you!\" said Pip. Pip wiggled all ten warm toes. Pip clapped both warm paws. The snow sparkled in the sun. It was a good, good day. The end.",
+      "is_ending": true,
+      "ending": {"id": "e_found", "type": "completion", "title": "The Red Mitten"}
+    },
+    {
+      "id": "n_together",
+      "body": "All together, the friends lifted the red mitten down. \"Hooray!\" they cheered. Pip put it on right away. Both paws were warm now. \"Thank you, friends,\" said Pip. \"You are the best.\" They all hugged in the soft snow. Good friends help each other. And good friends play together. So they did, all afternoon. The end.",
+      "is_ending": true,
+      "ending": {"id": "e_together", "type": "completion", "title": "Found Together"}
+    },
+    {
+      "id": "n_surprise",
+      "body": "It was the red mitten! It had been in Pip's boot the whole time. \"It was with me all along!\" Pip laughed. Mama Fox laughed too. Pip put on the warm mitten. Then Pip drank sweet, warm cocoa. What a funny day this was. Pip was warm. Pip was full. And Pip was happy. The end.",
+      "is_ending": true,
+      "ending": {"id": "e_surprise", "type": "good", "title": "A Cozy Surprise"}
+    }
+  ]
+}
