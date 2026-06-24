@@ -49,7 +49,11 @@ Two features, sequenced because one enables the other. Each can become its own
 implementation plan.
 
 - **Phase A: Ratings.** Small and standalone. A child rates a finished book 1-5;
-  private to the family until sharing exists. Shippable alone.
+  private to the family until sharing exists. Shippable alone. "Finished"
+  describes the expected reading flow, not an enforced precondition: Phase A
+  deliberately does NOT gate `POST /ratings` on an existing `Completion` row, so
+  any storybook in the child's own family may be rated. A completion gate, if
+  wanted, is a follow-up; it is intentionally out of scope here.
 - **Phase B: Connected families, sharing, and visible relative ratings.** The
   large, security-significant half. Depends on Phase A.
 

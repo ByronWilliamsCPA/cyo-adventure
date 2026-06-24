@@ -40,6 +40,7 @@ In scope: backend model, migration, schemas, two endpoints, full unit + integrat
 
 - **Grain:** `rating` keys on `(child_profile_id, storybook_id)` with a plain FK to `storybook`, NOT the composite `(storybook_id, version)` FK to `storybook_version` that `Completion` uses. A rating is about the book; this grain is also what Phase B's lineage join needs.
 - **Mutability:** `POST /ratings` is an **upsert** (re-rating overwrites `value` and bumps `updated_at`), unlike `record_completion` which is insert-once-idempotent.
+- **No completion gate:** "a child rates a finished book" describes the expected reading flow, not an enforced precondition. `POST /ratings` does NOT require an existing `Completion` row for `(child_profile_id, storybook_id)`; any storybook in the child's own family may be rated. Adding a completion gate is a deliberate non-goal for Phase A (revisit only if product wants it).
 
 ---
 
