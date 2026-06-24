@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.validator.layer1 import Scale
 
 # Provider names the CLI accepts. Live providers were deferred in Phase 2; Phase
 # 2b enables them so the >=60% acceptance rate can be measured for real.
@@ -163,6 +164,7 @@ async def run_yield(
     threshold: float = 0.60,
     delay_between: float = 0.0,
     verbose: bool = False,
+    scale: Scale = "standard",
 ) -> YieldReport:
     """Run the generation pipeline for each brief and return a yield summary.
 
@@ -188,6 +190,9 @@ async def run_yield(
             default ``0.0`` is correct for mock runs.
         verbose: When ``True``, print a one-line progress message per brief to
             stderr (so a long live run is monitorable from its log).
+        scale: Story-size profile (``"standard"`` or ``"compact"``) forwarded to
+            :func:`generate_story`, so the L1-7 budget the gate enforces matches
+            the compact-tier spec for local/light runs.
 
     Returns:
         A :class:`YieldReport` with aggregate and per-story results. Each
@@ -201,7 +206,7 @@ async def run_yield(
         provider = provider_factory()
         started = time.monotonic()
         try:
-            outcome = await generate_story(brief, provider, pii)
+            outcome = await generate_story(brief, provider, pii, scale=scale)
         except Exception as exc:  # isolate one brief's failure (best-effort harness)
             # A measurement harness must not let a single brief's exception
             # abort the batch and discard every prior result. Record this brief
@@ -483,6 +488,12 @@ def _parse_args() -> argparse.Namespace:
         help="Disable the openrouter cascade so one leg is measured in isolation.",
     )
     parser.add_argument(
+        "--scale",
+        default="standard",
+        choices=("standard", "compact"),
+        help="Story-size budget profile to generate and enforce (default: standard).",
+    )
+    parser.add_argument(
         "--limit",
         type=int,
         default=None,
@@ -537,6 +548,10 @@ def main() -> None:
         Path(str(args.out)) if args.out is not None else None  # pyright: ignore[reportAny]
     )
     env_path: Path = Path(str(args.env_file))  # pyright: ignore[reportAny]
+    # argparse choices guarantee one of the two literals; narrow without cast.
+    scale_val: Scale = (
+        "compact" if str(args.scale) == "compact" else "standard"  # pyright: ignore[reportAny]
+    )
 
     briefs = _load_briefs(briefs_path)
     if limit is not None:
@@ -561,6 +576,7 @@ def main() -> None:
             threshold=threshold_val,
             delay_between=throttle,
             verbose=True,
+            scale=scale_val,
         )
     )
     _print_summary(report, threshold_val)
@@ -569,6 +585,7 @@ def main() -> None:
         meta: dict[str, object] = {
             "provider": provider_name,
             "model": model_override,
+            "scale": scale_val,
             "fallback_enabled": fallback_enabled
             if provider_name == "openrouter"
             else False,

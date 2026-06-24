@@ -52,6 +52,7 @@ if TYPE_CHECKING:
     from cyo_adventure.generation.pii import PiiContext
     from cyo_adventure.generation.prompts import StagePrompt
     from cyo_adventure.generation.provider import GenerationProvider
+    from cyo_adventure.validator.layer1 import Scale
 
 __all__ = [
     "GenerationOutcome",
@@ -128,12 +129,14 @@ class _RepairContext:
         provider: The generation provider.
         max_repairs: Maximum number of repair attempts.
         stage_log: Accumulated log list; entries are appended in place.
+        scale: Story-size profile forwarded to each repair stage's gate.
     """
 
     pii: PiiContext
     provider: GenerationProvider
     max_repairs: int
     stage_log: list[str]
+    scale: Scale = "standard"
 
 
 # ---------------------------------------------------------------------------
@@ -240,6 +243,7 @@ async def _run_one_stage(
     pii: PiiContext,
     provider: GenerationProvider,
     max_tokens: int,
+    scale: Scale = "standard",
 ) -> tuple[dict[str, object] | None, GateResult]:
     """Run a single generation stage: PII-guard, call provider, parse, gate.
 
@@ -253,6 +257,8 @@ async def _run_one_stage(
         pii: The PII context to guard the prompt against.
         provider: The generation provider to call.
         max_tokens: Maximum tokens for the provider completion.
+        scale: Story-size profile forwarded to ``run_gate`` so L1-7 is enforced
+            against the same budget the prompt promised.
 
     Returns:
         A tuple of ``(doc_or_none, gate_result)``. ``doc_or_none`` is the
@@ -290,7 +296,7 @@ async def _run_one_stage(
         return None, _empty_blocked_gate()
 
     doc = cast("dict[str, object]", parsed)
-    return doc, run_gate(doc)
+    return doc, run_gate(doc, scale)
 
 
 def _get_failing_findings(gate_result: GateResult) -> list[dict[str, object]]:
@@ -408,6 +414,7 @@ async def _run_repair_loop(
             pii=ctx.pii,
             provider=ctx.provider,
             max_tokens=_MAX_TOKENS_REPAIR,
+            scale=ctx.scale,
         )
         attempts += 1
         ctx.stage_log.append(f"repair:{attempts}")
@@ -461,6 +468,7 @@ async def generate_story(
     pii: PiiContext,
     *,
     max_repairs: int = 3,
+    scale: Scale = "standard",
 ) -> GenerationOutcome:
     """Run the staged generation pipeline and return a validated outcome.
 
@@ -494,6 +502,9 @@ async def generate_story(
             real-child names and birthdates that must not appear in any prompt.
         max_repairs: Maximum number of repair attempts before giving up.
             Defaults to 3.
+        scale: Story-size profile (``"standard"`` or ``"compact"``) applied to
+            both the Stage A prompt budget and the L1-7 gate, so they stay in
+            sync. Defaults to ``"standard"``.
 
     Returns:
         A :class:`GenerationOutcome` describing the final status, the last
@@ -509,12 +520,13 @@ async def generate_story(
     # ------------------------------------------------------------------
     # Stage A: Structure skeleton
     # ------------------------------------------------------------------
-    stage_a_prompt = build_structure_prompt(brief)
+    stage_a_prompt = build_structure_prompt(brief, scale)
     current_doc, gate_result = await _run_one_stage(
         stage_a_prompt,
         pii=pii,
         provider=provider,
         max_tokens=_MAX_TOKENS_STRUCTURE,
+        scale=scale,
     )
     _append_stage_log(stage_log, "stage_a", current_doc, gate_result)
 
@@ -535,6 +547,7 @@ async def generate_story(
             pii=pii,
             provider=provider,
             max_tokens=_MAX_TOKENS_PROSE,
+            scale=scale,
         )
         _append_stage_log(stage_log, "stage_b", current_doc, gate_result)
         # Prefer Stage B's fuller document, but keep Stage A's skeleton if
@@ -552,6 +565,7 @@ async def generate_story(
             provider=provider,
             max_repairs=max_repairs,
             stage_log=stage_log,
+            scale=scale,
         )
         # Seed the loop with the last valid document so a Stage B parse failure
         # repairs from Stage A's skeleton rather than an empty object, and the

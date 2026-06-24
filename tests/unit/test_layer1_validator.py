@@ -303,6 +303,58 @@ def test_branch_depth_above_max_is_error() -> None:
 
 
 @pytest.mark.unit
+def test_band_budget_scale_profiles() -> None:
+    """band_budget defaults to standard; "compact" returns the smaller numbers."""
+    # Default and explicit "standard" are identical (full-size ladder).
+    assert band_budget("8-11") == (15, 30, 6)
+    assert band_budget("8-11", "standard") == (15, 30, 6)
+    # Compact profile is smaller across all bands.
+    assert band_budget("8-11", "compact") == (6, 12, 4)
+    assert band_budget("10-13", "compact") == (10, 18, 5)
+    assert band_budget("13-16", "compact") == (12, 24, 6)
+
+
+@pytest.mark.unit
+def test_compact_scale_enforces_smaller_branch_depth() -> None:
+    """A depth-5 chain passes standard (max 6) but trips L1-7 under compact (max 4)."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(5)]
+    nodes = [*chain, _ending("n5")]
+    story = _story(nodes, meta=_meta(age_band="8-11", tier=1), start="n0")
+
+    standard = validate_layer1(story)
+    compact = validate_layer1(story, "compact")
+
+    # Standard 8-11 allows depth up to 6: no branch-depth error.
+    assert not any(
+        f.rule_id == "L1-7" and "branch_depth" in f.message for f in standard.errors
+    )
+    # Compact 8-11 caps depth at 4: depth 5 is an error.
+    assert any(
+        f.rule_id == "L1-7" and "branch_depth" in f.message for f in compact.errors
+    )
+
+
+@pytest.mark.unit
+def test_compact_scale_accepts_small_node_count() -> None:
+    """A 6-node story warns under standard (min 15) but is in-band under compact."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(5)]
+    nodes = [*chain, _ending("n5")]
+    story = _story(nodes, meta=_meta(age_band="8-11", tier=1), start="n0")
+
+    standard = validate_layer1(story)
+    compact = validate_layer1(story, "compact")
+
+    # Standard min is 15, so 6 nodes is flagged (a node_count finding).
+    assert any(
+        f.rule_id == "L1-7" and "node_count" in f.message for f in standard.findings
+    )
+    # Compact band is 6..12, so 6 nodes is in range: no node_count finding.
+    assert not any(
+        f.rule_id == "L1-7" and "node_count" in f.message for f in compact.findings
+    )
+
+
+@pytest.mark.unit
 def test_ending_count_mismatch_is_l1_7_error() -> None:
     """A metadata ending_count that disagrees with reality is an L1-7 error."""
     nodes = [_link("n_start", "n_end"), _ending()]

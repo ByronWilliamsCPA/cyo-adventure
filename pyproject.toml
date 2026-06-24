@@ -320,6 +320,12 @@ known-first-party = ["cyo_adventure"]
 # safer here than a positional config object.
 "**/generation/providers/*.py" = ["PLR0913"]
 
+# The generation orchestrator's staged-pipeline entry points carry the core
+# inputs (brief, provider, pii) plus per-run tuning knobs (max_repairs, story-size
+# scale); explicit keyword-only parameters read more clearly than a positional
+# config object at these call sites.
+"**/generation/orchestrator.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
