@@ -163,3 +163,19 @@ async def test_rating_below_range_rejected(client: AsyncClient, seed: Seed) -> N
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_rating_unknown_storybook_is_404(client: AsyncClient, seed: Seed) -> None:
+    """Rating a storybook that does not exist returns 404."""
+    resp = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": "does-not-exist",
+            "value": 3,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404, resp.text

@@ -63,6 +63,10 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     # #VERIFY: authorize_profile / authorize_family raise AuthorizationError -> 403.
     profile_id = _parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, profile_id)
+    # Note: the 404-if-missing check precedes authorize_family, so a caller can
+    # tell "exists in another family" (403) from "does not exist" (404). This
+    # matches reading.py's precedent and is accepted for Phase A (storybook ids
+    # are not secret). Revisit before Phase B adds cross-family reads.
     book = await ctx.session.get(Storybook, body.storybook_id)
     if book is None:
         msg = f"storybook '{body.storybook_id}' not found"
