@@ -20,8 +20,12 @@ def admissible_topologies(graph: nx.DiGraph[str]) -> set[Topology]:
 
     Returns:
         set[Topology]: Every topology the graph could legitimately be labelled.
-            A cyclic graph is exactly ``{LOOP_AND_GROW}``. An acyclic graph is
-            labelled from its reconvergence (in-degree >= 2) and branching.
+            A cyclic graph is exactly ``{LOOP_AND_GROW}``. An acyclic graph
+            with no reconvergence is ``{TIME_CAVE}`` (plus ``{GAUNTLET}`` when
+            it is a pure linear spine with no branching). An acyclic graph with
+            reconvergence is ``{BRANCH_AND_BOTTLENECK, GAUNTLET}`` because a
+            gauntlet IS a reconverging structure where branches feed back into
+            the spine.
     """
     if not nx.is_directed_acyclic_graph(graph):
         return {Topology.LOOP_AND_GROW}
@@ -33,12 +37,14 @@ def admissible_topologies(graph: nx.DiGraph[str]) -> set[Topology]:
     if reconverging == 0:
         # A pure branching tree: many leaves, no merges.
         admissible.add(Topology.TIME_CAVE)
+        if branching == 0:
+            # A pure linear spine with no choices is the canonical gauntlet shape.
+            admissible.add(Topology.GAUNTLET)
     else:
-        # Reconvergence means bottlenecks where paths merge.
+        # Reconvergence means bottlenecks where paths merge. A gauntlet IS a
+        # reconverging graph (side branches reconnect to the spine), so both
+        # labels are admissible when the graph has reconvergence.
         admissible.add(Topology.BRANCH_AND_BOTTLENECK)
-
-    if branching <= 1:
-        # A near-linear spine reads as a gauntlet regardless of merges.
         admissible.add(Topology.GAUNTLET)
 
     return admissible

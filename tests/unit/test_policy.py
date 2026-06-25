@@ -15,7 +15,14 @@ from cyo_adventure.storybook.models import (
 from cyo_adventure.validator.policy import validate_policy
 
 
-def _story(*, age_band: str, kind: EndingKind, scariness: str = "none") -> Storybook:
+def _story(
+    *,
+    age_band: str,
+    kind: EndingKind,
+    violence: str = "none",
+    scariness: str = "none",
+    peril: str = "none",
+) -> Storybook:
     end = Node(
         id="n_end",
         body="done",
@@ -42,7 +49,9 @@ def _story(*, age_band: str, kind: EndingKind, scariness: str = "none") -> Story
             tier=1,
             estimated_minutes=5,
             ending_count=1,
-            content_flags=ContentFlags(scariness=scariness),
+            content_flags=ContentFlags(
+                violence=violence, scariness=scariness, peril=peril
+            ),
             topology=Topology.GAUNTLET,
         ),
     )
@@ -79,6 +88,22 @@ def test_pl16_allows_content_at_band_ceiling():
         _story(age_band="3-5", kind=EndingKind.SUCCESS, scariness="mild")
     )
     assert not any(f.rule_id == "PL-16" for f in report.errors)
+
+
+def test_pl16_blocks_violence_over_band_ceiling():
+    # 3-5 violence ceiling is NONE; even "mild" violence must be blocked.
+    report = validate_policy(
+        _story(age_band="3-5", kind=EndingKind.SUCCESS, violence="mild")
+    )
+    assert any(f.rule_id == "PL-16" and "violence" in f.message for f in report.errors)
+
+
+def test_pl16_blocks_peril_over_band_ceiling():
+    # 3-5 peril ceiling is "mild"; "intense" exceeds it.
+    report = validate_policy(
+        _story(age_band="3-5", kind=EndingKind.SUCCESS, peril="intense")
+    )
+    assert any(f.rule_id == "PL-16" and "peril" in f.message for f in report.errors)
 
 
 def _two_ending_story(age_band: str, topology: Topology) -> Storybook:

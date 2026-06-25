@@ -36,7 +36,7 @@ def validate_policy(story: Storybook) -> ValidationReport:
         # #CRITICAL: security: a band with no configured profile makes this gate
         # fail OPEN, every age-safety check (PL-15/16/17) is skipped for that
         # band, so a forbidden ending or over-ceiling content would pass review.
-        # #VERIFY: test_every_age_band_has_a_profile asserts the AgeBand enum and
+        # #VERIFY: test_profiles_match_age_band_enum_exactly asserts the AgeBand enum and
         # band_profile._PROFILES keys stay in lockstep, so this branch is
         # unreachable for any valid (enum-constrained) age_band.
         return report

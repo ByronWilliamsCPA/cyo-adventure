@@ -72,13 +72,21 @@ def main(argv: list[str] | None = None) -> int:
     family: str = args.family
     model: str | None = args.model
     try:
-        blob: dict[str, object] = json.loads(Path(path).read_text(encoding="utf-8"))
-    except FileNotFoundError:
-        sys.stderr.write(f"error: file not found: {path}\n")
+        raw = Path(path).read_text(encoding="utf-8")
+    except OSError as exc:
+        sys.stderr.write(f"error: cannot read {path}: {exc}\n")
         return 1
+    try:
+        raw_blob = json.loads(raw)
     except json.JSONDecodeError as exc:
         sys.stderr.write(f"error: invalid JSON in {path}: {exc}\n")
         return 1
+    if not isinstance(raw_blob, dict):
+        sys.stderr.write(
+            f"error: expected a JSON object in {path}, got {type(raw_blob).__name__}\n"
+        )
+        return 1
+    blob: dict[str, object] = raw_blob
     try:
         family_id = uuid.UUID(family)
     except ValueError:
