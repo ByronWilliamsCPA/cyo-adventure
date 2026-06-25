@@ -310,7 +310,7 @@ class TestReadiness:
 
         @asynccontextmanager
         async def _failing_get_session() -> AsyncGenerator[None, None]:
-            raise RuntimeError("super secret dsn password")
+            raise RuntimeError("db-conn-error: connection timeout")
             yield  # pragma: no cover
 
         app = _make_app()
@@ -321,7 +321,7 @@ class TestReadiness:
             client = TestClient(app, raise_server_exceptions=False)
             body = client.get("/health/ready").text
 
-        assert "super secret dsn password" not in body
+        assert "db-conn-error: connection timeout" not in body
         assert "dependency unavailable" in body
 
 

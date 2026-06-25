@@ -1,0 +1,11 @@
+version: 2
+
+# Allowlist for known test fixtures that are not real credentials.
+# Each entry documents WHY the pattern is safe and which file it lives in.
+matches-ignore:
+  - name: "Test DSN fixture - synthetic creds used to validate config validator rejects dev URL in prod"
+    match: "appuser:testpass@db.example.com"
+  - name: "Test Ollama auth format fixture - tests first-colon split logic, not a real credential"
+    match: "testservice:testcred"
+  - name: "Test health endpoint - validates internal exception text does not leak to HTTP response"
+    match: "db-conn-error: connection timeout"
