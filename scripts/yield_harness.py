@@ -359,7 +359,7 @@ def _load_env_file(env_path: Path) -> None:
         key = key.strip()
         value = value.strip()
         # Strip matching surrounding quotes. .env.example documents quoted values
-        # (e.g. OLLAMA_AUTH="svc-cyo:<app-password>"); without unquoting, the
+        # (e.g. OLLAMA_AUTH="<username>:<app-password>"); without unquoting, the
         # literal quotes become part of the credential and break Basic auth.
         if len(value) >= 2 and value[0] in {'"', "'"} and value[-1] == value[0]:
             value = value[1:-1]

@@ -133,6 +133,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reversible base64 over the wire.
 - Stop tracking the empty `stack.env` file and add it to `.gitignore` (a
   Docker/Portainer stack env file that may hold real secrets).
+- Replace realistic-looking credential strings in test fixtures with unambiguously
+  synthetic values (`testservice:testcred`, `testpass`) to stop GitGuardian false
+  positives on every PR; remove the real Authentik service account name (`svc-cyo`)
+  from test code, comments, and script documentation; add `.gitguardian.yml` with
+  an allowlist for remaining known-benign test patterns.
 
 ## [0.1.0] - TBD
 
