@@ -2,10 +2,21 @@ version: 2
 
 # Allowlist for known test fixtures that are not real credentials.
 # Each entry documents WHY the pattern is safe and which file it lives in.
+#
+# NOTE: the svc-cyo entries below cover pre-PR-#11 Ollama test fixtures that
+# appear in branch-history merge commits. PR #11 (fix/security) replaced them
+# with testservice:testcred in the live files; the old strings remain only in
+# earlier git commits that are preserved in the merge history of this branch.
 matches-ignore:
   - name: "Test DSN fixture - synthetic creds used to validate config validator rejects dev URL in prod"
     match: "appuser:testpass@db.example.com"
-  - name: "Test Ollama auth format fixture - tests first-colon split logic, not a real credential"
+  - name: "Test Ollama auth format fixture (post-PR-11 name) - tests first-colon split logic, not a real credential"
     match: "testservice:testcred"
   - name: "Test health endpoint - validates internal exception text does not leak to HTTP response"
     match: "db-conn-error: connection timeout"
+  - name: "Pre-PR-11 Ollama auth test fixture - svc-cyo was a dev-env service account name used in tests before cleanup"
+    match: "svc-cyo:app-pw"
+  - name: "Pre-PR-11 Ollama auth test fixture (laptop variant) - local machine suffix, same dev-env service account"
+    match: "svc-cyo-laptop:app-pw"
+  - name: "Pre-PR-11 Ollama Basic-auth unit test - hardcoded placeholder password used only in test assertions"
+    match: "password=\"secret-pw\""
