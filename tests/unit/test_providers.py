@@ -549,11 +549,11 @@ class TestOllamaProvider:
             captured["authorization"] = request.headers.get("authorization", "")
             return httpx.Response(200, text=_ollama_stream("ok"))
 
-        # Credentials are read from the environment, not hardcoded: secret
-        # scanners (GitGuardian) do not flag env-sourced values, and this is a
-        # fake fixture (the adapter only base64-encodes user:pass). Each falls
-        # back to a clearly-synthetic value when the var is unset (local/CI).
-        test_user = os.environ.get("OLLAMA_TEST_USER", "svc-cyo")
+        # Prefer env vars so real homelab creds can be injected in live integration
+        # runs. The synthetic defaults (testservice / testservice-pass) are used in
+        # unit and CI runs; the adapter only base64-encodes user:pass, so the value
+        # does not matter for correctness.
+        test_user = os.environ.get("OLLAMA_TEST_USER", "testservice")
         test_pw = os.environ.get("OLLAMA_TEST_PW", f"{test_user}-pass")
         provider = _ollama(handler, username=test_user, password=test_pw)
         await provider.complete(system="s", prompt="u", max_tokens=100)
