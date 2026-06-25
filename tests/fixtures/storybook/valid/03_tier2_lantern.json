@@ -1,16 +1,28 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_lantern_cave",
   "version": 1,
   "title": "The Lantern Cave",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["mystery", "exploration"],
+    "themes": [
+      "mystery",
+      "exploration"
+    ],
     "estimated_minutes": 15,
-    "ending_count": 2,
-    "content_flags": {"violence": "none", "scariness": "mild", "peril": "none"}
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "none"
+    },
+    "topology": "time_cave"
   },
   "variables": [
     {
@@ -31,12 +43,23 @@
           "id": "c_take_lantern",
           "label": "Pick up the lantern.",
           "target": "n_cave_fork",
-          "effects": [{"op": "set", "var": "has_lantern", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_lantern",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_ignore_lantern",
           "label": "Leave the lantern and walk inside.",
           "target": "n_cave_fork"
+        },
+        {
+          "id": "xc_start_extra",
+          "label": "Wander off",
+          "target": "xn_dec_0"
         }
       ]
     },
@@ -49,7 +72,14 @@
           "id": "c_dark_passage",
           "label": "Enter the dark passage with your lantern.",
           "target": "n_treasure",
-          "condition": {"==": [{"var": "has_lantern"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "has_lantern"
+              },
+              true
+            ]
+          }
         },
         {
           "id": "c_bright_tunnel",
@@ -62,15 +92,64 @@
       "id": "n_treasure",
       "body": "Your lantern light reveals a glittering cache of ancient coins.",
       "is_ending": true,
-      "ending": {"id": "e_treasure_found", "type": "triumph", "title": "Fortune Discovered"},
+      "ending": {
+        "id": "e_treasure_found",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Fortune Discovered"
+      },
       "choices": []
     },
     {
       "id": "n_exit",
       "body": "The bright tunnel leads you back outside into warm sunlight.",
       "is_ending": true,
-      "ending": {"id": "e_safe_exit", "type": "peaceful", "title": "Safe and Sound"},
+      "ending": {
+        "id": "e_safe_exit",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Safe and Sound"
+      },
       "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "This way",
+          "target": "xn_end_term"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "That way",
+          "target": "xn_end_d0"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d0",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      }
+    },
+    {
+      "id": "xn_end_term",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_term",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      }
     }
   ]
 }

@@ -35,7 +35,7 @@ def _minimal_tier1_story(
 ) -> Storybook:
     """Build a minimal Tier-1 Storybook from a node list."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Test Story",
@@ -46,6 +46,7 @@ def _minimal_tier1_story(
             "themes": ["test"],
             "estimated_minutes": 5,
             "ending_count": ending_count,
+            "topology": "branch_and_bottleneck",
         },
         "variables": [],
         "start_node": start,
@@ -63,7 +64,7 @@ def _minimal_tier2_story(
 ) -> Storybook:
     """Build a minimal Tier-2 Storybook from node and variable lists."""
     data: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": story_id,
         "version": 1,
         "title": "Test Story",
@@ -74,6 +75,7 @@ def _minimal_tier2_story(
             "themes": ["test"],
             "estimated_minutes": 5,
             "ending_count": ending_count,
+            "topology": "branch_and_bottleneck",
         },
         "variables": variables,
         "start_node": start,
@@ -107,7 +109,12 @@ def test_linear_tier1_three_nodes_exactly_three_configs() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -144,7 +151,12 @@ def test_linear_tier1_correct_edges() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -182,7 +194,12 @@ def test_linear_tier1_no_cap() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -241,18 +258,21 @@ def test_lantern_fixture_exit_node_reachable_regardless_of_lantern() -> None:
 
 
 def test_lantern_fixture_config_count() -> None:
-    """The lantern story has 4 nodes; the walk should find at most 6 distinct
-    (node, var-state) configurations (variable branching at n_entrance produces
-    2 var states at n_cave_fork)."""
+    """The lantern walk should find a small, bounded set of distinct
+    (node, var-state) configurations.
+
+    The original lantern core (n_entrance, n_cave_fork, n_treasure, n_exit)
+    contributes up to 6 configs via the has_lantern branching. The schema-2.0
+    policy-compliance branch (an extra variable-free decision and its endings)
+    adds a few more single-state configs, all reachable with has_lantern=False.
+    """
     data = json.loads((FIXTURES / "03_tier2_lantern.json").read_text(encoding="utf-8"))
     story = Storybook.model_validate(data)
 
     result = walk_configurations(story)
 
-    # n_entrance (1 config), n_cave_fork (2 configs: lantern/no-lantern),
-    # n_treasure (1 config, lantern=True only), n_exit (2 configs: lantern/no-lantern).
-    # Total: at most 6 distinct (node, var_state) pairs.
-    assert 1 <= len(result.configs) <= 6
+    # 6 from the stateful core plus the variable-free compliance branch.
+    assert 1 <= len(result.configs) <= 10
 
 
 # ---------------------------------------------------------------------------
@@ -291,14 +311,24 @@ def test_cap_stops_walk_promptly() -> None:
                 "id": "end_a",
                 "body": "End A.",
                 "is_ending": True,
-                "ending": {"id": "e_a", "type": "happy", "title": "End A"},
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End A",
+                },
                 "choices": [],
             },
             {
                 "id": "end_b",
                 "body": "End B.",
                 "is_ending": True,
-                "ending": {"id": "e_b", "type": "sad", "title": "End B"},
+                "ending": {
+                    "id": "e_b",
+                    "valence": "negative",
+                    "kind": "setback",
+                    "title": "End B",
+                },
                 "choices": [],
             },
         ],
@@ -341,14 +371,24 @@ def test_cap_not_exceeded() -> None:
                 "id": "end_a",
                 "body": "End A.",
                 "is_ending": True,
-                "ending": {"id": "e_a", "type": "happy", "title": "End A"},
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End A",
+                },
                 "choices": [],
             },
             {
                 "id": "end_b",
                 "body": "End B.",
                 "is_ending": True,
-                "ending": {"id": "e_b", "type": "sad", "title": "End B"},
+                "ending": {
+                    "id": "e_b",
+                    "valence": "negative",
+                    "kind": "setback",
+                    "title": "End B",
+                },
                 "choices": [],
             },
         ],
@@ -377,7 +417,12 @@ def test_cap_one_still_returns_start_config() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -404,7 +449,12 @@ def test_cap_zero_returns_empty_capped() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -458,14 +508,24 @@ def test_cap_preserves_edges_configs_key_invariant_when_aborted() -> None:
                 "id": "end_a",
                 "body": "End A.",
                 "is_ending": True,
-                "ending": {"id": "e_a", "type": "happy", "title": "End A"},
+                "ending": {
+                    "id": "e_a",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End A",
+                },
                 "choices": [],
             },
             {
                 "id": "end_b",
                 "body": "End B.",
                 "is_ending": True,
-                "ending": {"id": "e_b", "type": "sad", "title": "End B"},
+                "ending": {
+                    "id": "e_b",
+                    "valence": "negative",
+                    "kind": "setback",
+                    "title": "End B",
+                },
                 "choices": [],
             },
         ],
@@ -505,7 +565,12 @@ def test_large_enough_cap_completes_small_story() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -541,7 +606,12 @@ def test_no_once_effects_produce_empty_frozenset_third_component() -> None:
                 "id": "end",
                 "body": "End.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "Done"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
                 "choices": [],
             },
         ],
@@ -604,7 +674,12 @@ def test_once_effect_node_discriminates_configurations() -> None:
                 "id": "the_end",
                 "body": "The end.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "Done"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
                 "choices": [],
             },
         ],
@@ -675,7 +750,12 @@ def test_once_effect_story_variable_state_differs_across_paths() -> None:
                 "id": "the_end",
                 "body": "The end.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "Done"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Done",
+                },
                 "choices": [],
             },
         ],
@@ -712,7 +792,12 @@ def test_walk_result_is_named_dataclass() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -741,7 +826,12 @@ def test_config_key_structure() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -773,7 +863,12 @@ def test_edges_keys_match_configs_keys() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -803,7 +898,12 @@ def test_capped_false_when_cap_not_reached() -> None:
                 "id": "end",
                 "body": "Done.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "The End"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
                 "choices": [],
             },
         ],
@@ -826,7 +926,12 @@ def test_single_node_ending_story() -> None:
                 "id": "start",
                 "body": "Instant end.",
                 "is_ending": True,
-                "ending": {"id": "e1", "type": "happy", "title": "Instant"},
+                "ending": {
+                    "id": "e1",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Instant",
+                },
                 "choices": [],
             },
         ],

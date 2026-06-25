@@ -1,0 +1,135 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_demo",
+  "version": 1,
+  "title": "Demo Skeleton",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "target": 3.0
+    },
+    "tier": 1,
+    "estimated_minutes": 5,
+    "ending_count": 5,
+    "topology": "time_cave"
+  },
+  "variables": [],
+  "start_node": "start",
+  "nodes": [
+    {
+      "id": "start",
+      "body": "<<FILL role=setup words=120 beats='introduce the hero at the forest edge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c1",
+          "label": "Enter the forest",
+          "target": "end"
+        },
+        {
+          "id": "xc_s_0",
+          "label": "A new path",
+          "target": "xn_dec_0"
+        },
+        {
+          "id": "xc_s_2",
+          "label": "A new path",
+          "target": "xn_dec_2"
+        }
+      ]
+    },
+    {
+      "id": "end",
+      "body": "<<FILL role=ending words=80 beats='a warm, safe resolution'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_home",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Safely Home"
+      }
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "left",
+          "target": "xn_e_0a"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "right",
+          "target": "xn_e_0b"
+        }
+      ]
+    },
+    {
+      "id": "xn_e_0a",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_0a",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_e_0b",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_1b",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_dec_2",
+      "body": "A side choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_2_a",
+          "label": "left",
+          "target": "xn_e_2a"
+        },
+        {
+          "id": "xc_2_b",
+          "label": "right",
+          "target": "xn_e_2b"
+        }
+      ]
+    },
+    {
+      "id": "xn_e_2a",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_2a",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Extra Ending 3"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_e_2b",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_3b",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 4"
+      },
+      "choices": []
+    }
+  ]
+}

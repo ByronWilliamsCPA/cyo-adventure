@@ -27,7 +27,7 @@ from cyo_adventure.storybook.schema_export import build_schema, export_schema
 def _minimal_tier1() -> dict[str, Any]:
     """Return a minimal, schema-valid Tier 1 story as a plain dict."""
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_min",
         "version": 1,
         "title": "Minimal",
@@ -37,6 +37,7 @@ def _minimal_tier1() -> dict[str, Any]:
             "tier": 1,
             "estimated_minutes": 5,
             "ending_count": 1,
+            "topology": "branch_and_bottleneck",
         },
         "variables": [],
         "start_node": "start",
@@ -51,7 +52,12 @@ def _minimal_tier1() -> dict[str, Any]:
                 "id": "end",
                 "body": "The end.",
                 "is_ending": True,
-                "ending": {"id": "e_good", "type": "happy", "title": "Home"},
+                "ending": {
+                    "id": "e_good",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "Home",
+                },
             },
         ],
     }
@@ -125,7 +131,12 @@ def test_duplicate_ending_id_rejected() -> None:
             "id": "end2",
             "body": "Also the end.",
             "is_ending": True,
-            "ending": {"id": "e_good", "type": "happy", "title": "Home Again"},
+            "ending": {
+                "id": "e_good",
+                "valence": "positive",
+                "kind": "success",
+                "title": "Home Again",
+            },
         }
     )
     with pytest.raises(ValidationError, match="duplicate ending id"):
@@ -145,7 +156,12 @@ def test_missing_ending_block_rejected() -> None:
 def test_non_ending_with_ending_block_rejected() -> None:
     """A non-ending node carrying an ending block fails validation."""
     story = _minimal_tier1()
-    story["nodes"][0]["ending"] = {"id": "e_x", "type": "happy", "title": "X"}
+    story["nodes"][0]["ending"] = {
+        "id": "e_x",
+        "valence": "positive",
+        "kind": "success",
+        "title": "X",
+    }
     with pytest.raises(ValidationError, match="must not carry an ending block"):
         Storybook.model_validate(story)
 
@@ -468,9 +484,19 @@ def test_set_effect_type_mismatch_rejected() -> None:
 def test_unsupported_schema_version_rejected() -> None:
     """A story declaring an unsupported schema_version is rejected."""
     story = _minimal_tier1()
-    story["schema_version"] = "2.0"
+    story["schema_version"] = "9.9"
     with pytest.raises(ValidationError, match="unsupported schema_version"):
         Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("band", ["3-5", "5-8", "16+"])
+def test_new_age_bands_are_valid(band: str) -> None:
+    """The three added bands parse on a minimal Tier 1 story."""
+    story = _minimal_tier1()
+    story["metadata"]["age_band"] = band
+    book = Storybook.model_validate(story)
+    assert book.metadata.age_band == band
 
 
 @pytest.mark.unit

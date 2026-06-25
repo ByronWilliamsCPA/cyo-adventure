@@ -36,11 +36,10 @@ from cyo_adventure.db.models import (
     ChildProfile,
     Concept,
     GenerationJob,
-    Storybook,
-    StorybookVersion,
 )
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import generate_story
+from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.middleware.correlation import (
@@ -275,28 +274,20 @@ async def run_generation_job(
             # IntegrityError on the second passing job. Stamp the same id back
             # onto the stored blob so the blob's "id" matches its DB row.
             story_id = f"s_{job_id}"
-            story_blob = {**outcome.storybook, "id": story_id}
 
-            # Create Storybook then StorybookVersion (FK order: Storybook first).
-            storybook_row = Storybook(
-                id=story_id,
-                family_id=concept_row.family_id,
-                status="draft",
-                created_by=concept_row.created_by,
+            await persist_storybook(
+                session,
+                StorybookParams(
+                    story_id=story_id,
+                    blob=outcome.storybook,
+                    family_id=concept_row.family_id,
+                    created_by=concept_row.created_by,
+                    model=job_row.model,
+                    prompt_version=_PROMPT_VERSION,
+                    validation_report=dict(outcome.report),
+                    version=_FIRST_VERSION,
+                ),
             )
-            session.add(storybook_row)
-            await session.flush()  # ensure storybook PK exists before version FK
-
-            version_row = StorybookVersion(
-                storybook_id=story_id,
-                version=_FIRST_VERSION,
-                blob=story_blob,
-                validation_report=dict(outcome.report),
-                model=job_row.model,
-                prompt_version=_PROMPT_VERSION,
-            )
-            session.add(version_row)
-            await session.flush()
 
             job_row.storybook_id = story_id
             job_row.version = _FIRST_VERSION

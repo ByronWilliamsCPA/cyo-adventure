@@ -21,15 +21,18 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from cyo_adventure.storybook.condition import Condition, referenced_vars
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "2.0"
 
 
 class AgeBand(StrEnum):
     """The reading age band a story targets."""
 
+    BAND_3_5 = "3-5"
+    BAND_5_8 = "5-8"
     BAND_8_11 = "8-11"
     BAND_10_13 = "10-13"
     BAND_13_16 = "13-16"
+    BAND_16_PLUS = "16+"
 
 
 class VariableType(StrEnum):
@@ -53,6 +56,66 @@ class ContentFlagLevel(StrEnum):
     NONE = "none"
     MILD = "mild"
     MODERATE = "moderate"
+    INTENSE = "intense"
+
+
+# Ordered rank for ContentFlagLevel. StrEnum is not orderable, and the per-band
+# ceiling check (PL-16) needs "<=" semantics, so the order is defined once here.
+_LEVEL_RANK: dict[ContentFlagLevel, int] = {
+    ContentFlagLevel.NONE: 0,
+    ContentFlagLevel.MILD: 1,
+    ContentFlagLevel.MODERATE: 2,
+    ContentFlagLevel.INTENSE: 3,
+}
+
+
+def level_rank(level: ContentFlagLevel) -> int:
+    """Return the ordinal rank of a content-flag level (none=0 .. intense=3).
+
+    Args:
+        level: The content-flag level.
+
+    Returns:
+        int: The level's rank, for ``<=`` comparisons against a band ceiling.
+    """
+    return _LEVEL_RANK[level]
+
+
+class Valence(StrEnum):
+    """How an ending feels, independent of what mechanically happened."""
+
+    POSITIVE = "positive"
+    NEUTRAL = "neutral"
+    NEGATIVE = "negative"
+
+
+class EndingKind(StrEnum):
+    """What mechanically happened at an ending (closed set)."""
+
+    SUCCESS = "success"
+    SETBACK = "setback"
+    DEATH = "death"
+    CAPTURE = "capture"
+    COMPLETION = "completion"
+    DISCOVERY = "discovery"
+
+
+class Topology(StrEnum):
+    """The branching shape of a story graph (Ashwell vocabulary)."""
+
+    TIME_CAVE = "time_cave"
+    GAUNTLET = "gauntlet"
+    BRANCH_AND_BOTTLENECK = "branch_and_bottleneck"
+    LOOP_AND_GROW = "loop_and_grow"
+
+
+class SafetyScope(StrEnum):
+    """A per-node hint marking a sensitive scene for the safety reviewer."""
+
+    PERIL = "peril"
+    SCARY_IMAGERY = "scary_imagery"
+    CONFLICT = "conflict"
+    SAD_MOMENT = "sad_moment"
 
 
 class ReadingLevel(BaseModel):
@@ -87,6 +150,7 @@ class StoryMetadata(BaseModel):
     estimated_minutes: int = Field(ge=1)
     ending_count: int = Field(ge=1)
     content_flags: ContentFlags = Field(default_factory=ContentFlags)
+    topology: Topology
 
 
 class Variable(BaseModel):
@@ -214,12 +278,13 @@ class Choice(BaseModel):
 
 
 class Ending(BaseModel):
-    """A terminal outcome, identified by a stable id across prose edits."""
+    """A terminal outcome, typed on two axes: how it feels and what happened."""
 
     model_config = ConfigDict(extra="forbid")
 
     id: str = Field(min_length=1)
-    type: str = Field(min_length=1)
+    valence: Valence
+    kind: EndingKind
     title: str = Field(min_length=1)
 
 
@@ -235,6 +300,7 @@ class Node(BaseModel):
     is_ending: bool = False
     ending: Ending | None = None
     tags: list[str] = Field(default_factory=list)
+    safety_scope: list[SafetyScope] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def _check_ending_consistency(self) -> Self:

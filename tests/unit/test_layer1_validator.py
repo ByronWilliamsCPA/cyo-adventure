@@ -14,7 +14,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.validator import Severity, validate_layer1
+from cyo_adventure.validator import Severity, layer1, validate_layer1
+from cyo_adventure.validator.layer1 import band_budget
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -115,6 +116,19 @@ def test_severity_enum_values() -> None:
     assert str(Severity.WARNING) == "warning"
 
 
+@pytest.mark.unit
+def test_band_budget_delegates_to_profile() -> None:
+    """band_budget reads the band profile and returns the budget triple."""
+    assert band_budget("13-16") == (30, 60, 10)
+    assert band_budget("99-100") is None
+
+
+@pytest.mark.unit
+def test_legacy_budgets_table_is_gone() -> None:
+    """The legacy module-level _BUDGETS table has been removed."""
+    assert not hasattr(layer1, "_BUDGETS")
+
+
 # --- Synthetic stories for branch coverage -------------------------------------
 
 
@@ -130,6 +144,7 @@ def _meta(
         "estimated_minutes": 5,
         "ending_count": ending_count,
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+        "topology": "branch_and_bottleneck",
     }
 
 
@@ -141,7 +156,12 @@ def _ending(nid: str = "n_end", eid: str = "e1") -> dict[str, object]:
         "on_enter": [],
         "choices": [],
         "is_ending": True,
-        "ending": {"id": eid, "type": "good", "title": "Done"},
+        "ending": {
+            "id": eid,
+            "valence": "positive",
+            "kind": "success",
+            "title": "Done",
+        },
         "tags": [],
     }
 
@@ -169,7 +189,7 @@ def _story(
 ) -> dict[str, object]:
     """Assemble a story mapping around the given nodes."""
     return {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_test",
         "version": 1,
         "title": "T",
@@ -318,3 +338,15 @@ def test_missing_nodes_is_schema_error() -> None:
     report = validate_layer1({"id": "s_test", "start_node": "x"})
     assert not report.ok
     assert "L1-1" in report.rule_ids()
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("band", "expected"),
+    [("3-5", (8, 20, 4)), ("5-8", (12, 30, 6)), ("16+", (30, 60, 12))],
+)
+def test_new_bands_have_budgets(band: str, expected: tuple[int, int, int]) -> None:
+    """band_budget returns the configured tuple for each new band."""
+    budget = band_budget(band)
+    assert budget is not None, f"No budget entry found for band {band!r}"
+    assert budget == expected

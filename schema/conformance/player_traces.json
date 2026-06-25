@@ -1,31 +1,55 @@
 {
   "description": "Cross-implementation player conformance: replaying the same choices through the Python and TypeScript engines must reach an identical state. visit_set is compared as a set (order-independent).",
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "traces": [
     {
       "name": "lantern_take_then_dark_passage",
-      "choices": ["c_take_lantern", "c_dark_passage"],
+      "choices": [
+        "c_take_lantern",
+        "c_dark_passage"
+      ],
       "expected": {
         "current_node": "n_treasure",
-        "var_state": { "has_lantern": true },
-        "visit_set": ["n_cave_fork", "n_entrance", "n_treasure"],
+        "var_state": {
+          "has_lantern": true
+        },
+        "visit_set": [
+          "n_cave_fork",
+          "n_entrance",
+          "n_treasure"
+        ],
         "ending_id": "e_treasure_found"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_lantern_cave",
         "version": 1,
         "title": "The Lantern Cave",
         "metadata": {
           "age_band": "10-13",
-          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "reading_level": {
+            "scheme": "flesch_kincaid",
+            "target": 5.0,
+            "tolerance": 1.5
+          },
           "tier": 2,
           "themes": [],
           "estimated_minutes": 15,
           "ending_count": 2,
-          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" }
+          "content_flags": {
+            "violence": "none",
+            "scariness": "none",
+            "peril": "none"
+          },
+          "topology": "gauntlet"
         },
-        "variables": [{ "name": "has_lantern", "type": "bool", "initial": false }],
+        "variables": [
+          {
+            "name": "has_lantern",
+            "type": "bool",
+            "initial": false
+          }
+        ],
         "start_node": "n_entrance",
         "nodes": [
           {
@@ -37,9 +61,19 @@
                 "id": "c_take_lantern",
                 "label": "Pick up the lantern.",
                 "target": "n_cave_fork",
-                "effects": [{ "op": "set", "var": "has_lantern", "value": true }]
+                "effects": [
+                  {
+                    "op": "set",
+                    "var": "has_lantern",
+                    "value": true
+                  }
+                ]
               },
-              { "id": "c_ignore_lantern", "label": "Walk inside.", "target": "n_cave_fork" }
+              {
+                "id": "c_ignore_lantern",
+                "label": "Walk inside.",
+                "target": "n_cave_fork"
+              }
             ]
           },
           {
@@ -51,23 +85,44 @@
                 "id": "c_dark_passage",
                 "label": "Enter the dark passage.",
                 "target": "n_treasure",
-                "condition": { "==": [{ "var": "has_lantern" }, true] }
+                "condition": {
+                  "==": [
+                    {
+                      "var": "has_lantern"
+                    },
+                    true
+                  ]
+                }
               },
-              { "id": "c_bright_tunnel", "label": "Take the bright tunnel.", "target": "n_exit" }
+              {
+                "id": "c_bright_tunnel",
+                "label": "Take the bright tunnel.",
+                "target": "n_exit"
+              }
             ]
           },
           {
             "id": "n_treasure",
             "body": "Treasure!",
             "is_ending": true,
-            "ending": { "id": "e_treasure_found", "type": "triumph", "title": "Fortune" },
+            "ending": {
+              "id": "e_treasure_found",
+              "valence": "positive",
+              "kind": "success",
+              "title": "Fortune"
+            },
             "choices": []
           },
           {
             "id": "n_exit",
             "body": "Sunlight.",
             "is_ending": true,
-            "ending": { "id": "e_safe_exit", "type": "peaceful", "title": "Safe" },
+            "ending": {
+              "id": "e_safe_exit",
+              "valence": "positive",
+              "kind": "completion",
+              "title": "Safe"
+            },
             "choices": []
           }
         ]
@@ -75,28 +130,52 @@
     },
     {
       "name": "lantern_ignore_then_bright",
-      "choices": ["c_ignore_lantern", "c_bright_tunnel"],
+      "choices": [
+        "c_ignore_lantern",
+        "c_bright_tunnel"
+      ],
       "expected": {
         "current_node": "n_exit",
-        "var_state": { "has_lantern": false },
-        "visit_set": ["n_cave_fork", "n_entrance", "n_exit"],
+        "var_state": {
+          "has_lantern": false
+        },
+        "visit_set": [
+          "n_cave_fork",
+          "n_entrance",
+          "n_exit"
+        ],
         "ending_id": "e_safe_exit"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_lantern_cave",
         "version": 1,
         "title": "The Lantern Cave",
         "metadata": {
           "age_band": "10-13",
-          "reading_level": { "scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5 },
+          "reading_level": {
+            "scheme": "flesch_kincaid",
+            "target": 5.0,
+            "tolerance": 1.5
+          },
           "tier": 2,
           "themes": [],
           "estimated_minutes": 15,
           "ending_count": 2,
-          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" }
+          "content_flags": {
+            "violence": "none",
+            "scariness": "none",
+            "peril": "none"
+          },
+          "topology": "gauntlet"
         },
-        "variables": [{ "name": "has_lantern", "type": "bool", "initial": false }],
+        "variables": [
+          {
+            "name": "has_lantern",
+            "type": "bool",
+            "initial": false
+          }
+        ],
         "start_node": "n_entrance",
         "nodes": [
           {
@@ -108,9 +187,19 @@
                 "id": "c_take_lantern",
                 "label": "Pick up the lantern.",
                 "target": "n_cave_fork",
-                "effects": [{ "op": "set", "var": "has_lantern", "value": true }]
+                "effects": [
+                  {
+                    "op": "set",
+                    "var": "has_lantern",
+                    "value": true
+                  }
+                ]
               },
-              { "id": "c_ignore_lantern", "label": "Walk inside.", "target": "n_cave_fork" }
+              {
+                "id": "c_ignore_lantern",
+                "label": "Walk inside.",
+                "target": "n_cave_fork"
+              }
             ]
           },
           {
@@ -122,23 +211,44 @@
                 "id": "c_dark_passage",
                 "label": "Enter the dark passage.",
                 "target": "n_treasure",
-                "condition": { "==": [{ "var": "has_lantern" }, true] }
+                "condition": {
+                  "==": [
+                    {
+                      "var": "has_lantern"
+                    },
+                    true
+                  ]
+                }
               },
-              { "id": "c_bright_tunnel", "label": "Take the bright tunnel.", "target": "n_exit" }
+              {
+                "id": "c_bright_tunnel",
+                "label": "Take the bright tunnel.",
+                "target": "n_exit"
+              }
             ]
           },
           {
             "id": "n_treasure",
             "body": "Treasure!",
             "is_ending": true,
-            "ending": { "id": "e_treasure_found", "type": "triumph", "title": "Fortune" },
+            "ending": {
+              "id": "e_treasure_found",
+              "valence": "positive",
+              "kind": "success",
+              "title": "Fortune"
+            },
             "choices": []
           },
           {
             "id": "n_exit",
             "body": "Sunlight.",
             "is_ending": true,
-            "ending": { "id": "e_safe_exit", "type": "peaceful", "title": "Safe" },
+            "ending": {
+              "id": "e_safe_exit",
+              "valence": "positive",
+              "kind": "completion",
+              "title": "Safe"
+            },
             "choices": []
           }
         ]
@@ -146,45 +256,91 @@
     },
     {
       "name": "once_effect_holds_across_reentry",
-      "choices": ["c_again", "c_again", "c_leave"],
+      "choices": [
+        "c_again",
+        "c_again",
+        "c_leave"
+      ],
       "expected": {
         "current_node": "n_end",
-        "var_state": { "counter": 1 },
-        "visit_set": ["n_end", "n_room"],
+        "var_state": {
+          "counter": 1
+        },
+        "visit_set": [
+          "n_end",
+          "n_room"
+        ],
         "ending_id": "e_done"
       },
       "story": {
-        "schema_version": "1.0",
+        "schema_version": "2.0",
         "id": "s_once_loop",
         "version": 1,
         "title": "Once Loop",
         "metadata": {
           "age_band": "10-13",
-          "reading_level": { "scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0 },
+          "reading_level": {
+            "scheme": "flesch_kincaid",
+            "target": 4.0,
+            "tolerance": 1.0
+          },
           "tier": 2,
           "themes": [],
           "estimated_minutes": 5,
           "ending_count": 1,
-          "content_flags": { "violence": "none", "scariness": "none", "peril": "none" }
+          "content_flags": {
+            "violence": "none",
+            "scariness": "none",
+            "peril": "none"
+          },
+          "topology": "loop_and_grow"
         },
-        "variables": [{ "name": "counter", "type": "int", "initial": 0, "min": 0, "max": 5 }],
+        "variables": [
+          {
+            "name": "counter",
+            "type": "int",
+            "initial": 0,
+            "min": 0,
+            "max": 5
+          }
+        ],
         "start_node": "n_room",
         "nodes": [
           {
             "id": "n_room",
             "body": "A room.",
             "is_ending": false,
-            "on_enter": [{ "op": "inc", "var": "counter", "value": 1, "once": true }],
+            "on_enter": [
+              {
+                "op": "inc",
+                "var": "counter",
+                "value": 1,
+                "once": true
+              }
+            ],
             "choices": [
-              { "id": "c_again", "label": "Stay.", "target": "n_room" },
-              { "id": "c_leave", "label": "Leave.", "target": "n_end" }
+              {
+                "id": "c_again",
+                "label": "Stay.",
+                "target": "n_room"
+              },
+              {
+                "id": "c_leave",
+                "label": "Leave.",
+                "target": "n_end"
+              }
             ]
           },
           {
             "id": "n_end",
             "body": "Done.",
             "is_ending": true,
-            "ending": { "id": "e_done", "type": "neutral", "title": "Done" },
+            "ending": {
+              "id": "e_done",
+              "valence": "neutral",
+              "kind": "discovery",
+              "title": "Done"
+            },
             "choices": []
           }
         ]

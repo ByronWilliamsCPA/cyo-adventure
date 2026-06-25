@@ -1,6 +1,6 @@
 {
   "description": "Cross-implementation conformance fixtures for the condition DSL (ADR-006). The Python and TypeScript evaluators must return identical results for every case.",
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "cases": [
     {
       "name": "bare_var_true",

@@ -1,0 +1,220 @@
+{
+  "schema_version": "1.0",
+  "id": "sk_clocktower_cipher",
+  "version": 1,
+  "title": "The Clocktower Cipher",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 5.5, "tolerance": 1.5},
+    "tier": 1,
+    "themes": ["mystery", "puzzles", "friendship", "history"],
+    "estimated_minutes": 18,
+    "ending_count": 8,
+    "content_flags": {"violence": "none", "scariness": "mild", "peril": "mild"}
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The old clocktower had not chimed in years. Its great brass hands were frozen at twelve, and the front door was locked tight. Mara, Theo, and Lin stood at the bottom of the steps and stared up at it. \"Look at this,\" Mara said. A square of paper was pinned to the door with a brass tack, covered in rows of strange symbols, neat and deliberate. \"It's a cipher,\" she breathed. She loved puzzles more than anything. Theo cracked his knuckles and studied the building for a way up. Lin, always careful, read the warning sign half buried in ivy: KEEP OUT. \"Someone wanted this found,\" Mara said. \"Why pin a code to a locked door unless you want it solved?\" The three friends looked at each other. The afternoon stretched ahead of them, gold and quiet. They could study the strange note, hunt for another way inside, or find the old clockkeeper who still lived nearby. What should they try first?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_examine", "label": "Examine the cipher note pinned to the door.", "target": "n_note"},
+        {"id": "c_door", "label": "Search the building for another way in.", "target": "n_door"},
+        {"id": "c_keeper", "label": "Find the old clockkeeper and ask for help.", "target": "n_keeper"}
+      ]
+    },
+    {
+      "id": "n_note",
+      "body": "Mara smoothed the paper against her knee and got to work. The cipher was a simple substitution, each symbol standing for a letter, and she had cracked dozens like it. Theo and Lin leaned close as her pencil moved. One symbol kept repeating, so she guessed it was E and worked outward from there. Slowly, the first line surfaced: THE KEY SLEEPS BENEATH THE THIRD STONE. \"A key,\" Lin said. \"Hidden in the steps.\" Mara nodded, already scanning the worn stone stairs. The second line was harder, but one phrase came clear: A LOOSE GRATE BREATHES. \"So there are two ways in,\" Theo said. \"The hidden key, or a grate somewhere.\" Mara folded the note and tucked it in her pocket, her heart thumping. Whoever wrote this had been clever and patient, and was speaking to them across years. They could follow the clue and dig for the buried key, or go straight for the grate the note mentioned. Which way?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_note_key", "label": "Follow the clue to hunt for the hidden key.", "target": "n_keyhunt"},
+        {"id": "c_note_inside", "label": "Try the loose grate the note mentions.", "target": "n_inside"}
+      ]
+    },
+    {
+      "id": "n_door",
+      "body": "They circled the base of the tower through tall, dry grass. The front door was solid oak and would not budge, but around the side they found a smaller door, swollen shut in its frame. Theo pressed his shoulder to it and felt it give, just slightly, with a groan. Above them, a narrow window stood cracked open three storeys up, where a drainpipe and a row of carved stone ledges offered a climb. Lin frowned at the height. \"That's a long way up,\" she said. Theo was already grinning; he loved a climb. \"The door's faster,\" Mara pointed out, \"and a lot closer to the ground.\" A cold breeze slid out of the gap in the doorframe, carrying the smell of dust and old metal. Whatever waited inside had been sealed a long time. They could put their weight into the stiff side door, or take the harder, higher route up to the open window. What would they choose?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_door_force", "label": "Shoulder the stiff side door open.", "target": "n_inside"},
+        {"id": "c_door_window", "label": "Climb up to the high window.", "target": "n_window"}
+      ]
+    },
+    {
+      "id": "n_keeper",
+      "body": "The clockkeeper's cottage sat in the tower's long shadow. He was old, with ink-stained fingers and sharp, kind eyes, and he did not seem surprised to see them. \"You found the note,\" he said. It was not a question. \"People do, now and then. Most give up.\" He studied the three of them. \"The tower is tricky. It was built to test whoever entered, and it still does.\" Mara asked who had built it. The keeper's face softened, as if at an old friend. \"That's a longer story,\" he said, \"and worth your time, if you'll hear it.\" He could also simply unlock the door and let them in, he added, though he warned that he would not climb those stairs himself. The choice was theirs. They could go inside now with the keeper's blessing, or stay a moment longer and ask about the person who had built the cipher into the tower's bones. What did they want first?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_keeper_enter", "label": "Go inside with the keeper.", "target": "n_inside"},
+        {"id": "c_keeper_story", "label": "Ask who built the cipher.", "target": "n_keeper_story"}
+      ]
+    },
+    {
+      "id": "n_keyhunt",
+      "body": "\"Beneath the third stone,\" Mara repeated, counting up from the bottom step. One, two, three. The third stair was cracked along one edge, and when Theo wedged his fingers under it, the stone lifted like a lid. Underneath, in a hollow lined with felt gone green with age, lay a heavy brass key. Lin lifted it out and turned it in the light. It was ornate, its head shaped like a tiny clockface, the teeth still bright where the felt had protected them. \"Someone meant for this to last,\" she said softly. Mara felt the pieces clicking together: the note, the clue, the key, all laid down years ago and waiting. Theo was practically bouncing. \"That fits the front door, I'd bet anything,\" he said. They climbed back to the great oak door, the key warm now in Lin's careful hand. There was only one thing left to do: fit it to the lock and see if the tower would let them in.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_keyhunt_in", "label": "Unlock the front door with the brass key.", "target": "n_inside"}
+      ]
+    },
+    {
+      "id": "n_keeper_story",
+      "body": "The keeper poured them each a cup of cider and settled into his chair. \"Her name was Eda,\" he began. \"The clockmaker. The cleverest hands this town ever knew.\" He explained how Eda had built the tower not just to keep time but to keep a secret, something the town had nearly lost and that she could not bear to see forgotten. \"She didn't trust a vault or a safe,\" he said. \"She trusted a puzzle. She believed only someone patient and kind enough to solve it deserved to find what she'd hidden.\" Mara leaned forward, hardly breathing. The cipher, the key, the warnings, all of it was Eda speaking, choosing her finders. \"The tower will test your patience,\" the keeper warned, \"and reward it. Set the clock right, and it opens. Force it, and it fights back.\" He rose stiffly and handed Mara a small brass token from the mantel. \"You'll know when you need this.\" Then he pointed them toward the door. It was time to go inside.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_story_in", "label": "Head inside with what you have learned.", "target": "n_inside"}
+      ]
+    },
+    {
+      "id": "n_window",
+      "body": "Theo went first, of course. He climbed the drainpipe hand over hand, found the carved ledges with his toes, and hauled himself up to the narrow window. Lin followed more slowly, testing each grip, while Mara waited below with the note. \"It's open!\" Theo called down. He worked the cracked window wider and slithered through, then reached back to help the others. One by one they squeezed into the dark and dropped onto a dusty wooden landing inside the tower. Mara's eyes adjusted slowly. They stood high up, with a spiral stair winding down into shadow and the faint, frozen shapes of gears looming overhead. The air was cold and still and smelled of brass and old oil. Lin brushed cobwebs from her sleeves. \"We're in,\" she whispered, as if the tower might hear. Theo was already peering down the stairwell, eager to explore. Below them, the whole sleeping machine of the clocktower waited. There was only one way to go now: down, into the heart of it.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_window_in", "label": "Drop down into the tower.", "target": "n_inside"}
+      ]
+    },
+    {
+      "id": "n_inside",
+      "body": "At the foot of the landing the tower opened into a tall, shadowed hall, the spine of the whole machine. Cold light fell in dusty beams from slit windows far above. Mara turned slowly, taking it in. A spiral stair climbed toward the great clockface overhead, where they would have to set the cipher. A low door stood ajar to one side, the clockmaker's study, its shelves crowded with tools and papers. Across the floor yawned a pit where a vast pendulum hung motionless on its cable, a narrow ledge running past it into the dark. And a steep stone stairway dropped down to a basement, where the tower's deepest machinery slept. \"We can't do everything,\" Lin said. \"The light won't last forever.\" Theo wanted to charge straight up. Mara itched to search the study for anything about the cipher. Lin eyed the basement and the pendulum both with caution. Four ways led on from here. Which would they take first?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_inside_stairs", "label": "Climb the spiral stair.", "target": "n_stairs"},
+        {"id": "c_inside_study", "label": "Open the clockmaker's study.", "target": "n_study"},
+        {"id": "c_inside_pendulum", "label": "Edge along the pendulum pit.", "target": "n_pendulum"},
+        {"id": "c_inside_basement", "label": "Go down to the basement.", "target": "n_basement"}
+      ]
+    },
+    {
+      "id": "n_stairs",
+      "body": "They started up the spiral stair, their footsteps ringing on the iron treads. Round and round it climbed, hugging the curved wall, the great frozen gears looming past them as they rose. Near the top, Theo's foot found a tread that wobbled. He knelt and pried it up, and underneath, wedged in the gap, sat a small brass gear-token, exactly like the one the keeper had described. \"Eda left these all over,\" Mara guessed, pocketing it. \"Little keys for little locks.\" Lin tested the rest of the steps carefully before they went on, just in case. Above them, light grew brighter, spilling down from the chamber behind the clockface. They could hear the wind now, humming through the gaps in the old brass. Whatever the cipher was meant to do, they would do it up there, at the face of the clock itself. They climbed the last turn of the stair toward the light, ready to face the clock.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_stairs_face", "label": "Climb up to the great clockface.", "target": "n_clockface"}
+      ]
+    },
+    {
+      "id": "n_study",
+      "body": "The study was small and crowded and smelled of paper and oil. A workbench ran along one wall, scattered with tiny tools, and above it hung a cipher wheel, two brass discs pinned together, each rimmed with letters. \"That's it,\" Mara said, her voice hushed. \"That's how you read the code.\" She turned the discs and felt the cipher's logic fall open in her mind; now she could decode anything Eda had left. But the shelves were also packed with logbooks, dozens of them, filled with Eda's neat handwriting, decades of notes and drawings and secrets. Lin ran a finger along the spines, tempted. \"We could learn so much,\" she murmured. Theo shifted by the door, restless. \"We came to set the clock,\" he reminded them. The light through the slit window was already turning gold; time was slipping. They could take the cipher wheel and climb to the clockface, or stay and lose themselves in the logbooks. Which mattered more?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_study_face", "label": "Take the cipher wheel up to the clockface.", "target": "n_clockface"},
+        {"id": "c_study_logs", "label": "Stay and read the fascinating logbooks.", "target": "n_end_library"}
+      ]
+    },
+    {
+      "id": "n_pendulum",
+      "body": "The pendulum hung in its pit like a great brass moon, still and heavy on a cable thick as Theo's arm. A narrow stone ledge ran along the wall past it, and at the far end, just visible in the gloom, sat an old oil can on a hook. \"That could free up the gears if anything's stuck,\" Mara said. Theo eyed the ledge. It was barely a foot wide, with a long drop below into darkness, though the pendulum itself was motionless and would not swing unless the clock came alive. Lin's stomach tightened. \"That's too narrow,\" she said. \"One slip.\" But the oil can looked useful, and the ledge, while frightening, was solid stone. Mara weighed it: the prize was worth something, but so was a whole skin. They could edge carefully along the ledge to grab the oil can, or decide the crossing was not worth the risk and back away to the safer stairs. What would they do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_pendulum_oil", "label": "Cross carefully and grab the oil can.", "target": "n_clockface"},
+        {"id": "c_pendulum_giveup", "label": "Decide the ledge is too risky and back out.", "target": "n_end_giveup"}
+      ]
+    },
+    {
+      "id": "n_basement",
+      "body": "The stone steps spiraled down into a cool, echoing dark, and the friends went carefully, one hand on the wall. The basement was the tower's engine room: a forest of shafts and cogs and counterweights, all sleeping, threaded through with the faint smell of grease. Lin lifted a fallen lantern and found, to her surprise, that it still held oil; she coaxed it alight, and the machinery threw long, leaning shadows. \"It's beautiful,\" she said. Every gear had been cut by hand. Against the far wall, a slim iron service ladder ran straight up through a shaft, bypassing the spiral stair entirely. \"That goes all the way to the clockface,\" Theo guessed, craning his neck. It was a quicker, if steeper, route to where they needed to be. They had seen the heart of the machine now, and understood a little more of Eda's genius. There was nothing more to learn down here. They took hold of the cold rungs and began to climb toward the clockface.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_basement_face", "label": "Take the service ladder up to the clockface.", "target": "n_clockface"}
+      ]
+    },
+    {
+      "id": "n_clockface",
+      "body": "At last they stood behind the great clockface, an enormous disc of frosted glass and brass, the town spread small and golden beyond it. Two huge hands reached from the central hub, and around the hub ran a ring of symbols, the same alphabet as the note. \"You set the time named in the cipher,\" Mara realized, \"and something happens.\" She had the cipher wheel and could work out the exact setting, slow and sure. Theo, impatient, wanted to just shove the hands to a likely hour and see. Lin had noticed a seam in the brass behind the face, a panel that might hide another way through. And there was always the reckless option, spinning the hands at random and hoping to stumble on the answer. The wind moaned through the works. Whatever they chose, the tower was watching. They could set the hands carefully with the cipher, force them by guesswork, search the back panel, or just spin and hope. What would they risk?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_face_correct", "label": "Set the hands using the cipher.", "target": "n_setcorrect"},
+        {"id": "c_face_jam", "label": "Force the hands by guesswork.", "target": "n_setjam"},
+        {"id": "c_face_panel", "label": "Search for a back panel behind the face.", "target": "n_backpanel"},
+        {"id": "c_face_random", "label": "Spin the hands at random and hope.", "target": "n_end_timeout"}
+      ]
+    },
+    {
+      "id": "n_setcorrect",
+      "body": "Mara worked the cipher wheel one last time, lips moving, then read off the hour and minute Eda had hidden in the note. Carefully, with Theo and Lin steadying the heavy hands, they moved the clock to that exact time. For a moment nothing happened. Then, deep in the tower, something turned. A series of soft clicks ran up through the floor, gears engaging that had not moved in years, and a panel beside the clockface slid smoothly aside, releasing a breath of cool, sealed air. Beyond it lay a small, dark room. \"We did it,\" Lin whispered, hardly believing. Mara felt tears prick her eyes; they had earned this, the patient way, the way Eda wanted. Theo let out a whoop that echoed down the whole tower. Whatever the clockmaker had guarded all these years was waiting just on the other side of that panel. Together, they stepped toward the opening and into the vault.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_correct_vault", "label": "Step through to the vault.", "target": "n_vault"}
+      ]
+    },
+    {
+      "id": "n_setjam",
+      "body": "Theo grabbed the great hands and heaved them around to a guess. For a heartbeat it seemed to work, and then a horrible grinding screech tore through the tower. The hands had forced a row of gears against their teeth, and now everything was locked, straining, half-turned. \"Stop, stop!\" Lin cried. The whole face shuddered. Mara's mind raced. If they had the oil can from the pendulum ledge, they might free the jammed gears before any harm was done. Without it, the mechanism was simply stuck, wedged tight by their own impatience, and there would be no opening it tonight. Theo stepped back, red-faced and sorry. \"I shouldn't have rushed it,\" he muttered. The tower groaned around them, every joint protesting. They could try to work the oil into the screaming gears and ease them loose, or admit defeat, leave the jammed clock for the night, and come back better prepared. What now?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_jam_oil", "label": "Free the jammed gears with the oil can.", "target": "n_vault"},
+        {"id": "c_jam_stuck", "label": "Give up; the gears will not move.", "target": "n_end_stuck"}
+      ]
+    },
+    {
+      "id": "n_backpanel",
+      "body": "Lin pressed the seam in the brass and felt it shift. Together they worked the panel free, revealing not the vault they expected but a second, smaller puzzle, a tiny dial rimmed with the same strange symbols, set into the wall behind the clockface. \"Eda and her layers,\" Mara said, half exasperated and half delighted. She set to work with the cipher wheel. As the little dial turned, she realized it offered two settings: one that matched the note exactly, which would surely open the main vault, and another, stranger sequence scratched faintly into the metal, almost hidden, as if meant only for the most curious. Theo looked between them. \"Which one?\" Lin asked. The obvious answer led to the vault and the secret everyone was meant to find. The hidden answer led somewhere Eda had not advertised at all. They could solve the panel into the vault, or follow the faint scratched sequence into whatever lay beyond it. Which would they choose?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_panel_vault", "label": "Open the panel into the vault.", "target": "n_vault"},
+        {"id": "c_panel_secret", "label": "Slip into the clockmaker's hidden workshop.", "target": "n_end_secret"}
+      ]
+    },
+    {
+      "id": "n_vault",
+      "body": "The vault was a small round room, dustless and dry, lit by a shaft of evening light through a pinhole in the wall, clearly placed there by Eda's design. On a velvet stand sat three things. A folded letter, sealed with wax. A little music-box automaton, a brass figure of a clockmaker at her bench, wound by a key. And a shallow dish of old coins and small bright jewels, a modest treasure. Mara reached toward the letter first; that, surely, held the heart of the secret. Lin was drawn to the automaton, wondering what tune it kept. Theo's eyes, just for a second, went to the glittering dish. \"We should be careful,\" Lin said quietly. \"This is hers.\" The room seemed to hold its breath. They had solved the tower; now they had to decide what kind of finders they were. They could read the letter and share its message, keep the secret among themselves, or simply take the treasure and go. What did they do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_vault_share", "label": "Decode the final message and bring it to the town.", "target": "n_end_hero"},
+        {"id": "c_vault_keep", "label": "Keep the clockmaker's secret among friends.", "target": "n_end_keepsake"},
+        {"id": "c_vault_grab", "label": "Stuff the treasure in your bag and run.", "target": "n_end_caught"}
+      ]
+    },
+    {
+      "id": "n_end_library",
+      "body": "They could not help themselves. One logbook led to another, Eda's drawings and notes pulling them deeper, and the afternoon dissolved into evening without their noticing. When the great bell finally tolled the hour, deep and sudden, they jumped. Light was failing, and the clockkeeper's voice floated up the stairwell, calling them down before the tower was locked for the night. \"We have to go,\" Lin said reluctantly, an open logbook still in her lap. They had not set the clock. They had not found the vault. But they had learned more about Eda than the whole town remembered, pages of brilliance no one had read in years. \"We'll come back,\" Mara promised, and meant it. They slipped out as the keeper turned the lock behind them, heads full of clockwork and ink. The secret was still up there, waiting. But so, now, was the certainty that they would return for it.",
+      "is_ending": true,
+      "ending": {"id": "e_library", "type": "neutral", "title": "Lost in the Logbooks"}
+    },
+    {
+      "id": "n_end_giveup",
+      "body": "Lin looked at the narrow ledge, the long drop, the still pendulum, and shook her head. \"It's not worth it,\" she said firmly. \"Not for an oil can.\" Theo opened his mouth to argue, then closed it; he trusted Lin's caution more than his own nerve. They backed carefully away from the pit and returned to the safer stairs. It was the right call, even if it stung. Without the oil can, some doors in the tower might stay shut to them tonight, and as the light faded they realized they had run out of time to solve the rest. They climbed back down and out into the cool evening, the cipher still half a mystery. \"There's always tomorrow,\" Mara said. Theo nodded slowly. \"Better to come back whole than not come back at all,\" he admitted. They had chosen safety over the prize, and walked home under the first stars, the tower dark and patient behind them.",
+      "is_ending": true,
+      "ending": {"id": "e_giveup", "type": "failure", "title": "Too Risky"}
+    },
+    {
+      "id": "n_end_timeout",
+      "body": "\"Just spin them!\" Theo said, and before anyone could stop him he sent the great hands whirling. They clattered around the face, past hour after hour, while Mara winced. For a wild second it was almost funny. Then the gears caught, all wrong, and the tower gave a deep, groaning shudder. Somewhere below, the closing bell began to ring, loud and final, jolted awake by the mechanism. \"That's the lock-up bell,\" Mara realized. The clockkeeper would be coming. They had jammed the works and run out of time in the same reckless moment. \"We have to go, now,\" Lin urged, and they scrambled for the stairs as the bell tolled on. The tower had not opened for them. It had simply told them, in its own iron voice, that this was not the way. They spilled out into the dusk, breathless and empty-handed, the cipher still unsolved. Next time, they agreed, they would do it Eda's way: slowly.",
+      "is_ending": true,
+      "ending": {"id": "e_timeout", "type": "failure", "title": "Out of Time"}
+    },
+    {
+      "id": "n_end_stuck",
+      "body": "They worked at the jammed gears with everything they had, but without the oil can there was nothing to ease the locked teeth, and the mechanism would not give. The great hands stayed frozen at their crooked, forced angle, the whole face seized tight. \"We pushed too hard,\" Theo admitted, wiping grease from his hands. \"I pushed too hard.\" Mara put a hand on his shoulder. \"We all wanted it fast,\" she said. There was no opening the tower tonight, not like this. But the damage was not permanent; a little oil, a little patience, and the clock could be coaxed loose another day. They made careful note of what they would need and climbed back down in the fading light. The clockkeeper met them at the bottom, took one look at their faces, and simply nodded. \"It tests you,\" he said. \"Come back when you're ready to be tested again.\" They left, defeated but wiser, already planning their return.",
+      "is_ending": true,
+      "ending": {"id": "e_stuck", "type": "failure", "title": "Locked Out for the Night"}
+    },
+    {
+      "id": "n_end_secret",
+      "body": "Mara followed the faint scratched sequence instead of the obvious one, and the little dial turned with a different, secret rhythm. The panel that opened was not the vault at all. Beyond it lay Eda's hidden workshop, a snug, wondrous room crammed with half-finished clockwork: birds that might have sung, a tiny brass orrery, a music box with no music yet, all waiting decades for hands to finish them. \"She never showed anyone this,\" Lin breathed. \"Only whoever was curious enough to look past the answer they were given.\" It felt like being trusted with someone's whole heart. There was no grand secret for the town here, just the private, unfinished dreams of a brilliant woman. The three friends looked at one another and understood, without saying it, that they had become this room's keepers now. They would come back, and learn the tools, and one day finish what Eda had started.",
+      "is_ending": true,
+      "ending": {"id": "e_secret", "type": "good", "title": "The Hidden Workshop"}
+    },
+    {
+      "id": "n_end_hero",
+      "body": "Mara broke the wax seal and unfolded Eda's letter, and the three of them read it together by the pinhole light. It was a message to the town, written in plain words at last: the location of the original town charter and the lost spring that had first drawn people to settle here, both hidden away during a long-ago flood and never recovered, their whereabouts dying with Eda unless someone solved her tower. \"This is huge,\" Lin whispered. \"People have wondered about this for years.\" They carried the letter straight down to the clockkeeper, who read it with shining eyes and pressed each of their hands. Within the week, the spring was found and flowing again, and the charter took its place in the town hall. No one made a fuss over three kids, which suited them fine, but they knew. The clock, repaired now, chimed true for the first time in years. Eda had chosen well.",
+      "is_ending": true,
+      "ending": {"id": "e_hero", "type": "completion", "title": "The Cipher Revealed"}
+    },
+    {
+      "id": "n_end_keepsake",
+      "body": "For a long moment they looked at the letter, at the automaton, at the quiet, trusting room. Then Mara folded the letter back along its old creases and set it down. \"Some secrets aren't ours to spend,\" she said slowly. \"Maybe this one's just ours to keep.\" Lin understood at once. Theo took a little longer, but he nodded. They wound the automaton once and watched the tiny brass clockmaker bend over her bench, then let it wind down and go still. They told no one what they had found. It became the thing that bound the three of them, a secret carried lightly between friends, brought out only on quiet afternoons when they climbed back up to sit in the vault and talk. The town never knew. But the three of them shared something most people never get: a real mystery, solved, and held close. Years later they would still trade a look whenever the clock chimed, and smile.",
+      "is_ending": true,
+      "ending": {"id": "e_keepsake", "type": "good", "title": "A Secret Kept"}
+    },
+    {
+      "id": "n_end_caught",
+      "body": "Theo's hand closed over the dish of coins and jewels, and the instant he lifted it, the room answered. A hidden mechanism released with a soft twang, and a cage of slender brass rods dropped down around them, hung all over with little bells that burst into a bright, ridiculous jangle. They were not hurt, not even really trapped, but the racket was tremendous and impossible to stop. \"Eda thought of everything,\" Mara groaned, half laughing despite herself. Within minutes the clockkeeper's lantern came bobbing up the stairs. He took in the cage, the bells, the guilty faces, and the dish in Theo's hand, and raised one eyebrow. Red to the ears, they put every coin and jewel back exactly where it had been, and the bells fell silent. The keeper said almost nothing, which was somehow worse. \"She built that trap for the greedy,\" was all he offered, \"not the worthy.\" They left empty-handed, and a great deal humbler.",
+      "is_ending": true,
+      "ending": {"id": "e_caught", "type": "failure", "title": "Caught Red-Handed"}
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "id": "sk_sunken_signal",
+  "version": 1,
+  "title": "The Sunken Signal",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {"scheme": "flesch_kincaid", "target": 9.0, "tolerance": 2.0},
+    "tier": 2,
+    "themes": ["survival", "isolation", "resource-management", "mystery"],
+    "estimated_minutes": 30,
+    "ending_count": 14,
+    "content_flags": {"violence": "mild", "scariness": "moderate", "peril": "moderate"}
+  },
+  "variables": [
+    {"name": "air", "type": "int", "initial": 4, "min": 0, "max": 4, "description": "Breathing-gas reserve, in fifths; 0 is empty."},
+    {"name": "has_rebreather", "type": "bool", "initial": false, "description": "Whether the spare closed-circuit rebreather is rigged."},
+    {"name": "has_keycard", "type": "bool", "initial": false, "description": "Whether the reactor-core keycard has been recovered."},
+    {"name": "has_signal", "type": "bool", "initial": false, "description": "Whether the transmitter core has been secured."}
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "The dive boat rocks under a moonless sky, and forty meters down, the dead research station is still calling. Its distress beacon has pulsed for three weeks now, a slow heartbeat on the sonar, long after the station went dark and the company wrote it off. You are the only one who answered the salvage contract. You check your rig one last time by the deck light: regulator, lamp, the gauge that says how much breathing gas stands between you and the surface. Not much margin. There never is. Your buddy stays topside on the line, close enough to haul you up if it comes to that, far enough to be no help at all once you are inside. You roll backward off the gunwale into black water and the cold closes over you like a fist. The station waits below, a darker shape in the dark. You can drop straight down the access shaft and save your light, descend past the external equipment locker on the way, or hang here a moment first and listen to the signal, trying to understand what it is. What do you do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_dive_fast", "label": "Plunge straight down the access shaft.", "target": "n_corridor", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_dive_locker", "label": "Descend past the external equipment locker.", "target": "n_locker"},
+        {"id": "c_dive_recon", "label": "Hover and study the signal's pattern first.", "target": "n_signal_recon"}
+      ]
+    },
+    {
+      "id": "n_signal_recon",
+      "body": "You hang in the open water and let the signal wash over you, eyes closed, counting. It is not the flat, even chirp of an automated beacon. The pulses cluster and gap, cluster and gap, in a pattern your gut recognizes before your mind does: someone keyed this by hand. Someone set it deliberately, and either could not or did not stop it. Three weeks. The cold gets into the thought and will not leave. Automated beacons are easy salvage; you cut them loose and surface and collect your fee. A hand-set signal means a person made a choice down there, and choices leave questions. Your gas is untouched and your nerve is mostly intact, and the station is still just a shape below you, waiting to become real. Whatever is making that sound, it is forty meters down in the dark, and the only way to learn what it is, is to go and see. You vent your buoyancy compensator and begin the descent into the flooded corridor, the signal growing louder with every meter, until it is less a sound than a pressure against your skull.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_recon_down", "label": "Descend into the flooded corridor.", "target": "n_corridor"}
+      ]
+    },
+    {
+      "id": "n_locker",
+      "body": "The external equipment locker hangs off the station's flank, its door already sprung, contents drifting on their tethers in the current. Most of it is junk, corroded past use, but one item stops you: a spare closed-circuit rebreather, still sealed in its case, the kind that scrubs your own breath and gives you far more time than open-circuit ever could. It is heavy. It will slow you in the tight spaces, snag on every edge, cost you speed when speed might matter. But gas is time, and time is the only thing that kills divers who are otherwise doing everything right. You float there, weighing it, the signal pulsing in your teeth. Take the rebreather and you carry a second chance at air, at the price of bulk and drag. Leave it and you stay lean and fast, betting that you will not need the margin. You have made this bet both ways before, and you have the scars and the empty tanks to show for each. The station does not care which you choose. You decide: rig the spare rebreather, or leave it and travel light.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_take_rebreather", "label": "Rig the spare rebreather to your harness.", "target": "n_corridor", "effects": [{"op": "set", "var": "has_rebreather", "value": true}]},
+        {"id": "c_leave_rebreather", "label": "Leave it; travel light and fast.", "target": "n_corridor"}
+      ]
+    },
+    {
+      "id": "n_corridor",
+      "body": "You pull yourself through the breach in the hull and into the main corridor, and the station swallows you. Your lamp carves a narrow cone through water thick with suspended silt; beyond it, nothing. The corridor is a flooded spine running the length of the station, and three ways open off it. To one side, a doorway to the laboratory wing, where the science was done and where, if the schematics you memorized are right, the access controls live. Opposite, the crew quarters, where the people lived and where the logs might tell you what happened. Ahead and down, half choked with collapsed paneling, the mess hall, a shortcut of sorts if you do not mind tight spaces. And somewhere deeper still, sealed, the reactor core, the source of the signal, behind a door that will not open without a card you do not yet have. Your gas gauge ticks down with every fin-stroke; the station is large and your margin is not. You cannot see all of it. You have to choose where to spend the air. Swim to the lab wing, the crew quarters, or pick through the collapsed mess hall?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_lab", "label": "Swim into the laboratory wing.", "target": "n_lab", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_crew", "label": "Swim into the crew quarters.", "target": "n_crew", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_mess", "label": "Pick through the collapsed mess hall.", "target": "n_flooded_mess"}
+      ]
+    },
+    {
+      "id": "n_lab",
+      "body": "The laboratory wing is a graveyard of science. Benches bolted to the floor hold the wreckage of experiments, glassware shattered and drifting, a whiteboard with equations that bleed into illegibility underwater. Your lamp finds a dead terminal still socketed with a keycard, the reactor-core access card, the one thing that opens the sealed door between you and the signal. It is right there, waiting to be pulled. But the wing is wrong in a way you feel before you see: the far bulkhead is bowed inward, groaning under the pressure of the flooded section beyond it, a thin skin of steel holding back an ocean. Every few seconds it pops and ticks, metal arguing with the deep. You could grab the keycard and go. You could take a moment to search the sealed sample racks, in case the station's secret is chemical, not electronic. Or you could do the stupid, human thing and put your hands on the failing bulkhead, as if you could hold it. Your gas is finite and the bulkhead is louder now. Pry the keycard from the terminal, search the sample racks, or brace against the groaning bulkhead?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_take_keycard", "label": "Pry the keycard from the dead terminal.", "target": "n_lab_detail", "effects": [{"op": "set", "var": "has_keycard", "value": true}]},
+        {"id": "c_search_samples", "label": "Search the sealed sample racks first.", "target": "n_lab_detail", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_lab_flood", "label": "Brace against the groaning bulkhead.", "target": "n_end_lab_flood"}
+      ]
+    },
+    {
+      "id": "n_lab_detail",
+      "body": "Deeper into the lab, past the worst of the wreckage, you find a maintenance hatch hanging open on a dark crawlway that the schematics say leads toward the station's central junction, your route on toward the core. It is a clear path forward. But your lamp also catches something you did not expect: a specimen vault, intact, its sealed cases still holding whatever this station was really studying, rows of them, cold and waiting and almost certainly the actual reason the company will not talk about this place. A salvage diver who surfaced with those would never need to dive again. The vault calls to the part of you that did not come here only for a fee. The hatch calls to the part of you that wants to live. Your gas does not care about either; it only goes down. You can take the maintenance hatch toward the junction and stay on mission, or stay here and document the specimen vault, knowing every minute you spend is a minute of air you will not get back. Which pull is stronger?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_lab_junction", "label": "Take the maintenance hatch toward the junction.", "target": "n_junction"},
+        {"id": "c_specimen", "label": "Stay to document the specimen vault.", "target": "n_end_specimen"}
+      ]
+    },
+    {
+      "id": "n_crew",
+      "body": "The crew quarters are almost peaceful, which is the worst part. Bunks still made. A photograph sealed in plastic, faces you will not let yourself look at. A datapad floats at the end of its tether, screen cracked but still scrolling the crew's final logs in a slow, silent crawl. Reading them would cost you time and tell you what happened here, which you are not sure you want to know. There is also an emergency oxygen cylinder racked on the wall, still charged, the kind you can crack open to refill your reserve, a real gift this deep. And a sealed drysuit bay you would have to force, but which the manifest says holds a serviceable backup rebreather, a second route to a safe ascent. Your lamp drifts across all three. Your gas keeps falling. You can read the crew's final logs, crack the oxygen cylinder to refill your air, or force the drysuit bay for the backup rig. Each costs something; each gives something. Choose.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_read_logs", "label": "Read the crew's final logs.", "target": "n_crew_detail"},
+        {"id": "c_grab_cylinder", "label": "Crack an emergency oxygen cylinder.", "target": "n_crew_detail", "effects": [{"op": "inc", "var": "air", "value": 2}]},
+        {"id": "c_crew_suit", "label": "Force the sealed drysuit bay.", "target": "n_drysuit_bay"}
+      ]
+    },
+    {
+      "id": "n_crew_detail",
+      "body": "Past the bunks, a flooded passage leads on toward the central junction, the way deeper into the station. It is a hard swim, narrow and silt-choked, and it will cost you gas to push through, but it goes where you need to go. Partway along, a pressure door has jammed half open across the passage. You can work it carefully, ease yourself through the gap the way it wants to be eased, and pay only in air and patience. Or you can force it, throw your weight against the stuck door and shove, which is faster and which, if the mechanism is as corroded as it looks, might slam it shut behind you, or worse, on you. You have seen what a pressure door does when it decides to close. Your reserve is lower than you would like. You can work the flooded passage through to the junction the slow way, or force the jammed door hard and trust your luck. Which?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_crew_junction", "label": "Work the flooded passage to the junction.", "target": "n_junction", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_crew_trap", "label": "Force the jammed door open hard.", "target": "n_end_crew_trap"}
+      ]
+    },
+    {
+      "id": "n_flooded_mess",
+      "body": "The mess hall has half collapsed, the ceiling buckled down to meet the tables, and you have to fold yourself through the gaps. It is claustrophobic work, your tank scraping rock, your lamp throwing crazed shadows off drifting cutlery and broken trays. But the collapse has done you one favor: a pocket of trapped air shivers against the highest point of the ruined ceiling, silver and perfect, gas vented from somewhere and caught here. You could tap it, share a few breaths from your spare regulator and stretch your reserve. Either way, a service vent in the far wall leads on toward the central junction, the route deeper into the station. Your gas gauge has been falling steadily; a refill, even a small one, is not nothing this far in. You can tap the trapped ceiling air pocket to top up your reserve, or simply slip through the side vent to the junction and keep moving. What do you do?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_mess_searchgalley", "label": "Tap the trapped ceiling air pocket.", "target": "n_junction", "effects": [{"op": "inc", "var": "air", "value": 1}]},
+        {"id": "c_mess_junction", "label": "Slip through the side vent to the junction.", "target": "n_junction"}
+      ]
+    },
+    {
+      "id": "n_drysuit_bay",
+      "body": "The drysuit bay's door gives with a groan and a billow of silt. Inside, racked and waiting, is exactly what the manifest promised: a serviceable rebreather rig, closed-circuit, its scrubber canisters still sealed. You check it with the care this deep demands, testing seals, the loop, the gauges, and it holds. Clipping it to your harness is awkward in the cramped bay, but when it is done you feel the difference, the quiet weight of a second chance at air, a way up that does not depend on the dwindling number on your primary gauge. A diver with a working rebreather has options a diver without one does not, especially on the long swim back. A hatch at the rear of the bay leads on toward the central junction, deeper into the station and closer to the signal still pulsing in your skull. You secure the rig, settle the new drag against your back, and head for the junction.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_suit_junction", "label": "Rig the rebreather and head for the junction.", "target": "n_junction", "effects": [{"op": "set", "var": "has_rebreather", "value": true}]}
+      ]
+    },
+    {
+      "id": "n_junction",
+      "body": "The central junction is a flooded hub where the station's corridors knot together, and here the way splits hard. Directly ahead, a pressure door seals off the reactor core, its panel dark except for a single red reader light waiting for a keycard. If you have the card, it opens, and it opens onto the most direct route to the signal. If you do not, there is only one other way down: a collapsed ventilation crawl, a black throat of buckled ducting that the schematics swear connects to the core chamber from behind, and that every instinct you own says is a coffin. Your gas is well down now; you can feel the descent in it. And there is a third option, the honest one, the one no one talks about: you could turn around. Surface. Live. Let the signal keep pulsing for someone with more sense. You can badge through the pressure door if you hold the keycard, squeeze into the collapsed vent crawl, or lose your nerve and ascend now while you still can.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_use_keycard", "label": "Badge through the pressure door.", "target": "n_core_door", "condition": {"==": [{"var": "has_keycard"}, true]}, "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_vent_crawl", "label": "Squeeze into the collapsed vent crawl.", "target": "n_vent", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_junction_panic", "label": "Lose your nerve and ascend now.", "target": "n_end_junction"}
+      ]
+    },
+    {
+      "id": "n_vent",
+      "body": "The vent crawl is everything you feared. It narrows the deeper you go, ducting crushed by the pressure into shapes never meant to pass a body, and your lamp shows you only the next meter of buckled metal before the dark eats the beam. Your tank grinds against the walls. There is no room to turn around easily. Ahead, if the schematics hold, the duct opens out into the core chamber, dropping you in from above, behind whatever sealed the front door. Behind you, the way you came, you could still back out, abandon the crawl, abort the whole dive and surface alive with nothing to show for it. And ahead, at the worst of it, the duct pinches to a bend so tight you would have to force your shoulders through and pray the metal gives before your air does. Your gas is low and the dark is total and the signal is very close now. You can drop into the core chamber from the vent, back out and abort, or force yourself through the narrowest bend. Choose, and choose fast.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_vent_core", "label": "Drop into the core chamber from the vent.", "target": "n_core_chamber", "effects": [{"op": "dec", "var": "air", "value": 1}]},
+        {"id": "c_vent_back", "label": "Back out and abort the dive.", "target": "n_end_retreat"},
+        {"id": "c_vent_stuck", "label": "Force through the narrowest bend.", "target": "n_end_vent_stuck"}
+      ]
+    },
+    {
+      "id": "n_core_door",
+      "body": "The keycard reader swallows the card, considers it for a long, sucking second, and then the red light turns green. Somewhere in the wall, a mechanism that has not moved in three weeks remembers its purpose, and the pressure door cycles open with a shudder you feel in your chest. Beyond it, the signal is no longer a sound. It is a physical thing, a pulse in the water, in your mask, in the fillings of your teeth. The core chamber waits past the threshold, and whatever has been calling for three weeks is in there. Your gas is lower than you would like, and the door behind you will cycle shut again on its timer, but there is no hesitating now, not this close. You steady your breathing, check your gauge one last time, and cross into the core chamber.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_enter_core", "label": "Enter the core chamber.", "target": "n_core_chamber"}
+      ]
+    },
+    {
+      "id": "n_core_chamber",
+      "body": "The core chamber is a drowned cathedral, the reactor's shielding rising on all sides, and at its heart, mounted on a failed console, is the source: a sealed transmitter core, still pulsing, its little light steady and patient and three weeks old. This is what called you down. Up close, the signal is almost unbearable, a pressure that makes it hard to think. Your gas gauge is a number you do not like to look at now; every choice in here costs breath you may not be able to spare. You could wrench the transmitter core free with your hands, fast and hard, which takes effort and air but ends it. If you rigged a rebreather, you could switch to it and work calmly, the closed loop buying you the time to do this right. You could lose your nerve entirely and flee for the surface with nothing. You could do the unthinkable and trigger the failing reactor, surfacing the whole wreck. Or you could simply stop, and listen to the full message the way no one was ever meant to. Wrench the core free, switch to the rebreather and work calm, flee, overload the reactor, or listen?",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_grab_signal", "label": "Pull the transmitter core free now.", "target": "n_signal_secured", "condition": {">=": [{"var": "air"}, 1]}, "effects": [{"op": "dec", "var": "air", "value": 1}, {"op": "set", "var": "has_signal", "value": true}]},
+        {"id": "c_rebreather_steady", "label": "Switch to the rebreather and work calmly.", "target": "n_signal_secured", "condition": {"==": [{"var": "has_rebreather"}, true]}, "effects": [{"op": "set", "var": "has_signal", "value": true}]},
+        {"id": "c_flee_core", "label": "Abandon the signal and flee for the surface.", "target": "n_ascent"},
+        {"id": "c_core_overload", "label": "Trigger the failing reactor to surface it whole.", "target": "n_end_meltdown"},
+        {"id": "c_core_listen", "label": "Stop and listen to the full message.", "target": "n_end_listen"}
+      ]
+    },
+    {
+      "id": "n_signal_secured",
+      "body": "The transmitter core comes loose with a final wet snap, and the signal stops. Just like that: three weeks of pulsing, gone, the chamber suddenly and completely quiet except for the rasp of your own breathing. The core is heavy and cold in your hands, and it holds whatever someone died to send. You clip it to your harness, secured. But your lamp catches something else now that the signal no longer drowns your attention: the station's data core, still seated in its rack, the black box that would explain everything, the company's real secret, worth more than the contract and the transmitter combined. Wrenching it loose would take time. Time you may not have, because your gas is genuinely low now, low enough that the long ascent ahead is no longer a sure thing. You have what you came for. The data core is greed, and greed has drowned better divers than you. You can begin the long ascent now with the prize you have, or stay just a little longer to take the data core too. The number on your gauge is the only honest voice down here.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_ascend_signal", "label": "Begin the long ascent with the prize.", "target": "n_ascent"},
+        {"id": "c_greedy_data", "label": "Stay to wrench the data core loose too.", "target": "n_end_data"}
+      ]
+    },
+    {
+      "id": "n_ascent",
+      "body": "You leave the chamber behind and start up, and the ascent is where the station collects its debt. Forty meters of black water stand between you and air, and how you cross them depends entirely on what you have left. If your gas reserve is still strong, you can power upward in one committed push, trusting your lungs and your luck. If you rigged a rebreather, you can ride it up in slow, safe stages, letting the loop breathe for you while you ascend the way the dive tables demand. If you have neither, there is only the third way: claw upward on whatever breath remains, eyes fixed on the silver ceiling that never seems to get closer, and hope it is enough. Or you could stop fighting altogether, let the weight take you, and sink back down into the dark you came from. The cold has your hands now. Power for the surface, ride the rebreather up in stages, claw upward on your last breath, or let go and sink.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_swim_strong", "label": "Power for the surface in one push.", "target": "n_surface", "condition": {">=": [{"var": "air"}, 2]}},
+        {"id": "c_swim_rebreather", "label": "Ride the rebreather up in safe stages.", "target": "n_surface", "condition": {"==": [{"var": "has_rebreather"}, true]}},
+        {"id": "c_swim_weak", "label": "Claw upward on your last breath.", "target": "n_collapse"},
+        {"id": "c_ascent_giveup", "label": "Let go and sink back down.", "target": "n_end_sink"}
+      ]
+    },
+    {
+      "id": "n_collapse",
+      "body": "The last meters are the cruelest. Your vision has narrowed to a gray tunnel, the edges going dark, your chest a single locked ache where your lungs are screaming for what is not there. The surface is right there, a trembling silver skin just above you, close enough to touch and as far as the moon. Your body wants to inhale and there is nothing to inhale. If you have any breath left at all, even a fume, you might find one last kick, one final convulsion of will to break through. If you rigged a rebreather, its alarm is shrieking, and your buddy on the line above might hear it, might already be hauling. And if you have nothing, no gas, no rig, no kick, then there is only the dark coming up to meet you, soft and final and almost kind. Find one last kick, signal your buddy with the rebreather alarm, or slip into the dark. Whatever is going to happen, happens now.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_last_kick", "label": "Find one last kick.", "target": "n_surface", "condition": {">=": [{"var": "air"}, 1]}},
+        {"id": "c_reach_buddy", "label": "Signal your dive buddy with the rebreather alarm.", "target": "n_rescue", "condition": {"==": [{"var": "has_rebreather"}, true]}},
+        {"id": "c_slip_under", "label": "Slip into the dark.", "target": "n_end_drown"}
+      ]
+    },
+    {
+      "id": "n_surface",
+      "body": "You break the surface and the night air hits your face like a slap, and you breathe, you actually breathe, great whooping lungfuls of cold black air under a sky full of stars. The boat is there. Your buddy's light swings toward you. You made it. You are alive. For a moment that is the only fact in the universe, and it is enough. Then the rest comes back: why you went down, what it cost, what you are bringing up. If the transmitter core is clipped to your harness, then it was not for nothing, and there is something to hand over, a message to deliver, a reason. If your hands are empty, then you are simply a diver who survived, which is not nothing, but which is not what you came for either. Your buddy is reaching down to help you aboard. You can hand over the recovered signal core, if you have it, or climb aboard with nothing but your life.",
+      "is_ending": false,
+      "choices": [
+        {"id": "c_report_success", "label": "Hand over the recovered signal core.", "target": "n_end_success", "condition": {"==": [{"var": "has_signal"}, true]}},
+        {"id": "c_report_empty", "label": "Climb aboard with nothing but your life.", "target": "n_end_survived"}
+      ]
+    },
+    {
+      "id": "n_end_success",
+      "body": "On the deck, under the boat's working light, the transmitter core stops being an object and becomes a voice. The salvage company wanted it suppressed; the families of the station crew wanted it for three weeks; you simply wanted to know. When the message is finally decoded, it is exactly what the hand-keyed rhythm promised: not a malfunction, but a warning, a record of what the station found and what it cost them to send it up before the dark took them. It changes things. Inquiries open. Names that were going to be quietly erased are spoken aloud instead. None of that brings anyone back, and you do not pretend it does. But you went down into a drowned grave on a contract meant to bury a secret, and you came up with the truth instead, and you delivered it. You sleep that night, for the first time in weeks, without the signal pulsing behind your eyes. It is quiet now. You finished what someone down there started, and that has to be worth the dive.",
+      "is_ending": true,
+      "ending": {"id": "e_success", "type": "completion", "title": "Signal Recovered"}
+    },
+    {
+      "id": "n_end_survived",
+      "body": "You climb aboard with empty hands and a full chest, and for a long while that trade feels like the only sane one anyone could make. You are alive. The station kept its secret and you kept your life, and that is a deal a smart diver takes every time. But as the boat motors back toward harbor and the adrenaline drains out of you, the other thing settles in: the signal is still down there, still pulsing, still calling, and you turned your back on it. Three weeks it has waited. It will wait longer now. Someone keyed that message by hand, in the dark, running out of air, and trusted that someone would come. You came. You just did not finish. Maybe you will go back, better prepared, with more gas and fewer doubts. Maybe you will not, and you will spend nights you do not expect wondering what the rhythm was trying to say. You survived. It is a real thing, survival. It is only not, tonight, quite enough.",
+      "is_ending": true,
+      "ending": {"id": "e_survived", "type": "failure", "title": "Empty-Handed"}
+    },
+    {
+      "id": "n_end_retreat",
+      "body": "You back out of the vent. It is not easy, reversing through that crushing dark, every motion a negotiation with metal that does not want to let you go, but you do it, meter by meter, until the crawl spits you back into the relative openness of the junction and you can breathe, can think, can feel your own pulse again. And there, in the open water, you make the call. Not this way. Not through a coffin, not on this gas, not for any fee or any signal. You turn for the surface and ascend clean and slow and alive, the station shrinking below you, the pulse of the signal fading meter by meter until it is just a memory pressing faintly against your skull. You break the surface and your buddy hauls you in and you say nothing for a long time. The station kept its secret. You kept your life, and your judgment, and the hard knowledge of exactly how far you were willing to go and where you drew the line. Tonight, breathing, you do not second-guess the choice to live.",
+      "is_ending": true,
+      "ending": {"id": "e_retreat", "type": "failure", "title": "Aborted Dive"}
+    },
+    {
+      "id": "n_rescue",
+      "body": "The rebreather alarm does its job. Far above, on the line, your buddy feels the change and hauls, hand over hand, faster than should be possible, and the dark that was reaching for you loses its grip. You come up not under your own power but dragged, a dead weight breaking the surface, and then there are hands on your harness and the hard edge of the boat against your back and air, air, forced into you whether you can take it or not. You spend a long time on the deck just breathing, shaking, your buddy swearing steadily and gratefully beside you. You did not finish the dive. The signal is still down there, the core unrecovered. But you are on this boat instead of in that station, and you know exactly how close the margin was, how the rig you almost did not bother with is the only reason you are cold and shaking under these stars instead of still and silent forty meters down. Pulled back from the edge. Empty-handed, but breathing. Some days that is the whole victory.",
+      "is_ending": true,
+      "ending": {"id": "e_rescue", "type": "failure", "title": "Pulled From the Brink"}
+    },
+    {
+      "id": "n_end_drown",
+      "body": "There is no last kick. You search for it the way you would search a pocket you already know is empty, and the silver surface trembles just out of reach, and your body finally does the thing it has been begging to do and tries to breathe. The water comes in cold. After the first terrible moment it is not even frightening; the gray tunnel narrows to a point and then it does not narrow anymore because there is nothing left to narrow, and the signal you came to find goes on pulsing somewhere below you, patient, unanswered, three weeks and now longer. Topside, your buddy will wait past the point of hope, will dive, will come up with nothing, will make the call no one wants to make. The station keeps you the way it kept the others, gently, in the dark, without malice. You went down to bring a message to the surface. In the end the surface was the one thing you could not reach. The sea closes over the place where you were, and is still.",
+      "is_ending": true,
+      "ending": {"id": "e_drown", "type": "death", "title": "The Dark Below"}
+    },
+    {
+      "id": "n_end_sink",
+      "body": "You stop fighting. It is not a decision so much as a release, the moment a held breath finally goes, and the weight you have been clawing against all this way simply takes you. The surface recedes, that trembling silver skin getting smaller and calmer above you, and you sink back the way you came, down toward the station, down toward the dark that never really let you leave. There is a strange peace in it, the peace of a current you are no longer pretending to swim against. The cold stops being cold. The signal, if it is still pulsing, is just a rhythm now, no more urgent than a heartbeat, and your own is slowing to meet it. Above, your buddy waits on a line gone slack, and does not yet know. You came so far. You found what you were looking for, or did not, and in the end it makes less difference than you would have thought. The deep takes you back without anger, the way it takes everything, and the water is quiet, and then there is only the quiet.",
+      "is_ending": true,
+      "ending": {"id": "e_sink", "type": "death", "title": "Letting Go"}
+    },
+    {
+      "id": "n_end_lab_flood",
+      "body": "The bulkhead does not so much break as decide. One instant it is groaning, the next it is gone, and the ocean that was held behind it arrives all at once with a force that has nothing to do with you, that does not know or care that you are there. The lab folds. Your lamp spins away, the beam wheeling across collapsing steel, and the water becomes a fist that throws you against the far wall and pins you there. It is very fast, which is the only mercy in it. There is no swim to make, no choice to take back, no gauge to check; there is the deep, doing what the deep does to anything that holds it back long enough. Far above, your buddy will feel the line shudder and go wrong, and will know, in the way divers always know, before the details ever come. You came down chasing a signal and you ran out of dive in a flooded room, the oldest way there is. The station takes the lab, and you with it, and settles again into its long, patient dark.",
+      "is_ending": true,
+      "ending": {"id": "e_lab_flood", "type": "death", "title": "Bulkhead Breach"}
+    },
+    {
+      "id": "n_end_specimen",
+      "body": "You cannot make yourself leave the vault. Case after case, you photograph and catalog, the salvage diver in you fully awake now, certain that what is sealed in here is worth more than any signal, any contract, any single message from the dead. The work is meticulous and slow and it eats your air in a way you tell yourself you are tracking, right up until you are not. When you finally check your gauge and feel the cold drop in your stomach, you know the window has closed; there is no time now for the core, for the signal, for anything but a careful, immediate ascent on what little you have left. You make it. You surface with a camera full of the station's real secret and the company's worst nightmare, and in the weeks that follow it makes you, if not famous, then permanently employed. But you never reached the signal. It is still down there, pulsing, the one thing you went for and the one thing you did not bring up. You got the science. You just never got the answer. Most nights you tell yourself that is a fair trade, and most nights you believe it.",
+      "is_ending": true,
+      "ending": {"id": "e_specimen", "type": "neutral", "title": "The Documentarian"}
+    },
+    {
+      "id": "n_end_crew_trap",
+      "body": "You throw your weight against the jammed door, and the corroded mechanism does exactly what corroded mechanisms do: it lets go all at once, the door slamming past its stuck point and crashing home into its frame behind you, sealing the passage with a boom you feel more than hear. You are in the crew quarters. The way forward is gone. The way back is gone. For a while you work the door with everything you have, fingers raw on the wheel, and it does not budge, and the silence after you stop trying is the loudest thing you have ever heard. Then you do the only sane thing left: you stop, you steady your breathing, you conserve, and you trigger your emergency locator and wait. Topside, your buddy is already calling it in. Rescue, when it comes, will be hours, a cutting team, a second boat, a story that ends with you cold and humbled but alive on a deck under a gray morning sky. You never reached the core. You forced a door that wanted patience, and patience is what the waiting taught you. Next time, you will listen.",
+      "is_ending": true,
+      "ending": {"id": "e_crew_trap", "type": "failure", "title": "Sealed In"}
+    },
+    {
+      "id": "n_end_junction",
+      "body": "Standing at the junction with the dark splitting three ways in front of you, something in you simply stops. It is not cowardice, though it will feel like it later, in the small hours. It is the oldest and most reliable instrument a diver owns finally reading aloud what your gauge and your gut have been saying all along: not this, not today, not for this. You turn around. You leave the sealed door and the black vent crawl and the pulsing signal behind you, and you make a clean, controlled, textbook ascent, doing everything right on the way up because doing things right is suddenly the only thing that matters. You break the surface alive and unharmed and you let your buddy haul you in without a word. The signal is still down there. You did not reach it. For days you will turn the moment over, asking whether you could have, should have, would have, if you had only pushed a little further. But you came home. The ones who keyed that signal did not get to choose to come home. You did, and you chose it.",
+      "is_ending": true,
+      "ending": {"id": "e_junction", "type": "failure", "title": "Lost Nerve"}
+    },
+    {
+      "id": "n_end_vent_stuck",
+      "body": "You force your shoulders into the narrowest bend, and for one straining second you think it will give. It does not. The crushed ducting holds you exactly where you are, your tank caught behind, your arms pinned ahead, no leverage, no room, the metal gripping you with the patient indifference of forty meters of water pressing down on it. You push. You cannot. You reverse, and that is worse; you are wedged both ways, a cork in a throat of steel, and your lamp lights one square meter of buckled wall and nothing else, forever. Your gauge ticks down and there is nothing on earth you can do about it. Panic comes and you let it, because there is no cost to it anymore, and then panic goes, because even panic needs air. The signal pulses on, very close now, a few meters and an impossible distance away, on the other side of metal you could not pass. No one will reach you here; there is no reaching this place. You came down chasing a sound through a coffin, and the coffin closed.",
+      "is_ending": true,
+      "ending": {"id": "e_vent_stuck", "type": "death", "title": "Wedged"}
+    },
+    {
+      "id": "n_end_meltdown",
+      "body": "You make the choice the way you make any choice you already know you cannot survive: quickly, before the part of you that wants to live can vote. The reactor is failing anyway, has been failing for three weeks, and a failing reactor can be made to fail completely, to breach and surface the whole wreck in a convulsion of escaping pressure that salvage crews on the surface will see for miles. They will come. They will find the station, the crew, the truth, all of it forced up into the light by a single act down here in the dark. You just will not be there to see it. The chamber heaves around you, the shielding screaming, and the last thing you feel is not pain but a kind of vast release, the sense of a held secret finally let go. Topside, your buddy will see the sea itself stand up and break white in the dark, and will understand, and will grieve. You did not bring the signal up gently. You brought everything up at once, and yourself down with it. The station gives up its dead. You are the price.",
+      "is_ending": true,
+      "ending": {"id": "e_meltdown", "type": "death", "title": "Critical"}
+    },
+    {
+      "id": "n_end_data",
+      "body": "You stay for the data core. Of course you do. It is right there and it is worth everything and you are so close, and the wrenching takes longer than it should, your hands clumsy with cold, the rack fighting you the whole way. When the core finally comes free and you turn for the ascent, you check your gauge out of habit, and the number on it is a number you have warned other divers about your whole career. There is not enough. There was never going to be enough; you spent it here, on this, on one thing too many. You start up anyway, because what else is there, and the surface is forty meters of black water away and you have perhaps twenty in you, and the math is the math. Somewhere in the long, failing dark of the ascent, with the transmitter core and the data core both clipped to a harness no one will recover in time, you run out. The two secrets you died for sink back down with you. The signal you silenced stays silent. Greed is an old, old way to drown, and the sea has all the time in the world for it.",
+      "is_ending": true,
+      "ending": {"id": "e_data", "type": "death", "title": "One Thing Too Many"}
+    },
+    {
+      "id": "n_end_listen",
+      "body": "You stop, and you listen to the whole thing. You had told yourself you would not, that you would grab the core and go, but the pattern has been in your skull for the length of the dive and now, at its source, you cannot turn away. So you hang there in the drowned chamber and you let it play out, the full message, hand-keyed in the dark by someone who knew they were not getting out, and it is worse and stranger and more human than anything you imagined, and it takes all of you, every scrap of attention you have. Time stops meaning anything. Your gauge stops meaning anything. The signal is the only thing in the universe and you are inside it, and somewhere far away your body keeps breathing down a reserve no one is watching. By the time the message loops and you surface from it, blinking, the cold has reached your core and your gas has reached its end, and the two facts arrive together. You understood it. That is what you got. You understood it completely, and it was the last thing you ever did, and the chamber holds you now in the silence where the signal used to be.",
+      "is_ending": true,
+      "ending": {"id": "e_listen", "type": "death", "title": "Lost in the Signal"}
+    }
+  ]
+}

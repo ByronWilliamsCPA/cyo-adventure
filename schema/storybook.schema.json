@@ -3,9 +3,12 @@
     "AgeBand": {
       "description": "The reading age band a story targets.",
       "enum": [
+        "3-5",
+        "5-8",
         "8-11",
         "10-13",
-        "13-16"
+        "13-16",
+        "16+"
       ],
       "title": "AgeBand",
       "type": "string"
@@ -65,7 +68,8 @@
       "enum": [
         "none",
         "mild",
-        "moderate"
+        "moderate",
+        "intense"
       ],
       "title": "ContentFlagLevel",
       "type": "string"
@@ -142,31 +146,46 @@
     },
     "Ending": {
       "additionalProperties": false,
-      "description": "A terminal outcome, identified by a stable id across prose edits.",
+      "description": "A terminal outcome, typed on two axes: how it feels and what happened.",
       "properties": {
         "id": {
           "minLength": 1,
           "title": "Id",
           "type": "string"
         },
+        "kind": {
+          "$ref": "#/$defs/EndingKind"
+        },
         "title": {
           "minLength": 1,
           "title": "Title",
           "type": "string"
         },
-        "type": {
-          "minLength": 1,
-          "title": "Type",
-          "type": "string"
+        "valence": {
+          "$ref": "#/$defs/Valence"
         }
       },
       "required": [
         "id",
-        "type",
+        "valence",
+        "kind",
         "title"
       ],
       "title": "Ending",
       "type": "object"
+    },
+    "EndingKind": {
+      "description": "What mechanically happened at an ending (closed set).",
+      "enum": [
+        "success",
+        "setback",
+        "death",
+        "capture",
+        "completion",
+        "discovery"
+      ],
+      "title": "EndingKind",
+      "type": "string"
     },
     "JsonValue": {},
     "Node": {
@@ -212,6 +231,13 @@
           "title": "On Enter",
           "type": "array"
         },
+        "safety_scope": {
+          "items": {
+            "$ref": "#/$defs/SafetyScope"
+          },
+          "title": "Safety Scope",
+          "type": "array"
+        },
         "tags": {
           "items": {
             "type": "string"
@@ -254,6 +280,17 @@
       "title": "ReadingLevel",
       "type": "object"
     },
+    "SafetyScope": {
+      "description": "A per-node hint marking a sensitive scene for the safety reviewer.",
+      "enum": [
+        "peril",
+        "scary_imagery",
+        "conflict",
+        "sad_moment"
+      ],
+      "title": "SafetyScope",
+      "type": "string"
+    },
     "StoryMetadata": {
       "additionalProperties": false,
       "description": "Descriptive metadata carried by every Storybook.",
@@ -289,6 +326,9 @@
           "minimum": 1,
           "title": "Tier",
           "type": "integer"
+        },
+        "topology": {
+          "$ref": "#/$defs/Topology"
         }
       },
       "required": [
@@ -296,10 +336,32 @@
         "reading_level",
         "tier",
         "estimated_minutes",
-        "ending_count"
+        "ending_count",
+        "topology"
       ],
       "title": "StoryMetadata",
       "type": "object"
+    },
+    "Topology": {
+      "description": "The branching shape of a story graph (Ashwell vocabulary).",
+      "enum": [
+        "time_cave",
+        "gauntlet",
+        "branch_and_bottleneck",
+        "loop_and_grow"
+      ],
+      "title": "Topology",
+      "type": "string"
+    },
+    "Valence": {
+      "description": "How an ending feels, independent of what mechanically happened.",
+      "enum": [
+        "positive",
+        "neutral",
+        "negative"
+      ],
+      "title": "Valence",
+      "type": "string"
     },
     "Variable": {
       "additionalProperties": false,
@@ -392,7 +454,7 @@
       "type": "array"
     },
     "schema_version": {
-      "default": "1.0",
+      "default": "2.0",
       "title": "Schema Version",
       "type": "string"
     },

@@ -1,0 +1,760 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sunken_signal",
+  "version": 1,
+  "title": "The Sunken Signal",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 2.0
+    },
+    "tier": 2,
+    "themes": [
+      "survival",
+      "isolation",
+      "resource-management",
+      "mystery"
+    ],
+    "estimated_minutes": 30,
+    "ending_count": 14,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck"
+  },
+  "variables": [
+    {
+      "name": "air",
+      "type": "int",
+      "initial": 4,
+      "min": 0,
+      "max": 4,
+      "description": "Breathing-gas reserve, in fifths; 0 is empty."
+    },
+    {
+      "name": "has_rebreather",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the spare closed-circuit rebreather is rigged."
+    },
+    {
+      "name": "has_keycard",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the reactor-core keycard has been recovered."
+    },
+    {
+      "name": "has_signal",
+      "type": "bool",
+      "initial": false,
+      "description": "Whether the transmitter core has been secured."
+    }
+  ],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=250 beats='A lone salvage diver on a night boat over a sunken research station; a distress signal still repeats from below; establish the diver, the descent, and that air is finite'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dive_fast",
+          "label": "Plunge straight down the access shaft.",
+          "target": "n_corridor",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_dive_locker",
+          "label": "Descend past the external equipment locker.",
+          "target": "n_locker"
+        },
+        {
+          "id": "c_dive_recon",
+          "label": "Hover and study the signal's pattern first.",
+          "target": "n_signal_recon"
+        }
+      ]
+    },
+    {
+      "id": "n_signal_recon",
+      "body": "<<FILL role=rising words=240 beats='The diver reads the repeating signal and recognizes a deliberate human pattern, not an automated beacon; unease that someone may still be down there; air not yet spent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_recon_down",
+          "label": "Descend into the flooded corridor.",
+          "target": "n_corridor"
+        }
+      ]
+    },
+    {
+      "id": "n_locker",
+      "body": "<<FILL role=rising words=240 beats='The external dive locker holds a spare closed-circuit rebreather; taking it adds weight but a second chance at air; the diver weighs caution against speed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_rebreather",
+          "label": "Rig the spare rebreather to your harness.",
+          "target": "n_corridor",
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_rebreather",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_leave_rebreather",
+          "label": "Leave it; travel light and fast.",
+          "target": "n_corridor"
+        }
+      ]
+    },
+    {
+      "id": "n_corridor",
+      "body": "<<FILL role=choice words=250 beats='Bottleneck: a flooded central junction; doorways to the laboratory wing, the crew quarters, and a half-collapsed mess hall; the core lies deeper, still sealed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lab",
+          "label": "Swim into the laboratory wing.",
+          "target": "n_lab",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_crew",
+          "label": "Swim into the crew quarters.",
+          "target": "n_crew",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_mess",
+          "label": "Pick through the collapsed mess hall.",
+          "target": "n_flooded_mess"
+        }
+      ]
+    },
+    {
+      "id": "n_lab",
+      "body": "<<FILL role=choice words=250 beats='The lab; a dead terminal still holds the reactor-core keycard; sample racks tempt; a strained bulkhead groans overhead, a real hazard'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take_keycard",
+          "label": "Pry the keycard from the dead terminal.",
+          "target": "n_lab_detail",
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_keycard",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_search_samples",
+          "label": "Search the sealed sample racks first.",
+          "target": "n_lab_detail",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_lab_flood",
+          "label": "Brace against the groaning bulkhead.",
+          "target": "n_end_lab_flood"
+        }
+      ]
+    },
+    {
+      "id": "n_lab_detail",
+      "body": "<<FILL role=rising words=240 beats='Deeper in the lab; a maintenance hatch leads on toward the central junction; a specimen vault tempts the diver to stay and document'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lab_junction",
+          "label": "Take the maintenance hatch toward the junction.",
+          "target": "n_junction"
+        },
+        {
+          "id": "c_specimen",
+          "label": "Stay to document the specimen vault.",
+          "target": "n_end_specimen"
+        }
+      ]
+    },
+    {
+      "id": "n_crew",
+      "body": "<<FILL role=choice words=250 beats='Crew quarters; final logs hint at what drowned the station; an emergency O2 cylinder can refill air; a sealed drysuit bay offers a backup rebreather'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_read_logs",
+          "label": "Read the crew's final logs.",
+          "target": "n_crew_detail"
+        },
+        {
+          "id": "c_grab_cylinder",
+          "label": "Crack an emergency oxygen cylinder.",
+          "target": "n_crew_detail",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "air",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "id": "c_crew_suit",
+          "label": "Force the sealed drysuit bay.",
+          "target": "n_drysuit_bay"
+        }
+      ]
+    },
+    {
+      "id": "n_crew_detail",
+      "body": "<<FILL role=rising words=240 beats='A flooded passage from the quarters toward the junction; a jammed door could trap the diver if forced wrong; air costs to push through'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_crew_junction",
+          "label": "Work the flooded passage to the junction.",
+          "target": "n_junction",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_crew_trap",
+          "label": "Force the jammed door open hard.",
+          "target": "n_end_crew_trap"
+        }
+      ]
+    },
+    {
+      "id": "n_flooded_mess",
+      "body": "<<FILL role=rising words=240 beats='The collapsed mess hall; an air pocket trapped against the ceiling can be tapped; either way a side vent leads to the junction'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_mess_searchgalley",
+          "label": "Tap the trapped ceiling air pocket.",
+          "target": "n_junction",
+          "effects": [
+            {
+              "op": "inc",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_mess_junction",
+          "label": "Slip through the side vent to the junction.",
+          "target": "n_junction"
+        }
+      ]
+    },
+    {
+      "id": "n_drysuit_bay",
+      "body": "<<FILL role=rising words=240 beats='The drysuit bay holds a serviceable rebreather rig; clipping it on is the diver second chance at a safe ascent; a hatch leads to the junction'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_suit_junction",
+          "label": "Rig the rebreather and head for the junction.",
+          "target": "n_junction",
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_rebreather",
+              "value": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "n_junction",
+      "body": "<<FILL role=choice words=250 beats='Bottleneck: a pressure door to the reactor core needs the keycard; a collapsed vent crawl is the only other way down; the diver can also lose nerve and turn back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_use_keycard",
+          "label": "Badge through the pressure door.",
+          "target": "n_core_door",
+          "condition": {
+            "==": [
+              {
+                "var": "has_keycard"
+              },
+              true
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_vent_crawl",
+          "label": "Squeeze into the collapsed vent crawl.",
+          "target": "n_vent",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_junction_panic",
+          "label": "Lose your nerve and ascend now.",
+          "target": "n_end_junction"
+        }
+      ]
+    },
+    {
+      "id": "n_vent",
+      "body": "<<FILL role=choice words=250 beats='The vent crawl is tight, lightless, and airless; it can drop the diver into the core chamber from behind, wedge them, or be backed out of to abort'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vent_core",
+          "label": "Drop into the core chamber from the vent.",
+          "target": "n_core_chamber",
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "id": "c_vent_back",
+          "label": "Back out and abort the dive.",
+          "target": "n_end_retreat"
+        },
+        {
+          "id": "c_vent_stuck",
+          "label": "Force through the narrowest bend.",
+          "target": "n_end_vent_stuck"
+        }
+      ]
+    },
+    {
+      "id": "n_core_door",
+      "body": "<<FILL role=rising words=240 beats='The pressure door cycles open onto the reactor core chamber; the signal is loud here; the diver crosses the threshold'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter_core",
+          "label": "Enter the core chamber.",
+          "target": "n_core_chamber"
+        }
+      ]
+    },
+    {
+      "id": "n_core_chamber",
+      "body": "<<FILL role=climax words=250 beats='Bottleneck climax: the signal source is a sealed transmitter still pinging; air is precious (reference current air); grabbing it needs breath, the rebreather lets the diver work calm, or they can flee, overload the core, or be hypnotized listening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_grab_signal",
+          "label": "Pull the transmitter core free now.",
+          "target": "n_signal_secured",
+          "condition": {
+            ">=": [
+              {
+                "var": "air"
+              },
+              1
+            ]
+          },
+          "effects": [
+            {
+              "op": "dec",
+              "var": "air",
+              "value": 1
+            },
+            {
+              "op": "set",
+              "var": "has_signal",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_rebreather_steady",
+          "label": "Switch to the rebreather and work calmly.",
+          "target": "n_signal_secured",
+          "condition": {
+            "==": [
+              {
+                "var": "has_rebreather"
+              },
+              true
+            ]
+          },
+          "effects": [
+            {
+              "op": "set",
+              "var": "has_signal",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "c_flee_core",
+          "label": "Abandon the signal and flee for the surface.",
+          "target": "n_ascent"
+        },
+        {
+          "id": "c_core_overload",
+          "label": "Trigger the failing reactor to surface it whole.",
+          "target": "n_end_meltdown"
+        },
+        {
+          "id": "c_core_listen",
+          "label": "Stop and listen to the full message.",
+          "target": "n_end_listen"
+        }
+      ]
+    },
+    {
+      "id": "n_signal_secured",
+      "body": "<<FILL role=climax words=250 beats='The transmitter core is secured (has_signal true); a data core tempts the diver to linger; the long ascent waits and air may be low (reference air)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ascend_signal",
+          "label": "Begin the long ascent with the prize.",
+          "target": "n_ascent"
+        },
+        {
+          "id": "c_greedy_data",
+          "label": "Stay to wrench the data core loose too.",
+          "target": "n_end_data"
+        }
+      ]
+    },
+    {
+      "id": "n_ascent",
+      "body": "<<FILL role=climax words=250 beats='Bottleneck: the long swim up; whether the diver can power up (air high), ride the rebreather, or only claw upward on the last breath depends on their state; giving up means sinking'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_swim_strong",
+          "label": "Power for the surface in one push.",
+          "target": "n_surface",
+          "condition": {
+            ">=": [
+              {
+                "var": "air"
+              },
+              2
+            ]
+          }
+        },
+        {
+          "id": "c_swim_rebreather",
+          "label": "Ride the rebreather up in safe stages.",
+          "target": "n_surface",
+          "condition": {
+            "==": [
+              {
+                "var": "has_rebreather"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_swim_weak",
+          "label": "Claw upward on your last breath.",
+          "target": "n_collapse"
+        },
+        {
+          "id": "c_ascent_giveup",
+          "label": "Let go and sink back down.",
+          "target": "n_end_sink"
+        }
+      ]
+    },
+    {
+      "id": "n_collapse",
+      "body": "<<FILL role=climax words=250 beats='Just below the surface the diver vision tunnels; with any breath left they find one kick, with the rebreather a buddy reaches them, otherwise they slip under (reference air at zero)'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_last_kick",
+          "label": "Find one last kick.",
+          "target": "n_surface",
+          "condition": {
+            ">=": [
+              {
+                "var": "air"
+              },
+              1
+            ]
+          }
+        },
+        {
+          "id": "c_reach_buddy",
+          "label": "Signal your dive buddy with the rebreather alarm.",
+          "target": "n_rescue",
+          "condition": {
+            "==": [
+              {
+                "var": "has_rebreather"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_slip_under",
+          "label": "Slip into the dark.",
+          "target": "n_end_drown"
+        }
+      ]
+    },
+    {
+      "id": "n_surface",
+      "body": "<<FILL role=choice words=240 beats='The diver breaks the surface alive; the ending turns on whether the transmitter was secured (has_signal); deliver the recovered signal, or climb aboard empty-handed'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_report_success",
+          "label": "Hand over the recovered signal core.",
+          "target": "n_end_success",
+          "condition": {
+            "==": [
+              {
+                "var": "has_signal"
+              },
+              true
+            ]
+          }
+        },
+        {
+          "id": "c_report_empty",
+          "label": "Climb aboard with nothing but your life.",
+          "target": "n_end_survived"
+        }
+      ]
+    },
+    {
+      "id": "n_end_success",
+      "body": "<<FILL role=completion words=210 beats='The recovered transmitter reveals the lost message and vindicates the dive; the diver delivers it; the main triumphant, series-advancing ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_success",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Signal Recovered"
+      }
+    },
+    {
+      "id": "n_end_survived",
+      "body": "<<FILL role=failure words=200 beats='Alive but empty-handed; the signal still pings below; a hollow, survivable failure that invites another attempt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_survived",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Empty-Handed"
+      }
+    },
+    {
+      "id": "n_end_retreat",
+      "body": "<<FILL role=failure words=200 beats='Backing out of the vent, the diver aborts and surfaces alive; the station keeps its secret; a measured, non-lethal failure that respects the choice to live'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_retreat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Aborted Dive"
+      }
+    },
+    {
+      "id": "n_rescue",
+      "body": "<<FILL role=failure words=200 beats='The dive buddy hauls the diver onto the boat at the edge of blackout; rescued, shaken, mission unfinished; a survivable failure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rescue",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pulled From the Brink"
+      }
+    },
+    {
+      "id": "n_end_drown",
+      "body": "<<FILL role=failure words=200 beats='Out of air below the surface, the diver slips into the dark; a lethal ending, somber and unflinching but not gratuitous (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_drown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "The Dark Below"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_sink",
+      "body": "<<FILL role=failure words=200 beats='Letting go, the diver sinks back toward the station; a quiet, lethal surrender ending (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_sink",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Letting Go"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_lab_flood",
+      "body": "<<FILL role=failure words=200 beats='The strained bulkhead gives way and the lab implodes; a sudden lethal ending; tense but not gory (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lab_flood",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Bulkhead Breach"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_specimen",
+      "body": "<<FILL role=failure words=200 beats='Lost in documenting the specimen vault, the diver lets the window close and surfaces with science but no signal; a neutral, non-lethal ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_specimen",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Documentarian"
+      }
+    },
+    {
+      "id": "n_end_crew_trap",
+      "body": "<<FILL role=failure words=200 beats='Forcing the jammed door seals the diver in the quarters; rescue eventually comes, the dive a failure; survivable, non-lethal'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crew_trap",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed In"
+      }
+    },
+    {
+      "id": "n_end_junction",
+      "body": "<<FILL role=failure words=200 beats='Nerve gone, the diver ascends from the junction; alive, the core unreached; a survivable failure of will'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_junction",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost Nerve"
+      }
+    },
+    {
+      "id": "n_end_vent_stuck",
+      "body": "<<FILL role=failure words=200 beats='Forcing the narrowest bend wedges the diver in the lightless vent as air runs out; a lethal ending; claustrophobic, restrained (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_vent_stuck",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Wedged"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_meltdown",
+      "body": "<<FILL role=failure words=200 beats='Triggering the failing reactor surfaces the wreck but not the diver; a lethal, sacrificial ending (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_meltdown",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Critical"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_data",
+      "body": "<<FILL role=failure words=200 beats='Lingering to wrench the data core free, the diver runs out of air at the worst moment; a lethal ending born of greed (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_data",
+        "valence": "negative",
+        "kind": "death",
+        "title": "One Thing Too Many"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    },
+    {
+      "id": "n_end_listen",
+      "body": "<<FILL role=failure words=200 beats='Transfixed by the full message, the diver loses track of air and time; a lethal, eerie ending (16+ permits death)'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_listen",
+        "valence": "negative",
+        "kind": "death",
+        "title": "Lost in the Signal"
+      },
+      "safety_scope": [
+        "peril"
+      ]
+    }
+  ]
+}

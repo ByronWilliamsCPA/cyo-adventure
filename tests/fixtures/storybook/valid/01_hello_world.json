@@ -1,16 +1,27 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_hello_world",
   "version": 1,
   "title": "Hello World",
   "metadata": {
     "age_band": "8-11",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 3.0, "tolerance": 1.0},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 3.0,
+      "tolerance": 1.0
+    },
     "tier": 1,
-    "themes": ["adventure"],
+    "themes": [
+      "adventure"
+    ],
     "estimated_minutes": 5,
-    "ending_count": 1,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "ending_count": 4,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave"
   },
   "variables": [],
   "start_node": "n_start",
@@ -20,15 +31,96 @@
       "body": "You stand at a crossroads. A friendly fox waves at you.",
       "is_ending": false,
       "choices": [
-        {"id": "c_wave_back", "label": "Wave back at the fox.", "target": "n_happy_end"}
+        {
+          "id": "c_wave_back",
+          "label": "Wave back at the fox.",
+          "target": "n_happy_end"
+        },
+        {
+          "id": "xc_start_extra",
+          "label": "Wander off",
+          "target": "xn_dec_0"
+        }
       ]
     },
     {
       "id": "n_happy_end",
       "body": "The fox becomes your friend and you skip home together.",
       "is_ending": true,
-      "ending": {"id": "e_friends", "type": "happy", "title": "New Friends"},
+      "ending": {
+        "id": "e_friends",
+        "valence": "positive",
+        "kind": "success",
+        "title": "New Friends"
+      },
       "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "This way",
+          "target": "xn_dec_1"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "That way",
+          "target": "xn_end_d0"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d0",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d0",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      }
+    },
+    {
+      "id": "xn_dec_1",
+      "body": "A side decision.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_1_a",
+          "label": "This way",
+          "target": "xn_end_term"
+        },
+        {
+          "id": "xc_1_b",
+          "label": "That way",
+          "target": "xn_end_d1"
+        }
+      ]
+    },
+    {
+      "id": "xn_end_d1",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_d1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      }
+    },
+    {
+      "id": "xn_end_term",
+      "body": "An extra resolution.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_term",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Extra Ending 3"
+      }
     }
   ]
 }

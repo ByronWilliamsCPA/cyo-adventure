@@ -34,6 +34,7 @@ def _meta(tier: int = 2, ending_count: int = 1) -> dict[str, object]:
         "themes": [],
         "estimated_minutes": 5,
         "ending_count": ending_count,
+        "topology": "branch_and_bottleneck",
         "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
     }
 
@@ -48,7 +49,7 @@ def _build(
     """Assemble and validate a synthetic Tier-2 story."""
     return Storybook.model_validate(
         {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "id": "s_syn",
             "version": 1,
             "title": "Synthetic",
@@ -66,7 +67,12 @@ def _end(nid: str = "n_end", eid: str = "e_end") -> dict[str, object]:
         "id": nid,
         "body": "Done.",
         "is_ending": True,
-        "ending": {"id": eid, "type": "good", "title": "End"},
+        "ending": {
+            "id": eid,
+            "valence": "positive",
+            "kind": "success",
+            "title": "End",
+        },
         "choices": [],
     }
 

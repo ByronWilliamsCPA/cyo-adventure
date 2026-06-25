@@ -1,14 +1,17 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_stateful_dead_end",
   "version": 1,
   "title": "Stateful Dead End",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"target": 5.0},
+    "reading_level": {
+      "target": 5.0
+    },
     "tier": 2,
     "estimated_minutes": 10,
-    "ending_count": 1
+    "ending_count": 1,
+    "topology": "gauntlet"
   },
   "variables": [
     {
@@ -41,7 +44,14 @@
           "id": "c_open_silver",
           "label": "Unlock the door with the silver key.",
           "target": "n_end",
-          "condition": {"==": [{"var": "has_silver_key"}, true]}
+          "condition": {
+            "==": [
+              {
+                "var": "has_silver_key"
+              },
+              true
+            ]
+          }
         }
       ]
     },
@@ -49,7 +59,12 @@
       "id": "n_end",
       "body": "Beyond the door lies freedom.",
       "is_ending": true,
-      "ending": {"id": "e_free", "type": "happy", "title": "Freedom"},
+      "ending": {
+        "id": "e_free",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Freedom"
+      },
       "choices": []
     }
   ]

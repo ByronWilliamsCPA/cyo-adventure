@@ -1,17 +1,26 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_bad_operator",
   "version": 1,
   "title": "Non-Whitelisted Operator",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"target": 5.0},
+    "reading_level": {
+      "target": 5.0
+    },
     "tier": 2,
     "estimated_minutes": 10,
-    "ending_count": 1
+    "ending_count": 1,
+    "topology": "gauntlet"
   },
   "variables": [
-    {"name": "score", "type": "int", "initial": 0, "min": 0, "max": 10}
+    {
+      "name": "score",
+      "type": "int",
+      "initial": 0,
+      "min": 0,
+      "max": 10
+    }
   ],
   "start_node": "n_start",
   "nodes": [
@@ -24,7 +33,14 @@
           "id": "c_try",
           "label": "Try the challenge.",
           "target": "n_end",
-          "condition": {"+": [{"var": "score"}, 1]}
+          "condition": {
+            "+": [
+              {
+                "var": "score"
+              },
+              1
+            ]
+          }
         }
       ]
     },
@@ -32,7 +48,12 @@
       "id": "n_end",
       "body": "DEFECT: condition uses arithmetic operator + which is not whitelisted.",
       "is_ending": true,
-      "ending": {"id": "e_done", "type": "happy", "title": "Done"},
+      "ending": {
+        "id": "e_done",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Done"
+      },
       "choices": []
     }
   ]

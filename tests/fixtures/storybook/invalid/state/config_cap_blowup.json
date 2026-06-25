@@ -1,16 +1,27 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_config_cap_blowup",
   "version": 1,
   "title": "The Four Keys",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"scheme": "flesch_kincaid", "target": 5.0, "tolerance": 1.5},
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.0,
+      "tolerance": 1.5
+    },
     "tier": 2,
-    "themes": ["exploration"],
+    "themes": [
+      "exploration"
+    ],
     "estimated_minutes": 15,
-    "ending_count": 1,
-    "content_flags": {"violence": "none", "scariness": "none", "peril": "none"}
+    "ending_count": 3,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "time_cave"
   },
   "variables": [
     {
@@ -49,25 +60,54 @@
           "id": "c_take_a",
           "label": "Pick up the iron key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_a", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_a",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_b",
           "label": "Pick up the brass key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_b", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_b",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_c",
           "label": "Pick up the copper key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_c", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_c",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_take_d",
           "label": "Pick up the silver key.",
           "target": "n_mid",
-          "effects": [{"op": "set", "var": "key_d", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_d",
+              "value": true
+            }
+          ]
+        },
+        {
+          "id": "xc_s_0",
+          "label": "A new path",
+          "target": "xn_dec_0"
         }
       ]
     },
@@ -80,25 +120,49 @@
           "id": "c_grab_a2",
           "label": "Also take the iron key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_a", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_a",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_b2",
           "label": "Also take the brass key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_b", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_b",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_c2",
           "label": "Also take the copper key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_c", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_c",
+              "value": true
+            }
+          ]
         },
         {
           "id": "c_grab_d2",
           "label": "Also take the silver key.",
           "target": "n_door",
-          "effects": [{"op": "set", "var": "key_d", "value": true}]
+          "effects": [
+            {
+              "op": "set",
+              "var": "key_d",
+              "value": true
+            }
+          ]
         }
       ]
     },
@@ -118,7 +182,53 @@
       "id": "n_end",
       "body": "The door swings open into brilliant light.",
       "is_ending": true,
-      "ending": {"id": "e_open", "type": "triumph", "title": "The Door Opens"},
+      "ending": {
+        "id": "e_open",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Door Opens"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_dec_0",
+      "body": "A side choice.",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "xc_0_a",
+          "label": "left",
+          "target": "xn_e_0a"
+        },
+        {
+          "id": "xc_0_b",
+          "label": "right",
+          "target": "xn_e_0b"
+        }
+      ]
+    },
+    {
+      "id": "xn_e_0a",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_0a",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Extra Ending 1"
+      },
+      "choices": []
+    },
+    {
+      "id": "xn_e_0b",
+      "body": "An extra resolution for coverage.",
+      "is_ending": true,
+      "ending": {
+        "id": "xe_1b",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Extra Ending 2"
+      },
       "choices": []
     }
   ]

@@ -1,14 +1,17 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "id": "s_bad_int_initial",
   "version": 1,
   "title": "Int Initial Above Max",
   "metadata": {
     "age_band": "10-13",
-    "reading_level": {"target": 5.0},
+    "reading_level": {
+      "target": 5.0
+    },
     "tier": 2,
     "estimated_minutes": 10,
-    "ending_count": 1
+    "ending_count": 1,
+    "topology": "gauntlet"
   },
   "variables": [
     {
@@ -26,14 +29,23 @@
       "body": "You stand ready.",
       "is_ending": false,
       "choices": [
-        {"id": "c_go", "label": "Go forward.", "target": "n_end"}
+        {
+          "id": "c_go",
+          "label": "Go forward.",
+          "target": "n_end"
+        }
       ]
     },
     {
       "id": "n_end",
       "body": "DEFECT: courage.initial (9) is above courage.max (5).",
       "is_ending": true,
-      "ending": {"id": "e_done", "type": "happy", "title": "Done"},
+      "ending": {
+        "id": "e_done",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Done"
+      },
       "choices": []
     }
   ]
