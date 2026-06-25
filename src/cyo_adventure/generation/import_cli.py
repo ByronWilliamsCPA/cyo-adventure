@@ -71,10 +71,21 @@ def main(argv: list[str] | None = None) -> int:
     path: str = args.path
     family: str = args.family
     model: str | None = args.model
+    # Resolve to canonical path and reject traversal outside the working
+    # directory. Required because this CLI can be invoked by an LLM agent
+    # (OWASP LLM07): a faulty or adversarial path like ../../etc/passwd must
+    # not reach the filesystem read.
+    cwd = Path.cwd()
+    resolved = Path(path).resolve()
     try:
-        raw = Path(path).read_text(encoding="utf-8")
-    except OSError as exc:
-        sys.stderr.write(f"error: cannot read {path}: {exc}\n")
+        resolved.relative_to(cwd)
+        raw = resolved.read_text(encoding="utf-8")
+    except (ValueError, OSError) as exc:
+        sys.stderr.write(
+            f"error: {path} resolves outside the working directory\n"
+            if isinstance(exc, ValueError)
+            else f"error: cannot read {path}: {exc}\n"
+        )
         return 1
     try:
         raw_blob = json.loads(raw)
