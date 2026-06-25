@@ -56,8 +56,7 @@ Why this is the right architecture:
   it never emits a graph. Structural gates become invariants that pass by
   construction.
 - **A skeleton is a pre-validated Storybook with empty prose**, so the existing
-  schema ([models.py](../../../src/cyo_adventure/storybook/models.py)) and validator
-  ([layer1.py](../../../src/cyo_adventure/validator/layer1.py)) validate it once at
+  schema (`models.py`) and validator (`layer1.py`) validate it once at
   authoring time. At generation, only the *filled prose* is re-checked against
   content and reading-level gates.
 - **It guarantees the commercial metrics.** Endings and decisions become authored
@@ -192,7 +191,7 @@ Existing (reuse, do not rebuild):
 
 - **Story store:** `db/models.py` `Storybook` + `StorybookVersion` tables; the
   generation worker validates then commits the finished story
-  ([worker.py](../../../src/cyo_adventure/generation/worker.py)). Every worker-path
+  (`worker.py`). Every worker-path
   generation already writes through this, so "once generated, it is saved" holds.
 - **Runtime state:** the `ReadingState` table persists per-reader variables and
   `visit_set` (drives `once: true` effects); `player/engine.py` + `state.py` run the
