@@ -407,13 +407,13 @@ class TestLiveHarnessHelpers:
     ) -> None:
         """Quoted dotenv values are unquoted so the literal quotes do not leak.
 
-        .env.example documents OLLAMA_AUTH="svc-cyo:<app-password>" with double
+        .env.example documents OLLAMA_AUTH="<username>:<app-password>" with double
         quotes; without unquoting, the quotes would become part of the credential
         and break Basic auth.
         """
         env = tmp_path / ".env"
         env.write_text(
-            "DQ_KEY=\"svc-cyo:app-pw\"\nSQ_KEY='plain'\nBARE_KEY=raw\n",
+            "DQ_KEY=\"testservice:testcred\"\nSQ_KEY='plain'\nBARE_KEY=raw\n",
             encoding="utf-8",
         )
         for key in ("DQ_KEY", "SQ_KEY", "BARE_KEY"):
@@ -421,6 +421,6 @@ class TestLiveHarnessHelpers:
         _load_env_file(env)
         import os
 
-        assert os.environ["DQ_KEY"] == "svc-cyo:app-pw"
+        assert os.environ["DQ_KEY"] == "testservice:testcred"
         assert os.environ["SQ_KEY"] == "plain"
         assert os.environ["BARE_KEY"] == "raw"

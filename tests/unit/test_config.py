@@ -14,7 +14,7 @@ import pytest
 
 # The dev-default DSN that the validator guards against leaking.
 _DEV_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/cyo_adventure"
-_PROD_DB_URL = "postgresql+asyncpg://appuser:secret@db.prod.example.com/cyo_adventure"
+_PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure"
 
 
 class TestSettingsDefaults:
@@ -129,8 +129,8 @@ class TestOllamaProviderSettings:
         """ollama_auth is read from the unprefixed OLLAMA_AUTH var."""
         from cyo_adventure.core.config import Settings
 
-        monkeypatch.setenv("OLLAMA_AUTH", "svc-cyo:app-pw")
-        assert Settings().ollama_auth == "svc-cyo:app-pw"
+        monkeypatch.setenv("OLLAMA_AUTH", "testservice:testcred")
+        assert Settings().ollama_auth == "testservice:testcred"
 
 
 class TestValidatorRejectDevUrlOutsideLocal:

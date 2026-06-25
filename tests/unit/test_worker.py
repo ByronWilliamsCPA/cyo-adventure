@@ -175,7 +175,7 @@ class TestBuildProviderLive:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="ollama",
             ollama_base_url="http://ollama.example.com",
-            ollama_auth="svc-cyo:app-pw",
+            ollama_auth="testservice:testcred",
         )
         with pytest.raises(ConfigurationError, match="cleartext"):
             build_provider(settings)
@@ -185,7 +185,7 @@ class TestBuildProviderLive:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="ollama",
             ollama_base_url="https://ollama.example.com",
-            ollama_auth="svc-cyo:app-pw",
+            ollama_auth="testservice:testcred",
         )
         assert isinstance(build_provider(settings), OllamaProvider)
 
@@ -194,7 +194,7 @@ class TestBuildProviderLive:
         settings = Settings(  # type: ignore[call-arg]
             generation_provider="ollama",
             ollama_base_url="http://localhost:11434",
-            ollama_auth="svc-cyo:app-pw",
+            ollama_auth="testservice:testcred",
         )
         assert isinstance(build_provider(settings), OllamaProvider)
 
@@ -205,10 +205,10 @@ class TestSplitBasicAuth:
     @pytest.mark.parametrize(
         ("value", "expected"),
         [
-            # The real username is exactly svc-cyo (the Authentik service account).
-            ("svc-cyo:app-pw", ("svc-cyo", "app-pw")),
+            # A basic user:pass pair splits cleanly.
+            ("testservice:testcred", ("testservice", "testcred")),
             # A username containing hyphens still splits on the first colon.
-            ("svc-cyo-laptop:abc123", ("svc-cyo-laptop", "abc123")),
+            ("test-svc-laptop:abc123", ("test-svc-laptop", "abc123")),
             # First-colon split keeps a password that itself contains colons.
             ("user:p:a:ss", ("user", "p:a:ss")),
             # Missing/blank/half values yield no credential.
@@ -219,7 +219,7 @@ class TestSplitBasicAuth:
             (":only-password", (None, None)),
             ("only-user:", (None, None)),
             # Surrounding whitespace on either half is trimmed (stray-space typo).
-            (" svc-cyo : app-pw ", ("svc-cyo", "app-pw")),
+            (" testservice : testcred ", ("testservice", "testcred")),
             (" : ", (None, None)),
         ],
     )
