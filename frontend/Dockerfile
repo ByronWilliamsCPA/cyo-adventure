@@ -4,20 +4,25 @@
 # =============================================================================
 # Stage 1: Dependencies
 # =============================================================================
-FROM node:22-alpine AS deps
+# Hardened Node image from the org GHCR mirror of Docker Hardened Images (DHI).
+# Replaces node:22-alpine; Debian-based so apt-get applies, not apk.
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13 AS deps
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# --ignore-scripts is intentionally omitted: esbuild and other Vite native deps
+# download platform-specific binaries via postinstall and will silently break
+# without lifecycle scripts. Dependency integrity is enforced by the lockfile
+# (npm ci) and Trivy scanning in container-security.yml.
 RUN npm ci --only=production=false
 
 # =============================================================================
 # Stage 2: Builder
 # =============================================================================
-FROM node:22-alpine AS builder
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13 AS builder
 
 WORKDIR /app
 
@@ -37,7 +42,8 @@ RUN npm run build
 # =============================================================================
 # Stage 3: Production (nginx)
 # =============================================================================
-FROM nginx:alpine AS production
+# Hardened nginx image from the org GHCR mirror of Docker Hardened Images (DHI).
+FROM ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13 AS production
 
 # Metadata labels
 LABEL org.opencontainers.image.title="CYO Adventure Frontend"
@@ -74,18 +80,22 @@ CMD ["nginx", "-g", "daemon off;"]
 # =============================================================================
 # Stage 4: Development (optional - for docker-compose dev)
 # =============================================================================
-FROM node:22-alpine AS development
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13 AS development
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev)
+# Same --ignore-scripts rationale as the deps stage above.
 RUN npm ci
 
-# Copy source code
+# Copy source code (.dockerignore excludes node_modules, .env, dist, etc.)
 COPY . .
+
+# Drop root before starting the dev server; the standard node image ships with
+# a non-root "node" user (uid 1000) that the DHI image preserves.
+USER node
 
 # Expose Vite dev server port
 EXPOSE 3000
