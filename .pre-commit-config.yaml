@@ -64,7 +64,7 @@ repos:
     rev: 30d5bb91af1a771378349dbbb0c82129392acf70  # v3.95.6  # pragma: allowlist secret
     hooks:
       - id: trufflehog
-        entry: bash -c 'git diff --cached -z --name-only --diff-filter=d 2>/dev/null | tr "\0" "\n" | grep -v "^CHANGELOG\.md$" | grep -v "^\.submodules/" | grep -v "^docker-compose" | grep -v "^$" | tr "\n" "\0" | xargs -0 -r trufflehog filesystem --fail --no-update'
+        entry: bash -c 'git diff --cached -z --name-only --diff-filter=d 2>/dev/null | tr "\0" "\n" | grep -v "^CHANGELOG\.md$" | grep -v "^\.submodules/" | grep -v "^docker-compose[^/]*\.ya\?ml$" | grep -v "^$" | tr "\n" "\0" | xargs -0 -r trufflehog filesystem --fail --no-update'
         pass_filenames: false
         stages: [pre-commit]
 

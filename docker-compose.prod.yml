@@ -6,8 +6,8 @@ version: '3.9'
 services:
   app:
     # Production image published to GHCR on release. Set VERSION to the
-    # semantic release tag (e.g. VERSION=v1.2.0) or leave as "latest".
-    image: ghcr.io/byronwilliamscpa/cyo-adventure:${VERSION:-latest}
+    # semantic release tag (e.g. VERSION=v1.2.0) or a digest pin.
+    image: ghcr.io/byronwilliamscpa/cyo-adventure:${VERSION:?Set VERSION to an immutable release tag or digest}
 
     # Don't mount source code in production
     volumes: []
