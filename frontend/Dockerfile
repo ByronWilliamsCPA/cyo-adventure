@@ -4,20 +4,25 @@
 # =============================================================================
 # Stage 1: Dependencies
 # =============================================================================
-FROM node:22-alpine AS deps
+# Hardened Node image from the org GHCR mirror of Docker Hardened Images (DHI).
+# Replaces node:22-alpine; Debian-based so apt-get applies, not apk.
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS deps
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# --ignore-scripts is intentionally omitted: esbuild and other Vite native deps
+# download platform-specific binaries via postinstall and will silently break
+# without lifecycle scripts. Dependency integrity is enforced by the lockfile
+# (npm ci) and Trivy scanning in container-security.yml.
 RUN npm ci --only=production=false
 
 # =============================================================================
 # Stage 2: Builder
 # =============================================================================
-FROM node:22-alpine AS builder
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS builder
 
 WORKDIR /app
 
@@ -37,7 +42,8 @@ RUN npm run build
 # =============================================================================
 # Stage 3: Production (nginx)
 # =============================================================================
-FROM nginx:alpine AS production
+# Hardened nginx image from the org GHCR mirror of Docker Hardened Images (DHI).
+FROM ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 AS production
 
 # Metadata labels
 LABEL org.opencontainers.image.title="CYO Adventure Frontend"
@@ -50,21 +56,25 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create non-root user for nginx
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup && \
-    chown -R appuser:appgroup /var/cache/nginx && \
-    chown -R appuser:appgroup /var/log/nginx && \
-    chown -R appuser:appgroup /etc/nginx/conf.d && \
-    touch /var/run/nginx.pid && \
-    chown -R appuser:appgroup /var/run/nginx.pid
+# Create non-root user for nginx and install curl for the HEALTHCHECK below.
+# addgroup/adduser are Alpine (BusyBox) commands; this image is Debian-based,
+# so groupadd/useradd (shadow-utils) must be used instead.
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd --gid 1001 --system appgroup \
+    && useradd --uid 1001 --system --gid appgroup appuser \
+    && chown -R appuser:appgroup /var/cache/nginx \
+    && chown -R appuser:appgroup /var/log/nginx \
+    && chown -R appuser:appgroup /etc/nginx/conf.d \
+    && touch /var/run/nginx.pid \
+    && chown -R appuser:appgroup /var/run/nginx.pid
 
 # Expose port 80
 EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -q --spider http://localhost/health || exit 1
+    CMD curl -fsS http://localhost/health || exit 1
 
 # Run as non-root user
 USER appuser
@@ -74,18 +84,27 @@ CMD ["nginx", "-g", "daemon off;"]
 # =============================================================================
 # Stage 4: Development (optional - for docker-compose dev)
 # =============================================================================
-FROM node:22-alpine AS development
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS development
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
-# Install all dependencies (including dev)
+# Same --ignore-scripts rationale as the deps stage above.
 RUN npm ci
 
-# Copy source code
+# Copy source code (.dockerignore excludes node_modules, .env, dist, etc.)
 COPY . .
+
+# Ensure the node user owns /app so Vite can write its cache at runtime.
+# npm ci runs as root above; without this chown USER node causes EACCES
+# on cache directory creation under /app/node_modules/.vite.
+RUN chown -R node:node /app
+
+# Drop root before starting the dev server; the standard node image ships with
+# a non-root "node" user (uid 1000) that the DHI image preserves.
+USER node
 
 # Expose Vite dev server port
 EXPOSE 3000

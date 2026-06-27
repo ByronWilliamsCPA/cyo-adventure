@@ -57,12 +57,14 @@ repos:
   # Advanced secret detection beyond detect-private-key
   # Detects API keys, tokens, credentials, and other secrets
   # Fail-closed: exits with error if trufflehog is not installed (not silent-skip)
-  # Scans staged files only; excludes CHANGELOG.md (commit SHA false-positive)
+  # Scans staged files only; excludes:
+  #   CHANGELOG.md         - commit SHAs trigger false positives
+  #   docker-compose*.yml  - dev placeholder credentials (real secrets go in .env, which is gitignored)
   - repo: https://github.com/trufflesecurity/trufflehog
     rev: 30d5bb91af1a771378349dbbb0c82129392acf70  # v3.95.6  # pragma: allowlist secret
     hooks:
       - id: trufflehog
-        entry: bash -c 'git diff --cached -z --name-only --diff-filter=d 2>/dev/null | tr "\0" "\n" | grep -v "^CHANGELOG\.md$" | grep -v "^\.submodules/" | grep -v "^$" | tr "\n" "\0" | xargs -0 -r trufflehog filesystem --fail --no-update'
+        entry: bash -c 'git diff --cached -z --name-only --diff-filter=d 2>/dev/null | tr "\0" "\n" | grep -v "^CHANGELOG\.md$" | grep -v "^\.submodules/" | grep -v "^docker-compose[^/]*\.ya\?ml$" | grep -v "^$" | tr "\n" "\0" | xargs -0 -r trufflehog filesystem --fail --no-update'
         pass_filenames: false
         stages: [pre-commit]
 

@@ -47,7 +47,9 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health/live"]
+      # Use Python stdlib: the production image deliberately omits curl to avoid
+      # its CVE surface. This matches the HEALTHCHECK in the Dockerfile exactly.
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=2).status == 200 else 1)"]
       interval: 30s
       timeout: 3s
       retries: 3
@@ -90,7 +92,7 @@ services:
   # Database Service (PostgreSQL)
   # =============================================================================
   db:
-    image: postgres:16-alpine
+    image: ghcr.io/byronwilliamscpa/dhi-postgres:16-debian13
     container_name: cyo_adventure-db
     environment:
       POSTGRES_DB: cyo_adventure
@@ -148,7 +150,7 @@ services:
 # Volumes (Persistent Storage)
 # =============================================================================
 volumes:
-postgres-data:
+  postgres-data:
     driver: local
 # redis-data:
   #   driver: local
