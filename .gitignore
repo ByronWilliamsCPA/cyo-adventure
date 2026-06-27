@@ -294,3 +294,9 @@ tmp_cleanup/*
 
 # Compliance report outputs
 docs/compliance-reports/
+
+# Local research scratch docs (not source-controlled)
+docs/planning/research/
+
+# Superpowers generated plan files
+docs/superpowers/plans/
