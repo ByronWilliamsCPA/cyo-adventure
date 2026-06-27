@@ -7,7 +7,7 @@
 # Hardened base image from the org GHCR mirror of Docker Hardened Images (DHI).
 # ~95% CVE reduction vs standard python:3.12-slim. Mirror syncs weekly from
 # dhi.io/python:3.12-debian13. No login required; the image is public.
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13 AS builder
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:17945c0c387a4ca034753f750edfa78c8b7c62caf2fca75dfc1986245e08cbf9 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -48,7 +48,7 @@ RUN uv sync --frozen --no-dev
 # Stage 2: Runtime - Minimal production image
 # =============================================================================
 # Same hardened base as the builder stage (see note above).
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:17945c0c387a4ca034753f750edfa78c8b7c62caf2fca75dfc1986245e08cbf9
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"
