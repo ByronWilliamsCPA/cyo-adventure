@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exported JSON schema and the entire story/fixture corpus were migrated.
 
 ### Added
+- CI: Claude Tier 0 baseline PR review caller
+  (`.github/workflows/claude-baseline-review.yml`), a thin caller of the org
+  reusable in `ByronWilliamsCPA/.github`. Part of the org-wide tiered-pr-review
+  rollout.
 - Config-driven six-band policy profile (`validator/band_profile.py`), now the
   single source of truth for per-band budgets (absorbing `layer1._BUDGETS`).
 - Policy gate layer PL-15..PL-18, run in `run_gate` between Layer 1 and Layer 2
