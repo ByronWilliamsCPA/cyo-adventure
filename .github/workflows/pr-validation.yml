@@ -12,6 +12,7 @@ on:
       - main
       - master
       - develop
+  merge_group:
 
 # Cancel in-progress runs for same PR
 concurrency:
@@ -87,10 +88,15 @@ jobs:
     name: Changelog Check
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Skip via event payload to avoid GitHub API label-timing races on the
-    # opened event (e.g. Renovate PRs). Avoids out-of-step false positives
-    # when main advances after the PR was opened.
+    # Only meaningful on pull_request events: the changelog gate compares the
+    # PR head against its base. On merge_group events there is no PR context
+    # (github.base_ref and pull_request.labels are empty), so the job is skipped
+    # there and the validate-dependencies summary treats a skip as a pass. This
+    # keeps the required "Dependency & Standards Validation" check green inside
+    # the merge queue. Label payload skips avoid GitHub API label-timing races
+    # on the opened event (e.g. Renovate PRs).
     if: |
+      github.event_name == 'pull_request' &&
       !contains(github.event.pull_request.labels.*.name, 'skip-changelog') &&
       !contains(github.event.pull_request.labels.*.name, 'dependencies') &&
       !contains(github.event.pull_request.labels.*.name, 'documentation') &&
