@@ -50,8 +50,12 @@ if TYPE_CHECKING:
 # exactly what the gate enforces.
 Scale: TypeAlias = Literal["standard", "compact"]
 
-# Compact profile (smaller graphs). Standard budgets delegate to profile_for()
-# which reads from band_profile — the single source of truth for standard numbers.
+# Compact profile (smaller graphs). Standard budgets delegate to profile_for(),
+# the single source of truth for standard numbers.
+# #ASSUME: data-integrity: covers only "8-11", "10-13", "13-16"; adding a new
+# AgeBand without an entry here causes _check_budget to emit a WARNING instead
+# of enforcing a budget for compact stories.
+# #VERIFY: after adding an AgeBand, confirm band_budget(new_band, "compact") is non-None.
 _COMPACT_BUDGETS: dict[str, tuple[int, int, int]] = {
     "8-11": (6, 12, 4),
     "10-13": (10, 18, 5),
@@ -769,6 +773,18 @@ def _check_budget(
     band = story.metadata.get("age_band")
     budget = band_budget(band, scale) if isinstance(band, str) else None
     if budget is None:
+        if scale == "compact" and isinstance(band, str):
+            report.add(
+                ValidationFinding(
+                    rule_id="L1-7",
+                    severity=Severity.WARNING,
+                    story_id=story.story_id,
+                    message=(
+                        f"L1-7 budget: no compact profile defined for age band "
+                        f"'{band}'; node-count and branch-depth checks skipped"
+                    ),
+                )
+            )
         return
     min_nodes, max_nodes, max_depth = budget
     count = len(story.node_ids())
