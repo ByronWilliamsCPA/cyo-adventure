@@ -152,7 +152,6 @@ jobs:
             --verbose
             --no-progress
             --accept 200,204,206,301,302,403,429
-            --exclude-mail
             --exclude '^https://github.com/.*/(issues|pulls|compare)/.*$'
             --exclude '^https://linear.app/.*$'
             './docs/**/*.md'
