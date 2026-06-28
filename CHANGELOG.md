@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Docker build on the shell-free DHI hardened base. The DHI runtime image has no
+  `/bin/sh`, `apt-get`, or `groupadd`, so the previous single-base Dockerfile
+  could not run its builder `RUN` blocks or create the non-root user. The build
+  now uses `python:3.12-slim-bookworm` for the (discarded) builder stage and the
+  DHI hardened image only for the runtime stage, drops the unusable
+  `apt-get`/`groupadd` steps, and runs as a numeric `USER 1000:1000`. `uv` is
+  copied from the digest-pinned `ghcr.io/astral-sh/uv` image (a musl-static
+  binary, so it is immune to the builder's glibc version).
+
 ### Changed
 - **Breaking (schema 2.0):** `Ending` now carries typed `valence` and `kind`
   instead of a free-form `type`; `StoryMetadata` requires `topology`. The
