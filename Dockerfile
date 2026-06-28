@@ -4,10 +4,11 @@
 # =============================================================================
 # Stage 1: Builder - Install dependencies
 # =============================================================================
-# Hardened base image from the org GHCR mirror of Docker Hardened Images (DHI).
-# ~95% CVE reduction vs standard python:3.12-slim. Mirror syncs weekly from
-# dhi.io/python:3.12-debian13. No login required; the image is public.
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:17945c0c387a4ca034753f750edfa78c8b7c62caf2fca75dfc1986245e08cbf9 AS builder
+# Tier A standard image for the build stage: has apt-get, /bin/sh, and
+# build-essential. The DHI hardened image lacks a shell and cannot run RUN
+# blocks, so we use python:3.12-slim-bookworm here and copy only the built
+# artifacts into the hardened runtime stage below.
+FROM python:3.12-slim-bookworm AS builder
 
 # Set working directory
 WORKDIR /app
@@ -22,9 +23,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Install UV for fast dependency management
-# hadolint ignore=DL3007
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+# dhi-uv:0-debian13 ships a glibc 2.39-dynamically-linked binary; bookworm ships
+# glibc 2.36, so copying from dhi-uv into this Debian 12 builder causes a symbol
+# version error at runtime. astral-sh/uv ships a musl-statically-linked binary
+# with no glibc dependency. Switch to dhi-uv once the builder moves to
+# dhi-python:3.12-debian13-dev (Debian 13, tracked in container-images catalog PR).
+# Renovate manages digest bumps via the ghcr.io/astral-sh/uv repository.
+COPY --from=ghcr.io/astral-sh/uv:0.8.17@sha256:db99140470350437166de1fc646323ecb59e4d99d7857d0baf429a7b4a9523f3 /uv /usr/local/bin/uv
 
 # Copy dependency files
 # README.md is referenced by pyproject.toml via [project] readme; uv reads project
@@ -45,10 +50,11 @@ COPY . .
 RUN uv sync --frozen --no-dev
 
 # =============================================================================
-# Stage 2: Runtime - Minimal production image
+# Stage 2: Runtime - Minimal hardened production image
 # =============================================================================
-# Same hardened base as the builder stage (see note above).
-FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:17945c0c387a4ca034753f750edfa78c8b7c62caf2fca75dfc1986245e08cbf9
+# DHI hardened Python image: ~95% CVE reduction vs python:3.12-slim, ships 150
+# CA certs, no shell. Mirror syncs weekly from dhi.io/python:3.12-debian13.
+FROM ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13@sha256:cf5aa76aaaa1466c57ca3ec494b83f8aefa1ddb1fcd6bf04b24a0bf34a270c70
 
 # Metadata labels (OCI standard)
 LABEL org.opencontainers.image.title="CYO Adventure"
@@ -59,31 +65,14 @@ LABEL org.opencontainers.image.url="https://github.com/williaby/cyo-adventure"
 LABEL org.opencontainers.image.source="https://github.com/williaby/cyo-adventure"
 LABEL org.opencontainers.image.licenses="MIT"
 
-# Apply outstanding security patches from the Debian package index, then install
-# only the minimal runtime dependencies. `apt-get upgrade` picks up fixes (e.g.
-# openssl/libssl) that ship after the base image was built. `curl` is
-# deliberately NOT installed: it and its transitive deps (libcurl, libssh2) carry
-# unpatched CVEs, and the container healthcheck below uses Python's stdlib
-# instead, so curl provides no value in the runtime image.
-# hadolint ignore=DL3008
-RUN apt-get update \
-    && apt-get upgrade -y --no-install-recommends \
-    && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Security: Create non-root user
-RUN groupadd -r appuser && useradd -r -g appuser -u 1000 appuser
-
 # Set working directory
 WORKDIR /app
 
 # Copy virtual environment from builder
-COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+COPY --from=builder --chown=1000:1000 /app/.venv /app/.venv
 
 # Copy application code
-COPY --chown=appuser:appuser . .
+COPY --chown=1000:1000 . .
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -91,8 +80,9 @@ ENV PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH" \
     PYTHONPATH=/app/src
 
-# Switch to non-root user
-USER appuser
+# Numeric UID/GID: equivalent non-root security without groupadd/useradd
+# (DHI hardened images have no shell tools for user management).
+USER 1000:1000
 
 # Expose port (default for FastAPI/web apps)
 EXPOSE 8000
