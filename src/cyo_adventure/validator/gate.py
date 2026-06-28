@@ -37,7 +37,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.storybook.models import Storybook
-from cyo_adventure.validator.layer1 import validate_layer1
+from cyo_adventure.validator.layer1 import Scale, validate_layer1
 from cyo_adventure.validator.layer2 import validate_layer2
 from cyo_adventure.validator.policy import validate_policy
 from cyo_adventure.validator.reading_level import check_reading_level
@@ -72,7 +72,7 @@ class GateResult:
     safety_flagged: bool
 
 
-def run_gate(data: Mapping[str, object]) -> GateResult:
+def run_gate(data: Mapping[str, object], scale: Scale = "standard") -> GateResult:
     """Run all validation layers and return a combined gate result.
 
     Accepts the raw decoded story JSON (a mapping) because Layer 1 operates
@@ -81,6 +81,8 @@ def run_gate(data: Mapping[str, object]) -> GateResult:
 
     Args:
         data: The raw decoded story JSON mapping.
+        scale: Story-size profile the L1-7 budget is enforced against
+            (``"standard"`` or ``"compact"``); forwarded to Layer 1.
 
     Returns:
         GateResult: The merged report, block status, and safety flag.
@@ -88,7 +90,7 @@ def run_gate(data: Mapping[str, object]) -> GateResult:
     merged = ValidationReport()
 
     # --- Layer 1: graph structure, schema, logic ---
-    l1_report = validate_layer1(data)
+    l1_report = validate_layer1(data, scale)
     for finding in l1_report.findings:
         merged.add(finding)
 

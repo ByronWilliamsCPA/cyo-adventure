@@ -176,6 +176,25 @@ class TestBuildStructurePrompt:
         assert f"at most {max_depth} choices deep" in result.user
         assert f"EXACTLY {minimal_brief.ending_count} ending" in result.user
 
+    def test_budget_block_compact_scale_matches_compact_budget(
+        self, minimal_brief: ConceptBrief
+    ) -> None:
+        """With scale='compact' the user block states the compact L1-7 limits.
+
+        Proves the prompt side honours the scale and stays bound to band_budget,
+        so the promised budget matches what the gate enforces under compact.
+        """
+        result = build_structure_prompt(minimal_brief, "compact")
+        budget = band_budget(minimal_brief.age_band, "compact")
+        assert budget is not None
+        min_nodes, max_nodes, max_depth = budget
+        assert f"between {min_nodes} and {max_nodes} nodes" in result.user
+        assert f"at most {max_depth} choices deep" in result.user
+        # The compact budget differs from the standard one (smaller).
+        assert band_budget(minimal_brief.age_band, "compact") != band_budget(
+            minimal_brief.age_band
+        )
+
     @pytest.mark.parametrize("band", list(AgeBand))
     def test_budget_block_for_every_band(self, band: AgeBand) -> None:
         """Every AgeBand renders a budget that matches its band_budget entry."""

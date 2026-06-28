@@ -27,6 +27,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`.github/workflows/claude-baseline-review.yml`), a thin caller of the org
   reusable in `ByronWilliamsCPA/.github`. Part of the org-wide tiered-pr-review
   rollout.
+- Compact story-size scale (`"compact"`): a tiered budget profile for smaller/quicker
+  stories, with fewer nodes and shallower branch depth per age band than the standard
+  profile. Threaded through the generation pipeline, L1-7 gate (`validator/layer1.py`),
+  Stage A prompt (`generation/prompts.py`), and `scripts/yield_harness.py --scale compact`.
+  The gate now reports a `WARNING` finding for age bands not yet covered by the compact
+  profile rather than silently skipping enforcement.
 - Config-driven six-band policy profile (`validator/band_profile.py`), now the
   single source of truth for per-band budgets (absorbing `layer1._BUDGETS`).
 - Policy gate layer PL-15..PL-18, run in `run_gate` between Layer 1 and Layer 2

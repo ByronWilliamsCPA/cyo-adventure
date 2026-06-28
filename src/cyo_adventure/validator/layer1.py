@@ -17,7 +17,7 @@ configuration cap) is intentionally out of scope here and lands in Phase 2.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypeAlias, cast
+from typing import TYPE_CHECKING, Literal, TypeAlias, cast
 
 import networkx as nx
 from jsonschema import Draft202012Validator
@@ -41,7 +41,31 @@ if TYPE_CHECKING:
     from pydantic import JsonValue
 
 
-def band_budget(age_band: str) -> tuple[int, int, int] | None:
+# Story-size scale. "standard" is the full-size ladder; "compact" is the smaller
+# tier for young/quick stories (and lighter models, whose graphs naturally run
+# smaller). Selecting the scale is a PRODUCT decision keyed on reading level / age
+# band, never on which backend serves the request; story size must not silently
+# change based on the model. Both the Stage A prompt (_budget_block) and the L1-7
+# gate (_check_budget) read band_budget with the same scale, so the prompt promises
+# exactly what the gate enforces.
+Scale: TypeAlias = Literal["standard", "compact"]
+
+# Compact profile (smaller graphs). Standard budgets delegate to profile_for(),
+# the single source of truth for standard numbers.
+# #ASSUME: data-integrity: covers only "8-11", "10-13", "13-16"; adding a new
+# AgeBand without an entry here causes _check_budget to emit a WARNING instead
+# of enforcing a budget for compact stories.
+# #VERIFY: after adding an AgeBand, confirm band_budget(new_band, "compact") is non-None.
+_COMPACT_BUDGETS: dict[str, tuple[int, int, int]] = {
+    "8-11": (6, 12, 4),
+    "10-13": (10, 18, 5),
+    "13-16": (12, 24, 6),
+}
+
+
+def band_budget(
+    age_band: str, scale: Scale = "standard"
+) -> tuple[int, int, int] | None:
     """Return the ``(min_nodes, max_nodes, max_branch_depth)`` budget for a band.
 
     Delegates to :func:`band_profile.profile_for` so the L1-7 node-count and
@@ -52,11 +76,16 @@ def band_budget(age_band: str) -> tuple[int, int, int] | None:
     Args:
         age_band: The story age band value (e.g. ``"8-11"``), matching an
             :class:`~cyo_adventure.storybook.models.AgeBand` value.
+        scale: Which size profile to use, ``"standard"`` (full-size, the default)
+            or ``"compact"`` (the smaller young/quick tier). The prompt and the
+            gate must pass the SAME scale so the promised and enforced budgets match.
 
     Returns:
         The ``(min_nodes, max_nodes, max_branch_depth)`` triple for the band,
-        or ``None`` when the band is not configured.
+        or ``None`` when the band is not configured in the selected profile.
     """
+    if scale == "compact":
+        return _COMPACT_BUDGETS.get(age_band)
     profile = profile_for(age_band)
     if profile is None:
         return None
@@ -176,11 +205,16 @@ class _Story:
         return out
 
 
-def validate_layer1(data: Mapping[str, object]) -> ValidationReport:
+def validate_layer1(
+    data: Mapping[str, object], scale: Scale = "standard"
+) -> ValidationReport:
     """Run every Layer-1 rule over a decoded story mapping.
 
     Args:
         data: The decoded story JSON.
+        scale: Story-size profile the L1-7 budget is enforced against
+            (``"standard"`` or ``"compact"``). Must match the scale the Stage A
+            prompt promised the model.
 
     Returns:
         ValidationReport: All findings; ``report.ok`` is ``True`` when no
@@ -196,7 +230,7 @@ def validate_layer1(data: Mapping[str, object]) -> ValidationReport:
         _check_graph_termination(story, graph, report)
         _check_reachability(story, graph, report)
         _check_trap_loops(story, graph, report)
-        _check_budget(story, graph, report)
+        _check_budget(story, graph, report, scale)
     return report
 
 
@@ -729,13 +763,28 @@ def _is_nontrivial_scc(graph: nx.DiGraph[str], component: set[str]) -> bool:
 
 
 def _check_budget(
-    story: _Story, graph: nx.DiGraph[str], report: ValidationReport
+    story: _Story,
+    graph: nx.DiGraph[str],
+    report: ValidationReport,
+    scale: Scale = "standard",
 ) -> None:
     """L1-7: ending_count match, node-count band, and max branch depth."""
     _check_ending_count(story, report)
     band = story.metadata.get("age_band")
-    budget = band_budget(band) if isinstance(band, str) else None
+    budget = band_budget(band, scale) if isinstance(band, str) else None
     if budget is None:
+        if scale == "compact" and isinstance(band, str):
+            report.add(
+                ValidationFinding(
+                    rule_id="L1-7",
+                    severity=Severity.WARNING,
+                    story_id=story.story_id,
+                    message=(
+                        f"L1-7 budget: no compact profile defined for age band "
+                        f"'{band}'; node-count and branch-depth checks skipped"
+                    ),
+                )
+            )
         return
     min_nodes, max_nodes, max_depth = budget
     count = len(story.node_ids())
