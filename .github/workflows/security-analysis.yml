@@ -13,6 +13,7 @@ name: Security Analysis
     branches: [main, master]
   pull_request:
     branches: [main, master]
+  merge_group:
   schedule:
     # Run security scans weekly on Monday at 9 AM UTC
     - cron: '0 9 * * 1'

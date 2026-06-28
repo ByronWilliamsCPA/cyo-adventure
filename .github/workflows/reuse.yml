@@ -12,6 +12,7 @@ on:
       - "REUSE.toml"
       - "LICENSES/**"
       - ".github/workflows/reuse.yml"
+  merge_group:
   push:
     branches:
       - main
