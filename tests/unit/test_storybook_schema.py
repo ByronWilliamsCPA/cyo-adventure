@@ -421,8 +421,10 @@ def test_schema_export_round_trip(tmp_path: Any) -> None:
 
 
 @pytest.mark.unit
-def test_schema_export_main_writes_file(tmp_path: Any) -> None:
-    """main() calls export_schema() and prints the written path without error.
+def test_schema_export_main_writes_file(
+    tmp_path: Any, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """main() calls export_schema() and prints the written path.
 
     export_schema's default path argument is bound at function-definition time
     (Python semantics), so we patch export_schema itself to redirect output to
@@ -439,8 +441,8 @@ def test_schema_export_main_writes_file(tmp_path: Any) -> None:
         schema_export.main()
         mock_fn.assert_called_once_with()
 
-    # Verify main() used the returned path in its print statement (no exception).
-    assert True  # reaching here means main() completed without raising
+    # main() must echo the path returned by export_schema(), not a hard-coded one.
+    assert f"wrote {target}" in capsys.readouterr().out
 
 
 @pytest.mark.unit
