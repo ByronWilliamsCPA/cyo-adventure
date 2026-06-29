@@ -14,7 +14,7 @@ import uuid
 
 import pytest
 
-from cyo_adventure.api.deps import Principal, RequestContext
+from cyo_adventure.api.deps import Principal
 from cyo_adventure.api.library import (
     _library_item,
     _parse_profile_id,
@@ -27,7 +27,6 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -104,7 +103,9 @@ def _guardian_principal(family_id: uuid.UUID) -> Principal:
     )
 
 
-def _published_book(storybook_id: str, family_id: uuid.UUID, version: int = 1) -> Storybook:
+def _published_book(
+    storybook_id: str, family_id: uuid.UUID, version: int = 1
+) -> Storybook:
     """Return a Storybook row in 'published' status with a current version."""
     book = Storybook(id=storybook_id, family_id=family_id)
     book.status = "published"
@@ -127,8 +128,7 @@ def _version_row(
                 "reading_level": {"target": 4.5},
             },
         }
-    row = StorybookVersion(storybook_id=storybook_id, version=version, blob=blob)
-    return row
+    return StorybookVersion(storybook_id=storybook_id, version=version, blob=blob)
 
 
 # ---------------------------------------------------------------------------

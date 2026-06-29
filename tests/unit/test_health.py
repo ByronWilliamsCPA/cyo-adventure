@@ -10,7 +10,6 @@ No live database is used; get_session is patched with an async context manager.
 from __future__ import annotations
 
 import time as _time_stdlib
-from collections.abc import Callable
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
@@ -20,7 +19,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator
+    from collections.abc import AsyncGenerator, Callable
 
 
 def _time_raiser_on_nth_call(n: int, exc: Exception) -> Callable[[], float]:
@@ -39,6 +38,7 @@ def _time_raiser_on_nth_call(n: int, exc: Exception) -> Callable[[], float]:
         return _real()
 
     return _fake
+
 
 # ---------------------------------------------------------------------------
 # Helpers

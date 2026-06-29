@@ -428,7 +428,6 @@ def test_schema_export_main_writes_file(tmp_path: Any) -> None:
     (Python semantics), so we patch export_schema itself to redirect output to
     a temp directory instead of patching the module-level constant.
     """
-    from pathlib import Path
     from unittest.mock import patch
 
     from cyo_adventure.storybook import schema_export

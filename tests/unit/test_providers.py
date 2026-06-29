@@ -789,9 +789,16 @@ class TestOllamaProviderBranches:
         def handler(_request: httpx.Request) -> httpx.Response:
             # Include a blank line between chunks -- the adapter should skip it.
             body = (
-                json.dumps({"message": {"role": "assistant", "content": "hello"}, "done": False})
+                json.dumps(
+                    {
+                        "message": {"role": "assistant", "content": "hello"},
+                        "done": False,
+                    }
+                )
                 + "\n\n"
-                + json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+                + json.dumps(
+                    {"message": {"role": "assistant", "content": ""}, "done": True}
+                )
                 + "\n"
             )
             return httpx.Response(200, text=body)
@@ -808,9 +815,13 @@ class TestOllamaProviderBranches:
             # First chunk is a JSON number (non-dict), second is the real content.
             body = (
                 "42\n"
-                + json.dumps({"message": {"role": "assistant", "content": "ok"}, "done": False})
+                + json.dumps(
+                    {"message": {"role": "assistant", "content": "ok"}, "done": False}
+                )
                 + "\n"
-                + json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+                + json.dumps(
+                    {"message": {"role": "assistant", "content": ""}, "done": True}
+                )
                 + "\n"
             )
             return httpx.Response(200, text=body)
@@ -883,9 +894,7 @@ class TestOpenRouterProviderBranches:
         """When message is not a dict the content path returns None -> empty content."""
 
         def handler(_request: httpx.Request) -> httpx.Response:
-            return httpx.Response(
-                200, json={"choices": [{"message": "not-a-dict"}]}
-            )
+            return httpx.Response(200, json={"choices": [{"message": "not-a-dict"}]})
 
         provider = _openrouter(handler)
         with pytest.raises(ProviderError) as exc_info:

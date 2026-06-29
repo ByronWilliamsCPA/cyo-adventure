@@ -214,7 +214,9 @@ class TestView:
     def test_view_maps_all_fields(self) -> None:
         """_view() maps every ReadingState attribute to ReadingStateView."""
         profile_id = uuid.uuid4()
-        row = _state_row(profile_id, "s", version=2, current_node="ch3", state_revision=7)
+        row = _state_row(
+            profile_id, "s", version=2, current_node="ch3", state_revision=7
+        )
         v = _view(row)
         assert v.child_profile_id == str(profile_id)
         assert v.storybook_id == "s"

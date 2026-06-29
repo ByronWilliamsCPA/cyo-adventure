@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- CORS: replaced wildcard `allow_headers=["*"]` with explicit allowlist in
+  `middleware/security.py` to comply with OWASP A05 when credentials are allowed.
+- Auth stub: added `APP_ENV` guard in `api/deps.py` so the dev-only
+  `_extract_subject` shortcut raises `ConfigurationError` on startup in non-local
+  environments.
+- PII: wrapped `GenerationProvider.complete()` with a PII-scrubbing decorator in
+  `generation/pii.py` so raw LLM outputs are never stored unguarded.
+- Removed plaintext database credentials from `core/config.py`; moved example
+  values to `.env.example` only.
+
+### Added
+- Unit test coverage raised from ~80% to 96.89% across all source modules:
+  `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
+  `utils/logging.py`, and the main `app.py` exception-handler matrix.
+- Purge policy plan for `GenerationJob.report` documented in `SECURITY.md`
+  (raw LLM outputs expire after 30 days per privacy model).
+
+### Changed
+- Removed `utils/financial.py` (template scaffolding with no domain role in a
+  kids' reading app); template feedback logged in `docs/template_feedback.md`.
+- Added `#CRITICAL`/`#ASSUME`/`#EDGE` RAD assumption tags to
+  `player/engine.ts` and `offline/sync.ts` to match backend tagging practice.
+- Documented single-process in-memory rate-limiter limitation in `SECURITY.md`
+  with a Redis migration task added to the roadmap.
+
 ### Fixed
 - Docker build on the shell-free DHI hardened base. The DHI runtime image has no
   `/bin/sh`, `apt-get`, or `groupadd`, so the previous single-base Dockerfile
