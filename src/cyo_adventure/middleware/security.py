@@ -471,12 +471,21 @@ def add_security_middleware(
         )
 
     # CORS configuration (OWASP A05)
+    # Explicit allowlist: wildcard allow_headers with allow_credentials=True
+    # violates the CORS spec and enables header-escalation attacks.
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins or [],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH"],
-        allow_headers=["*"],
+        allow_headers=[
+            "Authorization",
+            "Content-Type",
+            "X-Correlation-ID",
+            "X-Request-ID",
+            "X-Trace-ID",
+            "X-Span-ID",
+        ],
         expose_headers=["X-Request-ID"],
         max_age=3600,
     )

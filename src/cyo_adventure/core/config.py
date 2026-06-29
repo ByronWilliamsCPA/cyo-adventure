@@ -13,11 +13,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
 
-# Localhost-only development default. Kept as a module constant so the fail-fast
-# validator below can detect when it leaks into a non-local environment.
-_DEV_DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/cyo_adventure"
-)
+# Localhost-only development default (no credentials; relies on local peer/trust
+# auth). Kept as a module constant so the fail-fast validator below can detect
+# when it leaks into a non-local environment. Developers using password auth must
+# set CYO_ADVENTURE_DATABASE_URL explicitly (see .env.example).
+_DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 
 
 class Settings(BaseSettings):
@@ -45,14 +45,21 @@ class Settings(BaseSettings):
         populate_by_name=True,
     )
 
-    environment: Literal["local", "dev", "staging", "production"] = "local"
+    # validation_alias="ENVIRONMENT" makes the field read the unprefixed var so
+    # docker-compose.prod.yml and .env.example (which both set ENVIRONMENT=...)
+    # are honoured without the cyo_adventure_ prefix. populate_by_name=True in
+    # model_config lets direct constructor calls (Settings(environment="dev")) and
+    # tests still work without needing the alias.
+    environment: Literal["local", "dev", "staging", "production"] = Field(
+        default="local", validation_alias="ENVIRONMENT"
+    )
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     json_logs: bool = False
     include_timestamp: bool = True
-    # #CRITICAL: security: this default embeds plaintext credentials
-    # (postgres:postgres) and resolves as the live DSN whenever
-    # CYO_ADVENTURE_DATABASE_URL is unset, including in CI. It is a localhost-only
-    # development default and must never reach staging or production.
+    # #CRITICAL: security: this credential-less localhost default resolves as the
+    # live DSN whenever CYO_ADVENTURE_DATABASE_URL is unset, including in CI. It is
+    # a localhost-only development default (peer/trust auth) and must never reach
+    # staging or production.
     # #VERIFY: enforced by _reject_dev_database_url_outside_local below.
     database_url: str = _DEV_DATABASE_URL
     # Development default for local Redis; safe to leave unset in non-production
@@ -195,7 +202,7 @@ class Settings(BaseSettings):
             msg = (
                 "CYO_ADVENTURE_DATABASE_URL must be set in non-local environments; "
                 f"refusing to start in '{self.environment}' with the development "
-                "default database URL (plaintext localhost credentials)."
+                "default localhost database URL."
             )
             raise ConfigurationError(msg)
         return self

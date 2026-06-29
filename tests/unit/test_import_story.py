@@ -134,3 +134,48 @@ async def test_import_rejects_a_blocked_story() -> None:
     with pytest.raises(ValidationError, match="blocked"):
         await import_filled_story(session, request)
     assert session.added == []
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_rejects_blob_with_no_string_id() -> None:
+    """A blob missing a string id raises ValidationError (via gate or id check).
+
+    The gate's L1-1 schema conformance catches a non-string id before the
+    explicit check at line 69-70, so this tests the gate-blocked path.
+    """
+    session = _FakeSession()
+    blob = _filled_story()
+    blob["id"] = 42  # non-string id - gate will block this
+    request = ImportRequest(blob=blob, family_id=uuid.uuid4())
+    with pytest.raises(ValidationError):
+        await import_filled_story(session, request)
+    assert session.added == []
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
+    """The explicit id check guards against a gate-passing blob with no string id.
+
+    This uses a targeted mock to simulate a gate that passes while the blob
+    lacks a proper id -- exercising the defensive check at import_story.py:69.
+    """
+    from unittest.mock import patch
+
+    from cyo_adventure.validator.gate import GateResult
+    from cyo_adventure.validator.report import ValidationReport
+
+    session = _FakeSession()
+    blob = _filled_story()
+    del blob["id"]  # remove the id key
+
+    fake_result = GateResult(
+        report=ValidationReport(), blocked=False, safety_flagged=False
+    )
+    with patch(
+        "cyo_adventure.generation.import_story.run_gate", return_value=fake_result
+    ):
+        request = ImportRequest(blob=blob, family_id=uuid.uuid4())
+        with pytest.raises(ValidationError, match="no string id"):
+            await import_filled_story(session, request)

@@ -298,6 +298,10 @@ class GenerationJob(Base):
     model: Mapped[str | None] = mapped_column(String(120), default=None)
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
+    # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
+    # 30 days or when the linked storybook version reaches "published" status.
+    # #VERIFY: Phase 5 scheduled RQ job nulls this column; guardian/child API
+    # endpoints must never expose report content (status + stage_log only).
     # #ASSUME: data integrity: ``report`` schema is determined by
     # GenerationOutcome at the application layer; no DB-level constraint
     # enforces its shape.

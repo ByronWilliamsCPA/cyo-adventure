@@ -9,6 +9,7 @@ No live database is used; get_session is patched with an async context manager.
 
 from __future__ import annotations
 
+import time as _time_stdlib
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, patch
@@ -18,7 +19,26 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncGenerator
+    from collections.abc import AsyncGenerator, Callable
+
+
+def _time_raiser_on_nth_call(n: int, exc: Exception) -> Callable[[], float]:
+    """Return a side-effect callable that raises ``exc`` on the Nth call to time.time().
+
+    All other calls delegate to the real ``time.time()`` so structlog timestamps
+    and other incidental callers are not disturbed.
+    """
+    _real = _time_stdlib.time
+    _state: dict[str, int] = {"count": 0}
+
+    def _fake() -> float:
+        _state["count"] += 1
+        if _state["count"] == n:
+            raise exc
+        return _real()
+
+    return _fake
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -375,3 +395,96 @@ class TestReadinessCheckModel:
         assert rc.status is False
         assert rc.error == "dependency unavailable"
         assert rc.latency_ms == 12.5
+
+
+# ---------------------------------------------------------------------------
+# check_cache except branch
+# ---------------------------------------------------------------------------
+
+
+class TestCheckCacheExceptBranch:
+    """Tests for the check_cache() except branch (lines 146-149)."""
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_cache_except_branch_returns_false_status(self) -> None:
+        """check_cache returns status=False when time.time raises inside the try block.
+
+        The placeholder try block calls time.time() a second time to compute
+        latency. Patching time.time to raise on the second call exercises the
+        except branch without altering the public contract of check_cache.
+
+        A function-based side_effect is used (not a list) so that incidental
+        calls from structlog's timestamper do not exhaust a fixed list and
+        cause StopIteration inside the coroutine frame.
+        """
+        from cyo_adventure.api.health import check_cache
+
+        raiser = _time_raiser_on_nth_call(2, OSError("simulated cache failure"))
+        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
+            result = await check_cache()
+
+        assert result.status is False
+        assert result.name == "cache"
+        assert result.error == "dependency unavailable"
+        assert result.latency_ms is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_cache_except_branch_does_not_leak_exception_text(
+        self,
+    ) -> None:
+        """check_cache except branch must return the generic error string (OWASP A09)."""
+        from cyo_adventure.api.health import check_cache
+
+        internal_message = "redis-host:6379 ECONNREFUSED"
+        raiser = _time_raiser_on_nth_call(2, OSError(internal_message))
+        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
+            result = await check_cache()
+
+        assert internal_message not in (result.error or "")
+        assert result.error == "dependency unavailable"
+
+
+# ---------------------------------------------------------------------------
+# check_external_service except branch
+# ---------------------------------------------------------------------------
+
+
+class TestCheckExternalServiceExceptBranch:
+    """Tests for the check_external_service() except branch (lines 183-186)."""
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_external_service_except_branch_returns_false_status(
+        self,
+    ) -> None:
+        """check_external_service returns status=False when time.time raises inside try."""
+        from cyo_adventure.api.health import check_external_service
+
+        raiser = _time_raiser_on_nth_call(
+            2, OSError("simulated external service failure")
+        )
+        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
+            result = await check_external_service()
+
+        assert result.status is False
+        assert result.name == "external_api"
+        assert result.error == "dependency unavailable"
+        assert result.latency_ms is not None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_check_external_service_except_branch_does_not_leak_exception_text(
+        self,
+    ) -> None:
+        """check_external_service except branch must not expose the raw error (OWASP A09)."""
+        from cyo_adventure.api.health import check_external_service
+
+        internal_message = "api.example.com:443 ETIMEDOUT"
+        raiser = _time_raiser_on_nth_call(2, OSError(internal_message))
+        with patch("cyo_adventure.api.health.time.time", side_effect=raiser):
+            result = await check_external_service()
+
+        assert internal_message not in (result.error or "")
+        assert result.error == "dependency unavailable"

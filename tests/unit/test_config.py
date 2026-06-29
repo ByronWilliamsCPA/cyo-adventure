@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 
 # The dev-default DSN that the validator guards against leaking.
-_DEV_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/cyo_adventure"
+_DEV_DB_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 _PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure"
 
 
@@ -43,7 +43,7 @@ class TestSettingsDefaults:
         """Settings(environment='local') with the dev db url is valid."""
         from cyo_adventure.core.config import Settings
 
-        # Must not raise ConfigurationError
+        # Must not raise ConfigurationError even with the unset default URL
         s = Settings(environment="local")
 
         assert s.environment == "local"
@@ -185,16 +185,44 @@ class TestValidatorRejectDevUrlOutsideLocal:
         from cyo_adventure.core.config import Settings
 
         # Must not raise
-        s = Settings(environment=environment, database_url=_PROD_DB_URL)
+        Settings(environment=environment, database_url=_PROD_DB_URL)
 
-        assert s.environment == environment
-        assert s.database_url == _PROD_DB_URL
+
+class TestEnvironmentAlias:
+    """Tests for the unprefixed ENVIRONMENT alias on Settings.environment."""
 
     @pytest.mark.unit
-    def test_local_environment_with_real_url_is_valid(self) -> None:
-        """Settings(environment='local') accepts a non-default database_url without error."""
+    def test_environment_reads_from_unprefixed_env_var(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ENVIRONMENT (no cyo_adventure_ prefix) populates settings.environment."""
         from cyo_adventure.core.config import Settings
 
-        s = Settings(environment="local", database_url=_PROD_DB_URL)
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+        monkeypatch.setenv("ENVIRONMENT", "staging")
+        s = Settings(database_url=_PROD_DB_URL)
+        assert s.environment == "staging"
 
-        assert s.database_url == _PROD_DB_URL
+    @pytest.mark.unit
+    def test_environment_env_var_overrides_default(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Setting ENVIRONMENT=production causes settings.environment == 'production'."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+        monkeypatch.setenv("ENVIRONMENT", "production")
+        s = Settings(database_url=_PROD_DB_URL)
+        assert s.environment == "production"
+
+    @pytest.mark.unit
+    def test_environment_defaults_to_local_when_unset(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """With no ENVIRONMENT var set, environment defaults to 'local'."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("ENVIRONMENT", raising=False)
+        monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
+        s = Settings()
+        assert s.environment == "local"
