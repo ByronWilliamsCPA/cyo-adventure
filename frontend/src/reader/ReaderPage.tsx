@@ -50,7 +50,6 @@ export function ReaderPage({
   const revisionRef = useRef(0)
 
   const load = useCallback(async () => {
-    setPhase('loading')
     let cached = await getCachedStorybook(storybookId, version)
     if (!cached) {
       try {
@@ -68,9 +67,35 @@ export function ReaderPage({
     setPhase('reading')
   }, [fetchStory, profileId, storybookId, version])
 
+  // Load on mount and whenever the load inputs change. The body is inlined here
+  // (rather than calling load()) and every setState runs after an await, so
+  // react-hooks/set-state-in-effect sees no synchronous state update. The
+  // cancelled guard prevents a state update if the inputs change mid-load.
   useEffect(() => {
-    void load()
-  }, [load])
+    let cancelled = false
+    void (async () => {
+      let cached = await getCachedStorybook(storybookId, version)
+      if (cancelled) return
+      if (!cached) {
+        try {
+          cached = await fetchStory(storybookId, version)
+          await cacheStorybook(cached)
+        } catch {
+          if (!cancelled) setPhase('download-needed')
+          return
+        }
+      }
+      const saved = await getReadingState(profileId, storybookId)
+      if (cancelled) return
+      revisionRef.current = saved?.state_revision ?? 0
+      setStory(cached)
+      setInitialReading(saved)
+      setPhase('reading')
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [fetchStory, profileId, storybookId, version])
 
   const persist = useCallback(
     async (reading: ReadingState) => {
@@ -134,7 +159,14 @@ export function ReaderPage({
     return <p data-testid="loading">Loading...</p>
   }
   if (phase === 'download-needed' || !story) {
-    return <DownloadNeeded onRetry={() => void load()} />
+    return (
+      <DownloadNeeded
+        onRetry={() => {
+          setPhase('loading')
+          void load()
+        }}
+      />
+    )
   }
   return (
     <>
