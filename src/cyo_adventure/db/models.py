@@ -301,7 +301,9 @@ class GenerationJob(Base):
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
     # 30 days or when the linked storybook version reaches "published" status.
     # #VERIFY: Phase 5 scheduled RQ job nulls this column; guardian/child API
-    # endpoints must never expose report content (status + stage_log only).
+    # endpoints must never expose report content (expose job status only). There
+    # is no separate stage_log column today; persisting a redacted stage log for
+    # post-purge auditability is a Phase 5 task (see ADR-007).
     # #ASSUME: data integrity: ``report`` schema is determined by
     # GenerationOutcome at the application layer; no DB-level constraint
     # enforces its shape.

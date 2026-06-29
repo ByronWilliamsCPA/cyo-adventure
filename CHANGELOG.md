@@ -16,9 +16,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   in non-local environments. Also fixed `core/config.py` to read `environment`
   from the unprefixed `ENVIRONMENT` var via `validation_alias="ENVIRONMENT"` so
   the guard actually fires in deploy configs that set `ENVIRONMENT=production`.
-- PII: `PiiGuardedProvider` wrapper class in `generation/guarded.py` now enforces
-  PII-scrubbing on every `GenerationProvider.complete()` call so raw LLM outputs
-  are never stored unguarded.
+- PII: `PiiGuardedProvider` wrapper class in `generation/guarded.py` screens both
+  the system and user prompt blocks on every `GenerationProvider.complete()` call
+  and raises `ValidationError` on a forbidden-PII match before the inner provider
+  runs, so real-child PII can never be sent to an external LLM. The guard asserts;
+  it does not scrub.
 - Removed plaintext database credentials from `core/config.py`; moved example
   values to `.env.example` only.
 
@@ -26,9 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit test coverage raised from ~80% to 96.89% across all source modules:
   `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
   `utils/logging.py`, and the main `app.py` exception-handler matrix.
-- Purge policy plan for `GenerationJob.report` documented in ADR-007
-  (`docs/planning/adr/adr-007-raw-output-retention.md`); raw LLM outputs expire
-  after 30 days per privacy model.
+- Purge policy for `GenerationJob.report` documented in ADR-007
+  (`docs/planning/adr/adr-007-raw-output-retention.md`): raw LLM outputs are to be
+  purged 30 days after generation. This is a documented plan only; runtime
+  enforcement (a scheduled job) is deferred to Phase 5 and is not yet active.
 
 ### Changed
 - Removed `utils/financial.py` (template scaffolding with no domain role in a
