@@ -1,0 +1,11 @@
+# Snyk Code (.dcignore) path exclusions
+# Scopes Snyk Code (SAST) scanning to project-owned source files.
+# Mirrors the exclude set in .snyk for consistency.
+# See: docs/snyk-implementation-findings.md (Finding 1, Recommendation A)
+.venv/
+.worktrees/
+node_modules/
+site/
+htmlcov/
+out/
+**/site-packages/**

@@ -117,6 +117,8 @@ path = [
     ".sonarlint/**",  # SonarLint IDE configuration
     ".qlty/**",  # Qlty configuration
     ".coderabbit.yaml",  # CodeRabbit AI review configuration
+    ".snyk",  # Snyk Open Source scope/policy file
+    ".dcignore",  # Snyk Code (SAST) path exclusions
     ".vscode/**",  # VS Code settings
     ".idea/**",  # IntelliJ/PyCharm settings
     "concept.txt",
