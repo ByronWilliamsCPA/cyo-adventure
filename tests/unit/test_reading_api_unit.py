@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
@@ -39,6 +40,9 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+
+if TYPE_CHECKING:
+    from sqlalchemy import Select
 
 _FIXED_TS = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -67,6 +71,7 @@ class _FakeSession:
         self.flush_count = 0
         self.refresh_calls: list[tuple[object, list[str] | None]] = []
         self.get_calls: list[tuple[type[object], object]] = []
+        self.scalar_calls: list[object] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Look up by (model, key)."""
@@ -89,7 +94,8 @@ class _FakeSession:
             obj.found_at = _FIXED_TS
 
     async def scalar(self, stmt: object) -> object | None:
-        """Return the seeded result for SELECT...FOR UPDATE queries."""
+        """Capture the statement, then return the seeded SELECT...FOR UPDATE result."""
+        self.scalar_calls.append(stmt)
         return self._scalar_result
 
 
@@ -416,6 +422,39 @@ class TestGetReadingState:
 
 
 class TestPutReadingState:
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_locked_read_is_profile_story_scoped_and_for_update(self) -> None:
+        """The read-modify-write read must be row-scoped and locked.
+
+        Inspects the SQL captured by the fake session so a regression that drops
+        the (child_profile_id, storybook_id) predicate (cross-profile write) or
+        the SELECT ... FOR UPDATE lock (concurrent-writer race on the revision
+        check) fails here rather than passing on the seeded scalar result alone.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id)
+        session = _FakeSession(
+            get_map={(Storybook, "story-1"): book},
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+
+        await put_reading_state(
+            str(profile_id), "story-1", _body(state_revision=0), ctx
+        )
+
+        assert len(session.scalar_calls) == 1
+        stmt = cast("Select[Any]", session.scalar_calls[0])
+        # The row scope lives in the WHERE clause; the SELECT column list names
+        # every column, so checking the full statement would not catch a dropped
+        # predicate. FOR UPDATE is a statement-level modifier, checked on str().
+        where = str(stmt.whereclause)
+        assert "child_profile_id" in where  # cross-profile IDOR scope
+        assert "storybook_id" in where
+        assert "FOR UPDATE" in str(stmt)  # serializes concurrent writers
+
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_create_first_state_returns_view(self) -> None:

@@ -1,43 +1,70 @@
 """Unit tests for cyo_adventure.utils.logging.
 
-Covers the uncovered branches: setup_logging with json_logs=True,
-setup_logging with include_correlation=False, and log_performance().
+Covers setup_logging's flag-driven processor chain (JSON vs console renderer,
+correlation toggle, timestamp toggle) and log_performance(). The setup_logging
+tests inspect the processor chain structlog is actually configured with, so a
+regression that ignores a flag fails here rather than passing on no-crash alone.
 """
 
 from __future__ import annotations
 
 import pytest
+import structlog
+
+from cyo_adventure.utils.logging import (
+    correlation_context_processor,
+    setup_logging,
+)
+
+
+def _configured_processors() -> list[object]:
+    """Return the processor chain structlog is currently configured with."""
+    return structlog.get_config()["processors"]
+
+
+def _has_instance(processors: list[object], cls: type) -> bool:
+    """Whether any configured processor is an instance of ``cls``."""
+    return any(isinstance(p, cls) for p in processors)
 
 
 class TestSetupLogging:
     @pytest.mark.unit
-    def test_setup_logging_json_logs_true_does_not_raise(self) -> None:
-        """setup_logging(json_logs=True) configures JSON output without error."""
-        from cyo_adventure.utils.logging import setup_logging
-
-        # Must not raise; structlog is reconfigured.
+    def test_json_logs_true_uses_json_renderer(self) -> None:
+        """json_logs=True ends the chain with a JSONRenderer, not the console one."""
         setup_logging(level="INFO", json_logs=True, include_correlation=True)
 
-    @pytest.mark.unit
-    def test_setup_logging_no_correlation_does_not_raise(self) -> None:
-        """setup_logging(include_correlation=False) skips the correlation processor."""
-        from cyo_adventure.utils.logging import setup_logging
-
-        setup_logging(level="DEBUG", json_logs=False, include_correlation=False)
+        procs = _configured_processors()
+        assert _has_instance(procs, structlog.processors.JSONRenderer)
+        assert not _has_instance(procs, structlog.dev.ConsoleRenderer)
 
     @pytest.mark.unit
-    def test_setup_logging_json_no_correlation_does_not_raise(self) -> None:
-        """setup_logging(json_logs=True, include_correlation=False) is valid."""
-        from cyo_adventure.utils.logging import setup_logging
+    def test_json_logs_false_uses_console_renderer(self) -> None:
+        """json_logs=False ends the chain with a ConsoleRenderer, not JSON."""
+        setup_logging(level="DEBUG", json_logs=False, include_correlation=True)
 
-        setup_logging(level="WARNING", json_logs=True, include_correlation=False)
+        procs = _configured_processors()
+        assert _has_instance(procs, structlog.dev.ConsoleRenderer)
+        assert not _has_instance(procs, structlog.processors.JSONRenderer)
 
     @pytest.mark.unit
-    def test_setup_logging_no_timestamp_does_not_raise(self) -> None:
-        """setup_logging(include_timestamp=False) uses the noop_processor."""
-        from cyo_adventure.utils.logging import setup_logging
+    def test_include_correlation_toggles_correlation_processor(self) -> None:
+        """The correlation processor is present only when include_correlation=True."""
+        setup_logging(level="INFO", json_logs=True, include_correlation=True)
+        assert correlation_context_processor in _configured_processors()
+
+        setup_logging(level="INFO", json_logs=True, include_correlation=False)
+        assert correlation_context_processor not in _configured_processors()
+
+    @pytest.mark.unit
+    def test_include_timestamp_toggles_timestamper(self) -> None:
+        """include_timestamp adds a TimeStamper only when True."""
+        setup_logging(level="INFO", json_logs=False, include_timestamp=True)
+        assert _has_instance(_configured_processors(), structlog.processors.TimeStamper)
 
         setup_logging(level="INFO", json_logs=False, include_timestamp=False)
+        assert not _has_instance(
+            _configured_processors(), structlog.processors.TimeStamper
+        )
 
 
 class TestLogPerformance:
