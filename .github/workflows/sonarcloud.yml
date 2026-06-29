@@ -43,7 +43,11 @@ jobs:
       python-version: '3.12'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'
-      fail-on-quality-gate: ${{ github.event_name != 'pull_request' }}
+      # Enforce the quality gate only on push to a protected branch. On
+      # pull_request it is advisory; on merge_group it must stay advisory too,
+      # otherwise Sonar fails every queue build (the event is not 'pull_request')
+      # and floods the merge queue with red, non-required check noise.
+      fail-on-quality-gate: ${{ github.event_name == 'push' }}
       skip-if-no-token: true
       no-build: false  # generated project ships as an installable package; upstream default of true would block 'uv sync' from installing the editable project for coverage
     secrets:

@@ -350,3 +350,38 @@ starts the backend and runs `npm run generate-client` before typecheck/build, an
 document which approach the template intends.
 
 **Affected Files**: `frontend/.gitignore`, `.github/workflows/ci.yml`, `CLAUDE.md`
+
+### Workflow concurrency keys break the merge queue (missing `|| github.ref`)
+
+- **Priority**: High
+- **Category**: Tooling / CI
+- **Discovered**: 2026-06-29
+
+**Issue**: The generated `pr-validation.yml` sets its concurrency group to
+`pr-validation-${{ github.event.pull_request.number }}` with no fallback. On
+`merge_group` events there is no pull_request context, so the expression
+collapses to a constant (`pr-validation-`) and every concurrent queue entry
+shares one group. With `cancel-in-progress: true`, queue entries cancel each
+other's required `Dependency & Standards Validation` check, and a cancelled
+required check blocks the merge queue indefinitely. The other required
+workflows (`ci.yml`, `reuse.yml`, `security-analysis.yml`, `sonarcloud.yml`)
+already use the safe `${{ github.event.pull_request.number || github.ref }}`
+pattern, so `pr-validation.yml` is the inconsistent one.
+
+Separately, `sonarcloud.yml` sets `fail-on-quality-gate:
+${{ github.event_name != 'pull_request' }}`, which evaluates to `true` on
+`merge_group`, so Sonar enforces (and fails) the quality gate on every queue
+build, producing red non-required check noise. It should enforce only on
+`push` to a protected branch.
+
+**Context**: Discovered while diagnosing why PRs were not merging through the
+GitHub merge queue. Required checks were green on the PR but the queue stalled.
+
+**Suggested Fix**: In every template workflow that triggers on `merge_group`,
+key the concurrency group on `${{ github.event.pull_request.number ||
+github.ref }}` (never on `pull_request.number` alone). For Sonar-style gates,
+use `${{ github.event_name == 'push' }}` for enforcement so the queue stays
+advisory.
+
+**Affected Files**: `.github/workflows/pr-validation.yml`,
+`.github/workflows/sonarcloud.yml`

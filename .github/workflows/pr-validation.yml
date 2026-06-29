@@ -14,9 +14,14 @@ on:
       - develop
   merge_group:
 
-# Cancel in-progress runs for same PR
+# Cancel in-progress runs for the same PR. The `|| github.ref` fallback is
+# essential for merge_group events: there is no pull_request context in the
+# queue, so without it every merge-group build collapses into the same
+# concurrency group and cancels the previous entry's required
+# "Dependency & Standards Validation" check, blocking the queue. On a
+# merge_group, github.ref is the unique gh-readonly-queue ref per entry.
 concurrency:
-  group: pr-validation-${{ github.event.pull_request.number }}
+  group: pr-validation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:

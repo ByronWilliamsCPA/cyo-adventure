@@ -384,6 +384,8 @@ known-first-party = ["cyo_adventure"]
     "EM",     # Tool exceptions
     "BLE",    # Blind except (error handling in tools)
     "C901",   # Complexity allowed in utility scripts
+    "S603",   # subprocess_without_shell_equals_true - tools pass fixed args
+    "S607",   # start_process_with_partial_path - resolved via shutil.which
 ]
 
 # Nox configuration
