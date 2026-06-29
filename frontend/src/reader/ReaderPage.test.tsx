@@ -51,9 +51,11 @@ describe('ReaderPage', () => {
     )
     await screen.findByTestId('reader')
     expect(fetchStory).toHaveBeenCalledOnce()
-    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
-    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
-    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+    // Use findBy* after each interaction: a choice/ending can render a tick
+    // later than the click, so synchronous getBy* races under coverage timing.
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    expect(await screen.findByTestId('ending-screen')).toBeTruthy()
     expect(screen.getByTestId('ending-id').textContent).toBe('e_treasure_found')
   })
 
