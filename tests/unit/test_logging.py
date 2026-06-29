@@ -8,6 +8,9 @@ regression that ignores a flag fails here rather than passing on no-crash alone.
 
 from __future__ import annotations
 
+import logging
+from typing import TYPE_CHECKING
+
 import pytest
 import structlog
 
@@ -15,6 +18,29 @@ from cyo_adventure.utils.logging import (
     correlation_context_processor,
     setup_logging,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+
+@pytest.fixture(autouse=True)
+def _restore_logging_config() -> Iterator[None]:
+    """Snapshot and restore process-wide structlog and stdlib-logging config.
+
+    setup_logging mutates global structlog configuration and the root logger.
+    Without this, configuration leaks between tests (and across modules) and the
+    flag-toggle assertions below become order-dependent.
+    """
+    saved_structlog = structlog.get_config()
+    root = logging.getLogger()
+    saved_handlers = root.handlers[:]
+    saved_level = root.level
+    try:
+        yield
+    finally:
+        structlog.configure(**saved_structlog)
+        root.handlers[:] = saved_handlers
+        root.setLevel(saved_level)
 
 
 def _configured_processors() -> list[object]:

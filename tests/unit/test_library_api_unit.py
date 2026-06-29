@@ -315,16 +315,27 @@ class TestListLibrary:
         # Inspect whereclause specifically: the SELECT column list names every
         # column, so checking the full statement string would still pass if a
         # predicate were dropped. The access scope lives in the WHERE clause.
-        storybook_where = str(cast("Select[Any]", session.scalars_calls[0]).whereclause)
+        storybook_stmt = cast("Select[Any]", session.scalars_calls[0])
+        storybook_where = str(storybook_stmt.whereclause)
         assert "family_id" in storybook_where  # cross-family IDOR scope
         assert "status" in storybook_where  # published-only predicate
         assert "current_published_version IS NOT NULL" in storybook_where
 
+        # Column presence does not pin the value compared against it; bind the
+        # family scope to THIS principal and the status to "published" so an
+        # inverted predicate or a constant binding still fails here.
+        storybook_params = set(storybook_stmt.compile().params.values())
+        assert family_id in storybook_params  # bound to the caller's family
+        assert "published" in storybook_params  # not "draft" / inverted
+
         # Composite (storybook_id, version) IN (...) bulk fetch, not per-story.
+        # Qualify the version column: the bare substring "version" also matches
+        # the table name "storybook_version", so it would pass even if the
+        # composite key collapsed to storybook_id alone.
         version_where = str(cast("Select[Any]", session.scalars_calls[1]).whereclause)
         assert "IN" in version_where
-        assert "storybook_id" in version_where
-        assert "version" in version_where
+        assert "storybook_version.storybook_id" in version_where
+        assert "storybook_version.version" in version_where
 
     @pytest.mark.unit
     @pytest.mark.asyncio

@@ -17,6 +17,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.reading import (
@@ -449,11 +450,26 @@ class TestPutReadingState:
         stmt = cast("Select[Any]", session.scalar_calls[0])
         # The row scope lives in the WHERE clause; the SELECT column list names
         # every column, so checking the full statement would not catch a dropped
-        # predicate. FOR UPDATE is a statement-level modifier, checked on str().
+        # predicate.
         where = str(stmt.whereclause)
         assert "child_profile_id" in where  # cross-profile IDOR scope
         assert "storybook_id" in where
-        assert "FOR UPDATE" in str(stmt)  # serializes concurrent writers
+
+        # Pin the predicate VALUES, not just the column names: a constant or
+        # wrong-attribute binding would still render the column here.
+        params = set(stmt.compile().params.values())
+        assert profile_id in params  # bound to the authorized profile
+        assert "story-1" in params  # bound to the path storybook
+
+        # The lock must be a plain row lock that serializes writers. Render with
+        # the Postgres dialect (the deployment target): the generic compiler
+        # omits skip_locked/nowait clauses, so a weakening would be invisible
+        # under str(stmt). skip_locked lets a concurrent writer slip past; nowait
+        # changes the failure mode. Both still contain "FOR UPDATE".
+        rendered = str(stmt.compile(dialect=postgresql.dialect()))
+        assert "FOR UPDATE" in rendered  # serializes concurrent writers
+        assert "SKIP LOCKED" not in rendered
+        assert "NOWAIT" not in rendered
 
     @pytest.mark.unit
     @pytest.mark.asyncio
