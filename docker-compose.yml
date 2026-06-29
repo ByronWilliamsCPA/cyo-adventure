@@ -18,8 +18,9 @@ services:
     ports:
       - "${APP_PORT:-8000}:8000"
     environment:
-      # Core settings
-      ENVIRONMENT: ${ENVIRONMENT:-development}
+      # Core settings (valid: local | dev | staging | production; non-local
+      # activates the api/deps.py auth-stub guard and the database_url fail-fast)
+      ENVIRONMENT: ${ENVIRONMENT:-local}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       JSON_LOGS: ${JSON_LOGS:-false}
 

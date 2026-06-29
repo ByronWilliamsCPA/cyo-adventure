@@ -56,10 +56,10 @@ class Settings(BaseSettings):
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     json_logs: bool = False
     include_timestamp: bool = True
-    # #CRITICAL: security: this default embeds plaintext credentials
-    # (postgres:postgres) and resolves as the live DSN whenever
-    # CYO_ADVENTURE_DATABASE_URL is unset, including in CI. It is a localhost-only
-    # development default and must never reach staging or production.
+    # #CRITICAL: security: this credential-less localhost default resolves as the
+    # live DSN whenever CYO_ADVENTURE_DATABASE_URL is unset, including in CI. It is
+    # a localhost-only development default (peer/trust auth) and must never reach
+    # staging or production.
     # #VERIFY: enforced by _reject_dev_database_url_outside_local below.
     database_url: str = _DEV_DATABASE_URL
     # Development default for local Redis; safe to leave unset in non-production
