@@ -35,9 +35,9 @@ Phase 3 is delivered in three slices, each its own PR:
 
 - **Slice 1 (this plan): the approval spine.** State machine + guardian approve/send-back/
   archive endpoints + the enforced no-unapproved-publish invariant + authz/IDOR tests.
-- **Slice 2: staged moderation and editorial review.** A classifier pre-filter feeding an
-  independent band-policy safety reviewer and an adapted editorial-review pass, scoring content
-  against per-age-band policy and routing any hit to human review.
+- **Slice 2: the CYO-native review pipeline.** A classifier pre-filter, a hard safety/age-policy
+  gate, soft readability and branch-coherence gates, and an advisory engagement pass, all
+  feeding one report; hard blocks auto-reject, everything else routes to guardian review.
 - **Slice 3: the review-surface read API.** One endpoint returning the story plus flagged
   passages plus the moderation report, shaped for the Phase-4a guardian review UI.
 
@@ -64,9 +64,9 @@ A pure, dependency-free transition table over `storybook.status`. No DB, no I/O.
 
 ```text
 draft ──submit──▶ in_review ──approve──▶ published ──archive──▶ archived
-                     │  ▲                    │
-              send_back │ resubmit           └──archive──▶ archived
-                     ▼  │
+  │                  │  ▲
+  └──auto_reject──┐  send_back │ resubmit
+                  ▼  ▼  │
                  needs_revision
 ```
 
@@ -80,10 +80,18 @@ Legal transitions:
 | From | Action | To | Who |
 |------|--------|----|----|
 | `draft` | submit | `in_review` | guardian or system |
+| `draft` | auto_reject | `needs_revision` | system (slice-2 moderation) |
 | `needs_revision` | submit | `in_review` | guardian or system |
 | `in_review` | approve | `published` | guardian only |
 | `in_review` | send_back | `needs_revision` | guardian only |
 | `published` | archive | `archived` | guardian only |
+
+The `draft → auto_reject → needs_revision` hop is added now (even though slice 1 has no
+caller for it) so the slice-2 moderation pipeline can route an automatically-rejected story
+without it ever passing through `in_review` or reaching a human. Including it in the slice-1
+matrix keeps the state machine complete and avoids a slice-2 schema/contract change. The
+moderation pipeline (slice 2) sits between generation and `in_review`: a clean story is
+`submit`-ed to `in_review`; a hard-blocked one is `auto_reject`-ed to `needs_revision`.
 
 `assert_transition(current, action)` returns the target state or raises
 `BusinessLogicError` on any illegal hop. A frozen mapping is the single source of truth;
@@ -160,15 +168,28 @@ No schema migration is needed: all columns already exist.
 
 ## 4. Slice 2 design (deferred): staged moderation and editorial review
 
-Captured now so the slice-1 seam is shaped correctly; built in a follow-up PR. The validator
-gate already calls a `SAFE-14` seam (`validator/safety.py`); slice 2 replaces the stub with a
-multi-stage review pipeline. The pipeline **adapts the reference-library writing-pipeline
-pattern** (`/home/byron/dev/reference-library`): sequential stages, each emitting a structured
-verdict that accumulates into one report, gated progression, and a bounded remediation loop
-that escalates to a human. The crucial difference: these stages run **server-side** inside the
-generation/moderation pipeline (LLM calls behind a provider abstraction), not as interactive
-subagents. Human escalation is not a fallback bolted on; it is the mandatory guardian approval
-that ADR-005 already requires.
+Captured now so the slice-1 seam is shaped correctly; built in a follow-up PR (slice 2 or 3).
+The validator gate already calls a `SAFE-14` seam (`validator/safety.py`); this work replaces
+the stub with a CYO-native multi-stage review pipeline.
+
+The pipeline **borrows the mechanism** of the reference-library writing pipeline
+(`/home/byron/dev/reference-library`): sequential stages, each emitting a structured verdict
+that accumulates into one report, gated progression, a bounded remediation loop, and human
+escalation as the terminal gate. It does **not** copy that pipeline's four doc-editing stages;
+those are an example of the pattern from a professional document-review setting. The *reviews
+themselves are designed for this domain*, branching choose-your-own-adventure stories for
+children, and target what the deterministic gate (Layer-1/Layer-2 validator plus the PL-15..18
+policy gate) cannot judge: age-relative safety, readability fit, cross-branch narrative
+coherence, and choice quality. Two differences from the source pattern: the stages run
+**server-side** inside the generation/moderation pipeline (LLM calls behind a provider
+abstraction, emitting verdicts rather than rewriting in place), not as interactive subagents;
+and human escalation is not a bolted-on fallback but the mandatory guardian approval ADR-005
+already requires.
+
+The pipeline runs between generation and `in_review`: after a story passes the deterministic
+gate (status `draft`), the review pipeline runs; a clean result is `submit`-ed to `in_review`
+for the guardian, a hard-blocked one is `auto_reject`-ed to `needs_revision` (the slice-1
+state-machine hops added in 3.1).
 
 ### 4.1 Stage 0: classifier pre-filter (deterministic, free)
 
@@ -190,71 +211,87 @@ auto-blocking; they are passed forward as inputs to the band reviewer. Each clas
 becomes a moderation finding `(source, category, score, node_id)`. Both keys are optional: a
 missing key skips that classifier and the pipeline relies on the remaining stages.
 
-### 4.2 Stage 1: safety reviewer (LLM, the band-policy gate)
+The review set below is the proposed CYO pipeline: one deterministic pre-filter, one hard
+safety gate, two soft quality gates, and one advisory pass. The two domain-unique reviews,
+which a general document pipeline does not have, are **branch coherence** and **choice
+quality**, because branching is where LLM story generation most often breaks.
+
+### 4.2 Stage 1: safety and age-policy review (LLM, hard gate)
 
 An independent LLM-reviewer takes each node's prose **plus the Stage-0 graded signals** plus
 the `band_profile` ceilings, and returns a per-node verdict (`safe` / `flag` / `block`) scored
-against that band's violence / scariness / peril ceilings and forbidden ending kinds. This is
-the age-band-relative judgment a fixed-taxonomy classifier structurally cannot make. Any
-`block`, or an unresolved `flag`, forces human review; nothing here can auto-publish.
+against that band's violence / scariness / peril ceilings and forbidden ending kinds. It also
+applies a small set of **values red-lines** appropriate to children's content (e.g. cruelty
+rewarded as the "good" outcome, self-harm or dangerous real-world acts modeled as achievable),
+which a category classifier does not capture. This is the age-relative judgment a fixed-taxonomy
+classifier structurally cannot make. Any `block`, or an unresolved `flag`, forces human review;
+nothing here can auto-publish. This is the only **hard safety gate**.
 
-### 4.3 Stage 2: editorial review (LLM, advisory plus a quality gate)
+### 4.3 Stage 2: age-fit and readability (LLM, soft gate)
 
-Adapts the reference-library stages to story content. Each is one review pass emitting a
-structured verdict; the analogy to the source pipeline is noted:
+Vocabulary, sentence complexity, and Flesch-Kincaid grade vs the band's `reading_level_cap`
+(textstat is already in the stack), plus thematic maturity fit. A story far off its
+reading-level target is a **soft gate**: it gets one bounded auto-repair pass and, if still
+off, is surfaced to the guardian (per the owner decision: reading level is a quality, not a
+safety, property, so it never hard-blocks on its own).
 
-- **Suitability and reading level** (~ grammar-composition stage): vocabulary and
-  Flesch-Kincaid grade vs the band's `reading_level_cap` (textstat is already in the stack);
-  flags off-band passages. This stage *may* gate (route to `needs_revision`) when a story is
-  far off its reading-level target.
-- **Narrative coherence and quality** (~ document-validator stage, flag-only): plot and
-  character consistency across branches, no contradictory continuity, age-appropriate stakes.
-  Flags, does not rewrite.
-- **Voice and AI-pattern** (~ writing-style-editor stage): reads as written-for-children, not
-  generic AI boilerplate; AI-tell detection, with heightened scrutiny because the content is
-  machine-generated.
-- **Audience comprehension** (~ audience-reaction-analyzer, advisory): will a reader in this
-  band understand and stay engaged; emotional-trajectory fit (no terror for the youngest band).
+### 4.4 Stage 3: narrative and branch coherence (LLM, soft gate)
 
-Editorial findings are advisory to the guardian by default; only the suitability/reading-level
-result may act as a quality gate. Editorial review is a *quality* gate, never a substitute for
-the Stage-1 *safety* gate.
+The CYOA keystone review. Across **all paths**, not just one: plot, character, setting, and
+tracked state (items/variables) stay consistent; each choice's stated consequence actually
+follows; no branch contradicts an earlier passage; every ending is reachable in tone and
+sensible for the path that led there. The deterministic Layer-2 validator proves the graph is
+*structurally* sound (reachable, terminating, no traps); this stage judges whether the prose is
+*semantically* coherent across that graph, which determinism cannot. Severe incoherence is a
+**soft gate** (auto-repair once, then surface); minor inconsistencies are flagged.
 
-### 4.4 Aggregation, gating, and remediation
+### 4.5 Stage 4: engagement, choice quality, and voice (LLM, advisory)
 
-All stages append to one findings list persisted on `storybook_version.moderation_report`,
-mirroring the reference-library accumulating status block. Gating:
+Are the choices meaningful, distinct, and consequential (not "go left / go right" with
+identical outcomes); is pacing and stakes appropriate and fun for the band; does the prose read
+as written-for-children rather than generic AI boilerplate (AI-tell detection folded in here).
+Advisory to the guardian and may feed a regeneration request, but does not gate on its own.
 
-- Stage 0 hard block **or** Stage 1 `block` -> `needs_revision` immediately (safety).
-- Stage 1 `flag` **or** Stage 2 sub-threshold -> eligible for one bounded auto-repair pass
-  (reuse the orchestrator's existing 3-attempt repair cap and no-progress abort), then route
-  to the guardian.
-- A clean pass lands the story in `in_review` (awaiting guardian approval), **never**
-  `published`. The guardian is always the final gate (ADR-005); the pipeline only decides what
-  to surface and pre-flag.
+### 4.6 Aggregation, gating, and remediation
+
+All five stages append to one findings list persisted on `storybook_version.moderation_report`,
+mirroring the reference-library accumulating status block. Gating, by stage role:
+
+- **Hard safety gate.** Stage 0 hard block **or** Stage 1 `block` -> `auto_reject` to
+  `needs_revision` immediately, no human spend.
+- **Soft quality gates.** Stage 1 `flag`, Stage 2 (reading level) far-off, or Stage 3 (branch
+  coherence) severe -> one bounded auto-repair pass (reuse the orchestrator's existing
+  3-attempt repair cap and no-progress abort), then `submit` to `in_review` with the findings
+  attached for the guardian.
+- **Advisory.** Stage 4 findings, and any minor Stage 2/3 flags, never gate; they ride along
+  in the report for the guardian to weigh.
+- A clean (or repaired) story is `submit`-ed to `in_review`, **never** `published`. The
+  guardian is always the final gate (ADR-005); the pipeline only decides what to surface and
+  pre-flag.
 
 One finding has the shape:
-`{ stage, source: openai|perspective|llm_safety|llm_editorial:<sub>, category, score|severity, node_id, verdict: block|flag|advisory|pass, message }`.
+`{ stage, source: openai|perspective|llm_safety|llm_readability|llm_coherence|llm_engagement, category, score|severity, node_id, verdict: block|flag|advisory|pass, message }`.
 
-### 4.5 Provider abstraction and independence
+### 4.7 Provider abstraction and independence
 
-LLM stages (1 and 2) run behind a `ReviewProvider` mirroring `GenerationProvider`'s backend
-optionality: **local Ollama, OpenRouter, and Modal**. `build_review_provider` enforces
+The four LLM stages (1-4) run behind a `ReviewProvider` mirroring `GenerationProvider`'s
+backend optionality: **local Ollama, OpenRouter, and Modal**. `build_review_provider` enforces
 **reviewer != generator**: it compares against `storybook_version.model` /
 `generation_job.provider` and selects a different backend so a model never reviews its own
 output. Every review prompt flows through the existing PII egress guard
 (`generation/guarded.py`) before any external call, exactly as generation does.
 
-### 4.6 Open questions (slice 2)
+### 4.8 Open questions (slice 2)
 
 1. Confirm "Modal" means Modal.com auto-endpoints (as in
    `2026-06-23-modal-generation-tiers-design.md`).
 2. Classifier behavior when a key is unset: skip that classifier (current plan) or hard-require.
-3. Exact Stage-2 reading-level thresholds per band (reuse `band_profile.reading_level_cap`;
+3. Exact reading-level thresholds per band for Stage 2 (reuse `band_profile.reading_level_cap`;
    confirm the Flesch-Kincaid grade bands).
-4. Whether the editorial suitability stage may hard-gate on reading level, or stays advisory.
-5. Exact OpenAI/Perspective category-to-dimension thresholds (verify at integration time, RAD
-   external-resource; the table above is the starting map).
+4. Exact OpenAI/Perspective category-to-dimension thresholds (verify at integration time, RAD
+   external-resource; the 4.1 table is the starting map).
+5. Whether Stage 4 (engagement/choice quality) belongs in slice 2 or is split into slice 3,
+   given it is the only purely-advisory stage and adds the most prompt-tuning cost.
 
 ## 5. Slice 3 design (deferred): review-surface read API
 
@@ -273,7 +310,7 @@ which consumes slice 3's API); the deferred trigger-based invariant hardening (P
 
 ## 7. Open questions
 
-Slice-2 moderation/editorial questions are listed in section 4.6. The remaining cross-slice
+Slice-2 moderation/editorial questions are listed in section 4.8. The remaining cross-slice
 question:
 
 1. Slice 1 `send_back` reason: persist where in slice 1 (a lightweight audit row), or log
