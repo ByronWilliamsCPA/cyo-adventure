@@ -39,6 +39,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a Redis migration task added to the roadmap.
 
 ### Fixed
+- Merge queue no longer stalls PRs. `pr-validation.yml` used a concurrency group
+  keyed only on `github.event.pull_request.number`, which is empty on
+  `merge_group` events, so concurrent queue entries collapsed into one group and
+  cancelled each other's required `Dependency & Standards Validation` check; a
+  cancelled required check blocks the merge. Added the `|| github.ref` fallback
+  (matching the other required workflows) so each queue entry gets a unique
+  group. Also stopped `sonarcloud.yml` from enforcing the quality gate inside the
+  queue (`fail-on-quality-gate` now true only on `push`), which was failing every
+  merge-group build with non-required check noise.
+- Front-matter validator (`tools/validate_front_matter.py`) no longer gates
+  commits on gitignored working files. It walks `docs/` from disk, so the
+  intentionally untracked `docs/superpowers/` scratch plans were failing the
+  pre-commit hook for every commit; it now filters paths through
+  `git check-ignore` (git resolved via `shutil.which`, fail-open if absent).
 - Docker build on the shell-free DHI hardened base. The DHI runtime image has no
   `/bin/sh`, `apt-get`, or `groupadd`, so the previous single-base Dockerfile
   could not run its builder `RUN` blocks or create the non-root user. The build

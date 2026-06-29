@@ -24,6 +24,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
+import subprocess
 import sys
 from io import StringIO
 from pathlib import Path
@@ -235,6 +237,46 @@ def validate_file(
     return {"file": str(path), "ok": ok, "errors": errors, "fixed": fixed}
 
 
+def filter_gitignored(paths: list[Path]) -> list[Path]:
+    """Drop paths that git ignores (e.g. untracked scratch docs).
+
+    The validator walks ``docs/`` from disk, so it would otherwise gate commits
+    on gitignored working files such as ``docs/superpowers/`` plan scratch notes
+    that are intentionally untracked. We ask git which paths are ignored in a
+    single batch call and keep only the rest.
+
+    Args:
+        paths: Candidate Markdown paths discovered on disk.
+
+    Returns:
+        The subset of ``paths`` that git does not ignore. If git is unavailable
+        or errors, all paths are returned unchanged (fail open: validate more
+        rather than silently skip).
+    """
+    if not paths:
+        return paths
+    # #EDGE: external-resource: git may be absent in some CI images.
+    # #VERIFY: fall back to the unfiltered list when git is unavailable.
+    git = shutil.which("git")
+    if git is None:
+        return paths
+    try:
+        # `check-ignore --stdin -z` reads NUL-delimited paths and echoes back
+        # only the ignored ones. Exit code 1 means "nothing ignored" (not an
+        # error), so we do not use check=True.
+        proc = subprocess.run(
+            [git, "check-ignore", "--stdin", "-z"],
+            input="\0".join(str(p) for p in paths) + "\0",
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except (OSError, ValueError):
+        return paths
+    ignored = {part for part in proc.stdout.split("\0") if part}
+    return [p for p in paths if str(p) not in ignored]
+
+
 def main() -> int:
     """Main entry point for the validation script.
 
@@ -279,6 +321,9 @@ def main() -> int:
             # Only add file if not in planning directory
             if "planning" not in path.parts:
                 md_files.append(path)
+
+    # Never gate on gitignored working files (e.g. docs/superpowers/ scratch).
+    md_files = filter_gitignored(md_files)
 
     if not md_files:
         print("No Markdown files found", file=sys.stderr)
