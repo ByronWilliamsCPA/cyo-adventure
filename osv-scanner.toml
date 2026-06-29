@@ -48,31 +48,9 @@
 # ============================================================================
 # Add your project's vulnerability exceptions below this line
 
-# ----------------------------------------------------------------------------
-# interrogate/py dependency - CVE-2022-42969 (DISPUTED)
-# ----------------------------------------------------------------------------
-[[IgnoredVulns]]
-id = "CVE-2022-42969"
-reason = """
-DISPUTED ReDoS vulnerability in py package (transitive dependency of interrogate).
-Only affects Subversion repository path parsing, which this project does not use.
-interrogate is a dev dependency for docstring coverage checking.
-The py package is unmaintained but poses no security risk in this context.
-See: https://nvd.nist.gov/vuln/detail/CVE-2022-42969
-"""
-
-[[IgnoredVulns]]
-id = "PYSEC-2022-42969"
-reason = """
-Same as CVE-2022-42969 - DISPUTED ReDoS in py package via interrogate.
-Dev dependency only, affects SVN parsing which is not used.
-"""
-
-[[IgnoredVulns]]
-id = "GHSA-w596-4wvx-j9j6"
-reason = """
-GitHub Security Advisory for py ReDoS (same as CVE-2022-42969).
-DISPUTED vulnerability affecting SVN path parsing.
-interrogate (dev dependency) transitively requires py, but this project
-does not interact with Subversion repositories.
-"""
+# No project-specific exceptions currently active.
+# CVE-2022-42969, PYSEC-2022-42969, and GHSA-w596-4wvx-j9j6 were removed
+# because the interrogate/py transitive dependency that triggered them is
+# no longer present in the dependency tree. Dead policy entries would
+# cause "unused ignore" warnings in future osv-scanner runs.
+# See: docs/snyk-implementation-findings.md (Finding 2)
