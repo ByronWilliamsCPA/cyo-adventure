@@ -734,3 +734,160 @@ class TestProviderErrorInvariant:
         err = ProviderError("timeout", provider="ollama", leg_fatal=False)
         assert err.leg_fatal is False
         assert err.status_code is None
+
+
+# ---------------------------------------------------------------------------
+# OllamaProvider: additional branch coverage
+# ---------------------------------------------------------------------------
+
+
+class TestOllamaProviderBranches:
+    """Cover the remaining uncovered branches in the Ollama adapter."""
+
+    @pytest.mark.asyncio
+    async def test_http_400_bad_request_is_leg_fatal(self) -> None:
+        """An HTTP 400 raises a leg-fatal ProviderError with 'bad request' in message."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(400, json={"error": "bad request"})
+
+        provider = _ollama(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert "bad request" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_unexpected_4xx_is_leg_fatal(self) -> None:
+        """A 4xx not explicitly mapped (e.g. 401) is still leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(401, json={"error": "auth required"})
+
+        provider = _ollama(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert "401" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_timeout_raises_transient_provider_error(self) -> None:
+        """An httpx.TimeoutException maps to a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            raise httpx.ReadTimeout("timeout", request=_request)
+
+        provider = _ollama(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_empty_stream_lines_are_skipped(self) -> None:
+        """Blank lines in the stream body are silently ignored."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            # Include a blank line between chunks -- the adapter should skip it.
+            body = (
+                json.dumps({"message": {"role": "assistant", "content": "hello"}, "done": False})
+                + "\n\n"
+                + json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+                + "\n"
+            )
+            return httpx.Response(200, text=body)
+
+        provider = _ollama(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "hello"
+
+    @pytest.mark.asyncio
+    async def test_non_dict_json_chunk_returns_empty_string(self) -> None:
+        """A JSON-parseable non-dict chunk (e.g. a number) is treated as empty content."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            # First chunk is a JSON number (non-dict), second is the real content.
+            body = (
+                "42\n"
+                + json.dumps({"message": {"role": "assistant", "content": "ok"}, "done": False})
+                + "\n"
+                + json.dumps({"message": {"role": "assistant", "content": ""}, "done": True})
+                + "\n"
+            )
+            return httpx.Response(200, text=body)
+
+        provider = _ollama(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+
+
+# ---------------------------------------------------------------------------
+# OpenRouterProvider: additional branch coverage
+# ---------------------------------------------------------------------------
+
+
+class TestOpenRouterProviderBranches:
+    """Cover the remaining uncovered branches in the OpenRouter adapter."""
+
+    @pytest.mark.asyncio
+    async def test_non_json_response_body_raises_transient(self) -> None:
+        """A response body that is not valid JSON raises a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text="not-json-at-all")
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_unexpected_4xx_is_leg_fatal(self) -> None:
+        """A 4xx not in the explicit maps (e.g. 405) is still leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(405, json={"error": "method not allowed"})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert "405" in str(exc_info.value)
+
+    @pytest.mark.asyncio
+    async def test_dig_content_non_dict_payload_raises_via_empty_content(self) -> None:
+        """A JSON list response body triggers the 'no content' ProviderError path."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            # A JSON array is valid JSON but fails as_str_map(payload) -> None.
+            return httpx.Response(200, json=[1, 2, 3])
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_dig_content_non_dict_choice_raises_via_empty_content(self) -> None:
+        """When choices[0] is not a dict the content path falls through to empty."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json={"choices": ["not-a-dict"]})
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_dig_content_non_dict_message_raises_via_empty_content(self) -> None:
+        """When message is not a dict the content path returns None -> empty content."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                200, json={"choices": [{"message": "not-a-dict"}]}
+            )
+
+        provider = _openrouter(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False

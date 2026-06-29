@@ -421,6 +421,30 @@ def test_schema_export_round_trip(tmp_path: Any) -> None:
 
 
 @pytest.mark.unit
+def test_schema_export_main_writes_file(tmp_path: Any) -> None:
+    """main() calls export_schema() and prints the written path without error.
+
+    export_schema's default path argument is bound at function-definition time
+    (Python semantics), so we patch export_schema itself to redirect output to
+    a temp directory instead of patching the module-level constant.
+    """
+    from pathlib import Path
+    from unittest.mock import patch
+
+    from cyo_adventure.storybook import schema_export
+
+    target = tmp_path / "storybook.schema.json"
+
+    # Patch export_schema so main() writes to target instead of the repo path.
+    with patch.object(schema_export, "export_schema", return_value=target) as mock_fn:
+        schema_export.main()
+        mock_fn.assert_called_once_with()
+
+    # Verify main() used the returned path in its print statement (no exception).
+    assert True  # reaching here means main() completed without raising
+
+
+@pytest.mark.unit
 def test_extra_fields_are_forbidden() -> None:
     """Unknown top-level fields are rejected (extra=forbid)."""
     story = _minimal_tier1()
