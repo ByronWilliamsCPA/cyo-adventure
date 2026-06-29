@@ -22,7 +22,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 1.0 | **Updated**: 2026-06-20
+> **Status**: Active | **Version**: 1.1 | **Updated**: 2026-06-29
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -62,6 +62,25 @@ in prompts; admin-only short-lived raw outputs).
 | Full v1 | All phases including 4b and 5 | 16-25 weeks |
 
 Source: [Project Vision](./project-vision.md) sections 1-3.
+
+### Current status (2026-06-29)
+
+| Phase | Status |
+|-------|--------|
+| 0 Foundations | ✅ Delivered (merged) |
+| 1 Schema + Reader | ✅ Delivered (merged) |
+| 2 Gen + Gate | ✅ Delivered (merged) |
+| 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
+| 3 Safety + Review | ⏸️ Not started (next; DB schema ready, workflow logic absent) |
+| 4a Library + Profiles | 🔄 Backend partial (library/ratings API); frontend absent |
+| 4b Editor + UX | ⏸️ Not started (post-release) |
+| 5 Hardening | ⏸️ Not started (post-release) |
+
+The **first usable release is roughly half done by phase count but the long pole is
+ahead**: Phase 3 is greenfield workflow code on a ready schema, and Phase 4a's
+guardian-facing UI has no app shell to build on yet (the frontend is a single-page
+reader demo with no routing). The concrete path from here is
+[`completion-plan.md`](./completion-plan.md).
 
 ---
 
@@ -200,7 +219,9 @@ Source: [Roadmap](./roadmap.md) sections "Critical Path" and "Timeline Overview"
 
 **Branch**: `chore/phase-0-foundations`
 **Milestone**: M0 - Phase 0 exit gate (decisions locked, CI green)
-**Status**: Planned
+**Status**: ✅ Delivered (merged). Schema, runtime semantics, validator rule catalog,
+fixture corpus, MVP cut, auth matrix, privacy model, and the CI/security baseline are in;
+the Phase-0 punch list (PL-01..PL-18) is closed.
 
 **Objective**: Lock the decisions and artifacts that are expensive to change once code exists.
 No app code until this gate passes.
@@ -270,12 +291,11 @@ No app code until this gate passes.
 
 **Branch**: `feat/phase-1-schema-reader-v2`
 **Milestone**: M1 - Reader plays hand-authored stories offline
-**Status**: Implemented (PR pending review). Condition evaluator (Python + TS,
-shared conformance), Layer-1 validator, deterministic player (Python + TS,
-cross-impl trace conformance), reader API (reading-state with 409 reconciliation,
-IDOR-tested), PWA reader (XState, IndexedDB, offline sync, conflict UX), Playwright
-E2E, and two hand-authored stories are complete and pass locally; PR review and
-CI are in progress.
+**Status**: ✅ Delivered (merged). Condition evaluator (Python + TS, shared
+conformance), Layer-1 validator, deterministic player (Python + TS, cross-impl trace
+conformance), reader API (reading-state with 409 reconciliation, IDOR-tested), PWA reader
+(XState, IndexedDB, offline sync, conflict UX), Playwright E2E, and two hand-authored
+stories are merged to `main` and green in CI.
 
 **Objective**: Prove the format and the player with human-written stories before any LLM is
 involved. This phase has no external network egress. See [ADR-001](./adr/adr-001-story-format-json-storybook.md)
@@ -331,10 +351,12 @@ and [ADR-002](./adr/adr-002-client-pwa.md).
 
 ### Phase 2: Validation Gate and Authoring Pipeline (4-6 weeks)
 
-**Branch**: `feat/phase-2-generation-gate` (PRs #5 and PR-c)
+**Branch**: `feat/phase-2-generation-gate` (PRs #5, #6) plus Phase 2b (PRs #7, #8)
 **Milestone**: M2 - Concept-to-story pipeline passes the full gate
-**Status**: Delivered (validation gate + mock-provider pipeline). Two criteria are deferred to
-Phase 2b; see the subsection below.
+**Status**: ✅ Delivered, including Phase 2b. The validation gate and orchestrator shipped
+first against MockProvider; the two deferred criteria are now closed (live OpenRouter +
+Ollama adapters merged; 70% yield, 14/20, measured on a live run 2026-06-22). See the
+subsection below.
 
 **Objective**: Generate stories that hold together, with the gate as the arbiter. This is the
 long pole of the project: generation reliability and the state-space validator absorb most of the
@@ -369,25 +391,27 @@ from Phase 0 are preconditions. See [ADR-003](./adr/adr-003-frontier-llm-generat
 **Acceptance criteria** (from [Roadmap Phase 2](./roadmap.md)):
 
 - From a concept brief, the pipeline produces a story that passes the full gate with zero
-  structural edits at least 60% of the time over a 20-story sample. (Deferred to Phase 2b.)
+  structural edits at least 60% of the time over a 20-story sample. (Met in Phase 2b: 70%,
+  14/20.)
 - The validator rejects 100% of the known-bad and Tier-2 corpora with correct rule and node
   attribution. (Delivered.)
 - No prompt sent to the provider contains a real child name, birthdate, or sensitive trait.
   (Delivered.)
 
-**Deferred to Phase 2b**:
+**Phase 2b (closed)**:
 
-Two acceptance criteria were deliberately deferred after review. The decision was recorded
-because both require a live LLM provider, which was not wired in-phase:
+Two acceptance criteria were deferred from the Phase 2 cut because both require a live LLM
+provider. Both are now met:
 
-1. **60% generation yield over a 20-story sample** - the mock-driven yield harness
-   (`scripts/yield_harness.py`) ships in Phase 2 and can be re-run once a live provider
-   is configured.
-2. **Concrete Claude/Ollama/OpenRouter provider adapters** - the `GenerationProvider`
-   protocol and `build_provider` factory shipped; the HTTP client implementations did not.
-   Live providers currently raise `ConfigurationError`.
+1. **60% generation yield over a 20-story sample** met at **70% (14/20)** on a live
+   OpenRouter run (`anthropic/claude-haiku-4.5`, 2026-06-22); result recorded under
+   [`yield-results/`](./yield-results/). Tier-1 passed 11/13; **Tier-2 passed only 3/7**,
+   so Tier-2 structure-prompt tightening is the residual yield lever carried forward.
+2. **Concrete provider adapters** shipped: OpenRouter (primary, in-provider fallback) and
+   Ollama (homelab final fallback), selectable by config. A direct Anthropic SDK adapter
+   stays deferred (Claude is reached via OpenRouter).
 
-Follow-up scope and acceptance criteria are in
+Full scope and the residual lever are in
 [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
 
 **Quality gates**:
@@ -411,7 +435,12 @@ provider and privacy decisions. Blocks Phase 3 and Phase 4a.
 
 **Branch**: `feat/phase-3-safety-review`
 **Milestone**: M3 - Parent approval gate enforced end to end
-**Status**: Planned
+**Status**: ⏸️ Not started (next on the critical path). The schema is ready
+(`storybook.status`, `storybook_version.approved_by` / `published_at` /
+`moderation_report`) and the deterministic age-band policy gate (`validator/policy.py`,
+PL-15..18) is in place, but the workflow itself is greenfield: `validator/safety.py` is an
+explicit stub, there are no approval/publish/send-back endpoints, no publish state
+machine, and no enforced invariant that a `published` story has a recorded approver.
 
 **Objective**: Make the kids-facing guarantee real: no story reaches a child without a recorded
 guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
@@ -459,7 +488,11 @@ Phase 2 once the validation gate and orchestrator are stable.
 
 **Branch**: `feat/phase-4a-library-profiles`
 **Milestone**: M4 - First usable release (generation + library)
-**Status**: Planned
+**Status**: 🔄 Backend partial; frontend not started. The `library` API (published,
+profile-scoped browsing) and the child `ratings` API are merged. The frontend has **no
+library, profile, guardian, or concept-intake UI and no routing** (it is still a
+single-page reader demo), so the guardian/parent app shell that Phases 3 and 4a both need
+is the largest remaining build for the first release.
 
 **Objective**: Make the first usable release shippable. A child sees only the stories permitted
 for their profile; a guardian can assign an approved generated story to one or more children.

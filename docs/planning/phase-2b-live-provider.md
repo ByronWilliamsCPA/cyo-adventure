@@ -1,7 +1,7 @@
 ---
 title: "Phase 2b: Live Provider Wiring and Generation Yield"
 schema_type: planning
-status: draft
+status: published
 owner: core-maintainer
 purpose: "Implement the live GenerationProvider adapters and measure real generation yield,
   closing the two acceptance criteria deferred from Phase 2."
@@ -12,6 +12,28 @@ tags:
 component: Generation
 source: "Deferred from Phase 2 (feat/phase-2-generation-gate) decision, 2026-06-22"
 ---
+
+## Status: Delivered (2026-06-29)
+
+Both acceptance criteria below are **met**, and the work package is closed:
+
+- **Live adapters shipped** (PRs #7, #8): OpenRouter as primary with an in-provider
+  fallback model, and Ollama as the homelab final fallback, both selectable purely by
+  `settings.generation_provider`. The direct Anthropic SDK adapter remains intentionally
+  deferred (Claude is reached via OpenRouter).
+- **Yield met at 70% (14/20)** on a live OpenRouter run (`anthropic/claude-haiku-4.5`,
+  2026-06-22), clearing the 60% threshold. Result recorded under
+  [`yield-results/phase-2b-2026-06-22.json`](./yield-results/phase-2b-2026-06-22.json).
+
+**Carried-forward lever (not blocking):** the run split **Tier-1 11/13 vs Tier-2 3/7**.
+The dominant Tier-2 failure was L1-7 "budget" (branch depth over the band cap, ending
+count off-brief). Tightening the Stage A structure prompt to state band budgets inline
+and numerically (the highest-leverage, model-independent fix described under In Scope
+below) is the open follow-up, tracked as a quality item in
+[`completion-plan.md`](./completion-plan.md), not a Phase-3 blocker.
+
+The remainder of this document is the original work-package specification, retained for
+provenance.
 
 ## Purpose
 
