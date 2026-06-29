@@ -179,3 +179,7 @@ async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
         request = ImportRequest(blob=blob, family_id=uuid.uuid4())
         with pytest.raises(ValidationError, match="no string id"):
             await import_filled_story(session, request)
+
+    # The id guard must reject before any row is staged: a regression that
+    # appends rows before the check would otherwise leak a partial import.
+    assert session.added == []

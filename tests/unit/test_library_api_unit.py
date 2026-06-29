@@ -11,6 +11,7 @@ the _parse_profile_id and _library_item helpers directly.
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
 
@@ -27,6 +28,9 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
+
+if TYPE_CHECKING:
+    from sqlalchemy import Select
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -282,6 +286,56 @@ class TestListLibrary:
         assert len(result.stories) == 1
         assert result.stories[0].id == "story-1"
         assert result.stories[0].title == "The Dragon's Den"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_query_is_family_scoped_and_version_fetch_is_bulk(self) -> None:
+        """Enforce the IDOR/published filters and the single bulk version fetch.
+
+        Inspects the SQL captured by the fake session so a regression that drops
+        the family_id scope (cross-family IDOR), the published-only predicate, or
+        collapses the single bulk version fetch into per-story queries (N+1)
+        fails here rather than passing on seeded rows alone.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        books = [
+            _published_book("story-a", family_id, version=1),
+            _published_book("story-b", family_id, version=2),
+        ]
+        versions = [_version_row("story-a", 1), _version_row("story-b", 2)]
+        session = _FakeSession(storybooks=books, versions=versions)
+        principal = _child_principal(family_id, profile_id)
+
+        await list_library(str(profile_id), principal, session)
+
+        # Exactly two queries: one for storybooks, one bulk version fetch (no N+1).
+        assert len(session.scalars_calls) == 2
+
+        # Inspect whereclause specifically: the SELECT column list names every
+        # column, so checking the full statement string would still pass if a
+        # predicate were dropped. The access scope lives in the WHERE clause.
+        storybook_stmt = cast("Select[Any]", session.scalars_calls[0])
+        storybook_where = str(storybook_stmt.whereclause)
+        assert "family_id" in storybook_where  # cross-family IDOR scope
+        assert "status" in storybook_where  # published-only predicate
+        assert "current_published_version IS NOT NULL" in storybook_where
+
+        # Column presence does not pin the value compared against it; bind the
+        # family scope to THIS principal and the status to "published" so an
+        # inverted predicate or a constant binding still fails here.
+        storybook_params = set(storybook_stmt.compile().params.values())
+        assert family_id in storybook_params  # bound to the caller's family
+        assert "published" in storybook_params  # not "draft" / inverted
+
+        # Composite (storybook_id, version) IN (...) bulk fetch, not per-story.
+        # Qualify the version column: the bare substring "version" also matches
+        # the table name "storybook_version", so it would pass even if the
+        # composite key collapsed to storybook_id alone.
+        version_where = str(cast("Select[Any]", session.scalars_calls[1]).whereclause)
+        assert "IN" in version_where
+        assert "storybook_version.storybook_id" in version_where
+        assert "storybook_version.version" in version_where
 
     @pytest.mark.unit
     @pytest.mark.asyncio

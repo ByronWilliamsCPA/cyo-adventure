@@ -132,7 +132,7 @@ class _RepairContext:
         scale: Story-size profile forwarded to each repair stage's gate.
     """
 
-    provider: GenerationProvider
+    provider: PiiGuardedProvider
     max_repairs: int
     stage_log: list[str]
     scale: Scale = "standard"
@@ -239,7 +239,7 @@ def _empty_blocked_gate() -> GateResult:
 async def _run_one_stage(
     stage_prompt: StagePrompt,
     *,
-    provider: GenerationProvider,
+    provider: PiiGuardedProvider,
     max_tokens: int,
     scale: Scale = "standard",
 ) -> tuple[dict[str, object] | None, GateResult]:

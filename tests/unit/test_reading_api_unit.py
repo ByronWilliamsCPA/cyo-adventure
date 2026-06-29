@@ -14,8 +14,10 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING, Any, cast
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.reading import (
@@ -39,6 +41,9 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+
+if TYPE_CHECKING:
+    from sqlalchemy import Select
 
 _FIXED_TS = datetime(2026, 1, 1, tzinfo=UTC)
 
@@ -67,6 +72,7 @@ class _FakeSession:
         self.flush_count = 0
         self.refresh_calls: list[tuple[object, list[str] | None]] = []
         self.get_calls: list[tuple[type[object], object]] = []
+        self.scalar_calls: list[object] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Look up by (model, key)."""
@@ -89,7 +95,8 @@ class _FakeSession:
             obj.found_at = _FIXED_TS
 
     async def scalar(self, stmt: object) -> object | None:
-        """Return the seeded result for SELECT...FOR UPDATE queries."""
+        """Capture the statement, then return the seeded SELECT...FOR UPDATE result."""
+        self.scalar_calls.append(stmt)
         return self._scalar_result
 
 
@@ -416,6 +423,54 @@ class TestGetReadingState:
 
 
 class TestPutReadingState:
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_locked_read_is_profile_story_scoped_and_for_update(self) -> None:
+        """The read-modify-write read must be row-scoped and locked.
+
+        Inspects the SQL captured by the fake session so a regression that drops
+        the (child_profile_id, storybook_id) predicate (cross-profile write) or
+        the SELECT ... FOR UPDATE lock (concurrent-writer race on the revision
+        check) fails here rather than passing on the seeded scalar result alone.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id)
+        session = _FakeSession(
+            get_map={(Storybook, "story-1"): book},
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+
+        await put_reading_state(
+            str(profile_id), "story-1", _body(state_revision=0), ctx
+        )
+
+        assert len(session.scalar_calls) == 1
+        stmt = cast("Select[Any]", session.scalar_calls[0])
+        # The row scope lives in the WHERE clause; the SELECT column list names
+        # every column, so checking the full statement would not catch a dropped
+        # predicate.
+        where = str(stmt.whereclause)
+        assert "child_profile_id" in where  # cross-profile IDOR scope
+        assert "storybook_id" in where
+
+        # Pin the predicate VALUES, not just the column names: a constant or
+        # wrong-attribute binding would still render the column here.
+        params = set(stmt.compile().params.values())
+        assert profile_id in params  # bound to the authorized profile
+        assert "story-1" in params  # bound to the path storybook
+
+        # The lock must be a plain row lock that serializes writers. Render with
+        # the Postgres dialect (the deployment target): the generic compiler
+        # omits skip_locked/nowait clauses, so a weakening would be invisible
+        # under str(stmt). skip_locked lets a concurrent writer slip past; nowait
+        # changes the failure mode. Both still contain "FOR UPDATE".
+        rendered = str(stmt.compile(dialect=postgresql.dialect()))
+        assert "FOR UPDATE" in rendered  # serializes concurrent writers
+        assert "SKIP LOCKED" not in rendered
+        assert "NOWAIT" not in rendered
+
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_create_first_state_returns_view(self) -> None:

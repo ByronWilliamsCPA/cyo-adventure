@@ -195,7 +195,7 @@ class Settings(BaseSettings):
 
         Raises:
             ConfigurationError: when ``environment`` is not ``local`` but
-                ``database_url`` is still the plaintext-credential dev default,
+                ``database_url`` is still the credential-free dev default DSN,
                 which means ``CYO_ADVENTURE_DATABASE_URL`` was not provided.
         """
         if self.environment != "local" and self.database_url == _DEV_DATABASE_URL:
