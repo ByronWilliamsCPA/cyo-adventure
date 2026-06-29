@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import importlib
 import uuid
+from unittest.mock import patch
 
 import pytest
 
@@ -293,3 +295,46 @@ class TestGetContext:
         assert isinstance(ctx, RequestContext)
         assert ctx.principal is principal
         assert ctx.session is fake_session
+
+
+# ---------------------------------------------------------------------------
+# Auth-stub environment guard
+# ---------------------------------------------------------------------------
+
+
+class TestAuthStubGuard:
+    """Tests for the module-level environment guard in api.deps."""
+
+    @pytest.mark.unit
+    def test_guard_raises_configuration_error_in_non_local_env(self) -> None:
+        """deps raises ConfigurationError at import time when environment != 'local'.
+
+        The guard is the sole enforcement point preventing the no-validation dev
+        auth stub from reaching staging or production. Tested via importlib.reload
+        which re-executes module-level code.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with patch("cyo_adventure.core.config.settings") as mock_settings:
+            mock_settings.environment = "production"
+            with pytest.raises(ConfigurationError, match="dev auth stub"):
+                importlib.reload(deps)
+
+        # Restore the module to a working local state so subsequent tests pass.
+        importlib.reload(deps)
+
+    @pytest.mark.unit
+    def test_guard_does_not_raise_in_local_env(self) -> None:
+        """deps imports cleanly when environment == 'local' (the default)."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with patch("cyo_adventure.core.config.settings") as mock_settings:
+            mock_settings.environment = "local"
+            try:
+                importlib.reload(deps)
+            except ConfigurationError:
+                pytest.fail(
+                    "ConfigurationError raised unexpectedly for environment='local'"
+                )
+
+        importlib.reload(deps)

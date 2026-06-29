@@ -10,11 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - CORS: replaced wildcard `allow_headers=["*"]` with explicit allowlist in
   `middleware/security.py` to comply with OWASP A05 when credentials are allowed.
-- Auth stub: added `APP_ENV` guard in `api/deps.py` so the dev-only
-  `_extract_subject` shortcut raises `ConfigurationError` on startup in non-local
-  environments.
-- PII: wrapped `GenerationProvider.complete()` with a PII-scrubbing decorator in
-  `generation/pii.py` so raw LLM outputs are never stored unguarded.
+- Auth stub: added `ENVIRONMENT` guard in `api/deps.py` (keyed on
+  `settings.environment`, populated by the unprefixed `ENVIRONMENT` env var) so
+  the dev-only `_extract_subject` shortcut raises `ConfigurationError` on startup
+  in non-local environments. Also fixed `core/config.py` to read `environment`
+  from the unprefixed `ENVIRONMENT` var via `validation_alias="ENVIRONMENT"` so
+  the guard actually fires in deploy configs that set `ENVIRONMENT=production`.
+- PII: `PiiGuardedProvider` wrapper class in `generation/guarded.py` now enforces
+  PII-scrubbing on every `GenerationProvider.complete()` call so raw LLM outputs
+  are never stored unguarded.
 - Removed plaintext database credentials from `core/config.py`; moved example
   values to `.env.example` only.
 
@@ -22,8 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Unit test coverage raised from ~80% to 96.89% across all source modules:
   `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
   `utils/logging.py`, and the main `app.py` exception-handler matrix.
-- Purge policy plan for `GenerationJob.report` documented in `SECURITY.md`
-  (raw LLM outputs expire after 30 days per privacy model).
+- Purge policy plan for `GenerationJob.report` documented in ADR-007
+  (`docs/planning/adr/adr-007-raw-output-retention.md`); raw LLM outputs expire
+  after 30 days per privacy model.
 
 ### Changed
 - Removed `utils/financial.py` (template scaffolding with no domain role in a

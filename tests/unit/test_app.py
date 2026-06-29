@@ -184,3 +184,54 @@ class TestCreateApp:
             ConfigurationError,
         ):
             assert isinstance(cls("msg"), ProjectBaseError)
+
+
+# ---------------------------------------------------------------------------
+# CORS allowlist regression guard
+# ---------------------------------------------------------------------------
+
+
+class TestCorsAllowlist:
+    """Tests that the CORS middleware is configured with an explicit header allowlist.
+
+    A regression to allow_headers=['*'] with allow_credentials=True would violate
+    the CORS spec and silently pass the existing test suite without this guard.
+    """
+
+    @pytest.mark.unit
+    def test_cors_allow_headers_is_not_wildcard(self) -> None:
+        """add_security_middleware must not use allow_headers=['*']."""
+        from starlette.middleware.cors import CORSMiddleware
+
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+        add_security_middleware(app, allowed_origins=["http://localhost:3000"])
+
+        cors_mw = next(
+            (m for m in app.user_middleware if m.cls is CORSMiddleware),
+            None,
+        )
+        assert cors_mw is not None, "CORSMiddleware not found in middleware stack"
+        allow_headers = cors_mw.kwargs.get("allow_headers", [])
+        assert "*" not in allow_headers, (
+            "allow_headers=['*'] with allow_credentials=True is a CORS misconfiguration"
+        )
+
+    @pytest.mark.unit
+    def test_cors_allow_headers_includes_authorization(self) -> None:
+        """The CORS allowlist must include Authorization for bearer-token flows."""
+        from starlette.middleware.cors import CORSMiddleware
+
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+        add_security_middleware(app, allowed_origins=["http://localhost:3000"])
+
+        cors_mw = next(
+            (m for m in app.user_middleware if m.cls is CORSMiddleware),
+            None,
+        )
+        assert cors_mw is not None
+        allow_headers = cors_mw.kwargs.get("allow_headers", [])
+        assert "Authorization" in allow_headers

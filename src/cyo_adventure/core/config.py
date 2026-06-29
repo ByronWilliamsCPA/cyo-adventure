@@ -45,7 +45,14 @@ class Settings(BaseSettings):
         populate_by_name=True,
     )
 
-    environment: Literal["local", "dev", "staging", "production"] = "local"
+    # validation_alias="ENVIRONMENT" makes the field read the unprefixed var so
+    # docker-compose.prod.yml and .env.example (which both set ENVIRONMENT=...)
+    # are honoured without the cyo_adventure_ prefix. populate_by_name=True in
+    # model_config lets direct constructor calls (Settings(environment="dev")) and
+    # tests still work without needing the alias.
+    environment: Literal["local", "dev", "staging", "production"] = Field(
+        default="local", validation_alias="ENVIRONMENT"
+    )
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
     json_logs: bool = False
     include_timestamp: bool = True
