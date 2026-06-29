@@ -22,6 +22,12 @@ on:
 
 permissions: {}
 
+# Serialize runs so a manual dispatch cannot race the weekly cron on the
+# reusable workflow's sticky-issue update (one provenance issue per repo).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   provenance:
     uses: ByronWilliamsCPA/.github/.github/workflows/python-dependency-provenance.yml@6b521336408f53d107d00143005d1404815ef43e
