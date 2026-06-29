@@ -289,6 +289,10 @@ Production readiness on the homelab (or Azure).
 - [ ] Performance pass, offline-edge hardening, accessibility (WCAG AA basics: contrast,
       focus order, scalable text).
 - [ ] Sentry wired on client and server; backups and a tested restore.
+- [ ] Replace in-memory `RateLimitMiddleware` with Redis-backed rate limiting
+      (`fastapi-limiter` or `slowapi`) to support multi-process and load-balanced
+      deployments. The current in-memory implementation is single-process only
+      (documented in SECURITY.md Known Infrastructure Limitations).
 - [ ] Operator runbook and a short authoring guide for non-technical use.
 
 ### Success Criteria

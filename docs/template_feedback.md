@@ -201,6 +201,28 @@ class of out-of-the-box breakage is caught in the template repo.
 **Affected Files**: `docs/ADRs/adr-template.md`; the front-matter validation
 script and its allowed-tags list.
 
+### Template ships `utils/financial.py` scaffolding irrelevant to non-financial projects
+
+- **Priority**: Medium
+- **Category**: Structure
+- **Discovered**: 2026-06-29
+
+**Issue**: The generated `src/{package}/utils/financial.py` ships Decimal helper
+utilities appropriate only for payment or accounting applications. In a kids'
+reading app (or any non-financial project), the file is dead code from day one,
+accumulates as technical debt, and produces confusing type-checking noise. The
+CLAUDE.md architecture note for this project explicitly flags it as "template
+scaffolding, not domain logic."
+
+**Context**: Discovered during a pre-Phase-3 cleanup audit. The file contained
+only a module docstring with no symbols. Nothing in the project imported it.
+
+**Suggested Fix**: Gate generation of `utils/financial.py` behind a cookiecutter
+variable (e.g. `include_financial_utils: false` by default), or remove it from
+the template entirely and ship it only in a "finance" project type.
+
+**Affected Files**: `src/{{package}}/utils/financial.py`
+
 ---
 
 ## Submitting Feedback

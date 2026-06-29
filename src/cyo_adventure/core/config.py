@@ -13,11 +13,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
 
-# Localhost-only development default. Kept as a module constant so the fail-fast
-# validator below can detect when it leaks into a non-local environment.
-_DEV_DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@localhost:5432/cyo_adventure"
-)
+# Localhost-only development default (no credentials; relies on local peer/trust
+# auth). Kept as a module constant so the fail-fast validator below can detect
+# when it leaks into a non-local environment. Developers using password auth must
+# set CYO_ADVENTURE_DATABASE_URL explicitly (see .env.example).
+_DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 
 
 class Settings(BaseSettings):
@@ -195,7 +195,7 @@ class Settings(BaseSettings):
             msg = (
                 "CYO_ADVENTURE_DATABASE_URL must be set in non-local environments; "
                 f"refusing to start in '{self.environment}' with the development "
-                "default database URL (plaintext localhost credentials)."
+                "default localhost database URL."
             )
             raise ConfigurationError(msg)
         return self

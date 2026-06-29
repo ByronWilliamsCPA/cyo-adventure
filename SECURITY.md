@@ -22,6 +22,25 @@ Or email: byronawilliams@gmail.com
 - Resolution target: 30 days for critical, 90 days for others
 - We commit to acknowledging all vulnerability reports within 14 days of submission at the latest; our target is 48 hours.
 
+## Known Infrastructure Limitations
+
+The following limitations are documented and tracked for remediation before
+production deployment or horizontal scaling:
+
+- **Rate limiting is in-memory only.** `middleware/security.py: RateLimitMiddleware`
+  enforces per-IP rate limits using a process-local counter. This is effective for
+  single-process, single-machine deployments but provides no protection across
+  multiple processes or behind a load balancer. Redis-backed rate limiting (e.g.
+  `fastapi-limiter`) is required before any multi-instance deployment. Tracked as
+  a Phase 5 hardening task in the roadmap.
+
+- **Dev auth stub must be replaced before non-local deployment.** The bearer-token
+  extraction in `api/deps.py` treats any token as a verified OIDC subject (no
+  signature, issuer, or expiry validation). A module-level guard raises
+  `ConfigurationError` at startup if the environment is not `local`, preventing
+  accidental staging or production deployment. Real Authentik JWT validation
+  (RS256, issuer/audience check) must replace this stub in Phase 3.
+
 ## Organization Policy
 
 See also: [ByronWilliamsCPA organization Security Policy](https://github.com/ByronWilliamsCPA/.github/blob/main/SECURITY.md)

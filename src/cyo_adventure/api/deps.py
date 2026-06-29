@@ -20,8 +20,13 @@ from typing import TYPE_CHECKING, Annotated
 from fastapi import Depends, Header
 from sqlalchemy import select
 
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.database import get_session
-from cyo_adventure.core.exceptions import AuthenticationError, AuthorizationError
+from cyo_adventure.core.exceptions import (
+    AuthenticationError,
+    AuthorizationError,
+    ConfigurationError,
+)
 from cyo_adventure.db.models import ChildProfile, User
 
 if TYPE_CHECKING:
@@ -34,6 +39,20 @@ ROLE_GUARDIAN = "guardian"
 ROLE_CHILD = "child"
 
 _BEARER_PREFIX = "bearer "
+
+# #CRITICAL: security: this module contains a dev/test auth seam (_extract_subject)
+# that treats any bearer token as a verified OIDC subject with NO signature,
+# issuer, or expiry validation. It must never be active outside local development.
+# #VERIFY: ConfigurationError raised at import time when environment != "local",
+# so uvicorn fails to start in staging/production if this stub is still wired in.
+if settings.environment != "local":
+    _env = settings.environment
+    msg = (
+        f"The dev auth stub in api/deps.py is active in the {_env!r} environment. "
+        "Replace _extract_subject with real Authentik JWT validation before any "
+        "non-local deployment."
+    )
+    raise ConfigurationError(msg)
 
 
 @dataclass(frozen=True, slots=True)

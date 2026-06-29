@@ -87,6 +87,12 @@ function enterNode(
   }
 }
 
+// #ASSUME: data-integrity: enterNode trusts that nodeId exists in the story.
+// A dangling target (choice pointing to a non-existent node) throws immediately,
+// matching the Python engine and the Layer-1 L1-2 reference-integrity check.
+// #VERIFY: the validator rejects stories with dangling targets before they reach
+// the reader, so this throw is a belt-and-suspenders guard, not a normal path.
+
 /** Begin a new read at start_node with initial variable values. */
 export function start(story: Storybook): ReadingState {
   const varState: VarState = {}
@@ -124,6 +130,12 @@ export function currentEndingId(story: Storybook, state: ReadingState): string |
   return node?.is_ending ? (node.ending?.id ?? null) : null
 }
 
+// #CRITICAL: timing: choose() transition order (condition check -> choice effects
+// -> set current_node -> on_enter effects) MUST stay in sync with the Python
+// reference engine (src/cyo_adventure/player/engine.py). Divergence causes the
+// Layer-2 validator and the runtime to disagree on reachable states.
+// #VERIFY: shared player_traces.json conformance corpus is run by both engines.
+
 /** Apply a choice and return the resulting reading state (input is not mutated). */
 export function choose(story: Storybook, state: ReadingState, choiceId: string): ReadingState {
   if (isEnding(story, state)) {
@@ -137,6 +149,10 @@ export function choose(story: Storybook, state: ReadingState, choiceId: string):
   if (!(choice.condition == null || evaluate(choice.condition, state.var_state))) {
     throw new Error(`choice '${choiceId}' is not visible in the current state`)
   }
+  // #ASSUME: data-integrity: intBounds is rebuilt per choose() call; bounds are
+  // not cached across calls. A cached bounds map would go stale if the Storybook
+  // object is replaced (e.g. on a story update) without clearing the cache.
+  // #VERIFY: choose() receives a fresh story reference on each call from the reader.
   const bounds = intBounds(story)
   const next: ReadingState = {
     current_node: state.current_node,

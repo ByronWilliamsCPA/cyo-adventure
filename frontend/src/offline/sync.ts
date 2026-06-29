@@ -61,6 +61,18 @@ function makeId(opts: SaveOptions): string {
  * returns `saved` on success, `conflict` on a 409, or `queued` if the network is
  * unavailable (the write is enqueued for later replay).
  */
+// #CRITICAL: concurrency: saveProgress writes to IndexedDB then the server.
+// The server is canonical (tech-spec "Multi-device sync rules"). A 409 means
+// another device advanced the revision; the caller must reconcile, not retry.
+// #VERIFY: only OfflineError is queued; HTTP 4xx/5xx must propagate to the
+// caller so a real failure (auth, validation, server error) is not misclassified
+// as offline and queued indefinitely.
+
+// #ASSUME: concurrency: event_id uniqueness relies on crypto.randomUUID().
+// Two concurrent saveProgress calls in the same millisecond will receive
+// different event_ids; the server uses event_id for idempotent replay dedup.
+// #VERIFY: replayQueue sends event_id on every replay write to the server.
+
 export async function saveProgress(
   api: SyncApi,
   profileId: string,
@@ -149,6 +161,13 @@ function queueKey(item: QueuedWrite): string {
  * real cross-device 409 is collected for reconciliation; a non-offline error
  * (e.g. 422/5xx) drops that write so it cannot wedge every later write.
  */
+// #CRITICAL: concurrency: replayQueue replays writes in insertion order.
+// Writes for the same story share a base_revision; latestRevision rebases each
+// subsequent write onto the revision applied by the previous one so the chain
+// lands sequentially rather than every write after the first producing a 409.
+// #VERIFY: a genuine cross-device 409 (server advanced by another device mid-
+// replay) is collected in outcome.conflicts, not silently dropped.
+
 export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
   const outcome: ReplayOutcome = { replayed: 0, conflicts: [], failed: [] }
   // Latest server revision applied per story during this replay, so subsequent

@@ -13,7 +13,7 @@ from __future__ import annotations
 import pytest
 
 # The dev-default DSN that the validator guards against leaking.
-_DEV_DB_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/cyo_adventure"
+_DEV_DB_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 _PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure"
 
 
@@ -43,7 +43,7 @@ class TestSettingsDefaults:
         """Settings(environment='local') with the dev db url is valid."""
         from cyo_adventure.core.config import Settings
 
-        # Must not raise ConfigurationError
+        # Must not raise ConfigurationError even with the unset default URL
         s = Settings(environment="local")
 
         assert s.environment == "local"

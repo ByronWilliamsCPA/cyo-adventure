@@ -34,7 +34,7 @@ import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast
 
-from cyo_adventure.generation.pii import assert_prompt_pii_safe
+from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.prompts import (
     build_prose_prompt,
     build_repair_prompt,
@@ -59,9 +59,9 @@ __all__ = [
     "generate_story",
 ]
 
-# #CRITICAL: security: assert_prompt_pii_safe runs on BOTH the system and user
-# blocks before every provider.complete call (see _run_one_stage); a PII
-# violation aborts generation before any external egress.
+# #CRITICAL: security: PiiGuardedProvider wraps the caller-supplied provider in
+# generate_story() before any stage helper receives it; both system and user
+# blocks are screened on every complete() call, aborting before external egress.
 # #VERIFY: test_orchestrator asserts provider.calls is empty when a brief would
 # leak a seeded real-child name (PII abort test case).
 
@@ -125,14 +125,13 @@ class _RepairContext:
     would be a footgun (the list itself is still mutable even under ``frozen``).
 
     Attributes:
-        pii: PII context forwarded to every :func:`_run_one_stage` call.
-        provider: The generation provider.
+        provider: The PII-guarded generation provider (a :class:`PiiGuardedProvider`
+            wrapping the real backend).
         max_repairs: Maximum number of repair attempts.
         stage_log: Accumulated log list; entries are appended in place.
         scale: Story-size profile forwarded to each repair stage's gate.
     """
 
-    pii: PiiContext
     provider: GenerationProvider
     max_repairs: int
     stage_log: list[str]
@@ -240,22 +239,22 @@ def _empty_blocked_gate() -> GateResult:
 async def _run_one_stage(
     stage_prompt: StagePrompt,
     *,
-    pii: PiiContext,
     provider: GenerationProvider,
     max_tokens: int,
     scale: Scale = "standard",
 ) -> tuple[dict[str, object] | None, GateResult]:
-    """Run a single generation stage: PII-guard, call provider, parse, gate.
+    """Run a single generation stage: call provider, parse JSON, run gate.
 
-    The PII guard MUST be invoked before the provider call. If it raises
-    :class:`~cyo_adventure.core.exceptions.ValidationError` that exception
-    propagates up immediately (no swallowing).
+    PII enforcement is structural: ``provider`` must be a
+    :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider` (injected by
+    :func:`generate_story`). The guard screens both ``system`` and ``user``
+    blocks before the inner provider is called; this function does not need to
+    repeat that check.
 
     Args:
         stage_prompt: The assembled :class:`~cyo_adventure.generation.prompts.StagePrompt`
             for this stage (a static system block and a volatile user block).
-        pii: The PII context to guard the prompt against.
-        provider: The generation provider to call.
+        provider: The PII-guarded generation provider to call.
         max_tokens: Maximum tokens for the provider completion.
         scale: Story-size profile forwarded to ``run_gate`` so L1-7 is enforced
             against the same budget the prompt promised.
@@ -268,18 +267,10 @@ async def _run_one_stage(
         failures.
 
     Raises:
-        ValidationError: If either block contains forbidden PII (propagates
-            immediately; the provider is never called).
+        ValidationError: If either block contains forbidden PII (propagated
+            from :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider`
+            before the inner provider is called).
     """
-    # #CRITICAL: security: assert_prompt_pii_safe runs on BOTH the system and
-    # user blocks before every provider.complete call; a PII violation aborts
-    # generation before any external egress. Brief-derived content lives in the
-    # user block, but the system block is guarded too so no future template
-    # change can smuggle PII past the guard.
-    # #VERIFY: PII abort test asserts provider.calls is empty after the raise.
-    assert_prompt_pii_safe(stage_prompt.system, forbidden=pii)
-    assert_prompt_pii_safe(stage_prompt.user, forbidden=pii)
-
     raw = await provider.complete(
         system=stage_prompt.system,
         prompt=stage_prompt.user,
@@ -389,7 +380,7 @@ async def _run_repair_loop(
         gate_result: The gate result from Stage A or B (must be blocked).
         current_doc: The document from Stage A or B (may be ``None`` on parse
             error).
-        ctx: Grouped repair context (pii, provider, max_repairs, stage_log).
+        ctx: Grouped repair context (provider, max_repairs, stage_log).
 
     Returns:
         A ``(current_doc, gate_result, attempts)`` triple reflecting the state
@@ -411,7 +402,6 @@ async def _run_repair_loop(
         repair_prompt = build_repair_prompt(current_json, failing_findings)
         new_doc, new_gate = await _run_one_stage(
             repair_prompt,
-            pii=ctx.pii,
             provider=ctx.provider,
             max_tokens=_MAX_TOKENS_REPAIR,
             scale=ctx.scale,
@@ -483,9 +473,10 @@ async def generate_story(
        max_repairs``, build a repair prompt for the failing findings,
        PII-guard, call provider, parse JSON, run gate, check no-progress.
 
-    PII guard placement: :func:`~cyo_adventure.generation.pii.assert_prompt_pii_safe`
-    is called on every assembled prompt before the corresponding provider
-    call. A PII violation raises
+    PII enforcement: ``provider`` is wrapped in a
+    :class:`~cyo_adventure.generation.guarded.PiiGuardedProvider` at entry.
+    Both ``system`` and ``prompt`` blocks are screened on every ``complete()``
+    call before the inner provider is reached. A PII violation raises
     :class:`~cyo_adventure.core.exceptions.ValidationError` immediately and
     no provider call is made.
 
@@ -517,14 +508,18 @@ async def generate_story(
     """
     stage_log: list[str] = []
 
+    # Wrap the provider so PII enforcement is structural for the entire run.
+    # Every complete() call in Stages A, B, and C screens both system and
+    # prompt blocks before reaching the real provider.
+    guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
+
     # ------------------------------------------------------------------
     # Stage A: Structure skeleton
     # ------------------------------------------------------------------
     stage_a_prompt = build_structure_prompt(brief, scale)
     current_doc, gate_result = await _run_one_stage(
         stage_a_prompt,
-        pii=pii,
-        provider=provider,
+        provider=guarded_provider,
         max_tokens=_MAX_TOKENS_STRUCTURE,
         scale=scale,
     )
@@ -544,8 +539,7 @@ async def generate_story(
         stage_b_prompt = build_prose_prompt(skeleton_json, brief)
         current_doc, gate_result = await _run_one_stage(
             stage_b_prompt,
-            pii=pii,
-            provider=provider,
+            provider=guarded_provider,
             max_tokens=_MAX_TOKENS_PROSE,
             scale=scale,
         )
@@ -561,8 +555,7 @@ async def generate_story(
     attempts = 0
     if gate_result.blocked:
         repair_ctx = _RepairContext(
-            pii=pii,
-            provider=provider,
+            provider=guarded_provider,
             max_repairs=max_repairs,
             stage_log=stage_log,
             scale=scale,
