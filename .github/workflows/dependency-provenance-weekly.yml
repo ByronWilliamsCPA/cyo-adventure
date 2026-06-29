@@ -1,0 +1,39 @@
+# ============================================================================
+# Weekly Dependency Provenance scan for CYO Adventure
+# ============================================================================
+# Calls the org reusable workflow, which runs keyless OSV-Scanner and traces each
+# vulnerable transitive package to the direct dependency that introduces it
+# (uv tree --invert / npm why), then posts a sticky provenance issue and an
+# artifact. No Snyk test quota is consumed and no Anthropic API key is used; the
+# interpretation layer runs locally on a subscription. See ByronWilliamsCPA/.claude
+# ADR-009 and ByronWilliamsCPA/.github ADR-003 for the role boundary.
+#
+# Pinned to the .github merge commit for python-dependency-provenance.yml because
+# the moving v1 tag has not yet been re-cut to include this new workflow.
+# #VERIFY: re-pin to a v1.x release tag once one is published that includes it.
+# ============================================================================
+name: Dependency Provenance Weekly
+
+on:
+  schedule:
+    # 06:23 UTC every Monday: off-peak and offset from the hour.
+    - cron: '23 6 * * 1'
+  workflow_dispatch:
+
+permissions: {}
+
+# Serialize runs so a manual dispatch cannot race the weekly cron on the
+# reusable workflow's sticky-issue update (one provenance issue per repo).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  provenance:
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-dependency-provenance.yml@6b521336408f53d107d00143005d1404815ef43e
+    permissions:
+      contents: read
+      issues: write
+    with:
+      python-version: '3.12'
+      open-issue: true
