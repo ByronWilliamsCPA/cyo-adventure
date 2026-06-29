@@ -2417,6 +2417,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#workflow-concurrency-keys-break-the-merge-queue-missing-githubref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow concurrency keys break the merge queue (missing || github.ref)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2776,6 +2787,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#workflow-concurrency-keys-break-the-merge-queue-missing-githubref" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow concurrency keys break the merge queue (missing || github.ref)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3100,6 +3122,36 @@ generated client.</p>
 starts the backend and runs <code>npm run generate-client</code> before typecheck/build, and
 document which approach the template intends.</p>
 <p><strong>Affected Files</strong>: <code>frontend/.gitignore</code>, <code>.github/workflows/ci.yml</code>, <code>CLAUDE.md</code></p>
+<h3 id="workflow-concurrency-keys-break-the-merge-queue-missing-githubref">Workflow concurrency keys break the merge queue (missing <code>|| github.ref</code>)<a class="headerlink" href="#workflow-concurrency-keys-break-the-merge-queue-missing-githubref" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: Tooling / CI</li>
+<li><strong>Discovered</strong>: 2026-06-29</li>
+</ul>
+<p><strong>Issue</strong>: The generated <code>pr-validation.yml</code> sets its concurrency group to
+<code>pr-validation-${{ github.event.pull_request.number }}</code> with no fallback. On
+<code>merge_group</code> events there is no pull_request context, so the expression
+collapses to a constant (<code>pr-validation-</code>) and every concurrent queue entry
+shares one group. With <code>cancel-in-progress: true</code>, queue entries cancel each
+other's required <code>Dependency &amp; Standards Validation</code> check, and a cancelled
+required check blocks the merge queue indefinitely. The other required
+workflows (<code>ci.yml</code>, <code>reuse.yml</code>, <code>security-analysis.yml</code>, <code>sonarcloud.yml</code>)
+already use the safe <code>${{ github.event.pull_request.number || github.ref }}</code>
+pattern, so <code>pr-validation.yml</code> is the inconsistent one.</p>
+<p>Separately, <code>sonarcloud.yml</code> sets <code>fail-on-quality-gate:
+${{ github.event_name != 'pull_request' }}</code>, which evaluates to <code>true</code> on
+<code>merge_group</code>, so Sonar enforces (and fails) the quality gate on every queue
+build, producing red non-required check noise. It should enforce only on
+<code>push</code> to a protected branch.</p>
+<p><strong>Context</strong>: Discovered while diagnosing why PRs were not merging through the
+GitHub merge queue. Required checks were green on the PR but the queue stalled.</p>
+<p><strong>Suggested Fix</strong>: In every template workflow that triggers on <code>merge_group</code>,
+key the concurrency group on <code>${{ github.event.pull_request.number ||
+github.ref }}</code> (never on <code>pull_request.number</code> alone). For Sonar-style gates,
+use <code>${{ github.event_name == 'push' }}</code> for enforcement so the queue stays
+advisory.</p>
+<p><strong>Affected Files</strong>: <code>.github/workflows/pr-validation.yml</code>,
+<code>.github/workflows/sonarcloud.yml</code></p>
 
 
 
@@ -3122,7 +3174,7 @@ document which approach the template intends.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 29, 2026 05:19:06 UTC">June 29, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 29, 2026 15:42:29 UTC">June 29, 2026</span>
   </span>
 
     
