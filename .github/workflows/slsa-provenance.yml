@@ -52,7 +52,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
@@ -99,7 +99,7 @@ jobs:
   slsa:
     name: SLSA Level 3
     needs: [build]
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-slsa.yml@d4e2acf99a9b97d22888598f7613a1ca04ed3d9c  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-slsa.yml@4b12bfe9a94a312be1f23cf7a591e6259ea96118  # main
     with:
       base64-subjects: ${{ needs.build.outputs.hashes }}
       upload-assets: true
