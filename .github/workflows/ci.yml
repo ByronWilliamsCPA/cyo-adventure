@@ -38,7 +38,7 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@6f71aecae2c91214ca0a0a2206a36cf912aa31ac # v1.1.0
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@9e1861a944bf55a9eb1c85068e465cf61c4474d3 # v1.9.10
     with:
       python-version: "3.12"
       coverage-threshold: 80
@@ -95,7 +95,7 @@ jobs:
         run: npm run test:e2e
 
       - name: Upload frontend coverage
-        uses: codecov/codecov-action@e79a6962e0d4c0c17b229090214935d2e33f8354 # v6.0.1
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
           file: ./frontend/coverage/lcov.info
           flags: frontend
