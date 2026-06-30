@@ -41,6 +41,61 @@ async def _seed_in_review(
         return story_id
 
 
+async def _seed_draft(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed Family A (admin + guardian + child) and a draft single-version story."""
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add_all(
+            [
+                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
+                User(family_id=fam.id, role="child", authn_subject="child-a"),
+            ]
+        )
+        story_id = "draft-me"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="draft"))
+        session.add(
+            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+        )
+        await session.commit()
+        return story_id
+
+
+async def _seed_published(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed Family A (admin + guardian + child) and a published single-version story."""
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add_all(
+            [
+                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
+                User(family_id=fam.id, role="child", authn_subject="child-a"),
+            ]
+        )
+        story_id = "pub-me"
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=fam.id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+        )
+        await session.commit()
+        return story_id
+
+
 async def test_admin_approves_in_review_story(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
@@ -138,3 +193,108 @@ async def test_submit_and_send_back_flow(
     body = resp.json()
     assert body["status"] == "needs_revision"
     assert body["reason"] == "too scary for 6yo"
+
+
+async def test_admin_submits_draft_story(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An admin submits a draft story for review -> 200, in_review."""
+    story_id = await _seed_draft(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "in_review"
+
+
+async def test_admin_archives_published_story(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An admin archives a published story -> 200, archived."""
+    story_id = await _seed_published(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "archived"
+
+
+async def test_child_cannot_submit(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A child token gets 403 on submit."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth("child-a")
+    )
+    assert resp.status_code == 403
+
+
+async def test_guardian_cannot_submit(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian token gets 403 on submit."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth("guardian-a")
+    )
+    assert resp.status_code == 403
+
+
+async def test_child_cannot_send_back(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A child token gets 403 on send-back."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/send-back",
+        headers=auth("child-a"),
+        json={"reason": "x"},
+    )
+    assert resp.status_code == 403
+
+
+async def test_guardian_cannot_send_back(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian token gets 403 on send-back."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/send-back",
+        headers=auth("guardian-a"),
+        json={"reason": "x"},
+    )
+    assert resp.status_code == 403
+
+
+async def test_child_cannot_archive(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A child token gets 403 on archive."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth("child-a")
+    )
+    assert resp.status_code == 403
+
+
+async def test_guardian_cannot_archive(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian token gets 403 on archive."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth("guardian-a")
+    )
+    assert resp.status_code == 403
+
+
+async def test_archive_non_published_returns_409(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Archiving a draft story (illegal transition) returns 409."""
+    story_id = await _seed_draft(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/archive", headers=auth("admin-a")
+    )
+    assert resp.status_code == 409
