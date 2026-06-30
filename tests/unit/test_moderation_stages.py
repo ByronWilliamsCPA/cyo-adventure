@@ -69,6 +69,34 @@ async def test_safety_stage_finding_has_correct_source_and_category() -> None:
     assert findings[0].node_id == "n2"
 
 
+@pytest.mark.unit
+async def test_safety_stage_garbled_json_fails_safe_to_flag() -> None:
+    provider = MockProvider(responses=["not json at all"])
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[("n1", "text")],
+        age_band="6-9",
+        max_tokens=512,
+    )
+    assert len(findings) == 1
+    assert findings[0].verdict is Verdict.FLAG
+    assert findings[0].verdict is not Verdict.PASS
+
+
+@pytest.mark.unit
+async def test_safety_stage_unknown_verdict_fails_safe_to_flag() -> None:
+    provider = MockProvider(responses=[json.dumps({"verdict": "bogus", "reason": "x"})])
+    findings = await run_safety_stage(
+        provider=provider,
+        nodes=[("n1", "text")],
+        age_band="6-9",
+        max_tokens=512,
+    )
+    assert len(findings) == 1
+    assert findings[0].verdict is Verdict.FLAG
+    assert findings[0].verdict is not Verdict.PASS
+
+
 # ---------------------------------------------------------------------------
 # Stage 2: readability (soft gate)
 # ---------------------------------------------------------------------------
@@ -137,6 +165,7 @@ async def test_coherence_stage_flag_verdict_incoherent() -> None:
     assert findings[0].source is Source.LLM_COHERENCE
     assert findings[0].category == "coherence"
     assert findings[0].node_id is None
+    assert len(provider.calls) == 1
 
 
 @pytest.mark.unit
@@ -180,6 +209,7 @@ async def test_engagement_stage_advisory_verdict_concern() -> None:
     assert findings[0].source is Source.LLM_ENGAGEMENT
     assert findings[0].category == "engagement"
     assert findings[0].node_id is None
+    assert len(provider.calls) == 1
 
 
 @pytest.mark.unit
