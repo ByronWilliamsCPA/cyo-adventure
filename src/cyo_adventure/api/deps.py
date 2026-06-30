@@ -15,6 +15,7 @@ Authorization rules (docs/planning/authorization-matrix.md):
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated
 
 from fastapi import Depends, Header
@@ -35,9 +36,19 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-ROLE_GUARDIAN = "guardian"
-ROLE_CHILD = "child"
-ROLE_ADMIN = "admin"
+
+class Role(StrEnum):
+    """The closed set of authenticated principal roles.
+
+    Coercing the ORM ``user.role`` string through ``Role(...)`` at the auth
+    boundary rejects any value the database holds outside this set
+    (closed-world): an unmodeled role raises rather than silently authorizing.
+    """
+
+    GUARDIAN = "guardian"
+    CHILD = "child"
+    ADMIN = "admin"
+
 
 _BEARER_PREFIX = "bearer "
 
@@ -64,26 +75,26 @@ class Principal:
         subject: The verified token subject (OIDC ``sub`` in production).
         user_id: The resolved ``User.id`` for the subject, used to stamp
             creator provenance (``created_by``) on rows this principal writes.
-        role: ``"guardian"`` or ``"child"``.
+        role: ``"guardian"``, ``"child"``, or ``"admin"``.
         family_id: The family the principal belongs to.
         profile_ids: The child-profile ids this principal may read or write.
     """
 
     subject: str
     user_id: uuid.UUID
-    role: str
+    role: Role
     family_id: uuid.UUID
     profile_ids: frozenset[uuid.UUID]
 
     @property
     def is_guardian(self) -> bool:
         """Return whether the principal holds the guardian role."""
-        return self.role == ROLE_GUARDIAN
+        return self.role == Role.GUARDIAN
 
     @property
     def is_admin(self) -> bool:
         """Return whether the principal holds the global admin (approver) role."""
-        return self.role == ROLE_ADMIN
+        return self.role == Role.ADMIN
 
     def can_access_profile(self, profile_id: uuid.UUID) -> bool:
         """Return whether the principal may act on the given profile.
@@ -171,10 +182,15 @@ async def require_principal(
         msg = "unknown subject"
         raise AuthenticationError(msg)
     profile_ids = await _resolve_profiles(session, user)
+    # #CRITICAL: security: coerce the ORM role string to the closed Role enum at
+    # the auth boundary; an unmodeled DB role raises ValueError -> 500 rather
+    # than producing a principal with an unrecognized (and unauthorized) role.
+    # #VERIFY: the ck_user_role CHECK constraint keeps the column within the set,
+    # so this coercion only fails on a corrupted or hand-edited row.
     return Principal(
         subject=subject,
         user_id=user.id,
-        role=user.role,
+        role=Role(user.role),
         family_id=user.family_id,
         profile_ids=profile_ids,
     )
@@ -191,7 +207,7 @@ async def _resolve_profiles(session: AsyncSession, user: User) -> frozenset[uuid
         frozenset[uuid.UUID]: All family profiles for a guardian; the single
             assigned profile for a child; empty if a child has none.
     """
-    if user.role == ROLE_GUARDIAN:
+    if user.role == Role.GUARDIAN:
         rows = await session.scalars(
             select(ChildProfile.id).where(ChildProfile.family_id == user.family_id)
         )

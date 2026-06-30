@@ -187,12 +187,39 @@ class SendBackRequest(BaseModel):
     reason: str = Field(min_length=1, max_length=2000)
 
 
-class StorybookStateView(BaseModel):
-    """A storybook lifecycle row returned after an approval-workflow action."""
+class SubmittedView(BaseModel):
+    """The response to a successful submit action."""
 
     id: str
     status: str
     current_published_version: int | None
-    approved_by: str | None = None
-    published_at: datetime | None = None
-    reason: str | None = None
+
+
+class ApprovedView(BaseModel):
+    """The response to a successful approve action.
+
+    ``approved_by`` and ``published_at`` are REQUIRED: a published story always
+    carries its approver and publish time, so this model cannot represent the
+    illegal "published without an approver" combination.
+    """
+
+    id: str
+    status: str
+    current_published_version: int
+    approved_by: str
+    published_at: datetime
+
+
+class SentBackView(BaseModel):
+    """The response to a successful send-back action; ``reason`` is required."""
+
+    id: str
+    status: str
+    reason: str
+
+
+class ArchivedView(BaseModel):
+    """The response to a successful archive action."""
+
+    id: str
+    status: str

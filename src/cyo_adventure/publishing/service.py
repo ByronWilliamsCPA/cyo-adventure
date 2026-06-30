@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import StorybookVersion
-from cyo_adventure.publishing.state_machine import assert_transition
+from cyo_adventure.publishing.state_machine import Action, Status, assert_transition
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -38,9 +38,10 @@ async def submit(session: AsyncSession, storybook: Storybook) -> None:
         StateTransitionError: If the story is not in ``draft``/``needs_revision``.
     """
     # #CRITICAL: data integrity: status is the ORM boundary for the lifecycle;
-    # assert_transition is the only gate that may change it.
+    # assert_transition is the only gate that may change it. The ORM string is
+    # coerced through Status() so an unmodeled DB status raises (closed-world).
     # #VERIFY: assert_transition raises StateTransitionError -> 409 on illegal hops.
-    storybook.status = assert_transition(storybook.status, "submit")
+    storybook.status = assert_transition(Status(storybook.status), Action.SUBMIT).value
     await session.flush()
 
 
@@ -76,7 +77,7 @@ async def approve(
 
     Args:
         session: The request session (caller owns the transaction).
-        principal: The approving guardian.
+        principal: The approving admin.
         storybook: The story being approved.
         version: The version number to publish.
 
@@ -91,12 +92,12 @@ async def approve(
     # and it stamps approved_by in the same operation, so no story is published
     # without a recorded approver (the slice-1 invariant).
     # #VERIFY: test_no_publish_without_approver drives every endpoint path.
-    target = assert_transition(storybook.status, "approve")
+    target = assert_transition(Status(storybook.status), Action.APPROVE)
     version_row = await session.get(StorybookVersion, (storybook.id, version))
     if version_row is None:
         msg = f"version {version} of storybook '{storybook.id}' not found"
         raise ResourceNotFoundError(msg)
-    storybook.status = target
+    storybook.status = target.value
     storybook.current_published_version = version
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
@@ -114,7 +115,7 @@ async def send_back(
 
     Args:
         session: The request session (caller owns the transaction).
-        principal: The guardian sending it back.
+        principal: The admin sending it back.
         storybook: The story being returned.
         reason: Why it was sent back (logged in slice 1; persisted in slice 2).
 
@@ -124,7 +125,9 @@ async def send_back(
     # #ASSUME: data integrity: the reason is logged (not persisted) in slice 1;
     # slice 2 stores it on the moderation report.
     # #VERIFY: structured log carries storybook_id + reason + actor.
-    storybook.status = assert_transition(storybook.status, "send_back")
+    storybook.status = assert_transition(
+        Status(storybook.status), Action.SEND_BACK
+    ).value
     _logger.info(
         "storybook_sent_back",
         storybook_id=storybook.id,
@@ -141,7 +144,7 @@ async def archive(
 
     Args:
         session: The request session (caller owns the transaction).
-        principal: The guardian archiving it.
+        principal: The admin archiving it.
         storybook: The story being archived.
 
     Raises:
@@ -150,7 +153,7 @@ async def archive(
     # #CRITICAL: data integrity: archiving only flips status; the library read
     # path already excludes any status != "published".
     # #VERIFY: list query filters status == _PUBLISHED.
-    storybook.status = assert_transition(storybook.status, "archive")
+    storybook.status = assert_transition(Status(storybook.status), Action.ARCHIVE).value
     _logger.info(
         "storybook_archived", storybook_id=storybook.id, actor=str(principal.user_id)
     )
