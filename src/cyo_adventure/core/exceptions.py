@@ -585,6 +585,23 @@ class BusinessLogicError(ProjectBaseError):
         )
 
 
+class StateTransitionError(BusinessLogicError):
+    """Illegal storybook lifecycle state transition.
+
+    A specialization of :class:`BusinessLogicError` for the publishing state
+    machine. Mapped to HTTP 409 Conflict because an illegal transition
+    conflicts with the resource's current state; a bare ``BusinessLogicError``
+    maps to 400. Inherits the ``BusinessLogicError`` constructor unchanged.
+
+    Example:
+        >>> raise StateTransitionError(
+        ...     "cannot approve a draft",
+        ...     rule="invalid_state_transition",
+        ...     context={"from": "draft", "action": "approve"},
+        ... )
+    """
+
+
 # Export all exceptions and public helpers
 __all__ = [
     "APIError",
@@ -598,5 +615,6 @@ __all__ = [
     "ProjectBaseError",
     "ProviderError",
     "ResourceNotFoundError",
+    "StateTransitionError",
     "ValidationError",
 ]

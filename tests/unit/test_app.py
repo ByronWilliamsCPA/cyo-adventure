@@ -21,6 +21,7 @@ from cyo_adventure.core.exceptions import (
     ExternalServiceError,
     ProjectBaseError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 
@@ -61,6 +62,12 @@ class TestStatusFor:
     @pytest.mark.unit
     def test_external_service_error_falls_back_to_400(self) -> None:
         assert _status_for(ExternalServiceError("upstream down")) == 400
+
+    @pytest.mark.unit
+    def test_status_for_state_transition_is_409(self) -> None:
+        """A StateTransitionError maps to 409; bare BusinessLogicError stays 400."""
+        assert _status_for(StateTransitionError("illegal hop")) == 409
+        assert _status_for(BusinessLogicError("conflict")) == 400
 
 
 # ---------------------------------------------------------------------------

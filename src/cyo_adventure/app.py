@@ -17,6 +17,7 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ProjectBaseError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
@@ -41,6 +42,8 @@ def _status_for(exc: ProjectBaseError) -> int:
         return 404
     if isinstance(exc, ValidationError):
         return 422
+    if isinstance(exc, StateTransitionError):
+        return 409
     return 400
 
 
