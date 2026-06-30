@@ -49,7 +49,7 @@ def _parse_fill(body: str) -> tuple[str | None, int | None]:
     return match.group("role"), int(match.group("words"))
 
 
-def _nodes(data: dict[str, object]) -> list[dict[str, object]]:
+def nodes_of(data: dict[str, object]) -> list[dict[str, object]]:
     """Return the node dicts from a skeleton, narrowing for strict typing."""
     raw = data.get("nodes")
     if not isinstance(raw, list):
@@ -67,13 +67,13 @@ def _choices(node: dict[str, object]) -> list[dict[str, object]]:
     return [cast("dict[str, object]", item) for item in items if isinstance(item, dict)]
 
 
-def _ending(node: dict[str, object]) -> dict[str, object]:
+def ending_of(node: dict[str, object]) -> dict[str, object]:
     """Return the ending dict from a node, or an empty dict."""
     raw = node.get("ending")
     return cast("dict[str, object]", raw) if isinstance(raw, dict) else {}
 
 
-def _meta(data: dict[str, object]) -> dict[str, object]:
+def meta_of(data: dict[str, object]) -> dict[str, object]:
     """Return the metadata dict from a skeleton, or an empty dict."""
     raw = data.get("metadata")
     return cast("dict[str, object]", raw) if isinstance(raw, dict) else {}
@@ -105,7 +105,7 @@ def skeleton_to_plantuml(data: dict[str, object], *, name: str | None = None) ->
         PlantUML source ending in a trailing newline. Output is byte-stable for a
         given input: nodes and choices are emitted in document order.
     """
-    nodes = _nodes(data)
+    nodes = nodes_of(data)
     start = data.get("start_node")
     start_id = start if isinstance(start, str) else ""
     raw_id = data.get("id")
@@ -162,7 +162,7 @@ def skeleton_to_plantuml(data: dict[str, object], *, name: str | None = None) ->
 def _node_color(node: dict[str, object], *, is_ending: bool) -> str:
     """Return the ``#RRGGBB`` PlantUML color token for a node."""
     if is_ending:
-        valence = _ending(node).get("valence")
+        valence = ending_of(node).get("valence")
         key = valence if isinstance(valence, str) else ""
         return _VALENCE_COLOR.get(key, _DEFAULT_NODE_COLOR)
     body = node.get("body")
@@ -173,7 +173,7 @@ def _node_color(node: dict[str, object], *, is_ending: bool) -> str:
 def _node_descriptions(node: dict[str, object], *, is_ending: bool) -> list[str]:
     """Return PlantUML state-description lines for a node (no author prose)."""
     if is_ending:
-        ending = _ending(node)
+        ending = ending_of(node)
         kind = ending.get("kind")
         valence = ending.get("valence")
         title = ending.get("title")
@@ -190,13 +190,13 @@ def _node_descriptions(node: dict[str, object], *, is_ending: bool) -> list[str]
     return [f"{role} · {words}w"]
 
 
-def _valence_split(nodes: list[dict[str, object]]) -> tuple[int, int, int]:
+def valence_split(nodes: list[dict[str, object]]) -> tuple[int, int, int]:
     """Return ``(positive, neutral, negative)`` ending counts."""
     pos = neu = neg = 0
     for node in nodes:
         if not bool(node.get("is_ending")):
             continue
-        valence = _ending(node).get("valence")
+        valence = ending_of(node).get("valence")
         if valence == "positive":
             pos += 1
         elif valence == "neutral":
@@ -208,7 +208,7 @@ def _valence_split(nodes: list[dict[str, object]]) -> tuple[int, int, int]:
 
 def _legend_lines(data: dict[str, object], nodes: list[dict[str, object]]) -> list[str]:
     """Return the ``legend ... endlegend`` block carrying skeleton metadata."""
-    meta = _meta(data)
+    meta = meta_of(data)
     title = data.get("title")
     title_text = title if isinstance(title, str) else "Untitled"
     band = meta.get("age_band")
@@ -216,7 +216,7 @@ def _legend_lines(data: dict[str, object], nodes: list[dict[str, object]]) -> li
     minutes = meta.get("estimated_minutes")
     topology = meta.get("topology")
     ending_total = sum(1 for n in nodes if bool(n.get("is_ending")))
-    pos, neu, neg = _valence_split(nodes)
+    pos, neu, neg = valence_split(nodes)
     band_text = band if isinstance(band, str) else "?"
     tier_text = str(tier) if isinstance(tier, int) else "?"
     minutes_text = str(minutes) if isinstance(minutes, int) else "?"

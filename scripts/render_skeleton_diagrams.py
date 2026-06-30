@@ -19,10 +19,15 @@ from pathlib import Path
 
 from cyo_adventure.generation.diagram import skeleton_to_plantuml
 from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton_catalog import (
+    build_catalog_region,
+    splice_region,
+)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_SKELETONS = REPO_ROOT / "skeletons"
 DEFAULT_OUT = REPO_ROOT / "docs" / "architecture" / "diagrams" / "skeletons"
+DEFAULT_CATALOG = REPO_ROOT / "docs" / "architecture" / "story-skeletons.md"
 
 # #CRITICAL: external resource: the render step downloads and executes a PlantUML jar.
 # #VERIFY: pin version 1.2024.7, verify SHA-256 before any java invocation, and treat
@@ -132,6 +137,26 @@ def render_svgs(puml_paths: list[Path], *, jar: Path | None) -> list[Path]:
     return rendered
 
 
+def regenerate_catalog(skeletons_dir: Path, catalog_path: Path) -> str:
+    """Return the catalog doc text with its generated region refreshed from skeletons.
+
+    Args:
+        skeletons_dir: Root directory containing skeleton JSON files.
+        catalog_path: Path to the catalog Markdown document to update.
+
+    Returns:
+        The full updated document text with the generated region spliced in.
+    """
+    skeletons: list[dict[str, object]] = []
+    slugs: list[str] = []
+    for json_path in sorted(skeletons_dir.rglob("*.json")):
+        skeletons.append(load_skeleton(json_path))
+        slugs.append(slug_for(json_path))
+    region = build_catalog_region(skeletons, slugs=slugs)
+    doc = catalog_path.read_text(encoding="utf-8")
+    return splice_region(doc, region)
+
+
 def _build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--skeletons-dir", type=Path, default=DEFAULT_SKELETONS)
@@ -141,6 +166,7 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Fail (exit 1) if any committed .puml is stale; write nothing.",
     )
+    parser.add_argument("--catalog", type=Path, default=DEFAULT_CATALOG)
     parser.add_argument(
         "--no-svg",
         action="store_true",
@@ -156,18 +182,27 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         stale = check_outputs(mapping)
+        catalog_new = regenerate_catalog(args.skeletons_dir, args.catalog)
+        if args.catalog.read_text(encoding="utf-8") != catalog_new:
+            stale.append(args.catalog)
         if stale:
             sys.stderr.write(
-                "Stale skeleton diagrams (re-run the generator and commit):\n"
+                "Stale skeleton diagrams/catalog (re-run the generator and commit):\n"
                 + "\n".join(f"  {p}" for p in stale)
                 + "\n"
             )
             return 1
-        sys.stdout.write(f"All {len(mapping)} skeleton diagrams are up to date.\n")
+        sys.stdout.write(
+            f"All {len(mapping)} skeleton diagrams and the catalog are up to date.\n"
+        )
         return 0
 
     written = write_outputs(mapping)
     sys.stdout.write(f"Wrote {len(written)} .puml file(s).\n")
+    args.catalog.write_text(
+        regenerate_catalog(args.skeletons_dir, args.catalog), encoding="utf-8"
+    )
+    sys.stdout.write("Refreshed the story-skeleton catalog.\n")
     if not args.no_svg:
         jar = resolve_jar()
         if jar is None:
