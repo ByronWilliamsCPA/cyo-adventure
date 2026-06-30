@@ -13,6 +13,7 @@ from __future__ import annotations
 import uuid
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -131,8 +132,13 @@ def _added_of(session: _FakeSession, model: type[object]) -> list[object]:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_passing_run_persists_unique_storybook() -> None:
+async def test_passing_run_persists_unique_storybook(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """A passing run mints a per-job storybook id and matching blob id."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     job, concept = _job_and_concept()
     session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
     job_id = uuid.uuid4()
@@ -160,8 +166,13 @@ async def test_passing_run_persists_unique_storybook() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_two_passing_runs_do_not_collide() -> None:
+async def test_two_passing_runs_do_not_collide(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Successive passing jobs produce distinct storybook ids (no PK collision)."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     story_ids: list[str] = []
     for _ in range(2):
         job, concept = _job_and_concept()
@@ -179,8 +190,13 @@ async def test_two_passing_runs_do_not_collide() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_production_path_records_mock_model_not_none() -> None:
+async def test_production_path_records_mock_model_not_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """With provider=None (production), the mock still records model='mock'."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     job, concept = _job_and_concept()
     session = _FakeSession(job=job, concept=concept)
 
@@ -288,3 +304,29 @@ def test_model_label_falls_back_to_mock() -> None:
 def test_provider_label_falls_back_to_settings() -> None:
     """_provider_label returns the configured provider for a nameless provider."""
     assert _provider_label(MockProvider(responses=[])) == "mock"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_passed_story_invokes_moderation_pipeline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A passing run awaits run_moderation_pipeline with story_id and version=1."""
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", moderation
+    )
+
+    await run_generation_job(
+        job_id, provider=provider, session_factory=_factory_for(session)
+    )
+
+    moderation.assert_awaited_once()
+    kwargs = moderation.await_args.kwargs
+    assert kwargs["story_id"] == f"s_{job_id}"
+    assert kwargs["version"] == 1

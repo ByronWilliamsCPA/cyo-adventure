@@ -46,6 +46,7 @@ from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
     set_correlation_id,
 )
+from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -296,6 +297,19 @@ async def run_generation_job(
                 "generation_job.passed",
                 job_id=str(job_id),
                 storybook_id=story_id,
+            )
+
+            # #CRITICAL: security: a passed story is only a draft; it must be screened
+            # and submitted/auto-rejected before commit so no unreviewed story rests in
+            # a state a guardian could approve.
+            # #VERIFY: run_moderation_pipeline drives submit or auto_reject on the row.
+            await run_moderation_pipeline(
+                session=session,
+                story_id=story_id,
+                version=_FIRST_VERSION,
+                settings=_default_settings,
+                generation_provider=effective_provider,
+                pii=pii,
             )
         else:
             logger.info(
