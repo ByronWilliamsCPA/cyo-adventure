@@ -22,6 +22,8 @@ from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service as approval_service
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
@@ -56,15 +58,21 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     return book
 
 
-def _state_view(book: Storybook, **extra: object) -> StorybookStateView:
+def _state_view(
+    book: Storybook,
+    *,
+    approved_by: str | None = None,
+    published_at: datetime | None = None,
+    reason: str | None = None,
+) -> StorybookStateView:
     """Build a StorybookStateView from a storybook row plus optional stamps."""
     return StorybookStateView(
         id=book.id,
         status=book.status,
         current_published_version=book.current_published_version,
-        approved_by=extra.get("approved_by"),  # type: ignore[arg-type]
-        published_at=extra.get("published_at"),  # type: ignore[arg-type]
-        reason=extra.get("reason"),  # type: ignore[arg-type]
+        approved_by=approved_by,
+        published_at=published_at,
+        reason=reason,
     )
 
 
