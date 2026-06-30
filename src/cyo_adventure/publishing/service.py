@@ -44,6 +44,28 @@ async def submit(session: AsyncSession, storybook: Storybook) -> None:
     await session.flush()
 
 
+async def auto_reject(session: AsyncSession, storybook: Storybook) -> None:
+    """Route a hard-blocked story to needs_revision without human review.
+
+    Driven by the slice-2 moderation pipeline on a Stage-0 bright-line hit or a
+    Stage-1 ``block``. There is no principal: the rejector is the machine, not a
+    guardian, so nothing is stamped on the version row.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        storybook: The draft story being machine-rejected.
+
+    Raises:
+        StateTransitionError: If the story is not in ``draft``.
+    """
+    # #CRITICAL: security: this is the machine-side rejection path; it must never
+    # set status="published" and only fires on a recorded hard-block finding.
+    # #VERIFY: assert_transition rejects any from-state except "draft".
+    storybook.status = assert_transition(storybook.status, "auto_reject")
+    _logger.info("storybook_auto_rejected", storybook_id=storybook.id)
+    await session.flush()
+
+
 async def approve(
     session: AsyncSession,
     principal: Principal,
