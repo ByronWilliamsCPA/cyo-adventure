@@ -232,10 +232,14 @@ class TestModerationReviewSettings:
     """Tests for slice-2 moderation settings and the classifier validator."""
 
     @pytest.mark.unit
-    def test_review_defaults_to_mock_and_requires_no_classifier(self) -> None:
+    def test_review_defaults_to_mock_and_requires_no_classifier(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """review_provider defaults to mock; no classifier key required."""
         from cyo_adventure.core.config import Settings
 
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("PERSPECTIVE_API_KEY", raising=False)
         settings = Settings()
         assert settings.review_provider == "mock"
         assert settings.openai_api_key is None
