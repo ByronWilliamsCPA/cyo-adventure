@@ -25,6 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   values to `.env.example` only.
 
 ### Added
+
+- Story-skeleton structure diagrams: a deterministic PlantUML generator
+  (`scripts/render_skeleton_diagrams.py`) plus a catalog and data-dictionary at
+  `docs/architecture/story-skeletons.md`, with a drift-guard test.
 - Unit test coverage raised from ~80% to 96.89% across all source modules:
   `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
   `utils/logging.py`, and the main `app.py` exception-handler matrix.
