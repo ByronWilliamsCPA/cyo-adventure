@@ -12,7 +12,7 @@ import uuid
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
-from sqlalchemy import select, tuple_
+from sqlalchemy import and_, select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
@@ -91,17 +91,26 @@ async def list_library(
     Returns:
         LibraryView: The published stories in the profile's family.
     """
-    # #CRITICAL: security: the library is scoped to the principal's own family and
-    # the requested profile is authorized, so a child cannot list another family's
-    # or profile's stories (IDOR).
-    # #VERIFY: authorize_profile raises -> 403; the query filters on family_id.
+    # #CRITICAL: security: the library is scoped to the principal's own family,
+    # the requested profile is authorized, and only APPROVED published versions
+    # are listed (read-path leg of the no-unapproved-publish invariant).
+    # #VERIFY: the join requires approved_by IS NOT NULL on the published version.
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
     rows = await session.scalars(
-        select(Storybook).where(
+        select(Storybook)
+        .join(
+            StorybookVersion,
+            and_(
+                StorybookVersion.storybook_id == Storybook.id,
+                StorybookVersion.version == Storybook.current_published_version,
+            ),
+        )
+        .where(
             Storybook.family_id == principal.family_id,
             Storybook.status == _PUBLISHED,
             Storybook.current_published_version.is_not(None),
+            StorybookVersion.approved_by.is_not(None),
         )
     )
     books = [
