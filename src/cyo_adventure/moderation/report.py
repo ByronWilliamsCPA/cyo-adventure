@@ -34,6 +34,7 @@ class Verdict(StrEnum):
     BLOCK = "block"
     FLAG = "flag"
     ADVISORY = "advisory"
+    # "pass" is a verdict value, not a credential (S105 false positive).
     PASS = "pass"  # noqa: S105
 
 
