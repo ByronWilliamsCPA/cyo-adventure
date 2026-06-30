@@ -171,3 +171,82 @@ async def test_soft_flag_triggers_repair_then_submits(
     submit.assert_awaited_once()
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["repaired"] is True
+
+
+@pytest.mark.unit
+async def test_invalid_blob_routes_to_auto_reject(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A stored blob that fails schema validation is force-blocked to auto_reject,
+    not allowed to raise out of the pipeline and strand the story in draft."""
+    story = _story()
+    bad_version = StorybookVersion(
+        storybook_id="s1", version=1, blob={"garbage": True}, model="gen-model"
+    )
+    mock_session.get = AsyncMock(side_effect=[story, bad_version])
+    auto_reject = AsyncMock()
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=AsyncMock(),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    assert bad_version.moderation_report is not None
+    assert bad_version.moderation_report["summary"]["hard_block"] is True
+
+
+@pytest.mark.unit
+async def test_invalid_repair_is_discarded_and_original_report_submits(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A repair that yields a schema-invalid blob is discarded: the original
+    soft-flagged report drives routing (submit), repaired stays False, and the
+    invalid revision is never persisted to the version row."""
+    story, version = _story(), _version()
+    mock_session.get = AsyncMock(side_effect=[story, version])
+    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
+    monkeypatch.setattr(pipeline_mod, "run_safety_stage", AsyncMock(return_value=[]))
+    monkeypatch.setattr(pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[]))
+    monkeypatch.setattr(
+        pipeline_mod, "run_engagement_stage", AsyncMock(return_value=[])
+    )
+    flag_finding = Finding(
+        stage=2,
+        source=Source.LLM_READABILITY,
+        category="reading_level",
+        node_id="n1",
+        verdict=Verdict.FLAG,
+        message="too hard",
+    )
+    monkeypatch.setattr(
+        pipeline_mod, "run_readability_stage", AsyncMock(return_value=[flag_finding])
+    )
+    # Repair yields a structurally invalid blob (not a valid Storybook).
+    monkeypatch.setattr(
+        pipeline_mod, "attempt_repair", AsyncMock(return_value={"garbage": True})
+    )
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=AsyncMock(),
+        pii=_pii(),
+    )
+
+    submit.assert_awaited_once()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["repaired"] is False
+    assert version.blob == _BLOB

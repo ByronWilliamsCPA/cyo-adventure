@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import httpx
+from pydantic import ValidationError
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
@@ -101,12 +102,28 @@ async def run_moderation_pipeline(
             )
         )
 
-    await _run_all_stages(
-        report=report,
-        blob=version_row.blob,
-        settings=settings,
-        review_provider=guarded_review,
-    )
+    # #CRITICAL: data-integrity: a corrupted stored blob must not crash the worker
+    # and strand the story in draft; an invalid story is force-blocked so it routes
+    # to auto_reject (needs_revision) below, preserving the submit-or-reject invariant.
+    # #VERIFY: the except adds a hard-block Finding that routing sends to auto_reject.
+    try:
+        await _run_all_stages(
+            report=report,
+            blob=version_row.blob,
+            settings=settings,
+            review_provider=guarded_review,
+        )
+    except ValidationError:
+        _logger.warning("moderation.invalid_blob", story_id=story_id)
+        report.add(
+            Finding(
+                stage=0,
+                source=Source.PIPELINE,
+                category="invalid_story",
+                verdict=Verdict.BLOCK,
+                message="story blob failed schema validation",
+            )
+        )
 
     # Soft gate: one bounded auto-repair, then re-moderate once.
     if report.has_soft_flag and not report.has_hard_block:
@@ -118,15 +135,26 @@ async def run_moderation_pipeline(
             max_tokens=_MAX_REPAIR_TOKENS,
         )
         if revised is not None:
-            report = ModerationReport(reviewer_independent=independent)
-            await _run_all_stages(
-                report=report,
-                blob=revised,
-                settings=settings,
-                review_provider=guarded_review,
-            )
-            report.repaired = True
-            version_row.blob = revised
+            # Re-moderate into a separate report; only adopt it (and persist the
+            # revised blob) if the repair is schema-valid. A malformed repair is
+            # discarded so the original soft-flagged report drives the routing.
+            repaired_report = ModerationReport(reviewer_independent=independent)
+            try:
+                await _run_all_stages(
+                    report=repaired_report,
+                    blob=revised,
+                    settings=settings,
+                    review_provider=guarded_review,
+                )
+            except ValidationError:
+                # #ASSUME: data-integrity: attempt_repair guarantees only a JSON
+                # object, not a schema-valid story; an invalid revision is dropped.
+                # #VERIFY: report and version_row.blob are left unchanged here.
+                _logger.warning("moderation.repair_invalid_blob", story_id=story_id)
+            else:
+                repaired_report.repaired = True
+                report = repaired_report
+                version_row.blob = revised
 
     version_row.moderation_report = report.to_dict()
 
@@ -157,7 +185,8 @@ async def _run_all_stages(
     """
     # #ASSUME: data-integrity: blob was persisted as a valid Storybook JSON;
     # model_validate raises ValidationError if the schema was corrupted at rest.
-    # #VERIFY: the caller catches ValidationError and routes to auto_reject.
+    # #VERIFY: run_moderation_pipeline wraps both calls in try/except ValidationError
+    # (initial -> hard-block + auto_reject; repair -> discard the revision).
     story = StoryModel.model_validate(blob)
     nodes = [(node.id, node.body) for node in story.nodes]
 
