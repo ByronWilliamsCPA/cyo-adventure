@@ -96,6 +96,7 @@ def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
     logger.warning(
         "project_error",
         error=payload.get("error"),
+        message=payload.get("message"),
         status_code=status,
         details=payload.get("details"),
     )
