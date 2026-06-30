@@ -55,3 +55,31 @@ async def test_repair_returns_none_on_unparseable_output() -> None:
         max_tokens=4096,
     )
     assert new_blob is None
+
+
+@pytest.mark.unit
+async def test_repair_returns_none_on_non_object_json() -> None:
+    # Parseable JSON that is not an object (a list) is not a story blob.
+    provider = MockProvider(responses=["[]"])
+    new_blob = await attempt_repair(
+        blob={"id": "s1", "nodes": []},
+        report=_soft_report(),
+        generation_provider=provider,
+        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        max_tokens=4096,
+    )
+    assert new_blob is None
+
+
+@pytest.mark.unit
+async def test_repair_returns_none_without_soft_flags() -> None:
+    # No FLAG findings: the function returns None without consuming a response.
+    provider = MockProvider(responses=[])
+    new_blob = await attempt_repair(
+        blob={"id": "s1", "nodes": []},
+        report=ModerationReport(),
+        generation_provider=provider,
+        pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        max_tokens=4096,
+    )
+    assert new_blob is None

@@ -49,11 +49,14 @@ async def attempt_repair(
     Returns:
         The revised story blob, or ``None`` if the model output did not parse.
     """
+    soft = [f for f in report.findings if f.verdict is Verdict.FLAG]
+    if not soft:
+        # Nothing to repair: a caller with no soft flags gets no LLM call.
+        return None
     # #CRITICAL: security: the repair prompt egresses story prose; it MUST run
     # through the PII guard exactly like generation.
     # #VERIFY: provider wrapped in PiiGuardedProvider before complete().
     guarded = PiiGuardedProvider(generation_provider, forbidden=pii)
-    soft = [f for f in report.findings if f.verdict is Verdict.FLAG]
     findings_text = "\n".join(
         f"- node {f.node_id} ({f.category}): {f.message}" for f in soft
     )
