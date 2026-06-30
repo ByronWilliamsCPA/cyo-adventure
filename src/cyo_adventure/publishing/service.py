@@ -60,9 +60,12 @@ async def auto_reject(session: AsyncSession, storybook: Storybook) -> None:
         StateTransitionError: If the story is not in ``draft``.
     """
     # #CRITICAL: security: this is the machine-side rejection path; it must never
-    # set status="published" and only fires on a recorded hard-block finding.
+    # set status="published" and only fires on a recorded hard-block finding. The
+    # ORM string is coerced through Status() so an unmodeled DB status raises.
     # #VERIFY: assert_transition rejects any from-state except "draft".
-    storybook.status = assert_transition(storybook.status, "auto_reject")
+    storybook.status = assert_transition(
+        Status(storybook.status), Action.AUTO_REJECT
+    ).value
     _logger.info("storybook_auto_rejected", storybook_id=storybook.id)
     await session.flush()
 
