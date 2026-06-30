@@ -62,9 +62,11 @@ def test_region_lists_each_skeleton_with_band_and_length() -> None:
 @pytest.mark.unit
 def test_coverage_matrix_marks_populated_and_empty_bands() -> None:
     region = build_catalog_region([_row("A", "3-5", 5, ["positive"])], slugs=["a"])
-    # 3-5 populated, 5-8 empty.
-    assert "3-5" in region
-    assert "5-8" in region
+    # Assert the coverage-matrix row form, not a bare substring: "3-5" also
+    # appears in the documented-skeletons table above, so a substring check
+    # would pass even on a malformed matrix.
+    assert "| 3-5 | yes |" in region
+    assert "| 5-8 | none yet |" in region
 
 
 @pytest.mark.unit
@@ -76,3 +78,16 @@ def test_splice_region_replaces_between_markers() -> None:
     assert "OLD" not in out
     assert out.startswith("intro")
     assert out.rstrip().endswith("outro")
+
+
+@pytest.mark.unit
+def test_splice_region_appends_when_markers_absent() -> None:
+    # Fallback path: a doc with no markers gets the region appended, not lost.
+    doc = "intro\nno markers here\n"
+    region = f"{BEGIN_MARKER}\nNEW\n{END_MARKER}\n"
+    out = splice_region(doc, region)
+    assert out.startswith("intro")
+    assert "no markers here" in out
+    assert BEGIN_MARKER in out
+    assert "NEW" in out
+    assert out.rstrip().endswith(END_MARKER)
