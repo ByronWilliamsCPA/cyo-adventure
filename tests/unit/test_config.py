@@ -226,3 +226,38 @@ class TestEnvironmentAlias:
         monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
         s = Settings()
         assert s.environment == "local"
+
+
+class TestModerationReviewSettings:
+    """Tests for slice-2 moderation settings and the classifier validator."""
+
+    @pytest.mark.unit
+    def test_review_defaults_to_mock_and_requires_no_classifier(self) -> None:
+        """review_provider defaults to mock; no classifier key required."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+        assert settings.review_provider == "mock"
+        assert settings.openai_api_key is None
+        assert settings.perspective_api_key is None
+
+    @pytest.mark.unit
+    def test_non_mock_review_without_any_classifier_key_raises(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Non-mock review without any classifier key raises ConfigurationError."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+        monkeypatch.delenv("PERSPECTIVE_API_KEY", raising=False)
+        with pytest.raises(ConfigurationError):
+            Settings(review_provider="openrouter")
+
+    @pytest.mark.unit
+    def test_non_mock_review_with_one_classifier_key_is_allowed(self) -> None:
+        """Non-mock review with at least one classifier key is allowed."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(review_provider="openrouter", openai_api_key="k")
+        assert settings.review_provider == "openrouter"

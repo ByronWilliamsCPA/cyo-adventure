@@ -189,6 +189,21 @@ class Settings(BaseSettings):
         default=None, validation_alias="OLLAMA_CA_BUNDLE"
     )
 
+    # --- Slice-2 moderation review pipeline ---
+    # Which backend the moderation LLM stages use. "mock" (default) runs no real
+    # review and requires no classifier key. "modal" is deferred to slice 2b and
+    # raises at build time, mirroring the deferred "claude" generation provider.
+    review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
+    review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
+    review_ollama_model: str = "qwen2.5:14b"
+
+    # Stage-0 deterministic classifier credentials. Both optional individually; a
+    # missing key skips that classifier. Both unset is rejected below when review runs.
+    openai_api_key: str | None = Field(default=None, validation_alias="OPENAI_API_KEY")
+    perspective_api_key: str | None = Field(
+        default=None, validation_alias="PERSPECTIVE_API_KEY"
+    )
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
@@ -203,6 +218,31 @@ class Settings(BaseSettings):
                 "CYO_ADVENTURE_DATABASE_URL must be set in non-local environments; "
                 f"refusing to start in '{self.environment}' with the development "
                 "default localhost database URL."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_classifier_when_reviewing(self) -> Settings:
+        """Require at least one Stage-0 classifier whenever real review runs.
+
+        When ``review_provider`` is not ``"mock"`` the moderation pipeline makes
+        real LLM calls over children's content; it must be preceded by at least
+        one deterministic classifier. Mirrors ``_reject_dev_database_url_outside_local``:
+        a posture invariant enforced conditionally, not blanket.
+
+        Raises:
+            ConfigurationError: when review runs with both classifier keys unset.
+        """
+        # #CRITICAL: security: no real review of children's content without a
+        # deterministic pre-filter; both keys unset under a live reviewer is fatal.
+        # #VERIFY: test_non_mock_review_without_any_classifier_key_raises.
+        if self.review_provider != "mock" and not (
+            self.openai_api_key or self.perspective_api_key
+        ):
+            msg = (
+                "at least one of OPENAI_API_KEY or PERSPECTIVE_API_KEY must be set "
+                f"when review_provider is '{self.review_provider}'"
             )
             raise ConfigurationError(msg)
         return self
