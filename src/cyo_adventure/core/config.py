@@ -127,7 +127,7 @@ class Settings(BaseSettings):
     # cover a cold start plus waiting behind one queued request.
     # #ASSUME: external-resources: time-to-first-byte can be minutes when a prior
     # request holds the single execution slot; too short a timeout fails healthy calls.
-    # #VERIFY: _build_ollama_leg passes this (not llm_timeout_seconds) to the adapter.
+    # #VERIFY: build_ollama_leg passes this (not llm_timeout_seconds) to the adapter.
     ollama_timeout_seconds: int = 300
 
     # Cascade switch. True (default) lets FallbackProvider fail over across legs.
