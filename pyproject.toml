@@ -331,6 +331,12 @@ known-first-party = ["cyo_adventure"]
 # config object at these call sites.
 "**/generation/orchestrator.py" = ["PLR0913"]
 
+# The moderation readability stage carries provider, nodes, reading_target,
+# tolerance, and max_tokens; all are mandatory and keyword-only, with no
+# sensible default for any of them, so a config object would obscure the
+# contract rather than clarify it.
+"**/moderation/stages.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
