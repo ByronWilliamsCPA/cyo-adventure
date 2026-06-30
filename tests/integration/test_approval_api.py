@@ -298,3 +298,27 @@ async def test_archive_non_published_returns_409(
         f"/api/v1/storybooks/{story_id}/archive", headers=auth("admin-a")
     )
     assert resp.status_code == 409
+
+
+async def test_no_publish_without_approver(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The only way to reach published stamps approved_by; the row proves it."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "published"
+        assert book.current_published_version is not None
+        version_row = await session.get(
+            StorybookVersion, (story_id, book.current_published_version)
+        )
+        assert version_row is not None
+        assert (
+            version_row.approved_by is not None
+        )  # invariant: never published w/o approver
+        assert version_row.published_at is not None
