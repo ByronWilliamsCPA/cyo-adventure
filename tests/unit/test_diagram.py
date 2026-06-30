@@ -107,3 +107,49 @@ def test_transform_truncates_long_choice_labels() -> None:
 def test_transform_emits_terminal_transition_for_endings() -> None:
     out = skeleton_to_plantuml(_tiny_skeleton())
     assert "n_end --> [*]" in out
+
+
+@pytest.mark.unit
+def test_non_ending_node_shows_role_and_words() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "n_start : setup · 85w" in out
+
+
+@pytest.mark.unit
+def test_ending_node_shows_kind_valence_and_title() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "n_end : completion (positive)" in out
+    assert 'n_end : "The End"' in out
+
+
+@pytest.mark.unit
+def test_legend_carries_metadata() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "legend right" in out
+    assert "Tiny Tale" in out
+    assert "Band 3-5" in out
+    assert "Tier 1" in out
+    assert "loop_and_grow" in out
+    assert "endlegend" in out
+
+
+@pytest.mark.unit
+def test_legend_reports_node_and_ending_counts_with_valence_split() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "2 nodes" in out
+    assert "1 ending" in out
+    assert "1+ / 0n / 0-" in out
+
+
+@pytest.mark.unit
+def test_output_never_leaks_fill_or_beats() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "<<FILL" not in out
+    assert "beats=" not in out
+    assert "start'" not in out  # beats prose content
+
+
+@pytest.mark.unit
+def test_transform_is_deterministic() -> None:
+    skel = _tiny_skeleton()
+    assert skeleton_to_plantuml(skel) == skeleton_to_plantuml(skel)

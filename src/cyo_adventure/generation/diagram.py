@@ -73,7 +73,7 @@ def _ending(node: dict[str, object]) -> dict[str, object]:
     return cast("dict[str, object]", raw) if isinstance(raw, dict) else {}
 
 
-def _meta(data: dict[str, object]) -> dict[str, object]:  # pyright: ignore[reportUnusedFunction]  # narrowing helper; called by future tasks
+def _meta(data: dict[str, object]) -> dict[str, object]:
     """Return the metadata dict from a skeleton, or an empty dict."""
     raw = data.get("metadata")
     return cast("dict[str, object]", raw) if isinstance(raw, dict) else {}
@@ -131,6 +131,10 @@ def skeleton_to_plantuml(data: dict[str, object], *, name: str | None = None) ->
         is_ending = bool(node.get("is_ending"))
         color = _node_color(node, is_ending=is_ending)
         lines.append(f"state {node_id} {color}")
+        lines.extend(
+            f"{node_id} : {desc}"
+            for desc in _node_descriptions(node, is_ending=is_ending)
+        )
 
     for node in nodes:
         node_id = _node_id(node)
@@ -149,6 +153,8 @@ def skeleton_to_plantuml(data: dict[str, object], *, name: str | None = None) ->
         if node_id and bool(node.get("is_ending")):
             lines.append(f"{node_id} --> [*]")
 
+    lines.append("")
+    lines.extend(_legend_lines(data, nodes))
     lines.append("@enduml")
     return "\n".join(lines) + "\n"
 
@@ -162,3 +168,65 @@ def _node_color(node: dict[str, object], *, is_ending: bool) -> str:
     body = node.get("body")
     role, _ = _parse_fill(body) if isinstance(body, str) else (None, None)
     return _ROLE_COLOR.get(role or "", _DEFAULT_NODE_COLOR)
+
+
+def _node_descriptions(node: dict[str, object], *, is_ending: bool) -> list[str]:
+    """Return PlantUML state-description lines for a node (no author prose)."""
+    if is_ending:
+        ending = _ending(node)
+        kind = ending.get("kind")
+        valence = ending.get("valence")
+        title = ending.get("title")
+        descs: list[str] = []
+        if isinstance(kind, str) and isinstance(valence, str):
+            descs.append(f"{kind} ({valence})")
+        if isinstance(title, str):
+            descs.append(f'"{title}"')
+        return descs
+    body = node.get("body")
+    role, words = _parse_fill(body) if isinstance(body, str) else (None, None)
+    if role is None or words is None:
+        return []
+    return [f"{role} · {words}w"]
+
+
+def _valence_split(nodes: list[dict[str, object]]) -> tuple[int, int, int]:
+    """Return ``(positive, neutral, negative)`` ending counts."""
+    pos = neu = neg = 0
+    for node in nodes:
+        if not bool(node.get("is_ending")):
+            continue
+        valence = _ending(node).get("valence")
+        if valence == "positive":
+            pos += 1
+        elif valence == "neutral":
+            neu += 1
+        elif valence == "negative":
+            neg += 1
+    return pos, neu, neg
+
+
+def _legend_lines(data: dict[str, object], nodes: list[dict[str, object]]) -> list[str]:
+    """Return the ``legend ... endlegend`` block carrying skeleton metadata."""
+    meta = _meta(data)
+    title = data.get("title")
+    title_text = title if isinstance(title, str) else "Untitled"
+    band = meta.get("age_band")
+    tier = meta.get("tier")
+    minutes = meta.get("estimated_minutes")
+    topology = meta.get("topology")
+    ending_total = sum(1 for n in nodes if bool(n.get("is_ending")))
+    pos, neu, neg = _valence_split(nodes)
+    band_text = band if isinstance(band, str) else "?"
+    tier_text = str(tier) if isinstance(tier, int) else "?"
+    minutes_text = str(minutes) if isinstance(minutes, int) else "?"
+    topology_text = topology if isinstance(topology, str) else "?"
+    ending_word = "ending" if ending_total == 1 else "endings"
+    return [
+        "legend right",
+        f"  {title_text}",
+        f"  Band {band_text} · Tier {tier_text} · ~{minutes_text} min",
+        f"  Topology: {topology_text}",
+        f"  {len(nodes)} nodes · {ending_total} {ending_word} ({pos}+ / {neu}n / {neg}-)",
+        "endlegend",
+    ]
