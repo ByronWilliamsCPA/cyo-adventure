@@ -337,6 +337,12 @@ known-first-party = ["cyo_adventure"]
 # contract rather than clarify it.
 "**/moderation/stages.py" = ["PLR0913"]
 
+# The repair pass carries blob, report, generation_provider, pii, and max_tokens;
+# all are mandatory and keyword-only. Each argument represents a distinct concern
+# (story state, findings, backend, PII context, budget) with no sensible default,
+# so grouping into a config object would obscure the contract rather than clarify it.
+"**/moderation/repair.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
