@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
 ROLE_GUARDIAN = "guardian"
 ROLE_CHILD = "child"
+ROLE_ADMIN = "admin"
 
 _BEARER_PREFIX = "bearer "
 
@@ -78,6 +79,11 @@ class Principal:
     def is_guardian(self) -> bool:
         """Return whether the principal holds the guardian role."""
         return self.role == ROLE_GUARDIAN
+
+    @property
+    def is_admin(self) -> bool:
+        """Return whether the principal holds the global admin (approver) role."""
+        return self.role == ROLE_ADMIN
 
     def can_access_profile(self, profile_id: uuid.UUID) -> bool:
         """Return whether the principal may act on the given profile.

@@ -172,3 +172,27 @@ class RatingListView(BaseModel):
     """All ratings recorded by a single child profile."""
 
     ratings: list[RatingView]
+
+
+# ---------------------------------------------------------------------------
+# Approval schemas
+# ---------------------------------------------------------------------------
+
+
+class SendBackRequest(BaseModel):
+    """Body for the send-back endpoint."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reason: str = Field(min_length=1, max_length=2000)
+
+
+class StorybookStateView(BaseModel):
+    """A storybook lifecycle row returned after an approval-workflow action."""
+
+    id: str
+    status: str
+    current_published_version: int | None
+    approved_by: str | None = None
+    published_at: datetime | None = None
+    reason: str | None = None

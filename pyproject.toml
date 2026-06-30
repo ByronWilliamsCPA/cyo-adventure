@@ -308,6 +308,11 @@ known-first-party = ["cyo_adventure"]
 # Module init files
 "__init__.py" = ["F401", "D104"]
 
+# The approval router imports Context (an Annotated[..., Depends()] alias) at
+# runtime; FastAPI resolves the Depends at startup via inspect, so Context must
+# not move into TYPE_CHECKING even when it appears only in annotations.
+"**/api/approval.py" = ["TC001"]
+
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
 
