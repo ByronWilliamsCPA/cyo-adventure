@@ -343,6 +343,12 @@ known-first-party = ["cyo_adventure"]
 # so grouping into a config object would obscure the contract rather than clarify it.
 "**/moderation/repair.py" = ["PLR0913"]
 
+# The pipeline entry point carries session, story_id, version, settings,
+# generation_provider, and pii; all are mandatory and keyword-only, each a
+# distinct concern (DB session, identity, lifecycle stage, config, backend, PII
+# context) with no sensible default. A config object would obscure the contract.
+"**/moderation/pipeline.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
