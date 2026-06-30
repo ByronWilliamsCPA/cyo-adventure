@@ -134,6 +134,7 @@ api = [
     "sqlalchemy[asyncio]>=2.0.0",  # ORM for database operations
     "alembic>=1.12.0",  # Database migrations
     "asyncpg>=0.29.0",  # Async PostgreSQL driver for SQLAlchemy
+    "httpx>=0.27",
 ]
 
 
@@ -674,6 +675,12 @@ critical_modules = [
     "src/cyo_adventure/middleware/security.py",
     "src/cyo_adventure/publishing/service.py",
     "src/cyo_adventure/publishing/state_machine.py",
+    "src/cyo_adventure/moderation/pipeline.py",
+    "src/cyo_adventure/moderation/classifiers.py",
+    "src/cyo_adventure/moderation/review_provider.py",
+    "src/cyo_adventure/moderation/stages.py",
+    "src/cyo_adventure/moderation/repair.py",
+    "src/cyo_adventure/moderation/report.py",
 ]
 critical_line_threshold = 90
 critical_branch_threshold = 80

@@ -210,9 +210,11 @@ async def test_passing_run_creates_storybook_version(
         assert job.prompt_version is not None
 
         # Verify Storybook row exists.
+        # After the Phase 3 slice-2 moderation pipeline, a clean story advances
+        # from draft to in_review (ready for guardian/admin review).
         story = await session.get(Storybook, job.storybook_id)
         assert story is not None
-        assert story.status == "draft"
+        assert story.status == "in_review"
 
         # Verify StorybookVersion row exists with blob and report.
         sv = await session.get(StorybookVersion, (job.storybook_id, 1))

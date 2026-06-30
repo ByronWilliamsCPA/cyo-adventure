@@ -42,6 +42,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Finding 3).
 
 ### Added
+- Phase 3 slice 2: staged content-moderation review pipeline. Generated stories are
+  screened between the deterministic gate and guardian review by a deterministic
+  classifier pre-filter (OpenAI Moderation + Perspective), an LLM safety hard gate,
+  LLM readability and branch-coherence soft gates with one bounded auto-repair pass,
+  and an LLM engagement advisory. Hard blocks auto-reject to needs_revision; clean or
+  repaired stories submit to in_review. Reviews run behind an independence-enforcing,
+  PII-guarded review provider (OpenRouter/Ollama; Modal deferred).
 - Unit test coverage raised from ~80% to 96.89% across all source modules:
   `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
   `utils/logging.py`, and the main `app.py` exception-handler matrix.
