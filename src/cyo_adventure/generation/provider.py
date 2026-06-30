@@ -288,7 +288,7 @@ class MockProvider:
         return response
 
 
-def _build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
+def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
     """Construct a single OpenRouter leg for ``model`` from settings.
 
     Args:
@@ -386,11 +386,15 @@ def _reject_cleartext_basic_auth(base_url: str) -> None:
     raise ConfigurationError(msg)
 
 
-def _build_ollama_leg(settings: Settings) -> GenerationProvider:
+def build_ollama_leg(
+    settings: Settings, model: str | None = None
+) -> GenerationProvider:
     """Construct the local Ollama leg from settings.
 
     Args:
         settings: The application settings instance.
+        model: Override the Ollama model to use. Defaults to
+            ``settings.ollama_model`` when ``None``.
 
     Returns:
         An Ollama ``GenerationProvider`` adapter.
@@ -425,7 +429,7 @@ def _build_ollama_leg(settings: Settings) -> GenerationProvider:
             raise ConfigurationError(msg) from exc
         verify = ctx
     return OllamaProvider(
-        model=settings.ollama_model,
+        model=model if model is not None else settings.ollama_model,
         base_url=settings.ollama_base_url,
         # Ollama gets its own, longer timeout: the single-parallel homelab host can
         # take minutes to first byte when a prior request holds the execution slot.
@@ -475,17 +479,17 @@ def build_provider(settings: Settings) -> GenerationProvider:
         return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
 
     if provider == "ollama":
-        return _build_ollama_leg(settings)
+        return build_ollama_leg(settings)
 
     if provider == "openrouter":
-        primary = _build_openrouter_leg(settings, settings.openrouter_model)
+        primary = build_openrouter_leg(settings, settings.openrouter_model)
         if not settings.provider_fallback_enabled:
             return primary
         return FallbackProvider(
             legs=[
                 primary,
-                _build_openrouter_leg(settings, settings.openrouter_fallback_model),
-                _build_ollama_leg(settings),
+                build_openrouter_leg(settings, settings.openrouter_fallback_model),
+                build_ollama_leg(settings),
             ]
         )
 
