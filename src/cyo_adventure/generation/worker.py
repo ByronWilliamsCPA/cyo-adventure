@@ -303,14 +303,39 @@ async def run_generation_job(
             # and submitted/auto-rejected before commit so no unreviewed story rests in
             # a state a guardian could approve.
             # #VERIFY: run_moderation_pipeline drives submit or auto_reject on the row.
-            await run_moderation_pipeline(
-                session=session,
-                story_id=story_id,
-                version=_FIRST_VERSION,
-                settings=_default_settings,
-                generation_provider=effective_provider,
-                pii=pii,
-            )
+            try:
+                await run_moderation_pipeline(
+                    session=session,
+                    story_id=story_id,
+                    version=_FIRST_VERSION,
+                    settings=_default_settings,
+                    generation_provider=effective_provider,
+                    pii=pii,
+                )
+            except Exception as exc:
+                # #CRITICAL: external-resource: a live review backend can raise
+                # (timeout, 5xx, auth). Roll back the unreviewed storybook persist
+                # first: the per-job story_id (f"s_{job_id}") would otherwise collide
+                # on an RQ retry of this same job. Then record the failure on a
+                # re-fetched row and commit, so the committed job state is "failed"
+                # (not a stale "running") and the row agrees with the queue.
+                # #VERIFY: rollback discards the persist; failure is committed before
+                # the re-raise.
+                error_text = str(exc)[:512]
+                await session.rollback()
+                failed_row = await session.get(GenerationJob, job_id)
+                if failed_row is not None:
+                    failed_row.status = "failed"
+                    failed_row.error = error_text
+                    failed_row.provider = _provider_label(effective_provider)
+                    failed_row.prompt_version = _PROMPT_VERSION
+                    await session.commit()
+                logger.exception(
+                    "generation_job.moderation_error",
+                    job_id=str(job_id),
+                    error=error_text,
+                )
+                raise
         else:
             logger.info(
                 "generation_job.not_passed",

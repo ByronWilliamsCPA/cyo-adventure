@@ -76,6 +76,7 @@ class _FakeSession:
         self.added: list[object] = []
         self.commit_count = 0
         self.flush_count = 0
+        self.rollback_count = 0
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Return the seeded row for the requested model (ignores the key)."""
@@ -102,6 +103,11 @@ class _FakeSession:
     async def commit(self) -> None:
         """Count commits (no-op persistence)."""
         self.commit_count += 1
+
+    async def rollback(self) -> None:
+        """Count rollbacks and discard pending adds (models a DB rollback)."""
+        self.rollback_count += 1
+        self.added.clear()
 
 
 def _factory_for(session: _FakeSession) -> Callable[[], object]:
@@ -161,6 +167,42 @@ async def test_passing_run_persists_unique_storybook(
     # stored blob id matches the per-job DB row id.
     assert versions[0].blob["id"] == f"s_{job_id}"
     assert versions[0].storybook_id == f"s_{job_id}"
+    assert session.commit_count >= 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_moderation_failure_records_failed_and_rolls_back(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A raising review stage must not strand the job at 'running'.
+
+    A live review backend can raise (timeout, 5xx, auth). The worker must roll
+    back the unreviewed storybook persist (so a retry of the same job_id does not
+    collide on the per-job story_id) and commit the job as 'failed' before
+    re-raising, so the row and the RQ queue agree.
+    """
+    moderation = AsyncMock(side_effect=RuntimeError("review backend down"))
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", moderation
+    )
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    with pytest.raises(RuntimeError, match="review backend down"):
+        await run_generation_job(
+            job_id, provider=provider, session_factory=_factory_for(session)
+        )
+
+    moderation.assert_awaited_once()
+    assert session.rollback_count >= 1
+    # The unreviewed storybook persist was discarded by the rollback.
+    assert _added_of(session, Storybook) == []
+    # The job is committed as failed (not stranded at 'running'/'passed').
+    assert job.status == "failed"
+    assert job.error == "review backend down"
     assert session.commit_count >= 1
 
 
