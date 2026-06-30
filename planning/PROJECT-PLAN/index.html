@@ -1684,6 +1684,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-status-2026-06-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current status (2026-06-29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2750,6 +2767,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="1. Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-status-2026-06-29" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current status (2026-06-29)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3112,7 +3146,7 @@
 
 <h1 id="project-plan-cyo-adventure-ariadne">Project Plan: CYO Adventure (Ariadne)<a class="headerlink" href="#project-plan-cyo-adventure-ariadne" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-06-29
 <strong>Codename</strong>: Ariadne (the thread that guides a reader through the maze of choices)
 <strong>Primary branch</strong>: <code>main</code></p>
 </blockquote>
@@ -3160,6 +3194,54 @@ in prompts; admin-only short-lived raw outputs).</p>
 </tbody>
 </table>
 <p>Source: <a href="../project-vision/">Project Vision</a> sections 1-3.</p>
+<h3 id="current-status-2026-06-29">Current status (2026-06-29)<a class="headerlink" href="#current-status-2026-06-29" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0 Foundations</td>
+<td>✅ Delivered (merged)</td>
+</tr>
+<tr>
+<td>1 Schema + Reader</td>
+<td>✅ Delivered (merged)</td>
+</tr>
+<tr>
+<td>2 Gen + Gate</td>
+<td>✅ Delivered (merged)</td>
+</tr>
+<tr>
+<td>2b Live providers + yield</td>
+<td>✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7)</td>
+</tr>
+<tr>
+<td>3 Safety + Review</td>
+<td>⏸️ Not started (next; DB schema ready, workflow logic absent)</td>
+</tr>
+<tr>
+<td>4a Library + Profiles</td>
+<td>🔄 Backend partial (library/ratings API); frontend absent</td>
+</tr>
+<tr>
+<td>4b Editor + UX</td>
+<td>⏸️ Not started (post-release)</td>
+</tr>
+<tr>
+<td>5 Hardening</td>
+<td>⏸️ Not started (post-release)</td>
+</tr>
+</tbody>
+</table>
+<p>The <strong>first usable release is roughly half done by phase count but the long pole is
+ahead</strong>: Phase 3 is greenfield workflow code on a ready schema, and Phase 4a's
+guardian-facing UI has no app shell to build on yet (the frontend is a single-page
+reader demo with no routing). The concrete path from here is
+<a href="../completion-plan/"><code>completion-plan.md</code></a>.</p>
 <hr />
 <h2 id="2-scope">2. Scope<a class="headerlink" href="#2-scope" title="Permanent link">&para;</a></h2>
 <h3 id="in-scope-mvp-and-first-release">In scope (MVP and first release)<a class="headerlink" href="#in-scope-mvp-and-first-release" title="Permanent link">&para;</a></h3>
@@ -3408,7 +3490,9 @@ validator absorb most of the iteration.</p>
 <h3 id="phase-0-foundations-1-2-weeks">Phase 0: Foundations (1-2 weeks)<a class="headerlink" href="#phase-0-foundations-1-2-weeks" title="Permanent link">&para;</a></h3>
 <p><strong>Branch</strong>: <code>chore/phase-0-foundations</code>
 <strong>Milestone</strong>: M0 - Phase 0 exit gate (decisions locked, CI green)
-<strong>Status</strong>: Planned</p>
+<strong>Status</strong>: ✅ Delivered (merged). Schema, runtime semantics, validator rule catalog,
+fixture corpus, MVP cut, auth matrix, privacy model, and the CI/security baseline are in;
+the Phase-0 punch list (PL-01..PL-18) is closed.</p>
 <p><strong>Objective</strong>: Lock the decisions and artifacts that are expensive to change once code exists.
 No app code until this gate passes.</p>
 <p><strong>Phase-0 hard blockers</strong> (elevated because generation ships in the first release):</p>
@@ -3533,12 +3617,11 @@ P0-13); they are not a re-numbering of the canonical PL ids. Migrate the punch l
 <h3 id="phase-1-schema-runtime-and-reader-mvp-3-5-weeks">Phase 1: Schema, Runtime, and Reader MVP (3-5 weeks)<a class="headerlink" href="#phase-1-schema-runtime-and-reader-mvp-3-5-weeks" title="Permanent link">&para;</a></h3>
 <p><strong>Branch</strong>: <code>feat/phase-1-schema-reader-v2</code>
 <strong>Milestone</strong>: M1 - Reader plays hand-authored stories offline
-<strong>Status</strong>: Implemented (PR pending review). Condition evaluator (Python + TS,
-shared conformance), Layer-1 validator, deterministic player (Python + TS,
-cross-impl trace conformance), reader API (reading-state with 409 reconciliation,
-IDOR-tested), PWA reader (XState, IndexedDB, offline sync, conflict UX), Playwright
-E2E, and two hand-authored stories are complete and pass locally; PR review and
-CI are in progress.</p>
+<strong>Status</strong>: ✅ Delivered (merged). Condition evaluator (Python + TS, shared
+conformance), Layer-1 validator, deterministic player (Python + TS, cross-impl trace
+conformance), reader API (reading-state with 409 reconciliation, IDOR-tested), PWA reader
+(XState, IndexedDB, offline sync, conflict UX), Playwright E2E, and two hand-authored
+stories are merged to <code>main</code> and green in CI.</p>
 <p><strong>Objective</strong>: Prove the format and the player with human-written stories before any LLM is
 involved. This phase has no external network egress. See <a href="../adr/adr-001-story-format-json-storybook/">ADR-001</a>
 and <a href="../adr/adr-002-client-pwa/">ADR-002</a>.</p>
@@ -3589,10 +3672,12 @@ and <a href="../adr/adr-002-client-pwa/">ADR-002</a>.</p>
 <p><strong>Dependencies</strong>: Requires Phase 0 schema and scaffold. Blocks Phase 2.</p>
 <hr />
 <h3 id="phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">Phase 2: Validation Gate and Authoring Pipeline (4-6 weeks)<a class="headerlink" href="#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks" title="Permanent link">&para;</a></h3>
-<p><strong>Branch</strong>: <code>feat/phase-2-generation-gate</code> (PRs #5 and PR-c)
+<p><strong>Branch</strong>: <code>feat/phase-2-generation-gate</code> (PRs #5, #6) plus Phase 2b (PRs #7, #8)
 <strong>Milestone</strong>: M2 - Concept-to-story pipeline passes the full gate
-<strong>Status</strong>: Delivered (validation gate + mock-provider pipeline). Two criteria are deferred to
-Phase 2b; see the subsection below.</p>
+<strong>Status</strong>: ✅ Delivered, including Phase 2b. The validation gate and orchestrator shipped
+first against MockProvider; the two deferred criteria are now closed (live OpenRouter +
+Ollama adapters merged; 70% yield, 14/20, measured on a live run 2026-06-22). See the
+subsection below.</p>
 <p><strong>Objective</strong>: Generate stories that hold together, with the gate as the arbiter. This is the
 long pole of the project: generation reliability and the state-space validator absorb most of the
 iteration. First external LLM call, so the privacy controls and provider data-handling decision
@@ -3625,24 +3710,26 @@ from Phase 0 are preconditions. See <a href="../adr/adr-003-frontier-llm-generat
 <p><strong>Acceptance criteria</strong> (from <a href="../roadmap/">Roadmap Phase 2</a>):</p>
 <ul>
 <li>From a concept brief, the pipeline produces a story that passes the full gate with zero
-  structural edits at least 60% of the time over a 20-story sample. (Deferred to Phase 2b.)</li>
+  structural edits at least 60% of the time over a 20-story sample. (Met in Phase 2b: 70%,
+  14/20.)</li>
 <li>The validator rejects 100% of the known-bad and Tier-2 corpora with correct rule and node
   attribution. (Delivered.)</li>
 <li>No prompt sent to the provider contains a real child name, birthdate, or sensitive trait.
   (Delivered.)</li>
 </ul>
-<p><strong>Deferred to Phase 2b</strong>:</p>
-<p>Two acceptance criteria were deliberately deferred after review. The decision was recorded
-because both require a live LLM provider, which was not wired in-phase:</p>
+<p><strong>Phase 2b (closed)</strong>:</p>
+<p>Two acceptance criteria were deferred from the Phase 2 cut because both require a live LLM
+provider. Both are now met:</p>
 <ol>
-<li><strong>60% generation yield over a 20-story sample</strong> - the mock-driven yield harness
-   (<code>scripts/yield_harness.py</code>) ships in Phase 2 and can be re-run once a live provider
-   is configured.</li>
-<li><strong>Concrete Claude/Ollama/OpenRouter provider adapters</strong> - the <code>GenerationProvider</code>
-   protocol and <code>build_provider</code> factory shipped; the HTTP client implementations did not.
-   Live providers currently raise <code>ConfigurationError</code>.</li>
+<li><strong>60% generation yield over a 20-story sample</strong> met at <strong>70% (14/20)</strong> on a live
+   OpenRouter run (<code>anthropic/claude-haiku-4.5</code>, 2026-06-22); result recorded under
+   <a href="./yield-results/"><code>yield-results/</code></a>. Tier-1 passed 11/13; <strong>Tier-2 passed only 3/7</strong>,
+   so Tier-2 structure-prompt tightening is the residual yield lever carried forward.</li>
+<li><strong>Concrete provider adapters</strong> shipped: OpenRouter (primary, in-provider fallback) and
+   Ollama (homelab final fallback), selectable by config. A direct Anthropic SDK adapter
+   stays deferred (Claude is reached via OpenRouter).</li>
 </ol>
-<p>Follow-up scope and acceptance criteria are in
+<p>Full scope and the residual lever are in
 <a href="../phase-2b-live-provider/"><code>docs/planning/phase-2b-live-provider.md</code></a>.</p>
 <p><strong>Quality gates</strong>:</p>
 <ul class="task-list">
@@ -3662,7 +3749,12 @@ provider and privacy decisions. Blocks Phase 3 and Phase 4a.</p>
 <h3 id="phase-3-safety-and-review-workflow-3-4-weeks-overlaps-phase-2">Phase 3: Safety and Review Workflow (3-4 weeks; overlaps Phase 2)<a class="headerlink" href="#phase-3-safety-and-review-workflow-3-4-weeks-overlaps-phase-2" title="Permanent link">&para;</a></h3>
 <p><strong>Branch</strong>: <code>feat/phase-3-safety-review</code>
 <strong>Milestone</strong>: M3 - Parent approval gate enforced end to end
-<strong>Status</strong>: Planned</p>
+<strong>Status</strong>: ⏸️ Not started (next on the critical path). The schema is ready
+(<code>storybook.status</code>, <code>storybook_version.approved_by</code> / <code>published_at</code> /
+<code>moderation_report</code>) and the deterministic age-band policy gate (<code>validator/policy.py</code>,
+PL-15..18) is in place, but the workflow itself is greenfield: <code>validator/safety.py</code> is an
+explicit stub, there are no approval/publish/send-back endpoints, no publish state
+machine, and no enforced invariant that a <code>published</code> story has a recorded approver.</p>
 <p><strong>Objective</strong>: Make the kids-facing guarantee real: no story reaches a child without a recorded
 guardian approval. See <a href="../adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
 <p><strong>Deliverables</strong> (traced to <a href="../roadmap/">Roadmap Phase 3</a>):</p>
@@ -3705,7 +3797,11 @@ Phase 2 once the validation gate and orchestrator are stable.</p>
 <h3 id="phase-4a-library-and-profiles-part-of-3-5-weeks-in-the-first-release">Phase 4a: Library and Profiles (part of 3-5 weeks; in the first release)<a class="headerlink" href="#phase-4a-library-and-profiles-part-of-3-5-weeks-in-the-first-release" title="Permanent link">&para;</a></h3>
 <p><strong>Branch</strong>: <code>feat/phase-4a-library-profiles</code>
 <strong>Milestone</strong>: M4 - First usable release (generation + library)
-<strong>Status</strong>: Planned</p>
+<strong>Status</strong>: 🔄 Backend partial; frontend not started. The <code>library</code> API (published,
+profile-scoped browsing) and the child <code>ratings</code> API are merged. The frontend has <strong>no
+library, profile, guardian, or concept-intake UI and no routing</strong> (it is still a
+single-page reader demo), so the guardian/parent app shell that Phases 3 and 4a both need
+is the largest remaining build for the first release.</p>
 <p><strong>Objective</strong>: Make the first usable release shippable. A child sees only the stories permitted
 for their profile; a guardian can assign an approved generated story to one or more children.
 This is the <strong>first release line</strong>.</p>
@@ -4253,7 +4349,7 @@ documents.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 20:01:21 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
   </span>
 
     

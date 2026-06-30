@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/phase-2b-live-provider/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/completion-plan/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Phase 2b: Live Provider Wiring and Generation Yield - CYO Adventure</title>
+        <title>CYO Adventure - Completion Plan (path to v1) - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#status-delivered-2026-06-29" class="md-skip">
+        <a href="#tldr" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phase 2b: Live Provider Wiring and Generation Yield
+              CYO Adventure - Completion Plan (path to v1)
             
           </span>
         </div>
@@ -2325,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#status-delivered-2026-06-29" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Status: Delivered (2026-06-29)
+        TL;DR
       
     </span>
   </a>
@@ -2336,10 +2336,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
+  <a href="#where-we-are-2026-06-29-baseline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Purpose
+        Where we are (2026-06-29 baseline)
       
     </span>
   </a>
@@ -2347,10 +2347,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#existing-seams-what-phase-2-already-ships" class="md-nav__link">
+  <a href="#definition-of-complete" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Existing Seams (what Phase 2 already ships)
+        Definition of "complete"
       
     </span>
   </a>
@@ -2358,22 +2358,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#scope" class="md-nav__link">
+  <a href="#remaining-work" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Scope
+        Remaining work
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Scope">
+    <nav class="md-nav" aria-label="Remaining work">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#in-scope" class="md-nav__link">
+  <a href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" class="md-nav__link">
     <span class="md-ellipsis">
       
-        In scope
+        Phase 3: Safety and approval workflow (next on the critical path)
       
     </span>
   </a>
@@ -2381,10 +2381,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#out-of-scope" class="md-nav__link">
+  <a href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Out of scope
+        Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#first-release-cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        First release cut
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4b-editor-and-engagement-post-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4b: Editor and engagement (post-release)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-hardening-and-deploy-post-release" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Hardening and deploy (post-release)
       
     </span>
   </a>
@@ -2397,10 +2430,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#acceptance-criteria" class="md-nav__link">
+  <a href="#sequencing-and-critical-path" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Acceptance Criteria
+        Sequencing and critical path
       
     </span>
   </a>
@@ -2408,10 +2441,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-constraints-and-guidelines" class="md-nav__link">
+  <a href="#carried-debt-and-risks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Constraints and Guidelines
+        Carried debt and risks
       
     </span>
   </a>
@@ -2419,10 +2452,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reference" class="md-nav__link">
+  <a href="#estimate" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reference
+        Estimate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related documents
       
     </span>
   </a>
@@ -2449,180 +2493,306 @@
   
 
 
-  <h1>Phase 2b: Live Provider Wiring and Generation Yield</h1>
+  <h1>CYO Adventure - Completion Plan (path to v1)</h1>
 
-<h2 id="status-delivered-2026-06-29">Status: Delivered (2026-06-29)<a class="headerlink" href="#status-delivered-2026-06-29" title="Permanent link">&para;</a></h2>
-<p>Both acceptance criteria below are <strong>met</strong>, and the work package is closed:</p>
-<ul>
-<li><strong>Live adapters shipped</strong> (PRs #7, #8): OpenRouter as primary with an in-provider
-  fallback model, and Ollama as the homelab final fallback, both selectable purely by
-  <code>settings.generation_provider</code>. The direct Anthropic SDK adapter remains intentionally
-  deferred (Claude is reached via OpenRouter).</li>
-<li><strong>Yield met at 70% (14/20)</strong> on a live OpenRouter run (<code>anthropic/claude-haiku-4.5</code>,
-  2026-06-22), clearing the 60% threshold. Result recorded under
-  <a href="../yield-results/phase-2b-2026-06-22.json"><code>yield-results/phase-2b-2026-06-22.json</code></a>.</li>
-</ul>
-<p><strong>Carried-forward lever (not blocking):</strong> the run split <strong>Tier-1 11/13 vs Tier-2 3/7</strong>.
-The dominant Tier-2 failure was L1-7 "budget" (branch depth over the band cap, ending
-count off-brief). Tightening the Stage A structure prompt to state band budgets inline
-and numerically (the highest-leverage, model-independent fix described under In Scope
-below) is the open follow-up, tracked as a quality item in
-<a href="../completion-plan/"><code>completion-plan.md</code></a>, not a Phase-3 blocker.</p>
-<p>The remainder of this document is the original work-package specification, retained for
-provenance.</p>
-<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>Phase 2 delivered the <code>GenerationProvider</code> protocol, the staged orchestrator, the mock-driven
-yield harness, and all backend scaffolding for async generation. Two acceptance criteria were
-deliberately deferred because they require a live LLM provider:</p>
+<blockquote>
+<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-06-29
+<strong>Baseline</strong>: Phases 0, 1, 2, and 2b delivered and merged. See
+<a href="../roadmap/"><code>roadmap.md</code></a> for the phase definitions this plan executes against.</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>The validation and generation halves of the system are built and merged: a child can
+read hand-authored stories offline, and the pipeline generates stories that clear the
+full gate at 70% live yield. What stands between here and a <strong>first usable release</strong> is
+two phases of work that are almost entirely greenfield:</p>
 <ol>
-<li>Concrete HTTP-client adapters for Claude (primary), Ollama, and OpenRouter.</li>
-<li>Measured generation yield of at least 60% over a 20-story sample against a live provider.</li>
+<li><strong>Phase 3 (Safety and approval workflow)</strong> on a Phase-3-ready database but with no
+   workflow logic yet, and</li>
+<li><strong>Phase 4a (Library, profiles, and the guardian app shell)</strong>, where the frontend is
+   still a single-page reader demo with no routing.</li>
 </ol>
-<p>This document defines the scope, acceptance criteria, and key constraints for the follow-up
-work package that closes those two items.</p>
-<hr />
-<h2 id="existing-seams-what-phase-2-already-ships">Existing Seams (what Phase 2 already ships)<a class="headerlink" href="#existing-seams-what-phase-2-already-ships" title="Permanent link">&para;</a></h2>
-<p>All of the following are in place and must not be changed by this work package except through
-the defined extension points:</p>
+<p>The first release is roughly half-done by phase count, but the remaining half is the
+harder half: it is the parent-facing product, not the engine. Estimated <strong>6 to 10 weeks</strong>
+to the first release for a 1 to 2 developer team, then <strong>4 to 7 weeks</strong> for Phase 4b and
+Phase 5 to reach full v1.</p>
+<h2 id="where-we-are-2026-06-29-baseline">Where we are (2026-06-29 baseline)<a class="headerlink" href="#where-we-are-2026-06-29-baseline" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Seam</th>
-<th>Location</th>
+<th>Area</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Storybook schema + Layer-1/Layer-2 validator + policy gate</td>
+<td>✅ Built, merged</td>
+</tr>
+<tr>
+<td>Offline PWA reader (play, state-gated choices, 409 sync, PWA install)</td>
+<td>✅ Built, merged</td>
+</tr>
+<tr>
+<td>Staged generation pipeline + live providers (OpenRouter, Ollama)</td>
+<td>✅ Built, merged; 70% yield</td>
+</tr>
+<tr>
+<td>Concept intake + RQ worker + guardian-only generation API</td>
+<td>✅ Built, merged</td>
+</tr>
+<tr>
+<td>Library + ratings API (backend)</td>
+<td>✅ Built, merged</td>
+</tr>
+<tr>
+<td>Safety/moderation <strong>logic</strong></td>
+<td>⏸️ <code>validator/safety.py</code> is a stub</td>
+</tr>
+<tr>
+<td>Publish state machine + approval/send-back endpoints</td>
+<td>⏸️ Absent (DB columns exist)</td>
+</tr>
+<tr>
+<td>Guardian/parent <strong>frontend</strong> (review, library, profiles, intake)</td>
+<td>⏸️ Absent; no routing</td>
+</tr>
+<tr>
+<td>Hardening (Redis rate limiter, backups, restore drill, Sentry)</td>
+<td>⏸️ Absent</td>
+</tr>
+</tbody>
+</table>
+<p>The keystone insight: <strong>the database is ready for Phase 3</strong> (<code>storybook.status</code>,
+<code>storybook_version.approved_by</code> / <code>published_at</code> / <code>moderation_report</code> all exist), and
+the <strong>deterministic age-band policy gate</strong> (<code>validator/policy.py</code>, PL-15..18) already
+runs. The missing pieces are workflow code and UI, not schema.</p>
+<h2 id="definition-of-complete">Definition of "complete"<a class="headerlink" href="#definition-of-complete" title="Permanent link">&para;</a></h2>
+<p>The project reaches <strong>first usable release</strong> when a generated story can travel concept -&gt;
+generation -&gt; validation -&gt; moderation -&gt; guardian approval -&gt; a child's library and play
+offline to multiple endings, with the invariant that <strong>no story is visible to a child
+without a recorded guardian approval</strong>, all reachable through the UI by a non-technical
+parent.</p>
+<p>It reaches <strong>full v1</strong> when Phase 4b (in-UI editing, ending tracker, read-aloud) and
+Phase 5 (hardening, deploy behind Pangolin/Authentik, tested restore) are also done, per
+the <a href="../roadmap/#definition-of-done">roadmap Definition of Done</a>.</p>
+<h2 id="remaining-work">Remaining work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h2>
+<h3 id="phase-3-safety-and-approval-workflow-next-on-the-critical-path">Phase 3: Safety and approval workflow (next on the critical path)<a class="headerlink" href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" title="Permanent link">&para;</a></h3>
+<p><strong>Goal</strong>: make the kids-facing guarantee real and enforced. ADR-005 (mandatory human
+approval) governs.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Workstream</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>GenerationProvider</code> protocol</td>
-<td><code>src/cyo_adventure/generation/provider.py</code></td>
-<td>Defines <code>complete(prompt, ...)</code></td>
+<td>C3-1</td>
+<td>Implement the LLM moderation pass behind the <code>SAFE-14</code> seam in <code>validator/safety.py</code></td>
+<td>Provider moderation + independent LLM-reviewer, scored against the existing band profiles; any hit flags nodes and forces review. Persist the result to <code>storybook_version.moderation_report</code>.</td>
 </tr>
 <tr>
-<td><code>build_provider</code> factory</td>
-<td><code>src/cyo_adventure/generation/provider.py</code></td>
-<td>Currently raises <code>ConfigurationError</code> for any non-mock provider</td>
+<td>C3-2</td>
+<td>Publish state machine</td>
+<td>Encode <code>draft -&gt; generating -&gt; auto_check -&gt; in_review -&gt; approved -&gt; published -&gt; archived</code> with <code>needs_revision</code> on gate/moderation failure. Enforce transitions in one service module, not ad hoc in endpoints.</td>
 </tr>
 <tr>
-<td><code>settings.generation_provider</code></td>
-<td><code>src/cyo_adventure/core/config.py</code></td>
-<td>Config key that selects the active provider</td>
+<td>C3-3</td>
+<td>Guardian approval/send-back endpoints</td>
+<td>Guardian-only <code>approve</code> (stamps <code>approved_by</code> + <code>published_at</code>, sets <code>storybook.status=published</code> and <code>current_published_version</code>) and <code>send-back</code> (-&gt; <code>needs_revision</code>). Child tokens rejected.</td>
 </tr>
 <tr>
-<td>Staged orchestrator</td>
-<td><code>src/cyo_adventure/generation/orchestrator.py</code></td>
-<td>Provider-agnostic; calls <code>provider.complete()</code></td>
+<td>C3-4</td>
+<td>Review-surface read API</td>
+<td>One endpoint returning the story blob plus flagged passages plus the moderation report, shaped for the parent review UI (built in 4a).</td>
 </tr>
 <tr>
-<td>PII egress guard</td>
-<td><code>src/cyo_adventure/generation/pii.py</code> (<code>assert_prompt_pii_safe</code>)</td>
-<td>Must run before every provider call</td>
+<td>C3-5</td>
+<td>Enforce the core invariant</td>
+<td>A <code>published</code> storybook must reference a version whose <code>approved_by</code> is non-null. Enforce in the publish service and back it with a DB CHECK/constraint or a tested guard; add the negative test.</td>
 </tr>
 <tr>
-<td>Yield harness</td>
-<td><code>scripts/yield_harness.py</code></td>
-<td>Accepts <code>--provider</code> flag; swap the provider and re-run</td>
+<td>C3-6</td>
+<td>Authorization + IDOR tests</td>
+<td>Child A cannot reach child B; cross-family guardian access denied; child cannot call approve/publish. All green.</td>
 </tr>
 </tbody>
 </table>
-<hr />
-<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h2>
-<h3 id="in-scope">In scope<a class="headerlink" href="#in-scope" title="Permanent link">&para;</a></h3>
+<p><strong>Acceptance</strong>: every transition path is tested; no path reaches a child profile without a
+recorded approval; adversarial briefs flag and cannot auto-publish; 90% coverage on the
+publish state machine and authorization checks.</p>
+<h3 id="phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release">Phase 4a: Library, profiles, and the guardian app shell (closes the first release)<a class="headerlink" href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" title="Permanent link">&para;</a></h3>
+<p><strong>Goal</strong>: make the whole flow reachable by a parent through the browser. This is the
+<strong>largest remaining build</strong> because the frontend has no app shell.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Workstream</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C4a-1</td>
+<td>Frontend app shell + routing</td>
+<td>Introduce a router and an authenticated layout. Today <code>App.tsx</code> is a single hard-coded reader page; every screen below needs routing and an auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI.</td>
+</tr>
+<tr>
+<td>C4a-2</td>
+<td>Profile management UI</td>
+<td>Create/select per-child profiles; surface age-band and reading-level caps (backed by <code>child_profile</code>). Child sessions land directly in their own library.</td>
+</tr>
+<tr>
+<td>C4a-3</td>
+<td>Library browsing UI</td>
+<td>Consume the existing <code>library</code> API; a child sees only <code>published</code>, profile-permitted books; ratings shown/edited via the <code>ratings</code> API.</td>
+</tr>
+<tr>
+<td>C4a-4</td>
+<td>Guardian console: review + approve</td>
+<td>Wire the Phase-3 review-surface API (C3-4) and approval endpoints (C3-3) into a UI where a parent reads a story, sees flagged passages, and approves or sends back in a few minutes.</td>
+</tr>
+<tr>
+<td>C4a-5</td>
+<td>Concept intake UI + job status</td>
+<td>Form posting to the concept/generation API; show job status (queued/running/passed/needs_review/failed) without exposing raw model output.</td>
+</tr>
+<tr>
+<td>C4a-6</td>
+<td>Assign-to-profile UI</td>
+<td>Guardian assigns an approved story to one or more children.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Acceptance</strong>: concept -&gt; approved -&gt; assigned -&gt; a child reads it offline, entirely
+through the UI; a child never sees a non-permitted or unapproved story.</p>
+<h3 id="first-release-cut">First release cut<a class="headerlink" href="#first-release-cut" title="Permanent link">&para;</a></h3>
+<p>Ships: Phases 0-3 + 4a. A parent generates, reviews, approves, and assigns a story; a
+child reads it offline. Deferred to after the release: in-UI editing, TTS, ending tracker
+(4b), and production hardening/deploy (5). The release can run on the homelab in a
+trusted-network configuration before the full Phase 5 hardening lands, if desired, but
+<strong>Phase 5's auth/ingress (Pangolin + Authentik) is required before any exposure beyond a
+trusted LAN</strong>.</p>
+<h3 id="phase-4b-editor-and-engagement-post-release">Phase 4b: Editor and engagement (post-release)<a class="headerlink" href="#phase-4b-editor-and-engagement-post-release" title="Permanent link">&para;</a></h3>
+<p>Lightweight node editor (read as a playthrough + node list, edit a passage, re-roll one
+branch, re-run validation), ending tracker ("3 of 7 found"), bookmarks, and read-aloud
+(TTS) for the youngest band. None started.</p>
+<h3 id="phase-5-hardening-and-deploy-post-release">Phase 5: Hardening and deploy (post-release)<a class="headerlink" href="#phase-5-hardening-and-deploy-post-release" title="Permanent link">&para;</a></h3>
+<p>Performance + offline-edge hardening; WCAG AA basics; Sentry on client and server;
+<strong>replace the in-memory <code>RateLimitMiddleware</code> with a Redis-backed limiter</strong> (it is
+single-process only today, documented in SECURITY.md); backups and a tested restore
+drill; deploy behind Pangolin + Authentik; operator runbook + short authoring guide.
+Also lands the deferred <code>GenerationJob.stage_log</code> column + API so the ADR-007 raw-output
+purge can null <code>report</code> while keeping an auditable log.</p>
+<h2 id="sequencing-and-critical-path">Sequencing and critical path<a class="headerlink" href="#sequencing-and-critical-path" title="Permanent link">&para;</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Phase 3 (C3-1..C3-6)  ─┐
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                       ├─► Phase 4a guardian console (C4a-4) needs C3-3/C3-4
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>C4a-1 app shell ───────┘   (start C4a-1 in parallel with Phase 3; it has no Phase-3 dep)
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        │
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        ├─► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        └─► C4a-5 concept intake
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                   ▼
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                          FIRST USABLE RELEASE
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                                   ▼
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                    Phase 4b (editor/TTS/tracker) ── Phase 5 (hardening/deploy)
+</span></code></pre></div>
+<p>The one true ordering constraint is that the <strong>guardian console (C4a-4) depends on the
+Phase-3 approval and review APIs (C3-3, C3-4)</strong>. Everything else in 4a (app shell,
+profiles, library, concept intake) can proceed in parallel with Phase 3, so the frontend
+app shell (C4a-1) should start immediately rather than waiting on Phase 3 to finish.</p>
+<h2 id="carried-debt-and-risks">Carried debt and risks<a class="headerlink" href="#carried-debt-and-risks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Severity</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Tier-2 generation yield weak (3/7)</strong></td>
+<td>Medium</td>
+<td>Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever; see <a href="../phase-2b-live-provider/"><code>phase-2b-live-provider.md</code></a>). Re-measure. Do before relying on Tier-2 generation in production.</td>
+</tr>
+<tr>
+<td><strong>In-memory rate limiter</strong></td>
+<td>Medium</td>
+<td>Phase 5: replace with Redis-backed limiter before multi-process/exposed deployment.</td>
+</tr>
+<tr>
+<td><strong>No frontend routing / app shell</strong></td>
+<td>High (effort)</td>
+<td>Phase 4a C4a-1 is a prerequisite for all guardian/library UI; size it as real work, not a wrapper.</td>
+</tr>
+<tr>
+<td><strong>esbuild Renovate re-proposal</strong></td>
+<td>Low</td>
+<td>Open a <code>renovate.json</code> rule pinning/grouping <code>esbuild</code> to Vite's range so the #22 bump is not re-proposed (carried TODO).</td>
+</tr>
+<tr>
+<td><strong>markdownlint whole-repo table/heading debt</strong></td>
+<td>Low</td>
+<td>Non-gating (pre-push only). Address opportunistically; do not block planning-doc updates on it.</td>
+</tr>
+<tr>
+<td><strong><code>GenerationJob.stage_log</code> deferral</strong></td>
+<td>Low</td>
+<td>Phase 5: add the redacted stage-log column + API so the ADR-007 purge keeps an auditable trail.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="estimate">Estimate<a class="headerlink" href="#estimate" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Scope</th>
+<th>Estimate (1-2 devs)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 3</td>
+<td>Safety + approval workflow + tests</td>
+<td>3-4 weeks</td>
+</tr>
+<tr>
+<td>Phase 4a</td>
+<td>App shell, profiles, library, guardian console, intake</td>
+<td>3-5 weeks (overlaps Phase 3)</td>
+</tr>
+<tr>
+<td><strong>First usable release</strong></td>
+<td>Phases 3 + 4a combined, with overlap</td>
+<td><strong>6-10 weeks</strong></td>
+</tr>
+<tr>
+<td>Phase 4b</td>
+<td>Editor, TTS, ending tracker</td>
+<td>2-4 weeks</td>
+</tr>
+<tr>
+<td>Phase 5</td>
+<td>Hardening, deploy, restore drill</td>
+<td>2-3 weeks</td>
+</tr>
+<tr>
+<td><strong>Full v1</strong></td>
+<td>First release + 4b + 5</td>
+<td><strong>+4-7 weeks</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Implement <code>complete()</code> for two live providers behind the existing <code>GenerationProvider</code>
-  protocol (primary/fallback roles per ADR-003 as amended 2026-06-22):</li>
-<li><strong>OpenRouter</strong> (HTTP, primary): target the model specified by <code>settings.openrouter_model</code>,
-    with <code>settings.openrouter_fallback_model</code> as the in-provider fallback. Claude is reached
-    here (<code>anthropic/claude-sonnet-4.6</code>); there is no separate Anthropic SDK adapter.</li>
-<li><strong>Ollama</strong> (local P40, final fallback): target the model specified by <code>settings.ollama_model</code>.</li>
-<li>A direct <strong>Anthropic SDK</strong> adapter is <strong>deferred</strong> (out of scope below): the operator routes
-    Claude through OpenRouter, so the standalone SDK path is unnecessary now. The seam remains for
-    a trivial future add (direct Opus 4.8 + prompt caching) if a billed Anthropic account is used.</li>
-<li>Wire <code>build_provider</code> so that <code>settings.generation_provider</code> returns the correct live adapter
-  instead of raising <code>ConfigurationError</code>.</li>
-<li>Add network-level concerns per <a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a>:
-  configurable timeout, exponential-backoff retry (max 3 attempts), and a provider-agnostic
-  <code>ProviderError</code> mapped from HTTP/SDK exceptions.</li>
-<li>Ensure the PII guard (<code>pii.py</code>, <code>assert_prompt_pii_safe</code>) still runs before every
-  <code>complete()</code> call; no adapter may call the provider SDK directly without going through the
-  guard. The guard is currently a structural convention (all egress flows through the
-  orchestrator's <code>_run_one_stage</code>); when adding the first live adapter, move or re-assert the
-  screen at the provider boundary so a new adapter cannot bypass it.</li>
-<li>Run <code>scripts/yield_harness.py</code> against the live OpenRouter adapter over a 20-story sample and
-  record the result.</li>
-<li><strong>Tighten the Stage A structure prompt's budget constraints.</strong> The 2026-06-22 probe found the
-  dominant yield failure is L1-7 "budget" (<code>branch_depth</code> over the band cap, <code>ending_count</code> not
-  matching the brief): the structure prompt defers these numbers to the injected drafting guide
-  instead of stating them inline. State the hard band budget numerically and prominently (max
-  branch depth, min/max nodes from <code>layer1.py</code>'s band table, and "produce exactly <code>ending_count</code>
-  endings"). This is the highest-leverage yield lever and is model-independent. Document the
-  change in the harness output per the out-of-scope note below.</li>
-</ul>
-<h3 id="out-of-scope">Out of scope<a class="headerlink" href="#out-of-scope" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Changes to the orchestrator, validator, or PII guard logic.</li>
-<li>New story-format features or schema changes.</li>
-<li>Prompt-template authoring (templates ship in Phase 2; adjust them only if yield measurement
-  reveals a systematic failure pattern, and document the change in the harness output).</li>
-<li>Provider billing, quota, or rate-limit dashboards (operational concern, not code).</li>
-<li>The direct <strong>Anthropic SDK</strong> adapter: deferred. Claude is reached via OpenRouter
-  (<code>anthropic/claude-sonnet-4.6</code>); a standalone SDK path is unnecessary while the operator routes
-  Claude through OpenRouter. Revisit only if a billed Anthropic account is used directly.</li>
-</ul>
-<hr />
-<h2 id="acceptance-criteria">Acceptance Criteria<a class="headerlink" href="#acceptance-criteria" title="Permanent link">&para;</a></h2>
-<p>Both criteria must be met for this work package to close Phase 2 fully:</p>
-<ol>
-<li>
-<p><strong>Provider swap is a config change only.</strong> Setting <code>settings.generation_provider</code> to
-   <code>openrouter</code> or <code>ollama</code> selects the corresponding adapter with no code changes (the
-   <code>claude</code> value stays in the enum for the deferred direct-Anthropic adapter and raises
-   <code>ConfigurationError</code> until that adapter is implemented). The orchestrator, harness, and API
-   endpoints are unaffected.</p>
-</li>
-<li>
-<p><strong>Generation yield at least 60% over a 20-story sample.</strong> Running
-   <code>scripts/yield_harness.py --briefs &lt;20-brief sample&gt;.json --provider openrouter --threshold 0.60</code>
-   against the live OpenRouter adapter (the primary per ADR-003 as amended 2026-06-22; model
-   pinned via <code>settings.openrouter_model</code>; the sample size is the number of briefs in the file)
-   produces a pass rate at or above 60% (stories that pass the full validation gate with zero
-   structural edits, prose-only tweaks allowed). The harness output is committed to
-   <code>docs/planning/yield-results/phase-2b-YYYY-MM-DD.json</code>. Run debug iterations against a
-   <code>:free</code> model (e.g. <code>google/gemma-4-31b-it:free</code>) so paid measurement is a few confirmation
-   runs only.</p>
-</li>
-</ol>
-<hr />
-<h2 id="key-constraints-and-guidelines">Key Constraints and Guidelines<a class="headerlink" href="#key-constraints-and-guidelines" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>ADR-003</strong> governs provider selection rationale and the interface contract. Any deviation
-  from the interface requires an ADR amendment before implementation.</li>
-<li><strong>Timeout defaults</strong>: 120 s per <code>complete()</code> call; configurable via
-  <code>settings.llm_timeout_seconds</code>.</li>
-<li><strong>Retry policy</strong>: 3 attempts with exponential backoff (2 s, 4 s, 8 s); on exhaustion, raise
-  <code>ProviderError</code> and let the orchestrator route to <code>needs_revision</code>.</li>
-<li><strong>Unavailable-model fallback (OpenRouter roster churns weekly)</strong>: the adapter MUST map an
-  "invalid model" response (HTTP 400/404) to <code>ProviderError</code>, and <code>build_provider</code> cascades
-  <code>openrouter_model</code> -&gt; <code>openrouter_fallback_model</code> -&gt; <code>ollama</code> so a vanished pinned model is a
-  fallback trigger, not a crash. Pin first-party families (Anthropic, Google) that survive churn.</li>
-<li><strong>OpenRouter free-tier limits</strong>: <code>:free</code> models allow 20 req/min and 50 req/day under $10 of
-  purchased credits (1,000/day at &gt;=$10). A 20-story run is ~100 calls, so a one-time $10 top-up is
-  required to complete a free-model run in a day; reserve free models for debug iterations.</li>
-<li><strong>Acceptable model families (minors' content, ADR-004)</strong>: production generation routes only to
-  providers with a defensible data policy (Anthropic, Google); other OpenRouter labs are for
-  local/free experimentation only.</li>
-<li><strong>No PII in prompts</strong>: the PII guard is the enforcement point; adapters must not construct
-  prompts independently of the orchestrator.</li>
-<li><strong>MockProvider remains the default</strong> in CI and local development until
-  <code>settings.generation_provider</code> is explicitly set to a live value. This prevents accidental
-  LLM calls during automated test runs.</li>
-</ul>
-<hr />
-<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../adr/adr-003-frontier-llm-generation/">ADR-003: Frontier LLM for generation</a></li>
-<li><a href="../roadmap/#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">Phase 2 roadmap entry</a></li>
-<li><a href="../PROJECT-PLAN/#phase-2-validation-gate-and-authoring-pipeline-4-6-weeks">PROJECT-PLAN.md Phase 2 section</a></li>
+<li><a href="../roadmap/">Development Roadmap</a> (phase definitions)</li>
+<li><a href="../PROJECT-PLAN/">Project Plan</a> (detailed phase tasks and quality gates)</li>
+<li><a href="../phase-2b-live-provider/">Phase 2b: live providers and yield</a></li>
+<li><a href="../adr/adr-005-mandatory-human-approval/">ADR-005: mandatory human approval</a></li>
 </ul>
 
 
@@ -2656,7 +2826,7 @@ the defined extension points:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 20:01:21 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
   </span>
 
     
