@@ -649,6 +649,17 @@ targets = ["src"]
 [tool.bandit.assert_used]
 skips = ["**/test_*.py", "**/*_test.py"]
 
+[tool.test-coverage-agent]
+critical_modules = [
+    "src/cyo_adventure/api/approval.py",
+    "src/cyo_adventure/api/deps.py",
+    "src/cyo_adventure/middleware/security.py",
+    "src/cyo_adventure/publishing/service.py",
+    "src/cyo_adventure/publishing/state_machine.py",
+]
+critical_line_threshold = 90
+critical_branch_threshold = 80
+
 # Vulture Configuration (Dead Code Detection)
 # Detects unused code to maintain clean codebase
 # Run: uv run vulture src/
