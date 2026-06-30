@@ -7,7 +7,14 @@ from pathlib import Path
 
 import pytest
 
-from scripts.render_skeleton_diagrams import generate_puml, slug_for, write_outputs
+from scripts.render_skeleton_diagrams import (
+    check_outputs,
+    generate_puml,
+    render_svgs,
+    slug_for,
+    verify_sha256,
+    write_outputs,
+)
 
 
 def _write_skeleton(root: Path) -> Path:
@@ -134,3 +141,61 @@ def test_write_outputs_writes_files(tmp_path: Path) -> None:
     target = tmp_path / "out" / "3-5" / "demo-diagram.puml"
     write_outputs({target: "@startuml x\n@enduml\n"})
     assert target.read_text(encoding="utf-8") == "@startuml x\n@enduml\n"
+
+
+# ---------------------------------------------------------------------------
+# check_outputs unit tests (carry-forward from Task 4 review)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_check_outputs_missing_file_is_stale(tmp_path: Path) -> None:
+    path = tmp_path / "missing.puml"
+    stale = check_outputs({path: "@startuml x\n@enduml\n"})
+    assert path in stale
+
+
+@pytest.mark.unit
+def test_check_outputs_different_content_is_stale(tmp_path: Path) -> None:
+    path = tmp_path / "old.puml"
+    path.write_text("@startuml old\n@enduml\n", encoding="utf-8")
+    stale = check_outputs({path: "@startuml new\n@enduml\n"})
+    assert path in stale
+
+
+@pytest.mark.unit
+def test_check_outputs_matching_content_not_stale(tmp_path: Path) -> None:
+    path = tmp_path / "current.puml"
+    content = "@startuml x\n@enduml\n"
+    path.write_text(content, encoding="utf-8")
+    stale = check_outputs({path: content})
+    assert path not in stale
+
+
+# ---------------------------------------------------------------------------
+# verify_sha256 and render_svgs tests (Task 5)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_verify_sha256_matches_known_digest(tmp_path: Path) -> None:
+    blob = tmp_path / "x.jar"
+    blob.write_bytes(b"hello")
+    # sha256("hello")
+    expected = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+    assert verify_sha256(blob, expected) is True
+
+
+@pytest.mark.unit
+def test_verify_sha256_rejects_mismatch(tmp_path: Path) -> None:
+    blob = tmp_path / "x.jar"
+    blob.write_bytes(b"hello")
+    assert verify_sha256(blob, "0" * 64) is False
+
+
+@pytest.mark.unit
+def test_render_svgs_skips_gracefully_without_jar(tmp_path: Path) -> None:
+    puml = tmp_path / "a.puml"
+    puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
+    # jar=None means "unavailable"; must return [] and not raise.
+    assert render_svgs([puml], jar=None) == []
