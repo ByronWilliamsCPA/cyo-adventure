@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import pytest
 
-from cyo_adventure.generation.diagram import _parse_fill
+from cyo_adventure.generation.diagram import _parse_fill, skeleton_to_plantuml
 
 
 @pytest.mark.unit
@@ -22,3 +22,88 @@ def test_parse_fill_handles_completion_role() -> None:
 @pytest.mark.unit
 def test_parse_fill_returns_none_for_non_fill_body() -> None:
     assert _parse_fill("Once upon a time the fox was warm.") == (None, None)
+
+
+def _tiny_skeleton() -> dict[str, object]:
+    """A minimal valid-shaped skeleton dict (not gate-validated; transform is pure)."""
+    return {
+        "title": "Tiny Tale",
+        "start_node": "n_start",
+        "metadata": {
+            "age_band": "3-5",
+            "tier": 1,
+            "estimated_minutes": 5,
+            "topology": "loop_and_grow",
+            "ending_count": 1,
+        },
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "<<FILL role=setup words=85 beats='start'>>",
+                "is_ending": False,
+                "choices": [
+                    {"id": "c_go", "label": "Go to the end.", "target": "n_end"},
+                ],
+            },
+            {
+                "id": "n_end",
+                "body": "<<FILL role=completion words=80 beats='done'>>",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_end",
+                    "valence": "positive",
+                    "kind": "completion",
+                    "title": "The End",
+                },
+            },
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_transform_wraps_in_startuml_enduml() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert out.startswith("@startuml")
+    assert out.rstrip().endswith("@enduml")
+
+
+@pytest.mark.unit
+def test_transform_emits_start_transition() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "[*] --> n_start" in out
+
+
+@pytest.mark.unit
+def test_transform_emits_a_state_per_node() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "state n_start" in out
+    assert "state n_end" in out
+
+
+@pytest.mark.unit
+def test_transform_emits_labeled_choice_transition() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "n_start --> n_end : Go to the end." in out
+
+
+@pytest.mark.unit
+def test_transform_truncates_long_choice_labels() -> None:
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    first = nodes[0]
+    assert isinstance(first, dict)
+    choices = first["choices"]
+    assert isinstance(choices, list)
+    choice = choices[0]
+    assert isinstance(choice, dict)
+    choice["label"] = "x" * 80
+    out = skeleton_to_plantuml(skel)
+    assert ("x" * 40 + "...") in out
+    assert ("x" * 41) not in out
+
+
+@pytest.mark.unit
+def test_transform_emits_terminal_transition_for_endings() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "n_end --> [*]" in out
