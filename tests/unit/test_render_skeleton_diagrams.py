@@ -199,3 +199,19 @@ def test_render_svgs_skips_gracefully_without_jar(tmp_path: Path) -> None:
     puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
     # jar=None means "unavailable"; must return [] and not raise.
     assert render_svgs([puml], jar=None) == []
+
+
+@pytest.mark.unit
+def test_check_outputs_returns_only_stale_in_mixed_mapping(tmp_path: Path) -> None:
+    fresh_content = "@startuml fresh\n@enduml\n"
+    fresh_path = tmp_path / "fresh.puml"
+    fresh_path.write_text(fresh_content, encoding="utf-8")
+
+    stale_path = tmp_path / "stale.puml"
+    # stale_path does not exist on disk
+
+    mapping = {fresh_path: fresh_content, stale_path: "@startuml stale\n@enduml\n"}
+    result = check_outputs(mapping)
+
+    assert stale_path in result
+    assert fresh_path not in result

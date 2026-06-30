@@ -31,8 +31,8 @@ DEFAULT_OUT = REPO_ROOT / "docs" / "architecture" / "diagrams" / "skeletons"
 PLANTUML_VERSION = "1.2024.7"
 PLANTUML_SHA256 = "e34c12bbe9944f1f338ca3d88c9b116b86300cc8e90b35c4086b825b5ae96d24"
 PLANTUML_URL = (
-    "https://github.com/plantuml/plantuml/releases/download/"
-    f"v{PLANTUML_VERSION}/plantuml-{PLANTUML_VERSION}.jar"
+    f"https://github.com/plantuml/plantuml/releases/download/v{PLANTUML_VERSION}"
+    f"/plantuml-{PLANTUML_VERSION}.jar"
 )
 JAR_CACHE = (
     Path.home() / ".cache" / "cyo-adventure" / f"plantuml-{PLANTUML_VERSION}.jar"
@@ -124,6 +124,7 @@ def render_svgs(puml_paths: list[Path], *, jar: Path | None) -> list[Path]:
         subprocess.run(  # nosec B603 B607
             ["java", "-jar", str(jar), "-tsvg", str(puml)],
             check=True,
+            capture_output=True,
         )
         svg = puml.with_suffix(".svg")
         if svg.is_file():
@@ -170,10 +171,11 @@ def main(argv: list[str] | None = None) -> int:
     if not args.no_svg:
         jar = resolve_jar()
         if jar is None:
-            sys.stderr.write(
-                "PlantUML jar unavailable or unverified; skipped SVG rendering. "
-                "Set PLANTUML_JAR or allow network access to render.\n"
+            _msg = (
+                "PlantUML jar unavailable or unverified; skipped SVG rendering."
+                " Set PLANTUML_JAR or allow network access to render.\n"
             )
+            sys.stderr.write(_msg)
         else:
             rendered = render_svgs(written, jar=jar)
             sys.stdout.write(f"Rendered {len(rendered)} .svg file(s).\n")
