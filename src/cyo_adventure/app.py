@@ -8,20 +8,44 @@ generated frontend client.
 
 from __future__ import annotations
 
+from typing import Any
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from cyo_adventure.api import generation, health, library, ratings, reading
+from cyo_adventure.api import approval, generation, health, library, ratings, reading
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
     ProjectBaseError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 from cyo_adventure.middleware import CorrelationMiddleware, add_security_middleware
+from cyo_adventure.utils.logging import get_logger
+
+logger = get_logger(__name__)
 
 _INTERNAL_ERROR = {"error": "InternalError", "message": "internal error"}
+
+# Detail keys that carry caller-supplied input (`value`) or internal state
+# (`context`, e.g. a resource's lifecycle status) and must not be disclosed in
+# the client-facing error body. They are retained in the server log only.
+_SENSITIVE_DETAIL_KEYS = frozenset({"value", "context"})
+
+
+def _client_safe_error(payload: dict[str, Any]) -> dict[str, Any]:
+    """Return a copy of an error payload with sensitive detail keys removed."""
+    safe = dict(payload)
+    details = safe.get("details")
+    if isinstance(details, dict):
+        pruned = {k: v for k, v in details.items() if k not in _SENSITIVE_DETAIL_KEYS}
+        if pruned:
+            safe["details"] = pruned
+        else:
+            safe.pop("details", None)
+    return safe
 
 
 def _status_for(exc: ProjectBaseError) -> int:
@@ -41,22 +65,42 @@ def _status_for(exc: ProjectBaseError) -> int:
         return 404
     if isinstance(exc, ValidationError):
         return 422
+    if isinstance(exc, StateTransitionError):
+        return 409
     return 400
 
 
 def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
     """Render a core exception as a JSON error response.
 
+    The full error payload (including caller `value` and internal `context`)
+    is logged server-side; the client body is sanitized so it never discloses
+    raw input or internal lifecycle state.
+
     Args:
         _request: The incoming request (unused).
         exc: The exception raised during handling.
 
     Returns:
-        JSONResponse: The error body with the mapped status code.
+        JSONResponse: The sanitized error body with the mapped status code.
     """
     if not isinstance(exc, ProjectBaseError):
         return JSONResponse(status_code=500, content=_INTERNAL_ERROR)
-    return JSONResponse(status_code=_status_for(exc), content=exc.to_dict())
+    status = _status_for(exc)
+    payload = exc.to_dict()
+    # #CRITICAL: security: the full payload (value/context) goes to the server
+    # log only; the client body is pruned of caller input and internal state to
+    # avoid information disclosure (CWE-209).
+    # #VERIFY: _client_safe_error drops `value` and `context`; structured log
+    # retains them for debugging.
+    logger.warning(
+        "project_error",
+        error=payload.get("error"),
+        message=payload.get("message"),
+        status_code=status,
+        details=payload.get("details"),
+    )
+    return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
 
 def create_app() -> FastAPI:
@@ -79,6 +123,7 @@ def create_app() -> FastAPI:
     app.include_router(reading.router)
     app.include_router(generation.router)
     app.include_router(ratings.router)
+    app.include_router(approval.router)
     return app
 
 

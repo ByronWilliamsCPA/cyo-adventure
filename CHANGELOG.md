@@ -23,6 +23,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it does not scrub.
 - Removed plaintext database credentials from `core/config.py`; moved example
   values to `.env.example` only.
+- Enforced admin-approval invariant for published stories (Phase 3 slice 1): a
+  story can reach a child profile only with a recorded admin approval. The
+  guarantee is held by four layers: a frozen publish state machine
+  (`publishing/state_machine.py`, illegal transitions raise
+  `StateTransitionError` mapped to HTTP 409); a single write path
+  (`publishing/service.py::approve` is the sole setter of `status="published"`,
+  stamping `approved_by` and `published_at` atomically server-side, never from
+  client input); read-path defenses on both `list_library` (INNER JOIN requiring
+  `approved_by IS NOT NULL`) and `get_storybook_version` (non-admin callers get
+  404, not 403, for any non-published/unapproved/non-current version, hiding
+  draft existence); and an end-to-end invariant lock test. A new admin role
+  screens content cross-family; guardians have no draft or approval access in
+  this slice.
+- Error responses no longer disclose caller-supplied `value` or internal
+  lifecycle `context` (e.g. a resource's `status`) in the client-facing body;
+  the full payload is retained in the server log only (CWE-209, red-team
+  Finding 3).
 
 ### Added
 - Unit test coverage raised from ~80% to 96.89% across all source modules:

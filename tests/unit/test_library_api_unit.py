@@ -457,6 +457,9 @@ class TestGetStorybookVersion:
         book = _published_book("story-1", family_id, version=1)
         blob: dict[str, object] = {"title": "Test", "nodes": []}
         version = _version_row("story-1", 1, blob=blob)
+        # approved_by must be set: the library guard rejects non-admin reads of
+        # unapproved versions even when the story status is published (Task 6).
+        version.approved_by = uuid.uuid4()
         get_map: dict[tuple[type[object], object], object] = {
             (Storybook, "story-1"): book,
             (StorybookVersion, ("story-1", 1)): version,

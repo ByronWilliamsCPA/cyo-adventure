@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -53,6 +54,8 @@ class Seed:
     """Identifiers and tokens for the seeded fixture data."""
 
     family_id: uuid.UUID
+    admin_user_id: uuid.UUID
+    admin_token: str
     guardian_token: str
     child_token: str
     child_profile_id: uuid.UUID
@@ -167,8 +170,10 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
         session.add_all([profile_a, profile_b])
         await session.flush()
 
+        admin_a = User(family_id=fam_a.id, role="admin", authn_subject="admin-a")
         session.add_all(
             [
+                admin_a,
                 User(family_id=fam_a.id, role="guardian", authn_subject="guardian-a"),
                 User(
                     family_id=fam_a.id,
@@ -191,6 +196,7 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
                 ),
             ]
         )
+        await session.flush()
 
         story_id = str(blob["id"])
         version = int(blob["version"])
@@ -202,11 +208,21 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
                 status="published",
             )
         )
-        session.add(StorybookVersion(storybook_id=story_id, version=version, blob=blob))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=version,
+                blob=blob,
+                approved_by=admin_a.id,
+                published_at=datetime.now(UTC),
+            )
+        )
         await session.commit()
 
         return Seed(
             family_id=fam_a.id,
+            admin_user_id=admin_a.id,
+            admin_token="admin-a",
             guardian_token="guardian-a",
             child_token="child-a",
             child_profile_id=profile_a.id,

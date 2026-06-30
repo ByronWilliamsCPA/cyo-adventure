@@ -12,7 +12,7 @@ import uuid
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
-from sqlalchemy import select, tuple_
+from sqlalchemy import and_, select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
@@ -91,17 +91,26 @@ async def list_library(
     Returns:
         LibraryView: The published stories in the profile's family.
     """
-    # #CRITICAL: security: the library is scoped to the principal's own family and
-    # the requested profile is authorized, so a child cannot list another family's
-    # or profile's stories (IDOR).
-    # #VERIFY: authorize_profile raises -> 403; the query filters on family_id.
+    # #CRITICAL: security: the library is scoped to the principal's own family,
+    # the requested profile is authorized, and only APPROVED published versions
+    # are listed (read-path leg of the no-unapproved-publish invariant).
+    # #VERIFY: the join requires approved_by IS NOT NULL on the published version.
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
     rows = await session.scalars(
-        select(Storybook).where(
+        select(Storybook)
+        .join(
+            StorybookVersion,
+            and_(
+                StorybookVersion.storybook_id == Storybook.id,
+                StorybookVersion.version == Storybook.current_published_version,
+            ),
+        )
+        .where(
             Storybook.family_id == principal.family_id,
             Storybook.status == _PUBLISHED,
             Storybook.current_published_version.is_not(None),
+            StorybookVersion.approved_by.is_not(None),
         )
     )
     books = [
@@ -150,16 +159,27 @@ async def get_storybook_version(
     Raises:
         ResourceNotFoundError: If the story or version does not exist.
     """
-    # #CRITICAL: security: family ownership is authorized before the blob is
-    # returned, so a token for one family cannot fetch another family's story.
-    # #VERIFY: authorize_family raises AuthorizationError -> 403.
     book = await session.get(Storybook, storybook_id)
     if book is None:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    authorize_family(principal, book.family_id)
+    # #CRITICAL: security: a global admin may read any version of any family (to
+    # review drafts). A guardian or child is scoped to their own family and may
+    # read ONLY the approved, published, current version; 404 (not 403) so a
+    # draft's existence is not revealed.
+    # #VERIFY: non-admin cross-family -> 403; non-admin + (unpublished |
+    # non-current | unapproved) -> 404; admin -> any blob.
+    if not principal.is_admin:
+        authorize_family(principal, book.family_id)
     version_row = await session.get(StorybookVersion, (storybook_id, version))
     if version_row is None:
+        msg = f"version {version} of storybook '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    if not principal.is_admin and (
+        book.status != _PUBLISHED
+        or book.current_published_version != version
+        or version_row.approved_by is None
+    ):
         msg = f"version {version} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
     return version_row.blob

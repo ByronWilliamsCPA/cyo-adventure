@@ -74,6 +74,7 @@ allowed:
   - quality
   - quality_assurance
   - security
+  - supply_chain
   - compliance
   - licensing
   - license
@@ -95,3 +96,4 @@ allowed:
   - boundaries
   - feedback
   - template
+  - template_feedback

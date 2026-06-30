@@ -7,8 +7,11 @@ create_app() returning a configured FastAPI instance.
 
 from __future__ import annotations
 
+import json
+from unittest.mock import MagicMock
+
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
 from cyo_adventure.app import _handle_project_error, _status_for, create_app
@@ -21,6 +24,7 @@ from cyo_adventure.core.exceptions import (
     ExternalServiceError,
     ProjectBaseError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 
@@ -62,6 +66,12 @@ class TestStatusFor:
     def test_external_service_error_falls_back_to_400(self) -> None:
         assert _status_for(ExternalServiceError("upstream down")) == 400
 
+    @pytest.mark.unit
+    def test_status_for_state_transition_is_409(self) -> None:
+        """A StateTransitionError maps to 409; bare BusinessLogicError stays 400."""
+        assert _status_for(StateTransitionError("illegal hop")) == 409
+        assert _status_for(BusinessLogicError("conflict")) == 400
+
 
 # ---------------------------------------------------------------------------
 # _handle_project_error
@@ -72,30 +82,52 @@ class TestHandleProjectError:
     @pytest.mark.unit
     def test_project_base_error_returns_mapped_status(self) -> None:
         """A ProjectBaseError subclass gets the correct status from _status_for."""
-        from unittest.mock import MagicMock
-
         request = MagicMock()
         exc = ResourceNotFoundError("no such item")
         response = _handle_project_error(request, exc)
         assert response.status_code == 404
 
     @pytest.mark.unit
-    def test_project_base_error_body_uses_to_dict(self) -> None:
-        """The response body is the exc.to_dict() JSON."""
-        import json
-        from unittest.mock import MagicMock
-
-        request = MagicMock()
+    def test_project_base_error_body_contains_error_key(self) -> None:
+        """The response body contains the error type key."""
+        request = MagicMock(spec=Request)
         exc = ValidationError("bad value", field="email", value="x")
         response = _handle_project_error(request, exc)
         body = json.loads(response.body)
         assert "error" in body
 
     @pytest.mark.unit
+    def test_handle_project_error_omits_validation_value(self) -> None:
+        """Raw caller input in `value` must not appear in the client response body."""
+        request = MagicMock(spec=Request)
+        exc = ValidationError("bad email", field="email", value="secret@example.com")
+        resp = _handle_project_error(request, exc)
+        assert resp.status_code == 422
+        body = json.loads(bytes(resp.body))
+        details = body.get("details", {})
+        assert "value" not in details
+        assert details.get("field") == "email"
+
+    @pytest.mark.unit
+    def test_handle_project_error_omits_business_context(self) -> None:
+        """Internal lifecycle `context` must not appear in the client response body."""
+        request = MagicMock(spec=Request)
+        exc = StateTransitionError(
+            "cannot approve",
+            rule="invalid_state_transition",
+            context={"from": "draft", "action": "approve"},
+        )
+        resp = _handle_project_error(request, exc)
+        assert resp.status_code == 409
+        body = json.loads(bytes(resp.body))
+        details = body.get("details", {})
+        assert "context" not in details
+        assert details.get("rule") == "invalid_state_transition"
+        assert body["message"] == "cannot approve"
+
+    @pytest.mark.unit
     def test_non_project_error_returns_500_internal(self) -> None:
         """A plain Exception that is not a ProjectBaseError returns 500."""
-        from unittest.mock import MagicMock
-
         request = MagicMock()
         exc = RuntimeError("unexpected")
         response = _handle_project_error(request, exc)
@@ -104,9 +136,6 @@ class TestHandleProjectError:
     @pytest.mark.unit
     def test_non_project_error_body_is_internal_error(self) -> None:
         """The 500 body contains the generic InternalError key."""
-        import json
-        from unittest.mock import MagicMock
-
         request = MagicMock()
         response = _handle_project_error(request, RuntimeError("boom"))
         body = json.loads(response.body)
@@ -114,16 +143,12 @@ class TestHandleProjectError:
 
     @pytest.mark.unit
     def test_authentication_error_returns_401(self) -> None:
-        from unittest.mock import MagicMock
-
         request = MagicMock()
         response = _handle_project_error(request, AuthenticationError("unauth"))
         assert response.status_code == 401
 
     @pytest.mark.unit
     def test_authorization_error_returns_403(self) -> None:
-        from unittest.mock import MagicMock
-
         request = MagicMock()
         response = _handle_project_error(request, AuthorizationError("denied"))
         assert response.status_code == 403

@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-06-20
+> **Status**: Active | **Updated**: 2026-06-29
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -23,6 +23,34 @@ generation, then safety and review, then library/profiles, editor, and hardening
 six phases over roughly 16 to 25 weeks for a 1 to 2 developer team. The decided release
 cut puts generation in the first usable release (Phases 0-3 plus a minimal
 library-and-profiles slice, roughly 11 to 16 weeks).
+
+## Current Status (2026-06-29)
+
+Phases 0, 1, 2, and 2b are **delivered and merged to `main`**. The reader plays
+hand-authored stories offline with multi-device 409 reconciliation; the full validation
+gate (Layer 1 graph checks, Layer 2 state-space walk, deterministic age-band policy gate)
+is in place; the staged generation pipeline runs against live providers (OpenRouter
+cascade plus an Ollama homelab leg) and measured **70% yield (14/20)** on a live run,
+clearing the 60% bar. Tier-2 generation remains the weak leg (3/7) and is the carried
+quality risk into Phase 3.
+
+What remains for the **first usable release** is **Phase 3** (the safety and approval
+workflow, not yet started) and **Phase 4a** (library, profiles, and the guardian app
+shell). The Phase-3 database columns exist but no approval/publish/moderation *logic*
+does, and the frontend is still a single-page reader demo with no routing, so the
+guardian-facing surfaces are greenfield. See
+[`completion-plan.md`](./completion-plan.md) for the path from here to v1.
+
+| Phase | Status | Evidence |
+|-------|--------|----------|
+| 0 Foundations | ✅ Delivered | schema, scaffold, CI/security baseline merged |
+| 1 Schema + Reader | ✅ Delivered | player, evaluator, Layer-1, offline PWA reader merged |
+| 2 Gen + Gate | ✅ Delivered | Layer-2 walk, orchestrator, RQ worker, policy gate merged |
+| 2b Live providers + yield | ✅ Delivered | OpenRouter + Ollama adapters; 70% live yield recorded |
+| 3 Safety + Review | ⏸️ Not started | DB schema ready; `safety.py` is a stub; no approval endpoints |
+| 4a Library + Profiles | 🔄 Backend partial | `library`/`ratings` API merged; no frontend, no guardian UI |
+| 4b Editor + UX | ⏸️ Not started | post-release |
+| 5 Hardening | ⏸️ Not started | in-memory rate limiter, backups, restore drill outstanding |
 
 ## Timeline Overview
 
@@ -40,16 +68,20 @@ Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░�
 
 | Milestone | Target | Status | Dependencies |
 |-----------|--------|--------|--------------|
-| M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ⏸️ Planned | None |
-| M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ⏸️ Planned | M0 |
-| M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | 🔄 In progress (partial; see Phase 2b for live-provider wiring and yield measurement) | M1 |
-| M3: Parent approval gate enforced end to end | Wk 11-14 | ⏸️ Planned | M2 |
-| M4: First usable release (generation + library) | Wk 11-16 | ⏸️ Planned | M3 |
-| M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Planned | M4 |
+| M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ✅ Delivered | None |
+| M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ✅ Delivered | M0 |
+| M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) | M1 |
+| M3: Parent approval gate enforced end to end | Wk 11-14 | ⏸️ Not started (next; Phase 3) | M2 |
+| M4: First usable release (generation + library) | Wk 11-16 | ⏸️ Not started (needs Phase 3 + 4a) | M3 |
+| M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4 |
 
 ---
 
 ## Phase 0: Implementation gate (1-2 weeks)
+
+**Status**: ✅ Delivered. Schema, runtime semantics, validator rule catalog, MVP cut,
+auth matrix, privacy model, and the CI/security baseline are merged; the Phase-0 punch
+list (PL-01..PL-18) is closed.
 
 ### Objective
 
@@ -113,6 +145,11 @@ through PL-14).
 
 ## Phase 1: Schema, runtime, and reader MVP (3-5 weeks)
 
+**Status**: ✅ Delivered. Deterministic player (Python + TypeScript, cross-impl
+conformance), in-house condition evaluator, Layer-1 validator, the offline PWA reader
+(XState, IndexedDB, service worker), revision-based sync with the 409 conflict and
+post-eviction download UX, and two hand-authored stories are merged to `main`.
+
 ### Objective
 
 Prove the format and the player with human-written stories before any LLM is involved.
@@ -171,8 +208,11 @@ This phase has no external network egress.
 
 ## Phase 2: Validation gate and authoring pipeline (4-6 weeks)
 
-**Status**: Delivered (validation gate + mock-provider pipeline). Two criteria deferred
-to Phase 2b; see note below.
+**Status**: ✅ Delivered, including Phase 2b. The validation gate and the
+orchestrator shipped first against MockProvider; the two deferred criteria (live
+adapters and measured yield) are now closed: the OpenRouter cascade and Ollama leg are
+merged, and a live run recorded **70% yield (14/20)** on 2026-06-22, clearing the 60%
+bar. Tier-2 is the weak leg (3/7) and carries forward as a quality risk.
 
 ### Objective
 
@@ -198,20 +238,24 @@ call, so the privacy controls and provider data-handling decision are preconditi
   node attribution.
 - ✅ No prompt sent to the provider contains a real child name, birthdate, or sensitive
   trait.
-- ⏳ From a concept brief, the pipeline produces a story that passes the full gate with
-  zero structural edits at least 60% of the time over a 20-story sample. (Deferred to
-  Phase 2b; harness exists but runs against MockProvider.)
+- ✅ From a concept brief, the pipeline produces a story that passes the full gate with
+  zero structural edits at least 60% of the time over a 20-story sample. (Met in Phase
+  2b: 70% (14/20) on a live OpenRouter run, 2026-06-22.)
 
-### Deferred to Phase 2b
+### Phase 2b (closed)
 
-Two acceptance criteria were deliberately deferred after review:
+Two acceptance criteria were deferred from the Phase 2 cut and are now both met:
 
-1. **60% generation yield over a 20-story sample** (requires a live LLM; the harness
-   exists but the in-phase run uses MockProvider).
-2. **Concrete Claude/Ollama/OpenRouter provider adapters** (the `GenerationProvider`
-   protocol and config seam shipped; the HTTP clients did not).
+1. **60% generation yield over a 20-story sample** met at **70% (14/20)** on a live
+   OpenRouter run (`anthropic/claude-haiku-4.5`); result recorded under
+   [`yield-results/`](./yield-results/). Tier-1 passed 11/13; Tier-2 passed only 3/7,
+   so Tier-2 prompt/structure tightening is the open follow-up lever.
+2. **Concrete provider adapters** shipped: OpenRouter (primary, with in-provider
+   fallback) and Ollama (homelab final fallback). A direct Anthropic SDK adapter remains
+   intentionally deferred (Claude is reached via OpenRouter).
 
-These are tracked in [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
+Full scope and the residual Tier-2 lever are in
+[`docs/planning/phase-2b-live-provider.md`](./phase-2b-live-provider.md).
 
 ### Dependencies
 
@@ -221,6 +265,14 @@ These are tracked in [`docs/planning/phase-2b-live-provider.md`](./phase-2b-live
 ---
 
 ## Phase 3: Safety and review workflow (3-4 weeks; overlaps Phase 2)
+
+**Status**: ⏸️ Not started (next on the critical path). The database is Phase-3-ready
+(`storybook.status`, `storybook_version.approved_by`, `published_at`, and
+`moderation_report` columns exist), and the deterministic age-band policy gate
+(`validator/policy.py`, PL-15..18) is in place. What is missing is the *workflow*: the
+LLM moderation pass (`validator/safety.py` is an explicit stub), the publish state
+machine, the guardian approval/send-back endpoints, and the enforced invariant that no
+`published` story exists without a recorded `approved_by`.
 
 ### Objective
 
@@ -247,6 +299,13 @@ Make the kids-facing guarantee real.
 ---
 
 ## Phase 4: Library, profiles, editor, and engagement (3-5 weeks)
+
+**Status**: 🔄 4a backend partial; 4a frontend and 4b not started. The backend
+`library` and `ratings` APIs are merged (the library filters to `published`,
+profile-scoped books). The frontend has **no library, profile, guardian, or concept
+intake UI and no routing** (it is still a single-page reader demo), so the guardian app
+shell is greenfield and is the largest remaining lift for the first release. 4b (editor,
+TTS, ending tracker) is untouched.
 
 ### Objective
 

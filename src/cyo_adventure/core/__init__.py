@@ -11,11 +11,11 @@ from cyo_adventure.core.exceptions import (
     ExternalServiceError,
     ProjectBaseError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 
 __all__ = [
-    # Exceptions (sorted alphabetically)
     "APIError",
     "AuthenticationError",
     "AuthorizationError",
@@ -25,7 +25,7 @@ __all__ = [
     "ExternalServiceError",
     "ProjectBaseError",
     "ResourceNotFoundError",
-    # Configuration
     "Settings",
+    "StateTransitionError",
     "ValidationError",
 ]

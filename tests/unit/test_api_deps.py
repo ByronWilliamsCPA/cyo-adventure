@@ -338,3 +338,25 @@ class TestAuthStubGuard:
                 )
 
         importlib.reload(deps)
+
+
+@pytest.mark.unit
+def test_principal_is_admin_role() -> None:
+    """is_admin is true only for the admin role; is_guardian stays false for it."""
+    admin = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="admin",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset(),
+    )
+    assert admin.is_admin is True
+    assert admin.is_guardian is False
+    guardian = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="guardian",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset(),
+    )
+    assert guardian.is_admin is False
