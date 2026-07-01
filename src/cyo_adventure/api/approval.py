@@ -10,7 +10,7 @@ the story (404) and calls the publishing service (409 on an illegal transition).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
 from sqlalchemy import func, select
@@ -38,6 +38,17 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
+
+# #ASSUME: data integrity: each `cast("Literal[...]", book.status)` call below
+# assumes approval_service's corresponding call (submit/approve/send_back/archive)
+# leaves book.status at exactly the one literal named, per
+# publishing/state_machine.py's LEGAL_TRANSITIONS. The cast itself performs no
+# runtime check; Pydantic revalidates the claim when the response model is
+# constructed, so a service/state-machine bug surfaces as a loud error there
+# instead of a silently-wrong status.
+# #VERIFY: publishing/state_machine.py's LEGAL_TRANSITIONS still maps SUBMIT,
+# APPROVE, SEND_BACK, and ARCHIVE to exactly in_review, published,
+# needs_revision, and archived respectively (tests/unit/test_state_machine.py).
 
 
 async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
@@ -76,7 +87,7 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     await approval_service.submit(ctx.session, book)
     return SubmittedView(
         id=book.id,
-        status=book.status,
+        status=cast("Literal['in_review']", book.status),
         current_published_version=book.current_published_version,
     )
 
@@ -99,7 +110,7 @@ async def approve_storybook(storybook_id: str, ctx: Context) -> ApprovedView:
         raise BusinessLogicError(msg, rule="publish_without_approver")
     return ApprovedView(
         id=book.id,
-        status=book.status,
+        status=cast("Literal['published']", book.status),
         current_published_version=version,
         approved_by=str(version_row.approved_by),
         published_at=version_row.published_at,
@@ -113,7 +124,11 @@ async def send_back_storybook(
     """Send an in-review story back for revision with a reason (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.send_back(ctx.session, ctx.principal, book, body.reason)
-    return SentBackView(id=book.id, status=book.status, reason=body.reason)
+    return SentBackView(
+        id=book.id,
+        status=cast("Literal['needs_revision']", book.status),
+        reason=body.reason,
+    )
 
 
 @router.post("/storybooks/{storybook_id}/archive")
@@ -121,7 +136,7 @@ async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     """Archive a published story, removing it from the library (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.archive(ctx.session, ctx.principal, book)
-    return ArchivedView(id=book.id, status=book.status)
+    return ArchivedView(id=book.id, status=cast("Literal['archived']", book.status))
 
 
 async def _latest_version(session: AsyncSession, storybook_id: str) -> int:

@@ -121,6 +121,13 @@ class ConceptCreatedResponse(BaseModel):
     concept_id: str
 
 
+# The generation-job lifecycle states, shared by the response model field and the
+# boundary coercion in api/generation.py. GenerationJob.status is a plain string
+# column guarded at rest by the ck_generation_job_status CHECK constraint, so the
+# handler casts the read-back value to this alias and Pydantic revalidates it.
+JobStatusLiteral = Literal["queued", "running", "passed", "needs_review", "failed"]
+
+
 class GenerationEnqueuedResponse(BaseModel):
     """Response returned after a generation job is created and enqueued."""
 
@@ -132,7 +139,7 @@ class GenerationJobResponse(BaseModel):
     """Full status payload for a generation job."""
 
     id: str
-    status: Literal["queued", "running", "passed", "needs_review", "failed"]
+    status: JobStatusLiteral
     report: dict[str, object] | None = None
     storybook_id: str | None = None
     version: int | None = None
