@@ -57,6 +57,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- K-12 storybook design system package at `frontend/design-system/`: 7 React
+  components (`Button`, `ChoiceButton`, `Dialog`, `EmptyState`, `PassageText`,
+  `ProgressBar`, `StatusBadge`) plus committed design-sync artifacts for
+  deterministic re-sync to the CYO Design System project on claude.ai/design.
 - Phase 3 slice 2: staged content-moderation review pipeline. Generated stories are
   screened between the deterministic gate and guardian review by a deterministic
   classifier pre-filter (OpenAI Moderation + Perspective), an LLM safety hard gate,

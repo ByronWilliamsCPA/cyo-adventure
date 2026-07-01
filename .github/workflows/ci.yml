@@ -97,8 +97,68 @@ jobs:
       - name: Upload frontend coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: ./frontend/coverage/lcov.info
+          # v6's action.yml has no singular "file" input (only plural "files");
+          # the old key was silently ignored, and lcov.info's SF: paths are
+          # relative to frontend/, so working-directory is required to map
+          # them back to the PR diff correctly.
+          files: ./coverage/lcov.info
+          # Vitest's v8 provider also writes coverage/coverage-final.json,
+          # which Codecov's auto-search picks up as a second report and
+          # merges alongside the explicit lcov.info, diluting/mismapping
+          # per-file results. We already pass the exact file, so disable
+          # search entirely.
+          disable_search: true
+          working-directory: frontend
           flags: frontend
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  design-system:
+    name: Design System (Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: ./frontend/design-system
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/design-system/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm run test:run -- --coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload design-system coverage
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
+        with:
+          files: ./coverage/lcov.info
+          disable_search: true
+          working-directory: frontend/design-system
+          flags: design-system
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -107,7 +167,7 @@ jobs:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [ci, frontend]
+    needs: [ci, frontend, design-system]
     if: always()
     permissions:
       contents: read
@@ -122,10 +182,12 @@ jobs:
         env:
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
+          DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
         run: |
           FAILED=false
           [ "$CI_RESULT" != "success" ] && FAILED=true
           [ "$FRONTEND_RESULT" != "success" ] && FAILED=true
+          [ "$DESIGN_SYSTEM_RESULT" != "success" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
             echo "CI Gate failed"
             exit 1
