@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/architecture/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-30-skeleton-structure-diagrams-design/">
       
       
-        <link rel="prev" href="../api-reference/">
-      
-      
-        <link rel="next" href="system-overview/">
       
       
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Architecture Overview - CYO Adventure</title>
+        <title>Skeleton Structure Diagrams and Catalog (Design) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#architecture-pages" class="md-skip">
+        <a href="#1-problem-and-goal" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href=".." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture Overview
+              Skeleton Structure Diagrams and Catalog (Design)
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href=".." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,13 +296,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -328,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -350,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -372,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../planning/" class="md-tabs__link">
+        <a href="../../../planning/" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href=".." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -787,8 +781,6 @@
       
   
   
-    
-  
   
   
     
@@ -812,23 +804,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -853,13 +844,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -879,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -914,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -949,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -984,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1019,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1125,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1160,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1195,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1230,7 +1221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1334,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1369,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1404,7 +1395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1481,7 +1472,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/" class="md-nav__link ">
+            <a href="../../../planning/" class="md-nav__link ">
               
   
   
@@ -1532,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/project-vision/" class="md-nav__link">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1567,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/tech-spec/" class="md-nav__link">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1602,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1637,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/roadmap/" class="md-nav__link">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1709,7 +1700,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../planning/adr/" class="md-nav__link ">
+            <a href="../../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1760,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1795,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1830,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1865,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1900,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1935,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2049,7 +2040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2084,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2119,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2154,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2223,7 +2214,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2274,7 +2265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2334,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#architecture-pages" class="md-nav__link">
+  <a href="#1-problem-and-goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Pages
+        1. Problem and goal
       
     </span>
   </a>
@@ -2345,10 +2336,88 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#diagram-index" class="md-nav__link">
+  <a href="#2-background-what-a-skeleton-is" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Diagram Index
+        2. Background: what a skeleton is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Background: what a skeleton is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#current-library-3-of-6-bands-populated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Current library (3 of 6 bands populated)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-approach-deterministic-generator-three-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Approach: deterministic generator, three layers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Approach: deterministic generator, three layers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-pure-transform" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Pure transform
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-cli-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 CLI shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-render-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Render step
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-the-diagram-a-plantuml-state-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The diagram: a PlantUML state diagram
       
     </span>
   </a>
@@ -2356,10 +2425,38 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#system-at-a-glance" class="md-nav__link">
+  <a href="#5-catalog-data-dictionary-doc" class="md-nav__link">
     <span class="md-ellipsis">
       
-        System at a Glance
+        5. Catalog + data-dictionary doc
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Catalog + data-dictionary doc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-drift-to-flag-not-fix-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known drift to flag (not fix here)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Testing
       
     </span>
   </a>
@@ -2367,10 +2464,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#key-design-decisions" class="md-nav__link">
+  <a href="#7-components-and-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Key Design Decisions
+        7. Components and boundaries
       
     </span>
   </a>
@@ -2378,10 +2475,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture-decision-records" class="md-nav__link">
+  <a href="#8-risks-and-fallback" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architecture Decision Records
+        8. Risks and fallback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-out-of-scope-yagni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Out of scope (YAGNI)
       
     </span>
   </a>
@@ -2408,225 +2516,300 @@
   
 
 
-  <h1>Overview</h1>
+  <h1>Skeleton Structure Diagrams and Catalog (Design)</h1>
 
-<p>CYO Adventure is a choose-your-own-adventure reading app for kids. A React 19 PWA
-lets children read branching stories offline; a FastAPI backend serves the library,
-manages reading progress, and runs an LLM-powered generation pipeline behind a
-deterministic validation gate and mandatory guardian approval (ADR-005).</p>
-<h2 id="architecture-pages">Architecture Pages<a class="headerlink" href="#architecture-pages" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Branch: <code>feat/skeleton-diagrams</code> (worktree <code>.worktrees/feat-skeleton-diagrams</code>,
+based on <code>origin/main</code>) | Date: 2026-06-30 | Author: Byron Williams (with Claude)</p>
+</blockquote>
+<h2 id="1-problem-and-goal">1. Problem and goal<a class="headerlink" href="#1-problem-and-goal" title="Permanent link">&para;</a></h2>
+<p>The preset story skeletons under <code>skeletons/</code> are structurally-valid Storybook
+shells: directed graphs of nodes whose non-ending bodies carry a <code>&lt;&lt;FILL ...&gt;&gt;</code>
+directive. Reviewing them today means reading JSON node-by-node and mentally
+reconstructing the branching shape. As the library grows toward the full matrix
+(six age bands x story lengths), this does not scale, and there is no single
+surface that answers "what structures do we already have?"</p>
+<p><strong>Goal.</strong> Produce a visual, faithful diagram for every skeleton, plus one
+reference document that catalogs the library and defines the controlled
+vocabulary behind it. Diagrams must be exact (built from the JSON, not drawn by
+hand or by an AI image model) and must not be able to silently drift from the
+data.</p>
+<p><strong>Non-goal.</strong> Authoring the missing band x length skeletons; generating
+illustrative or cover art (AI image generation is explicitly out of scope for
+these structural diagrams, where a hallucinated edge would mislead a reviewer).</p>
+<h2 id="2-background-what-a-skeleton-is">2. Background: what a skeleton is<a class="headerlink" href="#2-background-what-a-skeleton-is" title="Permanent link">&para;</a></h2>
+<p>A skeleton (see <code>src/cyo_adventure/generation/skeleton.py</code>) is loaded and
+validated through the existing gate's blocking layers (structure, references,
+reachability, termination, budget) at load time. Each skeleton has:</p>
+<ul>
+<li><code>start_node</code> (entry).</li>
+<li><code>nodes[]</code>, each with <code>id</code>, <code>body</code>, <code>is_ending</code>. Non-ending nodes carry a
+  <code>&lt;&lt;FILL role=ROLE words=N beats='...'&gt;&gt;</code> directive and a list of <code>choices</code>
+  (<code>id</code>, <code>label</code>, <code>target</code>). Ending nodes carry an <code>ending</code> object
+  (<code>valence</code>, <code>kind</code>, <code>title</code>).</li>
+<li><code>metadata</code>: <code>age_band</code>, <code>reading_level</code>, <code>tier</code>, <code>themes</code>,
+  <code>estimated_minutes</code>, <code>ending_count</code>, <code>content_flags</code>, <code>topology</code>.</li>
+</ul>
+<p>The graph is therefore directly renderable as a state machine: <code>[*]</code> to the
+start node, choices as labeled transitions, ending nodes as terminal states.</p>
+<h3 id="current-library-3-of-6-bands-populated">Current library (3 of 6 bands populated)<a class="headerlink" href="#current-library-3-of-6-bands-populated" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Page</th>
-<th>Description</th>
+<th>Skeleton</th>
+<th>Band</th>
+<th>Length (est. min)</th>
+<th>Tier</th>
+<th>Topology</th>
+<th>Nodes</th>
+<th>Endings (valence)</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="system-overview/">System Overview</a></td>
-<td>C4 context and container diagrams; publish state machine</td>
+<td>The Lost Mitten</td>
+<td>3-5</td>
+<td>5</td>
+<td>1</td>
+<td>loop_and_grow</td>
+<td>11</td>
+<td>3 (3 positive)</td>
 </tr>
 <tr>
-<td><a href="generation-pipeline/">Generation Pipeline</a></td>
-<td>Staged LLM generation (Structure/Prose/Repair), provider fallback</td>
+<td>The Clocktower Cipher</td>
+<td>10-13</td>
+<td>18</td>
+<td>1</td>
+<td>branch_and_bottleneck</td>
+<td>25</td>
+<td>8 (3 positive, 1 neutral, 4 negative)</td>
 </tr>
 <tr>
-<td><a href="validation-and-player/">Validation and Player</a></td>
-<td>Validator gate, story engine, offline sync</td>
-</tr>
-<tr>
-<td><a href="data-model/">Data Model</a></td>
-<td>9 ORM tables, ER diagram, relationships</td>
-</tr>
-<tr>
-<td><a href="story-skeletons/">Story Skeletons</a></td>
-<td>Preset skeleton structure diagrams and metadata data dictionary</td>
-</tr>
-<tr>
-<td><a href="deployment/">Deployment</a></td>
-<td>Homelab Docker stack, Pangolin, Authentik, MinIO (Phase 5)</td>
+<td>The Sunken Signal</td>
+<td>16+</td>
+<td>30</td>
+<td>2</td>
+<td>branch_and_bottleneck</td>
+<td>32</td>
+<td>14 (1 positive, 1 neutral, 12 negative)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="diagram-index">Diagram Index<a class="headerlink" href="#diagram-index" title="Permanent link">&para;</a></h2>
-<p>All diagrams are PlantUML source + rendered SVG pairs under <code>docs/architecture/diagrams/</code>.</p>
-<table>
-<thead>
-<tr>
-<th>Diagram</th>
-<th>File</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>C4 Context (L1)</td>
-<td><a href="diagrams/c4-context.puml">c4-context.puml</a> / <a href="diagrams/c4-context.svg">.svg</a></td>
-<td>Actors and external systems</td>
-</tr>
-<tr>
-<td>C4 Container (L2)</td>
-<td><a href="diagrams/c4-container.puml">c4-container.puml</a> / <a href="diagrams/c4-container.svg">.svg</a></td>
-<td>Runtime containers and data stores</td>
-</tr>
-<tr>
-<td>Generation Pipeline</td>
-<td><a href="diagrams/component-generation.puml">component-generation.puml</a> / <a href="diagrams/component-generation.svg">.svg</a></td>
-<td>Orchestrator, prompts, providers, gate</td>
-</tr>
-<tr>
-<td>Validator Gate</td>
-<td><a href="diagrams/component-validator.puml">component-validator.puml</a> / <a href="diagrams/component-validator.svg">.svg</a></td>
-<td>L1/L2/RL/SAFE layers</td>
-</tr>
-<tr>
-<td>Player Engine</td>
-<td><a href="diagrams/component-player.puml">component-player.puml</a> / <a href="diagrams/component-player.svg">.svg</a></td>
-<td>StoryEngine, evaluator, XState</td>
-</tr>
-<tr>
-<td>API and Persistence</td>
-<td><a href="diagrams/component-api-persistence.puml">component-api-persistence.puml</a> / <a href="diagrams/component-api-persistence.svg">.svg</a></td>
-<td>Routers, auth seam, ORM</td>
-</tr>
-<tr>
-<td>Generation Sequence</td>
-<td><a href="diagrams/seq-generation.puml">seq-generation.puml</a> / <a href="diagrams/seq-generation.svg">.svg</a></td>
-<td>Stage A/B/C with provider fallback</td>
-</tr>
-<tr>
-<td>Reading-State PUT</td>
-<td><a href="diagrams/seq-reading-state.puml">seq-reading-state.puml</a> / <a href="diagrams/seq-reading-state.svg">.svg</a></td>
-<td>Optimistic concurrency, 409 reconciliation</td>
-</tr>
-<tr>
-<td>Offline and Reconnect</td>
-<td><a href="diagrams/seq-offline.puml">seq-offline.puml</a> / <a href="diagrams/seq-offline.svg">.svg</a></td>
-<td>IndexedDB queue, replay, conflict</td>
-</tr>
-<tr>
-<td>ER Diagram</td>
-<td><a href="diagrams/er-diagram.puml">er-diagram.puml</a> / <a href="diagrams/er-diagram.svg">.svg</a></td>
-<td>9 ORM tables and FK relationships</td>
-</tr>
-<tr>
-<td>Deployment</td>
-<td><a href="diagrams/deployment.puml">deployment.puml</a> / <a href="diagrams/deployment.svg">.svg</a></td>
-<td>Docker containers, Pangolin, Authentik</td>
-</tr>
-</tbody>
-</table>
-<p>To regenerate SVGs after editing a PUML file:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>java<span class="w"> </span>-jar<span class="w"> </span>/tmp/plantuml.jar<span class="w"> </span>-tsvg<span class="w"> </span>docs/architecture/diagrams/&lt;file&gt;.puml
+<h2 id="3-approach-deterministic-generator-three-layers">3. Approach: deterministic generator, three layers<a class="headerlink" href="#3-approach-deterministic-generator-three-layers" title="Permanent link">&para;</a></h2>
+<p>The work splits into a pure transform, a thin I/O shell, and an optional render
+step. The split makes the core trivially testable and lets the deliverable
+degrade gracefully: even if the PlantUML jar cannot be fetched, the committed
+<code>.puml</code> source is still produced.</p>
+<h3 id="31-pure-transform">3.1 Pure transform<a class="headerlink" href="#31-pure-transform" title="Permanent link">&para;</a></h3>
+<p><code>skeleton_to_plantuml(data: dict[str, object]) -&gt; str</code> in a new module
+<code>src/cyo_adventure/generation/diagram.py</code>.</p>
+<ul>
+<li>Input is a decoded skeleton dict (already validated by <code>load_skeleton</code>).</li>
+<li>Output is deterministic PlantUML <strong>state diagram</strong> source. Deterministic means
+  byte-stable for a given input: nodes and transitions are emitted in document
+  order (start node first, then <code>nodes[]</code> order), so regeneration is diffable.</li>
+<li>Pure: no filesystem, no clock, no network. This is what makes strict-mode
+  coverage and the drift-guard test cheap.</li>
+</ul>
+<h3 id="32-cli-shell">3.2 CLI shell<a class="headerlink" href="#32-cli-shell" title="Permanent link">&para;</a></h3>
+<p><code>scripts/render_skeleton_diagrams.py</code>:</p>
+<ol>
+<li>Walk <code>skeletons/**/*.json</code>.</li>
+<li>For each, call <code>load_skeleton()</code> (validates) then <code>skeleton_to_plantuml()</code>.</li>
+<li>Write <code>docs/architecture/diagrams/skeletons/&lt;band&gt;/&lt;slug&gt;.puml</code>.</li>
+<li>If a PlantUML jar is available, render <code>&lt;slug&gt;.svg</code> beside it.</li>
+<li>Regenerate the catalog/data-dictionary doc (section 5) from the same in-memory
+   skeleton data, so the catalog and the diagrams are always built from one pass.</li>
+</ol>
+<p>Flags: <code>--check</code> (regenerate to a temp area and diff against committed files;
+non-zero exit on drift, for the test/CI to call) and <code>--no-svg</code> (skip rendering).</p>
+<h3 id="33-render-step">3.3 Render step<a class="headerlink" href="#33-render-step" title="Permanent link">&para;</a></h3>
+<p>The project standard is PlantUML <code>.puml</code> + <code>.svg</code> pairs rendered with
+<code>java -jar plantuml.jar -tsvg</code>. <code>java</code> 21 is present, but the README's
+<code>/tmp/plantuml.jar</code> is ephemeral and currently absent. The render step will:</p>
+<ul>
+<li>Look for the jar at a stable cached path (<code>~/.cache/cyo-adventure/plantuml-&lt;ver&gt;.jar</code>),
+  falling back to an env var <code>PLANTUML_JAR</code> if set.</li>
+<li>If absent, download the pinned version (<strong>1.2024.7</strong>, matching the existing
+  SVGs) and verify a known SHA-256 before use.</li>
+<li>Never fail the whole run if rendering is unavailable: emit <code>.puml</code>, warn that
+  SVGs were skipped, exit 0 unless <code>--check</code> found drift.</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>#CRITICAL: external resource: the render step downloads a jar over the network.
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>#VERIFY: pin the version, verify SHA-256 before executing the jar, and treat a
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>         download failure as a skipped-SVG warning, never an executed-unverified-binary.
 </span></code></pre></div>
-<p>PlantUML version used to produce current SVGs: <strong>1.2024.7</strong> (jar at <code>/tmp/plantuml.jar</code>).</p>
-<h2 id="system-at-a-glance">System at a Glance<a class="headerlink" href="#system-at-a-glance" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Family devices (browsers, tablets)
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  |  HTTPS (Pangolin zero-trust)
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  v
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>PWA (React 19, TypeScript)
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  - Reader: XState + TS engine + TS evaluator
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  - Offline: IndexedDB cache + write queue (event_id idempotency)
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  - API client: generated from OpenAPI schema (not hand-written)
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  |  REST /api/v1 + Bearer token (OIDC via Authentik)
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  v
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>FastAPI backend (Python 3.12)
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  - api/: health, library, reading, generation (guardian-only)
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  - api/deps.py: Principal (role/family/profile) auth seam
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>  - storybook/: Pydantic models, condition DSL, evaluator
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  - player/: StoryEngine (Runtime Semantics v1, pure)
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  - validator/: gate (L1+L2+RL+SAFE), walk, report
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  - generation/: orchestrator (Stage A-&gt;B-&gt;C), prompts, PII guard,
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                 providers (OpenRouter primary, Ollama fallback),
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                 FallbackProvider cascade, queue, worker
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  |
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  +-- Redis 7 (RQ job queue)
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  |
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>  +-- [worker container] RQ worker
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>        -&gt; OpenRouter (primary LLM)
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>        -&gt; Ollama (local fallback)
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        -&gt; [Phase 5] MinIO (blob_ref object storage)
-</span></code></pre></div>
-<h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
+<h2 id="4-the-diagram-a-plantuml-state-diagram">4. The diagram: a PlantUML state diagram<a class="headerlink" href="#4-the-diagram-a-plantuml-state-diagram" title="Permanent link">&para;</a></h2>
+<p>For each skeleton:</p>
+<ul>
+<li><code>[*] --&gt; &lt;start_node&gt;</code>.</li>
+<li>Each non-ending node is a state. Its label shows <code>id</code>, <code>role</code>, and target
+  <code>words</code> (parsed from the FILL directive). The <code>&lt;&lt;FILL</code> body text and <code>beats</code>
+  prose are <strong>not</strong> rendered as node labels (only role/words), so author intent
+  never leaks into the structural view.</li>
+<li>Each choice is a transition <code>&lt;from&gt; --&gt; &lt;target&gt; : &lt;label&gt;</code> (label truncated
+  with an ellipsis beyond ~40 chars to keep layout readable).</li>
+<li>Each ending node is a state styled by <code>valence</code> and shows <code>kind</code> + ending
+  <code>title</code>, then <code>--&gt; [*]</code>.</li>
+<li>Color encoding via <code>skinparam state</code> stereotypes:</li>
+<li>Roles: <code>setup</code>, <code>rising</code>, <code>choice</code>, <code>climax</code> (distinct, calm hues).</li>
+<li>Endings: <code>positive</code> = green, <code>neutral</code> = gray, <code>negative</code> = red.</li>
+<li>A <code>legend</code> / <code>note</code> block carries the metadata that names the structure:
+  title, age band, tier, length (est. minutes), topology, node count, ending
+  count, and the valence split.</li>
+</ul>
+<p>PlantUML lays state diagrams out with Graphviz/dot, so reconvergence
+(branch_and_bottleneck) and back-edges (loop_and_grow) render without manual
+positioning. The 32-node, 14-ending Sunken Signal is the layout stress test and
+will be visually checked before the approach is considered adequate; if its
+layout is unreadable, the fallback documented in section 8 applies.</p>
+<h2 id="5-catalog-data-dictionary-doc">5. Catalog + data-dictionary doc<a class="headerlink" href="#5-catalog-data-dictionary-doc" title="Permanent link">&para;</a></h2>
+<p><code>docs/architecture/story-skeletons.md</code>, four parts:</p>
+<ol>
+<li><strong>Basics.</strong> What a skeleton is, how diagrams are generated, and the one
+   command to regenerate them.</li>
+<li><strong>Documented skeletons.</strong> The catalog table (section 2.1 columns: Skeleton,
+   Age band, Length, Tier, Topology, Nodes, Endings + valence split, Diagram
+   link), organized by age band then length, each row linking its rendered SVG.</li>
+<li><strong>Data dictionary.</strong> One subsection per key variable, each with a definition
+   and its preset options or constraint, sourced from <code>models.py</code>:</li>
+</ol>
 <table>
 <thead>
 <tr>
-<th>Decision</th>
-<th>Rationale</th>
+<th>Variable</th>
+<th>Type</th>
+<th>Preset options / constraint</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Mandatory guardian approval (ADR-005)</td>
-<td>No story reaches a child without a human in the loop</td>
+<td><code>age_band</code></td>
+<td>closed enum</td>
+<td><code>3-5</code>, <code>5-8</code>, <code>8-11</code>, <code>10-13</code>, <code>13-16</code>, <code>16+</code></td>
 </tr>
 <tr>
-<td>JSON Storybook format (ADR-001)</td>
-<td>Deterministic, validatable, no runtime parsing ambiguity</td>
+<td><code>tier</code></td>
+<td>int 1-2</td>
+<td><code>1</code>, <code>2</code> (tier 1 forbids state variables)</td>
 </tr>
 <tr>
-<td>PWA offline-first (ADR-002)</td>
-<td>Children can read without network connectivity</td>
+<td><code>topology</code></td>
+<td>closed enum</td>
+<td><code>time_cave</code>, <code>gauntlet</code>, <code>branch_and_bottleneck</code>, <code>loop_and_grow</code></td>
 </tr>
 <tr>
-<td>Staged LLM generation with repair (ADR-003)</td>
-<td>Improves schema conformance; bounded, not unbounded retries</td>
+<td><code>valence</code></td>
+<td>closed enum</td>
+<td><code>positive</code>, <code>neutral</code>, <code>negative</code></td>
 </tr>
 <tr>
-<td>In-house condition evaluator (ADR-006)</td>
-<td>No third-party logic library; whitelisted ops only</td>
+<td><code>ending.kind</code></td>
+<td>closed enum</td>
+<td><code>success</code>, <code>setback</code>, <code>death</code>, <code>capture</code>, <code>completion</code>, <code>discovery</code></td>
 </tr>
 <tr>
-<td>Homelab-first deployment (ADR-004)</td>
-<td>Family privacy; zero cloud dependency for core features</td>
+<td>content flags</td>
+<td>level enum per category</td>
+<td>categories <code>violence</code>, <code>scariness</code>, <code>peril</code>; levels <code>none</code> &lt; <code>mild</code> &lt; <code>moderate</code> &lt; <code>intense</code></td>
+</tr>
+<tr>
+<td><code>estimated_minutes</code></td>
+<td>int &gt;= 1</td>
+<td>open (length is continuous; per-band ranges governed by <code>validator/band_profile.py</code>)</td>
+</tr>
+<tr>
+<td>node <code>role</code></td>
+<td>FILL directive</td>
+<td><code>setup</code>, <code>rising</code>, <code>choice</code>, <code>climax</code>, plus ending subtypes</td>
 </tr>
 </tbody>
 </table>
-<h2 id="architecture-decision-records">Architecture Decision Records<a class="headerlink" href="#architecture-decision-records" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Coverage gaps.</strong> Which band x length cells have a skeleton today and which
+   are empty, so the library's coverage is visible at a glance.</li>
+</ol>
+<p>The doc is linked from the diagram index in <code>docs/architecture/README.md</code>.</p>
+<h3 id="known-drift-to-flag-not-fix-here">Known drift to flag (not fix here)<a class="headerlink" href="#known-drift-to-flag-not-fix-here" title="Permanent link">&para;</a></h3>
+<p><code>.claude/skills/cyo-author/reference/skeleton-format.md</code> documents ending types
+as <code>{completion, good, neutral, failure, death}</code> under an <code>ending.type</code> field.
+The enforced model uses <code>ending.kind</code> in
+<code>{success, setback, death, capture, completion, discovery}</code> plus a separate
+<code>valence</code>. The data dictionary sources from <code>models.py</code> (the enforced schema)
+and notes the discrepancy; correcting the format reference is a follow-up logged
+to <code>docs/template_feedback.md</code>, out of scope for this change.</p>
+<h2 id="6-testing">6. Testing<a class="headerlink" href="#6-testing" title="Permanent link">&para;</a></h2>
+<p>Project gates apply (Ruff, BasedPyright strict, &gt;= 80% coverage, RAD markers).</p>
+<ul>
+<li><strong>Transform unit tests</strong> (pure, deterministic):</li>
+<li><code>[*] --&gt; &lt;start_node&gt;</code> transition present and correct.</li>
+<li>Every node in <code>nodes[]</code> emits exactly one state.</li>
+<li>Every choice emits one labeled transition to its <code>target</code>.</li>
+<li>Ending states carry valence-correct styling and the ending title/kind.</li>
+<li>No <code>&lt;&lt;FILL</code>, <code>beats=</code>, or body prose appears anywhere in the output.</li>
+<li>Legend metadata (band, length, tier, topology, counts, valence split) matches
+    the input.</li>
+<li>Determinism: same input renders byte-identical output across two calls.</li>
+<li><strong>Drift guard</strong> (<code>tests/</code> test that shells out to <code>--check</code>): regenerate
+  <code>.puml</code> (and the catalog's skeleton list) from each committed skeleton and
+  assert it matches the committed files. A skeleton edited without regenerating
+  its diagram fails CI. SVG bytes are not asserted (renderer-version sensitive);
+  only <code>.puml</code> source and the catalog table are drift-checked.</li>
+<li><strong>Fixture coverage:</strong> the three real skeletons plus a tiny synthetic skeleton
+  (one start, one choice, one ending of each valence) to exercise styling
+  branches without depending on the production presets.</li>
+</ul>
+<h2 id="7-components-and-boundaries">7. Components and boundaries<a class="headerlink" href="#7-components-and-boundaries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
+<th>Unit</th>
+<th>Responsibility</th>
+<th>Depends on</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../planning/adr/adr-001-story-format-json-storybook/">ADR-001</a></td>
-<td>Story format: JSON Storybook</td>
-<td>Accepted</td>
+<td><code>generation/diagram.py::skeleton_to_plantuml</code></td>
+<td>dict -&gt; PlantUML string (pure)</td>
+<td>FILL-directive parsing helper; <code>storybook</code> enums for styling keys</td>
 </tr>
 <tr>
-<td><a href="../planning/adr/adr-002-client-pwa/">ADR-002</a></td>
-<td>Client: Progressive Web App</td>
-<td>Accepted</td>
+<td><code>scripts/render_skeleton_diagrams.py</code></td>
+<td>walk, validate, write <code>.puml</code>, render <code>.svg</code>, rebuild catalog, <code>--check</code></td>
+<td><code>load_skeleton</code>, <code>skeleton_to_plantuml</code>, optional jar</td>
 </tr>
 <tr>
-<td><a href="../planning/adr/adr-003-frontier-llm-generation/">ADR-003</a></td>
-<td>Frontier LLM story generation</td>
-<td>Accepted</td>
+<td><code>docs/architecture/story-skeletons.md</code></td>
+<td>human catalog + data dictionary</td>
+<td>generated section content</td>
 </tr>
 <tr>
-<td><a href="../planning/adr/adr-004-homelab-first-deployment/">ADR-004</a></td>
-<td>Homelab-first deployment</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a></td>
-<td>Mandatory human approval gate</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="../planning/adr/adr-006-conditions-inhouse-evaluator/">ADR-006</a></td>
-<td>Conditions: in-house evaluator</td>
-<td>Accepted</td>
+<td>drift-guard test</td>
+<td>fail on stale diagram/catalog</td>
+<td><code>scripts/...--check</code></td>
 </tr>
 </tbody>
 </table>
+<p>The FILL-directive parser (<code>role</code>, <code>words</code> extraction) is a small shared helper;
+if <code>generation/</code> already parses FILL elsewhere, reuse it rather than duplicating.</p>
+<h2 id="8-risks-and-fallback">8. Risks and fallback<a class="headerlink" href="#8-risks-and-fallback" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Layout quality on large graphs.</strong> If PlantUML's dot-backed layout renders the
+  32-node Sunken Signal as spaghetti, options in order of preference:
+  (a) tune PlantUML layout hints (<code>hide empty description</code>, direction,
+  grouping endings); (b) emit Graphviz <code>.dot</code> directly for finer rank control
+  (<code>dot</code> is already installed) while keeping the same catalog. The transform's
+  output format is an internal detail behind <code>skeleton_to_plantuml</code>, so this is a
+  localized change. The user has accepted PlantUML as the primary; this is a
+  contingency only.</li>
+<li><strong>Jar provenance.</strong> Mitigated by version pin + SHA-256 verification (section 3.3).</li>
+</ul>
+<h2 id="9-out-of-scope-yagni">9. Out of scope (YAGNI)<a class="headerlink" href="#9-out-of-scope-yagni" title="Permanent link">&para;</a></h2>
+<p>Authoring new skeletons; AI/Nano Banana illustrative art; MkDocs nav wiring beyond
+linking the catalog; CI auto-render of SVGs (the script is provided; wiring it
+into a workflow is a separate decision). The generator makes each of these a
+small follow-up rather than a rewrite.</p>
 
 
 
@@ -2659,7 +2842,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:00:48 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 00:11:06 UTC">July 1, 2026</span>
   </span>
 
     
@@ -2736,10 +2919,10 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
