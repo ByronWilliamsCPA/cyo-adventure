@@ -148,6 +148,15 @@ def _strict_eq(left: VarValue, right: VarValue) -> bool:
 def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
     """Apply an ordering operator, returning False on non-numeric operands.
 
+    Booleans are NOT numeric here even though ``bool`` subclasses ``int`` in
+    Python: the spec requires ordering operands to resolve to int, and the
+    TypeScript mirror's ``typeof x !== 'number'`` check is false for booleans.
+    Treating a bool as 0/1 would make the validator see a choice as visible
+    while the player hides it (the exact divergence ADR-006 forbids), so both
+    implementations fail closed. Pinned by the ``*_bool_*`` and
+    ``lt_missing_var_is_false`` conformance cases (a missing variable resolves
+    to ``False`` and must follow this same path).
+
     Args:
         operator (str): One of ``< <= > >=``.
         left (VarValue): The left operand value.
@@ -157,7 +166,12 @@ def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
         bool: The ordering result, or False if either operand is not numeric or
             the operator is not a recognised ordering operator.
     """
-    if not (isinstance(left, int) and isinstance(right, int)):
+    if (
+        isinstance(left, bool)
+        or isinstance(right, bool)
+        or not isinstance(left, int)
+        or not isinstance(right, int)
+    ):
         return False
     if operator == "<":
         return left < right

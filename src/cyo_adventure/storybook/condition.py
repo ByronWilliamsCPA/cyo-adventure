@@ -29,12 +29,27 @@ from typing import Annotated, cast
 from pydantic import AfterValidator, JsonValue
 
 COMPARISON_OPERATORS: frozenset[str] = frozenset({"==", "!=", "<", "<=", ">", ">="})
+ORDERING_OPERATORS: frozenset[str] = frozenset({"<", "<=", ">", ">="})
 BOOLEAN_NARY_OPERATORS: frozenset[str] = frozenset({"and", "or"})
 WHITELISTED_OPERATORS: frozenset[str] = (
     frozenset({"var", "!"}) | COMPARISON_OPERATORS | BOOLEAN_NARY_OPERATORS
 )
 
 _LITERAL_TYPES: tuple[type, ...] = (bool, int, str)
+
+MAX_ABS_STORY_INT: int = 1_000_000_000
+"""The magnitude cap for every int literal in a story (conditions, variable
+declarations, effect values).
+
+# #CRITICAL: data integrity: Python ints are exact at any size but the
+# TypeScript player computes in IEEE-754 doubles, which are exact only up to
+# 2**53 - 1 (~9.0e15). Capping schema literals at 1e9 keeps every
+# engine-reachable intermediate value float64-exact with a ~9000x margin even
+# on pathological ten-thousand-effect paths, so the validator and the player
+# can never disagree about a value's identity.
+# #VERIFY: conformance case eq_int_at_literal_bound_is_true pins agreement at
+# the bound; player/replay.py caps forged saves at the true 2**53 - 1 line.
+"""
 
 
 def _is_literal(value: object) -> bool:
@@ -65,21 +80,54 @@ def _validate_var(operand: object) -> None:
         raise ValueError(msg)
 
 
-def _validate_operand(operand: object) -> None:
-    """Validate a comparison operand (a literal or a nested condition).
+def _validate_operand(operator: str, operand: object) -> None:
+    """Validate a comparison operand (a literal or a ``{"var": name}`` reference).
+
+    A nested condition is NOT a valid comparison operand: both evaluators
+    resolve a non-var object operand to literal ``False`` rather than
+    evaluating it, so allowing one here would let a story express a condition
+    the runtime silently ignores. Ordering operators additionally reject
+    boolean literals (a bool can never resolve numeric, so the comparison is
+    statically meaningless), and int literals are bounded so exact Python ints
+    and the client's IEEE-754 doubles can never disagree.
 
     Args:
+        operator (str): The comparison operator this operand belongs to.
         operand (object): The operand to validate.
 
     Raises:
-        ValueError: If the operand is neither a literal nor a valid condition.
+        ValueError: If the operand is not a literal or var reference, is a
+            boolean literal under an ordering operator, or is an int literal
+            beyond ``MAX_ABS_STORY_INT``.
     """
     if isinstance(operand, dict):
-        _validate_node(cast("dict[str, object]", operand))
-    elif not _is_literal(operand):
+        typed = cast("dict[str, object]", operand)
+        if set(typed) != {"var"}:
+            msg = (
+                "comparison operand must be a literal or a var reference, "
+                f"got operator object {sorted(typed)}"
+            )
+            raise ValueError(msg)
+        _validate_var(typed["var"])
+        return
+    if not _is_literal(operand):
         msg = (
-            "comparison operand must be a literal or a nested condition, "
+            "comparison operand must be a literal or a var reference, "
             f"got {type(operand).__name__}"
+        )
+        raise ValueError(msg)
+    if isinstance(operand, bool):
+        if operator in ORDERING_OPERATORS:
+            msg = (
+                f"ordering '{operator}' cannot compare a boolean literal; "
+                "ordering operands must resolve to int"
+            )
+            raise ValueError(msg)
+        return
+    if isinstance(operand, int) and abs(operand) > MAX_ABS_STORY_INT:
+        msg = (
+            f"comparison int literal magnitude must be <= {MAX_ABS_STORY_INT}, "
+            f"got {operand}"
         )
         raise ValueError(msg)
 
@@ -103,7 +151,7 @@ def _validate_comparison(operator: str, operand: object) -> None:
         msg = f"comparison '{operator}' requires a 2-item list operand"
         raise ValueError(msg)
     for item in operands:
-        _validate_operand(item)
+        _validate_operand(operator, item)
 
 
 def _validate_nary(operator: str, operand: object) -> None:
