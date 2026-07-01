@@ -16,7 +16,11 @@ import pytest
 from cyo_adventure.api import approval
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.schemas import SendBackRequest
-from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from cyo_adventure.db.models import Storybook, StorybookVersion
 
 pytestmark = pytest.mark.asyncio
@@ -328,11 +332,14 @@ async def test_review_surface_returns_view_for_admin() -> None:
 
 @pytest.mark.unit
 async def test_review_surface_blocks_child() -> None:
-    """get_review_surface blocks a child principal with AuthorizationError."""
+    """get_review_surface blocks a child principal with AuthorizationError, and
+    never reads a row (role is checked before any load).
+    """
     session = AsyncMock()
     ctx = _ctx("child", session)
     with pytest.raises(AuthorizationError):
         await approval.get_review_surface("s1", ctx, version=1)
+    session.get.assert_not_awaited()
 
 
 @pytest.mark.unit
@@ -344,3 +351,31 @@ async def test_review_surface_missing_version_raises_404() -> None:
     ctx = _ctx("admin", session)
     with pytest.raises(ResourceNotFoundError):
         await approval.get_review_surface(book.id, ctx, version=9)
+
+
+@pytest.mark.unit
+async def test_review_surface_rejects_non_positive_version() -> None:
+    """A non-positive version query param is rejected before the version-row
+    lookup: only _load_admin_story's session.get call happens.
+    """
+    session = AsyncMock()
+    book = _story("in_review", current=None)
+    session.get = AsyncMock(return_value=book)
+    ctx = _ctx("admin", session)
+
+    with pytest.raises(ValidationError):
+        await approval.get_review_surface(book.id, ctx, version=0)
+
+    session.get.assert_awaited_once()
+
+
+@pytest.mark.unit
+async def test_review_surface_rejects_negative_version() -> None:
+    """A negative version query param is rejected the same as zero."""
+    session = AsyncMock()
+    book = _story("in_review", current=None)
+    session.get = AsyncMock(return_value=book)
+    ctx = _ctx("admin", session)
+
+    with pytest.raises(ValidationError):
+        await approval.get_review_surface(book.id, ctx, version=-1)

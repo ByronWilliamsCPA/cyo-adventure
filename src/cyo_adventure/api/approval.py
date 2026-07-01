@@ -29,6 +29,7 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
     ResourceNotFoundError,
+    ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service as approval_service
@@ -168,19 +169,33 @@ async def get_review_surface(
             story-level findings.
 
     Raises:
-        AuthorizationError: If the principal is not an admin/guardian for the family.
+        AuthorizationError: If the caller is not an admin (403).
+        ValidationError: If a supplied version is not a positive integer, or the
+            stored moderation report is corrupt at rest.
         ResourceNotFoundError: If the story or the requested version does not exist.
     """
     # #CRITICAL: security: this reads unpublished, possibly-flagged content, so it
-    # must be admin-only and family-scoped; _load_admin_story enforces both before
+    # must be admin-only; _load_admin_story enforces the admin role (global,
+    # cross-family authority, same as every other handler in this module) before
     # any row is read (a child token must never reach the review surface).
     # #VERIFY: _load_admin_story raises AuthorizationError -> 403 for non-admins.
     book = await _load_admin_story(ctx, storybook_id)
+    # #ASSUME: data integrity: version is a client-supplied query parameter with
+    # no schema-level lower bound; reject a non-positive value before it reaches
+    # the composite-key lookup below rather than let it silently 404.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_surface_rejects_non_positive_version.
+    if version is not None and version <= 0:
+        msg = "version must be a positive integer"
+        raise ValidationError(msg, field="version", value=version)
     resolved = (
         version
         if version is not None
         else await _latest_version(ctx.session, storybook_id)
     )
+    # #ASSUME: external resources: this composite-key lookup is a second async
+    # DB round trip after _load_admin_story's; both must complete within the
+    # request's session/transaction scope (api/deps.py::Context).
+    # #VERIFY: ctx.session is request-scoped and closed by the deps context manager.
     version_row = await ctx.session.get(StorybookVersion, (storybook_id, resolved))
     if version_row is None:
         msg = f"version {resolved} of storybook '{storybook_id}' not found"
