@@ -13,6 +13,7 @@ from __future__ import annotations
 import uuid
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -75,6 +76,7 @@ class _FakeSession:
         self.added: list[object] = []
         self.commit_count = 0
         self.flush_count = 0
+        self.rollback_count = 0
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Return the seeded row for the requested model (ignores the key)."""
@@ -101,6 +103,11 @@ class _FakeSession:
     async def commit(self) -> None:
         """Count commits (no-op persistence)."""
         self.commit_count += 1
+
+    async def rollback(self) -> None:
+        """Count rollbacks and discard pending adds (models a DB rollback)."""
+        self.rollback_count += 1
+        self.added.clear()
 
 
 def _factory_for(session: _FakeSession) -> Callable[[], object]:
@@ -131,8 +138,13 @@ def _added_of(session: _FakeSession, model: type[object]) -> list[object]:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_passing_run_persists_unique_storybook() -> None:
+async def test_passing_run_persists_unique_storybook(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """A passing run mints a per-job storybook id and matching blob id."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     job, concept = _job_and_concept()
     session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
     job_id = uuid.uuid4()
@@ -160,8 +172,49 @@ async def test_passing_run_persists_unique_storybook() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_two_passing_runs_do_not_collide() -> None:
+async def test_moderation_failure_records_failed_and_rolls_back(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A raising review stage must not strand the job at 'running'.
+
+    A live review backend can raise (timeout, 5xx, auth). The worker must roll
+    back the unreviewed storybook persist (so a retry of the same job_id does not
+    collide on the per-job story_id) and commit the job as 'failed' before
+    re-raising, so the row and the RQ queue agree.
+    """
+    moderation = AsyncMock(side_effect=RuntimeError("review backend down"))
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", moderation
+    )
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    with pytest.raises(RuntimeError, match="review backend down"):
+        await run_generation_job(
+            job_id, provider=provider, session_factory=_factory_for(session)
+        )
+
+    moderation.assert_awaited_once()
+    assert session.rollback_count >= 1
+    # The unreviewed storybook persist was discarded by the rollback.
+    assert _added_of(session, Storybook) == []
+    # The job is committed as failed (not stranded at 'running'/'passed').
+    assert job.status == "failed"
+    assert job.error == "review backend down"
+    assert session.commit_count >= 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_two_passing_runs_do_not_collide(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Successive passing jobs produce distinct storybook ids (no PK collision)."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     story_ids: list[str] = []
     for _ in range(2):
         job, concept = _job_and_concept()
@@ -179,8 +232,13 @@ async def test_two_passing_runs_do_not_collide() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_production_path_records_mock_model_not_none() -> None:
+async def test_production_path_records_mock_model_not_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """With provider=None (production), the mock still records model='mock'."""
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", AsyncMock()
+    )
     job, concept = _job_and_concept()
     session = _FakeSession(job=job, concept=concept)
 
@@ -288,3 +346,29 @@ def test_model_label_falls_back_to_mock() -> None:
 def test_provider_label_falls_back_to_settings() -> None:
     """_provider_label returns the configured provider for a nameless provider."""
     assert _provider_label(MockProvider(responses=[])) == "mock"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_passed_story_invokes_moderation_pipeline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A passing run awaits run_moderation_pipeline with story_id and version=1."""
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.run_moderation_pipeline", moderation
+    )
+
+    await run_generation_job(
+        job_id, provider=provider, session_factory=_factory_for(session)
+    )
+
+    moderation.assert_awaited_once()
+    kwargs = moderation.await_args.kwargs
+    assert kwargs["story_id"] == f"s_{job_id}"
+    assert kwargs["version"] == 1

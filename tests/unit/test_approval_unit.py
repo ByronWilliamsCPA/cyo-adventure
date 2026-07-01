@@ -130,7 +130,10 @@ async def test_submit_handler_calls_service_and_returns_view(
     session.get = AsyncMock(return_value=book)
     ctx = _ctx("admin", session)
 
-    submit_mock = AsyncMock()
+    async def _submit(*_args: object, **_kwargs: object) -> None:
+        book.status = "in_review"
+
+    submit_mock = AsyncMock(side_effect=_submit)
     monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit_mock)
 
     view = await approval.submit_storybook("s1", ctx)
@@ -165,7 +168,11 @@ async def test_approve_handler_stamps_view(
     session.scalar = AsyncMock(return_value=1)
     ctx = _ctx("admin", session)
 
-    approve_mock = AsyncMock(return_value=version_row)
+    async def _approve(*_args: object, **_kwargs: object) -> StorybookVersion:
+        book.status = "published"
+        return version_row
+
+    approve_mock = AsyncMock(side_effect=_approve)
     monkeypatch.setattr("cyo_adventure.publishing.service.approve", approve_mock)
 
     view = await approval.approve_storybook("s1", ctx)
@@ -190,7 +197,10 @@ async def test_send_back_handler_echoes_reason(
     ctx = _ctx("admin", session)
     body = SendBackRequest(reason="too scary")
 
-    send_back_mock = AsyncMock()
+    async def _send_back(*_args: object, **_kwargs: object) -> None:
+        book.status = "needs_revision"
+
+    send_back_mock = AsyncMock(side_effect=_send_back)
     monkeypatch.setattr("cyo_adventure.publishing.service.send_back", send_back_mock)
 
     view = await approval.send_back_storybook("s1", body, ctx)
@@ -216,7 +226,10 @@ async def test_archive_handler_calls_service(
     session.get = AsyncMock(return_value=book)
     ctx = _ctx("admin", session)
 
-    archive_mock = AsyncMock()
+    async def _archive(*_args: object, **_kwargs: object) -> None:
+        book.status = "archived"
+
+    archive_mock = AsyncMock(side_effect=_archive)
     monkeypatch.setattr("cyo_adventure.publishing.service.archive", archive_mock)
 
     view = await approval.archive_storybook("s1", ctx)

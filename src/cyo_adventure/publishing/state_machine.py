@@ -16,6 +16,7 @@ without it ever passing through ``in_review`` or reaching a human.
 
 from __future__ import annotations
 
+from enum import StrEnum
 from types import MappingProxyType
 from typing import TYPE_CHECKING
 
@@ -24,26 +25,47 @@ from cyo_adventure.core.exceptions import StateTransitionError
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-# The five resting states of a storybook. ``approved`` is collapsed into the
-# ``approve`` action (it is not a distinct resting state).
-STATES: frozenset[str] = frozenset(
-    {"draft", "in_review", "needs_revision", "published", "archived"}
-)
+
+class Status(StrEnum):
+    """The five resting states of a storybook.
+
+    ``approved`` is collapsed into the ``approve`` action (it is not a distinct
+    resting state). This closed enum is the application-boundary type for
+    ``storybook.status``; coercing an ORM string through ``Status(...)`` rejects
+    any value the database somehow holds outside this set.
+    """
+
+    DRAFT = "draft"
+    IN_REVIEW = "in_review"
+    NEEDS_REVISION = "needs_revision"
+    PUBLISHED = "published"
+    ARCHIVED = "archived"
+
+
+class Action(StrEnum):
+    """The lifecycle actions that drive a storybook between states."""
+
+    SUBMIT = "submit"
+    APPROVE = "approve"
+    SEND_BACK = "send_back"
+    ARCHIVE = "archive"
+    AUTO_REJECT = "auto_reject"
+
 
 # (from_state, action) -> to_state. Frozen; the single source of truth.
-LEGAL_TRANSITIONS: Mapping[tuple[str, str], str] = MappingProxyType(
+LEGAL_TRANSITIONS: Mapping[tuple[Status, Action], Status] = MappingProxyType(
     {
-        ("draft", "submit"): "in_review",
-        ("draft", "auto_reject"): "needs_revision",
-        ("needs_revision", "submit"): "in_review",
-        ("in_review", "approve"): "published",
-        ("in_review", "send_back"): "needs_revision",
-        ("published", "archive"): "archived",
+        (Status.DRAFT, Action.SUBMIT): Status.IN_REVIEW,
+        (Status.DRAFT, Action.AUTO_REJECT): Status.NEEDS_REVISION,
+        (Status.NEEDS_REVISION, Action.SUBMIT): Status.IN_REVIEW,
+        (Status.IN_REVIEW, Action.APPROVE): Status.PUBLISHED,
+        (Status.IN_REVIEW, Action.SEND_BACK): Status.NEEDS_REVISION,
+        (Status.PUBLISHED, Action.ARCHIVE): Status.ARCHIVED,
     }
 )
 
 
-def assert_transition(current: str, action: str) -> str:
+def assert_transition(current: Status, action: Action) -> Status:
     """Return the target state for a legal transition, or raise.
 
     Args:
@@ -52,14 +74,16 @@ def assert_transition(current: str, action: str) -> str:
             ``send_back``, ``archive``, ``auto_reject``).
 
     Returns:
-        str: The resulting status if the transition is legal.
+        Status: The resulting status if the transition is legal.
 
     Raises:
-        StateTransitionError: If ``(current, action)`` is not a legal hop.
+        StateTransitionError: If ``(current, action)`` is not a legal hop. The
+            client-facing message does not name the internal ``current`` state
+            (CWE-209); the full detail is retained in ``context`` for the log.
     """
     target = LEGAL_TRANSITIONS.get((current, action))
     if target is None:
-        msg = f"cannot {action!r} a storybook in state {current!r}"
+        msg = f"cannot {action!r} a storybook in its current state"
         raise StateTransitionError(
             msg,
             rule="invalid_state_transition",
