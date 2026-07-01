@@ -2599,16 +2599,17 @@ Implements: <a href="../../../planning/roadmap/#phase-3-safety-and-review-workfl
 nothing ever moves them forward. The library read path only shows <code>published</code> books, so
 in practice no generated story can reach a child at all, and there is no mechanism to make
 one reachable <em>safely</em>. Phase 3 makes the kids-facing guarantee real and enforced: <strong>no
-story reaches a child profile without a recorded guardian approval</strong>, and machine-generated
-content is screened before a human ever sees it.</p>
+story reaches a child profile without a recorded human approval</strong> (in slice 1 the approver is
+a dedicated global admin, the backend safety operator), and machine-generated content is
+screened before a human ever sees it.</p>
 <p>The database is already Phase-3-ready (<code>storybook.status</code>, <code>current_published_version</code>,
 <code>storybook_version.approved_by</code> / <code>published_at</code> / <code>moderation_report</code>). The deterministic
 age-band policy gate (<code>validator/policy.py</code>, PL-15..18) already runs inside the validation
-gate. What is missing is the <em>workflow</em>: state transitions, guardian endpoints, the enforced
-invariant, and the moderation pass.</p>
+gate. What is missing is the <em>workflow</em>: state transitions, admin approval endpoints, the
+enforced invariant, and the moderation pass.</p>
 <p>Phase 3 is delivered in three slices, each its own PR:</p>
 <ul>
-<li><strong>Slice 1 (this plan): the approval spine.</strong> State machine + guardian approve/send-back/
+<li><strong>Slice 1 (this plan): the approval spine.</strong> State machine + admin approve/send-back/
   archive endpoints + the enforced no-unapproved-publish invariant + authz/IDOR tests.</li>
 <li><strong>Slice 2: the CYO-native review pipeline.</strong> A classifier pre-filter, a hard safety/age-policy
   gate, soft readability and branch-coherence gates, and an advisory engagement pass, all
@@ -2711,19 +2712,19 @@ generation-job concerns tracked on <code>generation_job.status</code>, not story
 <td><code>in_review</code></td>
 <td>approve</td>
 <td><code>published</code></td>
-<td>guardian only</td>
+<td>admin only</td>
 </tr>
 <tr>
 <td><code>in_review</code></td>
 <td>send_back</td>
 <td><code>needs_revision</code></td>
-<td>guardian only</td>
+<td>admin only</td>
 </tr>
 <tr>
 <td><code>published</code></td>
 <td>archive</td>
 <td><code>archived</code></td>
-<td>guardian only</td>
+<td>admin only</td>
 </tr>
 </tbody>
 </table>
@@ -2744,7 +2745,7 @@ the matrix is exhaustively unit-tested (every legal hop succeeds, every other pa
   sets <code>storybook.status = "published"</code>, <code>storybook.current_published_version = version</code>,
   and stamps <code>storybook_version.approved_by = principal.user_id</code> and
   <code>published_at = now()</code>. <strong>This is the only path that may set <code>published</code>.</strong> Collapsing
-  approve and publish into one guardian action is deliberate: for a four-child family app,
+  approve and publish into one admin action is deliberate: for a four-child family app,
   "approve" is "make visible."</li>
 <li><code>submit(session, storybook)</code>: <code>draft|needs_revision → in_review</code>.</li>
 <li><code>send_back(session, principal, storybook, reason)</code>: <code>in_review → needs_revision</code>,
@@ -2753,18 +2754,21 @@ the matrix is exhaustively unit-tested (every legal hop succeeds, every other pa
 <li><code>archive(session, principal, storybook)</code>: <code>published → archived</code>.</li>
 </ul>
 <h3 id="33-api-apiapprovalpy">3.3 API (<code>api/approval.py</code>)<a class="headerlink" href="#33-api-apiapprovalpy" title="Permanent link">&para;</a></h3>
-<p>A guardian-only router following the existing <code>Context</code> / <code>Principal</code> pattern. Routes:</p>
+<p>An admin-only router following the existing <code>Context</code> / <code>Principal</code> pattern. Approval is a
+backend safety process owned by a global admin (the safety-review operator), so authority is
+cross-family. Routes:</p>
 <ul>
 <li><code>POST /api/v1/storybooks/{storybook_id}/submit</code></li>
 <li><code>POST /api/v1/storybooks/{storybook_id}/approve</code></li>
 <li><code>POST /api/v1/storybooks/{storybook_id}/send-back</code> (body: <code>{ "reason": str }</code>)</li>
 <li><code>POST /api/v1/storybooks/{storybook_id}/archive</code></li>
 </ul>
-<p>Every handler, in order: load the storybook (404 if absent) -&gt; <code>authorize_family</code> against
-its <code>family_id</code> (403 cross-family) -&gt; require <code>principal.is_guardian</code> (403 for child) -&gt;
-call the service (409 <code>BusinessLogicError</code> on an illegal transition). All handlers are
-<code>async def</code> and carry RAD markers (security: guardian-only mutation; data integrity: ORM
-boundary) per the package CLAUDE.md.</p>
+<p>Every handler, in order: require <code>principal.is_admin</code> (403 for child or guardian) <strong>before</strong>
+the load so a non-admin never learns whether a story exists -&gt; load the storybook (404 if
+absent) -&gt; call the service (409 <code>BusinessLogicError</code> on an illegal transition).
+<code>authorize_family</code> is intentionally NOT called because admin authority is cross-family. All
+handlers are <code>async def</code> and carry RAD markers (security: admin-only mutation; data
+integrity: ORM boundary) per the package CLAUDE.md.</p>
 <h3 id="34-the-enforced-invariant">3.4 The enforced invariant<a class="headerlink" href="#34-the-enforced-invariant" title="Permanent link">&para;</a></h3>
 <p><strong>No <code>published</code> storybook without a recorded approver.</strong> Three reinforcing layers:</p>
 <ol>
@@ -2786,9 +2790,11 @@ defense plus the test is the enforcement for slice 1.</p>
 <li>Unit: the full transition matrix (legal succeed, illegal raise).</li>
 <li>Unit: <code>service.approve</code> stamps <code>approved_by</code> + <code>published_at</code> + <code>current_published_version</code>
   and sets <code>published</code>.</li>
-<li>Integration: guardian approves an <code>in_review</code> story -&gt; <code>published</code> + stamped.</li>
-<li>Integration (IDOR/authz): a child token gets 403 on approve/submit/send-back/archive; a
-  guardian from another family gets 403; an illegal transition returns 409.</li>
+<li>Integration: an admin approves an <code>in_review</code> story -&gt; <code>published</code> + stamped.</li>
+<li>Integration (IDOR/authz): a child or guardian token gets 403 on
+  approve/submit/send-back/archive (approval is admin-only); a non-admin acting on an unknown
+  id gets 403 (not 404) because the role check precedes the load; an illegal transition
+  returns 409.</li>
 <li>Integration (invariant): no endpoint sequence reaches <code>published</code> without <code>approved_by</code>.</li>
 </ul>
 <h3 id="36-files-touched-slice-1">3.6 Files touched (slice 1)<a class="headerlink" href="#36-files-touched-slice-1" title="Permanent link">&para;</a></h3>
@@ -2803,8 +2809,8 @@ defense plus the test is the enforcement for slice 1.</p>
 <p>Captured now so the slice-1 seam is shaped correctly; built in a follow-up PR (slice 2 or 3).
 The validator gate already calls a <code>SAFE-14</code> seam (<code>validator/safety.py</code>); this work replaces
 the stub with a CYO-native multi-stage review pipeline.</p>
-<p>The pipeline <strong>borrows the mechanism</strong> of the reference-library writing pipeline
-(<code>/home/byron/dev/reference-library</code>): sequential stages, each emitting a structured verdict
+<p>The pipeline <strong>borrows the mechanism</strong> of an internal reference-library writing pipeline:
+sequential stages, each emitting a structured verdict
 that accumulates into one report, gated progression, a bounded remediation loop, and human
 escalation as the terminal gate. It does <strong>not</strong> copy that pipeline's four doc-editing stages;
 those are an example of the pattern from a professional document-review setting. The <em>reviews
@@ -2814,12 +2820,12 @@ policy gate) cannot judge: age-relative safety, readability fit, cross-branch na
 coherence, and choice quality. Two differences from the source pattern: the stages run
 <strong>server-side</strong> inside the generation/moderation pipeline (LLM calls behind a provider
 abstraction, emitting verdicts rather than rewriting in place), not as interactive subagents;
-and human escalation is not a bolted-on fallback but the mandatory guardian approval ADR-005
-already requires.</p>
+and human escalation is not a bolted-on fallback but the mandatory human approval ADR-005
+already requires (the admin approval gate built in slice 1).</p>
 <p>The pipeline runs between generation and <code>in_review</code>: after a story passes the deterministic
 gate (status <code>draft</code>), the review pipeline runs; a clean result is <code>submit</code>-ed to <code>in_review</code>
-for the guardian, a hard-blocked one is <code>auto_reject</code>-ed to <code>needs_revision</code> (the slice-1
-state-machine hops added in 3.1).</p>
+for the admin reviewer, a hard-blocked one is <code>auto_reject</code>-ed to <code>needs_revision</code> (the
+slice-1 state-machine hops added in 3.1).</p>
 <h3 id="41-stage-0-classifier-pre-filter-deterministic-free">4.1 Stage 0: classifier pre-filter (deterministic, free)<a class="headerlink" href="#41-stage-0-classifier-pre-filter-deterministic-free" title="Permanent link">&para;</a></h3>
 <p>Run <strong>OpenAI Moderation</strong> (<code>omni-moderation-latest</code>) and <strong>Google Perspective</strong> over each
 node's prose. We leverage the full taxonomy, not one category, splitting it by role:</p>
@@ -2918,8 +2924,8 @@ mirroring the reference-library accumulating status block. Gating, by stage role
 <li><strong>Advisory.</strong> Stage 4 findings, and any minor Stage &#8532; flags, never gate; they ride along
   in the report for the guardian to weigh.</li>
 <li>A clean (or repaired) story is <code>submit</code>-ed to <code>in_review</code>, <strong>never</strong> <code>published</code>. The
-  guardian is always the final gate (ADR-005); the pipeline only decides what to surface and
-  pre-flag.</li>
+  human approver (the admin in slice 1) is always the final gate (ADR-005); the pipeline only
+  decides what to surface and pre-flag.</li>
 </ul>
 <p>One finding has the shape:
 <code>{ stage, source: openai|perspective|llm_safety|llm_readability|llm_coherence|llm_engagement, category, score|severity, node_id, verdict: block|flag|advisory|pass, message }</code>.</p>
@@ -2982,7 +2988,7 @@ question:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 02:06:14 UTC">July 1, 2026</span>
   </span>
 
     
