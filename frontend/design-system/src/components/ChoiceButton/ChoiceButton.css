@@ -1,0 +1,72 @@
+/* The choose-your-own-adventure choice: the core interactive primitive. */
+
+.cyo-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  background-color: var(--color-parchment-dark);
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  padding: var(--space-4) var(--space-6);
+  border: 2px solid var(--color-amber-light);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--easing-default),
+    border-color var(--duration-fast) var(--easing-default),
+    box-shadow var(--duration-fast) var(--easing-default),
+    transform var(--duration-fast) var(--easing-default);
+  box-shadow: var(--shadow-sm);
+}
+
+.cyo-choice:hover:not(:disabled) {
+  background-color: var(--color-amber-light);
+  border-color: var(--color-amber);
+  box-shadow: var(--shadow-md);
+  transform: translateX(4px);
+}
+
+.cyo-choice:focus-visible {
+  outline: 3px solid var(--color-amber);
+  outline-offset: 3px;
+}
+
+.cyo-choice:active:not(:disabled) {
+  transform: translateX(2px) translateY(1px);
+}
+
+.cyo-choice:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cyo-choice--selected {
+  background-color: var(--color-amber-light);
+  border-color: var(--color-amber);
+  box-shadow: var(--shadow-md);
+}
+
+/* The decorative › marker shifts right on hover/selected */
+.cyo-choice__marker {
+  color: var(--color-amber);
+  font-size: var(--text-xl);
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: transform var(--duration-fast) var(--easing-default);
+  user-select: none;
+}
+
+.cyo-choice:hover:not(:disabled) .cyo-choice__marker,
+.cyo-choice--selected .cyo-choice__marker {
+  transform: translateX(4px);
+}
+
+.cyo-choice__label {
+  flex: 1;
+  min-width: 0;
+}

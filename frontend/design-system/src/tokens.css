@@ -1,0 +1,90 @@
+:root {
+  /* ── Colors: storybook palette ───────────────────── */
+
+  /* Parchment — warm cream backgrounds */
+  --color-parchment:       #f8f3e8;
+  --color-parchment-dark:  #ede6d0;
+  --color-parchment-deeper: #e0d5b8;
+
+  /* Ink — deep warm browns for text */
+  --color-ink:             #2c1a0e;
+  --color-ink-secondary:   #5a3e28;
+  --color-ink-muted:       #8c6f56;
+
+  /* Amber — primary interactive accent */
+  --color-amber:           #c17b2a;
+  --color-amber-hover:     #a3631f;
+  --color-amber-light:     #f0e4cc;
+  --color-amber-subtle:    #fdf6ec;
+
+  /* Forest — secondary (success, connected) */
+  --color-forest:          #2d5a3d;
+  --color-forest-light:    #d4e8da;
+
+  /* Sky — tertiary (informational) */
+  --color-sky:             #4a7fb5;
+  --color-sky-light:       #daeaf7;
+
+  /* Semantic */
+  --color-error:           #9b2c2c;
+  --color-error-light:     #fde8e8;
+  --color-success:         #276749;
+  --color-success-light:   #d4eddf;
+  --color-warning:         #92600a;
+  --color-warning-light:   #fef3cd;
+
+  /* ── Typography ──────────────────────────────────── */
+  --font-serif: Georgia, 'Palatino Linotype', Palatino, 'Book Antiqua', serif;
+  --font-sans:  'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono:  'Courier New', Courier, monospace;
+
+  /* Scale — slightly larger base for readability */
+  --text-xs:   0.75rem;   /* 12px */
+  --text-sm:   0.875rem;  /* 14px */
+  --text-base: 1.125rem;  /* 18px */
+  --text-lg:   1.25rem;   /* 20px */
+  --text-xl:   1.5rem;    /* 24px */
+  --text-2xl:  1.875rem;  /* 30px */
+  --text-3xl:  2.25rem;   /* 36px */
+
+  /* Line heights */
+  --leading-tight:   1.3;
+  --leading-normal:  1.6;
+  --leading-relaxed: 1.8;  /* generous for reading passages */
+
+  /* Weights */
+  --weight-normal:   400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+  --weight-bold:     700;
+
+  /* ── Spacing — 4px base scale ────────────────────── */
+  --space-1:  0.25rem;   /* 4px  */
+  --space-2:  0.5rem;    /* 8px  */
+  --space-3:  0.75rem;   /* 12px */
+  --space-4:  1rem;      /* 16px */
+  --space-5:  1.25rem;   /* 20px */
+  --space-6:  1.5rem;    /* 24px */
+  --space-8:  2rem;      /* 32px */
+  --space-10: 2.5rem;    /* 40px */
+  --space-12: 3rem;      /* 48px */
+  --space-16: 4rem;      /* 64px */
+
+  /* ── Border radius ───────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  /* ── Shadows — warm toned ────────────────────────── */
+  --shadow-sm: 0 1px 3px rgba(44, 26, 14, 0.10);
+  --shadow-md: 0 4px 12px rgba(44, 26, 14, 0.14);
+  --shadow-lg: 0 8px 24px rgba(44, 26, 14, 0.20);
+
+  /* ── Motion ──────────────────────────────────────── */
+  --duration-fast:   120ms;
+  --duration-normal: 220ms;
+  --duration-slow:   380ms;
+  --easing-default:  ease-in-out;
+}
