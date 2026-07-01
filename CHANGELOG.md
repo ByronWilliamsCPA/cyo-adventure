@@ -64,6 +64,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and an LLM engagement advisory. Hard blocks auto-reject to needs_revision; clean or
   repaired stories submit to in_review. Reviews run behind an independence-enforcing,
   PII-guarded review provider (OpenRouter/Ollama; Modal deferred).
+- Story-skeleton structure diagrams: a deterministic PlantUML generator
+  (`scripts/render_skeleton_diagrams.py`) plus a catalog and data-dictionary at
+  `docs/architecture/story-skeletons.md`, with a drift-guard test.
 - Unit test coverage raised from ~80% to 96.89% across all source modules:
   `api/health.py`, `api/deps.py`, `api/library.py`, `api/reading.py`,
   `utils/logging.py`, and the main `app.py` exception-handler matrix.
@@ -114,6 +117,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `apt-get`/`groupadd` steps, and runs as a numeric `USER 1000:1000`. `uv` is
   copied from the digest-pinned `ghcr.io/astral-sh/uv` image (a musl-static
   binary, so it is immune to the builder's glibc version).
+- Skeleton diagram generator (PR #37 review follow-up): `skeleton_to_plantuml`
+  now raises instead of silently dropping a node with a missing id or
+  miscounting an ending with an unrecognized valence, and sanitizes ending
+  titles against PlantUML quote-breakage. The catalog table builder escapes
+  `|` in title/band cells so author text can't shift columns. The diagram
+  generator script (`scripts/render_skeleton_diagrams.py`) no longer crashes
+  uncaught on a missing `java` binary or a malformed `.puml`, and
+  `resolve_jar`'s failure messages now distinguish a benign missing-jar skip
+  from a security-relevant hash mismatch.
 
 ### Changed
 - **Breaking (schema 2.0):** `Ending` now carries typed `valence` and `kind`

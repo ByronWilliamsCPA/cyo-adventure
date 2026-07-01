@@ -1,0 +1,61 @@
+@startuml the-lost-mitten
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 85w
+state n_pine #D1C4E9
+n_pine : rising · 80w
+state n_rabbit #D1C4E9
+n_rabbit : rising · 80w
+state n_sled #D1C4E9
+n_sled : rising · 80w
+state n_creek #FFF9C4
+n_creek : choice · 85w
+state n_birds #D1C4E9
+n_birds : rising · 80w
+state n_help #D1C4E9
+n_help : rising · 80w
+state n_cocoa #D1C4E9
+n_cocoa : rising · 80w
+state n_found #C8E6C9
+n_found : completion (positive)
+n_found : "The Red Mitten"
+state n_together #C8E6C9
+n_together : completion (positive)
+n_together : "Found Together"
+state n_surprise #C8E6C9
+n_surprise : success (positive)
+n_surprise : "A Cozy Surprise"
+n_start --> n_pine : Look under the big pine tree.
+n_start --> n_rabbit : Ask Hoppy the rabbit.
+n_start --> n_sled : Check the sledding track.
+n_pine --> n_creek : Follow the footprints to the creek.
+n_pine --> n_start : Go back to the snowy hill.
+n_rabbit --> n_creek : Hop down to the creek.
+n_rabbit --> n_start : Look again on the hill.
+n_sled --> n_creek : Follow the red thread to the creek.
+n_sled --> n_start : Try the hill one more time.
+n_creek --> n_found : Reach for the red thing in the snow.
+n_creek --> n_birds : Look up at the chirping birds.
+n_creek --> n_cocoa : Follow the smell of cocoa home.
+n_birds --> n_found : Gently lift the mitten down.
+n_birds --> n_help : Call your friends to help.
+n_help --> n_together : Reach the mitten together.
+n_cocoa --> n_surprise : See what fell out of the boot.
+n_found --> [*]
+n_together --> [*]
+n_surprise --> [*]
+
+legend right
+  The Lost Mitten
+  Band 3-5 · Tier 1 · ~5 min
+  Topology: loop_and_grow
+  11 nodes · 3 endings (3+ / 0n / 0-)
+endlegend
+@enduml

@@ -1,0 +1,154 @@
+@startuml the-sunken-signal
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 250w
+state n_signal_recon #D1C4E9
+n_signal_recon : rising · 240w
+state n_locker #D1C4E9
+n_locker : rising · 240w
+state n_corridor #FFF9C4
+n_corridor : choice · 250w
+state n_lab #FFF9C4
+n_lab : choice · 250w
+state n_lab_detail #D1C4E9
+n_lab_detail : rising · 240w
+state n_crew #FFF9C4
+n_crew : choice · 250w
+state n_crew_detail #D1C4E9
+n_crew_detail : rising · 240w
+state n_flooded_mess #D1C4E9
+n_flooded_mess : rising · 240w
+state n_drysuit_bay #D1C4E9
+n_drysuit_bay : rising · 240w
+state n_junction #FFF9C4
+n_junction : choice · 250w
+state n_vent #FFF9C4
+n_vent : choice · 250w
+state n_core_door #D1C4E9
+n_core_door : rising · 240w
+state n_core_chamber #FFE0B2
+n_core_chamber : climax · 250w
+state n_signal_secured #FFE0B2
+n_signal_secured : climax · 250w
+state n_ascent #FFE0B2
+n_ascent : climax · 250w
+state n_collapse #FFE0B2
+n_collapse : climax · 250w
+state n_surface #FFF9C4
+n_surface : choice · 240w
+state n_end_success #C8E6C9
+n_end_success : completion (positive)
+n_end_success : "Signal Recovered"
+state n_end_survived #FFCDD2
+n_end_survived : setback (negative)
+n_end_survived : "Empty-Handed"
+state n_end_retreat #FFCDD2
+n_end_retreat : setback (negative)
+n_end_retreat : "Aborted Dive"
+state n_rescue #FFCDD2
+n_rescue : setback (negative)
+n_rescue : "Pulled From the Brink"
+state n_end_drown #FFCDD2
+n_end_drown : death (negative)
+n_end_drown : "The Dark Below"
+state n_end_sink #FFCDD2
+n_end_sink : death (negative)
+n_end_sink : "Letting Go"
+state n_end_lab_flood #FFCDD2
+n_end_lab_flood : death (negative)
+n_end_lab_flood : "Bulkhead Breach"
+state n_end_specimen #E0E0E0
+n_end_specimen : discovery (neutral)
+n_end_specimen : "The Documentarian"
+state n_end_crew_trap #FFCDD2
+n_end_crew_trap : setback (negative)
+n_end_crew_trap : "Sealed In"
+state n_end_junction #FFCDD2
+n_end_junction : setback (negative)
+n_end_junction : "Lost Nerve"
+state n_end_vent_stuck #FFCDD2
+n_end_vent_stuck : death (negative)
+n_end_vent_stuck : "Wedged"
+state n_end_meltdown #FFCDD2
+n_end_meltdown : death (negative)
+n_end_meltdown : "Critical"
+state n_end_data #FFCDD2
+n_end_data : death (negative)
+n_end_data : "One Thing Too Many"
+state n_end_listen #FFCDD2
+n_end_listen : death (negative)
+n_end_listen : "Lost in the Signal"
+n_start --> n_corridor : Plunge straight down the access shaft.
+n_start --> n_locker : Descend past the external equipment lock...
+n_start --> n_signal_recon : Hover and study the signal's pattern fir...
+n_signal_recon --> n_corridor : Descend into the flooded corridor.
+n_locker --> n_corridor : Rig the spare rebreather to your harness...
+n_locker --> n_corridor : Leave it; travel light and fast.
+n_corridor --> n_lab : Swim into the laboratory wing.
+n_corridor --> n_crew : Swim into the crew quarters.
+n_corridor --> n_flooded_mess : Pick through the collapsed mess hall.
+n_lab --> n_lab_detail : Pry the keycard from the dead terminal.
+n_lab --> n_lab_detail : Search the sealed sample racks first.
+n_lab --> n_end_lab_flood : Brace against the groaning bulkhead.
+n_lab_detail --> n_junction : Take the maintenance hatch toward the ju...
+n_lab_detail --> n_end_specimen : Stay to document the specimen vault.
+n_crew --> n_crew_detail : Read the crew's final logs.
+n_crew --> n_crew_detail : Crack an emergency oxygen cylinder.
+n_crew --> n_drysuit_bay : Force the sealed drysuit bay.
+n_crew_detail --> n_junction : Work the flooded passage to the junction...
+n_crew_detail --> n_end_crew_trap : Force the jammed door open hard.
+n_flooded_mess --> n_junction : Tap the trapped ceiling air pocket.
+n_flooded_mess --> n_junction : Slip through the side vent to the juncti...
+n_drysuit_bay --> n_junction : Rig the rebreather and head for the junc...
+n_junction --> n_core_door : Badge through the pressure door.
+n_junction --> n_vent : Squeeze into the collapsed vent crawl.
+n_junction --> n_end_junction : Lose your nerve and ascend now.
+n_vent --> n_core_chamber : Drop into the core chamber from the vent...
+n_vent --> n_end_retreat : Back out and abort the dive.
+n_vent --> n_end_vent_stuck : Force through the narrowest bend.
+n_core_door --> n_core_chamber : Enter the core chamber.
+n_core_chamber --> n_signal_secured : Pull the transmitter core free now.
+n_core_chamber --> n_signal_secured : Switch to the rebreather and work calmly...
+n_core_chamber --> n_ascent : Abandon the signal and flee for the surf...
+n_core_chamber --> n_end_meltdown : Trigger the failing reactor to surface i...
+n_core_chamber --> n_end_listen : Stop and listen to the full message.
+n_signal_secured --> n_ascent : Begin the long ascent with the prize.
+n_signal_secured --> n_end_data : Stay to wrench the data core loose too.
+n_ascent --> n_surface : Power for the surface in one push.
+n_ascent --> n_surface : Ride the rebreather up in safe stages.
+n_ascent --> n_collapse : Claw upward on your last breath.
+n_ascent --> n_end_sink : Let go and sink back down.
+n_collapse --> n_surface : Find one last kick.
+n_collapse --> n_rescue : Signal your dive buddy with the rebreath...
+n_collapse --> n_end_drown : Slip into the dark.
+n_surface --> n_end_success : Hand over the recovered signal core.
+n_surface --> n_end_survived : Climb aboard with nothing but your life.
+n_end_success --> [*]
+n_end_survived --> [*]
+n_end_retreat --> [*]
+n_rescue --> [*]
+n_end_drown --> [*]
+n_end_sink --> [*]
+n_end_lab_flood --> [*]
+n_end_specimen --> [*]
+n_end_crew_trap --> [*]
+n_end_junction --> [*]
+n_end_vent_stuck --> [*]
+n_end_meltdown --> [*]
+n_end_data --> [*]
+n_end_listen --> [*]
+
+legend right
+  The Sunken Signal
+  Band 16+ · Tier 2 · ~30 min
+  Topology: branch_and_bottleneck
+  32 nodes · 14 endings (1+ / 1n / 12-)
+endlegend
+@enduml
