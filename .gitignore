@@ -300,3 +300,6 @@ docs/planning/research/
 
 # Superpowers generated plan files
 docs/superpowers/plans/
+
+# Superpowers visual brainstorming companion (mockup scratch files)
+.superpowers/
