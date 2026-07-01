@@ -46,6 +46,11 @@ _STORYBOOK_STATUS_VALUES = (
     "'draft', 'in_review', 'needs_revision', 'published', 'archived'"
 )
 
+# The five generation-job lifecycle states, named once for the CHECK constraint.
+_GENERATION_JOB_STATUS_VALUES = (
+    "'queued', 'running', 'passed', 'needs_review', 'failed'"
+)
+
 
 class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
@@ -105,7 +110,8 @@ class Storybook(Base):
     # #CRITICAL: data integrity: ``status`` is the lifecycle ORM boundary, coerced
     # to the closed Status enum in publishing/state_machine.py; this CHECK is the
     # at-rest backstop so no write path persists a status outside the five resting
-    # states. GenerationJob.status is a SEPARATE lifecycle and is not constrained.
+    # states. GenerationJob.status is a SEPARATE lifecycle with its own CHECK
+    # (ck_generation_job_status), defined on that model.
     # #VERIFY: Status(storybook.status) raises on any value outside this set.
     __table_args__ = (
         CheckConstraint(
@@ -314,6 +320,16 @@ class GenerationJob(Base):
     """
 
     __tablename__ = "generation_job"
+    # #CRITICAL: data integrity: ``status`` is a closed lifecycle; this CHECK is the
+    # at-rest backstop (mirroring ck_storybook_status) so no write path persists a
+    # status outside the five values. Application writes use only these values.
+    # #VERIFY: see migration c3d4e5f6a7b8; values match _GENERATION_JOB_STATUS_VALUES.
+    __table_args__ = (
+        CheckConstraint(
+            f"status IN ({_GENERATION_JOB_STATUS_VALUES})",
+            name="ck_generation_job_status",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     concept_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_CONCEPT), index=True)
