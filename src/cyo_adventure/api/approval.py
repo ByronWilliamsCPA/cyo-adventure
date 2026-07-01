@@ -16,9 +16,11 @@ from fastapi import APIRouter
 from sqlalchemy import func, select
 
 from cyo_adventure.api.deps import Context
+from cyo_adventure.api.review_surface import build_review_surface
 from cyo_adventure.api.schemas import (
     ApprovedView,
     ArchivedView,
+    ReviewSurfaceView,
     SendBackRequest,
     SentBackView,
     SubmittedView,
@@ -146,3 +148,47 @@ async def _latest_version(session: AsyncSession, storybook_id: str) -> int:
         msg = f"storybook '{storybook_id}' has no versions"
         raise ResourceNotFoundError(msg)
     return latest
+
+
+@router.get("/storybooks/{storybook_id}/review")
+async def get_review_surface(
+    storybook_id: str,
+    ctx: Context,
+    version: int | None = None,
+) -> ReviewSurfaceView:
+    """Return the guardian review surface for a story version (admin only).
+
+    Args:
+        storybook_id: The story to review.
+        ctx: The request context (principal and session).
+        version: The version to review; defaults to the latest.
+
+    Returns:
+        ReviewSurfaceView: Blob plus moderation summary, flagged passages, and
+            story-level findings.
+
+    Raises:
+        AuthorizationError: If the principal is not an admin/guardian for the family.
+        ResourceNotFoundError: If the story or the requested version does not exist.
+    """
+    # #CRITICAL: security: this reads unpublished, possibly-flagged content, so it
+    # must be admin-only and family-scoped; _load_admin_story enforces both before
+    # any row is read (a child token must never reach the review surface).
+    # #VERIFY: _load_admin_story raises AuthorizationError -> 403 for non-admins.
+    book = await _load_admin_story(ctx, storybook_id)
+    resolved = (
+        version
+        if version is not None
+        else await _latest_version(ctx.session, storybook_id)
+    )
+    version_row = await ctx.session.get(StorybookVersion, (storybook_id, resolved))
+    if version_row is None:
+        msg = f"version {resolved} of storybook '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    return build_review_surface(
+        status=book.status,
+        storybook_id=storybook_id,
+        version=resolved,
+        blob=version_row.blob,
+        moderation_report=version_row.moderation_report,
+    )

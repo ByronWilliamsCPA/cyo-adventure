@@ -282,3 +282,65 @@ async def test_archive_handler_blocks_guardian() -> None:
 
     with pytest.raises(AuthorizationError):
         await approval.archive_storybook("s1", ctx)
+
+
+# ---------------------------------------------------------------------------
+# get_review_surface
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+async def test_review_surface_returns_view_for_admin() -> None:
+    """get_review_surface returns a projected view for an admin caller."""
+    session = AsyncMock()
+    book = _story("in_review", current=None)
+    version = StorybookVersion(
+        storybook_id=book.id,
+        version=1,
+        blob={"nodes": [{"id": "n1", "body": "Hi."}]},
+        moderation_report={
+            "findings": [
+                {
+                    "stage": 1,
+                    "source": "llm_safety",
+                    "category": "safety",
+                    "node_id": "n1",
+                    "verdict": "flag",
+                    "score": None,
+                    "message": "m",
+                }
+            ],
+            "summary": {
+                "count": 1,
+                "hard_block": False,
+                "soft_flag": True,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        },
+    )
+    session.get.side_effect = [book, version]  # _load_admin_story, then version row
+    ctx = _ctx("admin", session)
+    view = await approval.get_review_surface(book.id, ctx, version=1)
+    assert view.version == 1
+    assert view.flagged_passages[0].prose == "Hi."
+
+
+@pytest.mark.unit
+async def test_review_surface_blocks_child() -> None:
+    """get_review_surface blocks a child principal with AuthorizationError."""
+    session = AsyncMock()
+    ctx = _ctx("child", session)
+    with pytest.raises(AuthorizationError):
+        await approval.get_review_surface("s1", ctx, version=1)
+
+
+@pytest.mark.unit
+async def test_review_surface_missing_version_raises_404() -> None:
+    """get_review_surface raises 404 when the requested version row is missing."""
+    session = AsyncMock()
+    book = _story("in_review", current=None)
+    session.get.side_effect = [book, None]  # admin story ok, version row missing
+    ctx = _ctx("admin", session)
+    with pytest.raises(ResourceNotFoundError):
+        await approval.get_review_surface(book.id, ctx, version=9)
