@@ -739,6 +739,38 @@ class TestPutReadingState:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_version_mismatch_with_absent_version_returns_409(self) -> None:
+        """A version mismatch still 409s even when the mismatched version has no
+
+        persisted ``StorybookVersion`` row: the concurrency conflict must win over
+        the version-existence check, since a stale-session client is out of date,
+        not malformed (see reading.py's version-mismatch-before-validation note).
+        """
+        from fastapi.responses import JSONResponse
+
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id)
+        # stored row is on version 1; body targets version 2, which has NO
+        # StorybookVersion row seeded in get_map.
+        existing = _state_row(profile_id, "story-1", version=1, state_revision=3)
+        session = _FakeSession(
+            get_map={
+                (Storybook, "story-1"): book,
+                # (StorybookVersion, ("story-1", 2)) intentionally absent.
+            },
+            scalar_result=existing,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = _body(version=2, state_revision=3)  # version 2 absent, stored is 1
+
+        result = await put_reading_state(str(profile_id), "story-1", body, ctx)
+
+        assert isinstance(result, JSONResponse)
+        assert result.status_code == 409
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_idempotent_replay_returns_current_row(self) -> None:
         """A save with an already-applied event_id returns the stored row unchanged."""
         from cyo_adventure.api.schemas import ReadingStateView
