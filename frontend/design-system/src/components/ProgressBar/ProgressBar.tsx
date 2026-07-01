@@ -7,7 +7,10 @@ export interface ProgressBarProps {
 }
 
 export function ProgressBar({ value, label, showLabel = false }: ProgressBarProps) {
-  const clamped = Math.min(100, Math.max(0, value))
+  // #ASSUME: data integrity: value is a finite number from the caller.
+  // #VERIFY: guard against NaN/Infinity so aria-valuenow/width never render invalid.
+  const safeValue = Number.isFinite(value) ? value : 0
+  const clamped = Math.min(100, Math.max(0, safeValue))
   const ariaLabel = label ?? `${Math.round(clamped)}% complete`
 
   return (

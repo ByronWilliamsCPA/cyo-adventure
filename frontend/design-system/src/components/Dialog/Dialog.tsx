@@ -6,12 +6,20 @@ export interface DialogProps {
   children: ReactNode
   actions: ReactNode
   open?: boolean
-  onClose?: () => void
+  onClose: () => void
 }
 
 export function Dialog({ title, children, actions, open = true, onClose }: DialogProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
   const titleId = useId()
+  // #ASSUME: timing dependency: callers frequently pass an inline onClose,
+  // giving a new function identity every render.
+  // #VERIFY: keep onClose out of the effect's dependency array (via ref) so
+  // the focus-trap setup only re-runs on open/close, not on every re-render.
+  const onCloseRef = useRef(onClose)
+  useEffect(() => {
+    onCloseRef.current = onClose
+  })
 
   useEffect(() => {
     if (!open) return
@@ -25,10 +33,8 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
 
     function onKeyDown(event: KeyboardEvent): void {
       if (event.key === 'Escape') {
-        if (onClose) {
-          event.preventDefault()
-          onClose()
-        }
+        event.preventDefault()
+        onCloseRef.current()
         return
       }
       if (event.key !== 'Tab') return
@@ -55,7 +61,7 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
       document.removeEventListener('keydown', onKeyDown)
       previouslyFocused?.focus?.()
     }
-  }, [open, onClose])
+  }, [open])
 
   if (!open) return null
 

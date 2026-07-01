@@ -1,7 +1,8 @@
 import type { ButtonHTMLAttributes } from 'react'
 import './ChoiceButton.css'
 
-export interface ChoiceButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ChoiceButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'aria-pressed'> {
   label: string
   selected?: boolean
 }
