@@ -2336,10 +2336,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#where-we-are-2026-06-29-baseline" class="md-nav__link">
+  <a href="#where-we-are-2026-07-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Where we are (2026-06-29 baseline)
+        Where we are (2026-07-01)
       
     </span>
   </a>
@@ -2370,10 +2370,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" class="md-nav__link">
+  <a href="#phase-3-safety-and-approval-workflow-delivered-merged" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 3: Safety and approval workflow (next on the critical path)
+        Phase 3: Safety and approval workflow (✅ delivered, merged)
       
     </span>
   </a>
@@ -2496,26 +2496,26 @@
   <h1>CYO Adventure - Completion Plan (path to v1)</h1>
 
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-06-29
-<strong>Baseline</strong>: Phases 0, 1, 2, and 2b delivered and merged. See
+<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-06-29 | <strong>Updated</strong>: 2026-07-01
+<strong>Baseline</strong>: Phases 0, 1, 2, 2b, and the <strong>Phase 3 backend</strong> delivered and merged. See
 <a href="../roadmap/"><code>roadmap.md</code></a> for the phase definitions this plan executes against.</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>The validation and generation halves of the system are built and merged: a child can
-read hand-authored stories offline, and the pipeline generates stories that clear the
-full gate at 70% live yield. What stands between here and a <strong>first usable release</strong> is
-two phases of work that are almost entirely greenfield:</p>
-<ol>
-<li><strong>Phase 3 (Safety and approval workflow)</strong> on a Phase-3-ready database but with no
-   workflow logic yet, and</li>
+<p>The validation, generation, and <strong>safety/approval</strong> halves of the system are built and
+merged: a child can read hand-authored stories offline, the pipeline generates stories
+that clear the full gate at 70% live yield, and every generated story now flows through
+content moderation and a guardian approval state machine before it can reach a child. What
+stands between here and a <strong>first usable release</strong> is one phase:</p>
+<ul>
 <li><strong>Phase 4a (Library, profiles, and the guardian app shell)</strong>, where the frontend is
-   still a single-page reader demo with no routing.</li>
-</ol>
-<p>The first release is roughly half-done by phase count, but the remaining half is the
-harder half: it is the parent-facing product, not the engine. Estimated <strong>6 to 10 weeks</strong>
-to the first release for a 1 to 2 developer team, then <strong>4 to 7 weeks</strong> for Phase 4b and
-Phase 5 to reach full v1.</p>
-<h2 id="where-we-are-2026-06-29-baseline">Where we are (2026-06-29 baseline)<a class="headerlink" href="#where-we-are-2026-06-29-baseline" title="Permanent link">&para;</a></h2>
+  still a single-page reader demo with no routing. The Phase 3 approval and review APIs
+  exist and are enforced; they are simply not reachable through a browser yet.</li>
+</ul>
+<p>Phase 3 (Safety and approval workflow) shipped across three PRs (#34, #36, #45); the
+remaining work is the parent-facing frontend, not the engine or the workflow. Estimated
+<strong>3 to 5 weeks</strong> to the first release for a 1 to 2 developer team (Phase 4a), then <strong>4 to
+7 weeks</strong> for Phase 4b and Phase 5 to reach full v1.</p>
+<h2 id="where-we-are-2026-07-01">Where we are (2026-07-01)<a class="headerlink" href="#where-we-are-2026-07-01" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
@@ -2546,15 +2546,19 @@ Phase 5 to reach full v1.</p>
 </tr>
 <tr>
 <td>Safety/moderation <strong>logic</strong></td>
-<td>⏸️ <code>validator/safety.py</code> is a stub</td>
+<td>✅ Built, merged (staged pipeline behind <code>SAFE-14</code>, #36)</td>
 </tr>
 <tr>
-<td>Publish state machine + approval/send-back endpoints</td>
-<td>⏸️ Absent (DB columns exist)</td>
+<td>Publish state machine + approval/send-back + review-surface API</td>
+<td>✅ Built, merged (#34, #45)</td>
+</tr>
+<tr>
+<td>Reading-state save integrity (validate against pinned version)</td>
+<td>✅ Built, merged (#45)</td>
 </tr>
 <tr>
 <td>Guardian/parent <strong>frontend</strong> (review, library, profiles, intake)</td>
-<td>⏸️ Absent; no routing</td>
+<td>⏸️ Absent; no routing (wireframes #47, design system #44)</td>
 </tr>
 <tr>
 <td>Hardening (Redis rate limiter, backups, restore drill, Sentry)</td>
@@ -2562,10 +2566,12 @@ Phase 5 to reach full v1.</p>
 </tr>
 </tbody>
 </table>
-<p>The keystone insight: <strong>the database is ready for Phase 3</strong> (<code>storybook.status</code>,
-<code>storybook_version.approved_by</code> / <code>published_at</code> / <code>moderation_report</code> all exist), and
-the <strong>deterministic age-band policy gate</strong> (<code>validator/policy.py</code>, PL-15..18) already
-runs. The missing pieces are workflow code and UI, not schema.</p>
+<p>The keystone insight has now flipped: <strong>the entire Phase 3 backend is built and merged</strong>
+(moderation pipeline, publish state machine, guardian approval/send-back, review-surface
+read API, and the enforced no-publish-without-approval invariant), on top of the schema
+and the deterministic age-band policy gate (<code>validator/policy.py</code>, PL-15..18). The only
+missing piece for the first release is the <strong>guardian/parent UI</strong> that exercises these
+APIs, which is Phase 4a.</p>
 <h2 id="definition-of-complete">Definition of "complete"<a class="headerlink" href="#definition-of-complete" title="Permanent link">&para;</a></h2>
 <p>The project reaches <strong>first usable release</strong> when a generated story can travel concept -&gt;
 generation -&gt; validation -&gt; moderation -&gt; guardian approval -&gt; a child's library and play
@@ -2576,56 +2582,64 @@ parent.</p>
 Phase 5 (hardening, deploy behind Pangolin/Authentik, tested restore) are also done, per
 the <a href="../roadmap/#definition-of-done">roadmap Definition of Done</a>.</p>
 <h2 id="remaining-work">Remaining work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h2>
-<h3 id="phase-3-safety-and-approval-workflow-next-on-the-critical-path">Phase 3: Safety and approval workflow (next on the critical path)<a class="headerlink" href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" title="Permanent link">&para;</a></h3>
+<h3 id="phase-3-safety-and-approval-workflow-delivered-merged">Phase 3: Safety and approval workflow (✅ delivered, merged)<a class="headerlink" href="#phase-3-safety-and-approval-workflow-delivered-merged" title="Permanent link">&para;</a></h3>
 <p><strong>Goal</strong>: make the kids-facing guarantee real and enforced. ADR-005 (mandatory human
-approval) governs.</p>
+approval) governs. <strong>All six workstreams are merged</strong> across three PRs: slice 1 (#34,
+approval spine), slice 2 (#36, moderation pipeline), and slice 3 (#45, review surface +
+save-state integrity).</p>
 <table>
 <thead>
 <tr>
 <th>ID</th>
 <th>Workstream</th>
-<th>Notes</th>
+<th>Status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>C3-1</td>
-<td>Implement the LLM moderation pass behind the <code>SAFE-14</code> seam in <code>validator/safety.py</code></td>
-<td>Provider moderation + independent LLM-reviewer, scored against the existing band profiles; any hit flags nodes and forces review. Persist the result to <code>storybook_version.moderation_report</code>.</td>
+<td>LLM moderation pass behind the <code>SAFE-14</code> seam (provider moderation + independent LLM-reviewer, persisted to <code>storybook_version.moderation_report</code>)</td>
+<td>✅ #36</td>
 </tr>
 <tr>
 <td>C3-2</td>
-<td>Publish state machine</td>
-<td>Encode <code>draft -&gt; generating -&gt; auto_check -&gt; in_review -&gt; approved -&gt; published -&gt; archived</code> with <code>needs_revision</code> on gate/moderation failure. Enforce transitions in one service module, not ad hoc in endpoints.</td>
+<td>Publish state machine (<code>draft -&gt; ... -&gt; published -&gt; archived</code>, <code>needs_revision</code> on failure), enforced in one service module</td>
+<td>✅ #34</td>
 </tr>
 <tr>
 <td>C3-3</td>
-<td>Guardian approval/send-back endpoints</td>
-<td>Guardian-only <code>approve</code> (stamps <code>approved_by</code> + <code>published_at</code>, sets <code>storybook.status=published</code> and <code>current_published_version</code>) and <code>send-back</code> (-&gt; <code>needs_revision</code>). Child tokens rejected.</td>
+<td>Guardian approval/send-back endpoints (stamps <code>approved_by</code> + <code>published_at</code>, sets <code>published</code>; child tokens rejected)</td>
+<td>✅ #34</td>
 </tr>
 <tr>
 <td>C3-4</td>
-<td>Review-surface read API</td>
-<td>One endpoint returning the story blob plus flagged passages plus the moderation report, shaped for the parent review UI (built in 4a).</td>
+<td>Review-surface read API (story blob + flagged passages + moderation report for the parent UI; the consuming UI is Phase 4a C4a-4)</td>
+<td>✅ #45</td>
 </tr>
 <tr>
 <td>C3-5</td>
-<td>Enforce the core invariant</td>
-<td>A <code>published</code> storybook must reference a version whose <code>approved_by</code> is non-null. Enforce in the publish service and back it with a DB CHECK/constraint or a tested guard; add the negative test.</td>
+<td>Core invariant enforced: a <code>published</code> storybook must reference a version whose <code>approved_by</code> is non-null, backed by a tested guard</td>
+<td>✅ #34</td>
 </tr>
 <tr>
 <td>C3-6</td>
-<td>Authorization + IDOR tests</td>
-<td>Child A cannot reach child B; cross-family guardian access denied; child cannot call approve/publish. All green.</td>
+<td>Authorization + IDOR tests (cross-child, cross-family, child cannot approve/publish)</td>
+<td>✅ #34</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Acceptance</strong>: every transition path is tested; no path reaches a child profile without a
-recorded approval; adversarial briefs flag and cannot auto-publish; 90% coverage on the
-publish state machine and authorization checks.</p>
+<p>Also delivered in slice 3 (#45): reading-state saves are validated against the pinned
+version (a structural floor always runs, with full deterministic replay when the optional
+<code>choice_path</code> is present), closing red-team Finding 2.</p>
+<p><strong>Acceptance (met)</strong>: every transition path is tested; no path reaches a child profile
+without a recorded approval; adversarial briefs flag and cannot auto-publish; coverage on
+the new Phase 3 code is at or above the 90% bar. The only Phase 3 capability not yet
+reachable is the browser UI, which is Phase 4a (C4a-4).</p>
 <h3 id="phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release">Phase 4a: Library, profiles, and the guardian app shell (closes the first release)<a class="headerlink" href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" title="Permanent link">&para;</a></h3>
 <p><strong>Goal</strong>: make the whole flow reachable by a parent through the browser. This is the
-<strong>largest remaining build</strong> because the frontend has no app shell.</p>
+<strong>largest remaining build</strong> because the frontend has no app shell. Design groundwork is in
+place: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
+claude.ai/design (#44). The build (routing, auth context, real components) has not started.</p>
 <table>
 <thead>
 <tr>
@@ -2688,21 +2702,20 @@ drill; deploy behind Pangolin + Authentik; operator runbook + short authoring gu
 Also lands the deferred <code>GenerationJob.stage_log</code> column + API so the ADR-007 raw-output
 purge can null <code>report</code> while keeping an auditable log.</p>
 <h2 id="sequencing-and-critical-path">Sequencing and critical path<a class="headerlink" href="#sequencing-and-critical-path" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Phase 3 (C3-1..C3-6)  ─┐
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                       ├─► Phase 4a guardian console (C4a-4) needs C3-3/C3-4
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>C4a-1 app shell ───────┘   (start C4a-1 in parallel with Phase 3; it has no Phase-3 dep)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        │
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        ├─► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        └─► C4a-5 concept intake
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                   ▼
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                          FIRST USABLE RELEASE
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                                   ▼
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                    Phase 4b (editor/TTS/tracker) ── Phase 5 (hardening/deploy)
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Phase 3 (C3-1..C3-6)  ✅ DONE (#34/#36/#45)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>        │
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>C4a-1 app shell ──► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        │       └─► C4a-4 guardian console (consumes the merged C3-3/C3-4 APIs)
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        └─────────► C4a-5 concept intake
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                   ▼
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                          FIRST USABLE RELEASE
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                   ▼
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                    Phase 4b (editor/TTS/tracker) ── Phase 5 (hardening/deploy)
 </span></code></pre></div>
-<p>The one true ordering constraint is that the <strong>guardian console (C4a-4) depends on the
-Phase-3 approval and review APIs (C3-3, C3-4)</strong>. Everything else in 4a (app shell,
-profiles, library, concept intake) can proceed in parallel with Phase 3, so the frontend
-app shell (C4a-1) should start immediately rather than waiting on Phase 3 to finish.</p>
+<p>Phase 3 is complete, so its former ordering constraint is discharged: the <strong>guardian
+console (C4a-4) can now consume the merged approval and review APIs (C3-3, C3-4)</strong>
+directly. Phase 4a is now the entire critical path to the first release, and the frontend
+app shell (C4a-1) is the prerequisite for everything else in it.</p>
 <h2 id="carried-debt-and-risks">Carried debt and risks<a class="headerlink" href="#carried-debt-and-risks" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2763,17 +2776,17 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
 <tr>
 <td>Phase 3</td>
 <td>Safety + approval workflow + tests</td>
-<td>3-4 weeks</td>
+<td>✅ Done (#34/#36/#45)</td>
 </tr>
 <tr>
 <td>Phase 4a</td>
 <td>App shell, profiles, library, guardian console, intake</td>
-<td>3-5 weeks (overlaps Phase 3)</td>
+<td>3-5 weeks</td>
 </tr>
 <tr>
 <td><strong>First usable release</strong></td>
-<td>Phases 3 + 4a combined, with overlap</td>
-<td><strong>6-10 weeks</strong></td>
+<td>Phase 4a (Phase 3 already merged)</td>
+<td><strong>3-5 weeks</strong></td>
 </tr>
 <tr>
 <td>Phase 4b</td>
@@ -2821,7 +2834,7 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 10:40:49 UTC">July 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 13:54:30 UTC">July 1, 2026</span>
   </span>
 
     

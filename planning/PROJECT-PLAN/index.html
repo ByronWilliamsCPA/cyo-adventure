@@ -1688,10 +1688,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#current-status-2026-06-29" class="md-nav__link">
+  <a href="#current-status-2026-07-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status (2026-06-29)
+        Current status (2026-07-01)
       
     </span>
   </a>
@@ -2771,10 +2771,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#current-status-2026-06-29" class="md-nav__link">
+  <a href="#current-status-2026-07-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Current status (2026-06-29)
+        Current status (2026-07-01)
       
     </span>
   </a>
@@ -3146,7 +3146,7 @@
 
 <h1 id="project-plan-cyo-adventure-ariadne">Project Plan: CYO Adventure (Ariadne)<a class="headerlink" href="#project-plan-cyo-adventure-ariadne" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-06-29
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.2 | <strong>Updated</strong>: 2026-07-01
 <strong>Codename</strong>: Ariadne (the thread that guides a reader through the maze of choices)
 <strong>Primary branch</strong>: <code>main</code></p>
 </blockquote>
@@ -3194,7 +3194,7 @@ in prompts; admin-only short-lived raw outputs).</p>
 </tbody>
 </table>
 <p>Source: <a href="../project-vision/">Project Vision</a> sections 1-3.</p>
-<h3 id="current-status-2026-06-29">Current status (2026-06-29)<a class="headerlink" href="#current-status-2026-06-29" title="Permanent link">&para;</a></h3>
+<h3 id="current-status-2026-07-01">Current status (2026-07-01)<a class="headerlink" href="#current-status-2026-07-01" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
@@ -3221,11 +3221,11 @@ in prompts; admin-only short-lived raw outputs).</p>
 </tr>
 <tr>
 <td>3 Safety + Review</td>
-<td>⏸️ Not started (next; DB schema ready, workflow logic absent)</td>
+<td>✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a</td>
 </tr>
 <tr>
 <td>4a Library + Profiles</td>
-<td>🔄 Backend partial (library/ratings API); frontend absent</td>
+<td>🔄 Backend partial (library/ratings API); frontend absent (wireframes #47, design system #44)</td>
 </tr>
 <tr>
 <td>4b Editor + UX</td>
@@ -3237,9 +3237,9 @@ in prompts; admin-only short-lived raw outputs).</p>
 </tr>
 </tbody>
 </table>
-<p>The <strong>first usable release is roughly half done by phase count but the long pole is
-ahead</strong>: Phase 3 is greenfield workflow code on a ready schema, and Phase 4a's
-guardian-facing UI has no app shell to build on yet (the frontend is a single-page
+<p>With the <strong>Phase 3 backend merged, Phase 4a is now the entire critical path to the first
+usable release</strong>: the approval, moderation, and review APIs exist and are enforced, but
+the guardian-facing UI has no app shell to build on yet (the frontend is a single-page
 reader demo with no routing). The concrete path from here is
 <a href="../completion-plan/"><code>completion-plan.md</code></a>.</p>
 <hr />
@@ -3747,14 +3747,16 @@ provider. Both are now met:</p>
 provider and privacy decisions. Blocks Phase 3 and Phase 4a.</p>
 <hr />
 <h3 id="phase-3-safety-and-review-workflow-3-4-weeks-overlaps-phase-2">Phase 3: Safety and Review Workflow (3-4 weeks; overlaps Phase 2)<a class="headerlink" href="#phase-3-safety-and-review-workflow-3-4-weeks-overlaps-phase-2" title="Permanent link">&para;</a></h3>
-<p><strong>Branch</strong>: <code>feat/phase-3-safety-review</code>
-<strong>Milestone</strong>: M3 - Parent approval gate enforced end to end
-<strong>Status</strong>: ⏸️ Not started (next on the critical path). The schema is ready
-(<code>storybook.status</code>, <code>storybook_version.approved_by</code> / <code>published_at</code> /
-<code>moderation_report</code>) and the deterministic age-band policy gate (<code>validator/policy.py</code>,
-PL-15..18) is in place, but the workflow itself is greenfield: <code>validator/safety.py</code> is an
-explicit stub, there are no approval/publish/send-back endpoints, no publish state
-machine, and no enforced invariant that a <code>published</code> story has a recorded approver.</p>
+<p><strong>Branches</strong> (merged): <code>feat/phase-3-safety-review</code> (#34), slice 2 review pipeline (#36),
+<code>feat/phase-3-slice-3-backend-closeout</code> (#45)
+<strong>Milestone</strong>: M3 - Parent approval gate enforced end to end (backend done; end-to-end
+through the UI awaits Phase 4a C4a-4)
+<strong>Status</strong>: ✅ Delivered (backend), merged. The staged content-moderation pipeline runs
+behind the <code>SAFE-14</code> seam and persists to <code>moderation_report</code> (#36); the publish state
+machine, guardian approval/send-back endpoints, and the enforced invariant that a
+<code>published</code> story has a recorded approver are all in place (#34); the review-surface read
+API and reading-state save-state integrity shipped in slice 3 (#45). The remaining Phase 3
+capability not yet reachable is the browser UI that exercises these APIs (Phase 4a).</p>
 <p><strong>Objective</strong>: Make the kids-facing guarantee real: no story reaches a child without a recorded
 guardian approval. See <a href="../adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
 <p><strong>Deliverables</strong> (traced to <a href="../roadmap/">Roadmap Phase 3</a>):</p>
@@ -3781,15 +3783,15 @@ guardian approval. See <a href="../adr/adr-005-mandatory-human-approval/">ADR-00
 </ul>
 <p><strong>Quality gates</strong>:</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 80% line / 70% branch coverage overall; 90% on publish state machine and authorization
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> 80% line / 70% branch coverage overall; 90% on publish state machine and authorization
       checks (critical paths)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
       cross-family guardian access)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Safety evaluation: adversarial concept briefs verified to flag moderation and route to
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Safety evaluation: adversarial concept briefs verified to flag moderation and route to
       human review; no auto-publish path</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> No high or critical security findings (Bandit, Semgrep, pip-audit)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Ruff clean; BasedPyright strict clean</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pre-commit green; all commits signed with conventional messages</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No high or critical security findings (Bandit, Semgrep, pip-audit)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Ruff clean; BasedPyright strict clean</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Pre-commit green; all commits signed with conventional messages</li>
 </ul>
 <p><strong>Dependencies</strong>: Requires Phase 2 generation and validation. Phase 3 may begin overlapping
 Phase 2 once the validation gate and orchestrator are stable.</p>
@@ -4349,7 +4351,7 @@ documents.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 13:54:30 UTC">July 1, 2026</span>
   </span>
 
     
