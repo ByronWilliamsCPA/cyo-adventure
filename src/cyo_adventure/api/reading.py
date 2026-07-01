@@ -183,7 +183,10 @@ async def put_reading_state(
             conflict body carrying the current row on a revision/version clash.
 
     Raises:
-        ValidationError: If a first (create) save does not start at revision 0.
+        ResourceNotFoundError: If the story, or the version body.version cites,
+            does not exist.
+        ValidationError: If a first (create) save does not start at revision 0,
+            or the submitted state fails the structural floor or full replay.
     """
     # #CRITICAL: security: profile access is authorized before any row read or
     # write so a child cannot write another profile's state (IDOR).

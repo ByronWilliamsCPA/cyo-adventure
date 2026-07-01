@@ -929,6 +929,68 @@ class TestPutReadingState:
         result = await put_reading_state(str(profile_id), "s_syn", body, ctx)
         assert result.current_node == "n_start"
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_put_forwards_choice_path_and_accepts_genuine_replay(self) -> None:
+        """A body.choice_path is forwarded to validate_reading_state and a
+        genuinely-replayed state is accepted.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_end",
+            var_state={"courage": 2},
+            path=["n_start", "n_end"],
+            visit_set=["n_start", "n_end"],
+            choice_path=["c_go"],
+            state_revision=0,
+        )
+        result = await put_reading_state(str(profile_id), "s_syn", body, ctx)
+        assert result.current_node == "n_end"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_put_forwards_choice_path_and_rejects_forged_replay(self) -> None:
+        """A forged var_state that is in-bounds (so the structural floor alone
+        would accept it) must still be rejected once body.choice_path is
+        present, proving choice_path actually reaches validate_reading_state's
+        full-replay tier rather than being silently dropped.
+        """
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_end",
+            var_state={"courage": 5},  # in-bounds (0..5) but replay yields 2
+            path=["n_start", "n_end"],
+            visit_set=["n_start", "n_end"],
+            choice_path=["c_go"],
+            state_revision=0,
+        )
+        with pytest.raises(ValidationError):
+            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+
 
 # ---------------------------------------------------------------------------
 # record_completion
