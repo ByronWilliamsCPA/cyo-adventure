@@ -19,17 +19,17 @@ tags:
 
 ## 1. Problem and scope
 
-`App.tsx` is still a 51-line single hard-coded page with no router installed; Phase 4a
-(C4a-1 through C4a-6) is the largest remaining build before the first usable release and has
-no UI concept work behind it yet beyond the reader engine itself. PR #44 (open) delivered seven
+`App.tsx` is still a small, single hard-coded page (about 50 lines) with no router installed;
+Phase 4a (C4a-1 through C4a-6) is the largest remaining build before the first usable release and
+has no UI concept work behind it yet beyond the reader engine itself. PR #44 (merged) delivered seven
 on-brand primitives (`Button`, `ChoiceButton`, `Dialog`, `EmptyState`, `PassageText`,
 `ProgressBar`, `StatusBadge`) and a "storybook palette" token set, but nothing yet says which
 pages exist or how those components compose into them.
 
-This spec identifies the 3-5 key mobile-UI pages and captures a confirmed concept direction for
+This spec identifies the five key mobile-UI pages and captures a confirmed concept direction for
 each, at wireframe fidelity, so C4a-1..C4a-6 implementation has something concrete to build
 against instead of discovering structure mid-code. **This is a UX/structure spec, not an
-implementation plan** — routing, state management, and API wiring for these pages are separate
+implementation plan**: routing, state management, and API wiring for these pages are separate
 follow-on work (see Section 7).
 
 ## 2. App structure: two distinct experiences
@@ -55,7 +55,7 @@ implementation will actually use:
 |---|---|
 | Backgrounds | `--color-parchment` `#f8f3e8` (warm cream), darker variants for chrome/nav bars |
 | Text | `--color-ink` `#2c1a0e`, secondary `#5a3e28`, muted `#8c6f56` |
-| Primary accent | `--color-amber` `#c17b2a` / hover `#a3631f` &mdash; buttons, choices, progress fill |
+| Primary accent | `--color-amber` `#c17b2a` / hover `#a3631f`; buttons, choices, progress fill |
 | Secondary | `--color-forest` `#2d5a3d` (success/approve/connected), `--color-sky` `#4a7fb5` (info) |
 | Semantic | error `#9b2c2c`, warning `#92600a`, success `#276749` |
 | Type | Serif (`Georgia`/`Palatino`) for story passages, sans (`Segoe UI`/system) for UI chrome |
@@ -79,7 +79,7 @@ children by adding rows; the status pill reuses the same visual language as PR #
 **Open flag, needs a deliberate answer before C4a-2 build**: custom child photos mean this
 screen stores images of children. Decide explicitly whether photos are local-device-only or
 synced to the backend, and confirm a default illustrated avatar is always an acceptable fallback
-(not a required upload) &mdash; this is a privacy decision, not a default to fall into.
+(not a required upload); this is a privacy decision, not a default to fall into.
 
 ### 4.2 Library / Bookshelf (kid surface, home screen)
 
@@ -101,7 +101,7 @@ ending screen with restart. **This page is a visual restyle onto PR #44's real c
 new structure.**
 
 **Confirmed concept**: a **persistent sticky top bar** carrying a `StatusBadge` (online/offline)
-and a `ProgressBar` with a "Ch. X/Y" label, always visible during reading &mdash; not a minimal/
+and a `ProgressBar` with a "Ch. X/Y" label, always visible during reading, not a minimal/
 immersive layout with no chrome. The passage body renders via `PassageText` (serif, generous line
 height); choices render as stacked full-width `ChoiceButton`s. The existing ending screen and
 `ConflictDialog` get the same token treatment (serif ending title, pill-style restart button,
@@ -116,14 +116,14 @@ reading real estate.
 Two connected screens, both backed by C3-4's review-surface API and C3-3's approve/send-back
 endpoints.
 
-**Queue (landing view) &mdash; confirmed concept**: one flat scroll grouped into
-severity-ordered sections &mdash; **Flagged (review carefully)** first, then **Ready to
-review**, then **Still processing** &mdash; using a `flag-badge`-style pill per row (flagged
+**Queue (landing view): confirmed concept**: one flat scroll grouped into
+severity-ordered sections: **Flagged (review carefully)** first, then **Ready to
+review**, then **Still processing**, using a `flag-badge`-style pill per row (flagged
 count / "Clean" / "Generating&hellip;"). Nothing needs a tap-through to find what needs attention
 most; it is already sorted to the top.
 
-**Review detail &mdash; confirmed concept**: the **flags-first summary** is the landing view for
-a given story &mdash; every flagged passage surfaces immediately as its own card (moderation
+**Review detail: confirmed concept**: the **flags-first summary** is the landing view for
+a given story: every flagged passage surfaces immediately as its own card (moderation
 category + quoted excerpt), with a "Read full story &rarr;" link. Tapping that link (or a
 specific flagged card) **drills into the full story text with flagged passages highlighted
 inline**, auto-scrolled to that passage, with the moderation note directly beneath the
@@ -143,7 +143,7 @@ plan lists as separate workstreams; this page keeps them as **separate actions l
 a shared recipient field**, not fully merged.
 
 **Confirmed concept**: a single form (not a multi-step wizard) with **"Who's it for?"** as the
-first field &mdash; a child-selector chip row that sets the age-band/reading-level constraint for
+first field: a child-selector chip row that sets the age-band/reading-level constraint for
 generation and pre-selects the default assignee once approved. Below it, "What's it about?" (free
 text) and a tone chip row (Gentle / Adventurous / Silly), then "Request Story." Below the form, a
 persistent **"My Requests"** status list shows every request the guardian has made, each with a
@@ -152,7 +152,7 @@ keeps a separate **"Assign more &rarr;"** action, which opens a child multi-sele
 already-approved story to additional children without re-requesting it.
 
 **Why this shape**: picking a recipient upfront (like a wizard) would conflate "who am I
-imagining this for" with "who ultimately gets it" &mdash; the separate "Assign more" action
+imagining this for" with "who ultimately gets it"; the separate "Assign more" action
 preserves the ability to broaden an approved story to siblings later, while still giving the
 generation pipeline a concrete age-band target from the start.
 
