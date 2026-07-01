@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from cyo_adventure.api.review_surface import build_review_surface
+from cyo_adventure.core.exceptions import ValidationError
 
 
 def _blob() -> dict[str, object]:
@@ -132,3 +133,112 @@ def test_finding_on_absent_node_gets_empty_prose() -> None:
     passage = view.flagged_passages[0]
     assert passage.node_id == "n_missing"
     assert passage.prose == ""
+
+
+@pytest.mark.unit
+def test_summary_rejects_non_bool_gate_values() -> None:
+    """A corrupt-at-rest summary with a Python-truthy non-bool gate value must
+    not silently coerce to True via bool().
+    """
+    report: dict[str, object] = {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": "false",  # truthy under naive bool(), must NOT become True
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=report,
+    )
+    assert view.summary is not None
+    assert view.summary.hard_block is False
+
+
+@pytest.mark.unit
+def test_unrecognized_source_rejected() -> None:
+    """A finding whose source is outside the declared Source enum is rejected
+    as corrupt-at-rest data, not silently passed through as a plain string.
+    """
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "not_a_real_source",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "x",
+            }
+        ],
+        "summary": None,
+    }
+    with pytest.raises(ValidationError):
+        build_review_surface(
+            status="in_review",
+            storybook_id="s1",
+            version=1,
+            blob=_blob(),
+            moderation_report=report,
+        )
+
+
+@pytest.mark.unit
+def test_unrecognized_verdict_rejected() -> None:
+    """A finding whose verdict is outside the declared Verdict enum is rejected."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "maybe",
+                "score": None,
+                "message": "x",
+            }
+        ],
+        "summary": None,
+    }
+    with pytest.raises(ValidationError):
+        build_review_surface(
+            status="in_review",
+            storybook_id="s1",
+            version=1,
+            blob=_blob(),
+            moderation_report=report,
+        )
+
+
+@pytest.mark.unit
+def test_out_of_range_stage_rejected() -> None:
+    """A finding whose stage is outside the declared 0..4 range is rejected."""
+    report: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 99,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n_start",
+                "verdict": "flag",
+                "score": None,
+                "message": "x",
+            }
+        ],
+        "summary": None,
+    }
+    with pytest.raises(ValidationError):
+        build_review_surface(
+            status="in_review",
+            storybook_id="s1",
+            version=1,
+            blob=_blob(),
+            moderation_report=report,
+        )
