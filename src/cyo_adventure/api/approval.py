@@ -36,6 +36,17 @@ if TYPE_CHECKING:
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
 
+# #ASSUME: data integrity: each `cast("Literal[...]", book.status)` call below
+# assumes approval_service's corresponding call (submit/approve/send_back/archive)
+# leaves book.status at exactly the one literal named, per
+# publishing/state_machine.py's LEGAL_TRANSITIONS. The cast itself performs no
+# runtime check; Pydantic revalidates the claim when the response model is
+# constructed, so a service/state-machine bug surfaces as a loud error there
+# instead of a silently-wrong status.
+# #VERIFY: publishing/state_machine.py's LEGAL_TRANSITIONS still maps SUBMIT,
+# APPROVE, SEND_BACK, and ARCHIVE to exactly in_review, published,
+# needs_revision, and archived respectively (tests/unit/test_state_machine.py).
+
 
 async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     """Load a storybook for an admin action, enforcing the admin role first.
@@ -71,9 +82,6 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.submit(ctx.session, book)
-    # submit always resolves to in_review (the service raises on any other
-    # transition); cast satisfies the type checker and Pydantic revalidates the
-    # actual status against the Literal, so a service bug surfaces, not a lie.
     return SubmittedView(
         id=book.id,
         status=cast("Literal['in_review']", book.status),

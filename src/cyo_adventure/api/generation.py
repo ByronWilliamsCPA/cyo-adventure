@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import cast
+from typing import Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks
 from sqlalchemy import select
@@ -226,9 +226,16 @@ async def enqueue_concept_generation(
     # #VERIFY: test_generation_api::test_enqueue_returns_202_without_redis.
     background_tasks.add_task(_enqueue_safely, str(job.id))
 
-    # The job was just created as "queued" above, which is the model's default
-    # and only permitted value here, so let the default stand rather than cast.
-    return GenerationEnqueuedResponse(job_id=str(job.id))
+    # #ASSUME: data integrity: job.status is "queued" immediately after
+    # construction above; cast (not the model default) keeps this response
+    # consistent with get_generation_job below, reading and revalidating the
+    # real value rather than assuming the default matches it.
+    # #VERIFY: GenerationJob's only status at construction is "queued"
+    # (db/models.py); a future non-"queued" initial state would surface here
+    # as a ResponseValidationError instead of a silently-wrong response.
+    return GenerationEnqueuedResponse(
+        job_id=str(job.id), status=cast("Literal['queued']", job.status)
+    )
 
 
 @router.get("/generation-jobs/{job_id}")
@@ -270,9 +277,14 @@ async def get_generation_job(
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
 
-    # job.status is any of the five job states; the ck_generation_job_status
-    # CHECK constrains the stored value, and Pydantic revalidates it against
-    # JobStatusLiteral, so the cast asserts what the DB already guarantees.
+    # #ASSUME: data integrity: job.status is one of JobStatusLiteral's five
+    # values; the ck_generation_job_status CHECK (db/models.py) constrains the
+    # stored value, and Pydantic revalidates it against JobStatusLiteral on
+    # construction, so the cast asserts what the DB already guarantees rather
+    # than performing the check itself.
+    # #VERIFY: JobStatusLiteral's five values match
+    # db/models.py's _GENERATION_JOB_STATUS_VALUES exactly (see
+    # tests/unit/test_schemas.py::test_job_status_literal_matches_db_constraint).
     return GenerationJobResponse(
         id=str(job.id),
         status=cast("JobStatusLiteral", job.status),
