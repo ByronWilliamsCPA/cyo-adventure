@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/completion-plan/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-01-phase-3-slice-3-backend-closeout-design/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>CYO Adventure - Completion Plan (path to v1) - CYO Adventure</title>
+        <title>Phase 3 Slice 3: Backend Closeout (Review-Surface API + Save-State Replay) (Design) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#tldr" class="md-skip">
+        <a href="#1-problem-and-scope" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CYO Adventure - Completion Plan (path to v1)
+              Phase 3 Slice 3: Backend Closeout (Review-Surface API + Save-State Replay) (Design)
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link">
+        <a href="../../../planning/" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -446,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -476,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -572,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -607,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -642,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -742,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -819,7 +819,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -870,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -905,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -940,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -975,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1010,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1116,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1151,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1186,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1221,7 +1221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1325,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1360,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1395,7 +1395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1472,7 +1472,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../planning/" class="md-nav__link ">
               
   
   
@@ -1523,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1558,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1593,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1628,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1700,7 +1700,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../adr/" class="md-nav__link ">
+            <a href="../../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1751,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1786,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1821,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1856,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1891,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1926,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2040,7 +2040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2075,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2110,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2145,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2214,7 +2214,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2265,7 +2265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2325,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-problem-and-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. Problem and scope
       
     </span>
   </a>
@@ -2336,10 +2336,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#where-we-are-2026-06-29-baseline" class="md-nav__link">
+  <a href="#2-decisions-from-brainstorming-2026-07-01" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Where we are (2026-06-29 baseline)
+        2. Decisions (from brainstorming, 2026-07-01)
       
     </span>
   </a>
@@ -2347,33 +2347,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#definition-of-complete" class="md-nav__link">
+  <a href="#3-part-a-c3-4-review-surface-read-api" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Definition of "complete"
+        3. Part A: C3-4 review-surface read API
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#remaining-work" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remaining work
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Remaining work">
+    <nav class="md-nav" aria-label="3. Part A: C3-4 review-surface read API">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" class="md-nav__link">
+  <a href="#31-endpoint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 3: Safety and approval workflow (next on the critical path)
+        3.1 Endpoint
       
     </span>
   </a>
@@ -2381,10 +2370,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" class="md-nav__link">
+  <a href="#32-response-reviewsurfaceview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
+        3.2 Response: ReviewSurfaceView
       
     </span>
   </a>
@@ -2392,10 +2381,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#first-release-cut" class="md-nav__link">
+  <a href="#33-projection-logic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        First release cut
+        3.3 Projection logic
       
     </span>
   </a>
@@ -2403,21 +2392,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#phase-4b-editor-and-engagement-post-release" class="md-nav__link">
+  <a href="#34-errors" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Phase 4b: Editor and engagement (post-release)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-5-hardening-and-deploy-post-release" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Phase 5: Hardening and deploy (post-release)
+        3.4 Errors
       
     </span>
   </a>
@@ -2430,10 +2408,71 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#sequencing-and-critical-path" class="md-nav__link">
+  <a href="#4-part-b-finding-2-save-state-replay-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sequencing and critical path
+        4. Part B: Finding 2 save-state replay validation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Part B: Finding 2 save-state replay validation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-schema-change-additive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Schema change (additive)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-new-module-playerreplaypy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 New module: player/replay.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-call-site" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Call site
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-boundary-save-slots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Boundary: save slots
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Error handling
       
     </span>
   </a>
@@ -2441,10 +2480,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#carried-debt-and-risks" class="md-nav__link">
+  <a href="#6-tracked-follow-up-the-required-later-half-of-d4" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Carried debt and risks
+        6. Tracked follow-up (the "required later" half of D4)
       
     </span>
   </a>
@@ -2452,10 +2491,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#estimate" class="md-nav__link">
+  <a href="#7-out-of-scope" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Estimate
+        7. Out of scope
       
     </span>
   </a>
@@ -2463,10 +2502,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
+  <a href="#8-testing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related documents
+        8. Testing
       
     </span>
   </a>
@@ -2493,311 +2532,247 @@
   
 
 
-  <h1>CYO Adventure - Completion Plan (path to v1)</h1>
+  <h1>Phase 3 Slice 3: Backend Closeout (Review-Surface API + Save-State Replay) (Design)</h1>
 
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-06-29
-<strong>Baseline</strong>: Phases 0, 1, 2, and 2b delivered and merged. See
-<a href="../roadmap/"><code>roadmap.md</code></a> for the phase definitions this plan executes against.</p>
+<p>Branch: <code>feat/phase-3-slice-3-backend-closeout</code> (created off main tip <code>b973221</code>) | Date: 2026-07-01 | Author: Byron Williams (with Claude)
+Builds on: slice 1 (approval spine, merged PR #34), slice 2 (moderation pipeline, merged PR #36).
+Implements: <a href="../../../planning/completion-plan/">completion-plan C3-4</a>, <a href="../../../planning/roadmap/">roadmap Phase 3</a>,
+<a href="../../../planning/adr/adr-005-mandatory-human-approval/">ADR-005 mandatory human approval</a>.</p>
 </blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>The validation and generation halves of the system are built and merged: a child can
-read hand-authored stories offline, and the pipeline generates stories that clear the
-full gate at 70% live yield. What stands between here and a <strong>first usable release</strong> is
-two phases of work that are almost entirely greenfield:</p>
+<h2 id="1-problem-and-scope">1. Problem and scope<a class="headerlink" href="#1-problem-and-scope" title="Permanent link">&para;</a></h2>
+<p>Phase 3's safety logic (moderation pipeline) and approval spine are merged. Two backend
+items remain before the phase is closed and the 4a guardian console can be built:</p>
 <ol>
-<li><strong>Phase 3 (Safety and approval workflow)</strong> on a Phase-3-ready database but with no
-   workflow logic yet, and</li>
-<li><strong>Phase 4a (Library, profiles, and the guardian app shell)</strong>, where the frontend is
-   still a single-page reader demo with no routing.</li>
+<li><strong>C3-4 (review-surface read API).</strong> The guardian console (4a, C4a-4) needs one endpoint
+   that returns a version's story blob plus its moderation findings, shaped for a parent to
+   review flagged passages and approve or send back. No such read endpoint exists;
+   <code>api/approval.py</code> has only the write transitions.</li>
+<li><strong>Finding 2 (save-state integrity).</strong> <code>api/reading.py::_apply_body</code> writes client
+   <code>current_node</code> / <code>var_state</code> / <code>path</code> / <code>visit_set</code> verbatim on the PUT reading-state
+   path with no validation against the story graph. Its sibling <code>record_completion</code> already
+   validates <code>ending_id</code> against the cited version's blob, so the write path is internally
+   inconsistent: a forged or corrupt save is accepted unchecked.</li>
 </ol>
-<p>The first release is roughly half-done by phase count, but the remaining half is the
-harder half: it is the parent-facing product, not the engine. Estimated <strong>6 to 10 weeks</strong>
-to the first release for a 1 to 2 developer team, then <strong>4 to 7 weeks</strong> for Phase 4b and
-Phase 5 to reach full v1.</p>
-<h2 id="where-we-are-2026-06-29-baseline">Where we are (2026-06-29 baseline)<a class="headerlink" href="#where-we-are-2026-06-29-baseline" title="Permanent link">&para;</a></h2>
+<p>Both features validate or project client data against a stored <code>StorybookVersion.blob</code>, so
+they ship as one cohesive backend slice. No frontend work and no database migration are in
+scope (see section 7).</p>
+<h2 id="2-decisions-from-brainstorming-2026-07-01">2. Decisions (from brainstorming, 2026-07-01)<a class="headerlink" href="#2-decisions-from-brainstorming-2026-07-01" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>Area</th>
-<th>State</th>
+<th>#</th>
+<th>Decision</th>
+<th>Rationale</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Storybook schema + Layer-1/Layer-2 validator + policy gate</td>
-<td>✅ Built, merged</td>
+<td>D1</td>
+<td>Bundle C3-4 and Finding 2 into one backend slice.</td>
+<td>Both read/validate against a version blob; cohesive, no frontend.</td>
 </tr>
 <tr>
-<td>Offline PWA reader (play, state-gated choices, 409 sync, PWA install)</td>
-<td>✅ Built, merged</td>
+<td>D2</td>
+<td>Finding 2 validation depth: <strong>full engine replay</strong>.</td>
+<td>Strongest guarantee; proves the saved state is actually reachable, not just structurally well-formed.</td>
 </tr>
 <tr>
-<td>Staged generation pipeline + live providers (OpenRouter, Ollama)</td>
-<td>✅ Built, merged; 70% yield</td>
+<td>D3</td>
+<td>Replay contract: <strong>compare-and-reject (additive)</strong>.</td>
+<td>Client keeps sending derived state and adds <code>choice_path</code>; server replays and 422s on mismatch. Minimal, additive schema change; the comparison doubles as a client/server engine-drift detector.</td>
 </tr>
 <tr>
-<td>Concept intake + RQ worker + guardian-only generation API</td>
-<td>✅ Built, merged</td>
+<td>D4</td>
+<td>Rollout: <strong>phased, <code>choice_path</code> optional now, required later</strong>.</td>
+<td>Keeps the slice backend-pure; the frontend player is updated in a tracked follow-up before the field is made required.</td>
 </tr>
 <tr>
-<td>Library + ratings API (backend)</td>
-<td>✅ Built, merged</td>
-</tr>
-<tr>
-<td>Safety/moderation <strong>logic</strong></td>
-<td>⏸️ <code>validator/safety.py</code> is a stub</td>
-</tr>
-<tr>
-<td>Publish state machine + approval/send-back endpoints</td>
-<td>⏸️ Absent (DB columns exist)</td>
-</tr>
-<tr>
-<td>Guardian/parent <strong>frontend</strong> (review, library, profiles, intake)</td>
-<td>⏸️ Absent; no routing</td>
-</tr>
-<tr>
-<td>Hardening (Redis rate limiter, backups, restore drill, Sentry)</td>
-<td>⏸️ Absent</td>
+<td>D5</td>
+<td>Refinement on D4: <strong>two-tier validation</strong> so "optional" is not a total bypass.</td>
+<td>A structural floor runs on every save even when <code>choice_path</code> is absent; full replay runs when it is present.</td>
 </tr>
 </tbody>
 </table>
-<p>The keystone insight: <strong>the database is ready for Phase 3</strong> (<code>storybook.status</code>,
-<code>storybook_version.approved_by</code> / <code>published_at</code> / <code>moderation_report</code> all exist), and
-the <strong>deterministic age-band policy gate</strong> (<code>validator/policy.py</code>, PL-15..18) already
-runs. The missing pieces are workflow code and UI, not schema.</p>
-<h2 id="definition-of-complete">Definition of "complete"<a class="headerlink" href="#definition-of-complete" title="Permanent link">&para;</a></h2>
-<p>The project reaches <strong>first usable release</strong> when a generated story can travel concept -&gt;
-generation -&gt; validation -&gt; moderation -&gt; guardian approval -&gt; a child's library and play
-offline to multiple endings, with the invariant that <strong>no story is visible to a child
-without a recorded guardian approval</strong>, all reachable through the UI by a non-technical
-parent.</p>
-<p>It reaches <strong>full v1</strong> when Phase 4b (in-UI editing, ending tracker, read-aloud) and
-Phase 5 (hardening, deploy behind Pangolin/Authentik, tested restore) are also done, per
-the <a href="../roadmap/#definition-of-done">roadmap Definition of Done</a>.</p>
-<h2 id="remaining-work">Remaining work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h2>
-<h3 id="phase-3-safety-and-approval-workflow-next-on-the-critical-path">Phase 3: Safety and approval workflow (next on the critical path)<a class="headerlink" href="#phase-3-safety-and-approval-workflow-next-on-the-critical-path" title="Permanent link">&para;</a></h3>
-<p><strong>Goal</strong>: make the kids-facing guarantee real and enforced. ADR-005 (mandatory human
-approval) governs.</p>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Workstream</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>C3-1</td>
-<td>Implement the LLM moderation pass behind the <code>SAFE-14</code> seam in <code>validator/safety.py</code></td>
-<td>Provider moderation + independent LLM-reviewer, scored against the existing band profiles; any hit flags nodes and forces review. Persist the result to <code>storybook_version.moderation_report</code>.</td>
-</tr>
-<tr>
-<td>C3-2</td>
-<td>Publish state machine</td>
-<td>Encode <code>draft -&gt; generating -&gt; auto_check -&gt; in_review -&gt; approved -&gt; published -&gt; archived</code> with <code>needs_revision</code> on gate/moderation failure. Enforce transitions in one service module, not ad hoc in endpoints.</td>
-</tr>
-<tr>
-<td>C3-3</td>
-<td>Guardian approval/send-back endpoints</td>
-<td>Guardian-only <code>approve</code> (stamps <code>approved_by</code> + <code>published_at</code>, sets <code>storybook.status=published</code> and <code>current_published_version</code>) and <code>send-back</code> (-&gt; <code>needs_revision</code>). Child tokens rejected.</td>
-</tr>
-<tr>
-<td>C3-4</td>
-<td>Review-surface read API</td>
-<td>One endpoint returning the story blob plus flagged passages plus the moderation report, shaped for the parent review UI (built in 4a).</td>
-</tr>
-<tr>
-<td>C3-5</td>
-<td>Enforce the core invariant</td>
-<td>A <code>published</code> storybook must reference a version whose <code>approved_by</code> is non-null. Enforce in the publish service and back it with a DB CHECK/constraint or a tested guard; add the negative test.</td>
-</tr>
-<tr>
-<td>C3-6</td>
-<td>Authorization + IDOR tests</td>
-<td>Child A cannot reach child B; cross-family guardian access denied; child cannot call approve/publish. All green.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Acceptance</strong>: every transition path is tested; no path reaches a child profile without a
-recorded approval; adversarial briefs flag and cannot auto-publish; 90% coverage on the
-publish state machine and authorization checks.</p>
-<h3 id="phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release">Phase 4a: Library, profiles, and the guardian app shell (closes the first release)<a class="headerlink" href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" title="Permanent link">&para;</a></h3>
-<p><strong>Goal</strong>: make the whole flow reachable by a parent through the browser. This is the
-<strong>largest remaining build</strong> because the frontend has no app shell.</p>
-<table>
-<thead>
-<tr>
-<th>ID</th>
-<th>Workstream</th>
-<th>Notes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>C4a-1</td>
-<td>Frontend app shell + routing</td>
-<td>Introduce a router and an authenticated layout. Today <code>App.tsx</code> is a single hard-coded reader page; every screen below needs routing and an auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI.</td>
-</tr>
-<tr>
-<td>C4a-2</td>
-<td>Profile management UI</td>
-<td>Create/select per-child profiles; surface age-band and reading-level caps (backed by <code>child_profile</code>). Child sessions land directly in their own library.</td>
-</tr>
-<tr>
-<td>C4a-3</td>
-<td>Library browsing UI</td>
-<td>Consume the existing <code>library</code> API; a child sees only <code>published</code>, profile-permitted books; ratings shown/edited via the <code>ratings</code> API.</td>
-</tr>
-<tr>
-<td>C4a-4</td>
-<td>Guardian console: review + approve</td>
-<td>Wire the Phase-3 review-surface API (C3-4) and approval endpoints (C3-3) into a UI where a parent reads a story, sees flagged passages, and approves or sends back in a few minutes.</td>
-</tr>
-<tr>
-<td>C4a-5</td>
-<td>Concept intake UI + job status</td>
-<td>Form posting to the concept/generation API; show job status (queued/running/passed/needs_review/failed) without exposing raw model output.</td>
-</tr>
-<tr>
-<td>C4a-6</td>
-<td>Assign-to-profile UI</td>
-<td>Guardian assigns an approved story to one or more children.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Acceptance</strong>: concept -&gt; approved -&gt; assigned -&gt; a child reads it offline, entirely
-through the UI; a child never sees a non-permitted or unapproved story.</p>
-<h3 id="first-release-cut">First release cut<a class="headerlink" href="#first-release-cut" title="Permanent link">&para;</a></h3>
-<p>Ships: Phases 0-3 + 4a. A parent generates, reviews, approves, and assigns a story; a
-child reads it offline. Deferred to after the release: in-UI editing, TTS, ending tracker
-(4b), and production hardening/deploy (5). The release can run on the homelab in a
-trusted-network configuration before the full Phase 5 hardening lands, if desired, but
-<strong>Phase 5's auth/ingress (Pangolin + Authentik) is required before any exposure beyond a
-trusted LAN</strong>.</p>
-<h3 id="phase-4b-editor-and-engagement-post-release">Phase 4b: Editor and engagement (post-release)<a class="headerlink" href="#phase-4b-editor-and-engagement-post-release" title="Permanent link">&para;</a></h3>
-<p>Lightweight node editor (read as a playthrough + node list, edit a passage, re-roll one
-branch, re-run validation), ending tracker ("3 of 7 found"), bookmarks, and read-aloud
-(TTS) for the youngest band. None started.</p>
-<h3 id="phase-5-hardening-and-deploy-post-release">Phase 5: Hardening and deploy (post-release)<a class="headerlink" href="#phase-5-hardening-and-deploy-post-release" title="Permanent link">&para;</a></h3>
-<p>Performance + offline-edge hardening; WCAG AA basics; Sentry on client and server;
-<strong>replace the in-memory <code>RateLimitMiddleware</code> with a Redis-backed limiter</strong> (it is
-single-process only today, documented in SECURITY.md); backups and a tested restore
-drill; deploy behind Pangolin + Authentik; operator runbook + short authoring guide.
-Also lands the deferred <code>GenerationJob.stage_log</code> column + API so the ADR-007 raw-output
-purge can null <code>report</code> while keeping an auditable log.</p>
-<h2 id="sequencing-and-critical-path">Sequencing and critical path<a class="headerlink" href="#sequencing-and-critical-path" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Phase 3 (C3-1..C3-6)  ─┐
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                       ├─► Phase 4a guardian console (C4a-4) needs C3-3/C3-4
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>C4a-1 app shell ───────┘   (start C4a-1 in parallel with Phase 3; it has no Phase-3 dep)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        │
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        ├─► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        └─► C4a-5 concept intake
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                   ▼
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                          FIRST USABLE RELEASE
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                                   ▼
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                    Phase 4b (editor/TTS/tracker) ── Phase 5 (hardening/deploy)
-</span></code></pre></div>
-<p>The one true ordering constraint is that the <strong>guardian console (C4a-4) depends on the
-Phase-3 approval and review APIs (C3-3, C3-4)</strong>. Everything else in 4a (app shell,
-profiles, library, concept intake) can proceed in parallel with Phase 3, so the frontend
-app shell (C4a-1) should start immediately rather than waiting on Phase 3 to finish.</p>
-<h2 id="carried-debt-and-risks">Carried debt and risks<a class="headerlink" href="#carried-debt-and-risks" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Item</th>
-<th>Severity</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Tier-2 generation yield weak (3/7)</strong></td>
-<td>Medium</td>
-<td>Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever; see <a href="../phase-2b-live-provider/"><code>phase-2b-live-provider.md</code></a>). Re-measure. Do before relying on Tier-2 generation in production.</td>
-</tr>
-<tr>
-<td><strong>In-memory rate limiter</strong></td>
-<td>Medium</td>
-<td>Phase 5: replace with Redis-backed limiter before multi-process/exposed deployment.</td>
-</tr>
-<tr>
-<td><strong>No frontend routing / app shell</strong></td>
-<td>High (effort)</td>
-<td>Phase 4a C4a-1 is a prerequisite for all guardian/library UI; size it as real work, not a wrapper.</td>
-</tr>
-<tr>
-<td><strong>esbuild Renovate re-proposal</strong></td>
-<td>Low</td>
-<td>Open a <code>renovate.json</code> rule pinning/grouping <code>esbuild</code> to Vite's range so the #22 bump is not re-proposed (carried TODO).</td>
-</tr>
-<tr>
-<td><strong>markdownlint whole-repo table/heading debt</strong></td>
-<td>Low</td>
-<td>Non-gating (pre-push only). Address opportunistically; do not block planning-doc updates on it.</td>
-</tr>
-<tr>
-<td><strong><code>GenerationJob.stage_log</code> deferral</strong></td>
-<td>Low</td>
-<td>Phase 5: add the redacted stage-log column + API so the ADR-007 purge keeps an auditable trail.</td>
-</tr>
-<tr>
-<td><strong><code>choice_path</code> optional in reading-state saves</strong></td>
-<td>Medium</td>
-<td>Slice 3 shipped save-state replay validation with <code>choice_path</code> optional (structural floor always runs; full replay only when present). Follow-up: update the React player to send <code>choice_path</code>, regenerate the client, then make the field required so replay runs on every save.</td>
-</tr>
-</tbody>
-</table>
-<h2 id="estimate">Estimate<a class="headerlink" href="#estimate" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Scope</th>
-<th>Estimate (1-2 devs)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Phase 3</td>
-<td>Safety + approval workflow + tests</td>
-<td>3-4 weeks</td>
-</tr>
-<tr>
-<td>Phase 4a</td>
-<td>App shell, profiles, library, guardian console, intake</td>
-<td>3-5 weeks (overlaps Phase 3)</td>
-</tr>
-<tr>
-<td><strong>First usable release</strong></td>
-<td>Phases 3 + 4a combined, with overlap</td>
-<td><strong>6-10 weeks</strong></td>
-</tr>
-<tr>
-<td>Phase 4b</td>
-<td>Editor, TTS, ending tracker</td>
-<td>2-4 weeks</td>
-</tr>
-<tr>
-<td>Phase 5</td>
-<td>Hardening, deploy, restore drill</td>
-<td>2-3 weeks</td>
-</tr>
-<tr>
-<td><strong>Full v1</strong></td>
-<td>First release + 4b + 5</td>
-<td><strong>+4-7 weeks</strong></td>
-</tr>
-</tbody>
-</table>
-<h2 id="related-documents">Related documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<h2 id="3-part-a-c3-4-review-surface-read-api">3. Part A: C3-4 review-surface read API<a class="headerlink" href="#3-part-a-c3-4-review-surface-read-api" title="Permanent link">&para;</a></h2>
+<h3 id="31-endpoint">3.1 Endpoint<a class="headerlink" href="#31-endpoint" title="Permanent link">&para;</a></h3>
+<p><code>GET /api/v1/storybooks/{storybook_id}/review</code> on the existing approval router
+(<code>api/approval.py</code>, prefix <code>/api/v1</code>).</p>
 <ul>
-<li><a href="../roadmap/">Development Roadmap</a> (phase definitions)</li>
-<li><a href="../PROJECT-PLAN/">Project Plan</a> (detailed phase tasks and quality gates)</li>
-<li><a href="../phase-2b-live-provider/">Phase 2b: live providers and yield</a></li>
-<li><a href="../adr/adr-005-mandatory-human-approval/">ADR-005: mandatory human approval</a></li>
+<li><strong>Query param:</strong> <code>version: int | None = None</code>. When omitted, resolve the latest version
+  via the existing <code>_latest_version</code> helper. When provided, use it directly.</li>
+<li><strong>Authorization:</strong> reuse <code>_load_admin_story(ctx, storybook_id)</code> (admin role required,
+  checked before the story is loaded; child or non-admin token -&gt; 403). Admin authority is
+  global and cross-family by design, matching every other handler in <code>api/approval.py</code> (the
+  backend safety-review operator, not a family-scoped guardian); <code>authorize_family</code> is
+  intentionally not called. This is a read of unpublished, possibly-flagged content, so it
+  must never be reachable by a child token.</li>
+</ul>
+<h3 id="32-response-reviewsurfaceview">3.2 Response: <code>ReviewSurfaceView</code><a class="headerlink" href="#32-response-reviewsurfaceview" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>ReviewSurfaceView:
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    storybook_id: str
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    version: int
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    status: str                       # storybook.status
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    blob: dict[str, object]           # the full stored story blob (StorybookVersion.blob)
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    summary: ReviewSummary | None     # None when moderation_report is null
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    flagged_passages: list[FlaggedPassage]
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    story_level_findings: list[FindingView]
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>ReviewSummary:                        # mirrors ModerationReport.to_dict()[&quot;summary&quot;]
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>    count: int
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    hard_block: bool
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    soft_flag: bool
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    repaired: bool
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    reviewer_independent: bool
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>FlaggedPassage:
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    node_id: str
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    prose: str                        # joined from blob node text; &quot;&quot; if node absent
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>    findings: list[FindingView]
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>FindingView:                          # mirrors moderation/report.py Finding.to_dict()
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    stage: int
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    source: str
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    category: str
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    node_id: str | None
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>    verdict: str
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    score: float | None
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>    message: str
+</span></code></pre></div>
+<h3 id="33-projection-logic">3.3 Projection logic<a class="headerlink" href="#33-projection-logic" title="Permanent link">&para;</a></h3>
+<p>The stored <code>moderation_report</code> is already <code>{findings: [...], summary: {...}}</code> (see
+<code>moderation/report.py::ModerationReport.to_dict</code>). The endpoint reshapes it:</p>
+<ul>
+<li>Read <code>moderation_report</code> from the resolved <code>StorybookVersion</code> row. If <code>None</code>, return the
+  surface with <code>summary=None</code>, <code>flagged_passages=[]</code>, <code>story_level_findings=[]</code> (an
+  <code>in_review</code> story with no report yet is valid, not a 404).</li>
+<li>Partition findings by <code>node_id</code>:</li>
+<li>Findings with a non-null <code>node_id</code> and a non-<code>pass</code> verdict (BLOCK / FLAG / ADVISORY)
+    are grouped by <code>node_id</code> into <code>FlaggedPassage</code>s. <code>prose</code> is looked up from the blob's
+    node list by id (<code>""</code> if the node id is absent from the blob, a defensive fallback for
+    a report that references a node the blob no longer contains).</li>
+<li>Findings with <code>node_id is None</code> (coherence / engagement) become <code>story_level_findings</code>.</li>
+<li><code>pass</code> findings are excluded from both projections (clean-check records; the raw counts
+    remain in <code>summary</code>).</li>
+</ul>
+<h3 id="34-errors">3.4 Errors<a class="headerlink" href="#34-errors" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>storybook_id</code> unknown -&gt; <code>ResourceNotFoundError</code> (404) via <code>_load_admin_story</code>.</li>
+<li>Explicit <code>version</code> that does not exist -&gt; <code>ResourceNotFoundError</code> (404).</li>
+<li>Non-admin principal -&gt; <code>AuthorizationError</code> (403) via <code>_load_admin_story</code>.</li>
+</ul>
+<h2 id="4-part-b-finding-2-save-state-replay-validation">4. Part B: Finding 2 save-state replay validation<a class="headerlink" href="#4-part-b-finding-2-save-state-replay-validation" title="Permanent link">&para;</a></h2>
+<h3 id="41-schema-change-additive">4.1 Schema change (additive)<a class="headerlink" href="#41-schema-change-additive" title="Permanent link">&para;</a></h3>
+<p>Add one optional, request-only field to <code>ReadingStateBody</code> (<code>api/schemas.py</code>):</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">choice_path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span></code></pre></div>
+<p>The ordered choice-ids the child selected from the story start to reach <code>current_node</code>.
+Optional in this slice (D4); a tracked follow-up makes it required once the frontend sends
+it (section 6). No change to <code>ReadingStateView</code> and no database migration.</p>
+<h3 id="42-new-module-playerreplaypy">4.2 New module: <code>player/replay.py</code><a class="headerlink" href="#42-new-module-playerreplaypy" title="Permanent link">&para;</a></h3>
+<p>A pure, synchronous validator with no I/O:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>def validate_reading_state(
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>    blob: dict[str, object],
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    *,
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    current_node: str,
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    var_state: VarState,
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    path: list[str],
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    visit_set: list[str],
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    choice_path: list[str] | None,
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>) -&gt; None:
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    &quot;&quot;&quot;Raise ValidationError (-&gt; 422) if the save is not consistent with the blob.&quot;&quot;&quot;
+</span></code></pre></div>
+<p>It parses the blob once and runs two tiers.</p>
+<p><strong>Parse (defensive):</strong> <code>story = Storybook.model_validate(blob)</code> (the same pattern
+<code>moderation/pipeline.py:195</code> uses). A <code>pydantic.ValidationError</code> here means the version was
+corrupted at rest; re-raise as a domain <code>ValidationError</code> (422) with a generic message
+(CWE-209: do not leak the raw schema error to the client; log the detail server-side).</p>
+<p><strong>Tier 1, structural floor (ALWAYS, even when <code>choice_path is None</code>):</strong></p>
+<ul>
+<li><code>body.current_node</code> must be an existing node id.</li>
+<li>Every id in <code>body.path</code> and <code>body.visit_set</code> must be an existing node id.</li>
+<li>Every key in <code>body.var_state</code> must be a declared variable; each <code>int</code>-typed variable's
+  value must be within its declared <code>min</code>/<code>max</code> bounds and of the declared type.</li>
+<li>Any violation -&gt; <code>ValidationError</code> (422), naming the offending field.</li>
+</ul>
+<p><strong>Tier 2, full replay (only when <code>choice_path is not None</code>):</strong></p>
+<ul>
+<li><code>state = StoryEngine(story).start()</code>.</li>
+<li>For each <code>choice_id</code> in <code>body.choice_path</code>: <code>state = engine.choose(state, choice_id)</code>.
+  A <code>BusinessLogicError</code> (unknown/invisible choice, or choosing from an ending) is caught
+  and re-raised as <code>ValidationError</code> (422).</li>
+<li>Compare the replayed state to the submitted state: <code>current_node</code>, <code>var_state</code>,
+  <code>set(visit_set)</code>, and <code>path</code> must all match. Any mismatch -&gt; <code>ValidationError</code> (422).</li>
+</ul>
+<h3 id="43-call-site">4.3 Call site<a class="headerlink" href="#43-call-site" title="Permanent link">&para;</a></h3>
+<p>In <code>api/reading.py::put_reading_state</code>, after <code>_load_owned_storybook</code> and before applying
+the body, load the pinned version and validate:</p>
+<ul>
+<li><code>version_row = await ctx.session.get(StorybookVersion, (storybook_id, body.version))</code>;
+  <code>None</code> -&gt; <code>ResourceNotFoundError</code> (404), matching <code>record_completion</code>.</li>
+<li><code>validate_reading_state(version_row.blob, body)</code>.</li>
+<li>Applies to both the create (<code>_create_reading_state</code>) and update paths, so a first save is
+  validated too.</li>
+</ul>
+<p>This adds one version-blob fetch and parse per save. Saves are human-paced (one per child
+choice), so the cost is acceptable; tagged with a RAD <code>#ASSUME</code> marker at the call site.</p>
+<h3 id="44-boundary-save-slots">4.4 Boundary: save slots<a class="headerlink" href="#44-boundary-save-slots" title="Permanent link">&para;</a></h3>
+<p><code>body.save_slots</code> are stored but not replay-validated in this slice. Each slot is a
+client-side checkpoint snapshot without its own <code>choice_path</code>, so the server cannot replay
+it. Only the top-level current state is validated per save. Stated here as an explicit
+Phase-3 scope boundary; revisit if slots become a forgeable surface.</p>
+<h2 id="5-error-handling">5. Error handling<a class="headerlink" href="#5-error-handling" title="Permanent link">&para;</a></h2>
+<p>All client-caused rejections raise from the centralized hierarchy
+(<code>core/exceptions.py</code>): <code>ValidationError</code> -&gt; 422, <code>ResourceNotFoundError</code> -&gt; 404,
+<code>AuthorizationError</code> -&gt; 403. Corrupt-at-rest blobs raise a generic <code>ValidationError</code> (422)
+with server-side-only detail (CWE-209), consistent with <code>moderation/pipeline.py</code> handling
+the same case. No new exception types are introduced.</p>
+<h2 id="6-tracked-follow-up-the-required-later-half-of-d4">6. Tracked follow-up (the "required later" half of D4)<a class="headerlink" href="#6-tracked-follow-up-the-required-later-half-of-d4" title="Permanent link">&para;</a></h2>
+<p>Recorded so the phased rollout closes:</p>
+<ol>
+<li>Frontend: the React player accumulates each <code>choice_id</code> (it currently tracks only
+   <code>path</code>, the node ids), persists it in the offline cache and offline queue, and includes
+   <code>choice_path</code> in every save. Regenerate the OpenAPI client.</li>
+<li>Backend: flip <code>choice_path</code> to required and drop the <code>None</code> branch so Tier 2 runs on
+   every save.</li>
+</ol>
+<p>A <code>#ASSUME</code> RAD marker at the <code>put_reading_state</code> call site references this follow-up, and a
+backlog entry is added to the completion plan / project memory.</p>
+<h2 id="7-out-of-scope">7. Out of scope<a class="headerlink" href="#7-out-of-scope" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Any frontend change (player, offline sync, client regen) - deferred to the follow-up.</li>
+<li>Making <code>choice_path</code> required - deferred to the follow-up.</li>
+<li>Replay-validating <code>save_slots</code> - stated boundary (section 4.4).</li>
+<li>Database migrations - none needed (<code>choice_path</code> is request-only; <code>moderation_report</code>
+  column already exists).</li>
+<li>The 4a guardian console UI that consumes C3-4 - separate Phase 4a slice.</li>
+</ul>
+<h2 id="8-testing">8. Testing<a class="headerlink" href="#8-testing" title="Permanent link">&para;</a></h2>
+<p>Unit tests only (Docker-independent), following the existing <code>httpx.MockTransport</code> and
+FastAPI test-client patterns in <code>tests/unit</code>. Target 90% coverage on new code (Phase 3
+acceptance bar).</p>
+<p><strong>Part A (C3-4):</strong></p>
+<ul>
+<li>Admin gets the surface for the latest version; explicit <code>?version=</code> returns that version.</li>
+<li>Child or non-admin token -&gt; 403. Cross-family admin -&gt; 200 (admin authority is global,
+  matching every other <code>api/approval.py</code> handler; this is not a family-scoped guardian read).</li>
+<li>Flagged-passage join: a finding with a <code>node_id</code> is grouped and its <code>prose</code> matches the
+  blob node text; a <code>node_id=None</code> finding lands in <code>story_level_findings</code>; <code>pass</code> findings
+  are excluded.</li>
+<li>A story <code>in_review</code> with <code>moderation_report=None</code> returns empty projections, not 404.</li>
+<li>Unknown storybook / unknown explicit version -&gt; 404.</li>
+</ul>
+<p><strong>Part B (Finding 2):</strong></p>
+<ul>
+<li>Structural floor (no <code>choice_path</code>): a valid state passes; a <code>current_node</code> not in the
+  blob, a <code>path</code>/<code>visit_set</code> id not in the blob, an undeclared <code>var_state</code> key, and an
+  out-of-bounds int value each -&gt; 422.</li>
+<li>Full replay (<code>choice_path</code> present): a genuine replayed state passes; a forged
+  <code>current_node</code>, a forged <code>var_state</code>, and an illegal/invisible <code>choice_id</code> each -&gt; 422;
+  a <code>path</code>/<code>visit_set</code> mismatch vs replay -&gt; 422.</li>
+<li>Create path (first save) is validated the same as update.</li>
+<li>A corrupt-at-rest blob -&gt; generic 422 (no schema-detail leak).</li>
+<li>Regression: existing reading-state concurrency/idempotency tests still pass.</li>
 </ul>
 
 
@@ -2831,7 +2806,7 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 10:40:49 UTC">July 1, 2026</span>
   </span>
 
     
@@ -2908,10 +2883,10 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
