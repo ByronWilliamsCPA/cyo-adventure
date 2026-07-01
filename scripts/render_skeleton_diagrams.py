@@ -129,8 +129,12 @@ def resolve_jar() -> Path | None:
         # this safe to execute, not the download itself.
         urllib.request.urlretrieve(PLANTUML_URL, JAR_CACHE)  # noqa: S310  # nosec B310
     except OSError as exc:
+        # This handler wraps both the cache-directory mkdir and the download
+        # itself, so the message must not blame "download" for what could be
+        # a permissions/read-only-filesystem failure creating JAR_CACHE.parent.
         sys.stderr.write(
-            f"Could not download PlantUML jar from {PLANTUML_URL}: {exc}\n"
+            f"Could not download or prepare the PlantUML jar cache at"
+            f" {JAR_CACHE.parent}: {exc}\n"
         )
         return None
     if not verify_sha256(JAR_CACHE, PLANTUML_SHA256):

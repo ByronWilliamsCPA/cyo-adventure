@@ -104,7 +104,10 @@ def _require_node_id(node: _ObjectMap) -> str:
     """
     node_id = _node_id(node)
     if not node_id:
-        msg = f"skeleton node missing a valid string id: {node!r}"
+        # Report keys, not the full node repr: a node can carry a long FILL
+        # directive (body prose) that would otherwise dump untrusted author
+        # text into logs and CI output.
+        msg = f"skeleton node missing a valid string id: keys={sorted(node.keys())!r}"
         raise ValueError(msg)
     return node_id
 

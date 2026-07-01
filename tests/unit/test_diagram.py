@@ -174,6 +174,18 @@ def test_require_node_id_raises_on_non_string_id() -> None:
 
 
 @pytest.mark.unit
+def test_require_node_id_error_omits_body_prose() -> None:
+    # The error must report node keys, not a full repr: a node's FILL
+    # directive body can carry long author prose that should never be
+    # dumped into logs or CI output.
+    node = {"body": "<<FILL role=setup words=99 beats='a secret plot detail'>>"}
+    with pytest.raises(ValueError, match="missing a valid string id") as exc_info:
+        _require_node_id(node)
+    assert "secret plot detail" not in str(exc_info.value)
+    assert "keys=" in str(exc_info.value)
+
+
+@pytest.mark.unit
 def test_transform_raises_on_node_missing_id() -> None:
     skel = _tiny_skeleton()
     nodes = skel["nodes"]
