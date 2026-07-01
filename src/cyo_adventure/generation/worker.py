@@ -330,6 +330,16 @@ async def run_generation_job(
                     failed_row.provider = _provider_label(effective_provider)
                     failed_row.prompt_version = _PROMPT_VERSION
                     await session.commit()
+                else:
+                    # The "record failed" half of the invariant could not run: the row
+                    # vanished post-rollback (concurrent delete, or a rollback that
+                    # unwound its visibility). Surface it so the queue/DB divergence the
+                    # rollback is meant to prevent is observable, not silent.
+                    logger.exception(
+                        "generation_job.failure_record_lost",
+                        job_id=str(job_id),
+                        error=error_text,
+                    )
                 logger.exception(
                     "generation_job.moderation_error",
                     job_id=str(job_id),
