@@ -102,6 +102,12 @@ jobs:
           # relative to frontend/, so working-directory is required to map
           # them back to the PR diff correctly.
           files: ./coverage/lcov.info
+          # Vitest's v8 provider also writes coverage/coverage-final.json,
+          # which Codecov's auto-search picks up as a second report and
+          # merges alongside the explicit lcov.info, diluting/mismapping
+          # per-file results. We already pass the exact file, so disable
+          # search entirely.
+          disable_search: true
           working-directory: frontend
           flags: frontend
           fail_ci_if_error: false
@@ -150,6 +156,7 @@ jobs:
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
           files: ./coverage/lcov.info
+          disable_search: true
           working-directory: frontend/design-system
           flags: design-system
           fail_ci_if_error: false
