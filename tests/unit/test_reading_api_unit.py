@@ -192,6 +192,128 @@ def _completion_blob(*ending_ids: str) -> dict[str, object]:
     return {"nodes": nodes}
 
 
+def _valid_blob() -> dict[str, object]:
+    """A schema-valid linear story whose node ids match the existing test bodies.
+
+    Nodes start -> node-a -> chapter-2 -> ch3(ending); no variables (bodies carry
+    empty var_state). Structural floor passes for any current_node in this set.
+    """
+    return {
+        "schema_version": "2.0",
+        "id": "story-1",
+        "version": 1,
+        "title": "Fixture",
+        "metadata": {
+            "age_band": "10-13",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 4.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "themes": [],
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "branch_and_bottleneck",
+            "content_flags": {
+                "violence": "none",
+                "scariness": "none",
+                "peril": "none",
+            },
+        },
+        "variables": [],
+        "start_node": "start",
+        "nodes": [
+            {
+                "id": "start",
+                "body": "S.",
+                "choices": [{"id": "c1", "label": "x", "target": "node-a"}],
+            },
+            {
+                "id": "node-a",
+                "body": "A.",
+                "choices": [{"id": "c2", "label": "x", "target": "chapter-2"}],
+            },
+            {
+                "id": "chapter-2",
+                "body": "C.",
+                "choices": [{"id": "c3", "label": "x", "target": "ch3"}],
+            },
+            {
+                "id": "ch3",
+                "body": "E.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_end",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
+def _story_blob() -> dict[str, object]:
+    """A two-node story: n_start -> (choice c_go) -> n_end, int var courage 0..5."""
+    return {
+        "schema_version": "2.0",
+        "id": "s_syn",
+        "version": 1,
+        "title": "Synthetic",
+        "metadata": {
+            "age_band": "10-13",
+            "reading_level": {
+                "scheme": "flesch_kincaid",
+                "target": 4.0,
+                "tolerance": 1.0,
+            },
+            "tier": 2,
+            "themes": [],
+            "estimated_minutes": 5,
+            "ending_count": 1,
+            "topology": "branch_and_bottleneck",
+            "content_flags": {
+                "violence": "none",
+                "scariness": "none",
+                "peril": "none",
+            },
+        },
+        "variables": [
+            {"name": "courage", "type": "int", "initial": 0, "min": 0, "max": 5}
+        ],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "Start here.",
+                "on_enter": [],
+                "choices": [
+                    {
+                        "id": "c_go",
+                        "label": "Go",
+                        "target": "n_end",
+                        "effects": [{"op": "inc", "var": "courage", "value": 2}],
+                    }
+                ],
+            },
+            {
+                "id": "n_end",
+                "body": "Done.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_end",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
 # ---------------------------------------------------------------------------
 # _parse_uuid
 # ---------------------------------------------------------------------------
@@ -436,8 +558,14 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=None,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -478,8 +606,14 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=None,  # No existing row
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -501,8 +635,14 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=None,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -518,9 +658,15 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         existing = _state_row(profile_id, "story-1", state_revision=3)
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=existing,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -543,9 +689,15 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         existing = _state_row(profile_id, "story-1", state_revision=5)
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=existing,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -565,9 +717,16 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        # body targets version 2, so validation loads the version-2 pin.
+        version = StorybookVersion(
+            storybook_id="story-1", version=2, blob=_valid_blob()
+        )
         existing = _state_row(profile_id, "story-1", version=1, state_revision=3)
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 2)): version,
+            },
             scalar_result=existing,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -587,11 +746,17 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         existing = _state_row(
             profile_id, "story-1", state_revision=3, event_id="evt-xyz"
         )
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=existing,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -636,9 +801,15 @@ class TestPutReadingState:
         family_id = uuid.uuid4()
         profile_id = uuid.uuid4()
         book = _published_book("story-1", family_id)
+        version = StorybookVersion(
+            storybook_id="story-1", version=1, blob=_valid_blob()
+        )
         existing = _state_row(profile_id, "story-1", state_revision=0)
         session = _FakeSession(
-            get_map={(Storybook, "story-1"): book},
+            get_map={
+                (Storybook, "story-1"): book,
+                (StorybookVersion, ("story-1", 1)): version,
+            },
             scalar_result=existing,
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
@@ -648,6 +819,83 @@ class TestPutReadingState:
 
         assert isinstance(result, ReadingStateView)
         assert result.updated_by_device_id == "my-device-abc"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_put_rejects_forged_current_node(self) -> None:
+        """A current_node not in the pinned version's node set raises ValidationError."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_ghost",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start"],
+            state_revision=0,
+        )
+        with pytest.raises(ValidationError):
+            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_put_missing_version_raises_404(self) -> None:
+        """A save citing a StorybookVersion that does not exist raises 404."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        session = _FakeSession(
+            get_map={(Storybook, "s_syn"): book},  # no version row seeded
+            scalar_result=None,
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=7,
+            current_node="n_start",
+            var_state={},
+            path=["n_start"],
+            visit_set=["n_start"],
+            state_revision=0,
+        )
+        with pytest.raises(ResourceNotFoundError):
+            await put_reading_state(str(profile_id), "s_syn", body, ctx)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_put_accepts_valid_first_save(self) -> None:
+        """A structurally-valid first save against the pinned version succeeds."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("s_syn", family_id)
+        version = StorybookVersion(storybook_id="s_syn", version=1, blob=_story_blob())
+        session = _FakeSession(
+            get_map={
+                (Storybook, "s_syn"): book,
+                (StorybookVersion, ("s_syn", 1)): version,
+            },
+            scalar_result=None,  # no existing ReadingState -> create path
+        )
+        ctx = _ctx(_child_principal(family_id, profile_id), session)
+        body = ReadingStateBody(
+            version=1,
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start"],
+            state_revision=0,
+        )
+        result = await put_reading_state(str(profile_id), "s_syn", body, ctx)
+        assert result.current_node == "n_start"
 
 
 # ---------------------------------------------------------------------------

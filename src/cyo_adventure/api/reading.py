@@ -32,6 +32,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.player.replay import validate_reading_state
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -159,6 +160,25 @@ async def put_reading_state(
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     await _load_owned_storybook(ctx, storybook_id)
+    # #CRITICAL: data integrity: validate the save against the pinned version
+    # before any write so a forged current_node/var_state cannot be persisted
+    # (Finding 2). Runs on both the create and update paths.
+    # #ASSUME: security: choice_path is optional this slice, so absent it only the
+    # structural floor runs; the follow-up (completion-plan.md) makes it required
+    # once the frontend sends it, enabling full replay on every save.
+    # #VERIFY: player/replay.py validate_reading_state; ResourceNotFoundError -> 404.
+    version_row = await ctx.session.get(StorybookVersion, (storybook_id, body.version))
+    if version_row is None:
+        msg = f"version {body.version} of '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    validate_reading_state(
+        version_row.blob,
+        current_node=body.current_node,
+        var_state=body.var_state,
+        path=body.path,
+        visit_set=body.visit_set,
+        choice_path=body.choice_path,
+    )
     # #CRITICAL: concurrency: lock the row for the read-modify-write so two
     # concurrent saves for the same profile/story serialize instead of racing the
     # revision check (optimistic concurrency, tech-spec multi-device sync rules).

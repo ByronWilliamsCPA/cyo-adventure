@@ -30,6 +30,7 @@ class ReadingStateBody(BaseModel):
     state_revision: int = Field(ge=0)
     device_id: str | None = None
     event_id: str | None = None
+    choice_path: list[str] | None = None
 
 
 class ReadingStateView(BaseModel):
