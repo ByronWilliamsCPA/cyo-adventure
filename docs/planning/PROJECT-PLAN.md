@@ -22,7 +22,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 1.1 | **Updated**: 2026-06-29
+> **Status**: Active | **Version**: 1.2 | **Updated**: 2026-07-01
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -63,7 +63,7 @@ in prompts; admin-only short-lived raw outputs).
 
 Source: [Project Vision](./project-vision.md) sections 1-3.
 
-### Current status (2026-06-29)
+### Current status (2026-07-01)
 
 | Phase | Status |
 |-------|--------|
@@ -71,14 +71,14 @@ Source: [Project Vision](./project-vision.md) sections 1-3.
 | 1 Schema + Reader | ✅ Delivered (merged) |
 | 2 Gen + Gate | ✅ Delivered (merged) |
 | 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
-| 3 Safety + Review | ⏸️ Not started (next; DB schema ready, workflow logic absent) |
-| 4a Library + Profiles | 🔄 Backend partial (library/ratings API); frontend absent |
+| 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
+| 4a Library + Profiles | 🔄 Backend partial (library/ratings API); frontend absent (wireframes #47, design system #44) |
 | 4b Editor + UX | ⏸️ Not started (post-release) |
 | 5 Hardening | ⏸️ Not started (post-release) |
 
-The **first usable release is roughly half done by phase count but the long pole is
-ahead**: Phase 3 is greenfield workflow code on a ready schema, and Phase 4a's
-guardian-facing UI has no app shell to build on yet (the frontend is a single-page
+With the **Phase 3 backend merged, Phase 4a is now the entire critical path to the first
+usable release**: the approval, moderation, and review APIs exist and are enforced, but
+the guardian-facing UI has no app shell to build on yet (the frontend is a single-page
 reader demo with no routing). The concrete path from here is
 [`completion-plan.md`](./completion-plan.md).
 
@@ -433,14 +433,16 @@ provider and privacy decisions. Blocks Phase 3 and Phase 4a.
 
 ### Phase 3: Safety and Review Workflow (3-4 weeks; overlaps Phase 2)
 
-**Branch**: `feat/phase-3-safety-review`
-**Milestone**: M3 - Parent approval gate enforced end to end
-**Status**: ⏸️ Not started (next on the critical path). The schema is ready
-(`storybook.status`, `storybook_version.approved_by` / `published_at` /
-`moderation_report`) and the deterministic age-band policy gate (`validator/policy.py`,
-PL-15..18) is in place, but the workflow itself is greenfield: `validator/safety.py` is an
-explicit stub, there are no approval/publish/send-back endpoints, no publish state
-machine, and no enforced invariant that a `published` story has a recorded approver.
+**Branches** (merged): `feat/phase-3-safety-review` (#34), slice 2 review pipeline (#36),
+`feat/phase-3-slice-3-backend-closeout` (#45)
+**Milestone**: M3 - Parent approval gate enforced end to end (backend done; end-to-end
+through the UI awaits Phase 4a C4a-4)
+**Status**: ✅ Delivered (backend), merged. The staged content-moderation pipeline runs
+behind the `SAFE-14` seam and persists to `moderation_report` (#36); the publish state
+machine, guardian approval/send-back endpoints, and the enforced invariant that a
+`published` story has a recorded approver are all in place (#34); the review-surface read
+API and reading-state save-state integrity shipped in slice 3 (#45). The remaining Phase 3
+capability not yet reachable is the browser UI that exercises these APIs (Phase 4a).
 
 **Objective**: Make the kids-facing guarantee real: no story reaches a child without a recorded
 guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
@@ -469,15 +471,15 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 
 **Quality gates**:
 
-- [ ] 80% line / 70% branch coverage overall; 90% on publish state machine and authorization
+- [x] 80% line / 70% branch coverage overall; 90% on publish state machine and authorization
       checks (critical paths)
-- [ ] All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
+- [x] All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
       cross-family guardian access)
-- [ ] Safety evaluation: adversarial concept briefs verified to flag moderation and route to
+- [x] Safety evaluation: adversarial concept briefs verified to flag moderation and route to
       human review; no auto-publish path
-- [ ] No high or critical security findings (Bandit, Semgrep, pip-audit)
-- [ ] Ruff clean; BasedPyright strict clean
-- [ ] Pre-commit green; all commits signed with conventional messages
+- [x] No high or critical security findings (Bandit, Semgrep, pip-audit)
+- [x] Ruff clean; BasedPyright strict clean
+- [x] Pre-commit green; all commits signed with conventional messages
 
 **Dependencies**: Requires Phase 2 generation and validation. Phase 3 may begin overlapping
 Phase 2 once the validation gate and orchestrator are stable.
