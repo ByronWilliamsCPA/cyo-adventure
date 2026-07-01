@@ -63,6 +63,12 @@ def validate_reading_state(
 def _parse(blob: dict[str, object]) -> Storybook:
     """Parse a stored blob into a Storybook, mapping corruption to a 422.
 
+    Args:
+        blob: The stored ``StorybookVersion.blob`` for the pinned version.
+
+    Returns:
+        Storybook: The parsed, schema-valid story.
+
     Raises:
         ValidationError: If the blob no longer conforms to the schema.
     """
@@ -84,6 +90,13 @@ def _check_structure(
     visit_set: list[str],
 ) -> None:
     """Structural floor: node ids exist and var_state is well-formed.
+
+    Args:
+        story: The parsed, schema-valid story to validate against.
+        current_node: The submitted current node id.
+        var_state: The submitted variable state.
+        path: The submitted ordered node path.
+        visit_set: The submitted visited-node ids.
 
     Raises:
         ValidationError: On any unknown node id, undeclared variable, wrong-typed
@@ -126,6 +139,14 @@ def _check_replay(
     choice_path: list[str],
 ) -> None:
     """Full replay: the choice sequence must reproduce the submitted state.
+
+    Args:
+        story: The parsed, schema-valid story to replay against.
+        current_node: The submitted current node id.
+        var_state: The submitted variable state.
+        path: The submitted ordered node path.
+        visit_set: The submitted visited-node ids.
+        choice_path: The ordered choice ids to replay from ``start``.
 
     Raises:
         ValidationError: If a choice is illegal or the replayed state differs.
