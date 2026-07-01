@@ -3,7 +3,10 @@
 When Stage 1 flags or Stages 2-3 raise a soft gate, the pipeline tries a single
 repair: it asks the generation provider to revise the prose to address the soft
 findings while preserving structure, then returns the revised blob (or None on
-failure). The pipeline re-runs the deterministic gate and re-moderates the result.
+failure). The pipeline schema-validates and re-moderates the revised result before
+adopting it; it does NOT currently re-run the deterministic structural/policy gate
+(``validator.gate.run_gate``) on the revision. Re-gating the repaired blob is a
+documented follow-up (the human guardian remains the final gate per ADR-005).
 """
 
 from __future__ import annotations
@@ -48,6 +51,11 @@ async def attempt_repair(
 
     Returns:
         The revised story blob, or ``None`` if the model output did not parse.
+
+    Raises:
+        ProviderError: a backend outage (timeout/5xx/auth) propagates by design;
+            the worker rolls back the unreviewed persist and records the job failed
+            so RQ can retry, rather than submitting a partially-reviewed story.
     """
     soft = [f for f in report.findings if f.verdict is Verdict.FLAG]
     if not soft:
@@ -56,6 +64,10 @@ async def attempt_repair(
     # #CRITICAL: security: the repair prompt egresses story prose; it MUST run
     # through the PII guard exactly like generation.
     # #VERIFY: provider wrapped in PiiGuardedProvider before complete().
+    # #CRITICAL: external-resource: guarded.complete() is a network LLM call; a
+    # provider outage propagates to the worker for rollback + RQ retry (intentional
+    # non-catch). Only a parse failure of a returned body degrades to None here.
+    # #VERIFY: only json.JSONDecodeError is caught below; provider errors propagate.
     guarded = PiiGuardedProvider(generation_provider, forbidden=pii)
     findings_text = "\n".join(
         f"- node {f.node_id} ({f.category}): {f.message}" for f in soft

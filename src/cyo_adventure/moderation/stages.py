@@ -94,6 +94,8 @@ def _parse_verdict(raw: str, *, fail_safe: Verdict) -> tuple[Verdict, str]:
         "advisory": Verdict.ADVISORY,
     }
     try:
+        # json.loads is typed -> Any; we deliberately re-bind to object and narrow
+        # via isinstance below, so the reportAny here is an intentional boundary.
         parsed: object = json.loads(raw)  # pyright: ignore[reportAny]
         if not isinstance(parsed, dict):
             msg = "expected a JSON object"

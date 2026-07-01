@@ -106,6 +106,11 @@ async def run_moderation_pipeline(
     # and strand the story in draft; an invalid story is force-blocked so it routes
     # to auto_reject (needs_revision) below, preserving the submit-or-reject invariant.
     # #VERIFY: the except adds a hard-block Finding that routing sends to auto_reject.
+    # NB: only ValidationError is caught here. A review-backend outage (ProviderError)
+    # or mock exhaustion (BusinessLogicError) propagates INTENTIONALLY to the worker,
+    # which rolls back the unreviewed persist and records the job failed for RQ retry,
+    # rather than submitting a partially-reviewed story. The "Stage 1 fail-safe -> FLAG"
+    # invariant covers a garbled/unknown verdict in a *returned* body, not an outage.
     try:
         await _run_all_stages(
             report=report,
