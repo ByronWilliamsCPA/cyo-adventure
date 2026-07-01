@@ -1,27 +1,27 @@
 :root {
   /* ── Colors: storybook palette ───────────────────── */
 
-  /* Parchment — warm cream backgrounds */
+  /* Parchment: warm cream backgrounds */
   --color-parchment:       #f8f3e8;
   --color-parchment-dark:  #ede6d0;
   --color-parchment-deeper: #e0d5b8;
 
-  /* Ink — deep warm browns for text */
+  /* Ink: deep warm browns for text */
   --color-ink:             #2c1a0e;
   --color-ink-secondary:   #5a3e28;
   --color-ink-muted:       #8c6f56;
 
-  /* Amber — primary interactive accent */
+  /* Amber: primary interactive accent */
   --color-amber:           #c17b2a;
   --color-amber-hover:     #a3631f;
   --color-amber-light:     #f0e4cc;
   --color-amber-subtle:    #fdf6ec;
 
-  /* Forest — secondary (success, connected) */
+  /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;
   --color-forest-light:    #d4e8da;
 
-  /* Sky — tertiary (informational) */
+  /* Sky: tertiary (informational) */
   --color-sky:             #4a7fb5;
   --color-sky-light:       #daeaf7;
 
@@ -38,7 +38,7 @@
   --font-sans:  'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono:  'Courier New', Courier, monospace;
 
-  /* Scale — slightly larger base for readability */
+  /* Scale: slightly larger base for readability */
   --text-xs:   0.75rem;   /* 12px */
   --text-sm:   0.875rem;  /* 14px */
   --text-base: 1.125rem;  /* 18px */
@@ -58,7 +58,7 @@
   --weight-semibold: 600;
   --weight-bold:     700;
 
-  /* ── Spacing — 4px base scale ────────────────────── */
+  /* ── Spacing: 4px base scale ────────────────────── */
   --space-1:  0.25rem;   /* 4px  */
   --space-2:  0.5rem;    /* 8px  */
   --space-3:  0.75rem;   /* 12px */
@@ -77,7 +77,7 @@
   --radius-xl:   20px;
   --radius-full: 9999px;
 
-  /* ── Shadows — warm toned ────────────────────────── */
+  /* ── Shadows: warm toned ────────────────────────── */
   --shadow-sm: 0 1px 3px rgba(44, 26, 14, 0.10);
   --shadow-md: 0 4px 12px rgba(44, 26, 14, 0.14);
   --shadow-lg: 0 8px 24px rgba(44, 26, 14, 0.20);

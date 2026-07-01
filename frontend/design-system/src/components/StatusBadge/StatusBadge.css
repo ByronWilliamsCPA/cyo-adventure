@@ -43,7 +43,7 @@
   background-color: var(--color-ink-muted);
 }
 
-/* Loading — pulsing dot */
+/* Loading: pulsing dot */
 .cyo-status--loading {
   background-color: var(--color-warning-light);
   color: var(--color-warning);

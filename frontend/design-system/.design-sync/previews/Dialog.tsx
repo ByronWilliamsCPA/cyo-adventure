@@ -5,6 +5,7 @@ export function ConflictDialog() {
     <div style={{ position: 'relative', height: '420px', overflow: 'hidden' }}>
       <Dialog
         title="Your adventure was saved on another device"
+        onClose={() => undefined}
         actions={
           <>
             <Button variant="ghost">Keep that save</Button>
@@ -30,7 +31,7 @@ export function ClosableDialog() {
         actions={<Button variant="primary">Continue to next chapter</Button>}
       >
         <p style={{ margin: 0 }}>
-          You chose wisely — the river path led you to the hidden village. Your adventure
+          You chose wisely: the river path led you to the hidden village. Your adventure
           score: <strong>3 out of 5 stars</strong>.
         </p>
       </Dialog>
