@@ -19,4 +19,19 @@ describe('ProgressBar', () => {
     render(<ProgressBar value={Infinity} />)
     expect(screen.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0')
   })
+
+  it('renders a visible label span when showLabel is true', () => {
+    render(<ProgressBar value={50} showLabel />)
+    expect(screen.getByText('50% complete')).toBeInTheDocument()
+  })
+
+  it('omits the visible label span when showLabel is false', () => {
+    render(<ProgressBar value={50} />)
+    expect(document.querySelector('.cyo-progress__label')).not.toBeInTheDocument()
+  })
+
+  it('uses a custom label over the computed percentage text', () => {
+    render(<ProgressBar value={50} showLabel label="Halfway there" />)
+    expect(screen.getByText('Halfway there')).toBeInTheDocument()
+  })
 })
