@@ -7,24 +7,25 @@ import pytest
 from cyo_adventure.core.exceptions import StateTransitionError
 from cyo_adventure.publishing.state_machine import (
     LEGAL_TRANSITIONS,
-    STATES,
+    Action,
+    Status,
     assert_transition,
 )
 
 # Every legal hop: (from_state, action, expected_to_state).
 _LEGAL = [
-    ("draft", "submit", "in_review"),
-    ("draft", "auto_reject", "needs_revision"),
-    ("needs_revision", "submit", "in_review"),
-    ("in_review", "approve", "published"),
-    ("in_review", "send_back", "needs_revision"),
-    ("published", "archive", "archived"),
+    (Status.DRAFT, Action.SUBMIT, Status.IN_REVIEW),
+    (Status.DRAFT, Action.AUTO_REJECT, Status.NEEDS_REVISION),
+    (Status.NEEDS_REVISION, Action.SUBMIT, Status.IN_REVIEW),
+    (Status.IN_REVIEW, Action.APPROVE, Status.PUBLISHED),
+    (Status.IN_REVIEW, Action.SEND_BACK, Status.NEEDS_REVISION),
+    (Status.PUBLISHED, Action.ARCHIVE, Status.ARCHIVED),
 ]
 
 
 @pytest.mark.parametrize(("current", "action", "expected"), _LEGAL)
 def test_legal_transitions_return_target(
-    current: str, action: str, expected: str
+    current: Status, action: Action, expected: Status
 ) -> None:
     """Each legal (state, action) returns its documented target state."""
     assert assert_transition(current, action) == expected
@@ -35,26 +36,25 @@ def test_legal_transitions_table_matches_cases() -> None:
     assert {(c, a): t for c, a, t in _LEGAL} == dict(LEGAL_TRANSITIONS)
 
 
-@pytest.mark.parametrize(("current", "action", "_expected"), _LEGAL)
-def test_illegal_pairs_raise(current: str, action: str, _expected: str) -> None:
+def test_illegal_pairs_raise() -> None:
     """Every (state, action) not in the legal table raises StateTransitionError."""
     legal = {(c, a) for c, a, _ in _LEGAL}
-    actions = {a for _, a, _ in _LEGAL}
-    for state in STATES:
-        for act in actions:
-            if (state, act) in legal:
+    for state in Status:
+        for action in Action:
+            if (state, action) in legal:
                 continue
             with pytest.raises(StateTransitionError):
-                assert_transition(state, act)
+                assert_transition(state, action)
 
 
-def test_unknown_action_raises() -> None:
-    """An action outside the vocabulary raises rather than KeyError."""
-    with pytest.raises(StateTransitionError):
-        assert_transition("draft", "frobnicate")
-
-
-def test_unknown_state_raises() -> None:
-    """A state outside the vocabulary raises rather than KeyError."""
-    with pytest.raises(StateTransitionError):
-        assert_transition("nonexistent", "submit")
+def test_error_message_does_not_disclose_internal_state() -> None:
+    """The client-facing message must not name the internal current state."""
+    with pytest.raises(StateTransitionError) as exc_info:
+        assert_transition(Status.DRAFT, Action.APPROVE)
+    message = str(exc_info.value)
+    assert "draft" not in message
+    # The full detail is retained in details["context"] for the server log.
+    assert exc_info.value.details["context"] == {
+        "from": Status.DRAFT,
+        "action": Action.APPROVE,
+    }

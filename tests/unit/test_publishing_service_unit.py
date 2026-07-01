@@ -185,3 +185,27 @@ async def test_approve_stamps_utc_published_at() -> None:
     assert version_row.published_at is not None
     assert version_row.published_at.tzinfo is not None
     assert before <= version_row.published_at <= after
+
+
+@pytest.mark.unit
+async def test_auto_reject_moves_draft_to_needs_revision() -> None:
+    """auto_reject() transitions draft to needs_revision and flushes."""
+    session = AsyncMock()
+    story = _story("draft")
+
+    await service.auto_reject(session, story)
+
+    assert story.status == "needs_revision"
+    session.flush.assert_awaited_once()
+
+
+@pytest.mark.unit
+async def test_auto_reject_illegal_state_raises_and_does_not_flush() -> None:
+    """auto_reject() on published raises StateTransitionError; no flush."""
+    session = AsyncMock()
+    story = _story("published")
+
+    with pytest.raises(StateTransitionError):
+        await service.auto_reject(session, story)
+
+    session.flush.assert_not_awaited()

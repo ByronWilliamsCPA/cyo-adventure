@@ -16,14 +16,22 @@ from fastapi import APIRouter
 from sqlalchemy import func, select
 
 from cyo_adventure.api.deps import Context
-from cyo_adventure.api.schemas import SendBackRequest, StorybookStateView
-from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.api.schemas import (
+    ApprovedView,
+    ArchivedView,
+    SendBackRequest,
+    SentBackView,
+    SubmittedView,
+)
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    BusinessLogicError,
+    ResourceNotFoundError,
+)
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service as approval_service
 
 if TYPE_CHECKING:
-    from datetime import datetime
-
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
@@ -58,45 +66,39 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     return book
 
 
-def _state_view(
-    book: Storybook,
-    *,
-    approved_by: str | None = None,
-    published_at: datetime | None = None,
-    reason: str | None = None,
-) -> StorybookStateView:
-    """Build a StorybookStateView from a storybook row plus optional stamps."""
-    return StorybookStateView(
-        id=book.id,
-        status=book.status,
-        current_published_version=book.current_published_version,
-        approved_by=approved_by,
-        published_at=published_at,
-        reason=reason,
-    )
-
-
 @router.post("/storybooks/{storybook_id}/submit")
-async def submit_storybook(storybook_id: str, ctx: Context) -> StorybookStateView:
+async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.submit(ctx.session, book)
-    return _state_view(book)
+    return SubmittedView(
+        id=book.id,
+        status=book.status,
+        current_published_version=book.current_published_version,
+    )
 
 
 @router.post("/storybooks/{storybook_id}/approve")
-async def approve_storybook(storybook_id: str, ctx: Context) -> StorybookStateView:
+async def approve_storybook(storybook_id: str, ctx: Context) -> ApprovedView:
     """Approve and publish the latest version of an in-review story (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     version = await _latest_version(ctx.session, storybook_id)
     version_row = await approval_service.approve(
         ctx.session, ctx.principal, book, version
     )
-    return _state_view(
-        book,
-        approved_by=str(version_row.approved_by)
-        if version_row.approved_by is not None
-        else None,
+    # #CRITICAL: security: a successful approve is the SOLE published path and the
+    # service stamps approved_by + published_at in the same operation, so both are
+    # non-None here; ApprovedView's required fields encode that invariant in the
+    # wire contract (the response layer cannot emit published-without-approver).
+    # #VERIFY: approval_service.approve sets both before flush; None would be a bug.
+    if version_row.approved_by is None or version_row.published_at is None:
+        msg = "approved version is missing its approval stamp"
+        raise BusinessLogicError(msg, rule="publish_without_approver")
+    return ApprovedView(
+        id=book.id,
+        status=book.status,
+        current_published_version=version,
+        approved_by=str(version_row.approved_by),
         published_at=version_row.published_at,
     )
 
@@ -104,19 +106,19 @@ async def approve_storybook(storybook_id: str, ctx: Context) -> StorybookStateVi
 @router.post("/storybooks/{storybook_id}/send-back")
 async def send_back_storybook(
     storybook_id: str, body: SendBackRequest, ctx: Context
-) -> StorybookStateView:
+) -> SentBackView:
     """Send an in-review story back for revision with a reason (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.send_back(ctx.session, ctx.principal, book, body.reason)
-    return _state_view(book, reason=body.reason)
+    return SentBackView(id=book.id, status=book.status, reason=body.reason)
 
 
 @router.post("/storybooks/{storybook_id}/archive")
-async def archive_storybook(storybook_id: str, ctx: Context) -> StorybookStateView:
+async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     """Archive a published story, removing it from the library (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.archive(ctx.session, ctx.principal, book)
-    return _state_view(book)
+    return ArchivedView(id=book.id, status=book.status)
 
 
 async def _latest_version(session: AsyncSession, storybook_id: str) -> int:

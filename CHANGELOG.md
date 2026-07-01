@@ -39,10 +39,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Error responses no longer disclose caller-supplied `value` or internal
   lifecycle `context` (e.g. a resource's `status`) in the client-facing body;
   the full payload is retained in the server log only (CWE-209, red-team
-  Finding 3).
+  Finding 3). The `StateTransitionError` message was also genericized so it no
+  longer names the internal current lifecycle state to the client; the full
+  `from`/`action` detail stays in the server-side `context`.
+- Closed-world domain types at the trust boundary (Phase 3 slice 1 review): the
+  storybook lifecycle (`Status`/`Action`) and the principal `Role` are now
+  `StrEnum`s, coerced from their ORM string columns at the boundary so an
+  unmodeled status or role raises instead of silently flowing through. Backed at
+  rest by two `CHECK` constraints (`ck_storybook_status`, `ck_user_role`) added
+  in a new Alembic migration, so no non-API write path can persist a value
+  outside the modeled set.
+- Library listing hardened against malformed approved-story metadata
+  (`api/library.py::_library_item`): boolean values are rejected where a number
+  is expected, a non-finite reading-level target (NaN/Inf) can no longer reach
+  the response and 500 the whole listing via Starlette's `allow_nan=False`, and
+  any field falling back to a default now emits a structured
+  `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
-
+- Phase 3 slice 2: staged content-moderation review pipeline. Generated stories are
+  screened between the deterministic gate and guardian review by a deterministic
+  classifier pre-filter (OpenAI Moderation + Perspective), an LLM safety hard gate,
+  LLM readability and branch-coherence soft gates with one bounded auto-repair pass,
+  and an LLM engagement advisory. Hard blocks auto-reject to needs_revision; clean or
+  repaired stories submit to in_review. Reviews run behind an independence-enforcing,
+  PII-guarded review provider (OpenRouter/Ollama; Modal deferred).
 - Story-skeleton structure diagrams: a deterministic PlantUML generator
   (`scripts/render_skeleton_diagrams.py`) plus a catalog and data-dictionary at
   `docs/architecture/story-skeletons.md`, with a drift-guard test.
@@ -55,6 +76,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   enforcement (a scheduled job) is deferred to Phase 5 and is not yet active.
 
 ### Changed
+- Approval endpoints now return precise per-action response models
+  (`SubmittedView`, `ApprovedView`, `SentBackView`, `ArchivedView`) instead of
+  the single permissive `StorybookStateView`. `ApprovedView` makes `approved_by`
+  and `published_at` required, so the response layer can no longer represent the
+  illegal "published without an approver" state. This changes the OpenAPI schema;
+  regenerating the frontend client is a documented follow-up (the admin endpoints
+  are not consumed yet).
+- ADR-005 (mandatory human approval) amended: the recorded approver in Phase 3
+  slice 1 is a dedicated global admin (backend safety operator) screening content
+  cross-family, not the child's own parent. The core invariant (no story reaches
+  a child without a recorded human approval) is unchanged and strengthened.
 - Removed `utils/financial.py` (template scaffolding with no domain role in a
   kids' reading app); template feedback logged in `docs/template_feedback.md`.
 - Added `#CRITICAL`/`#ASSUME`/`#EDGE` RAD assumption tags to

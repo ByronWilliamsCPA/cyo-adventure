@@ -10,6 +10,7 @@ the _parse_profile_id and _library_item helpers directly.
 
 from __future__ import annotations
 
+import math
 import uuid
 from typing import TYPE_CHECKING, Any, cast
 
@@ -102,6 +103,17 @@ def _guardian_principal(family_id: uuid.UUID) -> Principal:
         subject="sub",
         user_id=uuid.uuid4(),
         role="guardian",
+        family_id=family_id,
+        profile_ids=frozenset(),
+    )
+
+
+def _admin_principal(family_id: uuid.UUID) -> Principal:
+    """Build a global admin principal (cross-family read authority)."""
+    return Principal(
+        subject="sub",
+        user_id=uuid.uuid4(),
+        role="admin",
         family_id=family_id,
         profile_ids=frozenset(),
     )
@@ -262,6 +274,64 @@ class TestLibraryItem:
         blob: dict[str, object] = {"title": "X", "metadata": {"age_band": 8}}
         item = _library_item("s", blob, 1)
         assert item.age_band == ""
+
+    @pytest.mark.unit
+    def test_bool_tier_rejected_as_non_int(self) -> None:
+        """A bool tier (True) must not read as 1; it falls back to 0."""
+        blob: dict[str, object] = {"title": "X", "metadata": {"tier": True}}
+        item = _library_item("s", blob, 1)
+        assert item.tier == 0
+
+    @pytest.mark.unit
+    def test_bool_reading_level_target_rejected(self) -> None:
+        """A bool reading_level target (True) must not read as 1.0; defaults to 0.0."""
+        blob: dict[str, object] = {
+            "title": "X",
+            "metadata": {"reading_level": {"target": True}},
+        }
+        item = _library_item("s", blob, 1)
+        assert item.reading_level_target == 0.0
+
+    @pytest.mark.unit
+    def test_nan_reading_level_target_defaults_to_zero(self) -> None:
+        """A NaN target must be rejected (Starlette allow_nan=False would 500)."""
+        blob: dict[str, object] = {
+            "title": "X",
+            "metadata": {"reading_level": {"target": float("nan")}},
+        }
+        item = _library_item("s", blob, 1)
+        assert item.reading_level_target == 0.0
+        assert math.isfinite(item.reading_level_target)
+
+    @pytest.mark.unit
+    def test_infinite_reading_level_target_defaults_to_zero(self) -> None:
+        """An infinite target must be rejected so the response stays serializable."""
+        blob: dict[str, object] = {
+            "title": "X",
+            "metadata": {"reading_level": {"target": float("inf")}},
+        }
+        item = _library_item("s", blob, 1)
+        assert item.reading_level_target == 0.0
+
+    @pytest.mark.unit
+    def test_malformed_metadata_emits_structured_warning(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        """A malformed metadata blob surfaces one structured warning, not silence."""
+        blob: dict[str, object] = {
+            "title": 42,
+            "metadata": {"tier": True, "reading_level": {"target": float("nan")}},
+        }
+        with caplog.at_level("WARNING"):
+            item = _library_item("noisy-story", blob, 7)
+
+        assert item.title == "noisy-story"
+        assert item.tier == 0
+        assert item.reading_level_target == 0.0
+        assert "library_item_malformed_metadata" in caplog.text
+        assert "title" in caplog.text
+        assert "tier" in caplog.text
+        assert "reading_level.target" in caplog.text
 
 
 # ---------------------------------------------------------------------------
@@ -497,6 +567,45 @@ class TestGetStorybookVersion:
 
         with pytest.raises(ResourceNotFoundError):
             await get_storybook_version("story-1", 99, principal, session)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_non_admin_non_current_version_raises_404(self) -> None:
+        """Published at v2, a non-admin requesting v1 gets 404 (non-current)."""
+        family_id = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=2)
+        v1 = _version_row("story-1", 1, blob={"title": "old"})
+        v1.approved_by = uuid.uuid4()
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): v1,
+        }
+        session = _FakeSession(get_map=get_map)
+        principal = _guardian_principal(family_id)
+
+        with pytest.raises(ResourceNotFoundError):
+            await get_storybook_version("story-1", 1, principal, session)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_admin_reads_non_current_version_returns_blob(self) -> None:
+        """An admin may read a non-current version (v1) of a story published at v2."""
+        family_id = uuid.uuid4()
+        other_family = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=2)
+        blob: dict[str, object] = {"title": "old", "nodes": []}
+        v1 = _version_row("story-1", 1, blob=blob)
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): v1,
+        }
+        session = _FakeSession(get_map=get_map)
+        # Admin from a different family: cross-family read is permitted.
+        principal = _admin_principal(other_family)
+
+        result = await get_storybook_version("story-1", 1, principal, session)
+
+        assert result == blob
 
     @pytest.mark.unit
     @pytest.mark.asyncio

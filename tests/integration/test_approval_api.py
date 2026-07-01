@@ -179,6 +179,21 @@ async def test_missing_story_returns_404(
     assert resp.status_code == 404
 
 
+async def test_non_admin_on_missing_story_returns_403_not_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A non-admin acting on an unknown id gets 403, not 404.
+
+    The role check must precede the DB load so a non-admin can never probe
+    whether a storybook exists (existence is not disclosed).
+    """
+    await _seed_in_review(sessions)
+    resp = await client.post(
+        "/api/v1/storybooks/does-not-exist/approve", headers=auth("child-a")
+    )
+    assert resp.status_code == 403
+
+
 async def test_submit_and_send_back_flow(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

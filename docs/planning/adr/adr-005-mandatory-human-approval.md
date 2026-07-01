@@ -12,8 +12,28 @@ tags:
 
 # ADR-005: Mandatory human approval before any story reaches a child
 
-> **Status**: Proposed
+> **Status**: Proposed (amended 2026-06-30, see Amendment below)
 > **Date**: 2026-06-20
+
+## Amendment (2026-06-30): the approver is a global admin, not the child's parent
+
+In Phase 3 slice 1 the recorded human approver is a dedicated **global admin** (the backend
+safety operator) rather than the child's own parent/guardian. This is an intentional design
+evolution, confirmed by the project owner, of the original "a parent approves it" framing
+below.
+
+The admin screens content **cross-family**: the approval router requires `principal.is_admin`
+(child and guardian tokens receive 403), and `authorize_family` is intentionally not called
+on approval routes because the safety-review authority spans families. Guardians retain their
+own family-scoped powers elsewhere; they are simply not the publish approver in this phase.
+
+The core invariant is **unchanged and in fact strengthened**: no story reaches a child
+without a recorded human approval, encoded in a state machine with no bypass to a child
+profile, with the approver stamped per published version (`storybook_version.approved_by`).
+Centralizing the screen in a trained safety operator raises the floor on review consistency
+versus a per-parent approval, while keeping the human-in-the-loop guarantee absolute. Where
+the sections below say "parent" or "guardian" as the approver, read "global admin (safety
+operator)"; the structural guarantee they describe is otherwise as written.
 
 ## TL;DR
 
