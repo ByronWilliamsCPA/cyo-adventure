@@ -32,6 +32,7 @@ from cyo_adventure.db.models import (
     Storybook,
     StorybookVersion,
 )
+from cyo_adventure.player.replay import validate_reading_state
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -83,6 +84,37 @@ async def _load_owned_storybook(ctx: Context, storybook_id: str) -> Storybook:
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, book.family_id)
     return book
+
+
+async def _validate_against_pinned_version(
+    ctx: Context, storybook_id: str, body: ReadingStateBody
+) -> None:
+    """Load the pinned story version and validate the save against it.
+
+    Raises:
+        ResourceNotFoundError: If ``body.version`` has no persisted version row.
+        ValidationError: If the structural floor or full replay rejects the state.
+    """
+    # #CRITICAL: data integrity: run the structural floor (always) plus full
+    # engine replay (when choice_path is present) before any write so a forged
+    # current_node/var_state/path cannot be persisted (Finding 2). Called only
+    # at the two sites that actually write (create, and a version-matched
+    # update), so a stale-session version mismatch can 409 before this runs.
+    # #ASSUME: security: choice_path is optional this slice; absent it, only the
+    # structural floor runs (completion-plan.md tracks making it required).
+    # #VERIFY: player/replay.py validate_reading_state; missing version -> 404.
+    version_row = await ctx.session.get(StorybookVersion, (storybook_id, body.version))
+    if version_row is None:
+        msg = f"version {body.version} of '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    validate_reading_state(
+        version_row.blob,
+        current_node=body.current_node,
+        var_state=body.var_state,
+        path=body.path,
+        visit_set=body.visit_set,
+        choice_path=body.choice_path,
+    )
 
 
 @router.get("/reading-state/{profile_id}/{storybook_id}")
@@ -151,7 +183,10 @@ async def put_reading_state(
             conflict body carrying the current row on a revision/version clash.
 
     Raises:
-        ValidationError: If a first (create) save does not start at revision 0.
+        ResourceNotFoundError: If the story, or the version body.version cites,
+            does not exist.
+        ValidationError: If a first (create) save does not start at revision 0,
+            or the submitted state fails the structural floor or full replay.
     """
     # #CRITICAL: security: profile access is authorized before any row read or
     # write so a child cannot write another profile's state (IDOR).
@@ -173,14 +208,20 @@ async def put_reading_state(
         .with_for_update()
     )
     if row is None:
+        await _validate_against_pinned_version(ctx, storybook_id, body)
         return _create_reading_state(ctx, parsed, storybook_id, body)
     # Idempotent replay: the same event was already applied; return current row.
     if body.event_id is not None and row.last_event_id == body.event_id:
         return _view(row)
+    # A stale-session version mismatch is a concurrency conflict, not a lookup
+    # failure: it must 409 even when body.version has no persisted version row
+    # (the client is out of date, not malformed), so this check runs before
+    # version validation below.
     if body.version != row.version:
         return _conflict(row, "reading_state version mismatch")
     if body.state_revision != row.state_revision:
         return _conflict(row, "reading_state revision mismatch")
+    await _validate_against_pinned_version(ctx, storybook_id, body)
     _apply_body(row, body)
     return _view(row)
 

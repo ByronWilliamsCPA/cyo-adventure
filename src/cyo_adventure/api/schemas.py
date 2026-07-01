@@ -10,9 +10,10 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from cyo_adventure.generation.concept import ConceptBrief
+from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
 
 
@@ -30,6 +31,7 @@ class ReadingStateBody(BaseModel):
     state_revision: int = Field(ge=0)
     device_id: str | None = None
     event_id: str | None = None
+    choice_path: list[str] | None = None
 
 
 class ReadingStateView(BaseModel):
@@ -224,3 +226,69 @@ class ArchivedView(BaseModel):
 
     id: str
     status: Literal["archived"]
+
+
+# ---------------------------------------------------------------------------
+# Review-surface schemas (C3-4)
+# ---------------------------------------------------------------------------
+
+
+class FindingView(BaseModel):
+    """One moderation finding, shaped for the guardian review UI."""
+
+    stage: int = Field(ge=0, le=4)
+    source: Source
+    category: str
+    node_id: str | None
+    verdict: Verdict
+    score: float | None
+    message: str
+
+
+class ReviewSummary(BaseModel):
+    """The moderation report's derived gating summary."""
+
+    count: int = Field(ge=0)
+    hard_block: bool
+    soft_flag: bool
+    repaired: bool
+    reviewer_independent: bool
+
+
+class FlaggedPassage(BaseModel):
+    """A node's prose plus the findings that concern it."""
+
+    node_id: str
+    prose: str
+    findings: list[FindingView] = Field(min_length=1)
+
+
+class ReviewSurfaceView(BaseModel):
+    """The full guardian review surface for one story version (C3-4)."""
+
+    storybook_id: str
+    version: int
+    status: str
+    blob: dict[str, object]
+    summary: ReviewSummary | None
+    flagged_passages: list[FlaggedPassage]
+    story_level_findings: list[FindingView]
+
+    @model_validator(mode="after")
+    def _no_pass_verdict_leaks(self) -> ReviewSurfaceView:
+        """Reject a surface carrying a clean-check ("pass") finding.
+
+        build_review_surface already filters Verdict.PASS out before constructing
+        this view; this is a second, independent guard so a future regression in
+        that filter fails the request instead of silently showing a guardian a
+        non-gating finding as if it needed review.
+        """
+        leaked = any(
+            f.verdict is Verdict.PASS
+            for passage in self.flagged_passages
+            for f in passage.findings
+        ) or any(f.verdict is Verdict.PASS for f in self.story_level_findings)
+        if leaked:
+            msg = "review surface must not contain a pass-verdict finding"
+            raise ValueError(msg)
+        return self

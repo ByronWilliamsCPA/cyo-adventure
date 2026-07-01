@@ -350,6 +350,20 @@ known-first-party = ["cyo_adventure"]
 # context) with no sensible default. A config object would obscure the contract.
 "**/moderation/pipeline.py" = ["PLR0913"]
 
+# The replay validator's public entry point and its two internal checks each
+# carry the story plus the submitted reading-state fields (current_node,
+# var_state, path, visit_set, choice_path); all are mandatory and keyword-only
+# at the public boundary, each a distinct concern of the submitted state. A
+# config object would obscure which fields the structural floor vs. replay
+# checks require.
+"**/player/replay.py" = ["PLR0913"]
+
+# The review-surface projection's entry point carries status, storybook_id,
+# version, blob, and moderation_report; all are mandatory and keyword-only,
+# each a distinct concern (lifecycle state, identity, story content, findings)
+# with no sensible default. A config object would obscure the contract.
+"**/api/review_surface.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

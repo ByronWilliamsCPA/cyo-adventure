@@ -1,0 +1,211 @@
+"""C3-4 review-surface projection: reshape a stored moderation report for review.
+
+Pure and synchronous. Turns a version's stored ``moderation_report`` plus its
+story ``blob`` into the guardian-facing view: flagged passages (node prose joined
+to per-node findings) and whole-story findings.
+"""
+
+from __future__ import annotations
+
+from typing import cast
+
+from pydantic import ValidationError as PydanticValidationError
+
+from cyo_adventure.api.schemas import (
+    FindingView,
+    FlaggedPassage,
+    ReviewSummary,
+    ReviewSurfaceView,
+)
+from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.moderation.report import Source, Verdict
+
+
+def build_review_surface(
+    *,
+    status: str,
+    storybook_id: str,
+    version: int,
+    blob: dict[str, object],
+    moderation_report: dict[str, object] | None,
+) -> ReviewSurfaceView:
+    """Build the guardian review surface for one story version.
+
+    Args:
+        status: The storybook's lifecycle status.
+        storybook_id: The story id.
+        version: The version being reviewed.
+        blob: The stored story blob (source of node prose).
+        moderation_report: The stored report, or ``None`` if unmoderated.
+
+    Returns:
+        ReviewSurfaceView: Blob plus summary, flagged passages, and story-level
+            findings. Empty projections when the report is ``None``.
+
+    Raises:
+        ValidationError: If the stored report no longer conforms to the view
+            schema (an out-of-range stage/count, or an unrecognized source or
+            verdict at rest).
+    """
+    # #EDGE: data integrity: moderation_report is a JSONB column read back as
+    # plain dict/list/str; FindingView/ReviewSummary now enforce it against
+    # StrEnums and bounded ints, so a corrupt row is surfaced as a generic 422
+    # (CWE-209) instead of an unhandled 500, matching player/replay.py::_parse.
+    # #VERIFY: the pydantic detail is not forwarded to the client.
+    try:
+        prose_by_id = _prose_index(blob)
+        flagged: dict[str, list[FindingView]] = {}
+        order: list[str] = []
+        story_level: list[FindingView] = []
+        for finding in _findings(moderation_report):
+            view = _finding_view(finding)
+            if view.verdict is Verdict.PASS:
+                continue
+            if view.node_id is None:
+                story_level.append(view)
+                continue
+            if view.node_id not in flagged:
+                flagged[view.node_id] = []
+                order.append(view.node_id)
+            flagged[view.node_id].append(view)
+        passages = [
+            FlaggedPassage(
+                node_id=nid, prose=prose_by_id.get(nid, ""), findings=flagged[nid]
+            )
+            for nid in order
+        ]
+        return ReviewSurfaceView(
+            storybook_id=storybook_id,
+            version=version,
+            status=status,
+            blob=blob,
+            summary=_summary(moderation_report),
+            flagged_passages=passages,
+            story_level_findings=story_level,
+        )
+    except PydanticValidationError as exc:
+        msg = "review surface cannot be built from a malformed moderation report"
+        raise ValidationError(msg, field="moderation_report") from exc
+
+
+def _prose_index(blob: dict[str, object]) -> dict[str, str]:
+    """Map node id -> prose (``Node.body``) from a story blob."""
+    nodes = blob.get("nodes")
+    if not isinstance(nodes, list):
+        return {}
+    index: dict[str, str] = {}
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        nid = node.get("id")
+        body = node.get("body")
+        if isinstance(nid, str):
+            index[nid] = body if isinstance(body, str) else ""
+    return index
+
+
+def _findings(report: dict[str, object] | None) -> list[dict[str, object]]:
+    """Return the report's findings list, or empty."""
+    if report is None:
+        return []
+    raw = report.get("findings")
+    if not isinstance(raw, list):
+        return []
+    # cast()'s str-typ overload (forward-reference style, what TC006 suggests)
+    # returns Any, not the narrowed type -- pass the type object itself so
+    # BasedPyright keeps the dict[str, object] narrowing isinstance() alone
+    # cannot express on a parameterized generic. dict[str, object] has no
+    # forward reference to defer, so there is no runtime cost to not quoting it.
+    return [
+        cast(dict[str, object], f)  # noqa: TC006
+        for f in raw
+        if isinstance(f, dict)
+    ]
+
+
+def _finding_view(finding: dict[str, object]) -> FindingView:
+    """Narrow one persisted finding dict into a FindingView."""
+    node_id = finding.get("node_id")
+    score = finding.get("score")
+    return FindingView(
+        stage=_as_int(finding.get("stage")),
+        source=_as_source(finding.get("source")),
+        category=_as_str(finding.get("category")),
+        node_id=node_id if isinstance(node_id, str) else None,
+        verdict=_as_verdict(finding.get("verdict")),
+        score=score
+        if isinstance(score, (int, float)) and not isinstance(score, bool)
+        else None,
+        message=_as_str(finding.get("message")),
+    )
+
+
+def _summary(report: dict[str, object] | None) -> ReviewSummary | None:
+    """Narrow the report summary block into a ReviewSummary, or None."""
+    if report is None:
+        return None
+    raw = report.get("summary")
+    if not isinstance(raw, dict):
+        return None
+    summary = cast(dict[str, object], raw)  # noqa: TC006 (see _findings above)
+    return ReviewSummary(
+        count=_as_int(summary.get("count")),
+        hard_block=_as_bool(summary.get("hard_block")),
+        soft_flag=_as_bool(summary.get("soft_flag")),
+        repaired=_as_bool(summary.get("repaired")),
+        reviewer_independent=_as_bool(summary.get("reviewer_independent")),
+    )
+
+
+def _as_str(value: object) -> str:
+    """Coerce a JSON value to str, defaulting to empty."""
+    return value if isinstance(value, str) else ""
+
+
+def _as_source(value: object) -> Source:
+    """Narrow a JSON value to a declared Source.
+
+    Unlike ``_as_str``/``_as_int``/``_as_bool``, there is no safe default
+    classifier to fall back to: an unrecognized source is exactly the
+    corrupt-at-rest case this projection must reject, not paper over.
+
+    Raises:
+        ValidationError: If value is not a string, or not a recognized Source.
+    """
+    if isinstance(value, str):
+        try:
+            return Source(value)
+        except ValueError:
+            pass
+    msg = "finding has an unrecognized source"
+    raise ValidationError(msg, field="source", value=value)
+
+
+def _as_verdict(value: object) -> Verdict:
+    """Narrow a JSON value to a declared Verdict.
+
+    Raises:
+        ValidationError: If value is not a string, or not a recognized Verdict.
+    """
+    if isinstance(value, str):
+        try:
+            return Verdict(value)
+        except ValueError:
+            pass
+    msg = "finding has an unrecognized verdict"
+    raise ValidationError(msg, field="verdict", value=value)
+
+
+def _as_int(value: object) -> int:
+    """Coerce a JSON value to int, defaulting to 0 (bools excluded)."""
+    return value if isinstance(value, int) and not isinstance(value, bool) else 0
+
+
+def _as_bool(value: object) -> bool:
+    """Coerce a JSON value to bool, defaulting to False."""
+    # #EDGE: data integrity: a persisted summary block should always store real
+    # booleans; this rejects Python-truthy coercion of a corrupt value (e.g. the
+    # string "false" or a non-empty list) so a malformed record cannot flip a
+    # gating flag on by accident.
+    # #VERIFY: tests/unit/test_review_surface.py::test_summary_rejects_non_bool_gate_values.
+    return value if isinstance(value, bool) else False

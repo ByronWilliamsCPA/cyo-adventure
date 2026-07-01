@@ -57,6 +57,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Phase 3 backend closeout. Two features that read/validate against a pinned story
+  version: (1) C3-4 guardian review-surface read API, an admin-only
+  `GET /api/v1/storybooks/{storybook_id}/review` that projects the stored moderation
+  report into flagged passages (findings grouped by node with the node prose joined)
+  plus story-level findings, shaped for the Phase 4a guardian console; and (2) Finding 2
+  reading-state save integrity, a two-tier validator on `PUT` reading-state that runs a
+  structural floor on every save (current_node exists; var_state keys are declared and
+  in-bounds) and full deterministic engine replay when the optional `choice_path` is
+  present, rejecting a forged or mismatched state with 422. The version-mismatch (409)
+  optimistic-concurrency check runs before the version-existence check, so a stale-session
+  save is a conflict, not a not-found. `choice_path` is optional this slice; making it
+  required is tracked in the completion plan.
 - K-12 storybook design system package at `frontend/design-system/`: 7 React
   components (`Button`, `ChoiceButton`, `Dialog`, `EmptyState`, `PassageText`,
   `ProgressBar`, `StatusBadge`) plus committed design-sync artifacts for
