@@ -29,7 +29,10 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
     const firstFocusable = dialogRef.current?.querySelector<HTMLElement>(
       'button:not(:disabled), [href], input:not(:disabled), [tabindex]:not([tabindex="-1"])',
     )
-    firstFocusable?.focus()
+    // #EDGE: a11y: children/actions may render zero tabbable elements.
+    // #VERIFY: fall back to focusing the dialog container itself so focus
+    // always moves inside the modal, keeping the trap effective.
+    ;(firstFocusable ?? dialogRef.current)?.focus()
 
     function onKeyDown(event: KeyboardEvent): void {
       if (event.key === 'Escape') {
@@ -76,6 +79,7 @@ export function Dialog({ title, children, actions, open = true, onClose }: Dialo
         aria-modal="true"
         aria-labelledby={titleId}
         className="cyo-dialog"
+        tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
       >
         <h2 id={titleId} className="cyo-dialog__title">
