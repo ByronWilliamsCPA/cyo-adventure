@@ -2,7 +2,8 @@
 
 Each classifier is optional: a missing key skips it. Bright-line categories produce
 a hard ``BLOCK`` finding (the pipeline routes straight to auto_reject, no LLM spend);
-graded categories produce non-blocking findings whose scores feed Stage 1.
+graded categories produce non-blocking ``ADVISORY`` findings recorded in the report
+for the guardian (they do not currently feed the Stage 1 prompt).
 """
 
 from __future__ import annotations
@@ -188,7 +189,11 @@ async def _run_perspective(
     node_id: str, prose: str, key: str, client: httpx.AsyncClient
 ) -> list[Finding]:
     """Call Google Perspective for one node; SEXUALLY_EXPLICIT -> BLOCK, else graded."""
-    url = f"https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key={key}"
+    # #CRITICAL: security: the key goes in the x-goog-api-key header, never the URL
+    # query string. httpx.HTTPStatusError.__str__ embeds the request URL, so a keyed
+    # URL would leak the credential into the perspective_failed log line on any 4xx/5xx.
+    # #VERIFY: error=str(exc) below cannot contain the key because the URL is key-free.
+    url = "https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze"
     attributes: dict[str, dict[str, str]] = {
         "SEXUALLY_EXPLICIT": {},
         "SEVERE_TOXICITY": {},
@@ -201,6 +206,7 @@ async def _run_perspective(
     try:
         response = await client.post(
             url,
+            headers={"x-goog-api-key": key},
             json={
                 "comment": {"text": prose},
                 "languages": ["en"],
