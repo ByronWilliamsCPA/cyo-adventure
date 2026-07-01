@@ -95,42 +95,83 @@ def resolve_jar() -> Path | None:
 
     Resolution order: ``PLANTUML_JAR`` env var, then the version-pinned cache,
     then a one-time download. The jar is executed only after SHA-256 verification.
+
+    Every failure path writes a distinct message to stderr before returning
+    ``None`` so an operator can tell a benign "nothing to use yet" skip apart
+    from a security-relevant "found a jar but its hash did not match" failure;
+    both used to produce the identical generic message.
     """
     env = os.environ.get("PLANTUML_JAR")
     if env:
         candidate = Path(env)
-        if candidate.is_file() and verify_sha256(candidate, PLANTUML_SHA256):
-            return candidate
-        return None
-    if JAR_CACHE.is_file() and verify_sha256(JAR_CACHE, PLANTUML_SHA256):
-        return JAR_CACHE
-    JAR_CACHE.parent.mkdir(parents=True, exist_ok=True)
+        if not candidate.is_file():
+            sys.stderr.write(f"PLANTUML_JAR={env} does not exist.\n")
+            return None
+        if not verify_sha256(candidate, PLANTUML_SHA256):
+            sys.stderr.write(
+                f"PLANTUML_JAR={env} failed SHA-256 verification"
+                f" (expected {PLANTUML_SHA256}); refusing to execute it.\n"
+            )
+            return None
+        return candidate
+    if JAR_CACHE.is_file():
+        if verify_sha256(JAR_CACHE, PLANTUML_SHA256):
+            return JAR_CACHE
+        sys.stderr.write(
+            f"Cached jar at {JAR_CACHE} failed SHA-256 verification"
+            f" (expected {PLANTUML_SHA256}); attempting a fresh download.\n"
+        )
     try:
-        # URL is a pinned constant (PLANTUML_URL), not user-supplied input
+        JAR_CACHE.parent.mkdir(parents=True, exist_ok=True)
+        # #CRITICAL: external resource: fetches an executable jar over the network.
+        # #VERIFY: PLANTUML_URL is a pinned constant, not user-supplied input; the
+        # post-download SHA-256 check below (against PLANTUML_SHA256) is what makes
+        # this safe to execute, not the download itself.
         urllib.request.urlretrieve(PLANTUML_URL, JAR_CACHE)  # noqa: S310  # nosec B310
-    except OSError:
+    except OSError as exc:
+        sys.stderr.write(
+            f"Could not download PlantUML jar from {PLANTUML_URL}: {exc}\n"
+        )
         return None
-    if JAR_CACHE.is_file() and verify_sha256(JAR_CACHE, PLANTUML_SHA256):
-        return JAR_CACHE
-    return None
+    if not verify_sha256(JAR_CACHE, PLANTUML_SHA256):
+        sys.stderr.write(
+            "Downloaded jar failed SHA-256 verification"
+            f" (expected {PLANTUML_SHA256}); refusing to execute it.\n"
+        )
+        return None
+    return JAR_CACHE
 
 
 def render_svgs(puml_paths: list[Path], *, jar: Path | None) -> list[Path]:
     """Render each ``.puml`` to ``.svg`` next to it. Returns rendered SVG paths.
 
     When ``jar`` is None the step is a no-op (returns ``[]``); callers warn rather
-    than fail so the generator still produces committed ``.puml`` source.
+    than fail so the generator still produces committed ``.puml`` source. A
+    missing ``java`` binary or a per-file render failure is likewise degraded to
+    a stderr warning and a partial result rather than an uncaught exception: the
+    jar's SHA-256 is already verified by ``resolve_jar`` before this runs, so a
+    failure here is an environment or input problem, never an unverified execution.
     """
     if jar is None or not puml_paths:
         return []
     rendered: list[Path] = []
     for puml in puml_paths:
-        # jar is SHA-256 verified before this call; list-form avoids shell injection
-        subprocess.run(  # nosec B603 B607
-            ["java", "-jar", str(jar), "-tsvg", str(puml)],
-            check=True,
-            capture_output=True,
-        )
+        try:
+            # #CRITICAL: external resource: shells out to a subprocess to render SVGs.
+            # #VERIFY: jar is SHA-256 verified before this call (see resolve_jar);
+            # list-form argv avoids shell injection.
+            subprocess.run(  # nosec B603 B607
+                ["java", "-jar", str(jar), "-tsvg", str(puml)],
+                check=True,
+                capture_output=True,
+            )
+        except FileNotFoundError:
+            sys.stderr.write("java executable not found; skipping SVG rendering.\n")
+            break
+        except subprocess.CalledProcessError as exc:
+            stderr = exc.stderr.decode("utf-8", errors="replace") if exc.stderr else ""
+            sys.stderr.write(f"PlantUML failed to render {puml}: {stderr}\n")
+            continue
         svg = puml.with_suffix(".svg")
         if svg.is_file():
             rendered.append(svg)
