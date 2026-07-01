@@ -154,6 +154,7 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
 | **esbuild Renovate re-proposal** | Low | Open a `renovate.json` rule pinning/grouping `esbuild` to Vite's range so the #22 bump is not re-proposed (carried TODO). |
 | **markdownlint whole-repo table/heading debt** | Low | Non-gating (pre-push only). Address opportunistically; do not block planning-doc updates on it. |
 | **`GenerationJob.stage_log` deferral** | Low | Phase 5: add the redacted stage-log column + API so the ADR-007 purge keeps an auditable trail. |
+| **`choice_path` optional in reading-state saves** | Medium | Slice 3 shipped save-state replay validation with `choice_path` optional (structural floor always runs; full replay only when present). Follow-up: update the React player to send `choice_path`, regenerate the client, then make the field required so replay runs on every save. |
 
 ## Estimate
 
