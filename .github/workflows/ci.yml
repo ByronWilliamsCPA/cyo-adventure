@@ -97,7 +97,12 @@ jobs:
       - name: Upload frontend coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: ./frontend/coverage/lcov.info
+          # v6's action.yml has no singular "file" input (only plural "files");
+          # the old key was silently ignored, and lcov.info's SF: paths are
+          # relative to frontend/, so working-directory is required to map
+          # them back to the PR diff correctly.
+          files: ./coverage/lcov.info
+          working-directory: frontend
           flags: frontend
           fail_ci_if_error: false
         env:
@@ -144,7 +149,8 @@ jobs:
       - name: Upload design-system coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v6.0.2
         with:
-          file: ./frontend/design-system/coverage/lcov.info
+          files: ./coverage/lcov.info
+          working-directory: frontend/design-system
           flags: design-system
           fail_ci_if_error: false
         env:
