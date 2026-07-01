@@ -225,3 +225,50 @@ class ArchivedView(BaseModel):
 
     id: str
     status: Literal["archived"]
+
+
+# ---------------------------------------------------------------------------
+# Review-surface schemas (C3-4)
+# ---------------------------------------------------------------------------
+
+
+class FindingView(BaseModel):
+    """One moderation finding, shaped for the guardian review UI."""
+
+    stage: int
+    source: str
+    category: str
+    node_id: str | None
+    verdict: str
+    score: float | None
+    message: str
+
+
+class ReviewSummary(BaseModel):
+    """The moderation report's derived gating summary."""
+
+    count: int
+    hard_block: bool
+    soft_flag: bool
+    repaired: bool
+    reviewer_independent: bool
+
+
+class FlaggedPassage(BaseModel):
+    """A node's prose plus the findings that concern it."""
+
+    node_id: str
+    prose: str
+    findings: list[FindingView]
+
+
+class ReviewSurfaceView(BaseModel):
+    """The full guardian review surface for one story version (C3-4)."""
+
+    storybook_id: str
+    version: int
+    status: str
+    blob: dict[str, object]
+    summary: ReviewSummary | None
+    flagged_passages: list[FlaggedPassage]
+    story_level_findings: list[FindingView]

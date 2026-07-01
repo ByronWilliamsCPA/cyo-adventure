@@ -358,6 +358,12 @@ known-first-party = ["cyo_adventure"]
 # checks require.
 "**/player/replay.py" = ["PLR0913"]
 
+# The review-surface projection's entry point carries status, storybook_id,
+# version, blob, and moderation_report; all are mandatory and keyword-only,
+# each a distinct concern (lifecycle state, identity, story content, findings)
+# with no sensible default. A config object would obscure the contract.
+"**/api/review_surface.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
