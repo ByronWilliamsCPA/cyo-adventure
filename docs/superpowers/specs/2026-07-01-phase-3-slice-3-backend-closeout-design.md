@@ -55,9 +55,12 @@ scope (see section 7).
 
 - **Query param:** `version: int | None = None`. When omitted, resolve the latest version
   via the existing `_latest_version` helper. When provided, use it directly.
-- **Authorization:** reuse `_load_admin_story(ctx, storybook_id)` (admin/guardian-only;
-  child token -> 403; family ownership enforced). This is a read of unpublished,
-  possibly-flagged content, so it must never be reachable by a child token.
+- **Authorization:** reuse `_load_admin_story(ctx, storybook_id)` (admin role required,
+  checked before the story is loaded; child or non-admin token -> 403). Admin authority is
+  global and cross-family by design, matching every other handler in `api/approval.py` (the
+  backend safety-review operator, not a family-scoped guardian); `authorize_family` is
+  intentionally not called. This is a read of unpublished, possibly-flagged content, so it
+  must never be reachable by a child token.
 
 ### 3.2 Response: `ReviewSurfaceView`
 
@@ -135,7 +138,15 @@ it (section 6). No change to `ReadingStateView` and no database migration.
 A pure, synchronous validator with no I/O:
 
 ```text
-def validate_reading_state(blob: dict[str, object], body: ReadingStateBody) -> None:
+def validate_reading_state(
+    blob: dict[str, object],
+    *,
+    current_node: str,
+    var_state: VarState,
+    path: list[str],
+    visit_set: list[str],
+    choice_path: list[str] | None,
+) -> None:
     """Raise ValidationError (-> 422) if the save is not consistent with the blob."""
 ```
 
@@ -223,7 +234,8 @@ acceptance bar).
 **Part A (C3-4):**
 
 - Admin gets the surface for the latest version; explicit `?version=` returns that version.
-- Child token -> 403; cross-family guardian -> 403.
+- Child or non-admin token -> 403. Cross-family admin -> 200 (admin authority is global,
+  matching every other `api/approval.py` handler; this is not a family-scoped guardian read).
 - Flagged-passage join: a finding with a `node_id` is grouped and its `prose` matches the
   blob node text; a `node_id=None` finding lands in `story_level_findings`; `pass` findings
   are excluded.
