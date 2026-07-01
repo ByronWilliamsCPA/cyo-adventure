@@ -8,6 +8,7 @@ the path and validated against the token subject (IDOR defense).
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -122,14 +123,14 @@ class GenerationEnqueuedResponse(BaseModel):
     """Response returned after a generation job is created and enqueued."""
 
     job_id: str
-    status: str = "queued"
+    status: Literal["queued"] = "queued"
 
 
 class GenerationJobResponse(BaseModel):
     """Full status payload for a generation job."""
 
     id: str
-    status: str
+    status: Literal["queued", "running", "passed", "needs_review", "failed"]
     report: dict[str, object] | None = None
     storybook_id: str | None = None
     version: int | None = None
@@ -191,7 +192,7 @@ class SubmittedView(BaseModel):
     """The response to a successful submit action."""
 
     id: str
-    status: str
+    status: Literal["in_review"]
     current_published_version: int | None
 
 
@@ -204,7 +205,7 @@ class ApprovedView(BaseModel):
     """
 
     id: str
-    status: str
+    status: Literal["published"]
     current_published_version: int
     approved_by: str
     published_at: datetime
@@ -214,7 +215,7 @@ class SentBackView(BaseModel):
     """The response to a successful send-back action; ``reason`` is required."""
 
     id: str
-    status: str
+    status: Literal["needs_revision"]
     reason: str
 
 
@@ -222,4 +223,4 @@ class ArchivedView(BaseModel):
     """The response to a successful archive action."""
 
     id: str
-    status: str
+    status: Literal["archived"]
