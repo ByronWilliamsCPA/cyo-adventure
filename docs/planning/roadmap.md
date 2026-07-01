@@ -24,22 +24,26 @@ six phases over roughly 16 to 25 weeks for a 1 to 2 developer team. The decided 
 cut puts generation in the first usable release (Phases 0-3 plus a minimal
 library-and-profiles slice, roughly 11 to 16 weeks).
 
-## Current Status (2026-06-29)
+## Current Status (2026-07-01)
 
-Phases 0, 1, 2, and 2b are **delivered and merged to `main`**. The reader plays
-hand-authored stories offline with multi-device 409 reconciliation; the full validation
-gate (Layer 1 graph checks, Layer 2 state-space walk, deterministic age-band policy gate)
-is in place; the staged generation pipeline runs against live providers (OpenRouter
-cascade plus an Ollama homelab leg) and measured **70% yield (14/20)** on a live run,
-clearing the 60% bar. Tier-2 generation remains the weak leg (3/7) and is the carried
-quality risk into Phase 3.
+Phases 0, 1, 2, 2b, and the **Phase 3 backend** are **delivered and merged to `main`**.
+The reader plays hand-authored stories offline with multi-device 409 reconciliation; the
+full validation gate (Layer 1 graph checks, Layer 2 state-space walk, deterministic
+age-band policy gate) is in place; the staged generation pipeline runs against live
+providers (OpenRouter cascade plus an Ollama homelab leg) and measured **70% yield
+(14/20)** on a live run, clearing the 60% bar. Tier-2 generation remains the weak leg
+(3/7) and is the carried quality risk. The Phase 3 safety and approval workflow shipped
+across three PRs: the staged content-moderation pipeline (#36), the publish state machine
+plus guardian approval/send-back endpoints and the published-requires-approval invariant
+(#34), and the review-surface read API plus reading-state save-state integrity (#45).
 
-What remains for the **first usable release** is **Phase 3** (the safety and approval
-workflow, not yet started) and **Phase 4a** (library, profiles, and the guardian app
-shell). The Phase-3 database columns exist but no approval/publish/moderation *logic*
-does, and the frontend is still a single-page reader demo with no routing, so the
-guardian-facing surfaces are greenfield. See
-[`completion-plan.md`](./completion-plan.md) for the path from here to v1.
+What remains for the **first usable release** is **Phase 4a** (library, profiles, and the
+guardian app shell). The Phase 3 backend guarantee is enforced and tested, but it is not
+yet reachable through the browser: the frontend is still a single-page reader demo with no
+routing, so the guardian-facing surfaces are greenfield. A Phase 4a mobile-UI wireframe
+concept spec (#47) and a K-12 design system synced to claude.ai/design (#44) are drafted;
+the app-shell build has not started. See [`completion-plan.md`](./completion-plan.md) for
+the path from here to v1.
 
 | Phase | Status | Evidence |
 |-------|--------|----------|
@@ -47,7 +51,7 @@ guardian-facing surfaces are greenfield. See
 | 1 Schema + Reader | ✅ Delivered | player, evaluator, Layer-1, offline PWA reader merged |
 | 2 Gen + Gate | ✅ Delivered | Layer-2 walk, orchestrator, RQ worker, policy gate merged |
 | 2b Live providers + yield | ✅ Delivered | OpenRouter + Ollama adapters; 70% live yield recorded |
-| 3 Safety + Review | ⏸️ Not started | DB schema ready; `safety.py` is a stub; no approval endpoints |
+| 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
 | 4a Library + Profiles | 🔄 Backend partial | `library`/`ratings` API merged; no frontend, no guardian UI |
 | 4b Editor + UX | ⏸️ Not started | post-release |
 | 5 Hardening | ⏸️ Not started | in-memory rate limiter, backups, restore drill outstanding |
@@ -71,7 +75,7 @@ Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░�
 | M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ✅ Delivered | None |
 | M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ✅ Delivered | M0 |
 | M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) | M1 |
-| M3: Parent approval gate enforced end to end | Wk 11-14 | ⏸️ Not started (next; Phase 3) | M2 |
+| M3: Parent approval gate enforced end to end | Wk 11-14 | 🚧 Backend delivered (Phase 3: #34/#36/#45); end-to-end through the UI awaits Phase 4a guardian console (C4a-4) | M2 |
 | M4: First usable release (generation + library) | Wk 11-16 | ⏸️ Not started (needs Phase 3 + 4a) | M3 |
 | M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4 |
 
@@ -266,13 +270,16 @@ Full scope and the residual Tier-2 lever are in
 
 ## Phase 3: Safety and review workflow (3-4 weeks; overlaps Phase 2)
 
-**Status**: ⏸️ Not started (next on the critical path). The database is Phase-3-ready
-(`storybook.status`, `storybook_version.approved_by`, `published_at`, and
-`moderation_report` columns exist), and the deterministic age-band policy gate
-(`validator/policy.py`, PL-15..18) is in place. What is missing is the *workflow*: the
-LLM moderation pass (`validator/safety.py` is an explicit stub), the publish state
-machine, the guardian approval/send-back endpoints, and the enforced invariant that no
-`published` story exists without a recorded `approved_by`.
+**Status**: ✅ Delivered (backend), merged across three slices: slice 1 (PR #34),
+slice 2 (PR #36), and slice 3 (PR #45). The staged content-moderation pipeline now runs
+behind the `SAFE-14` seam
+and persists to `moderation_report`; the publish state machine, guardian
+approval/send-back endpoints, and the enforced invariant that no `published` story exists
+without a recorded `approved_by` are in place; the review-surface read API projects the
+story blob plus flagged passages plus the moderation report for the parent UI; and
+reading-state saves are validated against the pinned version (structural floor plus
+optional full replay). The one piece not yet reachable is the browser UI that exercises
+these APIs, which is Phase 4a (guardian console, C4a-4).
 
 ### Objective
 
@@ -280,11 +287,12 @@ Make the kids-facing guarantee real.
 
 ### Deliverables
 
-- [ ] Moderation pass (provider moderation plus an independent LLM-reviewer) scored
-      against per-age-band policy.
-- [ ] Publish state machine with the guardian-only approval transition.
-- [ ] Parent review surface (read the story, see flagged passages, approve or send back).
-- [ ] Provenance and audit on every published version.
+- [x] Moderation pass (provider moderation plus an independent LLM-reviewer) scored
+      against per-age-band policy. (#36)
+- [x] Publish state machine with the guardian-only approval transition. (#34)
+- [x] Parent review surface API (read the story, see flagged passages, approve or send
+      back); the consuming UI is Phase 4a. (#45)
+- [x] Provenance and audit on every published version. (#34)
 
 ### Success Criteria
 

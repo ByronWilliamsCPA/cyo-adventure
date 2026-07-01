@@ -11,28 +11,28 @@ component: Strategy
 source: "2026-06-29 status review against merged code (Phases 0-2b delivered)"
 ---
 
-> **Status**: Active | **Created**: 2026-06-29
-> **Baseline**: Phases 0, 1, 2, and 2b delivered and merged. See
+> **Status**: Active | **Created**: 2026-06-29 | **Updated**: 2026-07-01
+> **Baseline**: Phases 0, 1, 2, 2b, and the **Phase 3 backend** delivered and merged. See
 > [`roadmap.md`](./roadmap.md) for the phase definitions this plan executes against.
 
 ## TL;DR
 
-The validation and generation halves of the system are built and merged: a child can
-read hand-authored stories offline, and the pipeline generates stories that clear the
-full gate at 70% live yield. What stands between here and a **first usable release** is
-two phases of work that are almost entirely greenfield:
+The validation, generation, and **safety/approval** halves of the system are built and
+merged: a child can read hand-authored stories offline, the pipeline generates stories
+that clear the full gate at 70% live yield, and every generated story now flows through
+content moderation and a guardian approval state machine before it can reach a child. What
+stands between here and a **first usable release** is one phase:
 
-1. **Phase 3 (Safety and approval workflow)** on a Phase-3-ready database but with no
-   workflow logic yet, and
-2. **Phase 4a (Library, profiles, and the guardian app shell)**, where the frontend is
-   still a single-page reader demo with no routing.
+- **Phase 4a (Library, profiles, and the guardian app shell)**, where the frontend is
+  still a single-page reader demo with no routing. The Phase 3 approval and review APIs
+  exist and are enforced; they are simply not reachable through a browser yet.
 
-The first release is roughly half-done by phase count, but the remaining half is the
-harder half: it is the parent-facing product, not the engine. Estimated **6 to 10 weeks**
-to the first release for a 1 to 2 developer team, then **4 to 7 weeks** for Phase 4b and
-Phase 5 to reach full v1.
+Phase 3 (Safety and approval workflow) shipped across three PRs (#34, #36, #45); the
+remaining work is the parent-facing frontend, not the engine or the workflow. Estimated
+**3 to 5 weeks** to the first release for a 1 to 2 developer team (Phase 4a), then **4 to
+7 weeks** for Phase 4b and Phase 5 to reach full v1.
 
-## Where we are (2026-06-29 baseline)
+## Where we are (2026-07-01)
 
 | Area | State |
 |------|-------|
@@ -41,15 +41,18 @@ Phase 5 to reach full v1.
 | Staged generation pipeline + live providers (OpenRouter, Ollama) | ✅ Built, merged; 70% yield |
 | Concept intake + RQ worker + guardian-only generation API | ✅ Built, merged |
 | Library + ratings API (backend) | ✅ Built, merged |
-| Safety/moderation **logic** | ⏸️ `validator/safety.py` is a stub |
-| Publish state machine + approval/send-back endpoints | ⏸️ Absent (DB columns exist) |
-| Guardian/parent **frontend** (review, library, profiles, intake) | ⏸️ Absent; no routing |
+| Safety/moderation **logic** | ✅ Built, merged (staged pipeline behind `SAFE-14`, #36) |
+| Publish state machine + approval/send-back + review-surface API | ✅ Built, merged (#34, #45) |
+| Reading-state save integrity (validate against pinned version) | ✅ Built, merged (#45) |
+| Guardian/parent **frontend** (review, library, profiles, intake) | ⏸️ Absent; no routing (wireframes #47, design system #44) |
 | Hardening (Redis rate limiter, backups, restore drill, Sentry) | ⏸️ Absent |
 
-The keystone insight: **the database is ready for Phase 3** (`storybook.status`,
-`storybook_version.approved_by` / `published_at` / `moderation_report` all exist), and
-the **deterministic age-band policy gate** (`validator/policy.py`, PL-15..18) already
-runs. The missing pieces are workflow code and UI, not schema.
+The keystone insight has now flipped: **the entire Phase 3 backend is built and merged**
+(moderation pipeline, publish state machine, guardian approval/send-back, review-surface
+read API, and the enforced no-publish-without-approval invariant), on top of the schema
+and the deterministic age-band policy gate (`validator/policy.py`, PL-15..18). The only
+missing piece for the first release is the **guardian/parent UI** that exercises these
+APIs, which is Phase 4a.
 
 ## Definition of "complete"
 
@@ -65,28 +68,37 @@ the [roadmap Definition of Done](./roadmap.md#definition-of-done).
 
 ## Remaining work
 
-### Phase 3: Safety and approval workflow (next on the critical path)
+### Phase 3: Safety and approval workflow (✅ delivered, merged)
 
 **Goal**: make the kids-facing guarantee real and enforced. ADR-005 (mandatory human
-approval) governs.
+approval) governs. **All six workstreams are merged** across three PRs: slice 1 (#34,
+approval spine), slice 2 (#36, moderation pipeline), and slice 3 (#45, review surface +
+save-state integrity).
 
-| ID | Workstream | Notes |
-|----|-----------|-------|
-| C3-1 | Implement the LLM moderation pass behind the `SAFE-14` seam in `validator/safety.py` | Provider moderation + independent LLM-reviewer, scored against the existing band profiles; any hit flags nodes and forces review. Persist the result to `storybook_version.moderation_report`. |
-| C3-2 | Publish state machine | Encode `draft -> generating -> auto_check -> in_review -> approved -> published -> archived` with `needs_revision` on gate/moderation failure. Enforce transitions in one service module, not ad hoc in endpoints. |
-| C3-3 | Guardian approval/send-back endpoints | Guardian-only `approve` (stamps `approved_by` + `published_at`, sets `storybook.status=published` and `current_published_version`) and `send-back` (-> `needs_revision`). Child tokens rejected. |
-| C3-4 | Review-surface read API | One endpoint returning the story blob plus flagged passages plus the moderation report, shaped for the parent review UI (built in 4a). |
-| C3-5 | Enforce the core invariant | A `published` storybook must reference a version whose `approved_by` is non-null. Enforce in the publish service and back it with a DB CHECK/constraint or a tested guard; add the negative test. |
-| C3-6 | Authorization + IDOR tests | Child A cannot reach child B; cross-family guardian access denied; child cannot call approve/publish. All green. |
+| ID | Workstream | Status |
+|----|-----------|--------|
+| C3-1 | LLM moderation pass behind the `SAFE-14` seam (provider moderation + independent LLM-reviewer, persisted to `storybook_version.moderation_report`) | ✅ #36 |
+| C3-2 | Publish state machine (`draft -> ... -> published -> archived`, `needs_revision` on failure), enforced in one service module | ✅ #34 |
+| C3-3 | Guardian approval/send-back endpoints (stamps `approved_by` + `published_at`, sets `published`; child tokens rejected) | ✅ #34 |
+| C3-4 | Review-surface read API (story blob + flagged passages + moderation report for the parent UI; the consuming UI is Phase 4a C4a-4) | ✅ #45 |
+| C3-5 | Core invariant enforced: a `published` storybook must reference a version whose `approved_by` is non-null, backed by a tested guard | ✅ #34 |
+| C3-6 | Authorization + IDOR tests (cross-child, cross-family, child cannot approve/publish) | ✅ #34 |
 
-**Acceptance**: every transition path is tested; no path reaches a child profile without a
-recorded approval; adversarial briefs flag and cannot auto-publish; 90% coverage on the
-publish state machine and authorization checks.
+Also delivered in slice 3 (#45): reading-state saves are validated against the pinned
+version (a structural floor always runs, with full deterministic replay when the optional
+`choice_path` is present), closing red-team Finding 2.
+
+**Acceptance (met)**: every transition path is tested; no path reaches a child profile
+without a recorded approval; adversarial briefs flag and cannot auto-publish; coverage on
+the new Phase 3 code is at or above the 90% bar. The only Phase 3 capability not yet
+reachable is the browser UI, which is Phase 4a (C4a-4).
 
 ### Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
 
 **Goal**: make the whole flow reachable by a parent through the browser. This is the
-**largest remaining build** because the frontend has no app shell.
+**largest remaining build** because the frontend has no app shell. Design groundwork is in
+place: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
+claude.ai/design (#44). The build (routing, auth context, real components) has not started.
 
 | ID | Workstream | Notes |
 |----|-----------|-------|
@@ -127,22 +139,21 @@ purge can null `report` while keeping an auditable log.
 ## Sequencing and critical path
 
 ```text
-Phase 3 (C3-1..C3-6)  ─┐
-                       ├─► Phase 4a guardian console (C4a-4) needs C3-3/C3-4
-C4a-1 app shell ───────┘   (start C4a-1 in parallel with Phase 3; it has no Phase-3 dep)
+Phase 3 (C3-1..C3-6)  ✅ DONE (#34/#36/#45)
         │
-        ├─► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
-        └─► C4a-5 concept intake
+C4a-1 app shell ──► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
+        │       └─► C4a-4 guardian console (consumes the merged C3-3/C3-4 APIs)
+        └─────────► C4a-5 concept intake
                                    ▼
                           FIRST USABLE RELEASE
                                    ▼
                     Phase 4b (editor/TTS/tracker) ── Phase 5 (hardening/deploy)
 ```
 
-The one true ordering constraint is that the **guardian console (C4a-4) depends on the
-Phase-3 approval and review APIs (C3-3, C3-4)**. Everything else in 4a (app shell,
-profiles, library, concept intake) can proceed in parallel with Phase 3, so the frontend
-app shell (C4a-1) should start immediately rather than waiting on Phase 3 to finish.
+Phase 3 is complete, so its former ordering constraint is discharged: the **guardian
+console (C4a-4) can now consume the merged approval and review APIs (C3-3, C3-4)**
+directly. Phase 4a is now the entire critical path to the first release, and the frontend
+app shell (C4a-1) is the prerequisite for everything else in it.
 
 ## Carried debt and risks
 
@@ -160,9 +171,9 @@ app shell (C4a-1) should start immediately rather than waiting on Phase 3 to fin
 
 | Band | Scope | Estimate (1-2 devs) |
 |------|-------|---------------------|
-| Phase 3 | Safety + approval workflow + tests | 3-4 weeks |
-| Phase 4a | App shell, profiles, library, guardian console, intake | 3-5 weeks (overlaps Phase 3) |
-| **First usable release** | Phases 3 + 4a combined, with overlap | **6-10 weeks** |
+| Phase 3 | Safety + approval workflow + tests | ✅ Done (#34/#36/#45) |
+| Phase 4a | App shell, profiles, library, guardian console, intake | 3-5 weeks |
+| **First usable release** | Phase 4a (Phase 3 already merged) | **3-5 weeks** |
 | Phase 4b | Editor, TTS, ending tracker | 2-4 weeks |
 | Phase 5 | Hardening, deploy, restore drill | 2-3 weeks |
 | **Full v1** | First release + 4b + 5 | **+4-7 weeks** |
