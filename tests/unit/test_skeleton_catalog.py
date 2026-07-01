@@ -91,3 +91,23 @@ def test_splice_region_appends_when_markers_absent() -> None:
     assert BEGIN_MARKER in out
     assert "NEW" in out
     assert out.rstrip().endswith(END_MARKER)
+
+
+@pytest.mark.unit
+def test_title_with_pipe_is_escaped_in_table_cell() -> None:
+    # An unescaped "|" would be parsed as a column separator, shifting every
+    # subsequent cell in the row.
+    region = build_catalog_region(
+        [_row("Salt | Pepper", "3-5", 5, ["positive"])], slugs=["salt-pepper"]
+    )
+    assert "Salt \\| Pepper" in region
+    assert "Salt | Pepper |" not in region
+
+
+@pytest.mark.unit
+def test_band_with_pipe_is_escaped_in_cell_but_not_in_svg_path() -> None:
+    # band doubles as a filesystem path segment in the SVG link; only its
+    # visible table-cell copy may be escaped, or the link would 404.
+    region = build_catalog_region([_row("A", "od|d", 5, ["positive"])], slugs=["a"])
+    assert "| od\\|d |" in region
+    assert "diagrams/skeletons/od|d/a.svg" in region
