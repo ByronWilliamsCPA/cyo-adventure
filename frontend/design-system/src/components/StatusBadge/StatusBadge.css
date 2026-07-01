@@ -1,0 +1,72 @@
+.cyo-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  border: 1px solid transparent;
+}
+
+.cyo-status__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.cyo-status__label {
+  white-space: nowrap;
+}
+
+/* Connected */
+.cyo-status--connected {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  border-color: var(--color-forest-light);
+}
+
+.cyo-status--connected .cyo-status__dot {
+  background-color: var(--color-success);
+}
+
+/* Offline */
+.cyo-status--offline {
+  background-color: var(--color-parchment-dark);
+  color: var(--color-ink-muted);
+  border-color: var(--color-parchment-deeper);
+}
+
+.cyo-status--offline .cyo-status__dot {
+  background-color: var(--color-ink-muted);
+}
+
+/* Loading: pulsing dot */
+.cyo-status--loading {
+  background-color: var(--color-warning-light);
+  color: var(--color-warning);
+  border-color: var(--color-amber-light);
+}
+
+.cyo-status--loading .cyo-status__dot {
+  background-color: var(--color-amber);
+  animation: cyo-status-pulse 1.4s ease-in-out infinite;
+}
+
+/* Error */
+.cyo-status--error {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border-color: var(--color-error-light);
+}
+
+.cyo-status--error .cyo-status__dot {
+  background-color: var(--color-error);
+}
+
+@keyframes cyo-status-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}

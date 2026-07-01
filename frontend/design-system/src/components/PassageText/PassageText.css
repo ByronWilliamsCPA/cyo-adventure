@@ -1,0 +1,32 @@
+/* Story passage prose: optimised for young readers. */
+
+.cyo-passage,
+.cyo-passage--multi p {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-ink);
+  margin: 0;
+  /* Classic indent for first paragraph */
+  text-indent: 1.5em;
+}
+
+/* Remove indent from multi-paragraph continuation paragraphs
+   (first paragraph retains indent; the rest get a vertical gap instead) */
+.cyo-passage--multi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.cyo-passage--multi p + p {
+  text-indent: 0;
+}
+
+/* Slightly larger text on wider screens for comfortable reading */
+@media (min-width: 640px) {
+  .cyo-passage,
+  .cyo-passage--multi p {
+    font-size: var(--text-lg);
+  }
+}

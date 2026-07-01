@@ -1,0 +1,7 @@
+# Design-sync build artifacts (regenerated on each run)
+.ds-sync/
+ds-bundle/
+
+# Design-sync machine state (cross-machine carry via uploaded _ds_sync.json)
+.design-sync/.cache/
+.design-sync/learnings/

@@ -1,0 +1,67 @@
+.cyo-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(44, 26, 14, 0.50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-4);
+  /* Backdrop fade */
+  animation: cyo-backdrop-in var(--duration-normal) var(--easing-default);
+}
+
+.cyo-dialog {
+  background-color: var(--color-parchment);
+  border-radius: var(--radius-xl);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-8);
+  /* Double ring: amber accent + deep shadow for depth */
+  box-shadow:
+    0 0 0 1px var(--color-amber-light),
+    var(--shadow-lg);
+  animation: cyo-dialog-in var(--duration-normal) var(--easing-default);
+}
+
+.cyo-dialog__title {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+  margin: 0 0 var(--space-4);
+  line-height: var(--leading-tight);
+}
+
+.cyo-dialog__body {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  color: var(--color-ink-secondary);
+  line-height: var(--leading-normal);
+  margin-bottom: var(--space-6);
+}
+
+.cyo-dialog__actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+@keyframes cyo-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes cyo-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
