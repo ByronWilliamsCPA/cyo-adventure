@@ -4,7 +4,13 @@ from __future__ import annotations
 
 import pytest
 
-from cyo_adventure.generation.diagram import _parse_fill, skeleton_to_plantuml
+from cyo_adventure.generation.diagram import (
+    _parse_fill,
+    _require_node_id,
+    _sanitize_text,
+    skeleton_to_plantuml,
+    valence_split,
+)
 
 
 @pytest.mark.unit
@@ -153,3 +159,98 @@ def test_output_never_leaks_fill_or_beats() -> None:
 def test_transform_is_deterministic() -> None:
     skel = _tiny_skeleton()
     assert skeleton_to_plantuml(skel) == skeleton_to_plantuml(skel)
+
+
+@pytest.mark.unit
+def test_require_node_id_raises_on_missing_id() -> None:
+    with pytest.raises(ValueError, match="missing a valid string id"):
+        _require_node_id({"body": "no id here"})
+
+
+@pytest.mark.unit
+def test_require_node_id_raises_on_non_string_id() -> None:
+    with pytest.raises(ValueError, match="missing a valid string id"):
+        _require_node_id({"id": 42})
+
+
+@pytest.mark.unit
+def test_require_node_id_error_omits_body_prose() -> None:
+    # The error must report node keys, not a full repr: a node's FILL
+    # directive body can carry long author prose that should never be
+    # dumped into logs or CI output.
+    node = {"body": "<<FILL role=setup words=99 beats='a secret plot detail'>>"}
+    with pytest.raises(ValueError, match="missing a valid string id") as exc_info:
+        _require_node_id(node)
+    assert "secret plot detail" not in str(exc_info.value)
+    assert "keys=" in str(exc_info.value)
+
+
+@pytest.mark.unit
+def test_transform_raises_on_node_missing_id() -> None:
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    first = nodes[0]
+    assert isinstance(first, dict)
+    del first["id"]
+    with pytest.raises(ValueError, match="missing a valid string id"):
+        skeleton_to_plantuml(skel)
+
+
+@pytest.mark.unit
+def test_sanitize_text_collapses_whitespace() -> None:
+    assert _sanitize_text("a   b\n\tc") == "a b c"
+
+
+@pytest.mark.unit
+def test_sanitize_text_replaces_double_quotes() -> None:
+    assert _sanitize_text('she said "hello"') == "she said 'hello'"
+
+
+@pytest.mark.unit
+def test_transform_escapes_double_quotes_in_ending_title() -> None:
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    ending_node = nodes[1]
+    assert isinstance(ending_node, dict)
+    ending = ending_node["ending"]
+    assert isinstance(ending, dict)
+    ending["title"] = 'The "Best" End'
+    out = skeleton_to_plantuml(skel)
+    assert "n_end : \"The 'Best' End\"" in out
+    assert '"The "Best" End"' not in out
+
+
+@pytest.mark.unit
+def test_valence_split_counts_each_bucket() -> None:
+    nodes: list[dict[str, object]] = [
+        {"is_ending": True, "ending": {"valence": "positive"}},
+        {"is_ending": True, "ending": {"valence": "neutral"}},
+        {"is_ending": True, "ending": {"valence": "negative"}},
+        {"is_ending": True, "ending": {"valence": "negative"}},
+    ]
+    assert valence_split(nodes) == (1, 1, 2)
+
+
+@pytest.mark.unit
+def test_valence_split_tolerates_missing_valence() -> None:
+    nodes: list[dict[str, object]] = [{"is_ending": True, "ending": {}}]
+    assert valence_split(nodes) == (0, 0, 0)
+
+
+@pytest.mark.unit
+def test_valence_split_ignores_non_ending_nodes() -> None:
+    nodes: list[dict[str, object]] = [
+        {"is_ending": False, "ending": {"valence": "bogus"}}
+    ]
+    assert valence_split(nodes) == (0, 0, 0)
+
+
+@pytest.mark.unit
+def test_valence_split_raises_on_unrecognized_valence() -> None:
+    nodes: list[dict[str, object]] = [
+        {"is_ending": True, "ending": {"valence": "bittersweet"}}
+    ]
+    with pytest.raises(ValueError, match="unrecognized valence"):
+        valence_split(nodes)

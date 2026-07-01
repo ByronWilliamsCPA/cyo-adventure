@@ -54,7 +54,9 @@ by narrative role.
 
 ## Data dictionary
 
-Sourced from `src/cyo_adventure/storybook/models.py` (the enforced schema). Where
+Sourced from `src/cyo_adventure/storybook/models.py` (the enforced schema), with one
+exception: node `role` is a FILL-directive convention read by
+`generation/diagram.py`, not a field the structural gate enforces. Where
 `.claude/skills/cyo-author/reference/skeleton-format.md` disagrees, the model wins;
 see template feedback for the doc-correction follow-up.
 

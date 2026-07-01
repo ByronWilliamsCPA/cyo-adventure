@@ -17,6 +17,16 @@ END_MARKER = "<!-- END GENERATED: skeleton-catalog -->"
 _DIAGRAM_REL = "diagrams/skeletons"
 
 
+def _escape_cell(text: str) -> str:
+    """Escape a value for safe embedding in a Markdown table cell.
+
+    A literal ``|`` in skeleton-authored text (a title, a band label) would
+    otherwise be parsed as a column separator, silently shifting every
+    subsequent cell in the row.
+    """
+    return text.replace("|", "\\|")
+
+
 def build_catalog_region(
     skeletons: list[dict[str, object]], *, slugs: list[str]
 ) -> str:
@@ -48,14 +58,17 @@ def build_catalog_region(
         populated.add(band)
         tier = meta.get("tier")
         minutes = meta.get("estimated_minutes")
-        topology = str(meta.get("topology", "?"))
-        title = str(data.get("title", "Untitled"))
+        topology = _escape_cell(str(meta.get("topology", "?")))
+        title = _escape_cell(str(data.get("title", "Untitled")))
         pos, neu, neg = valence_split(nodes)
+        # band is a directory-path segment (must stay unescaped to match the
+        # real filesystem layout); only its table-cell display is escaped.
         svg = f"{_DIAGRAM_REL}/{band}/{slug}.svg"
+        band_text = _escape_cell(band)
         tier_text = str(tier) if isinstance(tier, int) else "?"
         minutes_text = str(minutes) if isinstance(minutes, int) else "?"
         row = (
-            f"| {title} | {band} | {minutes_text} | {tier_text} | {topology} |"
+            f"| {title} | {band_text} | {minutes_text} | {tier_text} | {topology} |"
             f" {len(nodes)} | {pos}/{neu}/{neg} | [svg]({svg}) |"
         )
         lines.append(row)

@@ -85,6 +85,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `apt-get`/`groupadd` steps, and runs as a numeric `USER 1000:1000`. `uv` is
   copied from the digest-pinned `ghcr.io/astral-sh/uv` image (a musl-static
   binary, so it is immune to the builder's glibc version).
+- Skeleton diagram generator (PR #37 review follow-up): `skeleton_to_plantuml`
+  now raises instead of silently dropping a node with a missing id or
+  miscounting an ending with an unrecognized valence, and sanitizes ending
+  titles against PlantUML quote-breakage. The catalog table builder escapes
+  `|` in title/band cells so author text can't shift columns. The diagram
+  generator script (`scripts/render_skeleton_diagrams.py`) no longer crashes
+  uncaught on a missing `java` binary or a malformed `.puml`, and
+  `resolve_jar`'s failure messages now distinguish a benign missing-jar skip
+  from a security-relevant hash mismatch.
 
 ### Changed
 - **Breaking (schema 2.0):** `Ending` now carries typed `valence` and `kind`

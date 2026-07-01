@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 import json
+import subprocess
 from pathlib import Path
 
 import pytest
 
+import scripts.render_skeleton_diagrams as rsd
 from scripts.render_skeleton_diagrams import (
     check_outputs,
     generate_puml,
@@ -15,6 +17,8 @@ from scripts.render_skeleton_diagrams import (
     verify_sha256,
     write_outputs,
 )
+
+_HELLO_SHA256 = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
 
 
 def _write_skeleton(root: Path) -> Path:
@@ -215,3 +219,215 @@ def test_check_outputs_returns_only_stale_in_mixed_mapping(tmp_path: Path) -> No
 
     assert stale_path in result
     assert fresh_path not in result
+
+
+# ---------------------------------------------------------------------------
+# resolve_jar tests (follow-up to PR #37 review: no branch had coverage)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_resolve_jar_env_var_missing_file(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.setenv("PLANTUML_JAR", str(tmp_path / "nope.jar"))
+    assert rsd.resolve_jar() is None
+
+
+@pytest.mark.unit
+def test_resolve_jar_env_var_hash_mismatch(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"not the real jar")
+    monkeypatch.setenv("PLANTUML_JAR", str(jar))
+    assert rsd.resolve_jar() is None
+    assert "failed SHA-256 verification" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_resolve_jar_env_var_valid(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"hello")
+    monkeypatch.setenv("PLANTUML_JAR", str(jar))
+    monkeypatch.setattr(rsd, "PLANTUML_SHA256", _HELLO_SHA256)
+    assert rsd.resolve_jar() == jar
+
+
+@pytest.mark.unit
+def test_resolve_jar_uses_valid_cache(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    monkeypatch.delenv("PLANTUML_JAR", raising=False)
+    cache = tmp_path / "cache.jar"
+    cache.write_bytes(b"hello")
+    monkeypatch.setattr(rsd, "JAR_CACHE", cache)
+    monkeypatch.setattr(rsd, "PLANTUML_SHA256", _HELLO_SHA256)
+    assert rsd.resolve_jar() == cache
+
+
+@pytest.mark.unit
+def test_resolve_jar_corrupted_cache_falls_through_to_redownload(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.delenv("PLANTUML_JAR", raising=False)
+    cache = tmp_path / "cache.jar"
+    cache.write_bytes(b"corrupted")
+    monkeypatch.setattr(rsd, "JAR_CACHE", cache)
+    monkeypatch.setattr(rsd, "PLANTUML_SHA256", _HELLO_SHA256)
+
+    def fake_urlretrieve(_url: str, dest: Path) -> None:
+        Path(dest).write_bytes(b"hello")
+
+    monkeypatch.setattr(rsd.urllib.request, "urlretrieve", fake_urlretrieve)
+    assert rsd.resolve_jar() == cache
+    assert "attempting a fresh download" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_resolve_jar_download_failure(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.delenv("PLANTUML_JAR", raising=False)
+    monkeypatch.setattr(rsd, "JAR_CACHE", tmp_path / "cache" / "cache.jar")
+
+    def fake_urlretrieve(_url: str, _dest: Path) -> None:
+        raise OSError("network down")
+
+    monkeypatch.setattr(rsd.urllib.request, "urlretrieve", fake_urlretrieve)
+    assert rsd.resolve_jar() is None
+    assert "Could not download" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_resolve_jar_post_download_hash_mismatch(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.delenv("PLANTUML_JAR", raising=False)
+    monkeypatch.setattr(rsd, "JAR_CACHE", tmp_path / "cache" / "cache.jar")
+
+    def fake_urlretrieve(_url: str, dest: Path) -> None:
+        Path(dest).write_bytes(b"wrong content")
+
+    monkeypatch.setattr(rsd.urllib.request, "urlretrieve", fake_urlretrieve)
+    assert rsd.resolve_jar() is None
+    assert "Downloaded jar failed SHA-256 verification" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# render_svgs exception-handling tests (follow-up to PR #37 review)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_render_svgs_missing_java_binary_degrades_gracefully(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    puml = tmp_path / "a.puml"
+    puml.write_text("@startuml a\n@enduml\n", encoding="utf-8")
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"hello")
+
+    def fake_run(*_args: object, **_kwargs: object) -> None:
+        raise FileNotFoundError("java")
+
+    monkeypatch.setattr(rsd.subprocess, "run", fake_run)
+    assert render_svgs([puml], jar=jar) == []
+    assert "java executable not found" in capsys.readouterr().err
+
+
+@pytest.mark.unit
+def test_render_svgs_render_failure_skips_file_and_continues(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    puml_bad = tmp_path / "bad.puml"
+    puml_bad.write_text("@startuml bad\n@enduml\n", encoding="utf-8")
+    puml_good = tmp_path / "good.puml"
+    puml_good.write_text("@startuml good\n@enduml\n", encoding="utf-8")
+    jar = tmp_path / "x.jar"
+    jar.write_bytes(b"hello")
+
+    def fake_run(cmd: list[str], **_kwargs: object) -> None:
+        target = Path(cmd[-1])
+        if target.name == "bad.puml":
+            raise subprocess.CalledProcessError(1, cmd, stderr=b"boom")
+        target.with_suffix(".svg").write_text("<svg/>", encoding="utf-8")
+
+    monkeypatch.setattr(rsd.subprocess, "run", fake_run)
+    result = render_svgs([puml_bad, puml_good], jar=jar)
+    assert result == [puml_good.with_suffix(".svg")]
+    assert "PlantUML failed to render" in capsys.readouterr().err
+
+
+# ---------------------------------------------------------------------------
+# main(--check) drift-guard tests (follow-up to PR #37 review: the
+# "cannot silently drift" claim had zero coverage of its failure path)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_main_check_mode_reports_stale_files_and_exits_nonzero(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    skeletons = tmp_path / "skeletons"
+    _write_skeleton(skeletons)
+    out_root = tmp_path / "out"
+    catalog = tmp_path / "catalog.md"
+    catalog.write_text("# doc\n", encoding="utf-8")
+
+    exit_code = rsd.main(
+        [
+            "--check",
+            "--skeletons-dir",
+            str(skeletons),
+            "--out-dir",
+            str(out_root),
+            "--catalog",
+            str(catalog),
+        ]
+    )
+
+    assert exit_code == 1
+    err = capsys.readouterr().err
+    assert "Stale skeleton diagrams" in err
+    assert "demo-diagram.puml" in err
+
+
+@pytest.mark.unit
+def test_main_check_mode_passes_when_up_to_date(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    skeletons = tmp_path / "skeletons"
+    _write_skeleton(skeletons)
+    out_root = tmp_path / "out"
+    catalog = tmp_path / "catalog.md"
+    catalog.write_text("# doc\n", encoding="utf-8")
+
+    write_exit = rsd.main(
+        [
+            "--skeletons-dir",
+            str(skeletons),
+            "--out-dir",
+            str(out_root),
+            "--catalog",
+            str(catalog),
+            "--no-svg",
+        ]
+    )
+    assert write_exit == 0
+
+    check_exit = rsd.main(
+        [
+            "--check",
+            "--skeletons-dir",
+            str(skeletons),
+            "--out-dir",
+            str(out_root),
+            "--catalog",
+            str(catalog),
+        ]
+    )
+    assert check_exit == 0
+    assert "up to date" in capsys.readouterr().out
