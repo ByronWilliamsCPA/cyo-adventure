@@ -23,6 +23,7 @@ from cyo_adventure.storybook.models import Storybook, VariableType
 
 if TYPE_CHECKING:
     from cyo_adventure.storybook.evaluator import VarState
+    from cyo_adventure.storybook.models import Variable
 
 
 def validate_reading_state(
@@ -89,7 +90,14 @@ def _check_structure(
     path: list[str],
     visit_set: list[str],
 ) -> None:
-    """Structural floor: node ids exist and var_state is well-formed.
+    """Structural floor: node ids exist, current_node/path agree, var_state is complete.
+
+    This is the ONLY check that runs when ``choice_path`` is omitted (the
+    default while the frontend player does not send it yet), so it must
+    reject more than "every id happens to exist": a forged save that sets
+    ``current_node`` to a valid-but-unreached node, or omits a declared
+    variable to fall back to its implicit default, is exactly the forgery
+    Finding 2 was opened to close.
 
     Args:
         story: The parsed, schema-valid story to validate against.
@@ -99,35 +107,121 @@ def _check_structure(
         visit_set: The submitted visited-node ids.
 
     Raises:
-        ValidationError: On any unknown node id, undeclared variable, wrong-typed
-            value, or out-of-bounds int.
+        ValidationError: On any unknown node id, a current_node/path mismatch,
+            a missing or undeclared variable, or a wrong-typed/out-of-bounds
+            value.
     """
     node_ids = {node.id for node in story.nodes}
+    _check_current_node(current_node, node_ids)
+    _check_node_refs(path, visit_set, node_ids)
+    # #CRITICAL: data integrity: a genuine engine state always has
+    # current_node == path[-1] (StoryEngine.start/choose append the new node
+    # to path in the same step they set current_node); rejecting a mismatch
+    # here closes a forgery path the id-membership checks above miss entirely.
+    # #VERIFY: tests/unit/test_replay.py::test_current_node_path_mismatch_rejected.
+    if path and current_node != path[-1]:
+        msg = "current_node must be the last entry of path"
+        raise ValidationError(msg, field="current_node", value=current_node)
+    variables = {var.name: var for var in story.variables}
+    _check_var_state(var_state, variables)
+
+
+def _check_current_node(current_node: str, node_ids: set[str]) -> None:
+    """Reject a current_node id that does not exist in this story version.
+
+    Args:
+        current_node: The submitted current node id.
+        node_ids: The set of node ids declared in this story version.
+
+    Raises:
+        ValidationError: If current_node is not a known node id.
+    """
     if current_node not in node_ids:
         msg = "current_node is not a node in this story version"
         raise ValidationError(msg, field="current_node", value=current_node)
-    for nid in (*path, *visit_set):
+
+
+def _check_node_refs(path: list[str], visit_set: list[str], node_ids: set[str]) -> None:
+    """Reject any path/visit_set entry that does not exist in this story version.
+
+    Args:
+        path: The submitted ordered node path.
+        visit_set: The submitted visited-node ids.
+        node_ids: The set of node ids declared in this story version.
+
+    Raises:
+        ValidationError: If a path or visit_set entry is not a known node id,
+            reported with the field it actually came from.
+    """
+    for nid in path:
         if nid not in node_ids:
-            msg = "path/visit_set references a node not in this story version"
+            msg = "path references a node not in this story version"
             raise ValidationError(msg, field="path", value=nid)
-    variables = {var.name: var for var in story.variables}
+    for nid in visit_set:
+        if nid not in node_ids:
+            msg = "visit_set references a node not in this story version"
+            raise ValidationError(msg, field="visit_set", value=nid)
+
+
+def _check_var_state(var_state: VarState, variables: dict[str, Variable]) -> None:
+    """Reject a var_state that omits a declared variable or names an unknown one.
+
+    Args:
+        var_state: The submitted variable state.
+        variables: The declared variables in this story version, by name.
+
+    Raises:
+        ValidationError: If a declared variable is missing from var_state, or
+            var_state names a variable this story version does not declare.
+    """
+    # #CRITICAL: data integrity: StoryEngine.start() seeds every declared
+    # variable into var_state and no effect ever removes a key, so a genuine
+    # engine state always has one entry per declared variable; a client that
+    # omits a key is forging a silent fall-back to that variable's zero value.
+    # #VERIFY: tests/unit/test_replay.py::test_missing_declared_variable_rejected.
+    missing = sorted(variables.keys() - var_state.keys())
+    if missing:
+        msg = "var_state is missing a declared variable"
+        raise ValidationError(msg, field="var_state", value=missing[0])
     for key, value in var_state.items():
         var = variables.get(key)
         if var is None:
             msg = "var_state contains an undeclared variable"
             raise ValidationError(msg, field="var_state", value=key)
-        if var.type is VariableType.INT:
-            if isinstance(value, bool) or not isinstance(value, int):
-                msg = "int variable requires an integer value"
-                raise ValidationError(msg, field="var_state", value=key)
-            if (var.min is not None and value < var.min) or (
-                var.max is not None and value > var.max
-            ):
-                msg = "int variable value is out of declared bounds"
-                raise ValidationError(msg, field="var_state", value=key)
-        elif not isinstance(value, bool):
-            msg = "bool variable requires a boolean value"
-            raise ValidationError(msg, field="var_state", value=key)
+        _check_var_value(key, value, var)
+
+
+def _check_var_value(key: str, value: object, var: Variable) -> None:
+    """Reject a var_state value that is wrong-typed or out of declared bounds.
+
+    Args:
+        key: The variable name, used only for the raised error's context.
+        value: The submitted value for this variable.
+        var: The declared variable this value must satisfy.
+
+    Raises:
+        ValidationError: If value has the wrong type for var, or an int value
+            is outside var's declared bounds.
+        NotImplementedError: If var.type is a VariableType member this
+            function does not yet handle (fail closed on future enum growth
+            rather than silently misvalidating an unknown type).
+    """
+    if var.type is VariableType.INT:
+        if isinstance(value, bool) or not isinstance(value, int):
+            msg = f"var_state[{key!r}] requires an integer value"
+            raise ValidationError(msg, field="var_state", value=value)
+        if (var.min is not None and value < var.min) or (
+            var.max is not None and value > var.max
+        ):
+            msg = f"var_state[{key!r}] is out of declared bounds"
+            raise ValidationError(msg, field="var_state", value=value)
+    elif var.type is VariableType.BOOL:
+        if not isinstance(value, bool):
+            msg = f"var_state[{key!r}] requires a boolean value"
+            raise ValidationError(msg, field="var_state", value=value)
+    else:
+        msg = f"unsupported declared variable type: {var.type!r}"
+        raise NotImplementedError(msg)
 
 
 def _check_replay(

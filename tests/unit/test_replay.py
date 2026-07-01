@@ -176,3 +176,196 @@ def test_corrupt_blob_rejected_generically() -> None:
             visit_set=["n_start"],
             choice_path=None,
         )
+
+
+@pytest.mark.unit
+def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
+    """CWE-209: the raised error must be a generic message, not the raw
+    pydantic ValidationError detail (which would echo the corrupt payload).
+    """
+    with pytest.raises(ValidationError) as exc_info:
+        validate_reading_state(
+            {"not": "a story"},
+            current_node="n_start",
+            var_state={},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+        )
+    detail = str(exc_info.value)
+    assert (
+        detail == "reading-state cannot be validated against a malformed story version"
+    )
+    assert "not a story" not in detail
+    assert "pydantic" not in detail.lower()
+
+
+@pytest.mark.unit
+def test_current_node_path_mismatch_rejected() -> None:
+    """A forged current_node that is a real node id but not path[-1] must 422."""
+    with pytest.raises(ValidationError):
+        validate_reading_state(
+            _blob(),
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start", "n_end"],
+            visit_set=["n_start", "n_end"],
+            choice_path=None,
+        )
+
+
+@pytest.mark.unit
+def test_missing_declared_variable_rejected() -> None:
+    """Omitting a declared variable must not fall back to its implicit default."""
+    with pytest.raises(ValidationError):
+        validate_reading_state(
+            _blob(),
+            current_node="n_start",
+            var_state={},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+        )
+
+
+@pytest.mark.unit
+def test_visit_set_only_forgery_rejected() -> None:
+    """A visit_set entry that is a real node id but was never actually visited
+    can only be caught by full replay, not the id-membership check alone.
+    """
+    with pytest.raises(ValidationError):
+        validate_reading_state(
+            _blob(),
+            current_node="n_start",
+            var_state={"courage": 0},
+            path=["n_start"],
+            visit_set=["n_start", "n_end"],
+            choice_path=[],
+        )
+
+
+def _bool_blob() -> dict[str, object]:
+    """Single-node ending story with one bool variable, no int variable."""
+    return {
+        "schema_version": "2.0",
+        "id": "s_bool",
+        "version": 1,
+        "title": "Bool Synthetic",
+        "metadata": _meta(),
+        "variables": [{"name": "has_key", "type": "bool", "initial": False}],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "Start here.",
+                "on_enter": [],
+                "is_ending": True,
+                "ending": {
+                    "id": "e_only",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End",
+                },
+                "choices": [],
+            }
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_bool_variable_accepts_boolean_value() -> None:
+    validate_reading_state(
+        _bool_blob(),
+        current_node="n_start",
+        var_state={"has_key": True},
+        path=["n_start"],
+        visit_set=["n_start"],
+        choice_path=None,
+    )
+
+
+@pytest.mark.unit
+def test_bool_variable_rejects_non_boolean_value() -> None:
+    with pytest.raises(ValidationError):
+        validate_reading_state(
+            _bool_blob(),
+            current_node="n_start",
+            var_state={"has_key": 1},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+        )
+
+
+def _looping_blob() -> dict[str, object]:
+    """A story with a loop: n_start <-> n_loop, then n_loop -> n_end."""
+    return {
+        "schema_version": "2.0",
+        "id": "s_loop",
+        "version": 1,
+        "title": "Loop Synthetic",
+        "metadata": _meta(),
+        "variables": [],
+        "start_node": "n_start",
+        "nodes": [
+            {
+                "id": "n_start",
+                "body": "Start.",
+                "on_enter": [],
+                "choices": [
+                    {
+                        "id": "c_advance",
+                        "label": "Advance",
+                        "target": "n_loop",
+                        "effects": [],
+                    }
+                ],
+            },
+            {
+                "id": "n_loop",
+                "body": "Loop point.",
+                "on_enter": [],
+                "choices": [
+                    {
+                        "id": "c_back",
+                        "label": "Back",
+                        "target": "n_start",
+                        "effects": [],
+                    },
+                    {
+                        "id": "c_finish",
+                        "label": "Finish",
+                        "target": "n_end",
+                        "effects": [],
+                    },
+                ],
+            },
+            {
+                "id": "n_end",
+                "body": "Done.",
+                "is_ending": True,
+                "ending": {
+                    "id": "e_end",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "End",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
+@pytest.mark.unit
+def test_replay_accepts_looping_conformance_fixture() -> None:
+    """A choice sequence that revisits n_start via n_loop before finishing must
+    replay cleanly: path records every visit, visit_set only the distinct ids.
+    """
+    validate_reading_state(
+        _looping_blob(),
+        current_node="n_end",
+        var_state={},
+        path=["n_start", "n_loop", "n_start", "n_loop", "n_end"],
+        visit_set=["n_start", "n_loop", "n_end"],
+        choice_path=["c_advance", "c_back", "c_advance", "c_finish"],
+    )
