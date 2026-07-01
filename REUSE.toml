@@ -41,6 +41,17 @@ path = [
 SPDX-License-Identifier = "MIT"
 SPDX-FileCopyrightText = "2025 Byron Williams"
 
+# Design-system component package source (React/TypeScript) - MIT
+[[annotations]]
+path = [
+    "frontend/design-system/src/**/*.tsx",
+    "frontend/design-system/src/**/*.ts",
+    "frontend/design-system/.design-sync/previews/**/*.tsx",  # Authored preview fixtures
+    "frontend/design-system/vite.config.ts",
+]
+SPDX-License-Identifier = "MIT"
+SPDX-FileCopyrightText = "2026 Byron Williams"
+
 # Documentation - CC-BY-4.0
 [[annotations]]
 path = [
@@ -54,6 +65,14 @@ path = [
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileCopyrightText = "2025 Byron Williams"
+
+# Design-sync tooling notes - CC-BY-4.0
+[[annotations]]
+path = [
+    "frontend/design-system/.design-sync/NOTES.md",
+]
+SPDX-License-Identifier = "CC-BY-4.0"
+SPDX-FileCopyrightText = "2026 Byron Williams"
 
 # Configuration files - CC0-1.0 (public domain dedication)
 [[annotations]]
@@ -175,6 +194,19 @@ path = [
 ]
 SPDX-License-Identifier = "CC0-1.0"
 SPDX-FileCopyrightText = "2025 Byron Williams"
+
+# Design-system package configuration, lockfile, and sync artifacts - CC0-1.0
+[[annotations]]
+path = [
+    "frontend/design-system/.gitignore",
+    "frontend/design-system/package.json",
+    "frontend/design-system/package-lock.json",
+    "frontend/design-system/tsconfig.json",
+    "frontend/design-system/design-sync.config.json",
+    "frontend/design-system/src/**/*.css",
+]
+SPDX-License-Identifier = "CC0-1.0"
+SPDX-FileCopyrightText = "2026 Byron Williams"
 
 # Story skeletons and generated output files - CC-BY-4.0
 [[annotations]]
