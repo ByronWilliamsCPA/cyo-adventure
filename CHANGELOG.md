@@ -95,6 +95,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a Redis migration task added to the roadmap.
 
 ### Fixed
+- Type safety at the approval and generation response boundary: the four approval
+  handlers (`api/approval.py`) and the two generation-job responses
+  (`api/generation.py`) passed a raw `str` status into response models whose
+  `status` fields are closed-world `Literal`s, producing six BasedPyright
+  `reportArgumentType` errors. The handlers now coerce the actual DB status via a
+  quoted `cast` to the response Literal (so Pydantic revalidates the value at
+  construction and a wrong status surfaces as an error rather than a false 200),
+  and the enqueue response relies on its `"queued"` default. Adds a shared
+  `JobStatusLiteral` alias so the job-status union lives in one place. No behavior
+  change; `basedpyright src/` is now clean.
 - Merge queue no longer stalls PRs. `pr-validation.yml` used a concurrency group
   keyed only on `github.event.pull_request.number`, which is empty on
   `merge_group` events, so concurrent queue entries collapsed into one group and

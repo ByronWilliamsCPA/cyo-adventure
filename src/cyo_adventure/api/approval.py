@@ -10,7 +10,7 @@ the story (404) and calls the publishing service (409 on an illegal transition).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
 from sqlalchemy import func, select
@@ -71,9 +71,12 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
     """Submit a draft or needs-revision story for review (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.submit(ctx.session, book)
+    # submit always resolves to in_review (the service raises on any other
+    # transition); cast satisfies the type checker and Pydantic revalidates the
+    # actual status against the Literal, so a service bug surfaces, not a lie.
     return SubmittedView(
         id=book.id,
-        status=book.status,
+        status=cast("Literal['in_review']", book.status),
         current_published_version=book.current_published_version,
     )
 
@@ -96,7 +99,7 @@ async def approve_storybook(storybook_id: str, ctx: Context) -> ApprovedView:
         raise BusinessLogicError(msg, rule="publish_without_approver")
     return ApprovedView(
         id=book.id,
-        status=book.status,
+        status=cast("Literal['published']", book.status),
         current_published_version=version,
         approved_by=str(version_row.approved_by),
         published_at=version_row.published_at,
@@ -110,7 +113,11 @@ async def send_back_storybook(
     """Send an in-review story back for revision with a reason (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.send_back(ctx.session, ctx.principal, book, body.reason)
-    return SentBackView(id=book.id, status=book.status, reason=body.reason)
+    return SentBackView(
+        id=book.id,
+        status=cast("Literal['needs_revision']", book.status),
+        reason=body.reason,
+    )
 
 
 @router.post("/storybooks/{storybook_id}/archive")
@@ -118,7 +125,7 @@ async def archive_storybook(storybook_id: str, ctx: Context) -> ArchivedView:
     """Archive a published story, removing it from the library (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     await approval_service.archive(ctx.session, ctx.principal, book)
-    return ArchivedView(id=book.id, status=book.status)
+    return ArchivedView(id=book.id, status=cast("Literal['archived']", book.status))
 
 
 async def _latest_version(session: AsyncSession, storybook_id: str) -> int:

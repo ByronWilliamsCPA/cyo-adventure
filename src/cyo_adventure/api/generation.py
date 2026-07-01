@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import logging
 import uuid
+from typing import cast
 
 from fastapi import APIRouter, BackgroundTasks
 from sqlalchemy import select
@@ -40,6 +41,7 @@ from cyo_adventure.api.schemas import (
     ConceptCreateRequest,
     GenerationEnqueuedResponse,
     GenerationJobResponse,
+    JobStatusLiteral,
     ValidateResponse,
 )
 from cyo_adventure.core.config import settings
@@ -224,7 +226,9 @@ async def enqueue_concept_generation(
     # #VERIFY: test_generation_api::test_enqueue_returns_202_without_redis.
     background_tasks.add_task(_enqueue_safely, str(job.id))
 
-    return GenerationEnqueuedResponse(job_id=str(job.id), status=job.status)
+    # The job was just created as "queued" above, which is the model's default
+    # and only permitted value here, so let the default stand rather than cast.
+    return GenerationEnqueuedResponse(job_id=str(job.id))
 
 
 @router.get("/generation-jobs/{job_id}")
@@ -266,9 +270,12 @@ async def get_generation_job(
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
 
+    # job.status is any of the five job states; the ck_generation_job_status
+    # CHECK constrains the stored value, and Pydantic revalidates it against
+    # JobStatusLiteral, so the cast asserts what the DB already guarantees.
     return GenerationJobResponse(
         id=str(job.id),
-        status=job.status,
+        status=cast("JobStatusLiteral", job.status),
         report=job.report,
         storybook_id=job.storybook_id,
         version=job.version,
