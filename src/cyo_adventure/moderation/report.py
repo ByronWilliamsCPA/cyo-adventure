@@ -34,8 +34,11 @@ class Verdict(StrEnum):
     BLOCK = "block"
     FLAG = "flag"
     ADVISORY = "advisory"
-    # "pass" is a verdict value, not a credential (S105 false positive).
-    PASS = "pass"  # noqa: S105
+    # "pass" is a verdict value, not a credential (S105/B105 false positive).
+    # Two suppressions are required: Ruff's flake8-bandit port honors its own
+    # directive, but the standalone bandit binary the CI Security Gate runs
+    # does not recognize that directive and only honors its own.
+    PASS = "pass"  # noqa: S105  # nosec B105
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,6 +62,20 @@ class Finding:
     message: str
     node_id: str | None = None
     score: float | None = None
+
+    def __post_init__(self) -> None:
+        """Enforce the documented field ranges at construction.
+
+        Raises:
+            ValueError: when ``stage`` is outside 0-4 or ``score`` is outside
+                ``[0.0, 1.0]`` (a non-None probability/confidence).
+        """
+        if not 0 <= self.stage <= 4:
+            msg = f"Finding.stage must be 0-4, got {self.stage}"
+            raise ValueError(msg)
+        if self.score is not None and not 0.0 <= self.score <= 1.0:
+            msg = f"Finding.score must be in [0.0, 1.0] or None, got {self.score}"
+            raise ValueError(msg)
 
     def to_dict(self) -> dict[str, object]:
         """Return a JSON-serializable mapping for persistence."""
@@ -92,8 +109,14 @@ class ModerationReport:
 
     @property
     def has_soft_flag(self) -> bool:
-        """True when any finding is a soft ``FLAG`` (and none is a hard block)."""
-        return any(f.verdict is Verdict.FLAG for f in self.findings)
+        """True when any finding is a soft ``FLAG`` and none is a hard block.
+
+        The hard-block exclusion is part of the property's contract, not just an
+        accident of the call site: a blocked report has no actionable soft gate.
+        """
+        return not self.has_hard_block and any(
+            f.verdict is Verdict.FLAG for f in self.findings
+        )
 
     @property
     def is_clean(self) -> bool:
