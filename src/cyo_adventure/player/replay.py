@@ -25,6 +25,13 @@ if TYPE_CHECKING:
     from cyo_adventure.storybook.evaluator import VarState
     from cyo_adventure.storybook.models import Variable
 
+_MAX_FLOAT64_SAFE_INT: int = 2**53 - 1
+"""The largest integer IEEE-754 doubles represent exactly (Number.MAX_SAFE_INTEGER).
+
+Saved values above this line are exact on the Python side but round in the
+TypeScript player, so the two runtimes could disagree; the structural floor
+rejects them (see _check_var_value)."""
+
 
 def validate_reading_state(
     blob: dict[str, object],
@@ -209,6 +216,17 @@ def _check_var_value(key: str, value: object, var: Variable) -> None:
     if var.type is VariableType.INT:
         if isinstance(value, bool) or not isinstance(value, int):
             msg = f"var_state[{key!r}] requires an integer value"
+            raise ValidationError(msg, field="var_state", value=value)
+        # #CRITICAL: data integrity: Python holds ints exactly at any size but
+        # the client computes in IEEE-754 doubles (exact only to 2**53 - 1), so
+        # a forged save above that line could make validator and player
+        # disagree about a variable's value. Schema literals are capped at
+        # MAX_ABS_STORY_INT (1e9), so no engine-reachable state comes near this
+        # cap; only a forged save can trip it.
+        # #VERIFY: tests/unit/test_replay.py::
+        # test_unbounded_int_var_above_float64_safe_range_rejected.
+        if abs(value) > _MAX_FLOAT64_SAFE_INT:
+            msg = f"var_state[{key!r}] exceeds the float64-safe integer range"
             raise ValidationError(msg, field="var_state", value=value)
         if (var.min is not None and value < var.min) or (
             var.max is not None and value > var.max

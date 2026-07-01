@@ -19,7 +19,11 @@ from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from cyo_adventure.storybook.condition import Condition, referenced_vars
+from cyo_adventure.storybook.condition import (
+    MAX_ABS_STORY_INT,
+    Condition,
+    referenced_vars,
+)
 
 SCHEMA_VERSION = "2.0"
 
@@ -203,11 +207,25 @@ class Variable(BaseModel):
         """Validate an integer variable and its bounds.
 
         Raises:
-            ValueError: If the initial value is not integral or out of bounds.
+            ValueError: If the initial value is not integral, out of bounds, or
+                any of initial/min/max exceeds ``MAX_ABS_STORY_INT``.
         """
         if isinstance(self.initial, bool):
             msg = f"int variable '{self.name}' needs an integer initial value"
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        # Bound every declared int so exact Python arithmetic and the client's
+        # IEEE-754 doubles can never disagree (see MAX_ABS_STORY_INT).
+        for label, declared in (
+            ("initial", self.initial),
+            ("min", self.min),
+            ("max", self.max),
+        ):
+            if declared is not None and abs(declared) > MAX_ABS_STORY_INT:
+                msg = (
+                    f"int variable '{self.name}' {label} magnitude must be "
+                    f"<= {MAX_ABS_STORY_INT}, got {declared}"
+                )
+                raise ValueError(msg)
         self._check_int_bounds()
 
     def _check_int_bounds(self) -> None:
@@ -261,6 +279,19 @@ class Effect(BaseModel):
             raise ValueError(msg)
         elif self.value < 0:
             msg = f"{self.op.value} effect on '{self.var}' must be non-negative"
+            raise ValueError(msg)
+        # Bound int effect values like every other story int literal so exact
+        # Python arithmetic and the client's IEEE-754 doubles stay in agreement
+        # (see MAX_ABS_STORY_INT).
+        if (
+            isinstance(self.value, int)
+            and not isinstance(self.value, bool)
+            and abs(self.value) > MAX_ABS_STORY_INT
+        ):
+            msg = (
+                f"{self.op.value} effect on '{self.var}' value magnitude must be "
+                f"<= {MAX_ABS_STORY_INT}, got {self.value}"
+            )
             raise ValueError(msg)
         return self
 
