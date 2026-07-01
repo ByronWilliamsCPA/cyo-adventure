@@ -102,7 +102,8 @@ claude.ai/design (#44). The build (routing, auth context, real components) has n
 
 | ID | Workstream | Notes |
 |----|-----------|-------|
-| C4a-1 | Frontend app shell + routing | Introduce a router and an authenticated layout. Today `App.tsx` is a single hard-coded reader page; every screen below needs routing and an auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI. |
+| C4a-0 | Real authentication (trust boundary) | Replace the dev auth stub per [ADR-008](./adr/adr-008-first-release-trust-boundary.md): PKCE in the PWA against Authentik, backend JWT verification (issuer/audience/signature/expiry) behind the `deps.py` seam, `GET /api/v1/me`, admin-inherits-guardian, approval freshness guard, forged-token test matrix. Precedes C4a-1, which consumes its `AuthContext`. |
+| C4a-1 | Frontend app shell + routing | Introduce a router and an authenticated layout. Today `App.tsx` is a single hard-coded reader page; every screen below needs routing and the C4a-0 auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI. |
 | C4a-2 | Profile management UI | Create/select per-child profiles; surface age-band and reading-level caps (backed by `child_profile`). Child sessions land directly in their own library. |
 | C4a-3 | Library browsing UI | Consume the existing `library` API; a child sees only `published`, profile-permitted books; ratings shown/edited via the `ratings` API. |
 | C4a-4 | Guardian console: review + approve | Wire the Phase-3 review-surface API (C3-4) and approval endpoints (C3-3) into a UI where a parent reads a story, sees flagged passages, and approves or sends back in a few minutes. |
@@ -116,10 +117,11 @@ through the UI; a child never sees a non-permitted or unapproved story.
 
 Ships: Phases 0-3 + 4a. A parent generates, reviews, approves, and assigns a story; a
 child reads it offline. Deferred to after the release: in-UI editing, TTS, ending tracker
-(4b), and production hardening/deploy (5). The release can run on the homelab in a
-trusted-network configuration before the full Phase 5 hardening lands, if desired, but
-**Phase 5's auth/ingress (Pangolin + Authentik) is required before any exposure beyond a
-trusted LAN**.
+(4b), and production hardening/deploy (5). **Real authentication is inside the release
+cut, not deferred to Phase 5**: per [ADR-008](./adr/adr-008-first-release-trust-boundary.md)
+the LAN is not a trust boundary against this product's threat model (the household's own
+children), so the release deployment requires `auth_mode == "oidc"` with C4a-0 merged.
+Phase 5 still owns ingress hardening (Pangolin), backups, and observability.
 
 ### Phase 4b: Editor and engagement (post-release)
 
@@ -141,9 +143,9 @@ purge can null `report` while keeping an auditable log.
 ```text
 Phase 3 (C3-1..C3-6)  ✅ DONE (#34/#36/#45)
         │
-C4a-1 app shell ──► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
-        │       └─► C4a-4 guardian console (consumes the merged C3-3/C3-4 APIs)
-        └─────────► C4a-5 concept intake
+C4a-0 auth ─► C4a-1 app shell ──► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assign
+                      │       └─► C4a-4 guardian console (consumes the merged C3-3/C3-4 APIs)
+                      └─────────► C4a-5 concept intake
                                    ▼
                           FIRST USABLE RELEASE
                                    ▼
@@ -152,8 +154,9 @@ C4a-1 app shell ──► C4a-2 profiles ─► C4a-3 library ─► C4a-6 assig
 
 Phase 3 is complete, so its former ordering constraint is discharged: the **guardian
 console (C4a-4) can now consume the merged approval and review APIs (C3-3, C3-4)**
-directly. Phase 4a is now the entire critical path to the first release, and the frontend
-app shell (C4a-1) is the prerequisite for everything else in it.
+directly. Phase 4a is now the entire critical path to the first release; real
+authentication (C4a-0) comes first because the app shell (C4a-1) builds on its
+`AuthContext`, and C4a-1 is in turn the prerequisite for everything else.
 
 ## Carried debt and risks
 

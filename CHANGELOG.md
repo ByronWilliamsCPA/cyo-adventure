@@ -57,6 +57,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- ADR-008, the first-release trust-boundary design: real OIDC verification at the
+  API behind the `deps.py` seam (the ingress is explicitly not the boundary on a
+  home LAN), the admin-inherits-guardian role model recording the
+  parents-are-provisioned-as-admins decision, an offline-tolerant PWA session
+  contract (rotating refresh tokens, refresh-before-replay), and an
+  authentication-freshness guard on approval actions. Adds workstream C4a-0 to
+  Phase 4a ahead of the app shell, and corrects the planning docs to the merged
+  reality: the authorization matrix and PROJECT-PLAN state diagram now show the
+  admin approver and the collapsed `approve` transition (five resting states),
+  closing the role-drift and stub-auth findings from the 2026-07-01 senior
+  review at the design level.
 - Phase 3 backend closeout. Two features that read/validate against a pinned story
   version: (1) C3-4 guardian review-surface read API, an admin-only
   `GET /api/v1/storybooks/{storybook_id}/review` that projects the stored moderation

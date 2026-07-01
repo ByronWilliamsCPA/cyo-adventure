@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Draft | **Version**: 0.1 | **Updated**: 2026-06-20
+> **Status**: Draft | **Version**: 0.2 | **Updated**: 2026-07-01
 
 ## Overview
 
@@ -22,24 +22,30 @@ maps to an allowed set of profiles. A guardian may act on any profile within the
 family. A child token is scoped to reader and library endpoints and may only act on its
 own assigned profile. `profile_id` is never trusted alone.
 
-The `approve` and `publish` state-machine transitions require the guardian role. A child
-token that calls either endpoint receives 403 regardless of the `profile_id` in the
-request.
+There are three roles: **guardian** (family-scoped), **child** (own profile only), and
+**admin** (the safety operator; per the ADR-005 amendment of 2026-06-30 the approver is a
+global admin, not the child's parent-as-guardian). The `approve` action is admin-only and
+cross-family; a guardian or child token that calls it receives 403. Per
+[ADR-008](./adr/adr-008-first-release-trust-boundary.md), the approving parent is
+provisioned as `admin`, and from C4a-0 the admin role additionally inherits guardian scope
+within its own family (approval authority stays global; family powers do not).
 
 ---
 
 ## Action-by-Role Table
 
-| Action | Guardian | Child (own profile) | Enforcement |
-|--------|----------|---------------------|-------------|
-| Read own library / story / state | Any family profile | Own profile only | Token subject maps to allowed-profile set; 403 otherwise |
-| Write own reading state | Any family profile | Own profile only | Same, plus `state_revision` and version guards on the PUT |
-| Record a completion | Any family profile | Own profile only | `ending_id` must belong to the cited published version |
-| Generate / submit concept | Yes | No (403) | Guardian role required; child tokens are scoped to reader endpoints |
-| Approve (in_review to approved) | Yes | No (403) | Guardian role required on the transition; enforced in the state machine |
-| Publish (approved to published) | Yes | No (403) | Guardian role required on the transition; enforced in the state machine |
-| Access another family's data | No (403) | No (403) | Family ownership is checked on every resource; cross-family 403 |
-| Edit a passage (Phase 4b) | Yes | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
+| Action | Admin | Guardian | Child (own profile) | Enforcement |
+|--------|-------|----------|---------------------|-------------|
+| Read own library / story / state | Own-family profiles (from C4a-0) | Any family profile | Own profile only | Token subject maps to allowed-profile set; 403 otherwise |
+| Write own reading state | Own-family profiles (from C4a-0) | Any family profile | Own profile only | Same, plus `state_revision` and version guards on the PUT |
+| Record a completion | Own-family profiles (from C4a-0) | Any family profile | Own profile only | `ending_id` must belong to the cited published version |
+| Generate / submit concept | Own family (from C4a-0) | Yes | No (403) | Guardian-scope role required; child tokens are scoped to reader endpoints |
+| Review surface (read blob + moderation report) | Yes, cross-family | No (403) | No (403) | Admin role checked before any row load |
+| Approve (in_review to published, one action) | Yes, cross-family | No (403) | No (403) | Admin role required; `approved_by` and `published_at` stamped in the same transition |
+| Send back (in_review to needs_revision) | Yes, cross-family | No (403) | No (403) | Admin role required |
+| Archive (published to archived) | Yes, cross-family | No (403) | No (403) | Admin role required |
+| Access another family's data | Approval surface only | No (403) | No (403) | Family ownership is checked on every non-approval resource; cross-family 403 |
+| Edit a passage (Phase 4b) | Own family (planned) | Yes (planned) | No (403) | Guardian-scope role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
 
 Key implementation rules:
 
@@ -68,9 +74,10 @@ green before Phase 3 closes.
    includes `profile_id: B`. Expected: 403. The server must validate the subject against
    the path parameter, not the body field.
 
-3. **Child calls approve or publish**: a child token sends
-   `POST /api/v1/storybooks/{id}/versions/{v}/approve` or `.../publish`. Expected: 403.
-   The guardian role is required on both transitions; child tokens must not escalate.
+3. **Child or guardian calls approve**: a child or guardian token sends
+   `POST /api/v1/storybooks/{id}/approve` (or `/send-back`, `/archive`). Expected: 403.
+   The admin role is required on every approval-surface action; the role is checked
+   before any row load so a non-admin never learns whether the story exists.
 
 4. **Guardian from another family accesses a story**: a guardian token belonging to
    family B sends any read or write request against a storybook owned by family A.
@@ -80,24 +87,30 @@ green before Phase 3 closes.
 
 ## State Machine and Role Enforcement
 
-The publish state machine transitions are enforced as follows:
+The publish state machine (`publishing/state_machine.py`, the single source of truth) has
+five resting states; generation and auto-check happen while the row rests in `draft`, and
+`approved` is collapsed into the `approve` action rather than being a distinct state:
 
 ```text
-draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -+
-                                   |                                             |
-                                   +-> in_review -> approved -> published -> archived
+draft --submit------> in_review --approve---> published --archive--> archived
+  |                    |    ^
+  +--auto_reject--+    |    |
+                  v    v    |
+                needs_revision --submit--(re-review after repair / regenerate)
 ```
 
-- `in_review -> approved`: guardian role required. The approver ID is persisted in
-  `storybook_version.approved_by`.
-- `approved -> published`: guardian role required. The transition is separate from
-  approval so that approval and publish can be audited independently.
-- `auto_check -> in_review`: automated; triggered by the validator and moderation gate
-  passing. No role check needed because no human action initiates it.
-- `auto_check -> needs_revision`: automated on gate failure. Routes to human review if
-  moderation flags content; routes to repair if only structural issues are found.
+- `in_review -> published` (action `approve`): admin role required. The approver ID and
+  publish time are stamped in the same transition (`storybook_version.approved_by`,
+  `published_at`), so approval and publish are audited as one recorded human decision.
+- `in_review -> needs_revision` (action `send_back`): admin role required.
+- `draft -> in_review` (action `submit`) and `draft -> needs_revision` (action
+  `auto_reject`): driven by the moderation pipeline after the validation gate; no role
+  check because no human action initiates them. A hard moderation block auto-rejects; a
+  clean or repaired story submits to review.
+- `published -> archived` (action `archive`): admin role required.
 
-A story is visible in a child's library only in the `published` state.
+A story is visible in a child's library only in the `published` state, and the library
+additionally requires a recorded approver (`approved_by IS NOT NULL`) as a backstop.
 
 ---
 
@@ -105,5 +118,8 @@ A story is visible in a child's library only in the `published` state.
 
 - [Tech Spec: Security](./tech-spec.md#security)
 - [Tech Spec: API Specification](./tech-spec.md#api-specification)
-- [ADR-005: Mandatory human approval](./adr/adr-005-mandatory-human-approval.md)
+- [ADR-005: Mandatory human approval](./adr/adr-005-mandatory-human-approval.md) (amended
+  2026-06-30: the approver is a global admin)
+- [ADR-008: First-release trust boundary](./adr/adr-008-first-release-trust-boundary.md)
+  (C4a-0: real OIDC verification, admin-inherits-guardian, offline session model)
 - [ADR-004: Homelab-first deployment (Authentik OIDC)](./adr/adr-004-homelab-first-deployment.md)

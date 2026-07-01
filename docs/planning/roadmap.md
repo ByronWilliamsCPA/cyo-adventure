@@ -322,6 +322,10 @@ release, 4b follows.
 
 ### Deliverables (4a, in the first release)
 
+- [ ] Real authentication (C4a-0, [ADR-008](./adr/adr-008-first-release-trust-boundary.md)):
+      OIDC PKCE in the PWA, backend token verification behind the `deps.py` seam,
+      admin-inherits-guardian role superset, approval freshness guard. Precedes the app
+      shell (C4a-1), which consumes its auth context.
 - [ ] Library browsing and per-child profiles with age-band and reading-level limits.
 - [ ] The minimal guardian path to view, approve, publish, and assign a generated story to
       a profile.

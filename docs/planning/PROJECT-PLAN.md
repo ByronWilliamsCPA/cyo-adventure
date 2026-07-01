@@ -136,22 +136,31 @@ Key architectural decisions, each recorded in an ADR:
 | [ADR-003](./adr/adr-003-frontier-llm-generation.md) | Anthropic Claude primary behind a `GenerationProvider` interface; Ollama and OpenRouter as fallback | Frontier models hold branching structure best; provider interface keeps switching cheap |
 | [ADR-004](./adr/adr-004-homelab-first-deployment.md) | Homelab-first (Pangolin, Authentik, Postgres, Redis, MinIO); cloud-portable containers | Minors' data stays on controlled hardware; existing infra reused; Azure Container Apps is a drop-in |
 | [ADR-005](./adr/adr-005-mandatory-human-approval.md) | Publish state machine with mandatory guardian approval; no auto-publish path | Automated moderation helps but cannot be the sole safeguard for machine-generated content read by children |
-| [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 8 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
+| [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 10 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
+| [ADR-008](./adr/adr-008-first-release-trust-boundary.md) | First-release trust boundary: OIDC verification at the API (C4a-0), admin-inherits-guardian role model, offline-tolerant PWA sessions | On a home LAN the ingress can be bypassed; the API signature check is the only boundary that holds against the in-family threat model |
 
 ### Publish state machine
 
+As merged (`publishing/state_machine.py` is the single source of truth): five resting
+states; generation and auto-check happen while the row rests in `draft`, and `approved` is
+collapsed into the `approve` action rather than being a distinct state.
+
 ```text
-draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -+
-                                   |                                             |
-                                   +-> in_review -> approved -> published -> archived
-                                          ^
-                                          +-- (re-review on edit)
+draft --submit------> in_review --approve---> published --archive--> archived
+  |                    |    ^
+  +--auto_reject--+    |    |
+                  v    v    |
+                needs_revision --submit--(re-review after repair / regenerate)
 ```
 
-A story is visible to a child only in `published`. The transition `in_review -> approved`
-requires a guardian. Failures from the validator or moderation route to `needs_revision`.
+A story is visible to a child only in `published` (with a recorded approver as a library
+backstop). The `approve` action requires the **global admin** role (ADR-005 as amended
+2026-06-30; the approving parent is provisioned as admin per ADR-008) and stamps
+`approved_by` and `published_at` in the same transition. Moderation failures route to
+`needs_revision` via `auto_reject`; clean or repaired stories `submit` to review.
 
-Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
+Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model", updated to
+the merged Phase 3 shape.
 
 ---
 
@@ -169,7 +178,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Database | PostgreSQL 16, SQLAlchemy, Alembic | Metadata and reading state |
 | Object storage | MinIO (S3 API) | Versioned, immutable story blobs; Azure Blob is interchangeable |
 | Cache/queue | Redis | Background generation queue |
-| Condition evaluator | In-house Python + TypeScript (ADR-006) | Whitelisted 8-operator JSONLogic subset |
+| Condition evaluator | In-house Python + TypeScript (ADR-006) | Whitelisted 10-operator JSONLogic subset |
 | Graph analysis | networkx | Reachability, cycle detection, termination |
 | Readability | textstat | Flesch-Kincaid grade (advisory) |
 | LLM primary | Anthropic Claude | Behind `GenerationProvider` interface |
@@ -452,9 +461,10 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 - **Moderation pass**: provider moderation API plus an independent LLM-reviewer pass, scored
   against per-age-band policy; any hit flags the nodes and forces human review. Safety hits
   always route to a person; never auto-publish.
-- **Publish state machine** with the guardian-only approval transition:
-  `draft -> generating -> auto_check -> in_review -> approved -> published -> archived`,
-  with `needs_revision` on auto-check failure.
+- **Publish state machine** with the admin-only approval transition (ADR-005 as amended):
+  `draft -> in_review -> published -> archived` with `needs_revision` on failures, where
+  `approve` collapses approval and publish into one stamped transition (see section 3 for
+  the merged shape).
 - **Parent review surface**: a guardian can read the full story, see flagged passages, and
   approve or send back. The review UI must make each approval achievable in a few minutes.
 - **Provenance and audit** on every published version: model, provider, prompt version, and
@@ -494,7 +504,9 @@ Phase 2 once the validation gate and orchestrator are stable.
 profile-scoped browsing) and the child `ratings` API are merged. The frontend has **no
 library, profile, guardian, or concept-intake UI and no routing** (it is still a
 single-page reader demo), so the guardian/parent app shell that Phases 3 and 4a both need
-is the largest remaining build for the first release.
+is the largest remaining build for the first release. Authentication is still the dev
+stub; C4a-0 (below, [ADR-008](./adr/adr-008-first-release-trust-boundary.md)) replaces it
+inside this phase and precedes all other 4a work.
 
 **Objective**: Make the first usable release shippable. A child sees only the stories permitted
 for their profile; a guardian can assign an approved generated story to one or more children.
@@ -502,6 +514,14 @@ This is the **first release line**.
 
 **Deliverables** (traced to [Roadmap Phase 4a](./roadmap.md)):
 
+- **C4a-0, Real authentication and the auth contract**
+  ([ADR-008](./adr/adr-008-first-release-trust-boundary.md)): OIDC Authorization Code +
+  PKCE in the PWA against Authentik; backend verification of signature, issuer, audience,
+  and expiry behind the existing `deps.py` seam (`auth_mode` setting keeps the dev stub
+  for local and tests); `GET /api/v1/me`; admin-inherits-guardian role superset;
+  authentication-freshness guard on approval actions; forged-token test matrix. This lands
+  **before C4a-1**, which consumes its `AuthContext`. Closes the Critical stub-auth
+  finding from the 2026-07-01 senior review.
 - **Library browsing**: GET `/api/v1/library?profile_id={id}` filters by published status,
   age band, and reading level cap of the requesting profile.
 - **Per-child profiles**: `child_profile` records with `age_band`, `reading_level_cap`,
@@ -515,9 +535,13 @@ This is the **first release line**.
 
 - A child sees only stories permitted for their profile (age band and reading level enforced).
 - A guardian can assign an approved generated story to one or more children.
+- A forged bearer token (any row of the ADR-008 forged-token matrix) is rejected on every
+  endpoint; the release deployment runs `auth_mode == "oidc"`.
 
 **Quality gates**:
 
+- [ ] Forged-token matrix green in both auth modes; dev stub still refuses to start outside
+      `environment == "local"`
 - [ ] 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths
 - [ ] Integration tests: child cannot see unapproved or off-band story; guardian assigns story
       to profile and child library updates

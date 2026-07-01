@@ -31,6 +31,8 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-004](./adr-004-homelab-first-deployment.md) | Homelab-first deployment, Azure as the scale-out alternative | Proposed | 2026-06-20 |
 | [ADR-005](./adr-005-mandatory-human-approval.md) | Mandatory human approval before any story reaches a child | Proposed | 2026-06-20 |
 | [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Proposed | 2026-06-20 |
+| [ADR-007](./adr-007-raw-output-retention.md) | Raw generation output is retained briefly, then purged | Proposed | 2026-06-24 |
+| [ADR-008](./adr-008-first-release-trust-boundary.md) | The first release verifies identity at the API, not at the ingress | Proposed | 2026-07-01 |
 
 ## Creating ADRs
 
