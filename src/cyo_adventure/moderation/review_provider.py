@@ -20,6 +20,13 @@ from cyo_adventure.generation.provider import (
 if TYPE_CHECKING:
     from cyo_adventure.core.config import Settings
 
+# The mock review backend (the dev/test default) must outlast a full pipeline run.
+# The pipeline issues 2N+2 review calls (safety + readability per node, coherence +
+# engagement once each), and MockProvider raises BusinessLogicError on over-call, so a
+# fixed budget that is too small turns a large clean story into a spurious job failure.
+# This bound covers well beyond any realistic node count; mock is never a live backend.
+_MOCK_RESPONSE_BUDGET = 4096
+
 
 class ReviewProvider(Protocol):
     """Structural protocol identical to ``GenerationProvider``."""
@@ -61,10 +68,14 @@ def build_review_provider(
     # #CRITICAL: security: a model reviewing its own output is not an independent
     # check; tier 3 must surface as not-independent, never silently pass.
     # #VERIFY: test_same_backend_same_model_is_not_independent.
+    # #CRITICAL: external-resource: openrouter/ollama legs are network-backed HTTP
+    # clients; a missing credential raises ConfigurationError at build time rather
+    # than failing mid-pipeline.
+    # #VERIFY: build_openrouter_leg/build_ollama_leg raise on absent credentials.
     backend = settings.review_provider
 
     if backend == "mock":
-        return MockProvider(responses=["{}"] * 64), True
+        return MockProvider(responses=["{}"] * _MOCK_RESPONSE_BUDGET), True
 
     if backend == "modal":
         msg = (
