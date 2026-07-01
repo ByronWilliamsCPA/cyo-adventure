@@ -407,3 +407,30 @@ advisory.
 
 **Affected Files**: `.github/workflows/pr-validation.yml`,
 `.github/workflows/sonarcloud.yml`
+
+### `skeleton-format.md` reference doc documents stale `ending.type` field and value set
+
+- **Priority**: Medium
+- **Category**: Documentation
+- **Discovered**: 2026-06-30
+
+**Issue**: `.claude/skills/cyo-author/reference/skeleton-format.md` documents ending
+conventions under an `ending.type` field with values `{completion, good, neutral,
+failure, death}`. The enforced schema model (`src/cyo_adventure/storybook/models.py`,
+class `Ending`) uses `ending.kind` (an `EndingKind` enum: `success, setback, death,
+capture, completion, discovery`) plus a separate `ending.valence` field
+(`Valence`: `positive, neutral, negative`). The reference doc's field name, value set,
+and axis split all differ from the enforced model, so any author following the reference
+will produce structurally invalid skeletons that the Pydantic validator rejects.
+
+**Context**: Discovered during the skeleton-diagrams workstream (Task 9 gate review)
+when verifying that the drift-guard test and catalog generator use the live `EndingKind`
+enum correctly. The reference doc was written before the schema 2.0 breaking change
+(PR that introduced `valence`/`kind` split) and was not updated at that time.
+
+**Suggested Fix**: Regenerate or rewrite `.claude/skills/cyo-author/reference/skeleton-format.md`
+from the live model enums: replace `ending.type` with `ending.kind` (values from
+`EndingKind`), add a new `ending.valence` row (values from `Valence`), and remove the
+stale value set (`good`, `neutral` as top-level kinds).
+
+**Affected Files**: `.claude/skills/cyo-author/reference/skeleton-format.md`

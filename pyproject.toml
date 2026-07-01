@@ -352,6 +352,7 @@ known-first-party = ["cyo_adventure"]
     "S108",   # hardcoded_tmp_directory - test temp paths are intentional
     "S311",   # random - non-crypto random in tests is fine
     "S113",   # request_without_timeout - test HTTP calls may be mocked
+    "S603",   # subprocess_without_shell_equals_true - integration tests invoke fixed scripts
 ]
 
 # Scripts (utility code - not packages)

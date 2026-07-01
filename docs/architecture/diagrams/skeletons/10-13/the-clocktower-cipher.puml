@@ -1,0 +1,117 @@
+@startuml the-clocktower-cipher
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 175w
+state n_note #D1C4E9
+n_note : rising · 175w
+state n_door #D1C4E9
+n_door : rising · 175w
+state n_keeper #D1C4E9
+n_keeper : rising · 175w
+state n_keyhunt #D1C4E9
+n_keyhunt : rising · 175w
+state n_keeper_story #D1C4E9
+n_keeper_story : rising · 175w
+state n_window #D1C4E9
+n_window : rising · 175w
+state n_inside #FFF9C4
+n_inside : choice · 175w
+state n_stairs #D1C4E9
+n_stairs : rising · 175w
+state n_study #D1C4E9
+n_study : rising · 175w
+state n_pendulum #D1C4E9
+n_pendulum : rising · 175w
+state n_basement #D1C4E9
+n_basement : rising · 175w
+state n_clockface #FFF9C4
+n_clockface : choice · 175w
+state n_setcorrect #FFE0B2
+n_setcorrect : climax · 175w
+state n_setjam #FFE0B2
+n_setjam : climax · 175w
+state n_backpanel #D1C4E9
+n_backpanel : rising · 175w
+state n_vault #FFF9C4
+n_vault : choice · 175w
+state n_end_library #E0E0E0
+n_end_library : discovery (neutral)
+n_end_library : "Lost in the Logbooks"
+state n_end_giveup #FFCDD2
+n_end_giveup : setback (negative)
+n_end_giveup : "Too Risky"
+state n_end_timeout #FFCDD2
+n_end_timeout : setback (negative)
+n_end_timeout : "Out of Time"
+state n_end_stuck #FFCDD2
+n_end_stuck : setback (negative)
+n_end_stuck : "Locked Out for the Night"
+state n_end_secret #C8E6C9
+n_end_secret : success (positive)
+n_end_secret : "The Hidden Workshop"
+state n_end_hero #C8E6C9
+n_end_hero : completion (positive)
+n_end_hero : "The Cipher Revealed"
+state n_end_keepsake #C8E6C9
+n_end_keepsake : success (positive)
+n_end_keepsake : "A Secret Kept"
+state n_end_caught #FFCDD2
+n_end_caught : setback (negative)
+n_end_caught : "Caught Red-Handed"
+n_start --> n_note : Examine the cipher note pinned to the do...
+n_start --> n_door : Search the building for another way in.
+n_start --> n_keeper : Find the old clockkeeper and ask for hel...
+n_note --> n_keyhunt : Follow the clue to hunt for the hidden k...
+n_note --> n_inside : Try the loose grate the note mentions.
+n_door --> n_inside : Shoulder the stiff side door open.
+n_door --> n_window : Climb up to the high window.
+n_keeper --> n_inside : Go inside with the keeper.
+n_keeper --> n_keeper_story : Ask who built the cipher.
+n_keyhunt --> n_inside : Unlock the front door with the brass key...
+n_keeper_story --> n_inside : Head inside with what you have learned.
+n_window --> n_inside : Drop down into the tower.
+n_inside --> n_stairs : Climb the spiral stair.
+n_inside --> n_study : Open the clockmaker's study.
+n_inside --> n_pendulum : Edge along the pendulum pit.
+n_inside --> n_basement : Go down to the basement.
+n_stairs --> n_clockface : Climb up to the great clockface.
+n_study --> n_clockface : Take the cipher wheel up to the clockfac...
+n_study --> n_end_library : Stay and read the fascinating logbooks.
+n_pendulum --> n_clockface : Cross carefully and grab the oil can.
+n_pendulum --> n_end_giveup : Decide the ledge is too risky and back o...
+n_basement --> n_clockface : Take the service ladder up to the clockf...
+n_clockface --> n_setcorrect : Set the hands using the cipher.
+n_clockface --> n_setjam : Force the hands by guesswork.
+n_clockface --> n_backpanel : Search for a back panel behind the face.
+n_clockface --> n_end_timeout : Spin the hands at random and hope.
+n_setcorrect --> n_vault : Step through to the vault.
+n_setjam --> n_vault : Free the jammed gears with the oil can.
+n_setjam --> n_end_stuck : Give up; the gears will not move.
+n_backpanel --> n_vault : Open the panel into the vault.
+n_backpanel --> n_end_secret : Slip into the clockmaker's hidden worksh...
+n_vault --> n_end_hero : Decode the final message and bring it to...
+n_vault --> n_end_keepsake : Keep the clockmaker's secret among frien...
+n_vault --> n_end_caught : Stuff the treasure in your bag and run.
+n_end_library --> [*]
+n_end_giveup --> [*]
+n_end_timeout --> [*]
+n_end_stuck --> [*]
+n_end_secret --> [*]
+n_end_hero --> [*]
+n_end_keepsake --> [*]
+n_end_caught --> [*]
+
+legend right
+  The Clocktower Cipher
+  Band 10-13 · Tier 1 · ~18 min
+  Topology: branch_and_bottleneck
+  25 nodes · 8 endings (3+ / 1n / 4-)
+endlegend
+@enduml

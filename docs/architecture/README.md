@@ -22,6 +22,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
 | [Data Model](data-model.md) | 9 ORM tables, ER diagram, relationships |
+| [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
 | [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Authentik, MinIO (Phase 5) |
 
 ## Diagram Index
