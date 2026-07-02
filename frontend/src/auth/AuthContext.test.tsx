@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthProvider } from './AuthContext'
@@ -47,6 +48,29 @@ function ActionsProbe() {
         sign in
       </button>
       <button type="button" onClick={() => void signOut()}>
+        sign out
+      </button>
+    </div>
+  )
+}
+
+/** Mirrors how real call sites consume the rejections these actions now throw. */
+function CatchingActionsProbe() {
+  const { signInWithOAuth, signOut } = useAuth()
+  const [caught, setCaught] = useState('none')
+  return (
+    <div>
+      <span data-testid="caught">{caught}</span>
+      <button
+        type="button"
+        onClick={() => void signInWithOAuth('google').catch((e: Error) => setCaught(e.message))}
+      >
+        sign in
+      </button>
+      <button
+        type="button"
+        onClick={() => void signOut().catch((e: Error) => setCaught(e.message))}
+      >
         sign out
       </button>
     </div>
@@ -229,6 +253,34 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
     fireEvent.click(screen.getByText('sign out'))
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
+  })
+
+  it('rejects signInWithOAuth when supabase reports an error', async () => {
+    // supabase-js resolves with { error } instead of throwing; the context
+    // must rethrow so a failed OAuth redirect is not silently swallowed.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignInWithOAuth.mockResolvedValue({ data: {}, error: new Error('oauth unavailable') })
+    render(
+      <AuthProvider>
+        <CatchingActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign in'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('oauth unavailable'))
+  })
+
+  it('rejects signOut when supabase reports an error', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: new Error('revoke failed') })
+    render(
+      <AuthProvider>
+        <CatchingActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('revoke failed'))
   })
 
   it('useAuth throws when used outside an AuthProvider', () => {

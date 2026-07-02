@@ -127,11 +127,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       status,
       principal,
+      // #ASSUME: data-integrity: supabase-js auth methods resolve with
+      // { error } instead of throwing, so an unchecked await silently
+      // swallows a failed OAuth redirect or sign-out. Rethrow so callers
+      // (LoginPage, GuardianShell) can surface the failure.
+      // #VERIFY: AuthContext.test.tsx signInWithOAuth/signOut rejection cases.
       signInWithOAuth: async (provider) => {
-        await supabase.auth.signInWithOAuth({ provider })
+        const { error } = await supabase.auth.signInWithOAuth({ provider })
+        if (error) throw error
       },
       signOut: async () => {
-        await supabase.auth.signOut()
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
       },
     }),
     [status, principal]

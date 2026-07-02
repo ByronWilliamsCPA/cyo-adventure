@@ -59,6 +59,13 @@
   background: var(--color-amber-hover, #a3631f);
 }
 
+.guardian-login__error,
+.guardian-shell__error {
+  margin: 1rem 1.5rem 0;
+  color: var(--color-error, #b3261e);
+  font-size: var(--text-sm, 0.9375rem);
+}
+
 .guardian-stub {
   border: 1px dashed var(--color-ink-muted, #8c6f56);
   border-radius: 12px;
