@@ -555,7 +555,9 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 
 - No story reaches a child profile without a recorded guardian approval (verified by attempting
   every transition path).
-- Adversarial briefs are flagged and cannot be auto-published.
+- 🔄 Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish" holds;
+  the "flag and route to human review" half is reframed and only partially met (see
+  [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)).
 
 **Quality gates**:
 
@@ -563,8 +565,20 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
       checks (critical paths)
 - [x] All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
       cross-family guardian access)
-- [x] Safety evaluation: adversarial concept briefs verified to flag moderation and route to
-      human review; no auto-publish path
+- [~] Safety evaluation: adversarial concept briefs flag moderation and route to human review.
+      **Partially met and reframed** (see
+      [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)). "No
+      auto-publish path" holds (verified: nothing publishes without a human `approve`). The
+      "adversarial briefs flag and route to human review" claim is **not backed by evidence**
+      for the model-dependent classes (no live-model run has been executed) and is **false on
+      two structural seams**: the import path and the admin `POST /submit` endpoint reach a
+      publishable state with no moderation at all. Remaining to close the gate: (a) close the
+      two bypass seams; (b) surface an explicit "never screened" state on the review surface;
+      (c) run the credentialed adversarial harness and archive per-class results. Under the
+      two-track model this gate is Track 1 (family) debt and a Track 2 (public launch) blocker:
+      the Kids Category / COPPA posture in [ADR-008](./adr/adr-008-public-app-store-launch.md)
+      makes an unbacked safety claim a compliance exposure, and P9-04 already mandates live
+      moderation in production
 - [x] No high or critical security findings (Bandit, Semgrep, pip-audit)
 - [x] Ruff clean; BasedPyright strict clean
 - [x] Pre-commit green; all commits signed with conventional messages
@@ -757,6 +771,24 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 | P6-08 | Parental gate (frontend) | Guardian re-auth wrapper around dashboard, approval, settings, and (later) purchase routes; the gate pattern Apple expects in Kids Category apps |
 | P6-09 | Auth negative-test suite | Expired token, wrong issuer, wrong audience, algorithm confusion, tampered signature, child token on guardian endpoints |
 | P6-10 | Cross-tenant IDOR extension | Existing IDOR suite extended with a third, stranger family: no read or write crosses family boundaries anywhere |
+
+**Salvaged design notes** (from the withdrawn first-release trust-boundary exploration; folded
+here as guidance, not as a competing ADR):
+
+- **Admin as a guardian superset when real auth lands (relevant to P6-01/P6-04).** Today the
+  `ADMIN` role resolves an empty profile set: the cross-family safety operator (ADR-005
+  amendment) is deliberately not a member of any family. When P6-01 produces `Principal` from a
+  real token, decide explicitly whether `ADMIN` should also inherit a guardian's family-scoped
+  powers (a role superset) or stay a pure reviewer with no family membership. The safer default
+  is to keep them disjoint (least privilege: an admin who is also a guardian holds two separate
+  principals), and to make that a conscious choice rather than an accident of how the empty
+  profile set is computed.
+- **Approval freshness guard (relevant to P6-08).** The parental gate re-auth wrapper should
+  carry into the backend: the `approve` transition is the highest-stakes action in the system,
+  so consider requiring a recent authentication (a bounded `auth_time` / re-auth freshness
+  window on the approve endpoint) so a long-lived or walked-away session cannot approve a story
+  hours later without re-proving the human. This pairs the frontend gate (P6-08) with a
+  server-side check rather than trusting the gate alone.
 
 **Acceptance criteria**:
 
@@ -1026,6 +1058,8 @@ documents.
 | Stateful runtime dead ends (silver door) | M | H | Layer-2 state-space validator; configuration cap bounds the walk; dedicated corpus in Phase 2 | 1, 2 |
 | LLM coherence across branches (60% yield target) | H | M | Structure-first staged generation; validator; repair loop (3-cap, no-progress abort); small Tier-2 state; drafting guide authored in Phase 0 | 0, 2 |
 | Unsafe or off-band content reaching a child | L | H | Independent moderation + mandatory guardian approval + age-band policy; never auto-publish; adversarial test corpus in Phase 3 | 3, 4a |
+| Moderation bypass seams: story reaches a publishable state unscreened | M | H | The import path (`generation/import_story.py`) and the admin `POST /submit` (`api/approval.py`) reach `in_review`/publishable with no `moderation_report`; approve never checks one exists, and the review surface renders `summary=None` identically to screened-clean. Human approval still gates publish, but the approver sees no safety signal. Close per C3-SAFETY: run moderation on both paths (or block publish when `moderation_report is None`) and add an explicit "never screened" state to the review surface. Evidence and taxonomy in [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md) | 3, 4a |
+| Safety-gate claim unbacked by a live adversarial run | M | H | The "adversarial briefs flag and route to human review" acceptance item has no live-model evidence (harness refuses mock verdicts as evidence). A Kids Category / COPPA public launch turns this into a compliance exposure. Close with the credentialed harness (per-class catch-rates archived); P9-04 already mandates live moderation in production | 3, 9 |
 | Generation cost and latency | M | L | Infrequent generation; async RQ worker; immutable cached outputs; per-family quota | 2 |
 | Condition-evaluator divergence (validator/player disagreement) | L | H | Tiny in-house interpreter; property-tested for totality (Hypothesis, fast-check); shared conformance fixtures; cross-impl test in CI | 0, 1 |
 | Multi-device progress loss (iOS) | M | M | Revision-based concurrency; explicit 409 conflict resolution; server canonical; sync on every choice | 1 |
@@ -1035,6 +1069,7 @@ documents.
 | App Store rejection (4.2 web wrapper, kids' AI content, parental gate) | M | H | Native affordances checklist (P8-08), parental gate (P6-08), reviewer notes on the pre-moderated pipeline (P7-07), TestFlight beta before submission (P9-09) | 8, 9 |
 | COPPA / GDPR-K violation | L | H | Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08) | 6, 7 |
 | Auth defect enables cross-family data access | L | H | Reuse of proven `Principal` model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary | 6 |
+| Track 1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | M | M | Acceptable only inside a trusted household LAN: the stub is import-guarded to `environment == "local"` and every submitter is an implicitly trusted family member; no exposure beyond the LAN until Phase 5 ingress (Pangolin) and Phase 6 real JWT validation (P6-01) retire the stub. Documented so the interim trust assumption is explicit, not silent | 4a, 5, 6 |
 | LLM cost abuse at public scale | M | M | Metered credits (P8-05), per-family quotas, global spend cap with circuit breaker (P9-05) | 8, 9 |
 | Entitlement drift (payments vs access disagree) | M | M | Server-side receipt validation and webhook-driven transitions only (P8-04); sandbox lifecycle matrix (P8-07); forged-webhook negative test | 8 |
 | Supabase platform dependency (its incident is our login and data-plane outage) | M | M | Managed SLA on Pro (P9-09); open components underneath (Postgres, S3 API, GoTrue) keep ejection a migration, not a rewrite; export drill in P9-06 proves it | 6, 9 |
