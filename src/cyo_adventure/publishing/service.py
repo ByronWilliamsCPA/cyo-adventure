@@ -102,12 +102,13 @@ async def approve(
     if version_row is None:
         msg = f"version {version} of storybook '{storybook.id}' not found"
         raise ResourceNotFoundError(msg)
-    # #CRITICAL: security: closes C3-SAFETY Findings 1-2 (adversarial-safety-
-    # evaluation.md): the import path and the admin submit endpoint can both
-    # move a draft to in_review without ever running moderation. This is the
-    # single choke point (the sole publish path) that makes "no unmoderated
-    # path reaches published" hold structurally, regardless of how many
-    # routes can reach in_review.
+    # #CRITICAL: security: closes C3-SAFETY Finding 2 (adversarial-safety-
+    # evaluation.md): the admin submit endpoint (api/approval.py::submit_storybook)
+    # can still move a draft straight to in_review without ever running
+    # moderation (Finding 1 closed the import path's own unmoderated route; this
+    # endpoint is untouched by that fix). This guard is the single choke point
+    # (the sole publish path) that makes "no unmoderated path reaches published"
+    # hold structurally, regardless of how many routes can reach in_review.
     # #VERIFY: test_approve_without_moderation_report_raises.
     if version_row.moderation_report is None:
         msg = "cannot approve a version that has never been screened by moderation"

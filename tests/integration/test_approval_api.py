@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
+from tests.conftest import make_clean_moderation_report
 
 from .conftest import auth
 
@@ -15,22 +16,6 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
-
-# A version that has been screened clean, for fixtures that need approve() to
-# succeed. approve() now refuses to publish a version with moderation_report
-# is None (C3-SAFETY Findings 1-2); tests exercising the illegal-transition,
-# authorization, or not-found paths never reach that check, so they do not
-# need this.
-_CLEAN_REPORT: dict[str, object] = {
-    "findings": [],
-    "summary": {
-        "count": 0,
-        "hard_block": False,
-        "soft_flag": False,
-        "repaired": False,
-        "reviewer_independent": True,
-    },
-}
 
 
 async def _seed_in_review(
@@ -55,7 +40,7 @@ async def _seed_in_review(
                 storybook_id=story_id,
                 version=1,
                 blob={"id": story_id},
-                moderation_report=_CLEAN_REPORT,
+                moderation_report=make_clean_moderation_report(),
             )
         )
         await session.commit()

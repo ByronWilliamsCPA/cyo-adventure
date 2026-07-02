@@ -26,11 +26,6 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
-# Imported stories are always the first version of a fresh Storybook id,
-# mirroring generation/worker.py's _FIRST_VERSION / generation/persistence.py's
-# StorybookParams.version default.
-_FIRST_VERSION = 1
-
 
 @dataclass(frozen=True, slots=True)
 class ImportRequest:
@@ -66,6 +61,13 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
     Raises:
         ValidationError: If the validation gate blocks the story, or the blob has
             no string id.
+        ProjectBaseError: Propagated, uncaught, from the post-persist moderation
+            pipeline call below (e.g. ResourceNotFoundError, or an
+            ExternalServiceError from a review-backend failure). Unlike
+            generation/worker.py, this function does not own the transaction, so
+            it does not catch or reinterpret a moderation failure; the caller's
+            session close/rollback (core/database.py::get_session) is what keeps
+            a failed import from leaving a half-committed row.
     """
     # #CRITICAL: data-integrity: the gate result and the blob must agree on id;
     # if the blob's id is missing or wrong, the stored version row is unreachable.
@@ -84,26 +86,26 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         msg = "filled story has no string id"
         raise ValidationError(msg)
 
-    await persist_storybook(
-        session,
-        StorybookParams(
-            story_id=story_id,
-            blob=request.blob,
-            family_id=request.family_id,
-            created_by=request.created_by,
-            model=request.model,
-            prompt_version=request.prompt_version,
-            validation_report=result.report.to_dict(),
-            version=_FIRST_VERSION,
-        ),
+    params = StorybookParams(
+        story_id=story_id,
+        blob=request.blob,
+        family_id=request.family_id,
+        created_by=request.created_by,
+        model=request.model,
+        prompt_version=request.prompt_version,
+        validation_report=result.report.to_dict(),
     )
+    await persist_storybook(session, params)
 
     # #CRITICAL: security: closes C3-SAFETY Finding 1 (adversarial-safety-
     # evaluation.md): import_filled_story used to persist a draft and stop,
     # leaving an externally-authored story (e.g. the cyo-author skeleton-fill
     # route) reachable by admin submit/approve with zero content screening.
-    # This mirrors generation/worker.py's post-persist moderation call exactly
-    # so an imported story is screened identically to a generated one.
+    # This calls the same run_moderation_pipeline as generation/worker.py, but
+    # NOT identically: worker.py wraps this call in try/except and does its own
+    # rollback/status bookkeeping on failure, while this function deliberately
+    # lets a moderation-pipeline exception propagate uncaught (see the Raises:
+    # section above) because it does not own the transaction.
     # publishing.service.approve additionally refuses to publish any version
     # with moderation_report=None (Finding 2's structural backstop), so this
     # call is defense in depth, not the sole gate.
@@ -120,7 +122,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
     await run_moderation_pipeline(
         session=session,
         story_id=story_id,
-        version=_FIRST_VERSION,
+        version=params.version,
         settings=_default_settings,
         generation_provider=build_provider(_default_settings),
         pii=pii,

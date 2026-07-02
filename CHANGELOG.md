@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Security
+- Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the
+  adversarial safety evaluation: `generation/import_story.py::import_filled_story`
+  now runs the moderation pipeline before returning, so the import path can no
+  longer reach `in_review` unscreened; `publishing/service.py::approve`
+  structurally refuses to publish any version whose `moderation_report is None`,
+  raising `BusinessLogicError`; and `ReviewSurfaceView` gains an explicit
+  `screened: bool` field (`build_review_surface`) so a never-screened draft can
+  no longer be mistaken for one screened clean. The credentialed
+  live-adversarial-harness run (Finding remainder (c)) is still blocked on
+  missing model credentials, tracked separately.
 - CORS: replaced wildcard `allow_headers=["*"]` with explicit allowlist in
   `middleware/security.py` to comply with OWASP A05 when credentials are allowed.
 - Auth stub: added `ENVIRONMENT` guard in `api/deps.py` (keyed on

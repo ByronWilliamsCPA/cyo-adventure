@@ -9,6 +9,7 @@ import pytest
 from cyo_adventure.core.exceptions import BusinessLogicError, StateTransitionError
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
 from cyo_adventure.publishing import service as approval_service
+from tests.conftest import make_clean_moderation_report
 
 if TYPE_CHECKING:
     import uuid
@@ -16,17 +17,6 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
-
-_CLEAN_REPORT: dict[str, object] = {
-    "findings": [],
-    "summary": {
-        "count": 0,
-        "hard_block": False,
-        "soft_flag": False,
-        "repaired": False,
-        "reviewer_independent": True,
-    },
-}
 
 
 async def _make_story(
@@ -68,7 +58,9 @@ async def test_approve_stamps_provenance_and_publishes(
     """approve() sets published + current_published_version + approved_by + published_at."""
     async with sessions() as session:
         book, guardian_id = await _make_story(
-            session, status="in_review", moderation_report=_CLEAN_REPORT
+            session,
+            status="in_review",
+            moderation_report=make_clean_moderation_report(),
         )
         principal = _principal(guardian_id, book.family_id)
         version_row = await approval_service.approve(session, principal, book, 1)

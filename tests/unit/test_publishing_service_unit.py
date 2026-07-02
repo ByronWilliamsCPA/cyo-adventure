@@ -21,17 +21,7 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service
-
-_CLEAN_REPORT: dict[str, object] = {
-    "findings": [],
-    "summary": {
-        "count": 0,
-        "hard_block": False,
-        "soft_flag": False,
-        "repaired": False,
-        "reviewer_independent": True,
-    },
-}
+from tests.conftest import make_clean_moderation_report
 
 pytestmark = pytest.mark.asyncio
 
@@ -98,7 +88,10 @@ async def test_approve_publishes_and_stamps() -> None:
     """approve() transitions to published, stamps approved_by and published_at."""
     story = _story("in_review")
     version_row = StorybookVersion(
-        storybook_id="s1", version=1, blob={}, moderation_report=_CLEAN_REPORT
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
     )
     session = AsyncMock()
     session.get = AsyncMock(return_value=version_row)
@@ -119,10 +112,11 @@ async def test_approve_publishes_and_stamps() -> None:
 async def test_approve_without_moderation_report_raises() -> None:
     """approve() on a never-screened version raises BusinessLogicError.
 
-    Closes C3-SAFETY Findings 1-2: the import path and the admin submit
-    endpoint can both move a draft to in_review without moderation ever
-    running. This is the structural choke point that makes "no unmoderated
-    path reaches published" hold regardless of how the story got here.
+    Closes C3-SAFETY Finding 2: the admin submit endpoint can still move a
+    draft to in_review without moderation ever running (Finding 1 closed the
+    import path's own unmoderated route). This guard is the structural choke
+    point that makes "no unmoderated path reaches published" hold regardless
+    of how the story got here.
     """
     story = _story("in_review")
     version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
@@ -213,7 +207,10 @@ async def test_approve_stamps_utc_published_at() -> None:
     """approve() stamps published_at with a timezone-aware UTC datetime."""
     story = _story("in_review")
     version_row = StorybookVersion(
-        storybook_id="s1", version=2, blob={}, moderation_report=_CLEAN_REPORT
+        storybook_id="s1",
+        version=2,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
     )
     session = AsyncMock()
     session.get = AsyncMock(return_value=version_row)
