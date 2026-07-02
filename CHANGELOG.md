@@ -57,6 +57,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Adversarial safety evaluation of the generation and moderation pipeline (docs + tooling,
+  no runtime paths touched): `docs/planning/safety/adversarial-safety-evaluation.md` records
+  the six-class failure taxonomy, the threat model, and five model-independent structural
+  findings verified at source, of which two are moderation-bypass seams (the import path in
+  `generation/import_story.py` and the admin `POST /submit` in `api/approval.py` reach a
+  publishable state with no `moderation_report`). A passage-oriented adversarial corpus
+  (`docs/planning/safety/adversarial-corpus.json`) and a harness
+  (`scripts/adversarial_harness.py`, with unit tests) feed the corpus to the real moderation
+  stages and the PII guard, report a per-class catch-rate, and refuse to treat a mock run as
+  evidence (exit 3). The previously-checked Phase 3 "adversarial briefs flag and route to
+  human review" gate is reframed to partially-met across PROJECT-PLAN.md, roadmap.md,
+  completion-plan.md (carried debt C3-SAFETY), and ADR-005: "no auto-publish path" holds, but
+  the flagging claim has no live-model evidence and is false on the two bypass seams. Under
+  the two-track model this is Track 1 debt and a Track 2 (Kids Category / COPPA) launch
+  blocker; new risk-register rows track the bypass seams, the unbacked gate, and the interim
+  dev-auth-stub trust assumption.
 - Track 2 public-launch planning (docs only, no code paths touched): PROJECT-PLAN.md
   v2.3 adds Phases 6-9 (public auth and multi-tenancy, Kids Category/COPPA compliance
   and account lifecycle, Capacitor iOS shell with tiered Apple In-App Purchase, curated

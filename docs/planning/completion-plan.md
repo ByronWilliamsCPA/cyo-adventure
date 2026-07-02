@@ -88,10 +88,15 @@ Also delivered in slice 3 (#45): reading-state saves are validated against the p
 version (a structural floor always runs, with full deterministic replay when the optional
 `choice_path` is present), closing red-team Finding 2.
 
-**Acceptance (met)**: every transition path is tested; no path reaches a child profile
-without a recorded approval; adversarial briefs flag and cannot auto-publish; coverage on
-the new Phase 3 code is at or above the 90% bar. The only Phase 3 capability not yet
-reachable is the browser UI, which is Phase 4a (C4a-4).
+**Acceptance (partially met; one item reframed)**: every transition path is tested; no path
+reaches a child profile without a recorded approval (holds); coverage on the new Phase 3
+code is at or above the 90% bar. The "adversarial briefs flag and cannot auto-publish"
+criterion is **reframed**: "cannot auto-publish" holds, but "flag and route to human review"
+is not backed by a live-model run and is false on the import and admin-submit paths, which
+reach a publishable state with no moderation. See
+[adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md) and the
+carried-debt table below (C3-SAFETY). The other Phase 3 capability not yet reachable is the
+browser UI, which is Phase 4a (C4a-4).
 
 ### Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
 
@@ -159,6 +164,7 @@ app shell (C4a-1) is the prerequisite for everything else in it.
 
 | Item | Severity | Action |
 |------|----------|--------|
+| **C3-SAFETY: adversarial safety gate unbacked + bypass seams** | High | The Phase 3 "adversarial briefs flag and route to human review" gate has no live-model evidence, and the import (`generation/import_story.py`) and admin `POST /submit` (`api/approval.py`) paths reach a publishable state with no moderation at all. See [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md). Close before the first release: (a) run moderation on the import and submit paths (or block publish when `moderation_report is None`); (b) add an explicit "never screened" state to the review surface for C4a-4; (c) run the credentialed adversarial harness and archive per-class results. |
 | **Tier-2 generation yield weak (3/7)** | Medium | Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever; see [`phase-2b-live-provider.md`](./phase-2b-live-provider.md)). Re-measure. Do before relying on Tier-2 generation in production. |
 | **In-memory rate limiter** | Medium | Phase 5: replace with Redis-backed limiter before multi-process/exposed deployment. |
 | **No frontend routing / app shell** | High (effort) | Phase 4a C4a-1 is a prerequisite for all guardian/library UI; size it as real work, not a wrapper. |
