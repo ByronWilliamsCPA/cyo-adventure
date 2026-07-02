@@ -1,7 +1,12 @@
 """Configuration settings for CYO Adventure.
 
-Settings are loaded from environment variables with the prefix 'CYO_ADVENTURE_'.
-Pydantic-settings handles the parsing and validation.
+Most settings are loaded from environment variables under the 'CYO_ADVENTURE_'
+prefix. Several operator-facing names are also honored unprefixed via
+validation_alias, matching what docker-compose*.yml and
+docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
+DATABASE_URL, and the OLLAMA_*, OPENROUTER_*, OPENAI_API_KEY, and
+PERSPECTIVE_API_KEY credentials. Pydantic-settings handles the parsing and
+validation.
 """
 
 from __future__ import annotations
@@ -235,9 +240,10 @@ class Settings(BaseSettings):
         """
         if self.environment != "local" and self.database_url == _DEV_DATABASE_URL:
             msg = (
-                "CYO_ADVENTURE_DATABASE_URL must be set in non-local environments; "
-                f"refusing to start in '{self.environment}' with the development "
-                "default localhost database URL."
+                "CYO_ADVENTURE_DATABASE_URL (or the unprefixed DATABASE_URL) must "
+                "be set in non-local environments; refusing to start in "
+                f"'{self.environment}' with the development default localhost "
+                "database URL."
             )
             raise ConfigurationError(msg)
         return self
