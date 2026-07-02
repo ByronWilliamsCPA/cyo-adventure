@@ -150,12 +150,20 @@ def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
 
     Booleans are NOT numeric here even though ``bool`` subclasses ``int`` in
     Python: the spec requires ordering operands to resolve to int, and the
-    TypeScript mirror's ``typeof x !== 'number'`` check is false for booleans.
-    Treating a bool as 0/1 would make the validator see a choice as visible
-    while the player hides it (the exact divergence ADR-006 forbids), so both
-    implementations fail closed. Pinned by the ``*_bool_*`` and
-    ``lt_missing_var_is_false`` conformance cases (a missing variable resolves
-    to ``False`` and must follow this same path).
+    TypeScript mirror's ``typeof x !== 'number'`` check is true for booleans
+    (``typeof true`` is ``'boolean'``), which is exactly why the TS side fails
+    closed on them. Treating a bool as 0/1 here would make the validator see a
+    choice as visible while the player hides it (the exact divergence ADR-006
+    forbids), so both implementations fail closed. Pinned by the ``*_bool_*``
+    and ``lt_missing_var_is_false`` conformance cases (a missing variable
+    resolves to ``False`` and must follow this same path).
+
+    # #CRITICAL: data integrity: bool must never be treated as numeric here;
+    # Python's `bool` subclasses `int`, so an unguarded `isinstance(x, int)`
+    # check would let a bool through as 0/1, diverging from the TypeScript
+    # player, which fails closed on booleans.
+    # #VERIFY: schema/conformance/conditions.json's ``*_bool_*`` cases, run by
+    # both tests/unit/test_evaluator.py and the frontend TS evaluator suite.
 
     Args:
         operator (str): One of ``< <= > >=``.
