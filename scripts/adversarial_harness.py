@@ -9,8 +9,10 @@ thresholds in ``docs/planning/safety/adversarial-safety-evaluation.md``.
 
 Honesty guardrail: the mock review provider returns ``"{}"`` for every call, which
 the stage parser maps to the fail-safe verdict (Stage 1 -> FLAG, soft stages ->
-PASS). A mock run therefore "flags" everything by fail-safe and measures nothing.
-The harness detects ``review_provider == "mock"`` and refuses to report the run as
+PASS). A mock run therefore flags every Stage-1-routed item by fail-safe, but a
+Stage-2 (readability) item still resolves to PASS and can show as a spurious miss;
+either way, a mock run measures nothing about real classifier discrimination. The
+harness detects ``review_provider == "mock"`` and refuses to report the run as
 evidence: it prints a prominent notice and exits non-zero regardless of the apparent
 catch-rate. A real evaluation needs a live review model::
 
@@ -21,7 +23,10 @@ catch-rate. A real evaluation needs a live review model::
 
 Live providers read their credential from the environment; for local runs the
 harness sources the gitignored ``.env`` (``--env-file``), exactly like the yield
-harness. The mock default keeps CI and casual runs free of network I/O.
+harness. The mock default keeps CI and casual runs free of network I/O. A live
+``--review-provider`` also needs a Stage-0 classifier credential (either
+``OPENAI_API_KEY`` or ``PERSPECTIVE_API_KEY``); see ``main()`` for how a missing
+one is surfaced.
 """
 
 from __future__ import annotations
@@ -33,10 +38,10 @@ import os
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ProjectBaseError, ValidationError
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.moderation.review_provider import (
@@ -60,10 +65,22 @@ __all__ = [
 # Verdict severity, low to high. "routed to a human" is FLAG or stronger.
 _VERDICT_RANK: dict[str, int] = {"pass": 0, "advisory": 1, "flag": 2, "block": 3}
 
+# The fixed set of statuses classify_item ever constructs, and the review-provider
+# names this harness accepts. Both are internally controlled (never round-tripped
+# from untrusted corpus JSON), so a Literal catches a typo at the call site instead
+# of only at runtime.
+ItemStatus = Literal[
+    "caught", "missed", "gap", "skipped", "control_ok", "control_over_block"
+]
+ReviewProviderName = Literal["mock", "openrouter", "ollama"]
+
 # Stage-2 (readability) needs a Flesch-Kincaid grade target; the corpus items are
 # banded, not grade-tagged, so map each band to a representative grade for the probe.
-# Approximate by design: the Stage-2 corpus item is far outside any reasonable band,
-# so the exact target does not change the flag outcome.
+# #ASSUME: data integrity: the mapped grade is approximate by design. The current
+# Stage-2 corpus item is far outside any reasonable band, so the exact target does
+# not change its flag outcome.
+# #VERIFY: if a future Stage-2 item sits close to a band boundary, confirm the
+# approximation still doesn't flip caught/missed before trusting its result.
 _BAND_GRADE: dict[str, float] = {
     "3-5": 0.5,
     "5-8": 2.0,
@@ -129,7 +146,7 @@ class ItemOutcome:
 
     item_id: str
     taxonomy_class: str
-    status: str
+    status: ItemStatus
     expected: str
     observed: tuple[str, ...]
     note: str
@@ -269,8 +286,8 @@ async def _observe_item(
         non-PII items, and a bool for PII-guard items.
     """
     target = _as_str(item.get("target"))
+    guarded = PiiGuardedProvider(review_provider, forbidden=_pii_context_of(item))
     if target == "pii_guard":
-        guarded = PiiGuardedProvider(review_provider, forbidden=_pii_context_of(item))
         passage = _as_str(item.get("passage"))
         try:
             _ = await guarded.complete(system="", prompt=passage, max_tokens=16)
@@ -278,27 +295,40 @@ async def _observe_item(
             return [], True
         return [], False
 
+    # #ASSUME: security: production (moderation/pipeline.py) always routes Stage
+    # 1/2 calls through a PiiGuardedProvider, never the bare review provider. This
+    # probe must match that topology so a guard regression would show up here too,
+    # not just in production.
+    # #VERIFY: guarded, not review_provider, is passed to both stage calls below.
     nodes = _nodes_of(item)
     stage = item.get("target_stage")
     band = _as_str(item.get("age_band"))
     if stage == 2:
         target_grade = _BAND_GRADE.get(band, 4.0)
         findings = await run_readability_stage(
-            provider=review_provider,
+            provider=guarded,
             nodes=nodes,
             reading_target=target_grade,
             tolerance=_READABILITY_TOLERANCE,
             max_tokens=_PROBE_MAX_TOKENS,
         )
-    else:
+    elif stage in (1, "aggregate"):
         # Stage 1 (per-node safety) covers both target_stage == 1 and the
         # aggregate (known-gap) items, which are run per node to demonstrate the gap.
         findings = await run_safety_stage(
-            provider=review_provider,
+            provider=guarded,
             nodes=nodes,
             age_band=band,
             max_tokens=_PROBE_MAX_TOKENS,
         )
+    else:
+        # #ASSUME: data integrity: target_stage is hand-authored corpus JSON with no
+        # schema validation on load. A typo (e.g. "2" instead of 2) must not silently
+        # misroute an item into the wrong probe and corrupt its scored outcome.
+        # #VERIFY: test_target_stage_type_mismatch_raises exercises this branch.
+        item_id = _as_str(item.get("id")) or "<unknown>"
+        msg = f"item {item_id!r} has an unrecognized target_stage: {stage!r}"
+        raise ValidationError(msg)
     return [f.verdict.value for f in findings], None
 
 
@@ -307,16 +337,24 @@ class CorpusReport:
     """Aggregate result of an adversarial corpus run.
 
     Attributes:
-        is_evidence: ``False`` for a mock run (fail-safe artifacts, not a measure).
         review_provider: The provider name the run used.
         outcomes: One :class:`ItemOutcome` per corpus item.
         per_class: ``{class: {status: count}}`` rollup.
+
+    ``is_evidence`` is deliberately not a stored field: this harness's entire
+    purpose is to never let a mock run masquerade as evidence, so that fact is
+    derived from ``review_provider`` rather than an independently-settable value
+    that could drift out of sync with it.
     """
 
-    is_evidence: bool
-    review_provider: str
+    review_provider: ReviewProviderName
     outcomes: list[ItemOutcome]
     per_class: dict[str, dict[str, int]]
+
+    @property
+    def is_evidence(self) -> bool:
+        """``False`` for a mock run (fail-safe artifacts, not a measure)."""
+        return self.review_provider != "mock"
 
 
 def _rollup(outcomes: Sequence[ItemOutcome]) -> dict[str, dict[str, int]]:
@@ -328,11 +366,26 @@ def _rollup(outcomes: Sequence[ItemOutcome]) -> dict[str, dict[str, int]]:
     return rollup
 
 
+def _catch_rate(status_counts: Mapping[str, int]) -> float | None:
+    """Return the caught/(caught+missed) rate for one class's status counts.
+
+    Returns ``None`` when the class has no caught-or-missed item to score (for
+    example a class made up only of ``gap``/``skipped``/control items), since a
+    rate would be undefined rather than zero.
+    """
+    caught = status_counts.get("caught", 0)
+    missed = status_counts.get("missed", 0)
+    total = caught + missed
+    if total == 0:
+        return None
+    return caught / total
+
+
 async def run_corpus(
     items: Sequence[Mapping[str, object]],
     review_provider: ReviewProvider,
     *,
-    review_provider_name: str,
+    review_provider_name: ReviewProviderName,
 ) -> CorpusReport:
     """Run every corpus item through its probe and classify the outcome.
 
@@ -352,7 +405,6 @@ async def run_corpus(
         observed, guard_raised = await _observe_item(item, review_provider)
         outcomes.append(classify_item(item, observed, guard_raised=guard_raised))
     return CorpusReport(
-        is_evidence=review_provider_name != "mock",
         review_provider=review_provider_name,
         outcomes=outcomes,
         per_class=_rollup(outcomes),
@@ -425,15 +477,19 @@ def _print_report(report: CorpusReport) -> None:
     if not report.is_evidence:
         print()
         print("!!! MOCK RUN: NOT EVIDENCE !!!")
-        print("The mock review provider returns fail-safe verdicts, so every")
-        print("passage 'flags' by default and no real discrimination is measured.")
+        print("The mock review provider returns fail-safe verdicts (Stage 1 -> FLAG,")
+        print("soft stages -> PASS), so results are deterministic artifacts of that")
+        print("fail-safe mapping, not real classifier discrimination.")
         print("Re-run with --review-provider openrouter (or ollama) for a real result.")
         print()
     print(f"Items: {len(report.outcomes)}")
     print()
-    print("Per-class rollup (status counts):")
+    print("Per-class rollup (status counts and catch-rate):")
     for tax in sorted(report.per_class):
-        print(f"  {tax}: {report.per_class[tax]}")
+        counts = report.per_class[tax]
+        rate = _catch_rate(counts)
+        rate_str = f"{rate:.0%}" if rate is not None else "N/A"
+        print(f"  {tax}: {counts} catch-rate={rate_str}")
     print()
     print("Per-item:")
     for out in report.outcomes:
@@ -448,6 +504,9 @@ def _write_results(out_path: Path, report: CorpusReport) -> None:
         "review_provider": report.review_provider,
         "is_evidence": report.is_evidence,
         "per_class": report.per_class,
+        "catch_rate": {
+            tax: _catch_rate(counts) for tax, counts in report.per_class.items()
+        },
         "items": [
             {
                 "id": out.item_id,
@@ -490,7 +549,12 @@ def _parse_args() -> argparse.Namespace:
         "--review-provider",
         default="mock",
         choices=("mock", "openrouter", "ollama"),
-        help="Review provider for the LLM stages (default: mock, not evidence).",
+        help=(
+            "Review provider for the LLM stages (default: mock, not evidence). "
+            "A live provider also needs a Stage-0 classifier credential "
+            "(OPENAI_API_KEY or PERSPECTIVE_API_KEY) in the environment or "
+            "--env-file."
+        ),
     )
     parser.add_argument(
         "--out",
@@ -512,7 +576,9 @@ def main() -> None:
 
     Loads the corpus, builds the review provider, runs the corpus, prints and
     optionally writes results. Exits 0 only for an evidence run with no misses and
-    no control over-blocks; exits 1 on a miss; exits 3 for a non-evidence mock run.
+    no control over-blocks; exits 1 on a miss; exits 2 if the settings or review
+    provider could not be built (for example a missing live-provider credential);
+    exits 3 for a non-evidence mock run.
     """
     args = _parse_args()
     corpus_path: Path = Path(str(args.corpus))  # pyright: ignore[reportAny]
@@ -526,14 +592,21 @@ def main() -> None:
 
     if provider_name != "mock":
         _load_env_file(env_path)
-    settings = Settings(review_provider=provider_name)  # type: ignore[arg-type]
-    review_provider, _independent = build_review_provider(
-        settings, generator_provider=None, generator_model=None
-    )
-
-    report = asyncio.run(
-        run_corpus(items, review_provider, review_provider_name=provider_name)
-    )
+    try:
+        settings = Settings.model_validate({"review_provider": provider_name})
+        review_provider, _independent = build_review_provider(
+            settings, generator_provider=None, generator_model=None
+        )
+        report = asyncio.run(
+            run_corpus(
+                items,
+                review_provider,
+                review_provider_name=cast("ReviewProviderName", provider_name),
+            )
+        )
+    except ProjectBaseError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(2)
     _print_report(report)
     if out_path is not None:
         _write_results(out_path, report)

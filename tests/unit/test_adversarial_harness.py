@@ -11,7 +11,11 @@ from __future__ import annotations
 
 import pytest
 
+from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.generation.provider import MockProvider
 from scripts.adversarial_harness import (
+    _catch_rate,
+    _observe_item,
     classify_item,
     is_caught,
     verdict_rank,
@@ -161,3 +165,37 @@ class TestClassifyItem:
         }
         out = classify_item(item, [], guard_raised=False)
         assert out.status == "missed"
+
+
+class TestCatchRate:
+    """The per-class caught/(caught+missed) rate used in reporting."""
+
+    def test_all_caught_is_full_rate(self) -> None:
+        """A class with only caught items scores 1.0."""
+        assert _catch_rate({"caught": 3}) == 1.0
+
+    def test_mixed_caught_and_missed(self) -> None:
+        """A class with two caught and one missed scores 2/3."""
+        assert _catch_rate({"caught": 2, "missed": 1}) == pytest.approx(2 / 3)
+
+    def test_no_caught_or_missed_is_undefined(self) -> None:
+        """A class made up only of gap/skipped/control items has no defined rate."""
+        assert _catch_rate({"gap": 1, "skipped": 2}) is None
+
+
+class TestObserveItemTargetStageGuard:
+    """``_observe_item`` must not silently misroute an unrecognized target_stage."""
+
+    @pytest.mark.asyncio
+    async def test_target_stage_type_mismatch_raises(self) -> None:
+        """A hand-authored corpus typo (e.g. a string stage) fails loud."""
+        item: dict[str, object] = {
+            "id": "C9",
+            "taxonomy_class": "C",
+            "executable": True,
+            "target_stage": "2",  # str, not the expected int 2 or "aggregate"
+            "age_band": "6-8",
+            "nodes": [{"id": "n1", "body": "hello"}],
+        }
+        with pytest.raises(ValidationError, match="unrecognized target_stage"):
+            _ = await _observe_item(item, MockProvider(responses=[]))
