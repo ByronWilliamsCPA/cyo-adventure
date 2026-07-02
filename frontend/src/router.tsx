@@ -5,12 +5,15 @@ import { createBrowserRouter } from 'react-router-dom'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
   ConsolePage,
+  GuardianAuthLayout,
   GuardianShell,
   IntakePage,
   KidShell,
   LibraryPage,
   LoginPage,
+  NotFoundPage,
   ReaderRoute,
+  RouteError,
   RouteFallback,
 } from './routeElements'
 
@@ -25,6 +28,14 @@ function suspended(element: ReactNode) {
  * module are shared. Each tree is a separate lazy chunk (routeElements.tsx)
  * so a kid device never downloads the guardian console's code, and vice versa.
  *
+ * The Supabase-backed AuthProvider is scoped to the guardian subtree via the
+ * lazy GuardianAuthLayout, so the kid surface never imports
+ * @supabase/supabase-js and does not require the VITE_SUPABASE_* env vars.
+ *
+ * Both trees carry an errorElement so a lazy-chunk load failure or a missing
+ * guardian env var degrades to an app-consistent fallback rather than a blank
+ * screen.
+ *
  * Exported separately from `router` so tests can build a MemoryRouter
  * against the same route config instead of driving jsdom's real History API.
  */
@@ -32,6 +43,7 @@ export const routes = [
   {
     path: '/',
     element: suspended(<KidShell />),
+    errorElement: <RouteError />,
     children: [
       { index: true, element: suspended(<LibraryPage />) },
       {
@@ -41,22 +53,33 @@ export const routes = [
     ],
   },
   {
-    path: '/guardian/login',
-    element: suspended(<LoginPage />),
-  },
-  {
-    path: '/guardian',
-    element: <ProtectedRoute redirectTo="/guardian/login" allowedRoles={['guardian', 'admin']} />,
+    // Guardian subtree: the AuthProvider (and thus @supabase/supabase-js) is
+    // loaded here as a lazy chunk, so the kid surface above never imports it.
+    element: suspended(<GuardianAuthLayout />),
+    errorElement: <RouteError />,
     children: [
       {
-        element: suspended(<GuardianShell />),
+        path: '/guardian/login',
+        element: suspended(<LoginPage />),
+      },
+      {
+        path: '/guardian',
+        element: (
+          <ProtectedRoute redirectTo="/guardian/login" allowedRoles={['guardian', 'admin']} />
+        ),
         children: [
-          { index: true, element: suspended(<ConsolePage />) },
-          { path: 'intake', element: suspended(<IntakePage />) },
+          {
+            element: suspended(<GuardianShell />),
+            children: [
+              { index: true, element: suspended(<ConsolePage />) },
+              { path: 'intake', element: suspended(<IntakePage />) },
+            ],
+          },
         ],
       },
     ],
   },
+  { path: '*', element: <NotFoundPage /> },
 ]
 
 export const router = createBrowserRouter(routes)

@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthProvider } from '../auth/AuthContext'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
 
@@ -70,12 +69,13 @@ vi.mock('../auth/supabaseClient', () => ({
 }))
 
 function renderAt(initialPath: string) {
+  // No <AuthProvider> wrapper here: it is scoped to the guardian subtree via
+  // the lazy GuardianAuthLayout in `routes`, mirroring production (App.tsx
+  // renders only <RouterProvider>). The kid-surface tests below therefore
+  // exercise routes that never mount AuthProvider, which is the point of
+  // scoping it; the guardian tests get it through the route tree.
   const router = createMemoryRouter(routes, { initialEntries: [initialPath] })
-  return render(
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
-  )
+  return render(<RouterProvider router={router} />)
 }
 
 beforeEach(() => {
