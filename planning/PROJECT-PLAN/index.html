@@ -4121,7 +4121,9 @@ guardian approval. See <a href="../adr/adr-005-mandatory-human-approval/">ADR-00
 <ul>
 <li>No story reaches a child profile without a recorded guardian approval (verified by attempting
   every transition path).</li>
-<li>Adversarial briefs are flagged and cannot be auto-published.</li>
+<li>🔄 Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish" holds;
+  the "flag and route to human review" half is reframed and only partially met (see
+  <a href="../safety/adversarial-safety-evaluation/">adversarial-safety-evaluation.md</a>).</li>
 </ul>
 <p><strong>Quality gates</strong>:</p>
 <ul class="task-list">
@@ -4129,8 +4131,20 @@ guardian approval. See <a href="../adr/adr-005-mandatory-human-approval/">ADR-00
       checks (critical paths)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
       cross-family guardian access)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Safety evaluation: adversarial concept briefs verified to flag moderation and route to
-      human review; no auto-publish path</li>
+<li>[~] Safety evaluation: adversarial concept briefs flag moderation and route to human review.
+      <strong>Partially met and reframed</strong> (see
+      <a href="../safety/adversarial-safety-evaluation/">adversarial-safety-evaluation.md</a>). "No
+      auto-publish path" holds (verified: nothing publishes without a human <code>approve</code>). The
+      "adversarial briefs flag and route to human review" claim is <strong>not backed by evidence</strong>
+      for the model-dependent classes (no live-model run has been executed) and is <strong>false on
+      two structural seams</strong>: the import path and the admin <code>POST /submit</code> endpoint reach a
+      publishable state with no moderation at all. Remaining to close the gate: (a) close the
+      two bypass seams; (b) surface an explicit "never screened" state on the review surface;
+      &copy; run the credentialed adversarial harness and archive per-class results. Under the
+      two-track model this gate is Track 1 (family) debt and a Track 2 (public launch) blocker:
+      the Kids Category / COPPA posture in <a href="../adr/adr-008-public-app-store-launch/">ADR-008</a>
+      makes an unbacked safety claim a compliance exposure, and P9-04 already mandates live
+      moderation in production</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No high or critical security findings (Bandit, Semgrep, pip-audit)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Ruff clean; BasedPyright strict clean</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Pre-commit green; all commits signed with conventional messages</li>
@@ -4379,6 +4393,24 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 </tr>
 </tbody>
 </table>
+<p><strong>Salvaged design notes</strong> (from the withdrawn first-release trust-boundary exploration; folded
+here as guidance, not as a competing ADR):</p>
+<ul>
+<li><strong>Admin as a guardian superset when real auth lands (relevant to P6-01/P6-04).</strong> Today the
+  <code>ADMIN</code> role resolves an empty profile set: the cross-family safety operator (ADR-005
+  amendment) is deliberately not a member of any family. When P6-01 produces <code>Principal</code> from a
+  real token, decide explicitly whether <code>ADMIN</code> should also inherit a guardian's family-scoped
+  powers (a role superset) or stay a pure reviewer with no family membership. The safer default
+  is to keep them disjoint (least privilege: an admin who is also a guardian holds two separate
+  principals), and to make that a conscious choice rather than an accident of how the empty
+  profile set is computed.</li>
+<li><strong>Approval freshness guard (relevant to P6-08).</strong> The parental gate re-auth wrapper should
+  carry into the backend: the <code>approve</code> transition is the highest-stakes action in the system,
+  so consider requiring a recent authentication (a bounded <code>auth_time</code> / re-auth freshness
+  window on the approve endpoint) so a long-lived or walked-away session cannot approve a story
+  hours later without re-proving the human. This pairs the frontend gate (P6-08) with a
+  server-side check rather than trusting the gate alone.</li>
+</ul>
 <p><strong>Acceptance criteria</strong>:</p>
 <ul>
 <li>A stranger can sign up with Apple or Google, receive their own family, and see no other
@@ -4920,6 +4952,20 @@ documents.</p>
 <td>3, 4a</td>
 </tr>
 <tr>
+<td>Moderation bypass seams: story reaches a publishable state unscreened</td>
+<td>M</td>
+<td>H</td>
+<td>The import path (<code>generation/import_story.py</code>) and the admin <code>POST /submit</code> (<code>api/approval.py</code>) reach <code>in_review</code>/publishable with no <code>moderation_report</code>; approve never checks one exists, and the review surface renders <code>summary=None</code> identically to screened-clean. Human approval still gates publish, but the approver sees no safety signal. Close per C3-SAFETY: run moderation on both paths (or block publish when <code>moderation_report is None</code>) and add an explicit "never screened" state to the review surface. Evidence and taxonomy in <a href="../safety/adversarial-safety-evaluation/"><code>safety/adversarial-safety-evaluation.md</code></a></td>
+<td>3, 4a</td>
+</tr>
+<tr>
+<td>Safety-gate claim unbacked by a live adversarial run</td>
+<td>M</td>
+<td>H</td>
+<td>The "adversarial briefs flag and route to human review" acceptance item has no live-model evidence (harness refuses mock verdicts as evidence). A Kids Category / COPPA public launch turns this into a compliance exposure. Close with the credentialed harness (per-class catch-rates archived); P9-04 already mandates live moderation in production</td>
+<td>3, 9</td>
+</tr>
+<tr>
 <td>Generation cost and latency</td>
 <td>M</td>
 <td>L</td>
@@ -4981,6 +5027,13 @@ documents.</p>
 <td>H</td>
 <td>Reuse of proven <code>Principal</code> model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary</td>
 <td>6</td>
+</tr>
+<tr>
+<td>Track 1 ships on the dev auth stub (<code>_extract_subject</code> trusts the bearer as a verified subject)</td>
+<td>M</td>
+<td>M</td>
+<td>Acceptable only inside a trusted household LAN: the stub is import-guarded to <code>environment == "local"</code> and every submitter is an implicitly trusted family member; no exposure beyond the LAN until Phase 5 ingress (Pangolin) and Phase 6 real JWT validation (P6-01) retire the stub. Documented so the interim trust assumption is explicit, not silent</td>
+<td>4a, 5, 6</td>
 </tr>
 <tr>
 <td>LLM cost abuse at public scale</td>
@@ -5360,7 +5413,7 @@ and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 04:22:00 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 07:04:49 UTC">July 2, 2026</span>
   </span>
 
     
