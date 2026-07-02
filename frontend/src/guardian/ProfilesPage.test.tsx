@@ -42,6 +42,7 @@ describe('ProfilesPage', () => {
     renderPage()
     expect(await screen.findByText('Reader A')).toBeInTheDocument()
     expect(screen.getByText(/Ages 10-13/)).toBeInTheDocument()
+    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
   })
 
   it('creates a profile through the dialog', async () => {
@@ -56,7 +57,7 @@ describe('ProfilesPage', () => {
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(mockPost).toHaveBeenCalledWith(
       '/v1/profiles',
-      expect.objectContaining({ display_name: 'Nova', age_band: '5-8' })
+      expect.objectContaining({ display_name: 'Nova', age_band: '5-8', avatar: null })
     )
     expect(await screen.findByText('Nova')).toBeInTheDocument()
   })

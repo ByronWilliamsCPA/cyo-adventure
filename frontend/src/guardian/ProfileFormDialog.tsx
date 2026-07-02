@@ -53,7 +53,12 @@ export function ProfileFormDialog({
     }
   }
 
-  const valid = displayName.trim().length > 0 && Number.isFinite(Number(cap))
+  const capNum = Number(cap)
+  const valid =
+    displayName.trim().length > 0 &&
+    Number.isFinite(capNum) &&
+    capNum >= 0 &&
+    capNum <= 99
 
   return (
     <Dialog

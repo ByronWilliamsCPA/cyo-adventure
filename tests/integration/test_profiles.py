@@ -207,3 +207,38 @@ async def test_update_rejects_malformed_uuid(client: AsyncClient, seed: Seed) ->
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_ignores_explicit_null_on_non_avatar_fields(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Explicit null on a non-avatar field is silently ignored (is not None gate)."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"age_band": None},
+        headers=guardian,
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["age_band"] == "5-8"  # unchanged, null was ignored
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_rejects_unknown_fields(client: AsyncClient, seed: Seed) -> None:
+    """extra=forbid rejects unmodeled body fields on PATCH too."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"family_id": "x"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
