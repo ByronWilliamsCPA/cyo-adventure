@@ -1,5 +1,19 @@
 {
   "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@2.2.4"
+      ]
+    },
+    "sonarqube": {
+      "type": "http",
+      "url": "http://localhost:8090/mcp",
+      "headers": {
+        "Authorization": "Bearer ${SONARQUBE_TOKEN}"
+      }
+    },
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=cvrnaydpzijtszfbsraq&read_only=true&features=database,docs,development"
