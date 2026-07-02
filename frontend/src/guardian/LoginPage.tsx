@@ -6,7 +6,7 @@ import './guardian.css'
 
 /**
  * Guardian sign-in via Supabase Auth (ADR-009): native Apple and Google.
- * There is no dev-stub form here even locally — Supabase's OAuth flow works
+ * There is no dev-stub form here even locally; Supabase's OAuth flow works
  * the same in every environment, unlike the backend's local-only bearer stub.
  */
 export function LoginPage() {

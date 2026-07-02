@@ -103,9 +103,10 @@ browser UI, which is Phase 4a (C4a-4).
 ### Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
 
 **Goal**: make the whole flow reachable by a parent through the browser. This is the
-**largest remaining build** because the frontend has no app shell. Design groundwork is in
-place: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
-claude.ai/design (#44). The build (routing, auth context, real components) has not started.
+**largest remaining build** because the frontend started with no app shell. Design groundwork
+was laid first: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
+claude.ai/design (#44). The app shell itself (C4a-1: routing plus a Supabase-backed auth
+context) is now in place; the remaining feature UIs (C4a-2 through C4a-6) build on it.
 
 | ID | Workstream | Notes |
 |----|-----------|-------|
