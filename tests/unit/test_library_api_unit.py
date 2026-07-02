@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import math
 import uuid
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, cast
 
 import pytest
@@ -23,6 +24,7 @@ from cyo_adventure.api.library import (
     get_storybook_version,
     list_library,
 )
+from cyo_adventure.api.schemas import LibraryItem, LibraryProgress
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -622,3 +624,44 @@ class TestGetStorybookVersion:
 
         with pytest.raises(AuthorizationError):
             await get_storybook_version("story-1", 1, principal, session)
+
+
+class TestLibraryItemEnrichmentFields:
+    """New per-profile fields default to safe empties for callers that omit them."""
+
+    @pytest.mark.unit
+    def test_new_fields_default(self) -> None:
+        item = LibraryItem(
+            id="s1",
+            title="T",
+            version=1,
+            age_band="6-8",
+            tier=1,
+            reading_level_target=2.0,
+        )
+        assert item.node_count == 0
+        assert item.rating is None
+        assert item.progress is None
+
+    @pytest.mark.unit
+    def test_progress_round_trip(self) -> None:
+        progress = LibraryProgress(
+            current_node="n3",
+            nodes_visited=4,
+            updated_at=datetime(2026, 7, 1, tzinfo=UTC),
+        )
+        item = LibraryItem(
+            id="s1",
+            title="T",
+            version=2,
+            age_band="6-8",
+            tier=1,
+            reading_level_target=2.0,
+            node_count=12,
+            rating=5,
+            progress=progress,
+        )
+        assert item.progress is not None
+        assert item.progress.nodes_visited == 4
+        assert item.node_count == 12
+        assert item.rating == 5
