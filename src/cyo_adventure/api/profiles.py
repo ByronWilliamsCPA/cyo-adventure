@@ -9,12 +9,23 @@ Picker and the guardian management page need.
 
 from __future__ import annotations
 
+import uuid
+
 from fastapi import APIRouter
 from sqlalchemy import select
 
-from cyo_adventure.api.deps import Context, Principal
-from cyo_adventure.api.schemas import ProfileCreateBody, ProfileListView, ProfileView
-from cyo_adventure.core.exceptions import AuthorizationError
+from cyo_adventure.api.deps import Context, Principal, authorize_profile
+from cyo_adventure.api.schemas import (
+    ProfileCreateBody,
+    ProfileListView,
+    ProfileUpdateBody,
+    ProfileView,
+)
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from cyo_adventure.db.models import ChildProfile
 
 router = APIRouter(prefix="/api/v1", tags=["profiles"])
@@ -118,4 +129,62 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     # back the server-generated id and timestamp (same pattern as ratings.py).
     await ctx.session.flush()
     await ctx.session.refresh(row, ["created_at"])
+    return _view(row)
+
+
+def _parse_uuid(raw: str, field: str) -> uuid.UUID:
+    """Parse a UUID field, raising a 422-mapped error on bad input."""
+    try:
+        return uuid.UUID(raw)
+    except ValueError as exc:
+        msg = f"{field} must be a UUID"
+        raise ValidationError(msg, field=field, value=raw) from exc
+
+
+@router.patch("/profiles/{profile_id}")
+async def update_profile(
+    profile_id: str, body: ProfileUpdateBody, ctx: Context
+) -> ProfileView:
+    """Partially update a child profile in the guardian's own family.
+
+    Args:
+        profile_id: The profile to update.
+        body: The fields to change; omitted fields are untouched.
+        ctx: The request context (principal + unit-of-work session).
+
+    Returns:
+        ProfileView: The updated profile.
+
+    Raises:
+        ValidationError: If profile_id is not a UUID.
+        AuthorizationError: If the caller is not a guardian, or the profile is
+            not in the caller's family (or does not exist; both are 403 so the
+            endpoint leaks nothing about other families' ids).
+        ResourceNotFoundError: If the row vanished between authorization and
+            load (concurrent delete).
+    """
+    _require_guardian(ctx.principal)
+    parsed = _parse_uuid(profile_id, "profile_id")
+    # #CRITICAL: security: authorize_profile checks the id against the
+    # principal's own family set, so cross-family ids and unknown ids are both
+    # 403 (no existence oracle).
+    # #VERIFY: test_profiles.py::test_guardian_cannot_update_other_familys_profile.
+    authorize_profile(ctx.principal, parsed)
+    row = await ctx.session.get(ChildProfile, parsed)
+    if row is None:
+        msg = f"profile '{profile_id}' not found"
+        raise ResourceNotFoundError(msg)
+    fields = body.model_fields_set
+    if body.display_name is not None:
+        row.display_name = body.display_name
+    if body.age_band is not None:
+        row.age_band = body.age_band.value
+    if body.reading_level_cap is not None:
+        row.reading_level_cap = body.reading_level_cap
+    if body.tts_enabled is not None:
+        row.tts_enabled = body.tts_enabled
+    if "avatar" in fields:
+        # Explicit null clears; omitted leaves unchanged (model_fields_set).
+        row.avatar = body.avatar
+    await ctx.session.flush()
     return _view(row)

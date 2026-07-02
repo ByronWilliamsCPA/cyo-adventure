@@ -122,3 +122,88 @@ async def test_create_rejects_unknown_fields(client: AsyncClient, seed: Seed) ->
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_guardian_updates_caps_and_clears_avatar(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """PATCH updates provided fields; explicit null clears the avatar."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "avatar": "fox"},
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}",
+        json={"reading_level_cap": 4.5, "age_band": "8-11", "avatar": None},
+        headers=guardian,
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["reading_level_cap"] == 4.5
+    assert body["age_band"] == "8-11"
+    assert body["avatar"] is None
+    assert body["display_name"] == "Nova"  # untouched field survives
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_omitting_avatar_keeps_it(client: AsyncClient, seed: Seed) -> None:
+    """A PATCH that omits avatar leaves the stored avatar unchanged."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "avatar": "owl"},
+        headers=guardian,
+    )
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"tts_enabled": True}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["avatar"] == "owl"
+    assert resp.json()["tts_enabled"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_guardian_cannot_update_other_familys_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Cross-family PATCH is a 403 (authorize_profile), leaking nothing."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.other_child_profile_id}",
+        json={"reading_level_cap": 1.0},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_cannot_update_profile(client: AsyncClient, seed: Seed) -> None:
+    """A child may not change their own caps."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"reading_level_cap": 99.0},
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_rejects_malformed_uuid(client: AsyncClient, seed: Seed) -> None:
+    """A non-UUID path id is a 422 from _parse_uuid."""
+    resp = await client.patch(
+        "/api/v1/profiles/not-a-uuid",
+        json={"tts_enabled": True},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
