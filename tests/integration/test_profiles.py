@@ -64,3 +64,61 @@ async def test_profileless_child_gets_empty_list(
     resp = await client.get("/api/v1/profiles", headers=auth("child-noprofile"))
     assert resp.status_code == 200, resp.text
     assert resp.json()["profiles"] == []
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_guardian_creates_profile(client: AsyncClient, seed: Seed) -> None:
+    """A guardian creates a profile; it is echoed back and then listed."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "  Nova  ", "age_band": "5-8", "avatar": "fox"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["display_name"] == "Nova"  # whitespace stripped
+    assert body["age_band"] == "5-8"
+    assert body["reading_level_cap"] == 99.0
+    assert body["avatar"] == "fox"
+    assert body["tts_enabled"] is False
+
+    listed = await client.get("/api/v1/profiles", headers=auth(seed.guardian_token))
+    names = [p["display_name"] for p in listed.json()["profiles"]]
+    assert names == ["Reader A", "Nova"]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_cannot_create_profile(client: AsyncClient, seed: Seed) -> None:
+    """A child token is rejected with 403 before any write."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_unknown_age_band(client: AsyncClient, seed: Seed) -> None:
+    """An age band outside the six-band vocabulary is a 422."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "4-6"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_unknown_fields(client: AsyncClient, seed: Seed) -> None:
+    """extra=forbid rejects unmodeled body fields."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "family_id": "x"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
