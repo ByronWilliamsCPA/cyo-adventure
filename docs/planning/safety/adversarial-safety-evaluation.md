@@ -46,9 +46,10 @@ This evaluation was produced in an environment with `generation_provider = "mock
 and `review_provider = "mock"`, no OpenAI/Perspective classifier keys, and no
 reachable local Ollama. The mock review provider returns `"{}"` for every call,
 which the stage parser maps to the fail-safe verdict (Stage 1 -> FLAG, soft stages
--> PASS). A mock run therefore "flags" every passage by fail-safe and measures
-nothing about real classifier discrimination. **No live-model adversarial run has
-been executed.** The behavioral catch-rates below are targets for a future
+-> PASS). A mock run therefore flags every Stage-1-routed item by fail-safe, but a
+Stage-2 (readability) item still resolves to PASS and can show as a spurious miss;
+either way, a mock run measures nothing about real classifier discrimination.
+**No live-model adversarial run has been executed.** The behavioral catch-rates below are targets for a future
 credentialed run, not results. Treating a mock run as evidence would manufacture
 exactly the false confidence this document exists to remove.
 
