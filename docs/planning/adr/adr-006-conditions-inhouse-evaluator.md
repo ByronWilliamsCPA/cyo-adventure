@@ -59,8 +59,9 @@ up: the JavaScript package has sat near-dormant for roughly two years, and the P
 package naming is muddled across stale and forked variants. The shape (for example,
 `{"==": [{"var": "has_lantern"}, true]}`) is still the right interchange format: an LLM
 emits a JSON tree more reliably than an expression string, and it needs no parser.
-Because every variable carries an `initial` value, `var` always resolves against
-populated state, so there is no missing-variable case.
+Because every variable carries an `initial` value, published stories should not expose
+a missing-variable case; the runtime still falls back to false defensively for
+malformed state.
 
 ## Options Considered
 

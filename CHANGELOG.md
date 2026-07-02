@@ -126,7 +126,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   boolean literals, and every story int literal (condition literals,
   `Variable.initial/min/max`, `Effect.value`) is bounded to |n| <= 1e9
   (`MAX_ABS_STORY_INT`) so exact Python ints and the client's IEEE-754 doubles
-  can never disagree about a value's identity; the reading-state floor rejects
+  stay exact for the bounded literal space; the reading-state floor rejects
   forged saves above 2^53 - 1. Full divergence matrix and maintenance contract
   in `docs/planning/evaluator-runtime-equivalence.md`; spec pseudocode and
   ADR-006's operator count corrected.

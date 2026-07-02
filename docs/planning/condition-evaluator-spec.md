@@ -103,8 +103,8 @@ literal. Three shape rules close divergence classes between the two evaluators (
 3. **Int literals are bounded to |n| <= 1,000,000,000** (`MAX_ABS_STORY_INT`). Python
    evaluates integers exactly at any size; the TypeScript player computes in IEEE-754
    doubles, exact only to 2^53 - 1. The bound (shared with variable declarations and
-   effect values) keeps every engine-reachable value float64-exact with a wide margin,
-   so the two implementations can never disagree about a value's identity.
+   effect values) keeps schema-representable literals float64-exact with a wide
+   margin and materially reduces divergence risk for engine-reachable values.
 
 ---
 
