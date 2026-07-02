@@ -13,9 +13,11 @@ type PickerState =
 
 /**
  * Kid-surface entry point (wireframe 4.1): a 2-column avatar grid; picking a
- * profile lands the child in their own library. The book-status pill ships
- * with C4a-3 (it needs library/reading-state data). The "Add Child" tile
- * routes to the auth-gated guardian surface, so kids cannot create profiles.
+ * profile lands the child in their own library. The book-status pill
+ * (wireframe 4.1) is deferred: a child principal cannot read sibling
+ * profiles' libraries (authorize_profile), so the pill needs a bulk status
+ * endpoint; tracked for C4a-6. The "Add Child" tile routes to the auth-gated
+ * guardian surface, so kids cannot create profiles.
  */
 export function ProfilePickerPage() {
   const api = useApi()

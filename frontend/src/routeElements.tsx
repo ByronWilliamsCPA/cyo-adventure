@@ -57,7 +57,7 @@ export const IntakePage = lazy(() =>
 )
 export const KidShell = lazy(() => import('./kid/KidShell').then((m) => ({ default: m.KidShell })))
 export const LibraryPage = lazy(() =>
-  import('./kid/LibraryPage').then((m) => ({ default: m.LibraryPage }))
+  import('./library/LibraryPage').then((m) => ({ default: m.LibraryPage }))
 )
 export const ProfilePickerPage = lazy(() =>
   import('./kid/ProfilePickerPage').then((m) => ({ default: m.ProfilePickerPage }))

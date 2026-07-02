@@ -95,9 +95,10 @@ describe('router: kid surface', () => {
     expect(await screen.findByText(/No profiles yet/i)).toBeInTheDocument()
   })
 
-  it('renders the library stub at /library/:profileId', async () => {
+  it('renders the library page at /library/:profileId', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [] } })
     renderAt('/library/p1')
-    expect(await screen.findByText(/My Books/)).toBeInTheDocument()
+    expect(await screen.findByText(/No books yet/i)).toBeInTheDocument()
   })
 
   it('renders the reader for a valid story route', async () => {

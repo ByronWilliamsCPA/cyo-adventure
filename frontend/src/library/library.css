@@ -7,6 +7,12 @@
   margin: 0 auto;
 }
 
+.library__status {
+  text-align: center;
+  color: var(--color-ink-muted);
+  padding: var(--space-8) var(--space-4);
+}
+
 .library__heading {
   font-family: var(--font-sans);
   font-size: var(--text-xl);
