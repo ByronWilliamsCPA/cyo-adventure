@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-010-modal-review-and-gated-generation/">
       
       
-        <link rel="prev" href="../roadmap/">
-      
-      
-        <link rel="next" href="adr-001-story-format-json-storybook/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Architecture Decision Records - CYO Adventure</title>
+        <title>ADR-010: Modal for moderation review and an evidence-gated generation leg - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#what-are-adrs" class="md-skip">
+        <a href="#adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture Decision Records
+              ADR-010: Modal for moderation review and an evidence-gated generation leg
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,13 +362,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -825,7 +819,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -876,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -911,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -946,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -981,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1016,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1122,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1157,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1192,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1227,7 +1221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1331,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1366,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1401,7 +1395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1440,8 +1434,6 @@
       
   
   
-    
-  
   
   
     
@@ -1465,23 +1457,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1506,13 +1497,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1532,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1567,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1602,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1637,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1669,8 +1660,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1698,21 +1687,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1737,13 +1725,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_7_6" id="__nav_7_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1763,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1798,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1833,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1868,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1903,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1938,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2052,7 +2040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2087,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2122,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2157,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2226,7 +2214,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2277,7 +2265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2329,6 +2317,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2337,10 +2327,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-are-adrs" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Are ADRs?
+        TL;DR
       
     </span>
   </a>
@@ -2348,10 +2338,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Index
+        Context
       
     </span>
   </a>
@@ -2359,49 +2349,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-adrs" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating ADRs
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Creating ADRs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#automatic-generation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Automatic Generation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#manual-creation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Manual Creation
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#naming-convention" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Naming Convention
+        Decision
       
     </span>
   </a>
@@ -2409,10 +2360,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-create-an-adr" class="md-nav__link">
+  <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to Create an ADR
+        Consequences
       
     </span>
   </a>
@@ -2420,10 +2371,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+  <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Lifecycle
+        Validation
       
     </span>
   </a>
@@ -2431,21 +2382,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#template-reference" class="md-nav__link">
+  <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Template Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#more-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        More Information
+        Related
       
     </span>
   </a>
@@ -2472,132 +2412,83 @@
   
 
 
-  <h1>Overview</h1>
-
-<p>This directory contains Architecture Decision Records (ADRs) for CYO Adventure.</p>
-<h2 id="what-are-adrs">What Are ADRs?<a class="headerlink" href="#what-are-adrs" title="Permanent link">&para;</a></h2>
-<p>ADRs document significant architectural decisions along with their context and consequences. They help:</p>
+<h1 id="adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg">ADR-010: Modal for moderation review and an evidence-gated generation leg<a class="headerlink" href="#adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Proposed
+<strong>Date</strong>: 2026-07-02
+<strong>Amends</strong>: <a href="../adr-003-frontier-llm-generation/">ADR-003</a> (provider strategy: adds a
+self-hosted review backend and an experimental generation leg; the frontier-primary
+decision stands until the promotion gate below is cleared)</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Build the moderation review backend (already reserved as <code>review_provider = "modal"</code>,
+deferred at slice 2b) on Modal-served open-weight models, and add a <code>ModalProvider</code>
+generation leg behind the existing <code>GenerationProvider</code> seam to test vLLM
+guided/constrained decoding against the known Tier-2 structural failures. OpenRouter
+(Claude) remains the generation primary; the Modal leg is promoted to primary only if it
+clears the existing 20-brief, &gt;=60% yield gate at an acceptable measured cost per story.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>Modal offers arbitrary code at the inference endpoint (any open-weight model, vLLM
+guided decoding that can force schema-valid JSON at the decoder level) and volume-cached
+model weights for tolerable cold starts. Two facts frame how to use that:</p>
 <ul>
-<li>Prevent architectural drift during AI-assisted development</li>
-<li>Provide rationale for technical choices</li>
-<li>Enable future developers to understand why decisions were made</li>
-<li>Maintain consistency across coding sessions</li>
+<li><strong>The generation primary is measured, not assumed.</strong> Phase 2b recorded 70% yield
+  (14/20) on <code>anthropic/claude-haiku-4.5</code> via OpenRouter at cents per story, with
+  Tier-2 the residual weakness (3/7, structural failures). Replacing a measured
+  primary with self-hosted open weights re-opens the yield question and makes a solo
+  operator the inference owner on the revenue path, against ADR-009's
+  minimize-operations thesis. Self-hosted GPU-seconds per story also plausibly cost
+  10-50x Haiku's token bill, and generation is metered revenue (credit packs), so cost
+  per story is margin.</li>
+<li><strong>The review leg is where self-hosting is a design win.</strong> The reviewer should be a
+  different model family than the generator (independent blind spots); review is
+  bursty, suiting scale-to-zero serverless GPU; quality demands are lower than
+  generation; and self-hosting means no additional third-party model vendor ever sees
+  children's content in review, strengthening the privacy-model posture. The config
+  seam for this already exists and currently raises as deferred.</li>
 </ul>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="adr-001-story-format-json-storybook/">ADR-001</a></td>
-<td>Story format is a versioned JSON Storybook graph</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-002-client-pwa/">ADR-002</a></td>
-<td>Client is a Progressive Web App</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-003-frontier-llm-generation/">ADR-003</a></td>
-<td>Frontier LLM for generation, local model as fallback</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-004-homelab-first-deployment/">ADR-004</a></td>
-<td>Homelab-first deployment, Azure as the scale-out alternative</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-005-mandatory-human-approval/">ADR-005</a></td>
-<td>Mandatory human approval before any story reaches a child</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-006-conditions-inhouse-evaluator/">ADR-006</a></td>
-<td>Conditions use the JSONLogic shape with an in-house whitelisted evaluator</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-007-raw-output-retention/">ADR-007</a></td>
-<td>Raw LLM output retention policy for GenerationJob.report</td>
-<td>Proposed</td>
-<td>2026-06-29</td>
-</tr>
-<tr>
-<td><a href="adr-008-public-app-store-launch/">ADR-008</a></td>
-<td>Public App Store launch with tiered subscription monetization</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-009-supabase-platform/">ADR-009</a></td>
-<td>Supabase as the managed platform for auth, database, and storage</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-010-modal-review-and-gated-generation/">ADR-010</a></td>
-<td>Modal for moderation review and an evidence-gated generation leg</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-</tbody>
-</table>
-<h2 id="creating-adrs">Creating ADRs<a class="headerlink" href="#creating-adrs" title="Permanent link">&para;</a></h2>
-<h3 id="automatic-generation">Automatic Generation<a class="headerlink" href="#automatic-generation" title="Permanent link">&para;</a></h3>
-<p>Run <code>/plan &lt;project description&gt;</code> to generate initial ADRs alongside other planning documents.</p>
-<h3 id="manual-creation">Manual Creation<a class="headerlink" href="#manual-creation" title="Permanent link">&para;</a></h3>
-<p>When making a new architectural decision:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Create an ADR for [decision topic].
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Use template: .claude/skills/project-planning/templates/adr-template.md
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Save to: docs/planning/adr/adr-NNN-[decision-slug].md
-</span></code></pre></div>
-<h2 id="naming-convention">Naming Convention<a class="headerlink" href="#naming-convention" title="Permanent link">&para;</a></h2>
-<p>ADRs follow this naming pattern:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>adr-NNN-short-description.md
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Examples:
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- adr-001-database-choice.md
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>- adr-002-auth-strategy.md
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>- adr-003-api-design.md
-</span></code></pre></div>
-<h2 id="when-to-create-an-adr">When to Create an ADR<a class="headerlink" href="#when-to-create-an-adr" title="Permanent link">&para;</a></h2>
-<p>Create an ADR when:</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Moderation review backend on Modal (executes the deferred slice 2b).</strong> Implement
+   the <code>review_provider = "modal"</code> backend in <code>moderation/review_provider.py</code> against a
+   Modal-served open-weight reviewer; weights prestaged on a Modal volume. The
+   OpenRouter reviewer remains the configured fallback. Stage-0 deterministic
+   classifiers stay mandatory (existing config invariant).</li>
+<li><strong>Experimental <code>ModalProvider</code> generation leg, not on the public path.</strong> A new
+   adapter behind <code>GenerationProvider</code>, using vLLM guided decoding targeted at the
+   Tier-2 structural failure modes. It runs offline experiments only.</li>
+<li><strong>Promotion gate.</strong> The Modal leg may become generation primary only after: (a) the
+   20-brief yield harness re-run clears &gt;=60% overall with Tier-2 no worse than the
+   incumbent, and (b) measured cost per accepted story is recorded and accepted against
+   credit-pack pricing. Promotion itself is a config change (<code>generation_provider</code>),
+   per ADR-003's config-pinned model policy.</li>
+<li><strong>Worker hosting</strong>: Modal is a candidate, alongside the container host, in the
+   time-boxed P9-03 evaluation. No commitment now.</li>
+</ol>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Choosing technology stack or framework</li>
-<li>Deciding on architectural patterns</li>
-<li>Selecting third-party services or libraries</li>
-<li>Making security or performance trade-offs</li>
-<li>Any decision that would be expensive to reverse</li>
+<li>✅ Reviewer independence and child-content privacy improve; the Tier-2 yield lever
+  gets a real experiment with decoder-level structure enforcement.</li>
+<li>✅ The revenue path keeps its measured 70% provider until evidence says otherwise.</li>
+<li>⚠️ Modal is a second serverless vendor. Mitigation: review usage is bursty (near-zero
+  idle cost), and the OpenRouter reviewer fallback covers Modal outages.</li>
+<li>⚠️ The experiment can stall without a deadline. Mitigation: it is explicitly
+  non-blocking for launch; it lives in the post-launch backlog with the gate attached.</li>
 </ul>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Proposed → Accepted → [Deprecated | Superseded]
-</span></code></pre></div>
-<ul>
-<li><strong>Proposed</strong>: Under discussion</li>
-<li><strong>Accepted</strong>: Decision made and in use</li>
-<li><strong>Deprecated</strong>: No longer relevant</li>
-<li><strong>Superseded</strong>: Replaced by another ADR</li>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Modal review backend passes the moderation pipeline integration tests and runs in
+      production config with the OpenRouter reviewer as fallback.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Yield harness re-run recorded under <code>docs/planning/yield-results/</code> for any
+      promotion decision, with cost per accepted story.</li>
 </ul>
-<h2 id="template-reference">Template Reference<a class="headerlink" href="#template-reference" title="Permanent link">&para;</a></h2>
-<p>For the full ADR template, see the ADR template documentation in the Reference section, or refer to <code>.claude/skills/project-planning/templates/adr-template.md</code> in the project repository.</p>
-<h2 id="more-information">More Information<a class="headerlink" href="#more-information" title="Permanent link">&para;</a></h2>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Document Guide: See <code>.claude/skills/project-planning/reference/document-guide.md</code> in the project repository</li>
-<li>Prompting Patterns: See <code>.claude/skills/project-planning/reference/prompting-patterns.md</code> in the project repository</li>
+<li><a href="../adr-003-frontier-llm-generation/">ADR-003</a>: the provider strategy this amends.</li>
+<li><a href="../adr-009-supabase-platform/">ADR-009</a>: the vendor-minimization thesis the
+  promotion gate protects.</li>
+<li><a href="../../phase-2b-live-provider/">Phase 2b results</a>: the incumbent yield measurement and
+  the Tier-2 residual lever.</li>
 </ul>
 
 
@@ -2631,7 +2522,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 04:22:00 UTC">July 2, 2026</span>
   </span>
 
     
@@ -2708,10 +2599,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
