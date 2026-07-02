@@ -84,6 +84,28 @@ by the Layer-1 validator (rule L1-6) at schema validation time, before any evalu
 "has_curse"} }` is valid. `{ "!": [{"var": "has_curse"}] }` is not valid and must be rejected
 by the validator.
 
+### Comparison operand grammar
+
+A comparison operand is exactly one of: a `{ "var": name }` reference, or a bool/int/str
+literal. Three shape rules close divergence classes between the two evaluators (see
+`docs/planning/evaluator-runtime-equivalence.md` for the full derivation):
+
+1. **No nested conditions as comparison operands.** Both evaluators resolve a non-var
+   object operand to literal `false` instead of evaluating it, so a construct like
+   `{ "==": [{"var": "a"}, {"!": {"var": "b"}}] }` would parse but silently ignore the
+   nested condition's value. The validator rejects it.
+2. **Ordering operators reject boolean literals.** A bool can never resolve to a numeric
+   value (ordering operands must resolve to int, per the table above), so an ordering
+   comparison against a boolean literal is statically meaningless and is rejected at
+   shape validation. Equality against boolean literals remains the canonical Tier-2
+   shape and stays valid. At runtime both evaluators additionally fail closed (return
+   `false`) if a boolean ever reaches an ordering operator through any path.
+3. **Int literals are bounded to |n| <= 1,000,000,000** (`MAX_ABS_STORY_INT`). Python
+   evaluates integers exactly at any size; the TypeScript player computes in IEEE-754
+   doubles, exact only to 2^53 - 1. The bound (shared with variable declarations and
+   effect values) keeps schema-representable literals float64-exact with a wide
+   margin and materially reduces divergence risk for engine-reachable values.
+
 ---
 
 ## 3. Excluded Operators
@@ -243,19 +265,29 @@ Both evaluators should be approximately 40 lines of pure recursive logic. Sugges
 
 ```
 evaluate(condition, var_state) -> bool
-  if condition is a bare boolean literal: return it
   op = single key of condition object
-  assert op in WHITELIST else raise SchemaViolation (should not reach here post-validation)
-  if op == "var":    return var_state[condition["var"]]
+  if op == "var":    return truthy(var_state.get(condition["var"], false))
   if op == "!":      return not evaluate(condition["!"], var_state)
   if op == "and":    return all(evaluate(c, var_state) for c in condition["and"])
   if op == "or":     return any(evaluate(c, var_state) for c in condition["or"])
-  # comparison operators: evaluate both sides, apply operator
+  # comparison operators: RESOLVE both sides (never evaluate them), apply operator
   lhs, rhs = condition[op]
-  lv = evaluate(lhs, var_state) if isinstance(lhs, dict) else lhs
-  rv = evaluate(rhs, var_state) if isinstance(rhs, dict) else rhs
+  lv = resolve(lhs, var_state)   # {"var": n} -> value; literal -> itself; else false
+  rv = resolve(rhs, var_state)
   return apply_comparison(op, lv, rv)
+
+apply_comparison(op, lv, rv) -> bool
+  if op == "==": return strict_eq(lv, rv)    # bool and int are distinct types
+  if op == "!=": return not strict_eq(lv, rv)
+  # ordering: booleans are NOT numeric (Python must exclude bool explicitly,
+  # since bool subclasses int); non-int operands fail closed
+  if lv or rv is boolean, or either is not an int: return false
+  return ordered(op, lv, rv)
 ```
+
+Comparison operands are resolved, never evaluated: a `{ "var": name }` reference resolves
+to the variable's value, a literal to itself, and anything else to `false` (defensive
+totality; the shape validator rejects such operands before a story is published).
 
 Literal values (non-object operands such as `true`, `false`, `3`) evaluate to themselves.
 The TypeScript implementation must use `===` for strict equality in `==` comparisons.

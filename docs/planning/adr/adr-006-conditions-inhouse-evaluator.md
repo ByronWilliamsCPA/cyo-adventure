@@ -19,7 +19,7 @@ tags:
 
 Keep the JSONLogic object shape as the on-disk condition format, but evaluate it with a
 small interpreter we write ourselves (one in Python, one in TypeScript) covering only a
-whitelisted eight-operator subset, because a roughly 40-line evaluator is easier to test
+whitelisted ten-operator subset, because a roughly 40-line evaluator is easier to test
 exhaustively and carries no supply-chain risk between a child and machine-generated
 content.
 
@@ -30,7 +30,7 @@ content.
 Tier-2 stories gate choices on conditions like "you have the lantern." The conditions
 come from an LLM, so they are untrusted, and the same condition must evaluate
 identically on the Python backend (validation) and in the TypeScript PWA (play). The
-whitelist is eight operators.
+whitelist is ten operators (var, !, and, or, ==, !=, <, <=, >, >=).
 
 ### Constraints
 
@@ -48,7 +48,7 @@ bug nobody tests until a child hits it. The evaluator is small but load-bearing.
 
 **We will keep the JSONLogic object shape as the interchange format but evaluate it with
 two small in-house interpreters (Python and TypeScript) over a whitelisted subset,
-because owning roughly 40 lines twice is safer than a stale dependency for eight
+because owning roughly 40 lines twice is safer than a stale dependency for ten
 operators.** No string parsing, no custom grammar, no third-party logic library, no
 `eval`. Content is data, never executed.
 
@@ -59,8 +59,9 @@ up: the JavaScript package has sat near-dormant for roughly two years, and the P
 package naming is muddled across stale and forked variants. The shape (for example,
 `{"==": [{"var": "has_lantern"}, true]}`) is still the right interchange format: an LLM
 emits a JSON tree more reliably than an expression string, and it needs no parser.
-Because every variable carries an `initial` value, `var` always resolves against
-populated state, so there is no missing-variable case.
+Because every variable carries an `initial` value, published stories should not expose
+a missing-variable case; the runtime still falls back to false defensively for
+malformed state.
 
 ## Options Considered
 
@@ -84,7 +85,7 @@ populated state, so there is no missing-variable case.
 **Cons**:
 
 - ❌ `json-logic-js` roughly two years stale; PyPI naming muddled; two implementations
-  can disagree on truthiness. Dependency risk and divergence for eight operators.
+  can disagree on truthiness. Dependency risk and divergence for ten operators.
 
 ### Option 3: Custom string DSL (lark/PEG) or CEL
 

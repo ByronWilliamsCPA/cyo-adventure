@@ -183,6 +183,96 @@
       },
       "var_state": { "has_lantern": false, "courage": 2 },
       "expected": false
+    },
+    {
+      "name": "lt_bool_var_left_is_false",
+      "condition": { "<": [{ "var": "flag" }, 1] },
+      "var_state": { "flag": false },
+      "expected": false
+    },
+    {
+      "name": "gt_bool_var_left_is_false",
+      "condition": { ">": [{ "var": "flag" }, 0] },
+      "var_state": { "flag": true },
+      "expected": false
+    },
+    {
+      "name": "ge_bool_vars_both_sides_is_false",
+      "condition": { ">=": [{ "var": "a" }, { "var": "b" }] },
+      "var_state": { "a": true, "b": false },
+      "expected": false
+    },
+    {
+      "name": "le_bool_var_right_is_false",
+      "condition": { "<=": [{ "var": "n" }, { "var": "flag" }] },
+      "var_state": { "n": 0, "flag": true },
+      "expected": false
+    },
+    {
+      "name": "lt_missing_var_is_false",
+      "condition": { "<": [{ "var": "ghost" }, 5] },
+      "var_state": {},
+      "expected": false
+    },
+    {
+      "name": "defensive_lt_false_literal_is_false",
+      "condition": { "<": [false, 1] },
+      "var_state": {},
+      "expected": false
+    },
+    {
+      "name": "defensive_gt_true_literal_is_false",
+      "condition": { ">": [true, 0] },
+      "var_state": {},
+      "expected": false
+    },
+    {
+      "name": "eq_missing_var_defaults_false",
+      "condition": { "==": [{ "var": "ghost" }, false] },
+      "var_state": {},
+      "expected": true
+    },
+    {
+      "name": "bare_missing_var_is_false",
+      "condition": { "var": "ghost" },
+      "var_state": {},
+      "expected": false
+    },
+    {
+      "name": "truthy_int_zero_is_false",
+      "condition": { "var": "count" },
+      "var_state": { "count": 0 },
+      "expected": false
+    },
+    {
+      "name": "truthy_nonzero_int_is_true",
+      "condition": { "var": "count" },
+      "var_state": { "count": 3 },
+      "expected": true
+    },
+    {
+      "name": "literal_only_eq_is_true",
+      "condition": { "==": [2, 2] },
+      "var_state": {},
+      "expected": true
+    },
+    {
+      "name": "literal_only_ordering_is_true",
+      "condition": { "<": [2, 3] },
+      "var_state": {},
+      "expected": true
+    },
+    {
+      "name": "eq_int_at_literal_bound_is_true",
+      "condition": { "==": [{ "var": "gold" }, 1000000000] },
+      "var_state": { "gold": 1000000000 },
+      "expected": true
+    },
+    {
+      "name": "defensive_nested_condition_operand_is_literal_false_not_evaluated",
+      "condition": { "==": [{ "var": "a" }, { "!": { "var": "a" } }] },
+      "var_state": { "a": false },
+      "expected": true
     }
   ]
 }

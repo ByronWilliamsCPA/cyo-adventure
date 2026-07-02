@@ -121,6 +121,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a Redis migration task added to the roadmap.
 
 ### Fixed
+- Validator-player evaluator parity: the Python condition evaluator treated
+  booleans as integers in ordering comparisons (`bool` subclasses `int`), so an
+  ordering comparison involving a boolean (literal operand, bool-valued
+  variable, or missing-variable default) evaluated numerically in the Layer-2
+  validation walk while the TypeScript player failed closed; a story certified
+  dead-end-free could dead-end in the browser. Both evaluators now fail closed
+  identically (`storybook/evaluator.py::_ordered`), and the shared conformance
+  corpus grows 27 to 42 cases pinning every route (the TypeScript suite passed
+  all new cases unchanged). The condition grammar additionally makes
+  divergence-capable input unrepresentable: comparison operands are literals or
+  `{"var": name}` references only (both evaluators resolve nested-condition
+  operands to literal false, never evaluate them), ordering operators reject
+  boolean literals, and every story int literal (condition literals,
+  `Variable.initial/min/max`, `Effect.value`) is bounded to |n| <= 1e9
+  (`MAX_ABS_STORY_INT`) so exact Python ints and the client's IEEE-754 doubles
+  stay exact for the bounded literal space; the reading-state floor rejects
+  forged saves above 2^53 - 1. Full divergence matrix and maintenance contract
+  in `docs/planning/evaluator-runtime-equivalence.md`; spec pseudocode and
+  ADR-006's operator count corrected.
 - Type safety at the approval and generation response boundary: the four approval
   handlers (`api/approval.py`) and the two generation-job responses
   (`api/generation.py`) passed a raw `str` status into response models whose

@@ -148,6 +148,23 @@ def _strict_eq(left: VarValue, right: VarValue) -> bool:
 def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
     """Apply an ordering operator, returning False on non-numeric operands.
 
+    Booleans are NOT numeric here even though ``bool`` subclasses ``int`` in
+    Python: the spec requires ordering operands to resolve to int, and the
+    TypeScript mirror's ``typeof x !== 'number'`` check is true for booleans
+    (``typeof true`` is ``'boolean'``), which is exactly why the TS side fails
+    closed on them. Treating a bool as 0/1 here would make the validator see a
+    choice as visible while the player hides it (the exact divergence ADR-006
+    forbids), so both implementations fail closed. Pinned by the ``*_bool_*``
+    and ``lt_missing_var_is_false`` conformance cases (a missing variable
+    resolves to ``False`` and must follow this same path).
+
+    # #CRITICAL: data integrity: bool must never be treated as numeric here;
+    # Python's `bool` subclasses `int`, so an unguarded `isinstance(x, int)`
+    # check would let a bool through as 0/1, diverging from the TypeScript
+    # player, which fails closed on booleans.
+    # #VERIFY: schema/conformance/conditions.json's ``*_bool_*`` cases, run by
+    # both tests/unit/test_evaluator.py and the frontend TS evaluator suite.
+
     Args:
         operator (str): One of ``< <= > >=``.
         left (VarValue): The left operand value.
@@ -157,7 +174,12 @@ def _ordered(operator: str, left: VarValue, right: VarValue) -> bool:
         bool: The ordering result, or False if either operand is not numeric or
             the operator is not a recognised ordering operator.
     """
-    if not (isinstance(left, int) and isinstance(right, int)):
+    if (
+        isinstance(left, bool)
+        or isinstance(right, bool)
+        or not isinstance(left, int)
+        or not isinstance(right, int)
+    ):
         return False
     if operator == "<":
         return left < right

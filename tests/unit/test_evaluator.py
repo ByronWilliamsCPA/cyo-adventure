@@ -60,13 +60,23 @@ def _var_states() -> st.SearchStrategy[dict[str, bool | int]]:
 def _conditions() -> st.SearchStrategy[dict[str, Any]]:
     """Strategy producing shape-valid conditions over the variable pool."""
     var_ref = st.sampled_from(_VAR_NAMES).map(lambda n: {"var": n})
-    literal = st.one_of(st.booleans(), st.integers(min_value=-1, max_value=6))
+    int_literal = st.integers(min_value=-1, max_value=6)
+    literal = st.one_of(st.booleans(), int_literal)
     operand = st.one_of(var_ref, literal)
-    comparison = st.tuples(
-        st.sampled_from(["==", "!=", "<", "<=", ">", ">="]),
+    # Ordering operators reject boolean literals at shape validation (a bool
+    # can never resolve numeric), so their operand pool excludes them.
+    ordering_operand = st.one_of(var_ref, int_literal)
+    equality = st.tuples(
+        st.sampled_from(["==", "!="]),
         operand,
         operand,
     ).map(lambda t: {t[0]: [t[1], t[2]]})
+    ordering = st.tuples(
+        st.sampled_from(["<", "<=", ">", ">="]),
+        ordering_operand,
+        ordering_operand,
+    ).map(lambda t: {t[0]: [t[1], t[2]]})
+    comparison = st.one_of(equality, ordering)
     leaves = st.one_of(var_ref, comparison)
     return st.recursive(
         leaves,

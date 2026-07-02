@@ -194,7 +194,8 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
         )
     detail = str(exc_info.value)
     assert (
-        detail == "reading-state cannot be validated against a malformed story version"
+        detail
+        == "story version failed schema validation (corrupt, or no longer permitted)"
     )
     assert "not a story" not in detail
     assert "pydantic" not in detail.lower()
@@ -226,6 +227,42 @@ def test_missing_declared_variable_rejected() -> None:
             visit_set=["n_start"],
             choice_path=None,
         )
+
+
+@pytest.mark.unit
+def test_unbounded_int_var_above_float64_safe_range_rejected() -> None:
+    """A save value at or beyond 2**53 on an unbounded int variable is rejected.
+
+    Python holds such ints exactly while the client's IEEE-754 doubles round
+    them, so validator and player could disagree about a forged save; the
+    structural floor caps magnitude at the float64-exact range.
+    """
+    blob = _blob()
+    blob["variables"] = [{"name": "courage", "type": "int", "initial": 0}]
+    with pytest.raises(ValidationError):
+        validate_reading_state(
+            blob,
+            current_node="n_start",
+            var_state={"courage": 2**53},
+            path=["n_start"],
+            visit_set=["n_start"],
+            choice_path=None,
+        )
+
+
+@pytest.mark.unit
+def test_unbounded_int_var_at_float64_safe_bound_accepted() -> None:
+    """A save value exactly at 2**53 - 1 on an unbounded int variable passes."""
+    blob = _blob()
+    blob["variables"] = [{"name": "courage", "type": "int", "initial": 0}]
+    validate_reading_state(
+        blob,
+        current_node="n_start",
+        var_state={"courage": 2**53 - 1},
+        path=["n_start"],
+        visit_set=["n_start"],
+        choice_path=None,
+    )
 
 
 @pytest.mark.unit

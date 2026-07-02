@@ -18,6 +18,7 @@ from pydantic import ValidationError
 from cyo_adventure.storybook import (
     WHITELISTED_OPERATORS,
     Storybook,
+    ordering_var_refs,
     referenced_vars,
     validate_condition,
 )
@@ -203,6 +204,33 @@ def test_undeclared_variable_rejected() -> None:
 
 
 @pytest.mark.unit
+def test_bool_variable_in_ordering_condition_rejected() -> None:
+    """A condition comparing a bool-typed variable with an ordering operator
+    fails validation: a bool can never resolve to int, so this is a story
+    authoring mistake the runtime evaluator would otherwise only catch by
+    silently failing closed (spec: ordering operands must resolve to int).
+    """
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["condition"] = {">=": [{"var": "has_lantern"}, 1]}
+    with pytest.raises(ValidationError, match="compares bool-typed variable"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_bool_variable_in_nested_ordering_condition_rejected() -> None:
+    """The bool-in-ordering check reaches through ``and``/``or``/``!`` nesting."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["condition"] = {
+        "and": [
+            {"==": [{"var": "courage"}, 0]},
+            {"!": {">": [{"var": "has_lantern"}, 0]}},
+        ]
+    }
+    with pytest.raises(ValidationError, match="compares bool-typed variable"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
 def test_non_whitelisted_operator_rejected() -> None:
     """A condition using a forbidden operator fails validation."""
     story = _tier2_with_state()
@@ -297,6 +325,21 @@ def test_referenced_vars_collects_nested_names() -> None:
 
 
 @pytest.mark.unit
+def test_ordering_var_refs_finds_only_ordering_operands() -> None:
+    """ordering_var_refs returns only variables compared with < <= > >=,
+    reaching through and/or/! nesting but not equality comparisons.
+    """
+    condition = {
+        "and": [
+            {"==": [{"var": "has_lantern"}, True]},
+            {"!": {">=": [{"var": "courage"}, 3]}},
+            {"or": [{"<": [{"var": "gold"}, 10]}, {"==": [{"var": "level"}, 2]}]},
+        ]
+    }
+    assert ordering_var_refs(condition) == {"courage", "gold"}
+
+
+@pytest.mark.unit
 def test_validate_condition_accepts_negation_and_nested_operand() -> None:
     """The ``!`` operator and a nested-condition operand are both accepted."""
     condition = {"!": {"==": [{"var": "x"}, {"var": "y"}]}}
@@ -319,9 +362,95 @@ def test_validate_condition_rejects_empty_var_name() -> None:
 
 @pytest.mark.unit
 def test_validate_condition_rejects_non_literal_operand() -> None:
-    """A comparison operand that is neither literal nor condition is rejected."""
-    with pytest.raises(ValueError, match="literal or a nested condition"):
+    """A comparison operand that is neither literal nor var reference is rejected."""
+    with pytest.raises(ValueError, match="literal or a var reference"):
         validate_condition({"==": [{"var": "x"}, None]})
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("operator", ["<", "<=", ">", ">="])
+@pytest.mark.parametrize("operands", [[True, 1], [0, False]])
+def test_validate_condition_rejects_bool_literal_in_ordering(
+    operator: str, operands: list[Any]
+) -> None:
+    """A boolean literal can never resolve numeric, so ordering on one is
+    statically meaningless; the shape validator rejects it (spec: ordering
+    operands must resolve to int).
+    """
+    with pytest.raises(ValueError, match="cannot compare a boolean"):
+        validate_condition({operator: operands})
+
+
+@pytest.mark.unit
+def test_validate_condition_accepts_bool_literal_in_equality() -> None:
+    """Equality against a boolean literal stays valid (the common Tier-2 shape)."""
+    condition: dict[str, Any] = {"==": [{"var": "has_key"}, True]}
+    assert validate_condition(condition) == condition
+
+
+@pytest.mark.unit
+def test_validate_condition_rejects_nested_condition_operand() -> None:
+    """A nested condition as a comparison operand is rejected: both evaluators
+    resolve a non-var object operand to literal False instead of evaluating it,
+    so the grammar must not represent it.
+    """
+    with pytest.raises(ValueError, match="literal or a var reference"):
+        validate_condition({"==": [{"var": "x"}, {"!": {"var": "y"}}]})
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("operator", ["==", "<"])
+def test_validate_condition_rejects_out_of_range_int_literal(operator: str) -> None:
+    """An int literal beyond the safe story bound is rejected so Python's exact
+    ints and the client's IEEE-754 doubles can never disagree.
+    """
+    with pytest.raises(ValueError, match="literal magnitude"):
+        validate_condition({operator: [{"var": "x"}, 1_000_000_001]})
+
+
+@pytest.mark.unit
+def test_validate_condition_accepts_int_literal_at_bound() -> None:
+    """An int literal exactly at the safe bound is accepted."""
+    condition: dict[str, Any] = {"==": [{"var": "gold"}, 1_000_000_000]}
+    assert validate_condition(condition) == condition
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("field", ["initial", "min", "max"])
+def test_int_variable_rejects_out_of_range_declaration(field: str) -> None:
+    """Variable initial/min/max beyond the safe story bound are rejected."""
+    story = _tier2_with_state()
+    story["variables"][1] = {"name": "courage", "type": "int", "initial": 0}
+    story["variables"][1][field] = -1_000_000_001 if field == "min" else 1_000_000_001
+    with pytest.raises(ValidationError, match="magnitude must be"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_int_variable_accepts_declaration_at_bound() -> None:
+    """Variable declarations exactly at the safe bound are accepted."""
+    story = _tier2_with_state()
+    story["variables"][1] = {
+        "name": "courage",
+        "type": "int",
+        "initial": 1_000_000_000,
+        "min": -1_000_000_000,
+        "max": 1_000_000_000,
+    }
+    book = Storybook.model_validate(story)
+    assert book.variables[1].initial == 1_000_000_000
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("op", ["set", "inc"])
+def test_effect_rejects_out_of_range_value(op: str) -> None:
+    """Effect values beyond the safe story bound are rejected."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["effects"] = [
+        {"op": op, "var": "courage", "value": 1_000_000_001}
+    ]
+    with pytest.raises(ValidationError, match="magnitude must be"):
+        Storybook.model_validate(story)
 
 
 @pytest.mark.unit

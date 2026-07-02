@@ -17,9 +17,14 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, JsonValue, model_validator
 
-from cyo_adventure.storybook.condition import Condition, referenced_vars
+from cyo_adventure.storybook.condition import (
+    MAX_ABS_STORY_INT,
+    Condition,
+    ordering_var_refs,
+    referenced_vars,
+)
 
 SCHEMA_VERSION = "2.0"
 
@@ -161,8 +166,12 @@ class Variable(BaseModel):
     name: str = Field(pattern=r"^[a-z][a-z0-9_]*$")
     type: VariableType
     initial: bool | int
-    min: int | None = None
-    max: int | None = None
+    # `bool` is included in the union (not just `int`) so a declared `true`/
+    # `false` bound survives Pydantic's coercion as an actual bool instead of
+    # being silently collapsed to 1/0; _check_int then rejects it explicitly,
+    # matching `initial`'s existing bool-rejection pattern.
+    min: bool | int | None = None
+    max: bool | int | None = None
     description: str = ""
 
     @model_validator(mode="after")
@@ -203,11 +212,33 @@ class Variable(BaseModel):
         """Validate an integer variable and its bounds.
 
         Raises:
-            ValueError: If the initial value is not integral or out of bounds.
+            ValueError: If the initial value or a bound is boolean, is out of
+                bounds, or any of initial/min/max exceeds
+                ``MAX_ABS_STORY_INT``.
         """
         if isinstance(self.initial, bool):
             msg = f"int variable '{self.name}' needs an integer initial value"
             raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        for bound_label, bound_value in (("min", self.min), ("max", self.max)):
+            if isinstance(bound_value, bool):
+                msg = f"int variable '{self.name}' {bound_label} must not be boolean"
+                raise ValueError(msg)  # noqa: TRY004 - Pydantic needs ValueError
+        # #CRITICAL: data integrity: exact Python arithmetic and the client's
+        # IEEE-754 doubles can never disagree about a declared int bound if
+        # every declared int is checked against MAX_ABS_STORY_INT here.
+        # #VERIFY: tests/unit/test_storybook_schema.py::
+        # test_int_variable_rejects_out_of_range_declaration.
+        for label, declared in (
+            ("initial", self.initial),
+            ("min", self.min),
+            ("max", self.max),
+        ):
+            if declared is not None and abs(declared) > MAX_ABS_STORY_INT:
+                msg = (
+                    f"int variable '{self.name}' {label} magnitude must be "
+                    f"<= {MAX_ABS_STORY_INT}, got {declared}"
+                )
+                raise ValueError(msg)
         self._check_int_bounds()
 
     def _check_int_bounds(self) -> None:
@@ -250,7 +281,9 @@ class Effect(BaseModel):
             Self: The validated model.
 
         Raises:
-            ValueError: If a set effect has no value or inc/dec is not integral.
+            ValueError: If a set effect has no value, inc/dec is not integral
+                or is negative, or the value's magnitude exceeds
+                ``MAX_ABS_STORY_INT``.
         """
         if self.op is EffectOp.SET:
             if self.value is None:
@@ -261,6 +294,18 @@ class Effect(BaseModel):
             raise ValueError(msg)
         elif self.value < 0:
             msg = f"{self.op.value} effect on '{self.var}' must be non-negative"
+            raise ValueError(msg)
+        # #CRITICAL: data integrity: exact Python arithmetic and the client's
+        # IEEE-754 doubles can never disagree about an effect value's identity
+        # if every int effect value is bounded like every other story int
+        # literal (see MAX_ABS_STORY_INT).
+        # #VERIFY: tests/unit/test_storybook_schema.py::
+        # test_effect_rejects_out_of_range_value.
+        if abs(self.value) > MAX_ABS_STORY_INT:
+            msg = (
+                f"{self.op.value} effect on '{self.var}' value magnitude must be "
+                f"<= {MAX_ABS_STORY_INT}, got {self.value}"
+            )
             raise ValueError(msg)
         return self
 
@@ -419,6 +464,7 @@ class Storybook(BaseModel):
                 if choice.condition is not None:
                     for name in referenced_vars(choice.condition):
                         self._require_declared(name, declared, node.id)
+                    self._check_ordering_vars(choice.condition, by_name, node.id)
 
     @staticmethod
     def _require_declared(name: str, declared: set[str], node_id: str) -> None:
@@ -435,6 +481,34 @@ class Storybook(BaseModel):
         if name not in declared:
             msg = f"node '{node_id}' references undeclared variable '{name}'"
             raise ValueError(msg)
+
+    @staticmethod
+    def _check_ordering_vars(
+        condition: dict[str, JsonValue], by_name: dict[str, Variable], node_id: str
+    ) -> None:
+        """Reject a bool-typed variable compared with an ordering operator.
+
+        A bool can never resolve to int (ordering operands must resolve to
+        int, ADR-006), so this is a story authoring mistake, caught here at
+        schema validation instead of relying solely on the runtime
+        evaluator's fail-closed behavior (``_ordered`` in ``evaluator.py``).
+
+        Args:
+            condition (dict[str, JsonValue]): A shape-validated condition.
+            by_name (dict[str, Variable]): Declared variables, by name.
+            node_id (str): The node where the reference occurs (for the message).
+
+        Raises:
+            ValueError: If an ordering operand names a bool-typed variable.
+        """
+        for name in ordering_var_refs(condition):
+            variable = by_name.get(name)
+            if variable is not None and variable.type is VariableType.BOOL:
+                msg = (
+                    f"node '{node_id}' compares bool-typed variable '{name}' "
+                    "with an ordering operator; ordering operands must be int"
+                )
+                raise ValueError(msg)
 
     @staticmethod
     def _check_effect(

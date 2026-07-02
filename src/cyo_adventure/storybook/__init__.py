@@ -9,6 +9,7 @@ from __future__ import annotations
 from cyo_adventure.storybook.condition import (
     WHITELISTED_OPERATORS,
     Condition,
+    ordering_var_refs,
     referenced_vars,
     validate_condition,
 )
@@ -54,6 +55,7 @@ __all__ = [
     "Variable",
     "VariableType",
     "evaluate",
+    "ordering_var_refs",
     "referenced_vars",
     "validate_condition",
 ]
