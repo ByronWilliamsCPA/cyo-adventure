@@ -2634,9 +2634,11 @@ version (a structural floor always runs, with full deterministic replay when the
 <p><strong>Acceptance (partially met; one item reframed)</strong>: every transition path is tested; no path
 reaches a child profile without a recorded approval (holds); coverage on the new Phase 3
 code is at or above the 90% bar. The "adversarial briefs flag and cannot auto-publish"
-criterion is <strong>reframed</strong>: "cannot auto-publish" holds, but "flag and route to human review"
-is not backed by a live-model run and is false on the import and admin-submit paths, which
-reach a publishable state with no moderation. See
+criterion is <strong>reframed</strong>: "cannot auto-publish" holds; the import and admin-submit paths no
+longer reach a publishable state without moderation (closed structurally: the import path now
+runs the moderation pipeline before returning, and <code>approve</code> refuses to publish any version
+with <code>moderation_report is None</code>); what remains unmet is "flag and route to human review" for
+the model-dependent classes, which is not yet backed by a live-model run. See
 <a href="../safety/adversarial-safety-evaluation/">adversarial-safety-evaluation.md</a> and the
 carried-debt table below (C3-SAFETY). The other Phase 3 capability not yet reachable is the
 browser UI, which is Phase 4a (C4a-4).</p>
@@ -2732,9 +2734,9 @@ app shell (C4a-1) is the prerequisite for everything else in it.</p>
 </thead>
 <tbody>
 <tr>
-<td><strong>C3-SAFETY: adversarial safety gate unbacked + bypass seams</strong></td>
-<td>High</td>
-<td>The Phase 3 "adversarial briefs flag and route to human review" gate has no live-model evidence, and the import (<code>generation/import_story.py</code>) and admin <code>POST /submit</code> (<code>api/approval.py</code>) paths reach a publishable state with no moderation at all. See <a href="../safety/adversarial-safety-evaluation/"><code>safety/adversarial-safety-evaluation.md</code></a>. Close before the first release: (a) run moderation on the import and submit paths (or block publish when <code>moderation_report is None</code>); (b) add an explicit "never screened" state to the review surface for C4a-4; &copy; run the credentialed adversarial harness and archive per-class results.</td>
+<td><strong>C3-SAFETY: adversarial safety gate unbacked (live-run pending)</strong></td>
+<td>Medium</td>
+<td>(a) and (b) are closed: <code>import_filled_story</code> now runs the moderation pipeline before returning (mirroring the generation worker), and <code>publishing.service.approve</code> structurally refuses to publish any version with <code>moderation_report is None</code>, so no unmoderated path reaches <code>published</code> regardless of route. The review surface also now exposes <code>screened: bool</code> for C4a-4. Remaining before the first release: &copy; run the credentialed adversarial harness against a live review model and archive per-class results for the model-dependent classes (A, B, E); this environment has no live LLM credentials, so it is blocked on credential availability, not code. See <a href="../safety/adversarial-safety-evaluation/"><code>safety/adversarial-safety-evaluation.md</code></a>.</td>
 </tr>
 <tr>
 <td><strong>Tier-2 generation yield weak (3/7)</strong></td>
@@ -2844,7 +2846,7 @@ app shell (C4a-1) is the prerequisite for everything else in it.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 07:04:49 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 14:45:32 UTC">July 2, 2026</span>
   </span>
 
     
