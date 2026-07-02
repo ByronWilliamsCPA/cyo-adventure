@@ -24,9 +24,10 @@ tags:
 
 Adopt Supabase as the public tier's managed platform: Supabase Auth for guardian sign-in
 (native Sign in with Apple and Google), Supabase Postgres as the database (async
-SQLAlchemy and Alembic unchanged), Supabase Storage behind the existing S3 seam, and
-Supabase Queues (pgmq) evaluated as the Redis/RQ replacement, with FastAPI and the
-generation worker remaining our own code on a single small container host. This replaces
+SQLAlchemy and Alembic unchanged; story blobs stay inline JSONB at launch, with Supabase
+Storage adopted later via `blob_ref` when catalog size warrants), and Supabase Queues
+(pgmq) evaluated as the Redis/RQ replacement, with FastAPI and the generation worker
+remaining our own code on a single small container host. This replaces
 ADR-008's self-hosted Authentik broker and multi-service Azure deployment because a solo
 operator's scarcest resource is operational attention, and this consolidates roughly five
 self-managed or separately-purchased services into one platform plus one container host.

@@ -29,6 +29,14 @@ generation credits), authenticating guardians only, through Authentik as the sin
 broker with Sign in with Apple and Google as federated sources, on hosted infrastructure;
 children remain in-app profiles with backend-issued scoped sessions, never IdP identities.
 
+> **Amendment note (2026-07-02)**: the auth-broker and hosting choices in this ADR were
+> superseded the same day by [ADR-009](./adr-009-supabase-platform.md): Supabase Auth
+> replaces the Authentik broker, and the Supabase platform plus one container host
+> replaces the Azure-hosted service set. The sections below are retained unedited as the
+> decision record; parts marked "superseded" must be implemented from ADR-009. The
+> distribution, guardian-only identity model, monetization, and compliance decisions
+> stand as written.
+
 ## Context
 
 ### Problem
@@ -78,6 +86,10 @@ existing PWA, sell a tiered family subscription through Apple In-App Purchase, k
 Authentik as the sole OIDC issuer brokering Sign in with Apple and Google for guardians
 only, and run the public tier on hosted infrastructure.**
 
+*(As amended by ADR-009: read "Authentik as the sole OIDC issuer" as "Supabase Auth as
+the sole token issuer" and "hosted infrastructure" as "the Supabase platform plus one
+container host". The rest of the statement is current.)*
+
 The decision decomposes into five parts:
 
 1. **Distribution: Capacitor iOS shell.** The React PWA is wrapped in a Capacitor shell
@@ -85,7 +97,10 @@ The decision decomposes into five parts:
    offline-first launch, iPad layouts). The web PWA remains the browser channel and the
    basis for a later Android build. This amends ADR-002's "no app-store friction"
    rationale: the format and client stay the same; only packaging is added.
-2. **Auth: Authentik as broker, guardians only.** Authentik remains the single OIDC
+2. **Auth: Authentik as broker, guardians only.** *(Broker choice superseded by
+   ADR-009: Supabase Auth is the issuer. The guardian-only identity model, the
+   `sub`-not-email keying, and the child-session design in this part stand.)*
+   Authentik remains the single OIDC
    issuer; Sign in with Apple and Google are federated sources configured in Authentik.
    The backend validates only Authentik-issued JWTs (issuer, audience, signature,
    expiry, via cached JWKS) and keys users on the Authentik `sub` claim
@@ -101,7 +116,10 @@ The decision decomposes into five parts:
    Haiku-primary roster is cents per story). Purchases sit behind the parental gate.
    Enroll in the Small Business Program (15% commission). No ads, ever, in the kid
    experience.
-4. **Hosting: public tier on hosted infrastructure.** The public deployment runs on
+4. **Hosting: public tier on hosted infrastructure.** *(Topology superseded by
+   ADR-009: the public tier runs on Supabase plus a single container host; Azure
+   Container Apps remains only a candidate for that host. The homelab-stays-dev/family
+   split stands.)* The public deployment runs on
    cloud infrastructure (Azure Container Apps is the pre-planned portable target per
    ADR-004), including a production-grade Authentik. The homelab remains the
    development and family-staging environment. This supersedes ADR-004's homelab-first
