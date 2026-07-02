@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.core.exceptions import StateTransitionError
+from cyo_adventure.core.exceptions import BusinessLogicError, StateTransitionError
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
 from cyo_adventure.publishing import service as approval_service
+from tests.conftest import make_clean_moderation_report
 
 if TYPE_CHECKING:
     import uuid
@@ -19,7 +20,10 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 
 async def _make_story(
-    session: AsyncSession, *, status: str
+    session: AsyncSession,
+    *,
+    status: str,
+    moderation_report: dict[str, object] | None = None,
 ) -> tuple[Storybook, uuid.UUID]:
     """Seed one family, one guardian, and a single-version story in ``status``.
 
@@ -37,7 +41,12 @@ async def _make_story(
     session.add(book)
     await session.flush()
     session.add(
-        StorybookVersion(storybook_id="story-1", version=1, blob={"id": "story-1"})
+        StorybookVersion(
+            storybook_id="story-1",
+            version=1,
+            blob={"id": "story-1"},
+            moderation_report=moderation_report,
+        )
     )
     await session.flush()
     return book, guardian.id
@@ -48,7 +57,11 @@ async def test_approve_stamps_provenance_and_publishes(
 ) -> None:
     """approve() sets published + current_published_version + approved_by + published_at."""
     async with sessions() as session:
-        book, guardian_id = await _make_story(session, status="in_review")
+        book, guardian_id = await _make_story(
+            session,
+            status="in_review",
+            moderation_report=make_clean_moderation_report(),
+        )
         principal = _principal(guardian_id, book.family_id)
         version_row = await approval_service.approve(session, principal, book, 1)
         assert book.status == "published"
@@ -67,6 +80,24 @@ async def test_approve_from_draft_raises(
         with pytest.raises(StateTransitionError):
             await approval_service.approve(session, principal, book, 1)
         assert book.status == "draft"
+
+
+async def test_approve_without_moderation_raises(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """approve() on an in_review story with no moderation_report is blocked.
+
+    Closes C3-SAFETY Findings 1-2 (adversarial-safety-evaluation.md): a story
+    that reached in_review by any route other than the moderated generation
+    worker (the import path, or a direct admin submit) must not be
+    approvable/publishable until it has been screened.
+    """
+    async with sessions() as session:
+        book, guardian_id = await _make_story(session, status="in_review")
+        principal = _principal(guardian_id, book.family_id)
+        with pytest.raises(BusinessLogicError):
+            await approval_service.approve(session, principal, book, 1)
+        assert book.status == "in_review"
 
 
 async def test_submit_then_send_back(

@@ -79,6 +79,9 @@ def build_review_surface(
             version=version,
             status=status,
             blob=blob,
+            # Finding 3: the only reliable "never screened" signal, since a
+            # screened-clean report also yields empty passages/findings below.
+            screened=moderation_report is not None,
             summary=_summary(moderation_report),
             flagged_passages=passages,
             story_level_findings=story_level,

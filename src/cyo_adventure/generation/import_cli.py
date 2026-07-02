@@ -14,7 +14,7 @@ import uuid
 from pathlib import Path
 
 from cyo_adventure.core.database import get_session
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ProjectBaseError
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
 
@@ -45,9 +45,11 @@ async def _run(blob: dict[str, object], family_id: uuid.UUID, model: str | None)
         The persisted story id.
 
     Raises:
-        ValidationError: Propagated from the validation gate if it blocks the
-            story (or the blob has no string id). UUID parsing is handled by the
-            caller, so this no longer raises on an invalid family id.
+        ProjectBaseError: Propagated from the validation gate if it blocks the
+            story (or the blob has no string id), or from the moderation
+            pipeline the gate hands off to (e.g. a review-backend failure).
+            UUID parsing is handled by the caller, so this no longer raises on
+            an invalid family id.
     """
     request = ImportRequest(blob=blob, family_id=family_id, model=model)
     async with get_session() as session:
@@ -103,13 +105,19 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError:
         sys.stderr.write(f"error: invalid family UUID: {family}\n")
         return 1
-    # #CRITICAL: data-integrity: ValidationError (a ProjectBaseError, not a
-    # ValueError) is the only gate/import failure caught here; the UUID ValueError
-    # catch above does not overlap with it.
-    # #VERIFY: test_arg_parser_* cover parsing; gate failures map to exit 1.
+    # #CRITICAL: data-integrity: ProjectBaseError (not a bare ValueError) covers
+    # both the validation gate's ValidationError and any exception the
+    # moderation pipeline raises after a successful persist (e.g.
+    # ResourceNotFoundError, a review-backend ExternalServiceError); the UUID
+    # ValueError catch above does not overlap with it. core/database.py's
+    # get_session() closes (and thus rolls back) the session on any exception
+    # exiting the `async with` block in _run, so a moderation failure here
+    # cannot leave a half-committed row.
+    # #VERIFY: test_arg_parser_* cover parsing; gate and moderation failures
+    # both map to exit 1.
     try:
         story_id = asyncio.run(_run(blob, family_id, model))
-    except ValidationError as exc:
+    except ProjectBaseError as exc:
         sys.stderr.write(f"import failed: {exc}\n")
         return 1
     sys.stdout.write(f"imported {story_id}\n")

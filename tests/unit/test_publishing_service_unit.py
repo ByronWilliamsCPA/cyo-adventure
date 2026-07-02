@@ -14,9 +14,14 @@ from unittest.mock import AsyncMock
 import pytest
 
 from cyo_adventure.api.deps import Principal
-from cyo_adventure.core.exceptions import ResourceNotFoundError, StateTransitionError
+from cyo_adventure.core.exceptions import (
+    BusinessLogicError,
+    ResourceNotFoundError,
+    StateTransitionError,
+)
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service
+from tests.conftest import make_clean_moderation_report
 
 pytestmark = pytest.mark.asyncio
 
@@ -82,7 +87,12 @@ async def test_submit_illegal_status_raises() -> None:
 async def test_approve_publishes_and_stamps() -> None:
     """approve() transitions to published, stamps approved_by and published_at."""
     story = _story("in_review")
-    version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
     session = AsyncMock()
     session.get = AsyncMock(return_value=version_row)
     principal = _principal("admin")
@@ -96,6 +106,28 @@ async def test_approve_publishes_and_stamps() -> None:
     assert version_row.published_at is not None
     assert isinstance(version_row.published_at, datetime)
     session.flush.assert_awaited_once()
+
+
+@pytest.mark.unit
+async def test_approve_without_moderation_report_raises() -> None:
+    """approve() on a never-screened version raises BusinessLogicError.
+
+    Closes C3-SAFETY Finding 2: the admin submit endpoint can still move a
+    draft to in_review without moderation ever running (Finding 1 closed the
+    import path's own unmoderated route). This guard is the structural choke
+    point that makes "no unmoderated path reaches published" hold regardless
+    of how the story got here.
+    """
+    story = _story("in_review")
+    version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
+    session = AsyncMock()
+    session.get = AsyncMock(return_value=version_row)
+
+    with pytest.raises(BusinessLogicError):
+        await service.approve(session, _principal("admin"), story, 1)
+
+    assert story.status == "in_review"
+    session.flush.assert_not_awaited()
 
 
 @pytest.mark.unit
@@ -174,7 +206,12 @@ async def test_archive_illegal_status_raises() -> None:
 async def test_approve_stamps_utc_published_at() -> None:
     """approve() stamps published_at with a timezone-aware UTC datetime."""
     story = _story("in_review")
-    version_row = StorybookVersion(storybook_id="s1", version=2, blob={})
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=2,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
     session = AsyncMock()
     session.get = AsyncMock(return_value=version_row)
     before = datetime.now(UTC)

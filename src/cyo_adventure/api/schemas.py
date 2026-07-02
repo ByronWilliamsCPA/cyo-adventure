@@ -277,6 +277,7 @@ class ReviewSurfaceView(BaseModel):
     version: int
     status: str
     blob: dict[str, object]
+    screened: bool
     summary: ReviewSummary | None
     flagged_passages: list[FlaggedPassage]
     story_level_findings: list[FindingView]

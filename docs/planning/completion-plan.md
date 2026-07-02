@@ -91,9 +91,11 @@ version (a structural floor always runs, with full deterministic replay when the
 **Acceptance (partially met; one item reframed)**: every transition path is tested; no path
 reaches a child profile without a recorded approval (holds); coverage on the new Phase 3
 code is at or above the 90% bar. The "adversarial briefs flag and cannot auto-publish"
-criterion is **reframed**: "cannot auto-publish" holds, but "flag and route to human review"
-is not backed by a live-model run and is false on the import and admin-submit paths, which
-reach a publishable state with no moderation. See
+criterion is **reframed**: "cannot auto-publish" holds; the import and admin-submit paths no
+longer reach a publishable state without moderation (closed structurally: the import path now
+runs the moderation pipeline before returning, and `approve` refuses to publish any version
+with `moderation_report is None`); what remains unmet is "flag and route to human review" for
+the model-dependent classes, which is not yet backed by a live-model run. See
 [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md) and the
 carried-debt table below (C3-SAFETY). The other Phase 3 capability not yet reachable is the
 browser UI, which is Phase 4a (C4a-4).
@@ -164,7 +166,7 @@ app shell (C4a-1) is the prerequisite for everything else in it.
 
 | Item | Severity | Action |
 |------|----------|--------|
-| **C3-SAFETY: adversarial safety gate unbacked + bypass seams** | High | The Phase 3 "adversarial briefs flag and route to human review" gate has no live-model evidence, and the import (`generation/import_story.py`) and admin `POST /submit` (`api/approval.py`) paths reach a publishable state with no moderation at all. See [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md). Close before the first release: (a) run moderation on the import and submit paths (or block publish when `moderation_report is None`); (b) add an explicit "never screened" state to the review surface for C4a-4; (c) run the credentialed adversarial harness and archive per-class results. |
+| **C3-SAFETY: adversarial safety gate unbacked (live-run pending)** | Medium | (a) and (b) are closed: `import_filled_story` now runs the moderation pipeline before returning (mirroring the generation worker), and `publishing.service.approve` structurally refuses to publish any version with `moderation_report is None`, so no unmoderated path reaches `published` regardless of route. The review surface also now exposes `screened: bool` for C4a-4. Remaining before the first release: (c) run the credentialed adversarial harness against a live review model and archive per-class results for the model-dependent classes (A, B, E); this environment has no live LLM credentials, so it is blocked on credential availability, not code. See [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md). |
 | **Tier-2 generation yield weak (3/7)** | Medium | Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever; see [`phase-2b-live-provider.md`](./phase-2b-live-provider.md)). Re-measure. Do before relying on Tier-2 generation in production. |
 | **In-memory rate limiter** | Medium | Phase 5: replace with Redis-backed limiter before multi-process/exposed deployment. |
 | **No frontend routing / app shell** | High (effort) | Phase 4a C4a-1 is a prerequisite for all guardian/library UI; size it as real work, not a wrapper. |

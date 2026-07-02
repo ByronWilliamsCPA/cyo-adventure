@@ -142,6 +142,36 @@ def tmp_cache_dir(tmp_path: Path) -> Path:
 
 
 # ============================================================================
+# Moderation Test Data
+# ============================================================================
+
+
+def make_clean_moderation_report() -> dict[str, object]:
+    """Return a fresh screened-clean moderation report body.
+
+    For tests that need publishing.service.approve to succeed: approve()
+    refuses to publish a version whose moderation_report is None (C3-SAFETY
+    Findings 1-2). Tests exercising the illegal-transition, authorization, or
+    not-found paths never reach that check, so they do not need this. Returns
+    a new dict per call so callers cannot mutate a shared instance across
+    tests.
+
+    Returns:
+        A moderation report dict with no findings and a clean summary.
+    """
+    return {
+        "findings": [],
+        "summary": {
+            "count": 0,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+# ============================================================================
 # Logging Fixtures
 # ============================================================================
 

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.db.models import Family, Storybook, StorybookVersion, User
+from tests.conftest import make_clean_moderation_report
 
 from .conftest import auth
 
@@ -35,7 +36,12 @@ async def _seed_in_review(
         story_id = "review-me"
         session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
         session.add(
-            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_clean_moderation_report(),
+            )
         )
         await session.commit()
         return story_id
@@ -149,6 +155,36 @@ async def test_admin_can_approve_across_families(
     )
     assert resp.status_code == 200
     assert resp.json()["status"] == "published"
+
+
+async def test_approve_unscreened_story_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Approving an in-review story with no moderation_report returns 400.
+
+    Closes C3-SAFETY Findings 1-2: a story that reached in_review without
+    ever being screened (the import path, or a direct admin submit) must not
+    be publishable via this endpoint.
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        story_id = "unscreened-me"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+        )
+        await session.commit()
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 400
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.status == "in_review"
 
 
 async def test_illegal_transition_returns_409(

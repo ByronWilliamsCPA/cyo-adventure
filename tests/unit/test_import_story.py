@@ -1,4 +1,5 @@
 import uuid
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -7,15 +8,31 @@ from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
 
+class _FakeResult:
+    """Stand-in for a SQLAlchemy Result yielding one-tuples of child names."""
+
+    def __init__(self, names: list[str]) -> None:
+        self._names = names
+
+    def all(self) -> list[tuple[str]]:
+        """Return rows as one-tuples, matching ``select(column)`` results."""
+        return [(name,) for name in self._names]
+
+
 class _FakeSession:
-    def __init__(self) -> None:
+    def __init__(self, *, child_names: list[str] | None = None) -> None:
         self.added: list[object] = []
+        self._child_names = child_names or []
 
     def add(self, row: object) -> None:
         self.added.append(row)
 
     async def flush(self) -> None:
         return None
+
+    async def execute(self, _stmt: object) -> _FakeResult:
+        """Stand in for the post-persist ChildProfile.display_name query."""
+        return _FakeResult(self._child_names)
 
 
 def _filled_story() -> dict[str, object]:
@@ -112,7 +129,13 @@ def _filled_story() -> dict[str, object]:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
-async def test_import_persists_a_valid_filled_story() -> None:
+async def test_import_persists_a_valid_filled_story(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
     session = _FakeSession()
     request = ImportRequest(
         blob=_filled_story(), family_id=uuid.uuid4(), model="opus-4.8"
@@ -122,6 +145,55 @@ async def test_import_persists_a_valid_filled_story() -> None:
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
     assert len(versions) == 1
     assert versions[0].blob["id"] == "s_filled"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_screens_the_persisted_story(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Finding 1: import must run moderation on the version it just persisted.
+
+    Before this fix, import_filled_story persisted a draft and returned,
+    leaving the cyo-author skeleton-fill route reachable by admin
+    submit/approve with zero content screening.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession(child_names=["Rosa"])
+    request = ImportRequest(blob=_filled_story(), family_id=uuid.uuid4())
+
+    story_id = await import_filled_story(session, request)
+
+    moderation.assert_awaited_once()
+    _, kwargs = moderation.call_args
+    assert kwargs["story_id"] == story_id
+    assert kwargs["version"] == 1
+    assert kwargs["pii"].child_names == frozenset({"Rosa"})
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_import_propagates_moderation_failure(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A moderation-backend failure propagates; the caller owns the rollback.
+
+    import_filled_story does not manage the transaction (see module docstring),
+    so unlike the generation worker it must not swallow or reinterpret a
+    moderation-pipeline exception -- it must simply not be caught here.
+    """
+    moderation = AsyncMock(side_effect=RuntimeError("review backend down"))
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(blob=_filled_story(), family_id=uuid.uuid4())
+
+    with pytest.raises(RuntimeError, match="review backend down"):
+        await import_filled_story(session, request)
 
 
 @pytest.mark.unit
