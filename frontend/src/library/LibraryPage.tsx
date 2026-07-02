@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
@@ -24,6 +24,21 @@ export function LibraryPage() {
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
 
+  // #ASSUME: timing dependencies: the "Try again" button calls `load()`
+  // directly and discards its cleanup, so `cancelled` alone cannot stop a
+  // stale setState if the component unmounts while that manual retry is
+  // still in flight (the effect-driven call is still covered by `cancelled`
+  // via its own cleanup).
+  // #VERIFY: `isMountedRef` closes that gap; every setState below checks it
+  // alongside `cancelled` before writing state.
+  const isMountedRef = useRef(true)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
+
   // #ASSUME: timing dependencies: the fetch below can outlive its effect
   // (profileId changes, or a manual retry re-fires while the prior request
   // is still in flight).
@@ -38,9 +53,9 @@ export function LibraryPage() {
       setState({ status: 'loading' })
       try {
         const items = await libraryApi.list(id)
-        if (!cancelled) setState({ status: 'ready', items })
+        if (!cancelled && isMountedRef.current) setState({ status: 'ready', items })
       } catch {
-        if (!cancelled) setState({ status: 'error' })
+        if (!cancelled && isMountedRef.current) setState({ status: 'error' })
       }
     }
     fetchItems()
@@ -77,7 +92,11 @@ export function LibraryPage() {
 
   if (!profileId) return null
   if (state.status === 'loading') {
-    return <p className="library__status">Loading your books…</p>
+    return (
+      <p className="library__status" role="status" aria-live="polite">
+        Loading your books…
+      </p>
+    )
   }
   if (state.status === 'error') {
     return (
