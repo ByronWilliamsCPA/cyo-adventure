@@ -25,7 +25,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.2 | **Updated**: 2026-07-02
+> **Status**: Active | **Version**: 2.3 | **Updated**: 2026-07-02
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -250,6 +250,8 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Scheduled jobs | pg_cron | ADR-007 raw-output retention purge and maintenance |
 | Compute hosting | One container host (Fly.io / Railway / Azure Container Apps; decide in P9-03) | FastAPI app + generation worker; the safety pipeline never moves to Edge Functions |
 | Supabase plan tiers | Free for dev/staging (50k MAU, 500 MB DB, 1 GB storage); Pro for production from TestFlight (P9-09) | Free projects pause when inactive and lack daily backups |
+| Moderation reviewer (public tier) | Modal-served open-weight reviewer ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)) | Reviewer independent of the generation provider; bursty serverless GPU; no third-party model vendor sees children's content in review; OpenRouter reviewer as fallback |
+| Generation (public tier) | OpenRouter (Claude) primary, unchanged | Modal `ModalProvider` leg is experimental only; promotion to primary requires the ADR-010 yield + cost gate |
 | Consent + deletion | First-party flows + Supabase Auth admin API | COPPA verifiable parental consent; deletion incl. Apple token revocation (our code) |
 
 Exact pinned versions are produced in Phase 0 as `TECHNICAL_BASELINE.md`. Container images
@@ -893,15 +895,16 @@ successful App Store submission.
 |-----------|-------------|-------|
 | P9-01 | `catalog_published` state on the publish state machine | Admin-curated transition in `src/cyo_adventure/publishing/state_machine.py` + migration; family `published` unchanged; catalog stories still carry full provenance and approval records |
 | P9-02 | Curated starter library | Pre-generate, moderate, and approve a launch set (target: 12 stories, 4 per age band); free tier gets a subset, subscription gets all; weekly-release cadence documented as the retention driver |
-| P9-03 | Hosted infrastructure ([ADR-009](./adr/adr-009-supabase-platform.md)) | Production Supabase project (Postgres via direct/session-mode connection; story blobs stay inline JSONB per the tech-stack table) + one container host for API and worker (Fly.io / Railway / Azure Container Apps, decided here); set explicit `pool_size`/`max_overflow` in `core/database.py` (its existing `#CRITICAL` marker requires this before production, and Supabase connections are a bounded resource); **time-boxed queue evaluation**: port the worker to Supabase Queues (pgmq) if the generation integration tests pass (only `generation/queue.py` is RQ-coupled; the worker's async core is queue-agnostic by design), else the pre-approved Upstash Redis fallback with RQ unchanged; ADR-007 retention purge moves to pg_cron; homelab remains dev/family staging; infra-as-code checked in |
-| P9-04 | Live moderation mandatory in production | `review_provider != "mock"` enforced by config validation in production; classifier keys (`OPENAI_API_KEY` or `PERSPECTIVE_API_KEY`) required (existing `_require_classifier_when_reviewing` invariant) |
+| P9-03 | Hosted infrastructure ([ADR-009](./adr/adr-009-supabase-platform.md)) | Production Supabase project (Postgres via direct/session-mode connection; story blobs stay inline JSONB per the tech-stack table) + one container host for API and worker (Fly.io / Railway / Azure Container Apps, decided here; Modal functions + queues are a candidate for the worker half per ADR-010, with the API staying on the always-on host); set explicit `pool_size`/`max_overflow` in `core/database.py` (its existing `#CRITICAL` marker requires this before production, and Supabase connections are a bounded resource); **time-boxed queue evaluation**: port the worker to Supabase Queues (pgmq) if the generation integration tests pass (only `generation/queue.py` is RQ-coupled; the worker's async core is queue-agnostic by design), else the pre-approved Upstash Redis fallback with RQ unchanged; ADR-007 retention purge moves to pg_cron; homelab remains dev/family staging; infra-as-code checked in |
+| P9-04 | Live moderation mandatory in production | `review_provider != "mock"` enforced by config validation in production; classifier keys (`OPENAI_API_KEY` or `PERSPECTIVE_API_KEY`) required (existing `_require_classifier_when_reviewing` invariant); production reviewer is the Modal backend from P9-12 with the OpenRouter reviewer as configured fallback |
 | P9-05 | Rate limiting, quotas, and cost caps | Per-family generation quotas, global daily LLM spend cap with alarm and circuit breaker, API rate limits; spend dashboards |
 | P9-06 | Production observability + ops | Sentry (client + server), structured logs with correlation IDs; Supabase daily backups/PITR on Pro plus a restore drill that includes a full export (schema, data, storage) to prove the ejection path (extends the Phase 5 runbook to the public tier) |
 | P9-07 | Ratings as curation signal | Existing `ratings` API surfaced in the admin curation view |
 | P9-08 | App Store listing | Screenshots, description, age rating from P7-07, privacy nutrition labels from P7-06, review notes from `docs/planning/app-store-review-notes.md` |
 | P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission; **upgrade the production Supabase project to Pro at TestFlight start** (free projects pause when inactive and lack daily backups) |
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
-| P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only |
+| P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003, reaffirmed by [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only; the Modal generation leg (post-launch backlog) joins the public path only via the ADR-010 promotion gate |
+| P9-12 | Modal moderation review backend ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md), executes deferred slice 2b) | Implement `review_provider = "modal"` in `moderation/review_provider.py` (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in Track 2 (independent of Phases 6-8) |
 
 **Acceptance criteria**:
 
@@ -929,14 +932,21 @@ Ordered by expected leverage; each becomes a phase or slice when picked up:
 
 1. **Weekly catalog releases**: operationalize P9-02 into a standing cadence (the
    subscription retention driver).
-2. **Read-aloud (TTS)** from Phase 4b, positioned as a subscription feature; widens the
+2. **Modal generation leg experiment** ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)):
+   `ModalProvider` adapter behind the `GenerationProvider` seam with vLLM guided
+   decoding aimed at the Tier-2 structural failures (the residual yield lever from
+   Phase 2b); promotion to primary only after the 20-brief yield harness clears >=60%
+   with Tier-2 no worse than the incumbent AND cost per accepted story is measured and
+   accepted against credit-pack pricing; results recorded under
+   `docs/planning/yield-results/`.
+3. **Read-aloud (TTS)** from Phase 4b, positioned as a subscription feature; widens the
    audience to the youngest band.
-3. **Parent progress reports**: weekly email/dashboard of reading activity (guardian-only
+4. **Parent progress reports**: weekly email/dashboard of reading activity (guardian-only
    data, no third-party processors in the kid context).
-4. **Android release**: same Capacitor codebase, Google Play family policies.
-5. **Web direct-billing channel**: the PWA remains; external-purchase link-out where
+5. **Android release**: same Capacitor codebase, Google Play family policies.
+6. **Web direct-billing channel**: the PWA remains; external-purchase link-out where
    App Store rules permit (US anti-steering relief), cheaper family plan direct.
-6. **Education channel**: teacher-as-guardian maps onto the existing family model;
+7. **Education channel**: teacher-as-guardian maps onto the existing family model;
    classroom licensing monetizes outside app-store commission entirely.
 
 ---
@@ -1030,6 +1040,7 @@ documents.
 | Supabase platform dependency (its incident is our login and data-plane outage) | M | M | Managed SLA on Pro (P9-09); open components underneath (Postgres, S3 API, GoTrue) keep ejection a migration, not a rewrite; export drill in P9-06 proves it | 6, 9 |
 | Sign in with Apple operational traps (one-time name/email, relay email, web-path secret expiry) | M | L | Native path has no client secret (`signInWithIdToken`, P6-05); first-login capture test; never key on email; register sending domain with Apple relay before any email feature; reduced web-secret rotation runbook | 6 |
 | pgmq queue port fails or underperforms | M | L | Time-boxed evaluation with the existing generation integration tests (P9-03); pre-approved Upstash Redis fallback keeps RQ unchanged | 9 |
+| Modal review backend outage or regression | M | L | Bursty usage (near-zero idle cost); OpenRouter reviewer stays as configured fallback; Stage-0 classifiers unaffected | 9 |
 | asyncpg misbehaves behind transaction-mode pooling | M | M | Direct or session-mode connections only (ADR-009); documented in `TECHNICAL_BASELINE.md` at Phase 6; connection-mode smoke test in CI against staging | 6, 9 |
 | Thin catalog at launch kills conversion and retention | M | H | Curated starter library with per-band coverage (P9-02); weekly-release cadence; 4b read-aloud as subscription lever | 9 |
 
@@ -1140,11 +1151,13 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-007: Raw LLM output retention policy | Retention for `GenerationJob.report` | [docs/planning/adr/adr-007-raw-output-retention.md](./adr/adr-007-raw-output-retention.md) |
 | ADR-008: Public App Store launch | Distribution, auth, monetization, hosting, and compliance pivots for Track 2 | [docs/planning/adr/adr-008-public-app-store-launch.md](./adr/adr-008-public-app-store-launch.md) |
 | ADR-009: Supabase platform | Auth, database, storage, and queue topology for the public tier (amends ADR-008) | [docs/planning/adr/adr-009-supabase-platform.md](./adr/adr-009-supabase-platform.md) |
+| ADR-010: Modal review + gated generation leg | Moderation reviewer on Modal; evidence-gated path for Modal generation (amends ADR-003) | [docs/planning/adr/adr-010-modal-review-and-gated-generation.md](./adr/adr-010-modal-review-and-gated-generation.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
 
 ---
 
-**Last Updated**: 2026-07-02 (v2.2: code-audit refinements: deprecation register, inline-blob
+**Last Updated**: 2026-07-02 (v2.3: Modal review backend + evidence-gated generation
+leg per ADR-010; v2.2: code-audit refinements: deprecation register, inline-blob
 storage correction, guardian email column, public-tier provider config, pool sizing;
 v2.1: Track 2 pivoted to the Supabase platform per ADR-009;
 v2.0: Track 2 public App Store launch added per ADR-008)
