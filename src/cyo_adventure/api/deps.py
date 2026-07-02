@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Annotated
 
 import jwt
 from fastapi import Depends, Header
+from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 
 from cyo_adventure.core.config import settings
@@ -202,7 +203,7 @@ def _jwks_client() -> jwt.PyJWKClient:
     return _jwks_client_cache
 
 
-def _verify_oidc_jwt(token: str) -> str:
+async def _verify_oidc_jwt(token: str) -> str:
     """Verify a Supabase-issued JWT and return its subject.
 
     Verifies signature (via the cached JWKS), issuer, audience, and expiry.
@@ -225,8 +226,16 @@ def _verify_oidc_jwt(token: str) -> str:
     # A failure here must never fall back to trusting the token unverified.
     # #VERIFY: test_oidc_verification.py covers expired/wrong-issuer/
     # wrong-audience/tampered-signature/alg-none, each asserting AuthenticationError.
+    # #CRITICAL: timing-dependencies: get_signing_key_from_jwt does a blocking
+    # urllib fetch on a JWKS cache miss/refresh; run inline it would stall the
+    # event loop for every in-flight request for the duration of that fetch.
+    # The threadpool offload keeps the async request path responsive; the
+    # jwt.decode that follows is CPU-cheap and stays inline.
+    # #VERIFY: test_oidc_verification.py exercises this path end-to-end (await).
     try:
-        signing_key = _jwks_client().get_signing_key_from_jwt(token)
+        signing_key = await run_in_threadpool(
+            _jwks_client().get_signing_key_from_jwt, token
+        )
         payload = jwt.decode(
             token,
             signing_key.key,  # pyright: ignore[reportAny]
@@ -248,7 +257,7 @@ def _verify_oidc_jwt(token: str) -> str:
     return subject
 
 
-def _resolve_subject(token: str) -> str:
+async def _resolve_subject(token: str) -> str:
     """Resolve the verified subject from a bearer token.
 
     In ``local`` this trusts the token as-is (the dev/test auth seam,
@@ -268,7 +277,7 @@ def _resolve_subject(token: str) -> str:
     # routes to _verify_oidc_jwt.
     if settings.environment == "local":
         return token
-    return _verify_oidc_jwt(token)
+    return await _verify_oidc_jwt(token)
 
 
 async def require_principal(
@@ -288,7 +297,7 @@ async def require_principal(
         AuthenticationError: If the token is missing, fails OIDC verification
             outside ``local``, or the subject is unknown.
     """
-    subject = _resolve_subject(_extract_subject(authorization))
+    subject = await _resolve_subject(_extract_subject(authorization))
     user = await session.scalar(select(User).where(User.authn_subject == subject))
     if user is None:
         msg = "unknown subject"

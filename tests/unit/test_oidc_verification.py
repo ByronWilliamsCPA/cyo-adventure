@@ -43,9 +43,22 @@ class _FakeJwksClient:
     """Stand-in for jwt.PyJWKClient that always serves one fixed public key."""
 
     def __init__(self, key: object) -> None:
+        """Store the public key this fake will serve for every lookup.
+
+        Args:
+            key: The public key returned to every caller.
+        """
         self._key = key
 
     def get_signing_key_from_jwt(self, _token: str) -> _FakeSigningKey:
+        """Return the fixed signing key, ignoring the token's kid header.
+
+        Args:
+            _token: The JWT whose header would normally select a key; unused.
+
+        Returns:
+            _FakeSigningKey: The wrapper around the fixed public key.
+        """
         return _FakeSigningKey(key=self._key)
 
 
@@ -62,9 +75,17 @@ def _configure_oidc(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
-def _claims(**overrides: Any) -> dict[str, Any]:
+def _claims(**overrides: object) -> dict[str, Any]:
+    """Build a valid claim set, with keyword overrides applied on top.
+
+    Args:
+        **overrides: Claim values that replace (or extend) the valid base set.
+
+    Returns:
+        dict[str, Any]: The merged claims ready for :func:`_sign`.
+    """
     now = datetime.now(UTC)
-    base = {
+    base: dict[str, Any] = {
         "sub": _SUBJECT,
         "iss": _ISSUER,
         "aud": _AUDIENCE,
@@ -76,64 +97,81 @@ def _claims(**overrides: Any) -> dict[str, Any]:
 
 
 def _sign(
-    claims: dict[str, Any], *, key: object = _PRIVATE_KEY, alg: str = "RS256"
+    claims: dict[str, Any], *, key: rsa.RSAPrivateKey = _PRIVATE_KEY, alg: str = "RS256"
 ) -> str:
+    """Encode and sign the claims into a compact JWT.
+
+    Args:
+        claims: The claim set to encode.
+        key: The signing key; defaults to the suite's primary RSA key.
+        alg: The JWS algorithm name.
+
+    Returns:
+        str: The signed, compact-serialized token.
+    """
     return jwt.encode(claims, key, algorithm=alg)
 
 
 @pytest.mark.unit
-def test_valid_token_returns_subject() -> None:
+@pytest.mark.asyncio
+async def test_valid_token_returns_subject() -> None:
     """A correctly-signed, current, matching-issuer/audience token verifies."""
     token = _sign(_claims())
-    assert deps._verify_oidc_jwt(token) == _SUBJECT
+    assert await deps._verify_oidc_jwt(token) == _SUBJECT
 
 
 @pytest.mark.unit
-def test_expired_token_rejected() -> None:
+@pytest.mark.asyncio
+async def test_expired_token_rejected() -> None:
     """A token whose exp claim is in the past fails verification."""
     now = datetime.now(UTC)
     token = _sign(_claims(iat=now - timedelta(hours=2), exp=now - timedelta(hours=1)))
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_wrong_issuer_rejected() -> None:
+@pytest.mark.asyncio
+async def test_wrong_issuer_rejected() -> None:
     """A token issued by a different issuer than configured fails verification."""
     token = _sign(_claims(iss="https://attacker.example/auth/v1"))
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_wrong_audience_rejected() -> None:
+@pytest.mark.asyncio
+async def test_wrong_audience_rejected() -> None:
     """A token minted for a different audience fails verification."""
     token = _sign(_claims(aud="some-other-service"))
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_tampered_signature_rejected() -> None:
+@pytest.mark.asyncio
+async def test_tampered_signature_rejected() -> None:
     """Flipping a byte in the signature segment invalidates the token."""
     token = _sign(_claims())
     header_b64, payload_b64, signature_b64 = token.split(".")
     tampered_sig = ("A" if signature_b64[0] != "A" else "B") + signature_b64[1:]
     tampered_token = f"{header_b64}.{payload_b64}.{tampered_sig}"
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(tampered_token)
+        await deps._verify_oidc_jwt(tampered_token)
 
 
 @pytest.mark.unit
-def test_wrong_signing_key_rejected() -> None:
+@pytest.mark.asyncio
+async def test_wrong_signing_key_rejected() -> None:
     """A token signed by a key other than the one served by the JWKS fails."""
     token = _sign(_claims(), key=_OTHER_PRIVATE_KEY)
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_algorithm_none_rejected() -> None:
+@pytest.mark.asyncio
+async def test_algorithm_none_rejected() -> None:
     """An unsigned alg=none token is rejected by the RS256/ES256 allowlist.
 
     PyJWT never falls back to a caller-supplied algorithm; the explicit
@@ -153,11 +191,12 @@ def test_algorithm_none_rejected() -> None:
     payload = _b64url(json.dumps(json_safe_claims).encode())
     token = f"{header}.{payload}."
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_missing_subject_claim_rejected() -> None:
+@pytest.mark.asyncio
+async def test_missing_subject_claim_rejected() -> None:
     """A validly-signed token with no sub claim is rejected.
 
     With sub in the decode-time require list, this is now rejected by
@@ -168,11 +207,12 @@ def test_missing_subject_claim_rejected() -> None:
     del claims["sub"]
     token = _sign(claims)
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_empty_subject_claim_rejected() -> None:
+@pytest.mark.asyncio
+async def test_empty_subject_claim_rejected() -> None:
     """A validly-signed token with an empty sub claim hits the manual check.
 
     An empty string is present, so the require list passes; the explicit
@@ -180,11 +220,12 @@ def test_empty_subject_claim_rejected() -> None:
     """
     token = _sign(_claims(sub=""))
     with pytest.raises(AuthenticationError, match="subject"):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_token_without_exp_rejected() -> None:
+@pytest.mark.asyncio
+async def test_token_without_exp_rejected() -> None:
     """A validly-signed token missing the exp claim is rejected.
 
     The options={"require": [...]} allowlist in _verify_oidc_jwt forces exp to
@@ -194,11 +235,12 @@ def test_token_without_exp_rejected() -> None:
     del claims["exp"]
     token = _sign(claims)
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_hs256_confusion_rejected() -> None:
+@pytest.mark.asyncio
+async def test_hs256_confusion_rejected() -> None:
     """An HS256 token forged with the RSA public key as the HMAC secret fails.
 
     The RS256/ES256 allowlist defeats the classic algorithm-confusion attack:
@@ -227,11 +269,12 @@ def test_hs256_confusion_rejected() -> None:
     signature = _b64url(hmac.new(public_pem, signing_input, hashlib.sha256).digest())
     forged = f"{header}.{payload}.{signature}"
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(forged)
+        await deps._verify_oidc_jwt(forged)
 
 
 @pytest.mark.unit
-def test_jwks_fetch_failure_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.asyncio
+async def test_jwks_fetch_failure_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     """A JWKS lookup failure (network, unknown kid) raises AuthenticationError."""
 
     class _FailingJwksClient:
@@ -244,21 +287,25 @@ def test_jwks_fetch_failure_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(deps, "_jwks_client", _failing_jwks_client)
     token = _sign(_claims())
     with pytest.raises(AuthenticationError):
-        deps._verify_oidc_jwt(token)
+        await deps._verify_oidc_jwt(token)
 
 
 @pytest.mark.unit
-def test_resolve_subject_trusts_token_in_local(monkeypatch: pytest.MonkeyPatch) -> None:
+@pytest.mark.asyncio
+async def test_resolve_subject_trusts_token_in_local(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """_resolve_subject bypasses verification entirely when environment=='local'."""
     monkeypatch.setattr(deps.settings, "environment", "local")
-    assert deps._resolve_subject("opaque-dev-token") == "opaque-dev-token"
+    assert await deps._resolve_subject("opaque-dev-token") == "opaque-dev-token"
 
 
 @pytest.mark.unit
-def test_resolve_subject_verifies_outside_local(
+@pytest.mark.asyncio
+async def test_resolve_subject_verifies_outside_local(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """_resolve_subject routes to _verify_oidc_jwt when environment != 'local'."""
     monkeypatch.setattr(deps.settings, "environment", "staging")
     token = _sign(_claims())
-    assert deps._resolve_subject(token) == _SUBJECT
+    assert await deps._resolve_subject(token) == _SUBJECT
