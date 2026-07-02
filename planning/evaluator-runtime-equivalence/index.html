@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+        <meta name="description" content="Systematic enumeration of every input class where the Python and TypeScript condition evaluators and player engines could disagree, the fixes and grammar rules that close each class, and the residual risks.">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/condition-evaluator-spec/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/evaluator-runtime-equivalence/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Condition Evaluator Specification - CYO Adventure</title>
+        <title>Validator-Runtime Equivalence: divergence audit and closure argument - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#condition-evaluator-specification" class="md-skip">
+        <a href="#why-this-document-exists" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Condition Evaluator Specification
+              Validator-Runtime Equivalence: divergence audit and closure argument
             
           </span>
         </div>
@@ -2317,8 +2317,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2327,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#purpose" class="md-nav__link">
+  <a href="#why-this-document-exists" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Purpose
+        Why this document exists
       
     </span>
   </a>
@@ -2338,33 +2336,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#1-condition-object-shape" class="md-nav__link">
+  <a href="#the-divergence-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Condition Object Shape
+        The divergence matrix
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-whitelisted-operator-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Whitelisted Operator Table
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="2. Whitelisted Operator Table">
+    <nav class="md-nav" aria-label="The divergence matrix">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#comparison-operand-grammar" class="md-nav__link">
+  <a href="#condition-evaluator-by-operator-and-operand-type" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Comparison operand grammar
+        Condition evaluator, by operator and operand type
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#player-engine-cross-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Player engine, cross-implementation
       
     </span>
   </a>
@@ -2377,10 +2375,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-excluded-operators" class="md-nav__link">
+  <a href="#the-closure-in-one-view" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Excluded Operators
+        The closure, in one view
       
     </span>
   </a>
@@ -2388,10 +2386,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-totality-contract" class="md-nav__link">
+  <a href="#why-the-remaining-space-cannot-diverge" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Totality Contract
+        Why the remaining space cannot diverge
       
     </span>
   </a>
@@ -2399,10 +2397,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-identical-result-requirement" class="md-nav__link">
+  <a href="#residual-risks-stated-honestly" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Identical-Result Requirement
+        Residual risks, stated honestly
       
     </span>
   </a>
@@ -2410,43 +2408,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-conformance-fixture-format" class="md-nav__link">
+  <a href="#maintenance-contract" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Conformance Fixture Format
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-example-fixtures" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Example Fixtures
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#8-implementation-guidance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        8. Implementation Guidance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related Documents
+        Maintenance contract
       
     </span>
   </a>
@@ -2473,366 +2438,243 @@
   
 
 
-<h1 id="condition-evaluator-specification">Condition Evaluator Specification<a class="headerlink" href="#condition-evaluator-specification" title="Permanent link">&para;</a></h1>
+  <h1>Validator-Runtime Equivalence: divergence audit and closure argument</h1>
+
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
-<strong>Binding on</strong>: Python evaluator (validator) and TypeScript evaluator (PWA player)
-<strong>Related ADR</strong>: <a href="../adr/adr-006-conditions-inhouse-evaluator/">ADR-006</a></p>
+<p><strong>Status</strong>: Active | <strong>Created</strong>: 2026-07-01
+<strong>Companion change set</strong>: branch <code>fix/evaluator-runtime-parity</code></p>
 </blockquote>
-<hr />
-<h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
-<p>The condition evaluator is a small, total interpreter over a whitelisted subset of the
-JSONLogic object shape. It runs in two implementations: Python (backend validator) and
-TypeScript (PWA player). This document specifies both implementations. A divergence between
-the two constitutes a conformance failure.</p>
-<hr />
-<h2 id="1-condition-object-shape">1. Condition Object Shape<a class="headerlink" href="#1-condition-object-shape" title="Permanent link">&para;</a></h2>
-<p>A condition is a JSON object following the JSONLogic structural convention: a single-key
-object whose key is the operator name and whose value is the operand or operand array.</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;operator&quot;</span><span class="p">:</span><span class="w"> </span><span class="err">opera</span><span class="kc">n</span><span class="err">d_or_array</span><span class="w"> </span><span class="p">}</span>
-</span></code></pre></div>
-<p>Conditions are stored as-is in <code>choice.condition</code> in the Storybook JSON blob. They are not
-stored as strings; there is no parser. An LLM emits a JSON tree; the evaluator interprets it
-directly.</p>
-<p><strong>Examples</strong>:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// &quot;you have the lantern&quot;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// &quot;courage is at least 3 and you do not have the curse&quot;</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">{</span><span class="w"> </span><span class="nt">&quot;and&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;&gt;=&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;!&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_curse&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1">// choice is always visible (absent condition)</span>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="c1">// (no condition field means always true; not a JSON null)</span>
-</span></code></pre></div>
-<hr />
-<h2 id="2-whitelisted-operator-table">2. Whitelisted Operator Table<a class="headerlink" href="#2-whitelisted-operator-table" title="Permanent link">&para;</a></h2>
-<p>The following operators are the complete whitelist. Any operator not in this table is rejected
-by the Layer-1 validator (rule L1-6) at schema validation time, before any evaluation occurs.</p>
+<h2 id="why-this-document-exists">Why this document exists<a class="headerlink" href="#why-this-document-exists" title="Permanent link">&para;</a></h2>
+<p>The product's keystone guarantee ("every published story provably reaches an
+ending") holds only if three components agree about every condition and every
+effect: the Python evaluator/engine (used by the Layer-2 validation walk), and
+the TypeScript evaluator/engine (used by the child's browser). ADR-006 calls
+identical semantics a hard requirement. This audit enumerated the full input
+space, found one real divergence (shipped), one silent semantic trap, and one
+open divergence class, and closed all three. The conformance corpus at
+<code>schema/conformance/conditions.json</code> now pins every cell of the matrix below.</p>
+<h2 id="the-divergence-matrix">The divergence matrix<a class="headerlink" href="#the-divergence-matrix" title="Permanent link">&para;</a></h2>
+<p>Cells marked AGREE were verified identical by construction and pinned by a
+conformance case where the behavior is non-obvious. Cells marked DIVERGED or
+TRAP are the findings; each names its closure.</p>
+<h3 id="condition-evaluator-by-operator-and-operand-type">Condition evaluator, by operator and operand type<a class="headerlink" href="#condition-evaluator-by-operator-and-operand-type" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Operator</th>
-<th>Arity</th>
-<th>Operand form</th>
-<th>Semantics</th>
+<th>Operand situation</th>
+<th>Python (before)</th>
+<th>TypeScript</th>
+<th>Verdict and closure</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>var</code></td>
-<td>1</td>
-<td><code>{ "var": "name" }</code></td>
-<td>Resolve the named variable from <code>var_state</code>. Returns the stored value (bool or int). The variable must be declared in <code>variables</code>; <code>var</code> always resolves because every variable carries an <code>initial</code> value.</td>
+<td>declared bool/int/str</td>
+<td>truthiness via <code>bool()</code></td>
+<td>truthiness via <code>Boolean()</code></td>
+<td>AGREE (<code>truthy_int_zero_is_false</code>, <code>truthy_nonzero_int_is_true</code>; <code>""</code> falsy, <code>"0"</code> truthy on both)</td>
 </tr>
 <tr>
-<td><code>==</code></td>
-<td>2</td>
-<td><code>{ "==": [a, b] }</code></td>
-<td>Strict equality. Returns true if <code>a</code> and <code>b</code> are equal by value and type.</td>
+<td><code>var</code></td>
+<td>missing variable</td>
+<td><code>False</code> default</td>
+<td><code>false</code> default</td>
+<td>AGREE (<code>bare_missing_var_is_false</code>); story-level validation rejects undeclared references, so this is defensive-domain only</td>
 </tr>
 <tr>
-<td><code>!=</code></td>
-<td>2</td>
-<td><code>{ "!=": [a, b] }</code></td>
-<td>Strict inequality. Returns true if <code>a</code> and <code>b</code> are not equal by value and type.</td>
+<td><code>!</code>, <code>and</code>, <code>or</code></td>
+<td>any, incl. empty list</td>
+<td><code>not</code> / <code>all</code> / <code>any</code></td>
+<td><code>!</code> / <code>.every</code> / <code>.some</code></td>
+<td>AGREE; even <code>all([])</code>/<code>[].every</code> match (<code>true</code>/<code>false</code>), and the shape validator requires length &gt;= 2 anyway</td>
 </tr>
 <tr>
-<td><code>&lt;</code></td>
-<td>2</td>
-<td><code>{ "&lt;": [a, b] }</code></td>
-<td>Returns true if <code>a</code> is strictly less than <code>b</code>. Both operands must resolve to numeric (int) values.</td>
+<td><code>==</code> <code>!=</code></td>
+<td>same types</td>
+<td><code>_strict_eq</code></td>
+<td><code>===</code></td>
+<td>AGREE</td>
 </tr>
 <tr>
-<td><code>&lt;=</code></td>
-<td>2</td>
-<td><code>{ "&lt;=": [a, b] }</code></td>
-<td>Returns true if <code>a</code> is less than or equal to <code>b</code>. Both operands must resolve to numeric (int) values.</td>
+<td><code>==</code> <code>!=</code></td>
+<td>bool vs int</td>
+<td><code>False</code> (boolness check)</td>
+<td><code>false</code></td>
+<td>AGREE (<code>eq_bool_int_is_false</code>); this aliasing was already fixed for equality before this audit</td>
 </tr>
 <tr>
-<td><code>&gt;</code></td>
-<td>2</td>
-<td><code>{ "&gt;": [a, b] }</code></td>
-<td>Returns true if <code>a</code> is strictly greater than <code>b</code>. Both operands must resolve to numeric (int) values.</td>
+<td><code>==</code> <code>!=</code></td>
+<td>int vs str, bool vs str</td>
+<td><code>False</code></td>
+<td><code>false</code></td>
+<td>AGREE (<code>eq_across_types_is_false</code>)</td>
 </tr>
 <tr>
-<td><code>&gt;=</code></td>
-<td>2</td>
-<td><code>{ "&gt;=": [a, b] }</code></td>
-<td>Returns true if <code>a</code> is greater than or equal to <code>b</code>. Both operands must resolve to numeric (int) values.</td>
+<td><code>&lt; &lt;= &gt; &gt;=</code></td>
+<td>int vs int</td>
+<td>exact comparison</td>
+<td>float64 comparison</td>
+<td>AGREE within the literal bound (see class 3)</td>
 </tr>
 <tr>
-<td><code>and</code></td>
-<td>2+</td>
-<td><code>{ "and": [a, b, ...] }</code></td>
-<td>Logical conjunction. Returns true if every operand is truthy. Evaluates all operands (not short-circuit); a schema-valid condition tree has no side effects, so eager evaluation is safe and simplifies the totality contract.</td>
+<td><code>&lt; &lt;= &gt; &gt;=</code></td>
+<td><strong>bool anywhere</strong> (literal, bool-valued var, or missing-var default)</td>
+<td><strong>treated as 0/1</strong> because <code>bool</code> subclasses <code>int</code></td>
+<td><code>false</code> (fail closed)</td>
+<td><strong>DIVERGED (the shipped bug).</strong> Closed three ways: <code>_ordered</code> now rejects bools explicitly; the shape validator rejects boolean literals under ordering operators; conformance cases <code>lt_bool_var_left_is_false</code>, <code>gt_bool_var_left_is_false</code>, <code>ge_bool_vars_both_sides_is_false</code>, <code>le_bool_var_right_is_false</code>, <code>lt_missing_var_is_false</code>, <code>defensive_lt_false_literal_is_false</code>, <code>defensive_gt_true_literal_is_false</code> pin every route</td>
 </tr>
 <tr>
-<td><code>or</code></td>
-<td>2+</td>
-<td><code>{ "or": [a, b, ...] }</code></td>
-<td>Logical disjunction. Returns true if at least one operand is truthy. Evaluates all operands (not short-circuit); same rationale as <code>and</code>.</td>
+<td>any comparison</td>
+<td>str vs int under ordering</td>
+<td><code>False</code></td>
+<td><code>false</code></td>
+<td>AGREE (<code>ordering_on_string_is_false</code>)</td>
 </tr>
 <tr>
-<td><code>!</code></td>
-<td>1</td>
-<td><code>{ "!": a }</code></td>
-<td>Logical negation. Returns true if <code>a</code> is falsy. The operand may be a <code>var</code> expression or a nested condition object.</td>
+<td>any comparison</td>
+<td><strong>nested condition as operand</strong></td>
+<td>resolved to literal <code>False</code>, never evaluated</td>
+<td>same</td>
+<td><strong>TRAP (agreeing but silently wrong vs author intent).</strong> The spec's old pseudocode even suggested evaluating nested operands, which neither implementation did. Closed: the shape grammar now restricts dict operands to exactly <code>{"var": name}</code>; <code>defensive_nested_condition_operand_is_literal_false_not_evaluated</code> pins the defensive agreement</td>
+</tr>
+<tr>
+<td>any comparison</td>
+<td>non-literal operand (null, list)</td>
+<td><code>False</code></td>
+<td><code>false</code></td>
+<td>AGREE (defensive; shape-invalid)</td>
+</tr>
+<tr>
+<td><code>==</code> <code>!=</code> <code>&lt; &lt;= &gt; &gt;=</code></td>
+<td><strong>int magnitude &gt; 2^53</strong></td>
+<td>exact</td>
+<td>rounds to nearest double</td>
+<td><strong>DIVERGED (open class).</strong> Example: var holds 2^53, literal 2^53 + 1: Python <code>False</code>, TS <code>true</code>. Closed at the gate: every story int literal (condition literals, <code>Variable.initial/min/max</code>, <code>Effect.value</code>) is now bounded to |n| &lt;= 1,000,000,000 (<code>MAX_ABS_STORY_INT</code>), and the reading-state save floor rejects submitted values above 2^53 - 1</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Total operator count</strong>: 10 (var, ==, !=, &lt;, &lt;=, &gt;, &gt;=, and, or, !).</p>
-<p><strong>Note on <code>!</code> operand form</strong>: <code>!</code> takes a single operand, not an array. <code>{ "!": {"var":
-"has_curse"} }</code> is valid. <code>{ "!": [{"var": "has_curse"}] }</code> is not valid and must be rejected
-by the validator.</p>
-<h3 id="comparison-operand-grammar">Comparison operand grammar<a class="headerlink" href="#comparison-operand-grammar" title="Permanent link">&para;</a></h3>
-<p>A comparison operand is exactly one of: a <code>{ "var": name }</code> reference, or a bool/int/str
-literal. Three shape rules close divergence classes between the two evaluators (see
-<code>docs/planning/evaluator-runtime-equivalence.md</code> for the full derivation):</p>
+<h3 id="player-engine-cross-implementation">Player engine, cross-implementation<a class="headerlink" href="#player-engine-cross-implementation" title="Permanent link">&para;</a></h3>
+<p>The engines already share a trace-conformance corpus
+(<code>schema/conformance/player_traces.json</code>). The audit checked the cells that
+corpus cannot express:</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Python engine</th>
+<th>TS engine</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>set</code> with bool value on bounded var</td>
+<td>not clamped (bool excluded explicitly)</td>
+<td>not clamped (<code>typeof !== 'number'</code>)</td>
+<td>AGREE</td>
+</tr>
+<tr>
+<td><code>inc</code>/<code>dec</code> with bool value</td>
+<td>would treat as 0/1 (<code>isinstance(value, int)</code>)</td>
+<td>treats as 0</td>
+<td>Differs only defensively; <code>Effect._check_value</code> rejects bool values for inc/dec, so the input is unrepresentable</td>
+</tr>
+<tr>
+<td><code>inc</code>/<code>dec</code> on a bool-valued variable</td>
+<td>base would be 0/1</td>
+<td>base 0</td>
+<td>Differs only defensively; L1-6 rejects effect/type mismatches before publish</td>
+</tr>
+<tr>
+<td>clamp semantics (declared min/max)</td>
+<td>clamp on set/inc/dec</td>
+<td>clamp on set/inc/dec</td>
+<td>AGREE</td>
+</tr>
+<tr>
+<td>arithmetic beyond 2^53</td>
+<td>exact</td>
+<td>float64</td>
+<td>Bounded by the same <code>MAX_ABS_STORY_INT</code> closure; see residual risks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-closure-in-one-view">The closure, in one view<a class="headerlink" href="#the-closure-in-one-view" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>No nested conditions as comparison operands.</strong> Both evaluators resolve a non-var
-   object operand to literal <code>false</code> instead of evaluating it, so a construct like
-   <code>{ "==": [{"var": "a"}, {"!": {"var": "b"}}] }</code> would parse but silently ignore the
-   nested condition's value. The validator rejects it.</li>
-<li><strong>Ordering operators reject boolean literals.</strong> A bool can never resolve to a numeric
-   value (ordering operands must resolve to int, per the table above), so an ordering
-   comparison against a boolean literal is statically meaningless and is rejected at
-   shape validation. Equality against boolean literals remains the canonical Tier-2
-   shape and stays valid. At runtime both evaluators additionally fail closed (return
-   <code>false</code>) if a boolean ever reaches an ordering operator through any path.</li>
-<li><strong>Int literals are bounded to |n| &lt;= 1,000,000,000</strong> (<code>MAX_ABS_STORY_INT</code>). Python
-   evaluates integers exactly at any size; the TypeScript player computes in IEEE-754
-   doubles, exact only to 2^53 - 1. The bound (shared with variable declarations and
-   effect values) keeps schema-representable literals float64-exact with a wide
-   margin and materially reduces divergence risk for engine-reachable values.</li>
+<li><strong>Runtime fix</strong> (<code>storybook/evaluator.py::_ordered</code>): booleans are not
+   numeric for ordering; both implementations now fail closed identically on
+   every route (bool literal, bool-valued variable, missing-variable default).</li>
+<li><strong>Grammar tightening</strong> (<code>storybook/condition.py</code>): comparison operands are
+   exactly literals or <code>{"var": name}</code> references; ordering operators reject
+   boolean literals; int literals bounded to <code>MAX_ABS_STORY_INT</code>. Statically
+   meaningless or divergence-capable conditions are now unrepresentable, which
+   is the same design stance as the rest of the gate.</li>
+<li><strong>Schema bounds</strong> (<code>storybook/models.py</code>): <code>Variable.initial/min/max</code> and
+   <code>Effect.value</code> share the <code>MAX_ABS_STORY_INT</code> bound.</li>
+<li><strong>Save floor</strong> (<code>player/replay.py</code>): submitted reading-state values above
+   2^53 - 1 are rejected, closing the forged-save route into float64 territory
+   for unbounded variables.</li>
+<li><strong>Corpus</strong> (<code>schema/conformance/conditions.json</code>): 27 -&gt; 42 cases; every
+   matrix row above that is not obviously identical is pinned by name.</li>
 </ol>
-<hr />
-<h2 id="3-excluded-operators">3. Excluded Operators<a class="headerlink" href="#3-excluded-operators" title="Permanent link">&para;</a></h2>
-<p>The following operators are explicitly excluded by policy. The validator rejects any condition
-tree that contains them.</p>
-<table>
-<thead>
-<tr>
-<th>Excluded category</th>
-<th>Excluded operators</th>
-<th>Reason for exclusion</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Arithmetic</td>
-<td><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></td>
-<td>Conditions gate choices; arithmetic belongs in effects (inc/dec). Including it here would allow authors to compute derived values inside conditions, which complicates static analysis and makes bound checking harder.</td>
-</tr>
-<tr>
-<td>Membership</td>
-<td><code>in</code></td>
-<td>Not needed for boolean state; adds string/array semantics the evaluator does not need to handle.</td>
-</tr>
-<tr>
-<td>String operations</td>
-<td><code>cat</code>, <code>substr</code></td>
-<td>Story conditions operate on bool and int variables only. String comparison is unnecessary; string values in variables are not supported in v1.</td>
-</tr>
-<tr>
-<td>Array reductions</td>
-<td><code>map</code>, <code>reduce</code>, <code>filter</code>, <code>all</code>, <code>some</code>, <code>none</code>, <code>merge</code></td>
-<td>No array-valued variables in v1; adding array ops would require a type system and widen the attack surface.</td>
-</tr>
-<tr>
-<td>Conditional/ternary</td>
-<td><code>if</code></td>
-<td><code>if</code> is a ternary that returns a value, not a boolean predicate. It would allow conditions to produce non-boolean results, violating the totality contract. Branching is already expressed by choice visibility; <code>if</code> adds nothing.</td>
-</tr>
-<tr>
-<td>Missing/default</td>
-<td><code>missing</code>, <code>missing_some</code>, <code>default</code></td>
-<td>Every variable has an <code>initial</code> value, so <code>var</code> always resolves. The missing-value operators are unnecessary and mask schema errors.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="4-totality-contract">4. Totality Contract<a class="headerlink" href="#4-totality-contract" title="Permanent link">&para;</a></h2>
-<p><strong>Every schema-valid condition must return a boolean value without raising an exception.</strong></p>
-<p>This contract is maintained by:</p>
+<h2 id="why-the-remaining-space-cannot-diverge">Why the remaining space cannot diverge<a class="headerlink" href="#why-the-remaining-space-cannot-diverge" title="Permanent link">&para;</a></h2>
+<p>The evaluators are total functions over (condition, var_state). Post-closure:</p>
+<ul>
+<li><strong>Operator space</strong>: 10 operators, all enumerated above. Unknown operators
+  cannot reach the evaluators (shape whitelist) and both fail closed if one did.</li>
+<li><strong>Operand type space</strong>: <code>{bool, int, str}</code> literals, var references (which
+  resolve to <code>{bool, int, str}</code> or the <code>False</code> default), and the defensive
+  <code>False</code> for anything else. Every ordered pair of resolved types appears in
+  the matrix. The only type-coercion asymmetries between the languages are
+  bool-as-int (Python) and cross-type <code>==</code> looseness (JS); the first is now
+  excluded in <code>_ordered</code> and was already excluded in <code>_strict_eq</code>, the second
+  never applies because TS uses <code>===</code>.</li>
+<li><strong>Value space</strong>: int identity is the only value-level divergence channel
+  (float64 rounding). All schema-representable ints are within &plusmn;1e9; the
+  worst-case engine-reachable magnitude is bounded by
+  <code>initial + path_length x max_effect_value</code>. Reaching 2^53 from a 1e9 bound
+  requires roughly nine million maximum-size effect applications in a single
+  session, which is not a realistic user path (see residual risks). Forged
+  saves, the only way to inject a large value directly, are rejected at
+  2^53 - 1 by the structural floor.</li>
+<li><strong>Recursion depth</strong>: both evaluators recurse per nesting level. Python's
+  recursion limit (~1000) would raise on a pathologically deep condition, but
+  <code>validate_condition</code> recurses the same structure first, so such a story
+  fails validation server-side and can never be published; the TS evaluator
+  only ever sees published (validated) stories. Depth is therefore bounded
+  before either evaluator runs. A future explicit depth cap in
+  <code>validate_condition</code> would make this failure graceful instead of a 500 and
+  ties into the unimplemented L2-8 walk-failure rule (tracked separately in
+  the full-repo review).</li>
+</ul>
+<h2 id="residual-risks-stated-honestly">Residual risks, stated honestly<a class="headerlink" href="#residual-risks-stated-honestly" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Schema validity as precondition</strong>: the Layer-1 validator (L1-6) checks that only
-   whitelisted operators appear and that every <code>var</code> reference names a declared variable,
-   before any evaluation occurs.</li>
-<li><strong><code>var</code> always resolves</strong>: every declared variable has an <code>initial</code> value. The evaluator
-   initialises <code>var_state</code> from the Storybook's <code>variables</code> array before any node is entered.
-   There is no missing-variable case for a schema-valid condition.</li>
-<li><strong>Type agreement enforced at schema time</strong>: the validator checks that comparison operands
-   agree in type with the declared variable (L1-6). A runtime type mismatch in a schema-valid
-   condition is therefore a validator bug, not a runtime case to handle gracefully.</li>
-<li><strong>No recursion depth problem</strong>: the JSONLogic object shape is a tree; the evaluator recurses
-   over it. Arbitrary nesting depth is theoretically possible, but deeply nested conditions are
-   a generator smell. The validator may optionally warn on nesting depth beyond a practical
-   limit (e.g., 8 levels), but depth alone does not violate the totality contract.</li>
+<li><strong>Organic float64 drift on unbounded int variables.</strong> A variable with no
+   declared min/max can legitimately exceed 1e9 through repeated effects; the
+   engines do not saturate. Magnitude ~9.0e15 (where doubles lose exactness)
+   requires ~9,000,000 max-size increments in one session, so this is
+   documented rather than coded away. Engine-level saturation at 2^53 - 1 in
+   both engines was considered and rejected as over-engineering; revisit only
+   if unbounded accumulator variables become a real story pattern.</li>
+<li><strong>String variables are tolerated but out of spec.</strong> The spec says string
+   variables are not supported in v1, yet both evaluators handle them (and
+   agree, including truthiness and cross-type equality). If v1 ever tightens
+   this, do it at the schema (Variable model), not in the evaluators.</li>
+<li><strong>The corpus is finite.</strong> The matrix argument above is the completeness
+   claim; the corpus pins representatives of each cell, not the whole space.
+   Any new operator, literal type, or resolution rule MUST add its row to the
+   matrix and its cases to the corpus in the same change.</li>
 </ol>
-<p><strong>If a schema-valid condition raises at runtime</strong>: this is an implementation bug. Log the
-condition, the <code>var_state</code>, and the exception; surface it as a configuration-walk failure (L2-8)
-so the story is not silently published with a broken condition.</p>
-<hr />
-<h2 id="5-identical-result-requirement">5. Identical-Result Requirement<a class="headerlink" href="#5-identical-result-requirement" title="Permanent link">&para;</a></h2>
-<p><strong>The Python and TypeScript evaluators must return identical boolean results for every
-schema-valid (condition, var_state) pair.</strong></p>
-<p>This is not a best-effort goal. It is a correctness requirement: the validator and the player
-are authoritative for different parts of the lifecycle. If they disagree, a story the validator
-passes may dead-end in the player. The conformance fixture corpus (Section 6) is the
-enforcement mechanism.</p>
-<p><strong>Implementation note</strong>: the only area where divergence is likely is truthiness. Both
-implementations must use strict equality semantics for <code>==</code> and <code>!=</code>, not JavaScript-style
-loose equality. Specifically: <code>true == 1</code> must return <code>false</code> (strict: different types);
-<code>1 == 1</code> must return <code>true</code>.</p>
-<hr />
-<h2 id="6-conformance-fixture-format">6. Conformance Fixture Format<a class="headerlink" href="#6-conformance-fixture-format" title="Permanent link">&para;</a></h2>
-<p>The conformance corpus is a JSON array. Each entry is an object with three required fields:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">[</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="p">{</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">&quot;condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">&quot;var_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;has_lantern&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;courage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">&quot;expected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="p">}</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">]</span>
-</span></code></pre></div>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>condition</code></td>
-<td>Object</td>
-<td>A schema-valid JSONLogic condition object.</td>
-</tr>
-<tr>
-<td><code>var_state</code></td>
-<td>Object</td>
-<td>A complete variable state map: all declared variables with values consistent with their declared types and bounds.</td>
-</tr>
-<tr>
-<td><code>expected</code></td>
-<td>Boolean</td>
-<td>The correct boolean result. Both evaluators must return this value.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Additional optional fields</strong> (for test readability; not evaluated):</p>
-<table>
-<thead>
-<tr>
-<th>Field</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>description</code></td>
-<td>String</td>
-<td>Human-readable description of what the fixture tests.</td>
-</tr>
-<tr>
-<td><code>tags</code></td>
-<td>Array of String</td>
-<td>Categories: e.g., <code>["negation", "bool"]</code>, <code>["comparison", "int"]</code>, <code>["compound"]</code>.</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Corpus requirements</strong>:</p>
-<ul>
-<li>At least one fixture per whitelisted operator.</li>
-<li>At least five fixtures exercising compound conditions (nested <code>and</code>/<code>or</code>/<code>!</code>).</li>
-<li>At least one fixture for each boundary value of a declared <code>int</code> variable (at <code>min</code>, at
-  <code>max</code>, one below <code>min</code>, one above <code>max</code>; the last two confirm the variable was initialised
-  in bounds).</li>
-<li>The corpus is pinned in the repository and both CI pipelines run it. A failure in either
-  evaluator is a CI blocker.</li>
-</ul>
-<hr />
-<h2 id="7-example-fixtures">7. Example Fixtures<a class="headerlink" href="#7-example-fixtures" title="Permanent link">&para;</a></h2>
-<p>The following three fixtures are normative examples. They must be included in the conformance
-corpus verbatim.</p>
-<p><strong>Fixture 1: simple bool equality, true case</strong></p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern is true; condition checks equality to true&quot;</span><span class="p">,</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;bool&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;equality&quot;</span><span class="p">],</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span><span class="nt">&quot;condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span><span class="nt">&quot;var_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;has_lantern&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;courage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">  </span><span class="nt">&quot;expected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
-</span></code></pre></div>
-<p><strong>Fixture 2: integer comparison with negation, false case</strong></p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage is 2, which is not &gt;= 3; negation makes the outer condition false&quot;</span><span class="p">,</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;comparison&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;negation&quot;</span><span class="p">],</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="nt">&quot;condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="nt">&quot;and&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;&gt;=&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;!&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_curse&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="p">]</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="p">},</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="nt">&quot;var_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;has_lantern&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;courage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;has_curse&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="nt">&quot;expected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="p">}</span>
-</span></code></pre></div>
-<p><strong>Fixture 3: compound or with two false branches</strong></p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="p">{</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;neither branch of the or is satisfied; result must be false&quot;</span><span class="p">,</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;compound&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;or&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">],</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nt">&quot;condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="nt">&quot;or&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;==&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;has_lantern&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;&gt;&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;var&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;courage&quot;</span><span class="w"> </span><span class="p">},</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">}</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="p">]</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="p">},</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nt">&quot;var_state&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;has_lantern&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;courage&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;has_curse&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w"> </span><span class="p">},</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="nt">&quot;expected&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">}</span>
-</span></code></pre></div>
-<hr />
-<h2 id="8-implementation-guidance">8. Implementation Guidance<a class="headerlink" href="#8-implementation-guidance" title="Permanent link">&para;</a></h2>
-<p>Both evaluators should be approximately 40 lines of pure recursive logic. Suggested structure:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>evaluate(condition, var_state) -&gt; bool
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  op = single key of condition object
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  if op == &quot;var&quot;:    return truthy(var_state.get(condition[&quot;var&quot;], false))
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  if op == &quot;!&quot;:      return not evaluate(condition[&quot;!&quot;], var_state)
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  if op == &quot;and&quot;:    return all(evaluate(c, var_state) for c in condition[&quot;and&quot;])
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  if op == &quot;or&quot;:     return any(evaluate(c, var_state) for c in condition[&quot;or&quot;])
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>  # comparison operators: RESOLVE both sides (never evaluate them), apply operator
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>  lhs, rhs = condition[op]
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>  lv = resolve(lhs, var_state)   # {&quot;var&quot;: n} -&gt; value; literal -&gt; itself; else false
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>  rv = resolve(rhs, var_state)
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>  return apply_comparison(op, lv, rv)
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>apply_comparison(op, lv, rv) -&gt; bool
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>  if op == &quot;==&quot;: return strict_eq(lv, rv)    # bool and int are distinct types
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>  if op == &quot;!=&quot;: return not strict_eq(lv, rv)
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>  # ordering: booleans are NOT numeric (Python must exclude bool explicitly,
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>  # since bool subclasses int); non-int operands fail closed
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>  if lv or rv is boolean, or either is not an int: return false
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>  return ordered(op, lv, rv)
-</span></code></pre></div>
-<p>Comparison operands are resolved, never evaluated: a <code>{ "var": name }</code> reference resolves
-to the variable's value, a literal to itself, and anything else to <code>false</code> (defensive
-totality; the shape validator rejects such operands before a story is published).</p>
-<p>Literal values (non-object operands such as <code>true</code>, <code>false</code>, <code>3</code>) evaluate to themselves.
-The TypeScript implementation must use <code>===</code> for strict equality in <code>==</code> comparisons.</p>
-<hr />
-<h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../adr/adr-006-conditions-inhouse-evaluator/">ADR-006: In-house condition evaluator</a></li>
-<li><a href="../tech-spec/#story-dsl-condition-format-adr-006">Tech Spec: Story DSL condition format</a></li>
-<li><a href="../runtime-semantics/">Story Runtime Semantics v1</a></li>
-<li><a href="../validator-rules/">Validator Rule Catalog</a></li>
-</ul>
+<h2 id="maintenance-contract">Maintenance contract<a class="headerlink" href="#maintenance-contract" title="Permanent link">&para;</a></h2>
+<p>Any PR touching <code>storybook/evaluator.py</code>, <code>storybook/condition.py</code>,
+<code>frontend/src/player/evaluator.ts</code>, either engine's effect application, or
+<code>MAX_ABS_STORY_INT</code> must update the matrix above and add conformance cases for
+any new cell. The corpus runs in both CI suites
+(<code>tests/unit/test_evaluator.py</code>, <code>frontend/src/player/evaluator.test.ts</code>)
+against the single physical fixture file; that shared file is the enforcement
+mechanism, this document is the map.</p>
 
 
 
@@ -2865,7 +2707,7 @@ The TypeScript implementation must use <code>===</code> for strict equality in <
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 07:01:15 UTC">July 2, 2026</span>
   </span>
 
     
