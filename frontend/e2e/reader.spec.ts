@@ -10,8 +10,10 @@ const lantern = JSON.parse(
 ).traces[0].story
 
 // The reader lives at /read/:profileId/:storybookId/:version (ReaderRoute); the
-// bare `/` renders the LibraryPage stub (C4a-2/C4a-3), not the reader. storybookId
-// and version match the mocked s_lantern_cave story loaded in beforeEach.
+// bare `/` renders the kid-surface Profile Picker (C4a-2, see profiles.spec.ts),
+// and the LibraryPage stub lives at /library/:profileId (C4a-3). Neither is the
+// reader. storybookId and version match the mocked s_lantern_cave story loaded
+// in beforeEach.
 const READER_PATH = '/read/child-a/s_lantern_cave/1'
 
 const READING_ROW = {
