@@ -25,7 +25,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.1 | **Updated**: 2026-07-02
+> **Status**: Active | **Version**: 2.2 | **Updated**: 2026-07-02
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -245,7 +245,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Payments | Apple IAP (StoreKit 2) via RevenueCat, or direct App Store Server API | Decide at Phase 8 start (P8-04); server-side entitlements either way |
 | Entitlements | Postgres (subscription state + credit ledger) | Enforced in library and generation APIs, never trusted from the client |
 | Database (public tier) | Supabase Postgres | Async SQLAlchemy + Alembic unchanged; direct/session-mode connection for asyncpg |
-| Object storage (public tier) | Supabase Storage (S3-compatible API) | Behind the existing S3 seam; MinIO stays for local dev |
+| Story blobs (public tier) | Inline JSONB (`storybook_version.blob`), as today | No object-storage code exists yet; `blob_ref` is reserved; adopt Supabase Storage (S3-compatible API) only when catalog size warrants externalizing blobs |
 | Queue (public tier) | Supabase Queues (pgmq), Upstash Redis as pre-approved fallback | Time-boxed evaluation at Phase 9 start (P9-03) |
 | Scheduled jobs | pg_cron | ADR-007 raw-output retention purge and maintenance |
 | Compute hosting | One container host (Fly.io / Railway / Azure Container Apps; decide in P9-03) | FastAPI app + generation worker; the safety pipeline never moves to Edge Functions |
@@ -697,11 +697,12 @@ alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
 ## Track 2: Public App Store Launch (Phases 6-9)
 
-Track 2 implements [ADR-008](./adr/adr-008-public-app-store-launch.md). It begins after the
-first usable release (Phase 4a) and turns the family app into a multi-tenant commercial
-product without weakening the safety guarantee: validation gate, moderation, and mandatory
-guardian approval apply to every story in every tier, and children never trigger generation
-or see raw model output.
+Track 2 implements [ADR-008](./adr/adr-008-public-app-store-launch.md) as amended by
+[ADR-009](./adr/adr-009-supabase-platform.md). It begins after the first usable release
+(Phase 4a) and turns the family app into a multi-tenant commercial product without
+weakening the safety guarantee: validation gate, moderation, and mandatory guardian
+approval apply to every story in every tier, and children never trigger generation or
+see raw model output.
 
 **Standing constraints for every Track 2 phase** (in addition to the Section 7 gates):
 
@@ -712,6 +713,18 @@ or see raw model output.
 - Entitlements and profile limits are enforced server-side, never trusted from the client.
 - Anything touching auth, payments, consent, or deletion carries RAD `#CRITICAL` tags and
   a named test per the package `CLAUDE.md`.
+
+**Deprecation register** (code Track 2 retires or demotes; each removal lands in the
+phase named):
+
+| Code | Disposition | Phase |
+|------|-------------|-------|
+| Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
+| `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Replaced by supabase-js session via a storage abstraction | 6 (P6-06) |
+| Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | Demoted to dev/family-tier only; public tier is OpenRouter-only | 9 (P9-11) |
+| `redis_url`, `generation/queue.py` (RQ), and the commented Redis service in `docker-compose.yml` | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken | 9 (P9-03) |
+| `utils/financial.py` (unused template scaffolding; no imports anywhere) | Remove in a standalone chore before Phase 8 so the entitlements/credits work (integer credits, Apple handles money) is not built near dead Decimal helpers; log template feedback per the repo requirement | pre-8 chore |
+| `docker-compose.prod.yml` as the production deployment definition | Superseded by the P9-03 container-host infra-as-code; compose files remain for local dev | 9 (P9-03) |
 
 ---
 
@@ -734,10 +747,10 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 |-----------|-------------|-------|
 | P6-01 | Real JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | PyJWT + cached JWKS against the Supabase issuer (enable asymmetric JWT signing keys on the project); verify signature, issuer, audience, expiry; delete the import-time environment guard; keep the dev stub selectable only when `environment == "local"` |
 | P6-02 | Auth settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | Provider-agnostic names, values point at the Supabase project (deliberate ejection path); fail-fast model validator requiring them outside `local` (same pattern as `_reject_dev_database_url_outside_local`) |
-| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on the Supabase `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02) |
+| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on the Supabase `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02); adds a nullable `email` contact column to `User` + Alembic migration (the model has none today; needed for receipts/consent records; populated from the Supabase user, may be an Apple relay address, NEVER used as a key) |
 | P6-04 | Child-session tokens | Guardian-minted, backend-signed, short-lived JWT scoped to role=child and a single `profile_id`; lifetime long enough for an offline reading session (config); second branch in `require_principal` producing the same `Principal` shape; Supabase anonymous users are NOT used |
 | P6-05 | Supabase Auth providers: Sign in with Apple + Google | Native iOS flow via `signInWithIdToken` (no client secret in the native path); web OAuth path needs the Apple Services ID client secret (6-month validity, reduced rotation runbook); first-login name/email capture verified (Apple sends them exactly once) |
-| P6-06 | Frontend auth: supabase-js session management | supabase-js handles sign-in, refresh, and Capacitor deep-link callbacks; replace the `localStorage` token in `frontend/src/hooks/useApi.ts` with the supabase-js session behind a storage abstraction (Keychain implementation lands in P8-02); backend calls still send the Supabase access token as the bearer |
+| P6-06 | Frontend auth: supabase-js session management | supabase-js handles sign-in, refresh, and Capacitor deep-link callbacks; replace the `localStorage` token in `frontend/src/hooks/useApi.ts` with the supabase-js session behind a storage abstraction (Keychain implementation lands in P8-02); backend calls still send the Supabase access token as the bearer; rework `useApi.ts` 401 handling to attempt a supabase-js refresh before clearing the session, and verify `offline/sync.ts` replay refreshes an expired token before classifying a 401 as a real failure; add the Supabase URL to CSP `connect-src` wherever the frontend's CSP is set (the API's `middleware/security.py` CSP governs API responses only) |
 | P6-07 | Child profile picker + optional per-profile PIN | Kid experience stays login-free; picker appears after guardian device sign-in |
 | P6-08 | Parental gate (frontend) | Guardian re-auth wrapper around dashboard, approval, settings, and (later) purchase routes; the gate pattern Apple expects in Kids Category apps |
 | P6-09 | Auth negative-test suite | Expired token, wrong issuer, wrong audience, algorithm confusion, tampered signature, child token on guardian endpoints |
@@ -880,7 +893,7 @@ successful App Store submission.
 |-----------|-------------|-------|
 | P9-01 | `catalog_published` state on the publish state machine | Admin-curated transition in `src/cyo_adventure/publishing/state_machine.py` + migration; family `published` unchanged; catalog stories still carry full provenance and approval records |
 | P9-02 | Curated starter library | Pre-generate, moderate, and approve a launch set (target: 12 stories, 4 per age band); free tier gets a subset, subscription gets all; weekly-release cadence documented as the retention driver |
-| P9-03 | Hosted infrastructure ([ADR-009](./adr/adr-009-supabase-platform.md)) | Production Supabase project (Postgres via direct/session-mode connection, Storage through the S3 seam) + one container host for API and worker (Fly.io / Railway / Azure Container Apps, decided here); **time-boxed queue evaluation**: port the worker to Supabase Queues (pgmq) if the generation integration tests pass, else the pre-approved Upstash Redis fallback with RQ unchanged; ADR-007 retention purge moves to pg_cron; homelab remains dev/family staging; infra-as-code checked in |
+| P9-03 | Hosted infrastructure ([ADR-009](./adr/adr-009-supabase-platform.md)) | Production Supabase project (Postgres via direct/session-mode connection; story blobs stay inline JSONB per the tech-stack table) + one container host for API and worker (Fly.io / Railway / Azure Container Apps, decided here); set explicit `pool_size`/`max_overflow` in `core/database.py` (its existing `#CRITICAL` marker requires this before production, and Supabase connections are a bounded resource); **time-boxed queue evaluation**: port the worker to Supabase Queues (pgmq) if the generation integration tests pass (only `generation/queue.py` is RQ-coupled; the worker's async core is queue-agnostic by design), else the pre-approved Upstash Redis fallback with RQ unchanged; ADR-007 retention purge moves to pg_cron; homelab remains dev/family staging; infra-as-code checked in |
 | P9-04 | Live moderation mandatory in production | `review_provider != "mock"` enforced by config validation in production; classifier keys (`OPENAI_API_KEY` or `PERSPECTIVE_API_KEY`) required (existing `_require_classifier_when_reviewing` invariant) |
 | P9-05 | Rate limiting, quotas, and cost caps | Per-family generation quotas, global daily LLM spend cap with alarm and circuit breaker, API rate limits; spend dashboards |
 | P9-06 | Production observability + ops | Sentry (client + server), structured logs with correlation IDs; Supabase daily backups/PITR on Pro plus a restore drill that includes a full export (schema, data, storage) to prove the ejection path (extends the Phase 5 runbook to the public tier) |
@@ -888,6 +901,7 @@ successful App Store submission.
 | P9-08 | App Store listing | Screenshots, description, age rating from P7-07, privacy nutrition labels from P7-06, review notes from `docs/planning/app-store-review-notes.md` |
 | P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission; **upgrade the production Supabase project to Pro at TestFlight start** (free projects pause when inactive and lack daily backups) |
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
+| P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only |
 
 **Acceptance criteria**:
 
@@ -1130,7 +1144,9 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 
 ---
 
-**Last Updated**: 2026-07-02 (v2.1: Track 2 pivoted to the Supabase platform per ADR-009;
+**Last Updated**: 2026-07-02 (v2.2: code-audit refinements: deprecation register, inline-blob
+storage correction, guardian email column, public-tier provider config, pool sizing;
+v2.1: Track 2 pivoted to the Supabase platform per ADR-009;
 v2.0: Track 2 public App Store launch added per ADR-008)
 **Next Review**: At each phase boundary; Track 2 additionally at P7-08 compliance sign-off
 and pre-submission (P9-10)

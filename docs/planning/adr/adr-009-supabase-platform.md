@@ -94,8 +94,13 @@ The decision decomposes as follows:
 2. **Database: Supabase Postgres.** Async SQLAlchemy and Alembic migrations unchanged;
    connect via a direct connection or session-mode pooling (asyncpg constraint above).
    Automated backups/PITR on the Pro plan; the restore drill remains ours to run.
-3. **Storage: Supabase Storage via its S3-compatible API**, behind the existing S3
-   abstraction (MinIO stays for local dev).
+3. **Storage: deferred adoption of Supabase Storage.** Story blobs are currently
+   stored inline in Postgres (`storybook_version.blob` JSONB; the `blob_ref` column
+   is reserved but no object-storage code exists yet). They stay inline at launch,
+   which is well within Supabase database limits at the 500 KB/story cap. When
+   catalog size warrants externalizing blobs, implement `blob_ref` against Supabase
+   Storage's S3-compatible API (the portability posture ADR-004 intended, applied at
+   that point rather than ported now).
 4. **Queue: evaluate Supabase Queues (pgmq) at Phase 9 start.** If the worker's RQ
    usage ports cleanly, Redis disappears from the topology; if not, the fallback is
    managed Redis (e.g., Upstash) with RQ unchanged. The evaluation is time-boxed; the
@@ -230,8 +235,15 @@ client-secret plumbing in the native path).
    callbacks; native Apple sign-in via `signInWithIdToken`.
 5. **Deletion** (P7-04): Supabase Auth admin API + our Apple revocation call.
 6. **Infra** (P9-03): Supabase project (prod) + Supabase project (staging) + one
-   container host for API and worker; queue decision executed here.
-7. **Retention** (ADR-007): purge job moves to pg_cron.
+   container host for API and worker; queue decision executed here. The RQ surface
+   is already thin by design: `generation/worker.py` keeps the async core
+   Redis/RQ-free and `generation/queue.py` (~75 lines) is the only RQ-coupled
+   module, so the pgmq port replaces one module plus a polling loop.
+7. **`core/database.py`** (P9-03): set explicit `pool_size`/`max_overflow` (the
+   module's existing `#CRITICAL` marker already requires this before production;
+   Supabase session-mode connections are a bounded resource, so defaults are not
+   acceptable there).
+8. **Retention** (ADR-007): purge job moves to pg_cron.
 
 ### Testing Strategy
 
