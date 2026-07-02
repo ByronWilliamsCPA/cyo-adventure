@@ -147,6 +147,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   with a Redis migration task added to the roadmap.
 
 ### Fixed
+- Config env-name mismatch: `core/config.py` read `log_level`, `json_logs`, and
+  `database_url` only under the `CYO_ADVENTURE_` prefix, but docker-compose and
+  `docs/guides/configuration.md` set them unprefixed (`LOG_LEVEL`, `JSON_LOGS`,
+  `DATABASE_URL`), so those compose-injected values were silently ignored at
+  runtime. Each field now reads via `AliasChoices` accepting both names
+  (`CYO_ADVENTURE_DATABASE_URL` stays first and wins if both are set, preserving
+  the migrations/tests contract). Also corrected the `docker-compose.yml`
+  `DATABASE_URL` default to the `postgresql+asyncpg://` driver that
+  `create_async_engine()` requires; the sync `postgresql://` default was
+  previously masked because the app ignored the variable entirely.
 - Validator-player evaluator parity: the Python condition evaluator treated
   booleans as integers in ordering comparisons (`bool` subclasses `int`), so an
   ordering comparison involving a boolean (literal operand, bool-valued

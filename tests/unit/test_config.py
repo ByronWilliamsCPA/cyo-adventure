@@ -265,3 +265,65 @@ class TestModerationReviewSettings:
 
         settings = Settings(review_provider="openrouter", openai_api_key="k")
         assert settings.review_provider == "openrouter"
+
+
+class TestUnprefixedOperatorAliases:
+    """log_level, json_logs, and database_url read the unprefixed names that
+    docker-compose and docs/guides/configuration.md actually set, while
+    database_url keeps its prefixed CYO_ADVENTURE_DATABASE_URL contract."""
+
+    @pytest.mark.unit
+    def test_log_level_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """log_level is read from the unprefixed LOG_LEVEL var (compose/docs)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_LOG_LEVEL", raising=False)
+        monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+        assert Settings().log_level == "DEBUG"
+
+    @pytest.mark.unit
+    def test_json_logs_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """json_logs is read from the unprefixed JSON_LOGS var (compose/docs)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_JSON_LOGS", raising=False)
+        monkeypatch.setenv("JSON_LOGS", "true")
+        assert Settings().json_logs is True
+
+    @pytest.mark.unit
+    def test_database_url_reads_unprefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """database_url is read from the unprefixed DATABASE_URL var (compose)."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_DATABASE_URL", raising=False)
+        monkeypatch.setenv("DATABASE_URL", _PROD_DB_URL)
+        # environment stays "local", so the dev-url validator does not fire.
+        assert Settings().database_url == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_database_url_still_reads_prefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The tested CYO_ADVENTURE_DATABASE_URL contract keeps working."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("DATABASE_URL", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_DATABASE_URL", _PROD_DB_URL)
+        assert Settings().database_url == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_database_url_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://unprefixed/db")
+        monkeypatch.setenv("CYO_ADVENTURE_DATABASE_URL", _PROD_DB_URL)
+        assert Settings().database_url == _PROD_DB_URL
