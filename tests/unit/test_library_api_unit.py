@@ -33,6 +33,8 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from sqlalchemy import Select
 
 # ---------------------------------------------------------------------------
@@ -90,6 +92,23 @@ class _FakeSession:
         if self._scalars_queue:
             self._scalars_queue = self._scalars_queue[1:]
         return _FakeScalars(rows)
+
+
+def _flatten_params(values: Iterable[object]) -> set[object]:
+    """Flatten compiled bind params, unpacking IN-clause list values.
+
+    ``Select.compile().params`` binds an ``IN`` filter's values as a list, so
+    a bare ``set()`` over the raw values raises TypeError on the unhashable
+    list. This flattens one level deep so scalar and list-bound params can be
+    membership-tested uniformly.
+    """
+    flat: set[object] = set()
+    for value in values:
+        if isinstance(value, list):
+            flat.update(value)
+        else:
+            flat.add(value)
+    return flat
 
 
 def _child_principal(family_id: uuid.UUID, profile_id: uuid.UUID) -> Principal:
@@ -433,6 +452,33 @@ class TestListLibrary:
         assert "IN" in version_where
         assert "storybook_version.storybook_id" in version_where
         assert "storybook_version.version" in version_where
+
+        # Bulk reading-state fetch (index 2): scoped to the authorized profile,
+        # not the whole family, plus an IN filter on the published book ids so
+        # a regression that widens the scope to every profile, or that drops
+        # the published-book-id filter, fails here.
+        state_stmt = cast("Select[Any]", session.scalars_calls[2])
+        state_where = str(state_stmt.whereclause)
+        assert "reading_state.child_profile_id" in state_where
+        assert "reading_state.storybook_id" in state_where
+        assert "IN" in state_where
+        # The IN filter binds its values as a list, not a scalar, so flatten
+        # before membership-testing (a bare set() would choke on the list).
+        state_params = _flatten_params(state_stmt.compile().params.values())
+        assert profile_id in state_params  # bound to the authorized profile
+        assert "story-a" in state_params  # bound to the published book ids
+        assert "story-b" in state_params
+
+        # Bulk rating fetch (index 3): same profile scope and book-id IN filter.
+        rating_stmt = cast("Select[Any]", session.scalars_calls[3])
+        rating_where = str(rating_stmt.whereclause)
+        assert "rating.child_profile_id" in rating_where
+        assert "rating.storybook_id" in rating_where
+        assert "IN" in rating_where
+        rating_params = _flatten_params(rating_stmt.compile().params.values())
+        assert profile_id in rating_params  # bound to the authorized profile
+        assert "story-a" in rating_params  # bound to the published book ids
+        assert "story-b" in rating_params
 
     @pytest.mark.unit
     @pytest.mark.asyncio
