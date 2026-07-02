@@ -70,6 +70,7 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 [[annotations]]
 path = [
     "frontend/design-system/.design-sync/NOTES.md",
+    "frontend/design-system/.design-sync/conventions.md",
 ]
 SPDX-License-Identifier = "CC-BY-4.0"
 SPDX-FileCopyrightText = "2026 Byron Williams"
@@ -203,7 +204,7 @@ path = [
     "frontend/design-system/package.json",
     "frontend/design-system/package-lock.json",
     "frontend/design-system/tsconfig.json",
-    "frontend/design-system/design-sync.config.json",
+    "frontend/design-system/.design-sync/config.json",
     "frontend/design-system/src/**/*.css",
 ]
 SPDX-License-Identifier = "CC0-1.0"
