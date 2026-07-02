@@ -83,9 +83,7 @@ export function ProfilePickerPage() {
         ))}
         <li>
           <Link className="picker-tile picker-tile--add" to="/guardian/profiles">
-            <span className="avatar-circle avatar-circle--fallback" aria-hidden="true">
-              +
-            </span>
+            <AvatarCircle avatar={null} name="+" />
             <span className="picker-tile__name">Add Child</span>
           </Link>
         </li>
