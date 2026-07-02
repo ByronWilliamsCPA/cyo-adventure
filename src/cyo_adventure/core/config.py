@@ -1,14 +1,19 @@
 """Configuration settings for CYO Adventure.
 
-Settings are loaded from environment variables with the prefix 'CYO_ADVENTURE_'.
-Pydantic-settings handles the parsing and validation.
+Most settings are loaded from environment variables under the 'CYO_ADVENTURE_'
+prefix. Several operator-facing names are also honored unprefixed via
+validation_alias, matching what docker-compose*.yml and
+docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
+DATABASE_URL, and the OLLAMA_*, OPENROUTER_*, OPENAI_API_KEY, and
+PERSPECTIVE_API_KEY credentials. Pydantic-settings handles the parsing and
+validation.
 """
 
 from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import Field, model_validator
+from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -53,15 +58,35 @@ class Settings(BaseSettings):
     environment: Literal["local", "dev", "staging", "production"] = Field(
         default="local", validation_alias="ENVIRONMENT"
     )
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    json_logs: bool = False
+    # log_level and json_logs are read from their UNPREFIXED names: both
+    # docker-compose*.yml and docs/guides/configuration.md set LOG_LEVEL /
+    # JSON_LOGS with no cyo_adventure_ prefix (same operator-facing convention as
+    # ENVIRONMENT and OLLAMA_* above). AliasChoices keeps the prefixed form
+    # working too and, listed first, wins if both are set. Without this, a
+    # compose-injected LOG_LEVEL/JSON_LOGS was silently ignored at runtime.
+    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+        default="INFO",
+        validation_alias=AliasChoices("CYO_ADVENTURE_LOG_LEVEL", "LOG_LEVEL"),
+    )
+    json_logs: bool = Field(
+        default=False,
+        validation_alias=AliasChoices("CYO_ADVENTURE_JSON_LOGS", "JSON_LOGS"),
+    )
     include_timestamp: bool = True
     # #CRITICAL: security: this credential-less localhost default resolves as the
     # live DSN whenever CYO_ADVENTURE_DATABASE_URL is unset, including in CI. It is
     # a localhost-only development default (peer/trust auth) and must never reach
     # staging or production.
     # #VERIFY: enforced by _reject_dev_database_url_outside_local below.
-    database_url: str = _DEV_DATABASE_URL
+    # Accept BOTH names. CYO_ADVENTURE_DATABASE_URL is the established contract
+    # (migrations/env.py, integration tests, the validator message all name it),
+    # so it stays first and wins if both are set; DATABASE_URL is the standard
+    # name docker-compose*.yml injects, previously ignored because the field had
+    # no alias and env_prefix only matched the prefixed form.
+    database_url: str = Field(
+        default=_DEV_DATABASE_URL,
+        validation_alias=AliasChoices("CYO_ADVENTURE_DATABASE_URL", "DATABASE_URL"),
+    )
     # Development default for local Redis; safe to leave unset in non-production
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
@@ -215,9 +240,10 @@ class Settings(BaseSettings):
         """
         if self.environment != "local" and self.database_url == _DEV_DATABASE_URL:
             msg = (
-                "CYO_ADVENTURE_DATABASE_URL must be set in non-local environments; "
-                f"refusing to start in '{self.environment}' with the development "
-                "default localhost database URL."
+                "CYO_ADVENTURE_DATABASE_URL (or the unprefixed DATABASE_URL) must "
+                "be set in non-local environments; refusing to start in "
+                f"'{self.environment}' with the development default localhost "
+                "database URL."
             )
             raise ConfigurationError(msg)
         return self

@@ -24,8 +24,10 @@ services:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       JSON_LOGS: ${JSON_LOGS:-false}
 
-      # Database configuration
-      DATABASE_URL: ${DATABASE_URL:-postgresql://cyo_adventure:password@db:5432/cyo_adventure}
+      # Database configuration. Must use the asyncpg driver: core/database.py
+      # builds the engine via create_async_engine(), which rejects a bare
+      # postgresql:// (sync) URL.
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://cyo_adventure:password@db:5432/cyo_adventure}
       # Redis cache (if applicable)
       # REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
 
