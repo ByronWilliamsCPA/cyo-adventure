@@ -57,6 +57,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Track 2 public-launch planning (docs only, no code paths touched): PROJECT-PLAN.md
+  v2.3 adds Phases 6-9 (public auth and multi-tenancy, Kids Category/COPPA compliance
+  and account lifecycle, Capacitor iOS shell with tiered Apple In-App Purchase, curated
+  public catalog with hosted infrastructure and App Store submission), a deprecation
+  register, Track 2 risks, metrics, and milestones M6-M9. Three new ADRs anchor the
+  decisions: ADR-008 (public App Store launch with tiered subscription monetization),
+  ADR-009 (Supabase platform for auth/Postgres/storage with pgmq queue evaluation),
+  and ADR-010 (Modal moderation review backend and an evidence-gated Modal generation
+  leg behind the `GenerationProvider` seam). The ADR index gains the missing ADR-007
+  row and the three new rows.
 - Phase 3 backend closeout. Two features that read/validate against a pinned story
   version: (1) C3-4 guardian review-surface read API, an admin-only
   `GET /api/v1/storybooks/{storybook_id}/review` that projects the stored moderation
