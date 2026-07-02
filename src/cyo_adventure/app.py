@@ -19,6 +19,7 @@ from cyo_adventure.api import (
     health,
     library,
     me,
+    profiles,
     ratings,
     reading,
 )
@@ -130,6 +131,7 @@ def create_app() -> FastAPI:
     app.include_router(library.router)
     app.include_router(reading.router)
     app.include_router(generation.router)
+    app.include_router(profiles.router)
     app.include_router(ratings.router)
     app.include_router(approval.router)
     app.include_router(me.router)
