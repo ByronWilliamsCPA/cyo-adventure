@@ -76,10 +76,12 @@ placeholder circle rather than blocking the flow.
 children by adding rows; the status pill reuses the same visual language as PR #44's
 `StatusBadge` component, so "new story ready" can share styling with other status states later.
 
-**Open flag, needs a deliberate answer before C4a-2 build**: custom child photos mean this
-screen stores images of children. Decide explicitly whether photos are local-device-only or
-synced to the backend, and confirm a default illustrated avatar is always an acceptable fallback
-(not a required upload); this is a privacy decision, not a default to fall into.
+**RESOLVED 2026-07-02**: child avatars are preset-only, permanently; there is no photo upload
+and no custom image path, so this screen never stores images of children. A curated set of
+generated illustrated avatars will replace the interim emoji glyphs (tracked in issue #65);
+the avatar ids in the catalog are the stable contract, so the art swap requires no data
+migration. A child with no avatar selected falls back to a dashed initial circle, exactly as
+wireframed.
 
 ### 4.2 Library / Bookshelf (kid surface, home screen)
 
@@ -171,7 +173,7 @@ generation pipeline a concrete age-band target from the start.
 
 | Question | Why it matters | Owner |
 |---|---|---|
-| Child profile photos: local-only or synced? Is a photo ever required? | Storing images of children is a privacy decision, not a UI detail (Section 4.1). | Product decision before C4a-2 |
+| Child profile photos: local-only or synced? Is a photo ever required? | RESOLVED 2026-07-02: preset-only avatars, no photos ever; generated illustrated set replaces emoji glyphs (issue #65). See Section 4.1. | Closed |
 | Does "Assign more" need per-child unassign too, or only additive assignment? | Not explored in this pass; only additive assignment was wireframed (Section 4.5). | Follow-up brainstorm at C4a-6 |
 | Kid surface and parent surface: fully separate deployments/routes, or same app with two disjoint route trees? | Confirmed as two distinct experiences (Section 2) but the deployment-level split (subdomain vs. route prefix) wasn't decided. | Follow-up at C4a-1 |
 

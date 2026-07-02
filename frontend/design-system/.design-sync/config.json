@@ -1,0 +1,33 @@
+{
+  "pkg": "@cyo/design-system",
+  "globalName": "CYO",
+  "projectId": "9115f845-b975-460a-af83-cf8e33fff14e",
+  "shape": "package",
+  "buildCmd": "npm run build",
+  "cssEntry": "dist/cyo-design-system.css",
+  "overrides": {
+    "Button": { "cardMode": "column" },
+    "Dialog": { "cardMode": "single", "viewport": "560x420" }
+  },
+  "readmeHeader": ".design-sync/conventions.md",
+  "dtsPropsFor": {
+    "AvatarCircle": "avatar: string | null; name: string",
+    "Button": "variant?: 'primary' | 'ghost' | 'danger'; size?: 'sm' | 'md' | 'lg'; children: React.ReactNode; disabled?: boolean; onClick?: React.MouseEventHandler<HTMLButtonElement>",
+    "ChoiceButton": "label: string; selected?: boolean; disabled?: boolean; onClick?: React.MouseEventHandler<HTMLButtonElement>",
+    "Dialog": "title: string; children: React.ReactNode; actions: React.ReactNode; open?: boolean; onClose: () => void",
+    "EmptyState": "title: string; description: string; actions?: React.ReactNode; icon?: React.ReactNode",
+    "PassageText": "text: string; className?: string",
+    "ProgressBar": "value: number; label?: string; showLabel?: boolean",
+    "StatusBadge": "status: 'connected' | 'offline' | 'loading' | 'error'; label?: string"
+  },
+  "componentSrcMap": {
+    "AvatarCircle": "src/components/AvatarCircle/AvatarCircle.tsx",
+    "Button": "src/components/Button/Button.tsx",
+    "ChoiceButton": "src/components/ChoiceButton/ChoiceButton.tsx",
+    "Dialog": "src/components/Dialog/Dialog.tsx",
+    "EmptyState": "src/components/EmptyState/EmptyState.tsx",
+    "PassageText": "src/components/PassageText/PassageText.tsx",
+    "ProgressBar": "src/components/ProgressBar/ProgressBar.tsx",
+    "StatusBadge": "src/components/StatusBadge/StatusBadge.tsx"
+  }
+}
