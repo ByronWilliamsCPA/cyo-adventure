@@ -386,6 +386,9 @@
         "max": {
           "anyOf": [
             {
+              "type": "boolean"
+            },
+            {
               "type": "integer"
             },
             {
@@ -397,6 +400,9 @@
         },
         "min": {
           "anyOf": [
+            {
+              "type": "boolean"
+            },
             {
               "type": "integer"
             },

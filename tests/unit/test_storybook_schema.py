@@ -18,6 +18,7 @@ from pydantic import ValidationError
 from cyo_adventure.storybook import (
     WHITELISTED_OPERATORS,
     Storybook,
+    ordering_var_refs,
     referenced_vars,
     validate_condition,
 )
@@ -203,6 +204,33 @@ def test_undeclared_variable_rejected() -> None:
 
 
 @pytest.mark.unit
+def test_bool_variable_in_ordering_condition_rejected() -> None:
+    """A condition comparing a bool-typed variable with an ordering operator
+    fails validation: a bool can never resolve to int, so this is a story
+    authoring mistake the runtime evaluator would otherwise only catch by
+    silently failing closed (spec: ordering operands must resolve to int).
+    """
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["condition"] = {">=": [{"var": "has_lantern"}, 1]}
+    with pytest.raises(ValidationError, match="compares bool-typed variable"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
+def test_bool_variable_in_nested_ordering_condition_rejected() -> None:
+    """The bool-in-ordering check reaches through ``and``/``or``/``!`` nesting."""
+    story = _tier2_with_state()
+    story["nodes"][0]["choices"][0]["condition"] = {
+        "and": [
+            {"==": [{"var": "courage"}, 0]},
+            {"!": {">": [{"var": "has_lantern"}, 0]}},
+        ]
+    }
+    with pytest.raises(ValidationError, match="compares bool-typed variable"):
+        Storybook.model_validate(story)
+
+
+@pytest.mark.unit
 def test_non_whitelisted_operator_rejected() -> None:
     """A condition using a forbidden operator fails validation."""
     story = _tier2_with_state()
@@ -294,6 +322,21 @@ def test_referenced_vars_collects_nested_names() -> None:
         ]
     }
     assert referenced_vars(condition) == {"has_lantern", "courage"}
+
+
+@pytest.mark.unit
+def test_ordering_var_refs_finds_only_ordering_operands() -> None:
+    """ordering_var_refs returns only variables compared with < <= > >=,
+    reaching through and/or/! nesting but not equality comparisons.
+    """
+    condition = {
+        "and": [
+            {"==": [{"var": "has_lantern"}, True]},
+            {"!": {">=": [{"var": "courage"}, 3]}},
+            {"or": [{"<": [{"var": "gold"}, 10]}, {"==": [{"var": "level"}, 2]}]},
+        ]
+    }
+    assert ordering_var_refs(condition) == {"courage", "gold"}
 
 
 @pytest.mark.unit
