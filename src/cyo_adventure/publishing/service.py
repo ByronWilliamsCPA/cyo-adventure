@@ -13,7 +13,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from cyo_adventure.core.exceptions import ResourceNotFoundError
+from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.publishing.state_machine import Action, Status, assert_transition
 from cyo_adventure.utils.logging import get_logger
@@ -90,6 +90,8 @@ async def approve(
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
         ResourceNotFoundError: If the version row does not exist.
+        BusinessLogicError: If the version has never been screened by the
+            moderation pipeline (``moderation_report is None``).
     """
     # #CRITICAL: security: this is the SOLE path that sets status="published",
     # and it stamps approved_by in the same operation, so no story is published
@@ -100,6 +102,16 @@ async def approve(
     if version_row is None:
         msg = f"version {version} of storybook '{storybook.id}' not found"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: closes C3-SAFETY Findings 1-2 (adversarial-safety-
+    # evaluation.md): the import path and the admin submit endpoint can both
+    # move a draft to in_review without ever running moderation. This is the
+    # single choke point (the sole publish path) that makes "no unmoderated
+    # path reaches published" hold structurally, regardless of how many
+    # routes can reach in_review.
+    # #VERIFY: test_approve_without_moderation_report_raises.
+    if version_row.moderation_report is None:
+        msg = "cannot approve a version that has never been screened by moderation"
+        raise BusinessLogicError(msg, rule="approve_without_moderation")
     storybook.status = target.value
     storybook.current_published_version = version
     version_row.approved_by = principal.user_id

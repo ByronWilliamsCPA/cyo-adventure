@@ -556,7 +556,8 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 - No story reaches a child profile without a recorded guardian approval (verified by attempting
   every transition path).
 - 🔄 Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish" holds;
-  the "flag and route to human review" half is reframed and only partially met (see
+  the structural bypass seams are closed; the "flag and route to human review" claim for the
+  model-dependent classes still awaits a live-model run (see
   [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)).
 
 **Quality gates**:
@@ -568,17 +569,18 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 - [~] Safety evaluation: adversarial concept briefs flag moderation and route to human review.
       **Partially met and reframed** (see
       [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)). "No
-      auto-publish path" holds (verified: nothing publishes without a human `approve`). The
-      "adversarial briefs flag and route to human review" claim is **not backed by evidence**
-      for the model-dependent classes (no live-model run has been executed) and is **false on
-      two structural seams**: the import path and the admin `POST /submit` endpoint reach a
-      publishable state with no moderation at all. Remaining to close the gate: (a) close the
-      two bypass seams; (b) surface an explicit "never screened" state on the review surface;
-      (c) run the credentialed adversarial harness and archive per-class results. Under the
-      two-track model this gate is Track 1 (family) debt and a Track 2 (public launch) blocker:
-      the Kids Category / COPPA posture in [ADR-008](./adr/adr-008-public-app-store-launch.md)
-      makes an unbacked safety claim a compliance exposure, and P9-04 already mandates live
-      moderation in production
+      auto-publish path" holds (verified: nothing publishes without a human `approve`). (a) and
+      (b) are now closed: `import_filled_story` runs the moderation pipeline before returning
+      (mirroring the generation worker), and `publishing.service.approve` structurally refuses
+      to publish any version with `moderation_report is None`, so no unmoderated path reaches
+      `published` regardless of how a draft was created; the review surface also now exposes an
+      explicit `screened: bool` so the future C4a-4 console cannot mistake "never screened" for
+      "screened clean." Remaining: (c) run the credentialed adversarial harness against a live
+      review model and archive per-class results for the model-dependent classes (A, B, E).
+      Under the two-track model this remainder is Track 1 (family) debt and a Track 2 (public
+      launch) blocker: the Kids Category / COPPA posture in
+      [ADR-008](./adr/adr-008-public-app-store-launch.md) makes an unbacked safety claim a
+      compliance exposure, and P9-04 already mandates live moderation in production
 - [x] No high or critical security findings (Bandit, Semgrep, pip-audit)
 - [x] Ruff clean; BasedPyright strict clean
 - [x] Pre-commit green; all commits signed with conventional messages
@@ -1058,7 +1060,7 @@ documents.
 | Stateful runtime dead ends (silver door) | M | H | Layer-2 state-space validator; configuration cap bounds the walk; dedicated corpus in Phase 2 | 1, 2 |
 | LLM coherence across branches (60% yield target) | H | M | Structure-first staged generation; validator; repair loop (3-cap, no-progress abort); small Tier-2 state; drafting guide authored in Phase 0 | 0, 2 |
 | Unsafe or off-band content reaching a child | L | H | Independent moderation + mandatory guardian approval + age-band policy; never auto-publish; adversarial test corpus in Phase 3 | 3, 4a |
-| Moderation bypass seams: story reaches a publishable state unscreened | M | H | The import path (`generation/import_story.py`) and the admin `POST /submit` (`api/approval.py`) reach `in_review`/publishable with no `moderation_report`; approve never checks one exists, and the review surface renders `summary=None` identically to screened-clean. Human approval still gates publish, but the approver sees no safety signal. Close per C3-SAFETY: run moderation on both paths (or block publish when `moderation_report is None`) and add an explicit "never screened" state to the review surface. Evidence and taxonomy in [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md) | 3, 4a |
+| ~~Moderation bypass seams: story reaches a publishable state unscreened~~ **Closed** | L | H | Was: the import path (`generation/import_story.py`) and the admin `POST /submit` (`api/approval.py`) could reach `in_review`/publishable with no `moderation_report`. Closed by (a) `import_filled_story` now runs the moderation pipeline before returning, and (b) `publishing.service.approve` structurally refuses to publish any version with `moderation_report is None`, plus an explicit `screened: bool` on the review surface. Evidence and taxonomy in [`safety/adversarial-safety-evaluation.md`](./safety/adversarial-safety-evaluation.md) | 3, 4a |
 | Safety-gate claim unbacked by a live adversarial run | M | H | The "adversarial briefs flag and route to human review" acceptance item has no live-model evidence (harness refuses mock verdicts as evidence). A Kids Category / COPPA public launch turns this into a compliance exposure. Close with the credentialed harness (per-class catch-rates archived); P9-04 already mandates live moderation in production | 3, 9 |
 | Generation cost and latency | M | L | Infrequent generation; async RQ worker; immutable cached outputs; per-family quota | 2 |
 | Condition-evaluator divergence (validator/player disagreement) | L | H | Tiny in-house interpreter; property-tested for totality (Hypothesis, fast-check); shared conformance fixtures; cross-impl test in CI | 0, 1 |

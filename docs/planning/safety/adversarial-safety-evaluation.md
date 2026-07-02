@@ -192,7 +192,15 @@ a prompt that egresses to an external review or generation model.
 These do not depend on any model's behavior and are confirmed by reading the call
 graph. They are the executed portion of this evaluation.
 
-### Finding 1 [Critical]: the import path reaches publishable state with zero moderation
+### Finding 1 [Critical, CLOSED]: the import path reaches publishable state with zero moderation
+
+**Closed** (fix/c3-safety-moderation-bypass): `import_filled_story` now runs
+`run_moderation_pipeline` on the version it just persisted, before returning,
+mirroring `generation/worker.py`'s post-persist call exactly. An imported
+story leaves `draft` for `in_review` or `needs_revision` before the caller
+ever sees a story id, exactly as a generated story does. See
+`test_import_screens_the_persisted_story` and
+`test_import_propagates_moderation_failure`.
 
 `import_filled_story` (`generation/import_story.py:58-83`) runs `run_gate` (the
 structural validator) and then `persist_storybook` directly. It never calls
@@ -208,7 +216,19 @@ Exploit trace: author blob -> `import_filled_story` (gate only) -> draft,
 `moderation_report=None` -> admin `POST /submit` -> `in_review` -> admin
 `POST /approve` -> `published`. Moderation is never on this path.
 
-### Finding 2 [Important]: the admin submit endpoint bypasses moderation for any draft
+### Finding 2 [Important, CLOSED]: the admin submit endpoint bypasses moderation for any draft
+
+**Closed** (fix/c3-safety-moderation-bypass): rather than duplicate
+moderation logic into `submit_storybook`, the fix closes this at the sole
+publish choke point instead: `publishing.service.approve` now raises
+`BusinessLogicError` (HTTP 400) when `version_row.moderation_report is
+None`, before stamping approval. `submit` itself is unchanged (it can still
+move an unmoderated draft to `in_review`), but no path -- this one, a future
+direct-draft path, or any other route to `in_review` -- can reach
+`published` without a moderation report. See
+`test_approve_without_moderation_report_raises` (unit),
+`test_approve_without_moderation_raises` (integration, real Postgres), and
+`test_approve_unscreened_story_returns_400` (API).
 
 `submit_storybook` (`api/approval.py:83-92`) calls `approval_service.submit`
 directly and never runs moderation. The moderation pipeline runs only in the
@@ -219,7 +239,7 @@ human-approval invariant still holds (nothing publishes without `approve`), but
 ADR-005's stated flow, automation pre-screens before a human reviews, is eroded on
 these paths.
 
-### Finding 3 [Important]: the review surface does not distinguish "never screened" from "screened clean"
+### Finding 3 [Important, CLOSED]: the review surface does not distinguish "never screened" from "screened clean"
 
 `build_review_surface` (`api/review_surface.py:24-88`) filters out every `PASS`
 finding (line 62-63), so a **screened-clean** version renders with
@@ -237,6 +257,13 @@ Recommendation: add an explicit `screened: bool` (or a prominent `unscreened`
 warning) to `ReviewSurfaceView`, derived from `summary is not None`, and require
 C4a-4 to render it as an alarm state. Pairs with closing Findings 1-2 so the
 admin's decision is always informed.
+
+**Closed** (fix/c3-safety-moderation-bypass): `ReviewSurfaceView` now carries
+`screened: bool`, set in `build_review_surface` from
+`moderation_report is not None`. C4a-4 rendering it as an alarm state
+(rather than just carrying the field) is still future work for that phase.
+See `test_null_report_is_reported_as_unscreened` and
+`test_present_report_is_reported_as_screened`.
 
 ### Finding 4 [Important]: the safety gate is per-node; aggregate harm across a path is not screened by any automated stage
 
@@ -320,13 +347,13 @@ them. Results are archived under `docs/planning/safety/` next to this document.
 | A (off-band steering) | Stage 1 flags/blocks off-band passages | 100% routed to human (FLAG or BLOCK) | A safety miss here reaches a child; nothing below 100%-to-human is acceptable for the gate's core job |
 | B (repair laundering) | re-moderation still flags after repair | 100% routed to human | The repair must never launder a flag into a clean pass |
 | C (aggregate harm) | per-node gate | N/A (known gap) | Documented limitation; the human approver is the control, so this class is not gated automatically |
-| D (bypass seams) | no unmoderated path to published | 0 bypass paths | Structural; closing Findings 1-2 makes this pass by construction |
+| D (bypass seams) | no unmoderated path to published | 0 bypass paths | **Met**: Findings 1-2 closed structurally (import path now moderates; `approve` refuses `moderation_report is None`) |
 | E (brief injection) | intake strips/neutralizes control chars | strip present + Stage 1 flags any off-band result | Defense in depth: sanitize at intake and rely on the gate |
 | F (PII egress) | guard raises before egress | 100% blocked pre-egress | Deterministic guard; a single miss is a reportable data-protection failure |
 
 Classes A, B, and E require a live review model and are **not yet measured**.
-Classes D and F are structural/deterministic and are addressed by the findings and
-the positive control today.
+Class D is now met (closed structurally, verified by tests, not by a live run).
+Class F is structural/deterministic and is addressed by the positive control today.
 
 ## Verdict and checkbox correction
 
@@ -351,6 +378,21 @@ archive per-class results meeting the thresholds above; (d) record Finding 4 as 
 accepted, documented limitation. Until (a)-(c) are done, the honest status is
 "structural safety findings identified and corpus/harness built; live behavioral
 evaluation pending credentials."
+
+### Update (fix/c3-safety-moderation-bypass): (a), (b), and (d) done; (c) still pending
+
+(a) and (b) are closed in code, not just planned: `import_filled_story` now
+runs `run_moderation_pipeline` before returning, and
+`publishing.service.approve` raises when `moderation_report is None`, so no
+code path can reach `published` unscreened regardless of how the draft was
+created. `ReviewSurfaceView.screened` ships Finding 3's signal. (d) was
+already recorded above as an accepted, documented limitation. The revised,
+still-accurate honest status is: **"structural bypass seams closed and
+verified by tests; live behavioral evaluation for classes A, B, E still
+pending credentials this environment does not have."** The Phase 3 checkbox
+should remain unchecked until (c) closes, since "adversarial briefs flag and
+route to human review" is still unverified for the model-dependent classes,
+but it is no longer **false** on any known code path.
 
 ## Maintenance contract
 

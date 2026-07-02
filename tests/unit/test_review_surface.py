@@ -102,6 +102,36 @@ def test_null_report_yields_empty_projections() -> None:
 
 
 @pytest.mark.unit
+def test_null_report_is_reported_as_unscreened() -> None:
+    """Finding 3: an unmoderated version must not look identical to a clean one.
+
+    A screened-clean version renders empty flagged_passages/story_level_findings
+    just like an unmoderated one; `screened` is the only field a consumer (the
+    future C4a-4 guardian console) can trust to tell the two apart.
+    """
+    view = build_review_surface(
+        status="draft",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+    )
+    assert view.screened is False
+
+
+@pytest.mark.unit
+def test_present_report_is_reported_as_screened() -> None:
+    view = build_review_surface(
+        status="in_review",
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_report(),
+    )
+    assert view.screened is True
+
+
+@pytest.mark.unit
 def test_finding_on_absent_node_gets_empty_prose() -> None:
     report = {
         "findings": [

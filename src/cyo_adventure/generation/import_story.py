@@ -1,7 +1,8 @@
 """Import an externally-authored filled story into the story store.
 
-Gated by the same validator used by the generation worker. Intended for use
-by the cyo-author Claude Code authoring skill.
+Gated by the same validator used by the generation worker, and screened by the
+same moderation pipeline before it can leave ``draft``. Intended for use by the
+cyo-author Claude Code authoring skill.
 """
 
 from __future__ import annotations
@@ -9,14 +10,26 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from sqlalchemy import select
+
+from cyo_adventure.core.config import settings as _default_settings
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.db.models import ChildProfile
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
+from cyo_adventure.generation.pii import PiiContext
+from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.validator.gate import run_gate
 
 if TYPE_CHECKING:
     import uuid
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# Imported stories are always the first version of a fresh Storybook id,
+# mirroring generation/worker.py's _FIRST_VERSION / generation/persistence.py's
+# StorybookParams.version default.
+_FIRST_VERSION = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -46,7 +59,9 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         request: The grouped import inputs (see :class:`ImportRequest`).
 
     Returns:
-        The persisted story id (the blob's ``id``).
+        The persisted story id (the blob's ``id``). The story leaves ``draft``
+        for ``in_review`` (clean or repaired) or ``needs_revision`` (hard
+        block) before this returns; it is never left as an unscreened draft.
 
     Raises:
         ValidationError: If the validation gate blocks the story, or the blob has
@@ -69,7 +84,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         msg = "filled story has no string id"
         raise ValidationError(msg)
 
-    return await persist_storybook(
+    await persist_storybook(
         session,
         StorybookParams(
             story_id=story_id,
@@ -79,5 +94,36 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
             model=request.model,
             prompt_version=request.prompt_version,
             validation_report=result.report.to_dict(),
+            version=_FIRST_VERSION,
         ),
     )
+
+    # #CRITICAL: security: closes C3-SAFETY Finding 1 (adversarial-safety-
+    # evaluation.md): import_filled_story used to persist a draft and stop,
+    # leaving an externally-authored story (e.g. the cyo-author skeleton-fill
+    # route) reachable by admin submit/approve with zero content screening.
+    # This mirrors generation/worker.py's post-persist moderation call exactly
+    # so an imported story is screened identically to a generated one.
+    # publishing.service.approve additionally refuses to publish any version
+    # with moderation_report=None (Finding 2's structural backstop), so this
+    # call is defense in depth, not the sole gate.
+    # #VERIFY: test_import_screens_the_persisted_story /
+    # test_import_propagates_moderation_failure.
+    child_result = await session.execute(
+        select(ChildProfile.display_name).where(
+            ChildProfile.family_id == request.family_id
+        )
+    )
+    child_names: frozenset[str] = frozenset(row for (row,) in child_result.all() if row)
+    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+
+    await run_moderation_pipeline(
+        session=session,
+        story_id=story_id,
+        version=_FIRST_VERSION,
+        settings=_default_settings,
+        generation_provider=build_provider(_default_settings),
+        pii=pii,
+    )
+
+    return story_id

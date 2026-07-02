@@ -142,10 +142,11 @@ ever shared beyond the family.
 - [x] No story reaches a child profile without a recorded guardian approval (no auto-publish
   path; verified by the state machine and the published-requires-approver invariant).
 - [~] Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish"
-  holds; the flagging half is partially met and reframed, see
-  [adversarial-safety-evaluation.md](../safety/adversarial-safety-evaluation.md) (no
-  live-model run yet; the import and admin-submit paths currently reach a publishable state
-  unmoderated).
+  holds; the import and admin-submit paths no longer reach a publishable state unmoderated
+  (closed structurally: the import path now runs moderation before returning, and `approve`
+  refuses to publish a version with no moderation report). What remains unmet is the flagging
+  half for the model-dependent classes, which has no live-model run yet, see
+  [adversarial-safety-evaluation.md](../safety/adversarial-safety-evaluation.md).
 
 ### Review Schedule
 
