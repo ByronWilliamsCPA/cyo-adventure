@@ -19,12 +19,13 @@ purpose: "Single source of truth for implementation order, phase acceptance crit
 component: Strategy
 source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
   roadmap.md (2026-06-20), and ADRs 001-006; Track 2 (Phases 6-9) added 2026-07-02 from
-  ADR-008 (public App Store launch)"
+  ADR-008 (public App Store launch); Track 2 platform pivoted 2026-07-02 to Supabase
+  per ADR-009"
 ---
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.0 | **Updated**: 2026-07-02
+> **Status**: Active | **Version**: 2.1 | **Updated**: 2026-07-02
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -57,15 +58,18 @@ Because generation ships in the first release, two items are elevated to **Phase
 blockers**: the LLM provider data-handling decision and the privacy controls (no real child PII
 in prompts; admin-only short-lived raw outputs).
 
-**Public launch decision (2026-07-02, [ADR-008](./adr/adr-008-public-app-store-launch.md))**:
-the app will be offered publicly through the Apple App Store with a tiered family
-subscription. This adds **Track 2** (Phases 6 through 9): real multi-tenant OIDC
-authentication (Authentik brokering Sign in with Apple and Google, guardians only),
-Kids Category and COPPA compliance, a Capacitor iOS shell with Apple In-App Purchase,
-a curated public catalog, and hosted infrastructure. Track 2 begins after the first
-usable release (Phase 4a) and changes nothing in the safety guarantee: validation gate,
-moderation, and mandatory guardian approval remain mandatory for every story, and
-children never trigger generation or see raw model output.
+**Public launch decision (2026-07-02, [ADR-008](./adr/adr-008-public-app-store-launch.md),
+as amended by [ADR-009](./adr/adr-009-supabase-platform.md))**: the app will be offered
+publicly through the Apple App Store with a tiered family subscription. This adds
+**Track 2** (Phases 6 through 9): real multi-tenant authentication on Supabase Auth
+(native Sign in with Apple and Google, guardians only; children are never IdP
+identities), Kids Category and COPPA compliance, a Capacitor iOS shell with Apple
+In-App Purchase, and a curated public catalog on the Supabase platform (Postgres,
+Storage, queue) plus a single container host for the FastAPI app and worker. Track 2
+begins after the first usable release (Phase 4a) and changes nothing in the safety
+guarantee: validation gate, moderation, and mandatory guardian approval remain
+mandatory for every story, and children never trigger generation or see raw model
+output.
 
 **Timeline**:
 
@@ -76,7 +80,8 @@ children never trigger generation or see raw model output.
 | Public App Store launch (Track 2) | Phases 6-9, after Phase 4a | +11-17 weeks after first release |
 
 Source: [Project Vision](./project-vision.md) sections 1-3;
-[ADR-008](./adr/adr-008-public-app-store-launch.md) for Track 2.
+[ADR-008](./adr/adr-008-public-app-store-launch.md) and
+[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
 
 ### Current status (2026-07-02)
 
@@ -127,8 +132,8 @@ reader demo with no routing). The concrete path from here is
 Three items originally out of scope for v1 are now planned, with the revisited privacy
 posture the vision document said they would require:
 
-- **Public accounts and multi-tenancy**: guardian-only OIDC identities (Authentik
-  brokering Sign in with Apple and Google), JIT family provisioning, child profiles as
+- **Public accounts and multi-tenancy**: guardian-only identities on Supabase Auth
+  (native Sign in with Apple, Google), JIT family provisioning, child profiles as
   backend-scoped sessions (never IdP identities), verifiable parental consent, in-app
   account deletion.
 - **Native iOS distribution**: Capacitor shell around the existing PWA; App Store
@@ -174,7 +179,8 @@ Key architectural decisions, each recorded in an ADR:
 | [ADR-005](./adr/adr-005-mandatory-human-approval.md) | Publish state machine with mandatory guardian approval; no auto-publish path | Automated moderation helps but cannot be the sole safeguard for machine-generated content read by children |
 | [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 8 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
 | [ADR-007](./adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy for `GenerationJob.report` | Admin-only, short-lived raw outputs; audit without hoarding |
-| [ADR-008](./adr/adr-008-public-app-store-launch.md) | Public App Store launch: Capacitor shell, Authentik-brokered guardian-only OIDC, tiered IAP subscription, hosted public tier | Reuses the existing client, auth seam, and approval pipeline; strongest child-privacy posture (no child IdP identities); amends ADR-002 and ADR-004 for the public tier |
+| [ADR-008](./adr/adr-008-public-app-store-launch.md) | Public App Store launch: Capacitor shell, guardian-only IdP identities, tiered IAP subscription, hosted public tier | Reuses the existing client, auth seam, and approval pipeline; strongest child-privacy posture (no child IdP identities); amends ADR-002 and ADR-004 for the public tier; auth/hosting amended by ADR-009 |
+| [ADR-009](./adr/adr-009-supabase-platform.md) | Supabase platform for the public tier: Auth (native Apple/Google), Postgres, Storage, queue evaluation; FastAPI + worker on one container host | Guardian-only MAU makes auth cost negligible everywhere, so leverage decides; consolidates ~5 vendors to 2; retires the self-run-IdP risk; plain Postgres/S3/GoTrue keep the ejection path cheap |
 
 ### Publish state machine
 
@@ -227,24 +233,31 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Linting/format | Ruff (88 chars, PyStrict-aligned); ESLint + Prettier | |
 | Type checking | BasedPyright (strict) | |
 
-**Track 2 additions** ([ADR-008](./adr/adr-008-public-app-store-launch.md)):
+**Track 2 additions** ([ADR-008](./adr/adr-008-public-app-store-launch.md),
+[ADR-009](./adr/adr-009-supabase-platform.md)):
 
 | Layer | Choice | Notes |
 |-------|--------|-------|
-| iOS shell | Capacitor | Wraps the existing PWA; Keychain storage, `ASWebAuthenticationSession` login, offline-first launch |
-| JWT validation | PyJWT + cached JWKS | Authentik is the only issuer; verify iss/aud/exp/signature |
-| Identity federation | Authentik sources: Sign in with Apple, Google | Guardians only; children are never IdP identities |
+| iOS shell | Capacitor | Wraps the existing PWA; Keychain storage, offline-first launch |
+| Identity platform | Supabase Auth: Sign in with Apple (native `signInWithIdToken`), Google | Guardians only; children are never IdP identities; no Apple client secret in the native path |
+| JWT validation | PyJWT + cached JWKS | Supabase is the only issuer (asymmetric signing keys); verify iss/aud/exp/signature |
 | Child sessions | Backend-minted scoped JWTs | role=child, single profile, offline-friendly lifetime |
 | Payments | Apple IAP (StoreKit 2) via RevenueCat, or direct App Store Server API | Decide at Phase 8 start (P8-04); server-side entitlements either way |
 | Entitlements | Postgres (subscription state + credit ledger) | Enforced in library and generation APIs, never trusted from the client |
-| Public hosting | Azure Container Apps (per ADR-004 portability) | Postgres, Redis, object storage, Authentik hosted; homelab remains dev/family |
-| Consent + deletion | First-party flows | COPPA verifiable parental consent; deletion incl. Apple token revocation |
+| Database (public tier) | Supabase Postgres | Async SQLAlchemy + Alembic unchanged; direct/session-mode connection for asyncpg |
+| Object storage (public tier) | Supabase Storage (S3-compatible API) | Behind the existing S3 seam; MinIO stays for local dev |
+| Queue (public tier) | Supabase Queues (pgmq), Upstash Redis as pre-approved fallback | Time-boxed evaluation at Phase 9 start (P9-03) |
+| Scheduled jobs | pg_cron | ADR-007 raw-output retention purge and maintenance |
+| Compute hosting | One container host (Fly.io / Railway / Azure Container Apps; decide in P9-03) | FastAPI app + generation worker; the safety pipeline never moves to Edge Functions |
+| Supabase plan tiers | Free for dev/staging (50k MAU, 500 MB DB, 1 GB storage); Pro for production from TestFlight (P9-09) | Free projects pause when inactive and lack daily backups |
+| Consent + deletion | First-party flows + Supabase Auth admin API | COPPA verifiable parental consent; deletion incl. Apple token revocation (our code) |
 
 Exact pinned versions are produced in Phase 0 as `TECHNICAL_BASELINE.md`. Container images
 are pinned by tag; `latest` is never used.
 
 Source: [Tech Spec](./tech-spec.md) section "Technology Stack";
-[ADR-008](./adr/adr-008-public-app-store-launch.md) for Track 2.
+[ADR-008](./adr/adr-008-public-app-store-launch.md) and
+[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
 
 ---
 
@@ -283,7 +296,8 @@ split, so Phase 6 must land before 8 and 9 start. Phase 4b is not on this path b
 (4b) is a subscription selling point; schedule it opportunistically alongside Track 2.
 
 Source: [Roadmap](./roadmap.md) sections "Critical Path" and "Timeline Overview";
-[ADR-008](./adr/adr-008-public-app-store-launch.md) for Track 2.
+[ADR-008](./adr/adr-008-public-app-store-launch.md) and
+[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
 
 ---
 
@@ -693,8 +707,8 @@ or see raw model output.
 
 - No child identity ever exists in an identity provider; children are in-app profiles.
 - No third-party ad or analytics SDK ships in the kid context.
-- `User.authn_subject` keys on the Authentik `sub` claim, never on email (Apple private
-  relay makes email unstable).
+- `User.authn_subject` keys on the Supabase user id (JWT `sub` claim), never on email
+  (Apple private relay makes email unstable).
 - Entitlements and profile limits are enforced server-side, never trusted from the client.
 - Anything touching auth, payments, consent, or deletion carries RAD `#CRITICAL` tags and
   a named test per the package `CLAUDE.md`.
@@ -708,21 +722,22 @@ or see raw model output.
 **Status**: Planned
 
 **Objective**: Retire the dev auth stub and make the backend genuinely multi-tenant.
-Authentik becomes the single OIDC issuer with Sign in with Apple and Google as federated
-sources; only guardians authenticate against it. Children become backend-scoped profile
-sessions. The existing `Principal` model, authorization matrix, and IDOR test suite are
-reused; what changes is how a `Principal` is produced.
+Supabase Auth becomes the single token issuer with Sign in with Apple and Google as
+providers ([ADR-009](./adr/adr-009-supabase-platform.md)); only guardians authenticate
+against it. Children become backend-scoped profile sessions. The existing `Principal`
+model, authorization matrix, and IDOR test suite are reused; what changes is how a
+`Principal` is produced. Development and staging run on a free-plan Supabase project.
 
 **Deliverables**:
 
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
-| P6-01 | Real OIDC JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | PyJWT + cached JWKS; verify signature, issuer, audience, expiry; delete the import-time environment guard; keep the dev stub selectable only when `environment == "local"` |
-| P6-02 | OIDC settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | Fail-fast model validator requiring them outside `local` (same pattern as `_reject_dev_database_url_outside_local`) |
-| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on Authentik `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02) |
-| P6-04 | Child-session tokens | Guardian-minted, backend-signed, short-lived JWT scoped to role=child and a single `profile_id`; lifetime long enough for an offline reading session (config); second branch in `require_principal` producing the same `Principal` shape |
-| P6-05 | Authentik federated sources: Sign in with Apple + Google | Apple Services ID, `.p8` signing key, Team ID configured in Authentik; first-login name/email capture verified (Apple sends them exactly once); client-secret rotation runbook (max 6-month validity) |
-| P6-06 | Frontend OIDC: Authorization Code + PKCE against Authentik | Replace the `localStorage` token in `frontend/src/hooks/useApi.ts` with memory + silent refresh behind a storage abstraction (Keychain implementation lands in P8-02) |
+| P6-01 | Real JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | PyJWT + cached JWKS against the Supabase issuer (enable asymmetric JWT signing keys on the project); verify signature, issuer, audience, expiry; delete the import-time environment guard; keep the dev stub selectable only when `environment == "local"` |
+| P6-02 | Auth settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | Provider-agnostic names, values point at the Supabase project (deliberate ejection path); fail-fast model validator requiring them outside `local` (same pattern as `_reject_dev_database_url_outside_local`) |
+| P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on the Supabase `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02) |
+| P6-04 | Child-session tokens | Guardian-minted, backend-signed, short-lived JWT scoped to role=child and a single `profile_id`; lifetime long enough for an offline reading session (config); second branch in `require_principal` producing the same `Principal` shape; Supabase anonymous users are NOT used |
+| P6-05 | Supabase Auth providers: Sign in with Apple + Google | Native iOS flow via `signInWithIdToken` (no client secret in the native path); web OAuth path needs the Apple Services ID client secret (6-month validity, reduced rotation runbook); first-login name/email capture verified (Apple sends them exactly once) |
+| P6-06 | Frontend auth: supabase-js session management | supabase-js handles sign-in, refresh, and Capacitor deep-link callbacks; replace the `localStorage` token in `frontend/src/hooks/useApi.ts` with the supabase-js session behind a storage abstraction (Keychain implementation lands in P8-02); backend calls still send the Supabase access token as the bearer |
 | P6-07 | Child profile picker + optional per-profile PIN | Kid experience stays login-free; picker appears after guardian device sign-in |
 | P6-08 | Parental gate (frontend) | Guardian re-auth wrapper around dashboard, approval, settings, and (later) purchase routes; the gate pattern Apple expects in Kids Category apps |
 | P6-09 | Auth negative-test suite | Expired token, wrong issuer, wrong audience, algorithm confusion, tampered signature, child token on guardian endpoints |
@@ -734,8 +749,8 @@ reused; what changes is how a `Principal` is produced.
   family's data (P6-10 suite green).
 - A child session reads a downloaded story offline for the token's full lifetime and cannot
   call any guardian, approval, or generation endpoint.
-- No child identity exists in Authentik; deleting the IdP entry for a guardian orphans no
-  child data silently (verified in the P7-04 deletion drill).
+- No child identity exists in Supabase Auth; deleting the IdP entry for a guardian
+  orphans no child data silently (verified in the P7-04 deletion drill).
 - Sign in with Apple returns to the app with name/email captured on first authorization,
   including the Hide My Email relay case.
 
@@ -746,7 +761,8 @@ reused; what changes is how a `Principal` is produced.
 - [ ] No secret (Apple `.p8`, client secrets) in the repo; detect-secrets clean
 
 **Dependencies**: Requires Phase 4a (app shell and guardian UI exist). P6-05 requires the
-Apple Developer account (P7-01), so enroll at Track 2 start. Blocks Phases 8 and 9.
+Apple Developer account (P7-01), so enroll at Track 2 start. Requires a free-plan
+Supabase project (dev/staging) created at phase start. Blocks Phases 8 and 9.
 
 ---
 
@@ -769,11 +785,11 @@ label, the deletion contract, and the consent disclosure.
 | P7-01 | Apple Developer Program enrollment + EU DSA trader status | Prerequisite for P6-05, TestFlight, and submission; publish trader contact details |
 | P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change |
 | P7-03 | Privacy policy published + linked in-app | Drafted from `privacy-model.md`; hosted at a stable URL (App Store Connect requires one) |
-| P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; calls Apple's Sign in with Apple token-revocation endpoint; async deletion job with audit record; drill test proves zero residual child-linked rows |
+| P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows |
 | P7-05 | Guardian data export | All family data in a portable format (GDPR access right) |
 | P7-06 | Kid-context SDK and telemetry audit | No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels |
 | P7-07 | Age-rating questionnaire prep + AI disclosure + reviewer notes | `docs/planning/app-store-review-notes.md`: how the pre-moderated pipeline works, why children cannot reach generation, moderation and approval evidence |
-| P7-08 | Compliance checklist | `docs/planning/compliance-checklist.md` covering Guidelines 1.3, 4.8, 5.1.1(v), 5.1.4, COPPA, GDPR-K; owner sign-off required; **gates Phase 9 submission** |
+| P7-08 | Compliance checklist | `docs/planning/compliance-checklist.md` covering Guidelines 1.3, 4.8, 5.1.1(v), 5.1.4, COPPA, GDPR-K; includes verifying the Supabase DPA and data-region selection (Supabase is a processor of guardian and child-linked data per ADR-009); owner sign-off required; **gates Phase 9 submission** |
 
 **Acceptance criteria**:
 
@@ -817,7 +833,7 @@ the parental gate.
 
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
-| P8-01 | Capacitor iOS shell | Offline-first launch, `ASWebAuthenticationSession` login against Authentik, iPad layout pass, deep links; native affordances documented for the 4.2 self-check (P8-08) |
+| P8-01 | Capacitor iOS shell | Offline-first launch, native Apple sign-in sheet + supabase-js `signInWithIdToken` (Google via system browser flow), iPad layout pass, deep links; native affordances documented for the 4.2 self-check (P8-08) |
 | P8-02 | Keychain secure token storage | Implements the Phase 6 storage abstraction (P6-06) natively |
 | P8-03 | Entitlements model in Postgres | `family_entitlement` (subscription state, expiry) + `generation_credit_ledger` (append-only); Alembic migrations per the baseline convention |
 | P8-04 | IAP integration | Decision at phase start: RevenueCat vs direct StoreKit 2 + App Store Server API; either way server-side receipt/transaction validation and App Store Server Notifications v2 webhook drive entitlement transitions; never client-asserted |
@@ -864,13 +880,13 @@ successful App Store submission.
 |-----------|-------------|-------|
 | P9-01 | `catalog_published` state on the publish state machine | Admin-curated transition in `src/cyo_adventure/publishing/state_machine.py` + migration; family `published` unchanged; catalog stories still carry full provenance and approval records |
 | P9-02 | Curated starter library | Pre-generate, moderate, and approve a launch set (target: 12 stories, 4 per age band); free tier gets a subset, subscription gets all; weekly-release cadence documented as the retention driver |
-| P9-03 | Hosted infrastructure | Postgres, Redis, object storage, API, worker, and Authentik on the cloud target (Azure Container Apps per ADR-004 portability); homelab remains dev/family staging; infra-as-code checked in |
+| P9-03 | Hosted infrastructure ([ADR-009](./adr/adr-009-supabase-platform.md)) | Production Supabase project (Postgres via direct/session-mode connection, Storage through the S3 seam) + one container host for API and worker (Fly.io / Railway / Azure Container Apps, decided here); **time-boxed queue evaluation**: port the worker to Supabase Queues (pgmq) if the generation integration tests pass, else the pre-approved Upstash Redis fallback with RQ unchanged; ADR-007 retention purge moves to pg_cron; homelab remains dev/family staging; infra-as-code checked in |
 | P9-04 | Live moderation mandatory in production | `review_provider != "mock"` enforced by config validation in production; classifier keys (`OPENAI_API_KEY` or `PERSPECTIVE_API_KEY`) required (existing `_require_classifier_when_reviewing` invariant) |
 | P9-05 | Rate limiting, quotas, and cost caps | Per-family generation quotas, global daily LLM spend cap with alarm and circuit breaker, API rate limits; spend dashboards |
-| P9-06 | Production observability + ops | Sentry (client + server), structured logs with correlation IDs, backups + restore drill on hosted infra (extends the Phase 5 runbook to the public tier) |
+| P9-06 | Production observability + ops | Sentry (client + server), structured logs with correlation IDs; Supabase daily backups/PITR on Pro plus a restore drill that includes a full export (schema, data, storage) to prove the ejection path (extends the Phase 5 runbook to the public tier) |
 | P9-07 | Ratings as curation signal | Existing `ratings` API surfaced in the admin curation view |
 | P9-08 | App Store listing | Screenshots, description, age rating from P7-07, privacy nutrition labels from P7-06, review notes from `docs/planning/app-store-review-notes.md` |
-| P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission |
+| P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission; **upgrade the production Supabase project to Pro at TestFlight start** (free projects pause when inactive and lack daily backups) |
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
 
 **Acceptance criteria**:
@@ -997,8 +1013,10 @@ documents.
 | Auth defect enables cross-family data access | L | H | Reuse of proven `Principal` model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary | 6 |
 | LLM cost abuse at public scale | M | M | Metered credits (P8-05), per-family quotas, global spend cap with circuit breaker (P9-05) | 8, 9 |
 | Entitlement drift (payments vs access disagree) | M | M | Server-side receipt validation and webhook-driven transitions only (P8-04); sandbox lifecycle matrix (P8-07); forged-webhook negative test | 8 |
-| Authentik becomes a public login SPOF | M | M | Hosted HA deployment (P9-03); health checks; managed-IdP fallback documented in ADR-008 options | 6, 9 |
-| Sign in with Apple operational traps (secret expiry, one-time name/email, relay email) | M | M | Rotation runbook (P6-05); first-login capture test; never key on email; register sending domain with Apple relay before any email feature | 6 |
+| Supabase platform dependency (its incident is our login and data-plane outage) | M | M | Managed SLA on Pro (P9-09); open components underneath (Postgres, S3 API, GoTrue) keep ejection a migration, not a rewrite; export drill in P9-06 proves it | 6, 9 |
+| Sign in with Apple operational traps (one-time name/email, relay email, web-path secret expiry) | M | L | Native path has no client secret (`signInWithIdToken`, P6-05); first-login capture test; never key on email; register sending domain with Apple relay before any email feature; reduced web-secret rotation runbook | 6 |
+| pgmq queue port fails or underperforms | M | L | Time-boxed evaluation with the existing generation integration tests (P9-03); pre-approved Upstash Redis fallback keeps RQ unchanged | 9 |
+| asyncpg misbehaves behind transaction-mode pooling | M | M | Direct or session-mode connections only (ADR-009); documented in `TECHNICAL_BASELINE.md` at Phase 6; connection-mode smoke test in CI against staging | 6, 9 |
 | Thin catalog at launch kills conversion and retention | M | H | Curated starter library with per-band coverage (P9-02); weekly-release cadence; 4b read-aloud as subscription lever | 9 |
 
 ---
@@ -1107,11 +1125,13 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-006: Conditions use in-house whitelisted evaluator | Condition DSL and conformance strategy | [docs/planning/adr/adr-006-conditions-inhouse-evaluator.md](./adr/adr-006-conditions-inhouse-evaluator.md) |
 | ADR-007: Raw LLM output retention policy | Retention for `GenerationJob.report` | [docs/planning/adr/adr-007-raw-output-retention.md](./adr/adr-007-raw-output-retention.md) |
 | ADR-008: Public App Store launch | Distribution, auth, monetization, hosting, and compliance pivots for Track 2 | [docs/planning/adr/adr-008-public-app-store-launch.md](./adr/adr-008-public-app-store-launch.md) |
+| ADR-009: Supabase platform | Auth, database, storage, and queue topology for the public tier (amends ADR-008) | [docs/planning/adr/adr-009-supabase-platform.md](./adr/adr-009-supabase-platform.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
 
 ---
 
-**Last Updated**: 2026-07-02 (v2.0: Track 2 public App Store launch added per ADR-008)
+**Last Updated**: 2026-07-02 (v2.1: Track 2 pivoted to the Supabase platform per ADR-009;
+v2.0: Track 2 public App Store launch added per ADR-008)
 **Next Review**: At each phase boundary; Track 2 additionally at P7-08 compliance sign-off
 and pre-submission (P9-10)
 **Approved By**: Byron Williams (core-maintainer)

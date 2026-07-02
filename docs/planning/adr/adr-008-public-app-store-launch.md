@@ -17,6 +17,9 @@ tags:
 > **Status**: Proposed
 > **Date**: 2026-07-02
 > **Amends**: [ADR-002](./adr-002-client-pwa.md) (distribution), [ADR-004](./adr-004-homelab-first-deployment.md) (hosting for the public tier)
+> **Amended by**: [ADR-009](./adr-009-supabase-platform.md) (2026-07-02): Supabase
+> replaces the Authentik broker and the Azure-hosted service set for the public tier;
+> the distribution, monetization, and compliance decisions below stand
 
 ## TL;DR
 

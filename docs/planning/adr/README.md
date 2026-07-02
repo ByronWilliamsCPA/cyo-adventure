@@ -33,6 +33,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Proposed | 2026-06-20 |
 | [ADR-007](./adr-007-raw-output-retention.md) | Raw LLM output retention policy for GenerationJob.report | Proposed | 2026-06-29 |
 | [ADR-008](./adr-008-public-app-store-launch.md) | Public App Store launch with tiered subscription monetization | Proposed | 2026-07-02 |
+| [ADR-009](./adr-009-supabase-platform.md) | Supabase as the managed platform for auth, database, and storage | Proposed | 2026-07-02 |
 
 ## Creating ADRs
 
