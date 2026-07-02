@@ -194,7 +194,8 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
         )
     detail = str(exc_info.value)
     assert (
-        detail == "reading-state cannot be validated against a malformed story version"
+        detail
+        == "story version failed schema validation (corrupt, or no longer permitted)"
     )
     assert "not a story" not in detail
     assert "pydantic" not in detail.lower()

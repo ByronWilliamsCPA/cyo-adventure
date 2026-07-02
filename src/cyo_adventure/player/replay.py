@@ -78,15 +78,26 @@ def _parse(blob: dict[str, object]) -> Storybook:
         Storybook: The parsed, schema-valid story.
 
     Raises:
-        ValidationError: If the blob no longer conforms to the schema.
+        ValidationError: If the blob no longer conforms to the current schema,
+            whether from at-rest corruption or a since-tightened validation
+            rule (see the #CRITICAL note below).
     """
     # #EDGE: data integrity: a published version blob should always parse; a parse
     # failure means at-rest corruption, surfaced as a generic 422 (CWE-209).
     # #VERIFY: the pydantic detail is not forwarded to the client.
+    # #CRITICAL: data integrity: this PR tightens Storybook validation (bool
+    # rejected under Variable.min/max, int literals bounded by
+    # MAX_ABS_STORY_INT) without a schema_version bump; a version blob
+    # published and in active use before this change could newly fail here
+    # even though it was never corrupted, blocking that version's reading-state
+    # saves.
+    # #VERIFY: before relying on this in production, confirm no live version
+    # blob trips a rule tightened by this PR; if one does, bump schema_version
+    # and add a migration path rather than letting readers 422 silently.
     try:
         return Storybook.model_validate(blob)
     except PydanticValidationError as exc:
-        msg = "reading-state cannot be validated against a malformed story version"
+        msg = "story version failed schema validation (corrupt, or no longer permitted)"
         raise ValidationError(msg, field="version") from exc
 
 
@@ -207,8 +218,8 @@ def _check_var_value(key: str, value: object, var: Variable) -> None:
         var: The declared variable this value must satisfy.
 
     Raises:
-        ValidationError: If value has the wrong type for var, or an int value
-            is outside var's declared bounds.
+        ValidationError: If value has the wrong type for var, exceeds the
+            float64-safe integer range, or is outside var's declared bounds.
         NotImplementedError: If var.type is a VariableType member this
             function does not yet handle (fail closed on future enum growth
             rather than silently misvalidating an unknown type).
@@ -219,10 +230,12 @@ def _check_var_value(key: str, value: object, var: Variable) -> None:
             raise ValidationError(msg, field="var_state", value=value)
         # #CRITICAL: data integrity: Python holds ints exactly at any size but
         # the client computes in IEEE-754 doubles (exact only to 2**53 - 1), so
-        # a forged save above that line could make validator and player
-        # disagree about a variable's value. Schema literals are capped at
-        # MAX_ABS_STORY_INT (1e9), so no engine-reachable state comes near this
-        # cap; only a forged save can trip it.
+        # a value above that line could make validator and player disagree
+        # about a variable's value. Schema literals are capped at
+        # MAX_ABS_STORY_INT (1e9), so a forged save is the most direct route
+        # here; an unbounded variable (no declared min/max) could in principle
+        # also drift past this line through many legitimate effect
+        # applications, which this check rejects identically either way.
         # #VERIFY: tests/unit/test_replay.py::
         # test_unbounded_int_var_above_float64_safe_range_rejected.
         if abs(value) > _MAX_FLOAT64_SAFE_INT:
@@ -268,6 +281,15 @@ def _check_replay(
     for choice_id in choice_path:
         try:
             state = engine.choose(state, choice_id)
+        # #ASSUME: data integrity: StoryEngine.choose() raises only
+        # BusinessLogicError for every illegal-transition case (ending node,
+        # unknown choice id, hidden choice, and a dangling choice target via
+        # _node()); this is verified against engine.py's docstring and its
+        # sole raise sites, not inferred from the type alone.
+        # #VERIFY: if a future engine change adds a distinct exception for a
+        # malformed-story case (e.g. a dangling target), route that case to a
+        # message that does not blame choice_path, since that would be story
+        # corruption, not an illegal client choice.
         except BusinessLogicError as exc:
             msg = "choice_path contains an illegal choice"
             raise ValidationError(msg, field="choice_path", value=choice_id) from exc
