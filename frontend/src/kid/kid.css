@@ -1,0 +1,17 @@
+.kid-shell {
+  min-height: 100vh;
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+.kid-shell__main {
+  padding: 1.5rem;
+}
+
+.kid-stub {
+  border: 1px dashed var(--color-ink-muted, #8c6f56);
+  border-radius: 12px;
+  padding: 2rem;
+  color: var(--color-ink-secondary, #5a3e28);
+}

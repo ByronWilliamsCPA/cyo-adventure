@@ -1,3 +1,5 @@
+@import '../design-system/src/tokens.css';
+
 *,
 *::before,
 *::after {

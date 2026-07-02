@@ -737,8 +737,8 @@ phase named):
 
 | Code | Disposition | Phase |
 |------|-------------|-------|
-| Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
-| `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Replaced by supabase-js session via a storage abstraction | 6 (P6-06) |
+| Dev auth stub (`_extract_subject` + import-time guard in `api/deps.py`) | ✅ Done (2026-07-02, pulled forward into C4a-1). Retired from all non-local paths; stub survives only under `environment == "local"` for tests and local dev | 6 (P6-01) |
+| `localStorage` bearer token in `frontend/src/hooks/useApi.ts` | Not yet done; token is still written to `localStorage` by `AuthContext` (reusing the existing interceptor). Replacement by a supabase-js session storage abstraction remains scoped to P6-06 | 6 (P6-06) |
 | Homelab Ollama leg as a production generation fallback (`ollama_base_url`, `ollama_auth`, `ollama_ca_bundle` in prod config) | Demoted to dev/family-tier only; public tier is OpenRouter-only | 9 (P9-11) |
 | `redis_url`, `generation/queue.py` (RQ), and the commented Redis service in `docker-compose.yml` | Removed if the pgmq evaluation passes; retained unchanged if the Upstash fallback is taken | 9 (P9-03) |
 | `utils/financial.py` (unused template scaffolding; no imports anywhere) | Remove in a standalone chore before Phase 8 so the entitlements/credits work (integer credits, Apple handles money) is not built near dead Decimal helpers; log template feedback per the repo requirement | pre-8 chore |
@@ -750,7 +750,10 @@ phase named):
 
 **Branch**: `feat/phase-6-public-auth`
 **Milestone**: M6 - A stranger family can onboard in staging (public auth live behind a flag)
-**Status**: Planned
+**Status**: Planned; P6-01, P6-02, and P6-09 were pulled forward into Phase 4a's C4a-1 app
+shell (2026-07-02, per user direction to build against the live Supabase project rather than
+defer verification) and are done ahead of schedule. P6-06 is partially done (session
+management + `/me` fetch only). See per-item notes below.
 
 **Objective**: Retire the dev auth stub and make the backend genuinely multi-tenant.
 Supabase Auth becomes the single token issuer with Sign in with Apple and Google as
@@ -763,15 +766,15 @@ model, authorization matrix, and IDOR test suite are reused; what changes is how
 
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
-| P6-01 | Real JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | PyJWT + cached JWKS against the Supabase issuer (enable asymmetric JWT signing keys on the project); verify signature, issuer, audience, expiry; delete the import-time environment guard; keep the dev stub selectable only when `environment == "local"` |
-| P6-02 | Auth settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | Provider-agnostic names, values point at the Supabase project (deliberate ejection path); fail-fast model validator requiring them outside `local` (same pattern as `_reject_dev_database_url_outside_local`) |
+| P6-01 | Real JWT validation replacing `_extract_subject` in `src/cyo_adventure/api/deps.py` | ✅ Done (2026-07-02). PyJWT + cached JWKS against the Supabase issuer; verifies signature (RS256/ES256 allowlist, defeats `alg=none`), issuer, audience, expiry. **Deviation**: the spec called for deleting the import-time environment guard; instead it was kept but made conditional on OIDC config being present, for a startup-time fail-fast rather than a first-request failure. Dev stub still selectable only when `environment == "local"`. |
+| P6-02 | Auth settings in `src/cyo_adventure/core/config.py`: `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` | ✅ Done (2026-07-02). Provider-agnostic names, values point at the Supabase project (deliberate ejection path); `_require_oidc_config_outside_local` fail-fast model validator added, mirroring `_reject_dev_database_url_outside_local` as specified. |
 | P6-03 | JIT guardian provisioning: `POST /api/v1/onboarding` | First login creates `Family` + guardian `User` keyed on the Supabase `sub`; idempotent on retry; includes the consent-capture seam Phase 7 fills (P7-02); adds a nullable `email` contact column to `User` + Alembic migration (the model has none today; needed for receipts/consent records; populated from the Supabase user, may be an Apple relay address, NEVER used as a key) |
 | P6-04 | Child-session tokens | Guardian-minted, backend-signed, short-lived JWT scoped to role=child and a single `profile_id`; lifetime long enough for an offline reading session (config); second branch in `require_principal` producing the same `Principal` shape; Supabase anonymous users are NOT used |
 | P6-05 | Supabase Auth providers: Sign in with Apple + Google | Native iOS flow via `signInWithIdToken` (no client secret in the native path); web OAuth path needs the Apple Services ID client secret (6-month validity, reduced rotation runbook); first-login name/email capture verified (Apple sends them exactly once) |
-| P6-06 | Frontend auth: supabase-js session management | supabase-js handles sign-in, refresh, and Capacitor deep-link callbacks; replace the `localStorage` token in `frontend/src/hooks/useApi.ts` with the supabase-js session behind a storage abstraction (Keychain implementation lands in P8-02); backend calls still send the Supabase access token as the bearer; rework `useApi.ts` 401 handling to attempt a supabase-js refresh before clearing the session, and verify `offline/sync.ts` replay refreshes an expired token before classifying a 401 as a real failure; add the Supabase URL to CSP `connect-src` wherever the frontend's CSP is set (the API's `middleware/security.py` CSP governs API responses only) |
+| P6-06 | Frontend auth: supabase-js session management | **Partially done** (2026-07-02): `AuthContext` wraps `supabase.auth.getSession()`/`onAuthStateChange()`, calls `GET /api/v1/me` to resolve a `Principal`, and syncs the access token into the existing `useApi.ts` `localStorage` interceptor (reused as-is, not yet replaced). **Not yet built**: the storage-abstraction replacement of `localStorage` (Keychain lands in P8-02), Capacitor deep-link callbacks, native Apple `signInWithIdToken`, `useApi.ts` 401-retry-with-refresh, `offline/sync.ts` expired-token-before-401 handling, and the CSP `connect-src` update. |
 | P6-07 | Child profile picker + optional per-profile PIN | Kid experience stays login-free; picker appears after guardian device sign-in |
 | P6-08 | Parental gate (frontend) | Guardian re-auth wrapper around dashboard, approval, settings, and (later) purchase routes; the gate pattern Apple expects in Kids Category apps |
-| P6-09 | Auth negative-test suite | Expired token, wrong issuer, wrong audience, algorithm confusion, tampered signature, child token on guardian endpoints |
+| P6-09 | Auth negative-test suite | ✅ Done for the JWT-verification cases (2026-07-02, `tests/unit/test_oidc_verification.py`): expired token, wrong issuer, wrong audience, algorithm confusion (`alg=none`), tampered signature, wrong signing key, missing subject claim, JWKS fetch failure. **Not yet covered**: child token on guardian endpoints (depends on P6-04, not yet built). |
 | P6-10 | Cross-tenant IDOR extension | Existing IDOR suite extended with a third, stranger family: no read or write crosses family boundaries anywhere |
 
 **Salvaged design notes** (from the withdrawn first-release trust-boundary exploration; folded
@@ -1071,7 +1074,7 @@ documents.
 | App Store rejection (4.2 web wrapper, kids' AI content, parental gate) | M | H | Native affordances checklist (P8-08), parental gate (P6-08), reviewer notes on the pre-moderated pipeline (P7-07), TestFlight beta before submission (P9-09) | 8, 9 |
 | COPPA / GDPR-K violation | L | H | Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08) | 6, 7 |
 | Auth defect enables cross-family data access | L | H | Reuse of proven `Principal` model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary | 6 |
-| Track 1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | M | M | Acceptable only inside a trusted household LAN: the stub is import-guarded to `environment == "local"` and every submitter is an implicitly trusted family member; no exposure beyond the LAN until Phase 5 ingress (Pangolin) and Phase 6 real JWT validation (P6-01) retire the stub. Documented so the interim trust assumption is explicit, not silent | 4a, 5, 6 |
+| Track 1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | L | M | **Narrowed 2026-07-02**: P6-01 real JWT validation was pulled forward into C4a-1 and now runs in every non-local environment (`Settings()` itself refuses to start outside `local` without `oidc_issuer`/`oidc_jwks_url`, per `_require_oidc_config_outside_local`); the stub is reachable only when `environment == "local"`, which remains acceptable for local/CI dev. Remaining exposure: no `Principal` is minted for a child session yet (P6-04) and no JIT guardian provisioning exists (P6-03), so the frontend has no way to reach a non-local backend as a real user until those land | 4a, 6 |
 | LLM cost abuse at public scale | M | M | Metered credits (P8-05), per-family quotas, global spend cap with circuit breaker (P9-05) | 8, 9 |
 | Entitlement drift (payments vs access disagree) | M | M | Server-side receipt validation and webhook-driven transitions only (P8-04); sandbox lifecycle matrix (P8-07); forged-webhook negative test | 8 |
 | Supabase platform dependency (its incident is our login and data-plane outage) | M | M | Managed SLA on Pro (P9-09); open components underneath (Postgres, S3 API, GoTrue) keep ejection a migration, not a rewrite; export drill in P9-06 proves it | 6, 9 |

@@ -185,7 +185,12 @@ class TestValidatorRejectDevUrlOutsideLocal:
         from cyo_adventure.core.config import Settings
 
         # Must not raise
-        Settings(environment=environment, database_url=_PROD_DB_URL)
+        Settings(
+            environment=environment,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        )
 
 
 class TestEnvironmentAlias:
@@ -200,7 +205,11 @@ class TestEnvironmentAlias:
 
         monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
         monkeypatch.setenv("ENVIRONMENT", "staging")
-        s = Settings(database_url=_PROD_DB_URL)
+        s = Settings(
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        )
         assert s.environment == "staging"
 
     @pytest.mark.unit
@@ -212,7 +221,11 @@ class TestEnvironmentAlias:
 
         monkeypatch.delenv("CYO_ADVENTURE_ENVIRONMENT", raising=False)
         monkeypatch.setenv("ENVIRONMENT", "production")
-        s = Settings(database_url=_PROD_DB_URL)
+        s = Settings(
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        )
         assert s.environment == "production"
 
     @pytest.mark.unit
@@ -371,3 +384,88 @@ class TestUnprefixedOperatorAliases:
         monkeypatch.setenv("JSON_LOGS", "false")
         monkeypatch.setenv("CYO_ADVENTURE_JSON_LOGS", "true")
         assert Settings().json_logs is True
+
+
+class TestValidatorRequireOidcConfigOutsideLocal:
+    """Tests for the _require_oidc_config_outside_local model_validator."""
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "environment",
+        ["dev", "staging", "production"],
+    )
+    def test_non_local_environment_without_oidc_config_raises(
+        self, environment: str
+    ) -> None:
+        """Settings raises ConfigurationError when non-local with no OIDC config."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(environment=environment, database_url=_PROD_DB_URL)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        ("oidc_issuer", "oidc_jwks_url"),
+        [
+            (None, "https://project.supabase.co/auth/v1/.well-known/jwks.json"),
+            ("https://project.supabase.co/auth/v1", None),
+        ],
+    )
+    def test_non_local_environment_with_partial_oidc_config_raises(
+        self, oidc_issuer: str | None, oidc_jwks_url: str | None
+    ) -> None:
+        """Settings raises when only one of oidc_issuer/oidc_jwks_url is set."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(
+                environment="production",
+                database_url=_PROD_DB_URL,
+                oidc_issuer=oidc_issuer,
+                oidc_jwks_url=oidc_jwks_url,
+            )
+
+    @pytest.mark.unit
+    def test_error_message_mentions_environment_and_oidc_vars(self) -> None:
+        """ConfigurationError message names the environment and required env vars."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError) as exc_info:
+            Settings(environment="production", database_url=_PROD_DB_URL)
+
+        message = str(exc_info.value)
+        assert "production" in message
+        assert "OIDC_ISSUER" in message
+        assert "OIDC_JWKS_URL" in message
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "environment",
+        ["dev", "staging", "production"],
+    )
+    def test_non_local_environment_with_full_oidc_config_is_valid(
+        self, environment: str
+    ) -> None:
+        """Settings does not raise when both oidc_issuer and oidc_jwks_url are set."""
+        from cyo_adventure.core.config import Settings
+
+        # Must not raise
+        Settings(
+            environment=environment,
+            database_url=_PROD_DB_URL,
+            oidc_issuer="https://project.supabase.co/auth/v1",
+            oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        )
+
+    @pytest.mark.unit
+    def test_local_environment_without_oidc_config_is_valid(self) -> None:
+        """Local environment does not require OIDC config (dev auth stub)."""
+        from cyo_adventure.core.config import Settings
+
+        # Must not raise
+        settings = Settings(environment="local")
+        assert settings.oidc_issuer is None
+        assert settings.oidc_jwks_url is None

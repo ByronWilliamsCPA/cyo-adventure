@@ -4,13 +4,18 @@ from __future__ import annotations
 
 import importlib
 import uuid
+from typing import TYPE_CHECKING
 from unittest.mock import patch
 
+import jwt
 import pytest
 
 from cyo_adventure.api import deps
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.core.exceptions import AuthenticationError
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 class _FakeSession:
@@ -305,18 +310,46 @@ class TestGetContext:
 class TestAuthStubGuard:
     """Tests for the module-level environment guard in api.deps."""
 
+    @pytest.fixture(autouse=True)
+    def _restore_deps_namespace(self) -> Iterator[None]:
+        """Snapshot and restore ``deps``'s module namespace around each test.
+
+        These guard tests exercise import-time behavior via
+        ``importlib.reload(deps)``, which rebinds every callable in the module
+        (``get_db_session``, ``require_principal``, ...) to a brand-new object.
+        The singleton ``app`` and the integration DB-session override
+        (``app.dependency_overrides[get_db_session]``) captured the ORIGINAL
+        callables at import, so a plain reload leaves the shared module graph
+        desynced. A later DB-backed integration test (``tests/integration/
+        test_me.py``) then bypasses the session override and connects to the
+        real dev database, failing with an auth error. Because pytest-randomly
+        shuffles execution order, that failure is an order-dependent flake
+        rather than a deterministic one. Restoring the exact original namespace
+        keeps ``deps`` byte-identical after each test so the override always
+        matches.
+        """
+        original = deps.__dict__.copy()
+        try:
+            yield
+        finally:
+            importlib.reload(deps)
+            deps.__dict__.update(original)
+
     @pytest.mark.unit
-    def test_guard_raises_configuration_error_in_non_local_env(self) -> None:
-        """deps raises ConfigurationError at import time when environment != 'local'.
+    def test_guard_raises_when_non_local_and_no_oidc_config(self) -> None:
+        """deps raises ConfigurationError when environment != 'local' and no
+        OIDC issuer/JWKS is configured to take over from the dev stub.
 
         The guard is the sole enforcement point preventing the no-validation dev
-        auth stub from reaching staging or production. Tested via importlib.reload
-        which re-executes module-level code.
+        auth stub from reaching staging or production unconfigured. Tested via
+        importlib.reload which re-executes module-level code.
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
         with patch("cyo_adventure.core.config.settings") as mock_settings:
             mock_settings.environment = "production"
+            mock_settings.oidc_issuer = None
+            mock_settings.oidc_jwks_url = None
             with pytest.raises(ConfigurationError, match="dev auth stub"):
                 importlib.reload(deps)
 
@@ -336,6 +369,25 @@ class TestAuthStubGuard:
                 pytest.fail(
                     "ConfigurationError raised unexpectedly for environment='local'"
                 )
+
+        importlib.reload(deps)
+
+    @pytest.mark.unit
+    def test_guard_does_not_raise_when_non_local_with_oidc_config(self) -> None:
+        """deps imports cleanly outside 'local' once real OIDC config is set.
+
+        This is the case the dev-stub guard exists to allow: a non-local
+        deployment is legitimate once _verify_oidc_jwt has something to verify
+        against, so the guard must not block it. A ConfigurationError here would
+        fail the test naturally.
+        """
+        with patch("cyo_adventure.core.config.settings") as mock_settings:
+            mock_settings.environment = "staging"
+            mock_settings.oidc_issuer = "https://example.supabase.co/auth/v1"
+            mock_settings.oidc_jwks_url = (
+                "https://example.supabase.co/auth/v1/.well-known/jwks.json"
+            )
+            importlib.reload(deps)
 
         importlib.reload(deps)
 
@@ -360,3 +412,74 @@ def test_principal_is_admin_role() -> None:
         profile_ids=frozenset(),
     )
     assert guardian.is_admin is False
+
+
+class TestJwksClient:
+    """Direct tests for the lazily-constructed JWKS client and its guards.
+
+    The OIDC negative-token suite (test_oidc_verification.py) monkeypatches
+    `_jwks_client`, so the function body, including the https guard, is
+    exercised only here.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _reset_jwks_cache(self) -> Iterator[None]:
+        """Isolate the process-wide `_jwks_client_cache` singleton per test."""
+        deps._jwks_client_cache = None
+        try:
+            yield
+        finally:
+            deps._jwks_client_cache = None
+
+    @pytest.mark.unit
+    def test_missing_jwks_url_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A None `oidc_jwks_url` cannot verify tokens and must fail fast."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.setattr(deps.settings, "oidc_jwks_url", None)
+        with pytest.raises(ConfigurationError, match="OIDC_JWKS_URL is not configured"):
+            deps._jwks_client()
+
+    @pytest.mark.unit
+    def test_non_https_jwks_url_rejected_outside_local(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An http JWKS URL outside local is refused (on-path key substitution)."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.setattr(deps.settings, "environment", "production")
+        monkeypatch.setattr(
+            deps.settings, "oidc_jwks_url", "http://example.supabase.co/jwks.json"
+        )
+        with pytest.raises(ConfigurationError, match="must use https"):
+            deps._jwks_client()
+
+    @pytest.mark.unit
+    def test_https_jwks_url_outside_local_builds_and_caches_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A https JWKS URL outside local constructs and caches the client.
+
+        PyJWKClient opens no network connection at construction, so this stays
+        offline; a second call returns the same cached instance.
+        """
+        monkeypatch.setattr(deps.settings, "environment", "production")
+        monkeypatch.setattr(
+            deps.settings,
+            "oidc_jwks_url",
+            "https://example.supabase.co/auth/v1/.well-known/jwks.json",
+        )
+        client = deps._jwks_client()
+        assert isinstance(client, jwt.PyJWKClient)
+        assert deps._jwks_client() is client
+
+    @pytest.mark.unit
+    def test_local_env_allows_http_jwks_url(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """In local the https requirement is not enforced (dev convenience)."""
+        monkeypatch.setattr(deps.settings, "environment", "local")
+        monkeypatch.setattr(
+            deps.settings, "oidc_jwks_url", "http://localhost:9999/jwks.json"
+        )
+        assert isinstance(deps._jwks_client(), jwt.PyJWKClient)

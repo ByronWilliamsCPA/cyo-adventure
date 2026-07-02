@@ -12,14 +12,7 @@
  */
 
 import { evaluate } from './evaluator'
-import type {
-  Choice,
-  Effect,
-  ReadingState,
-  Storybook,
-  StoryNode,
-  VarState,
-} from './types'
+import type { Choice, Effect, ReadingState, Storybook, StoryNode, VarState } from './types'
 
 function nodeIndex(story: Storybook): Map<string, StoryNode> {
   return new Map(story.nodes.map((node) => [node.id, node]))

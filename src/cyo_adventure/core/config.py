@@ -229,6 +229,20 @@ class Settings(BaseSettings):
         default=None, validation_alias="PERSPECTIVE_API_KEY"
     )
 
+    # --- OIDC verification (ADR-009: Supabase Auth, guardian tier; PROJECT-PLAN P6-02) ---
+    # Provider-agnostic names are deliberate (ADR-009's ejection path): these
+    # point at Supabase's GoTrue issuer today but api/deps.py never imports a
+    # Supabase SDK, only jwt.PyJWKClient against oidc_jwks_url. Read from
+    # UNPREFIXED env vars, matching the openrouter_api_key/ollama_auth pattern.
+    # Optional here so local dev needs no config; _require_oidc_config_outside_local
+    # below fails fast outside "local", and api/deps.py's own import-time guard is a
+    # second check against the same invariant for the mocked-settings test scenario.
+    oidc_issuer: str | None = Field(default=None, validation_alias="OIDC_ISSUER")
+    oidc_audience: str = Field(
+        default="authenticated", validation_alias="OIDC_AUDIENCE"
+    )
+    oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.
@@ -244,6 +258,31 @@ class Settings(BaseSettings):
                 "be set in non-local environments; refusing to start in "
                 f"'{self.environment}' with the development default localhost "
                 "database URL."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_oidc_config_outside_local(self) -> Settings:
+        """Fail fast if OIDC verification config is missing outside local.
+
+        PROJECT-PLAN P6-02: mirrors _reject_dev_database_url_outside_local.
+        Outside "local" the dev auth stub is not a valid fallback (api/deps.py
+        only trusts it when environment == "local"), so a non-local process
+        with no oidc_issuer/oidc_jwks_url would have no way to authenticate
+        any request; refuse to start rather than serve 401s to everything.
+
+        Raises:
+            ConfigurationError: when ``environment`` is not ``local`` and
+                either ``oidc_issuer`` or ``oidc_jwks_url`` is unset.
+        """
+        if self.environment != "local" and not (
+            self.oidc_issuer and self.oidc_jwks_url
+        ):
+            msg = (
+                "OIDC_ISSUER and OIDC_JWKS_URL must both be set in non-local "
+                f"environments; refusing to start in '{self.environment}' with no "
+                "way to verify a bearer token (ADR-009)."
             )
             raise ConfigurationError(msg)
         return self

@@ -103,13 +103,14 @@ browser UI, which is Phase 4a (C4a-4).
 ### Phase 4a: Library, profiles, and the guardian app shell (closes the first release)
 
 **Goal**: make the whole flow reachable by a parent through the browser. This is the
-**largest remaining build** because the frontend has no app shell. Design groundwork is in
-place: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
-claude.ai/design (#44). The build (routing, auth context, real components) has not started.
+**largest remaining build** because the frontend started with no app shell. Design groundwork
+was laid first: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
+claude.ai/design (#44). The app shell itself (C4a-1: routing plus a Supabase-backed auth
+context) is now in place; the remaining feature UIs (C4a-2 through C4a-6) build on it.
 
 | ID | Workstream | Notes |
 |----|-----------|-------|
-| C4a-1 | Frontend app shell + routing | Introduce a router and an authenticated layout. Today `App.tsx` is a single hard-coded reader page; every screen below needs routing and an auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI. |
+| C4a-1 | Frontend app shell + routing | ✅ Router (two disjoint route trees: kid `/`, `/read/*` and guardian `/guardian/*`) and an authenticated layout backed by a real Supabase Auth session (ADR-009), including guardian-tier JWKS-backed JWT verification on the backend (Phase 6 P6-01/P6-02 pulled forward; see [adr-009](./adr/adr-009-supabase-platform.md)). This is the prerequisite for all other 4a UI. |
 | C4a-2 | Profile management UI | Create/select per-child profiles; surface age-band and reading-level caps (backed by `child_profile`). Child sessions land directly in their own library. |
 | C4a-3 | Library browsing UI | Consume the existing `library` API; a child sees only `published`, profile-permitted books; ratings shown/edited via the `ratings` API. |
 | C4a-4 | Guardian console: review + approve | Wire the Phase-3 review-surface API (C3-4) and approval endpoints (C3-3) into a UI where a parent reads a story, sees flagged passages, and approves or sends back in a few minutes. |

@@ -434,3 +434,39 @@ from the live model enums: replace `ending.type` with `ending.kind` (values from
 stale value set (`good`, `neutral` as top-level kinds).
 
 **Affected Files**: `.claude/skills/cyo-author/reference/skeleton-format.md`
+
+### `.env.example.baseline` ships generic ML/data scaffolding as default runtime vars
+
+- **Priority**: Medium
+- **Category**: Configuration
+- **Discovered**: 2026-07-02
+
+**Issue**: The template's `.standards/env.example.baseline` (which seeds each project's
+root `.env.example`) ships a large block of vars for an ML/data-pipeline archetype that
+most generated projects never use: `MODAL_TOKEN_ID/SECRET/WORKSPACE`,
+`HUGGINGFACE_TOKEN/HUB_CACHE/MODEL_ID`, `GOOGLE_HMAC_ACCESS_KEY_ID/SECRET`,
+`GCS_BUCKET_NAME/REGION`, plus generic `PROJECT_NAME`, `PROJECT_ENV`, `LOG_FORMAT`,
+`LOG_FILE`, and `WORKERS` that do not map to any field in a standard Pydantic
+`Settings` class. In this FastAPI project none of these had a consumer; grep confirmed
+they appear only in the baseline itself. They accumulate as dead bulk that every project
+must manually prune. The baseline also documents CI-only secrets (`CODECOV_TOKEN`,
+`SONAR_TOKEN`, Infisical machine identity) inside a *local* `.env.example` even though
+they belong in GitHub Secrets, and it uses unprefixed provider names
+(`OPENROUTER_MODEL`, `OPENROUTER_MAX_TOKENS`, `OPENROUTER_TEMPERATURE`) that match no
+`env_prefix`-based Settings field.
+
+**Context**: Discovered while cleaning up this project's `.env.example`, which had grown
+to 300+ lines mixing real backend/compose vars with the untouched template block and a
+duplicated, typo-laden operator-pasted tail. Reconstructing "what is truly needed"
+required diffing the file against `core/config.py`, `docker-compose*.yml`, the frontend
+example, and repo scripts.
+
+**Suggested Fix**: Slim the baseline to a minimal, archetype-neutral core (environment,
+log level, database URL, one optional provider key) and move the ML/data and cloud-storage
+vars into an opt-in cookiecutter feature flag (e.g. `use_ml_stack`). Keep CI-only secrets
+out of `.env.example` and document them in README instead. Align example var names with
+the `env_prefix` the template's `config.py` actually uses, so example names are readable
+by the generated Settings class without edits.
+
+**Affected Files**: `.standards/env.example.baseline`, template `config.py`, cookiecutter
+`cookiecutter.json` (for a proposed `use_ml_stack` flag)

@@ -9,6 +9,11 @@ const lantern = JSON.parse(
   readFileSync(path.resolve(here, '../../schema/conformance/player_traces.json'), 'utf-8')
 ).traces[0].story
 
+// The reader lives at /read/:profileId/:storybookId/:version (ReaderRoute); the
+// bare `/` renders the LibraryPage stub (C4a-2/C4a-3), not the reader. storybookId
+// and version match the mocked s_lantern_cave story loaded in beforeEach.
+const READER_PATH = '/read/child-a/s_lantern_cave/1'
+
 const READING_ROW = {
   current_node: 'n_entrance',
   var_state: {},
@@ -33,7 +38,7 @@ test.beforeEach(async ({ page, context }) => {
 })
 
 test('plays a downloaded story to an ending (US-101)', async ({ page }) => {
-  await page.goto('/')
+  await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()
   await page.getByTestId('choice-c_take_lantern').click()
   await page.getByTestId('choice-c_dark_passage').click()
@@ -42,7 +47,7 @@ test('plays a downloaded story to an ending (US-101)', async ({ page }) => {
 })
 
 test('plays to an ending with the network disabled', async ({ page, context }) => {
-  await page.goto('/')
+  await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()
   // The story is loaded; disable the network and finish reading offline.
   await context.setOffline(true)
@@ -53,7 +58,7 @@ test('plays to an ending with the network disabled', async ({ page, context }) =
 })
 
 test('state-gated choice is hidden until its condition holds (US-102)', async ({ page }) => {
-  await page.goto('/')
+  await page.goto(READER_PATH)
   await expect(page.getByTestId('reader')).toBeVisible()
   await page.getByTestId('choice-c_ignore_lantern').click()
   // Without the lantern, the dark passage is not offered.

@@ -1,0 +1,74 @@
+.guardian-shell {
+  min-height: 100vh;
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+.guardian-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--color-parchment-dark, #ede6d0);
+  border-bottom: 1px solid var(--color-amber-light, #f0e4cc);
+}
+
+.guardian-shell__title {
+  font-weight: var(--weight-semibold, 600);
+  font-size: var(--text-lg, 1.25rem);
+}
+
+.guardian-shell__sign-out {
+  background: transparent;
+  border: 1px solid var(--color-amber, #c17b2a);
+  color: var(--color-amber, #c17b2a);
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
+  cursor: pointer;
+}
+
+.guardian-shell__sign-out:hover {
+  background: var(--color-amber-subtle, #fdf6ec);
+}
+
+.guardian-shell__main {
+  padding: 1.5rem;
+}
+
+.guardian-login {
+  max-width: 24rem;
+  margin: 4rem auto;
+  text-align: center;
+}
+
+.guardian-login__provider {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-amber, #c17b2a);
+  background: var(--color-amber, #c17b2a);
+  color: white;
+  font-size: var(--text-base, 1.125rem);
+  cursor: pointer;
+}
+
+.guardian-login__provider:hover {
+  background: var(--color-amber-hover, #a3631f);
+}
+
+.guardian-login__error,
+.guardian-shell__error {
+  margin: 1rem 1.5rem 0;
+  color: var(--color-error, #b3261e);
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+.guardian-stub {
+  border: 1px dashed var(--color-ink-muted, #8c6f56);
+  border-radius: 12px;
+  padding: 2rem;
+  color: var(--color-ink-secondary, #5a3e28);
+}
