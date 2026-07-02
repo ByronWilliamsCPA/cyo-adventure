@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 
-import { makeProfilesApi } from './profilesApi'
+import { makeProfilesApi, type ProfileCreateBody } from './profilesApi'
 
 function fakeAxios() {
   return {
@@ -22,7 +22,7 @@ describe('makeProfilesApi', () => {
   it('creates via POST /v1/profiles and returns the view', async () => {
     const api = fakeAxios()
     api.post.mockResolvedValue({ data: { id: 'p2', display_name: 'Nova' } })
-    const body = { display_name: 'Nova', age_band: '5-8' }
+    const body: ProfileCreateBody = { display_name: 'Nova', age_band: '5-8' }
     const result = await makeProfilesApi(api as never).create(body)
     expect(api.post).toHaveBeenCalledWith('/v1/profiles', body)
     expect(result.id).toBe('p2')
