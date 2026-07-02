@@ -2833,12 +2833,34 @@ client-secret plumbing in the native path).</p>
 <h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
 <ol>
 <li><strong><code>api/deps.py</code></strong> (P6-01): validate Supabase-issued JWTs (asymmetric signing keys,
-   cached JWKS); the dev stub remains for <code>environment == "local"</code>.</li>
+   cached JWKS); the dev stub remains for <code>environment == "local"</code>. ✅ <strong>Implemented</strong>
+   (pulled forward into C4a-1, 2026-07-02): <code>_verify_oidc_jwt()</code> uses
+   <code>jwt.PyJWKClient</code> against <code>oidc_jwks_url</code>, allowlists <code>RS256</code>/<code>ES256</code> only
+   (defeats <code>alg=none</code>/algorithm-confusion), and checks issuer, audience, and
+   expiry. <strong>Deviation from the P6-01 spec</strong>: the spec calls for deleting the
+   import-time environment guard outright; instead the guard was kept but made
+   conditional (<code>environment != "local" and not (oidc_issuer and oidc_jwks_url)</code>
+   raises <code>ConfigurationError</code> at import time). Rationale: a process that starts
+   in a non-local environment with no way to verify any bearer token should fail
+   at startup, not on the first request.</li>
 <li><strong><code>core/config.py</code></strong> (P6-02): <code>oidc_issuer</code>, <code>oidc_audience</code>, <code>oidc_jwks_url</code> point
-   at the Supabase project; provider-agnostic names are deliberate (ejection path).</li>
-<li><strong>Onboarding</strong> (P6-03): JIT provisioning keys on the Supabase <code>sub</code>.</li>
+   at the Supabase project; provider-agnostic names are deliberate (ejection path).
+   ✅ <strong>Implemented</strong> (2026-07-02), including a <code>_require_oidc_config_outside_local</code>
+   model_validator mirroring the existing <code>_reject_dev_database_url_outside_local</code>
+   pattern, so <code>Settings()</code> itself refuses to construct outside <code>local</code> without
+   both values set (defense in depth alongside the deps.py guard above, since
+   deps.py's own tests mock <code>settings</code> directly and bypass Pydantic validation).</li>
+<li><strong>Onboarding</strong> (P6-03): JIT provisioning keys on the Supabase <code>sub</code>. Not started;
+   <code>GET /api/v1/me</code> (added 2026-07-02) returns the verified subject and resolved
+   <code>Principal</code>, but does not yet provision a <code>User</code>/<code>family_id</code> row on first sign-in.</li>
 <li><strong>Frontend</strong> (P6-06): supabase-js manages sessions, refresh, and Capacitor deep-link
-   callbacks; native Apple sign-in via <code>signInWithIdToken</code>.</li>
+   callbacks; native Apple sign-in via <code>signInWithIdToken</code>. <strong>Partially implemented</strong>
+   (2026-07-02): <code>AuthContext</code> wraps <code>supabase.auth.getSession()</code> /
+   <code>onAuthStateChange()</code>, calls <code>GET /api/v1/me</code> to resolve a <code>Principal</code>, and syncs
+   the access token into the existing <code>useApi()</code> localStorage-based interceptor.
+   Native Apple <code>signInWithIdToken</code>, Capacitor deep-link callbacks, 401-triggered
+   token refresh in <code>useApi.ts</code>/<code>offline/sync.ts</code>, and the CSP <code>connect-src</code> update
+   are <strong>not yet built</strong> and remain scoped to a future P6-06 pass.</li>
 <li><strong>Deletion</strong> (P7-04): Supabase Auth admin API + our Apple revocation call.</li>
 <li><strong>Infra</strong> (P9-03): Supabase project (prod) + Supabase project (staging) + one
    container host for API and worker; queue decision executed here. The RQ surface
@@ -2854,7 +2876,10 @@ client-secret plumbing in the native path).</p>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
 <ul>
 <li>The Phase 6 negative-token suite (expired, wrong issuer, wrong audience, algorithm
-  confusion, tampered signature) runs against Supabase-shaped JWTs.</li>
+  confusion, tampered signature) runs against Supabase-shaped JWTs. ✅ <strong>Implemented</strong>
+  (<code>tests/unit/test_oidc_verification.py</code>, 2026-07-02) using real RSA keypairs and a
+  fake JWKS client; covers <code>alg=none</code> forgery, wrong signing key, missing subject
+  claim, and JWKS fetch failure in addition to the criteria above.</li>
 <li>Queue evaluation: run the existing generation integration tests against pgmq before
   committing; fall back to Redis on any failure or time-box expiry.</li>
 <li>Restore drill (P9-06) includes a full export from Supabase (schema + data + storage)
@@ -2909,7 +2934,7 @@ client-secret plumbing in the native path).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 04:22:00 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 17:28:23 UTC">July 2, 2026</span>
   </span>
 
     

@@ -2644,9 +2644,10 @@ carried-debt table below (C3-SAFETY). The other Phase 3 capability not yet reach
 browser UI, which is Phase 4a (C4a-4).</p>
 <h3 id="phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release">Phase 4a: Library, profiles, and the guardian app shell (closes the first release)<a class="headerlink" href="#phase-4a-library-profiles-and-the-guardian-app-shell-closes-the-first-release" title="Permanent link">&para;</a></h3>
 <p><strong>Goal</strong>: make the whole flow reachable by a parent through the browser. This is the
-<strong>largest remaining build</strong> because the frontend has no app shell. Design groundwork is in
-place: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
-claude.ai/design (#44). The build (routing, auth context, real components) has not started.</p>
+<strong>largest remaining build</strong> because the frontend started with no app shell. Design groundwork
+was laid first: a mobile-UI wireframe concept spec (#47) and a K-12 design system synced to
+claude.ai/design (#44). The app shell itself (C4a-1: routing plus a Supabase-backed auth
+context) is now in place; the remaining feature UIs (C4a-2 through C4a-6) build on it.</p>
 <table>
 <thead>
 <tr>
@@ -2659,7 +2660,7 @@ claude.ai/design (#44). The build (routing, auth context, real components) has n
 <tr>
 <td>C4a-1</td>
 <td>Frontend app shell + routing</td>
-<td>Introduce a router and an authenticated layout. Today <code>App.tsx</code> is a single hard-coded reader page; every screen below needs routing and an auth context (Authentik/OIDC session). This is the prerequisite for all other 4a UI.</td>
+<td>✅ Router (two disjoint route trees: kid <code>/</code>, <code>/read/*</code> and guardian <code>/guardian/*</code>) and an authenticated layout backed by a real Supabase Auth session (ADR-009), including guardian-tier JWKS-backed JWT verification on the backend (Phase 6 P6-01/P6-02 pulled forward; see <a href="../adr/adr-009-supabase-platform/">adr-009</a>). This is the prerequisite for all other 4a UI.</td>
 </tr>
 <tr>
 <td>C4a-2</td>
@@ -2846,7 +2847,7 @@ app shell (C4a-1) is the prerequisite for everything else in it.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 14:45:32 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 17:28:23 UTC">July 2, 2026</span>
   </span>
 
     

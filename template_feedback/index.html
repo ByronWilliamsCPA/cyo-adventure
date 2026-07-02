@@ -2439,6 +2439,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#envexamplebaseline-ships-generic-mldata-scaffolding-as-default-runtime-vars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .env.example.baseline ships generic ML/data scaffolding as default runtime vars
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2814,6 +2825,17 @@
     <span class="md-ellipsis">
       
         skeleton-format.md reference doc documents stale ending.type field and value set
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#envexamplebaseline-ships-generic-mldata-scaffolding-as-default-runtime-vars" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        .env.example.baseline ships generic ML/data scaffolding as default runtime vars
       
     </span>
   </a>
@@ -3197,6 +3219,38 @@ from the live model enums: replace <code>ending.type</code> with <code>ending.ki
 <code>EndingKind</code>), add a new <code>ending.valence</code> row (values from <code>Valence</code>), and remove the
 stale value set (<code>good</code>, <code>neutral</code> as top-level kinds).</p>
 <p><strong>Affected Files</strong>: <code>.claude/skills/cyo-author/reference/skeleton-format.md</code></p>
+<h3 id="envexamplebaseline-ships-generic-mldata-scaffolding-as-default-runtime-vars"><code>.env.example.baseline</code> ships generic ML/data scaffolding as default runtime vars<a class="headerlink" href="#envexamplebaseline-ships-generic-mldata-scaffolding-as-default-runtime-vars" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Medium</li>
+<li><strong>Category</strong>: Configuration</li>
+<li><strong>Discovered</strong>: 2026-07-02</li>
+</ul>
+<p><strong>Issue</strong>: The template's <code>.standards/env.example.baseline</code> (which seeds each project's
+root <code>.env.example</code>) ships a large block of vars for an ML/data-pipeline archetype that
+most generated projects never use: <code>MODAL_TOKEN_ID/SECRET/WORKSPACE</code>,
+<code>HUGGINGFACE_TOKEN/HUB_CACHE/MODEL_ID</code>, <code>GOOGLE_HMAC_ACCESS_KEY_ID/SECRET</code>,
+<code>GCS_BUCKET_NAME/REGION</code>, plus generic <code>PROJECT_NAME</code>, <code>PROJECT_ENV</code>, <code>LOG_FORMAT</code>,
+<code>LOG_FILE</code>, and <code>WORKERS</code> that do not map to any field in a standard Pydantic
+<code>Settings</code> class. In this FastAPI project none of these had a consumer; grep confirmed
+they appear only in the baseline itself. They accumulate as dead bulk that every project
+must manually prune. The baseline also documents CI-only secrets (<code>CODECOV_TOKEN</code>,
+<code>SONAR_TOKEN</code>, Infisical machine identity) inside a <em>local</em> <code>.env.example</code> even though
+they belong in GitHub Secrets, and it uses unprefixed provider names
+(<code>OPENROUTER_MODEL</code>, <code>OPENROUTER_MAX_TOKENS</code>, <code>OPENROUTER_TEMPERATURE</code>) that match no
+<code>env_prefix</code>-based Settings field.</p>
+<p><strong>Context</strong>: Discovered while cleaning up this project's <code>.env.example</code>, which had grown
+to 300+ lines mixing real backend/compose vars with the untouched template block and a
+duplicated, typo-laden operator-pasted tail. Reconstructing "what is truly needed"
+required diffing the file against <code>core/config.py</code>, <code>docker-compose*.yml</code>, the frontend
+example, and repo scripts.</p>
+<p><strong>Suggested Fix</strong>: Slim the baseline to a minimal, archetype-neutral core (environment,
+log level, database URL, one optional provider key) and move the ML/data and cloud-storage
+vars into an opt-in cookiecutter feature flag (e.g. <code>use_ml_stack</code>). Keep CI-only secrets
+out of <code>.env.example</code> and document them in README instead. Align example var names with
+the <code>env_prefix</code> the template's <code>config.py</code> actually uses, so example names are readable
+by the generated Settings class without edits.</p>
+<p><strong>Affected Files</strong>: <code>.standards/env.example.baseline</code>, template <code>config.py</code>, cookiecutter
+<code>cookiecutter.json</code> (for a proposed <code>use_ml_stack</code> flag)</p>
 
 
 
@@ -3219,7 +3273,7 @@ stale value set (<code>good</code>, <code>neutral</code> as top-level kinds).</p
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 00:11:06 UTC">July 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 17:28:23 UTC">July 2, 2026</span>
   </span>
 
     

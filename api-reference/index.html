@@ -2612,8 +2612,13 @@
     <div class="doc doc-contents first">
 
         <p>Configuration settings for CYO Adventure.</p>
-<p>Settings are loaded from environment variables with the prefix 'CYO_ADVENTURE_'.
-Pydantic-settings handles the parsing and validation.</p>
+<p>Most settings are loaded from environment variables under the 'CYO_ADVENTURE_'
+prefix. Several operator-facing names are also honored unprefixed via
+validation_alias, matching what docker-compose*.yml and
+docs/guides/configuration.md already set: ENVIRONMENT, LOG_LEVEL, JSON_LOGS,
+DATABASE_URL, and the OLLAMA_<em>, OPENROUTER_</em>, OPENAI_API_KEY, and
+PERSPECTIVE_API_KEY credentials. Pydantic-settings handles the parsing and
+validation.</p>
 
 
 
