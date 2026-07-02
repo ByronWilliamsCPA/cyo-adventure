@@ -187,6 +187,17 @@ def _jwks_client() -> jwt.PyJWKClient:
         if settings.oidc_jwks_url is None:
             msg = "OIDC_JWKS_URL is not configured; cannot verify OIDC tokens"
             raise ConfigurationError(msg)
+        # #CRITICAL: security: an http:// JWKS URL allows on-path key
+        # substitution -> token forgery.
+        # #VERIFY: reject non-https oidc_jwks_url outside local.
+        if settings.environment != "local" and not settings.oidc_jwks_url.startswith(
+            "https://"
+        ):
+            msg = (
+                "OIDC_JWKS_URL must use https outside local; an http JWKS URL lets "
+                "an on-path attacker swap signing keys and forge tokens"
+            )
+            raise ConfigurationError(msg)
         _jwks_client_cache = jwt.PyJWKClient(settings.oidc_jwks_url)
     return _jwks_client_cache
 
@@ -222,6 +233,7 @@ def _verify_oidc_jwt(token: str) -> str:
             algorithms=["RS256", "ES256"],
             audience=settings.oidc_audience,
             issuer=settings.oidc_issuer,
+            options={"require": ["exp", "iat", "sub"]},
         )
     except jwt.PyJWKClientError as exc:
         msg = "unable to fetch signing key for token verification"
@@ -249,6 +261,11 @@ def _resolve_subject(token: str) -> str:
     Returns:
         str: The verified (or, in ``local``, trusted) subject.
     """
+    # #CRITICAL: security: the local branch trusts the bearer token as the
+    # subject with NO verification; it is reachable only when
+    # environment == "local".
+    # #VERIFY: test_resolve_subject_verifies_outside_local asserts non-local
+    # routes to _verify_oidc_jwt.
     if settings.environment == "local":
         return token
     return _verify_oidc_jwt(token)

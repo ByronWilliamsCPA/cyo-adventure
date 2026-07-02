@@ -9,6 +9,8 @@ fallback to trusting the token.
 from __future__ import annotations
 
 import base64
+import hashlib
+import hmac
 import json
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
@@ -16,6 +18,7 @@ from typing import Any
 
 import jwt
 import pytest
+from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 
 from cyo_adventure.api import deps
@@ -155,12 +158,76 @@ def test_algorithm_none_rejected() -> None:
 
 @pytest.mark.unit
 def test_missing_subject_claim_rejected() -> None:
-    """A validly-signed token with no sub claim is rejected."""
+    """A validly-signed token with no sub claim is rejected.
+
+    With sub in the decode-time require list, this is now rejected by
+    jwt.decode (MissingRequiredClaimError -> "token failed verification")
+    before the manual subject check runs, so no message match is asserted.
+    """
     claims = _claims()
     del claims["sub"]
     token = _sign(claims)
+    with pytest.raises(AuthenticationError):
+        deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+def test_empty_subject_claim_rejected() -> None:
+    """A validly-signed token with an empty sub claim hits the manual check.
+
+    An empty string is present, so the require list passes; the explicit
+    subject check in _verify_oidc_jwt is what rejects it.
+    """
+    token = _sign(_claims(sub=""))
     with pytest.raises(AuthenticationError, match="subject"):
         deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+def test_token_without_exp_rejected() -> None:
+    """A validly-signed token missing the exp claim is rejected.
+
+    The options={"require": [...]} allowlist in _verify_oidc_jwt forces exp to
+    be present, so a non-expiring token cannot slip through verification.
+    """
+    claims = _claims()
+    del claims["exp"]
+    token = _sign(claims)
+    with pytest.raises(AuthenticationError):
+        deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+def test_hs256_confusion_rejected() -> None:
+    """An HS256 token forged with the RSA public key as the HMAC secret fails.
+
+    The RS256/ES256 allowlist defeats the classic algorithm-confusion attack:
+    _verify_oidc_jwt never treats the asymmetric public key as an HMAC secret
+    because HS256 is not accepted, so the forgery is rejected before any
+    signature check. The token is hand-assembled here because PyJWT's own
+    jwt.encode refuses to HMAC-sign with a PEM public key (its encode-side
+    mitigation), so a real attacker's forged token must be built directly.
+    """
+
+    def _b64url(data: bytes) -> str:
+        return base64.urlsafe_b64encode(data).rstrip(b"=").decode("ascii")
+
+    public_pem = _PRIVATE_KEY.public_key().public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    )
+    claims = _claims()
+    json_safe_claims = {
+        key: value.timestamp() if isinstance(value, datetime) else value
+        for key, value in claims.items()
+    }
+    header = _b64url(json.dumps({"alg": "HS256", "typ": "JWT"}).encode())
+    payload = _b64url(json.dumps(json_safe_claims).encode())
+    signing_input = f"{header}.{payload}".encode()
+    signature = _b64url(hmac.new(public_pem, signing_input, hashlib.sha256).digest())
+    forged = f"{header}.{payload}.{signature}"
+    with pytest.raises(AuthenticationError):
+        deps._verify_oidc_jwt(forged)
 
 
 @pytest.mark.unit

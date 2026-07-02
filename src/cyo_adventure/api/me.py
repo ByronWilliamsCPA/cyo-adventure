@@ -25,6 +25,11 @@ async def whoami(ctx: Context) -> MeResponse:
     Returns:
         MeResponse: The principal's subject, role, family, and profile ids.
     """
+    # #ASSUME: security: /me returns identity only for an already-verified
+    # principal (require_principal ran and resolved a Principal); no token
+    # parsing happens here.
+    # #VERIFY: tests/integration/test_me.py::test_me_requires_authentication
+    # asserts 401 without a bearer.
     principal = ctx.principal
     return MeResponse(
         subject=principal.subject,
