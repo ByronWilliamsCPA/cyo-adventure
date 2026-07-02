@@ -30,7 +30,7 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
 
 if TYPE_CHECKING:
     from sqlalchemy import Select
@@ -63,12 +63,16 @@ class _FakeSession:
         *,
         storybooks: list[Storybook] | None = None,
         versions: list[StorybookVersion] | None = None,
+        states: list[ReadingState] | None = None,
+        ratings: list[Rating] | None = None,
         get_map: dict[tuple[type[object], object], object] | None = None,
     ) -> None:
-        # scalars() cycles: first call returns storybooks, second returns versions.
+        # scalars() cycles in order: storybooks, versions, reading states, ratings.
         self._scalars_queue: list[list[object]] = [
             list(storybooks or []),
             list(versions or []),
+            list(states or []),
+            list(ratings or []),
         ]
         self._get_map: dict[tuple[type[object], object], object] = get_map or {}
         self.scalars_calls: list[object] = []
@@ -147,6 +151,26 @@ def _version_row(
             },
         }
     return StorybookVersion(storybook_id=storybook_id, version=version, blob=blob)
+
+
+def _state_row(
+    profile_id: uuid.UUID,
+    storybook_id: str,
+    *,
+    visit_set: list[str],
+    current_node: str = "n1",
+    version: int = 1,
+) -> ReadingState:
+    """Return an in-memory ReadingState row with a deterministic updated_at."""
+    row = ReadingState(
+        child_profile_id=profile_id,
+        storybook_id=storybook_id,
+        version=version,
+        current_node=current_node,
+        visit_set=visit_set,
+    )
+    row.updated_at = datetime(2026, 7, 1, tzinfo=UTC)
+    return row
 
 
 # ---------------------------------------------------------------------------
@@ -381,8 +405,9 @@ class TestListLibrary:
 
         await list_library(str(profile_id), principal, session)
 
-        # Exactly two queries: one for storybooks, one bulk version fetch (no N+1).
-        assert len(session.scalars_calls) == 2
+        # Exactly four queries: storybooks, bulk version fetch, bulk reading
+        # state fetch, bulk rating fetch (no N+1 for any of the four).
+        assert len(session.scalars_calls) == 4
 
         # Inspect whereclause specifically: the SELECT column list names every
         # column, so checking the full statement string would still pass if a
@@ -665,3 +690,76 @@ class TestLibraryItemEnrichmentFields:
         assert item.progress.nodes_visited == 4
         assert item.node_count == 12
         assert item.rating == 5
+
+
+class TestListLibraryEnrichment:
+    """list_library joins per-profile reading state and ratings into items."""
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_progress_and_rating_attached(self) -> None:
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        blob: dict[str, object] = {
+            "title": "The Lantern",
+            "metadata": {
+                "age_band": "6-8",
+                "tier": 1,
+                "reading_level": {"target": 2.0},
+            },
+            "nodes": [{"id": "n1"}, {"id": "n2"}, {"id": "n3"}, {"id": "n4"}],
+        }
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id, version=2)],
+            versions=[_version_row("s1", 2, blob=blob)],
+            states=[
+                _state_row(profile_id, "s1", visit_set=["n1", "n2"], current_node="n2")
+            ],
+            ratings=[Rating(child_profile_id=profile_id, storybook_id="s1", value=4)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        item = view.stories[0]
+        assert item.node_count == 4
+        assert item.rating == 4
+        assert item.progress is not None
+        assert item.progress.current_node == "n2"
+        assert item.progress.nodes_visited == 2
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_no_state_no_rating_yields_none(self) -> None:
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        blob: dict[str, object] = {
+            "title": "T",
+            "metadata": {},
+            "nodes": [{"id": "n1"}],
+        }
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id)],
+            versions=[_version_row("s1", 1, blob=blob)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        item = view.stories[0]
+        assert item.node_count == 1
+        assert item.rating is None
+        assert item.progress is None
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_malformed_nodes_gives_zero_count(self) -> None:
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        blob: dict[str, object] = {"title": "T", "metadata": {}, "nodes": "not-a-list"}
+        session = _FakeSession(
+            storybooks=[_published_book("s1", family_id)],
+            versions=[_version_row("s1", 1, blob=blob)],
+        )
+        view = await list_library(
+            str(profile_id), _child_principal(family_id, profile_id), session
+        )
+        assert view.stories[0].node_count == 0

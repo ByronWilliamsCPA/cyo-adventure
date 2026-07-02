@@ -369,6 +369,12 @@ known-first-party = ["cyo_adventure"]
 # with no sensible default. A config object would obscure the contract.
 "**/api/review_surface.py" = ["PLR0913"]
 
+# The library-item builder carries storybook_id, blob, and version (the
+# identity of the row) plus rating and state (the per-profile enrichment,
+# keyword-only with a None default); each is a distinct concern and a config
+# object would obscure which fields are row identity vs. profile overlay.
+"**/api/library.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
