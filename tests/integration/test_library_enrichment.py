@@ -62,7 +62,7 @@ async def test_library_reports_progress_and_rating(
 async def test_other_childs_activity_not_leaked(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """Sibling/other-family state must never appear under this profile."""
+    """A profile with no activity sees null rating/progress, not another profile's data."""
     profile = str(seed.child_profile_id)
     listing = await client.get(
         f"/api/v1/library?profile_id={profile}", headers=auth(seed.child_token)
