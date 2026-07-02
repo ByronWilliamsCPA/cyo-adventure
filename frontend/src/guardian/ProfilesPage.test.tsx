@@ -88,4 +88,69 @@ describe('ProfilesPage', () => {
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i)
   })
+
+  it('shows the load-failure alert when the list request fails', async () => {
+    mockGet.mockRejectedValue(new Error('network down'))
+    renderPage()
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not load/i)
+  })
+
+  it('shows the empty state when the family has no profiles', async () => {
+    mockGet.mockResolvedValue({ data: { profiles: [] } })
+    renderPage()
+    expect(await screen.findByText('No profiles yet')).toBeInTheDocument()
+  })
+
+  it('surfaces an edit failure without closing silently', async () => {
+    const user = userEvent.setup()
+    mockPatch.mockRejectedValue(new Error('boom'))
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
+    await user.click(screen.getByRole('button', { name: /Save/i }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i)
+    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
+  })
+
+  it('sends the picked avatar id from the radio group', async () => {
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({
+      data: { ...readerA, id: 'p3', display_name: 'Ivy', avatar: 'owl' },
+    })
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /Add child/i }))
+    await user.type(screen.getByLabelText(/Name/i), 'Ivy')
+    await user.click(screen.getByRole('radio', { name: /Owl/i }))
+    await user.click(screen.getByRole('button', { name: /Save/i }))
+    expect(mockPost).toHaveBeenCalledWith(
+      '/v1/profiles',
+      expect.objectContaining({ display_name: 'Ivy', avatar: 'owl' })
+    )
+  })
+
+  it('sends the read-aloud toggle state', async () => {
+    const user = userEvent.setup()
+    mockPatch.mockResolvedValue({
+      data: { ...readerA, tts_enabled: true },
+    })
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
+    await user.click(screen.getByRole('checkbox', { name: /Read-aloud/i }))
+    await user.click(screen.getByRole('button', { name: /Save/i }))
+    expect(mockPatch).toHaveBeenCalledWith(
+      '/v1/profiles/p1',
+      expect.objectContaining({ tts_enabled: true })
+    )
+    expect(await screen.findByText(/Read-aloud on/)).toBeInTheDocument()
+  })
+
+  it('disables Save while the reading cap field is empty', async () => {
+    const user = userEvent.setup()
+    renderPage()
+    await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
+    const cap = screen.getByLabelText(/Reading level cap/i)
+    await user.clear(cap)
+    expect(screen.getByRole('button', { name: /Save/i })).toBeDisabled()
+    await user.type(cap, '7')
+    expect(screen.getByRole('button', { name: /Save/i })).toBeEnabled()
+  })
 })

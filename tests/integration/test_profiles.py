@@ -200,7 +200,7 @@ async def test_child_cannot_update_profile(client: AsyncClient, seed: Seed) -> N
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_update_rejects_malformed_uuid(client: AsyncClient, seed: Seed) -> None:
-    """A non-UUID path id is a 422 from _parse_uuid."""
+    """A non-UUID path id is a 422 from parse_uuid."""
     resp = await client.patch(
         "/api/v1/profiles/not-a-uuid",
         json={"tts_enabled": True},
@@ -242,3 +242,159 @@ async def test_update_rejects_unknown_fields(client: AsyncClient, seed: Seed) ->
         headers=auth(seed.guardian_token),
     )
     assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_requires_authentication(client: AsyncClient) -> None:
+    """POST /profiles without a bearer is a 401."""
+    resp = await client.post(
+        "/api/v1/profiles", json={"display_name": "Nova", "age_band": "5-8"}
+    )
+    assert resp.status_code == 401
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_requires_authentication(client: AsyncClient, seed: Seed) -> None:
+    """PATCH /profiles/{id} without a bearer is a 401."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}", json={"tts_enabled": True}
+    )
+    assert resp.status_code == 401
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_admin_cannot_create_profile(client: AsyncClient, seed: Seed) -> None:
+    """An admin token is rejected with 403; profile writes are guardian-only."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_admin_cannot_update_profile(client: AsyncClient, seed: Seed) -> None:
+    """An admin token may not change caps either (guardian-only writes)."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"reading_level_cap": 1.0},
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_admin_list_is_empty(client: AsyncClient, seed: Seed) -> None:
+    """An admin resolves no profile set, so the list is empty, not an error."""
+    del seed  # fixture seeds the admin-a user
+    resp = await client.get("/api/v1/profiles", headers=auth("admin-a"))
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["profiles"] == []
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_rejects_unknown_avatar(client: AsyncClient, seed: Seed) -> None:
+    """An avatar id outside the illustrated catalog is a 422 (closed vocabulary)."""
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "avatar": "not-a-glyph"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_display_name_length_boundaries(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Names of 1 and 120 chars pass; 121 chars and whitespace-only are 422."""
+    guardian = auth(seed.guardian_token)
+    ok_short = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "N", "age_band": "5-8"},
+        headers=guardian,
+    )
+    assert ok_short.status_code == 201, ok_short.text
+    ok_long = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "x" * 120, "age_band": "5-8"},
+        headers=guardian,
+    )
+    assert ok_long.status_code == 201, ok_long.text
+    too_long = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "x" * 121, "age_band": "5-8"},
+        headers=guardian,
+    )
+    assert too_long.status_code == 422
+    whitespace_only = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "   ", "age_band": "5-8"},
+        headers=guardian,
+    )
+    assert whitespace_only.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_create_reading_cap_boundaries(client: AsyncClient, seed: Seed) -> None:
+    """Caps of 0.0 and 99.0 pass; below 0 and above 99 are 422."""
+    guardian = auth(seed.guardian_token)
+    at_zero = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8", "reading_level_cap": 0.0},
+        headers=guardian,
+    )
+    assert at_zero.status_code == 201, at_zero.text
+    assert at_zero.json()["reading_level_cap"] == 0.0
+    at_max = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova2", "age_band": "5-8", "reading_level_cap": 99.0},
+        headers=guardian,
+    )
+    assert at_max.status_code == 201, at_max.text
+    below_zero = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova3", "age_band": "5-8", "reading_level_cap": -0.5},
+        headers=guardian,
+    )
+    assert below_zero.status_code == 422
+    above_max = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova4", "age_band": "5-8", "reading_level_cap": 99.5},
+        headers=guardian,
+    )
+    assert above_max.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_rejects_unknown_age_band(client: AsyncClient, seed: Seed) -> None:
+    """PATCH with an age band outside the vocabulary is a 422, like POST."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"age_band": "4-6"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_update_display_name(client: AsyncClient, seed: Seed) -> None:
+    """PATCH can rename a profile; whitespace is stripped like on create."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"display_name": "  Reader A Prime  "},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["display_name"] == "Reader A Prime"
