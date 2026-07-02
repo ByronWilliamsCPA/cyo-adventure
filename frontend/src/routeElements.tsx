@@ -62,6 +62,9 @@ export const LibraryPage = lazy(() =>
 export const ProfilePickerPage = lazy(() =>
   import('./kid/ProfilePickerPage').then((m) => ({ default: m.ProfilePickerPage }))
 )
+export const ProfilesPage = lazy(() =>
+  import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
+)
 export const ReaderRoute = lazy(() =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )
