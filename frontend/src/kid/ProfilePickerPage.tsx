@@ -29,11 +29,12 @@ export function ProfilePickerPage() {
       try {
         const profiles = await profilesApi.list()
         if (!cancelled) setState({ status: 'ready', profiles })
-      } catch {
+      } catch (err) {
+        console.error('profile list failed', err)
         if (!cancelled) setState({ status: 'error' })
       }
     }
-    load()
+    void load()
     return () => {
       cancelled = true
     }

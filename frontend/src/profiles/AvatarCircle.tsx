@@ -20,9 +20,12 @@ export function AvatarCircle({ avatar, name }: AvatarCircleProps) {
       </span>
     )
   }
+  // Spread iterates code points, so an emoji-leading name renders whole
+  // instead of as a lone UTF-16 surrogate (charAt would split it).
+  const initial = [...name.trim()][0]
   return (
     <span className="avatar-circle avatar-circle--fallback" aria-hidden="true">
-      {name.trim().charAt(0).toUpperCase() || '?'}
+      {initial?.toUpperCase() ?? '?'}
     </span>
   )
 }

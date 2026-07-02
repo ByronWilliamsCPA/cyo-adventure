@@ -1,20 +1,19 @@
 """Family child-profile management (C4a-2).
 
-Profiles gate what a child can read (age band, reading-level cap, content
-flags), so create/update is a guardian-role action; the list endpoint returns
-exactly the profiles the calling principal may act on (guardian: all family
-profiles, child: their own), which is what both the kid-surface Profile
-Picker and the guardian management page need.
+Profiles gate what a child can read (age band and reading-level cap; content
+flags live on the same row but are not yet surfaced by this API), so
+create/update is a guardian-role action; the list endpoint returns exactly
+the profiles the calling principal may act on (guardian: all family profiles,
+child: their own), which is what both the kid-surface Profile Picker and the
+guardian management page need.
 """
 
 from __future__ import annotations
 
-import uuid
-
 from fastapi import APIRouter
 from sqlalchemy import select
 
-from cyo_adventure.api.deps import Context, Principal, authorize_profile
+from cyo_adventure.api.deps import Context, Principal, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
     ProfileCreateBody,
     ProfileListView,
@@ -24,9 +23,9 @@ from cyo_adventure.api.schemas import (
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
-    ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile
+from cyo_adventure.storybook.models import AgeBand
 
 router = APIRouter(prefix="/api/v1", tags=["profiles"])
 
@@ -43,7 +42,7 @@ def _view(row: ChildProfile) -> ProfileView:
     return ProfileView(
         id=str(row.id),
         display_name=row.display_name,
-        age_band=row.age_band,
+        age_band=AgeBand(row.age_band),
         reading_level_cap=row.reading_level_cap,
         avatar=row.avatar,
         tts_enabled=row.tts_enabled,
@@ -63,8 +62,9 @@ def _require_guardian(principal: Principal) -> None:
     # #CRITICAL: security: profile caps (age band, reading level) gate what a
     # child can read; only the guardian role may create or change them. Child
     # and admin tokens are rejected here before any write.
-    # #VERIFY: tests/integration/test_profiles.py::test_child_cannot_create_profile
-    # and ::test_child_cannot_update_profile assert 403.
+    # #VERIFY: tests/integration/test_profiles.py::test_child_cannot_create_profile,
+    # ::test_child_cannot_update_profile, ::test_admin_cannot_create_profile,
+    # and ::test_admin_cannot_update_profile assert 403 for both roles.
     if not principal.is_guardian:
         msg = "guardian role required"
         raise AuthorizationError(msg)
@@ -132,15 +132,6 @@ async def create_profile(body: ProfileCreateBody, ctx: Context) -> ProfileView:
     return _view(row)
 
 
-def _parse_uuid(raw: str, field: str) -> uuid.UUID:
-    """Parse a UUID field, raising a 422-mapped error on bad input."""
-    try:
-        return uuid.UUID(raw)
-    except ValueError as exc:
-        msg = f"{field} must be a UUID"
-        raise ValidationError(msg, field=field, value=raw) from exc
-
-
 @router.patch("/profiles/{profile_id}")
 async def update_profile(
     profile_id: str, body: ProfileUpdateBody, ctx: Context
@@ -149,7 +140,9 @@ async def update_profile(
 
     Args:
         profile_id: The profile to update.
-        body: The fields to change; omitted fields are untouched.
+        body: The fields to change; omitted fields are untouched. An explicit
+            ``null`` clears only ``avatar``; on the other fields it is a no-op
+            (see ProfileUpdateBody).
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
@@ -164,7 +157,7 @@ async def update_profile(
             load (concurrent delete).
     """
     _require_guardian(ctx.principal)
-    parsed = _parse_uuid(profile_id, "profile_id")
+    parsed = parse_uuid(profile_id, "profile_id")
     # #CRITICAL: security: authorize_profile checks the id against the
     # principal's own family set, so cross-family ids and unknown ids are both
     # 403 (no existence oracle).
@@ -175,6 +168,12 @@ async def update_profile(
         msg = f"profile '{profile_id}' not found"
         raise ResourceNotFoundError(msg)
     fields = body.model_fields_set
+    # #ASSUME: data integrity: an explicit null on the four non-avatar fields
+    # is a deliberate no-op, not a clear; none of them has a legitimate empty
+    # state (a profile always has a name, band, cap, and TTS setting), so the
+    # is-not-None gates below silently ignore null rather than 422-ing.
+    # #VERIFY: test_profiles.py::test_update_ignores_explicit_null_on_non_avatar_fields
+    # pins the no-op; revisit if any of these fields ever gains clear semantics.
     if body.display_name is not None:
         row.display_name = body.display_name
     if body.age_band is not None:

@@ -15,7 +15,7 @@ export type AgeBandValue = (typeof AGE_BANDS)[number]
 export interface ProfileView {
   id: string
   display_name: string
-  age_band: string
+  age_band: AgeBandValue
   reading_level_cap: number
   avatar: string | null
   tts_enabled: boolean
@@ -24,15 +24,21 @@ export interface ProfileView {
 
 export interface ProfileCreateBody {
   display_name: string
-  age_band: string
+  age_band: AgeBandValue
   reading_level_cap?: number
   avatar?: string | null
   tts_enabled?: boolean
 }
 
+/**
+ * Deliberately stricter than the backend on the non-avatar fields: the server
+ * accepts an explicit null there but treats it as a no-op (see
+ * ProfileUpdateBody in schemas.py), so these types keep that confusing shape
+ * unrepresentable from the UI. Only avatar has real "clear via null" semantics.
+ */
 export interface ProfileUpdateBody {
   display_name?: string
-  age_band?: string
+  age_band?: AgeBandValue
   reading_level_cap?: number
   avatar?: string | null
   tts_enabled?: boolean

@@ -5,6 +5,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { AVATARS } from '../profiles/avatars'
 import {
   AGE_BANDS,
+  type AgeBandValue,
   type ProfileCreateBody,
   type ProfileView,
 } from '../profiles/profilesApi'
@@ -17,9 +18,10 @@ interface ProfileFormDialogProps {
 }
 
 /**
- * Shared create/edit form (wireframe 4.1 scope): name, age band, reading
- * level cap, illustrated avatar, TTS toggle. Photos are deliberately absent;
- * see the avatar catalog's module docstring.
+ * Shared create/edit form for the guardian Profiles page: name, age band,
+ * reading level cap, illustrated avatar, TTS toggle (the fields backing the
+ * wireframe 4.1 picker's profiles). Photos are deliberately absent; see the
+ * avatar catalog's module docstring.
  */
 export function ProfileFormDialog({
   title,
@@ -47,15 +49,19 @@ export function ProfileFormDialog({
         tts_enabled: tts,
       })
       onClose()
-    } catch {
+    } catch (err) {
+      console.error('profile save failed', err)
       setError(true)
       setSaving(false)
     }
   }
 
+  // Number('') and Number('   ') are both 0, so an emptied cap field would
+  // otherwise validate and silently save the most restrictive cap.
   const capNum = Number(cap)
   const valid =
     displayName.trim().length > 0 &&
+    cap.trim() !== '' &&
     Number.isFinite(capNum) &&
     capNum >= 0 &&
     capNum <= 99
@@ -98,7 +104,10 @@ export function ProfileFormDialog({
         </label>
         <label>
           Age band
-          <select value={ageBand} onChange={(e) => setAgeBand(e.target.value)}>
+          <select
+            value={ageBand}
+            onChange={(e) => setAgeBand(e.target.value as AgeBandValue)}
+          >
             {AGE_BANDS.map((band) => (
               <option key={band} value={band}>
                 {band}

@@ -31,7 +31,8 @@ export function ProfilesPage() {
       try {
         const rows = await profilesApi.list()
         if (!cancelled) setProfiles(rows)
-      } catch {
+      } catch (err) {
+        console.error('profile list failed', err)
         if (!cancelled) setLoadError(true)
       }
     }
