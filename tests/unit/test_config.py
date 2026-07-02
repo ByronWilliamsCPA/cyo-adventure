@@ -327,3 +327,47 @@ class TestUnprefixedOperatorAliases:
         monkeypatch.setenv("DATABASE_URL", "postgresql+asyncpg://unprefixed/db")
         monkeypatch.setenv("CYO_ADVENTURE_DATABASE_URL", _PROD_DB_URL)
         assert Settings().database_url == _PROD_DB_URL
+
+    @pytest.mark.unit
+    def test_log_level_still_reads_prefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """log_level keeps reading the prefixed CYO_ADVENTURE_LOG_LEVEL name."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("LOG_LEVEL", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_LOG_LEVEL", "WARNING")
+        assert Settings().log_level == "WARNING"
+
+    @pytest.mark.unit
+    def test_log_level_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("LOG_LEVEL", "DEBUG")
+        monkeypatch.setenv("CYO_ADVENTURE_LOG_LEVEL", "ERROR")
+        assert Settings().log_level == "ERROR"
+
+    @pytest.mark.unit
+    def test_json_logs_still_reads_prefixed_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """json_logs keeps reading the prefixed CYO_ADVENTURE_JSON_LOGS name."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("JSON_LOGS", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_JSON_LOGS", "true")
+        assert Settings().json_logs is True
+
+    @pytest.mark.unit
+    def test_json_logs_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("JSON_LOGS", "false")
+        monkeypatch.setenv("CYO_ADVENTURE_JSON_LOGS", "true")
+        assert Settings().json_logs is True
