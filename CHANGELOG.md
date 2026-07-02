@@ -67,6 +67,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Profile management (C4a-2): family-scoped profiles API (`GET`/`POST`
+  `/api/v1/profiles`, `PATCH /api/v1/profiles/{profile_id}`), the kid-surface
+  Profile Picker as the app's entry page (selection lands the child in their
+  own library route), and a guardian Profiles page for creating and editing
+  per-child age-band and reading-level caps with illustrated avatars (no
+  child photos; that privacy decision is still open).
 - Adversarial safety evaluation of the generation and moderation pipeline (docs + tooling,
   no runtime paths touched): `docs/planning/safety/adversarial-safety-evaluation.md` records
   the six-class failure taxonomy, the threat model, and five model-independent structural
