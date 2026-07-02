@@ -298,7 +298,11 @@ Make the kids-facing guarantee real.
 
 - ✅ No story reaches a child profile without a recorded guardian approval (verified by
   attempting every transition path).
-- ✅ Adversarial briefs are flagged and cannot be auto-published.
+- 🔄 Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish"
+  holds; the "flag and route to human review" half is reframed and only partially met (see
+  [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)): no
+  live-model adversarial run has been executed, and the import and admin-submit paths reach a
+  publishable state with no moderation. Tracked as Phase 3 debt into Phase 4a/5.
 
 ### Dependencies
 

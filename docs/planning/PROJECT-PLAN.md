@@ -485,8 +485,16 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
       checks (critical paths)
 - [x] All IDOR negative tests pass (child A/B cross-access, child calling approve/publish,
       cross-family guardian access)
-- [x] Safety evaluation: adversarial concept briefs verified to flag moderation and route to
-      human review; no auto-publish path
+- [~] Safety evaluation: adversarial concept briefs flag moderation and route to human review.
+      **Partially met and reframed** (see
+      [adversarial-safety-evaluation.md](./safety/adversarial-safety-evaluation.md)). "No
+      auto-publish path" holds (verified: nothing publishes without a human `approve`). The
+      "adversarial briefs flag and route to human review" claim is **not backed by evidence**
+      for the model-dependent classes (no live-model run has been executed) and is **false on
+      two structural seams**: the import path and the admin `POST /submit` endpoint reach a
+      publishable state with no moderation at all. Remaining to close the gate: (a) close the
+      two bypass seams; (b) surface an explicit "never screened" state on the review surface;
+      (c) run the credentialed adversarial harness and archive per-class results
 - [x] No high or critical security findings (Bandit, Semgrep, pip-audit)
 - [x] Ruff clean; BasedPyright strict clean
 - [x] Pre-commit green; all commits signed with conventional messages

@@ -57,6 +57,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Adversarial safety evaluation of the generation and moderation pipeline
+  (`docs/planning/safety/`): a failure taxonomy (six attack classes), a
+  passage-oriented adversarial corpus, and a runnable harness
+  (`scripts/adversarial_harness.py`, unit-tested) that feeds the corpus to the
+  real moderation stages and reports a per-class catch-rate. The harness refuses
+  to treat a mock run as evidence (the mock reviewer returns fail-safe verdicts).
+  Records the model-independent structural findings verified at source: the
+  import path and the admin `POST /submit` endpoint reach a publishable state with
+  no moderation (Findings 1-2); the review surface does not distinguish "never
+  screened" from "screened clean" (Finding 3); the safety gate is per-node, so
+  aggregate harm split across a choice path is not screened by any automated stage
+  (Finding 4); and the documented concept-brief control-character strip does not
+  exist (Finding 5). Corrects the unbacked Phase 3 safety-gate checkbox to
+  partially-met-and-reframed across PROJECT-PLAN, roadmap, completion-plan
+  (carried debt C3-SAFETY), and ADR-005: "no auto-publish path" holds, but
+  "adversarial briefs flag and route to human review" has no live-model evidence
+  and is false on the two bypass seams. No live behavioral run has been executed
+  (this environment has no review-model credentials).
 - ADR-008, the first-release trust-boundary design: real OIDC verification at the
   API behind the `deps.py` seam (the ingress is explicitly not the boundary on a
   home LAN), the admin-inherits-guardian role model recording the

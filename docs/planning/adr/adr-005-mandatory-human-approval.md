@@ -139,8 +139,13 @@ ever shared beyond the family.
 
 ### Success Criteria
 
-- [ ] No story reaches a child profile without a recorded guardian approval.
-- [ ] Adversarial briefs are flagged and cannot be auto-published.
+- [x] No story reaches a child profile without a recorded guardian approval (no auto-publish
+  path; verified by the state machine and the published-requires-approver invariant).
+- [~] Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish"
+  holds; the flagging half is partially met and reframed, see
+  [adversarial-safety-evaluation.md](../safety/adversarial-safety-evaluation.md) (no
+  live-model run yet; the import and admin-submit paths currently reach a publishable state
+  unmoderated).
 
 ### Review Schedule
 
@@ -153,4 +158,7 @@ ever shared beyond the family.
   depends on.
 - [ADR-003](./adr-003-frontier-llm-generation.md): the generator whose output this
   gate reviews.
+- [Adversarial safety evaluation](../safety/adversarial-safety-evaluation.md): the failure
+  taxonomy, the structural bypass findings, and the status of the adversarial-brief criterion
+  above.
 - [Tech Spec: Publish state machine](../tech-spec.md#publish-state-machine)
