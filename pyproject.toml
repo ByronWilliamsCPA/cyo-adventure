@@ -73,6 +73,7 @@ dependencies = [
     "networkx>=3.6.1",
     "rq>=2.10.0",
     "redis>=8.0.0",
+    "pyjwt[crypto]>=2.13.0",
 ]
 
 # Optional dependency groups
@@ -309,10 +310,14 @@ known-first-party = ["cyo_adventure"]
 # Module init files
 "__init__.py" = ["F401", "D104"]
 
-# The approval router imports Context (an Annotated[..., Depends()] alias) at
-# runtime; FastAPI resolves the Depends at startup via inspect, so Context must
-# not move into TYPE_CHECKING even when it appears only in annotations.
+# The approval and me routers import Context (an Annotated[..., Depends()]
+# alias) at runtime; FastAPI resolves the Depends at startup via inspect, so
+# Context must not move into TYPE_CHECKING even when it appears only in
+# annotations. Routers that import Context alongside other runtime-called
+# names (ratings.py, reading.py, generation.py) don't need this: ruff won't
+# suggest moving part of a multi-name import line.
 "**/api/approval.py" = ["TC001"]
+"**/api/me.py" = ["TC001"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]

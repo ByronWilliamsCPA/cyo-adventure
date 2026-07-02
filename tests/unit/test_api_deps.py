@@ -306,17 +306,20 @@ class TestAuthStubGuard:
     """Tests for the module-level environment guard in api.deps."""
 
     @pytest.mark.unit
-    def test_guard_raises_configuration_error_in_non_local_env(self) -> None:
-        """deps raises ConfigurationError at import time when environment != 'local'.
+    def test_guard_raises_when_non_local_and_no_oidc_config(self) -> None:
+        """deps raises ConfigurationError when environment != 'local' and no
+        OIDC issuer/JWKS is configured to take over from the dev stub.
 
         The guard is the sole enforcement point preventing the no-validation dev
-        auth stub from reaching staging or production. Tested via importlib.reload
-        which re-executes module-level code.
+        auth stub from reaching staging or production unconfigured. Tested via
+        importlib.reload which re-executes module-level code.
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
         with patch("cyo_adventure.core.config.settings") as mock_settings:
             mock_settings.environment = "production"
+            mock_settings.oidc_issuer = None
+            mock_settings.oidc_jwks_url = None
             with pytest.raises(ConfigurationError, match="dev auth stub"):
                 importlib.reload(deps)
 
@@ -335,6 +338,31 @@ class TestAuthStubGuard:
             except ConfigurationError:
                 pytest.fail(
                     "ConfigurationError raised unexpectedly for environment='local'"
+                )
+
+        importlib.reload(deps)
+
+    @pytest.mark.unit
+    def test_guard_does_not_raise_when_non_local_with_oidc_config(self) -> None:
+        """deps imports cleanly outside 'local' once real OIDC config is set.
+
+        This is the case the dev-stub guard exists to allow: a non-local
+        deployment is legitimate once _verify_oidc_jwt has something to verify
+        against, so the guard must not block it.
+        """
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with patch("cyo_adventure.core.config.settings") as mock_settings:
+            mock_settings.environment = "staging"
+            mock_settings.oidc_issuer = "https://example.supabase.co/auth/v1"
+            mock_settings.oidc_jwks_url = (
+                "https://example.supabase.co/auth/v1/.well-known/jwks.json"
+            )
+            try:
+                importlib.reload(deps)
+            except ConfigurationError:
+                pytest.fail(
+                    "ConfigurationError raised unexpectedly with OIDC config set"
                 )
 
         importlib.reload(deps)

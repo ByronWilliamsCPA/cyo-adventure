@@ -1,17 +1,21 @@
 import 'fake-indexeddb/auto'
 
 import { render, screen } from '@testing-library/react'
+import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import App from '../App'
+import { AuthProvider } from '../auth/AuthContext'
 import { _resetDbHandle } from '../offline/db'
+import { routes } from '../router'
 
-// Mock the API adapters so the App mounts deterministically without a backend.
+// Mock the API adapters so the reader route mounts deterministically without a backend.
 vi.mock('../api/readerApi', () => ({
   makeSyncApi: () => ({
-    // Echo a full ReadingState row (revision bumped) so the mock matches the real
-    // adapter contract; a truncated row would hide write-back regressions.
-    putReadingState: (_profileId: string, _storybookId: string, body: { state_revision?: number }) =>
+    putReadingState: (
+      _profileId: string,
+      _storybookId: string,
+      body: { state_revision?: number }
+    ) =>
       Promise.resolve({
         status: 200,
         row: { ...body, state_revision: (body.state_revision ?? 0) + 1 },
@@ -44,22 +48,87 @@ vi.mock('../api/readerApi', () => ({
     }),
 }))
 
+const mockGet = vi.fn()
+// A stable object, not a fresh literal per call: see the matching comment in
+// auth/AuthContext.test.tsx for why this matters.
+const fakeApi = { get: mockGet }
+vi.mock('../hooks/useApi', () => ({
+  useApi: () => fakeApi,
+}))
+
+const mockGetSession = vi.fn()
+const mockOnAuthStateChange = vi.fn()
+vi.mock('../auth/supabaseClient', () => ({
+  supabase: {
+    auth: {
+      getSession: (...args: unknown[]) => mockGetSession(...args),
+      onAuthStateChange: (...args: unknown[]) => mockOnAuthStateChange(...args),
+      signInWithOAuth: vi.fn(),
+      signOut: vi.fn(),
+    },
+  },
+}))
+
+function renderAt(initialPath: string) {
+  const router = createMemoryRouter(routes, { initialEntries: [initialPath] })
+  return render(
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  )
+}
+
 beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
+  mockGet.mockReset()
+  mockGetSession.mockReset().mockResolvedValue({ data: { session: null } })
+  mockOnAuthStateChange
+    .mockReset()
+    .mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
 })
 
-describe('App', () => {
-  it('renders the reader for the configured story', async () => {
-    render(<App />)
+describe('router: kid surface', () => {
+  it('renders the library stub at /', async () => {
+    renderAt('/')
+    expect(await screen.findByText(/My Books/)).toBeInTheDocument()
+  })
+
+  it('renders the reader for a valid story route', async () => {
+    renderAt('/read/p1/s_demo/1')
     expect(await screen.findByTestId('reader')).toBeInTheDocument()
     expect(screen.getByText('Hello reader')).toBeInTheDocument()
   })
 
-  it('shows the app title', async () => {
-    render(<App />)
-    expect(screen.getByRole('heading', { name: 'CYO Adventure' })).toBeInTheDocument()
-    // Let the async story load settle so no state update lands after teardown.
-    await screen.findByTestId('reader')
+  it('shows an error for a non-numeric version segment', async () => {
+    renderAt('/read/p1/s_demo/not-a-number')
+    expect(await screen.findByRole('alert')).toHaveTextContent(/invalid/i)
+  })
+})
+
+describe('router: guardian surface', () => {
+  // The unauthenticated/wrong-role redirect itself (ProtectedRoute rendering
+  // <Navigate>) is covered directly in auth/ProtectedRoute.test.tsx via a
+  // plain <MemoryRouter>/<Routes>. It's deliberately not re-exercised here
+  // through createMemoryRouter: a client-side <Navigate> triggers
+  // react-router's data-router navigate(), which constructs a fetch Request
+  // internally and crashes on an AbortSignal instanceof mismatch under this
+  // vitest/jsdom/undici combination (an environment issue, not an app bug).
+  // These tests only exercise routes that resolve on their initial match.
+
+  it('renders the login page directly', async () => {
+    renderAt('/guardian/login')
+    expect(await screen.findByText(/Guardian sign-in/)).toBeInTheDocument()
+  })
+
+  it('renders the console for a signed-in guardian', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    renderAt('/guardian')
+    expect(await screen.findByText(/Guardian Console/)).toBeInTheDocument()
   })
 })

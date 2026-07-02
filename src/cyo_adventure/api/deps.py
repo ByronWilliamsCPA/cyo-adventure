@@ -1,10 +1,12 @@
 """Request dependencies: the DB session unit-of-work and the auth seam.
 
 The auth seam resolves a bearer token to a :class:`Principal` (role, family, and
-the set of child profiles it may act on). It is a *seam*: the dev/test stub
-treats the bearer token as the already-verified OIDC subject. Real Authentik OIDC
-verification (issuer, audience, signature, expiry) replaces ``_extract_subject``
-in a later phase; the authorization logic below does not change.
+the set of child profiles it may act on). In the ``local`` environment it is a
+*seam*: the dev/test stub treats the bearer token as the already-verified OIDC
+subject, with no signature/issuer/expiry check. Outside ``local`` the token is
+a real Supabase-issued JWT (ADR-009), verified against a cached JWKS
+(signature, issuer, audience, expiry) before its ``sub`` claim is trusted; the
+authorization logic below does not change either way.
 
 Authorization rules (docs/planning/authorization-matrix.md):
 - A guardian may act on any child profile within its own family.
@@ -18,6 +20,7 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated
 
+import jwt
 from fastapi import Depends, Header
 from sqlalchemy import select
 
@@ -55,14 +58,18 @@ _BEARER_PREFIX = "bearer "
 # #CRITICAL: security: this module contains a dev/test auth seam (_extract_subject)
 # that treats any bearer token as a verified OIDC subject with NO signature,
 # issuer, or expiry validation. It must never be active outside local development.
-# #VERIFY: ConfigurationError raised at import time when environment != "local",
-# so uvicorn fails to start in staging/production if this stub is still wired in.
-if settings.environment != "local":
+# #VERIFY: ConfigurationError raised at import time when environment != "local"
+# and no real OIDC verification config (oidc_issuer + oidc_jwks_url) is present,
+# so uvicorn fails to start in staging/production unless real Supabase JWT
+# verification (_verify_oidc_jwt below) is actually configured to take over.
+if settings.environment != "local" and not (
+    settings.oidc_issuer and settings.oidc_jwks_url
+):
     _env = settings.environment
     msg = (
-        f"The dev auth stub in api/deps.py is active in the {_env!r} environment. "
-        "Replace _extract_subject with real Authentik JWT validation before any "
-        "non-local deployment."
+        f"The dev auth stub in api/deps.py cannot run in the {_env!r} environment "
+        "and no OIDC verification is configured. Set OIDC_ISSUER and "
+        "OIDC_JWKS_URL (ADR-009: Supabase Auth), or run with environment='local'."
     )
     raise ConfigurationError(msg)
 
@@ -148,8 +155,8 @@ def _extract_subject(authorization: str | None) -> str:
     """
     # #CRITICAL: security: dev/test seam only. Treats the bearer token as the
     # verified OIDC subject WITHOUT signature/issuer/expiry verification.
-    # #VERIFY: replace with real Authentik JWT validation before any non-local
-    # deployment; never ship this stub to staging or production.
+    # #VERIFY: _resolve_subject routes non-local callers to _verify_oidc_jwt
+    # instead; never ship this unverified path to staging or production.
     if not authorization or not authorization.lower().startswith(_BEARER_PREFIX):
         msg = "missing or malformed bearer token"
         raise AuthenticationError(msg)
@@ -158,6 +165,93 @@ def _extract_subject(authorization: str | None) -> str:
         msg = "empty bearer token"
         raise AuthenticationError(msg)
     return token
+
+
+# #CRITICAL: external-resources: PyJWKClient fetches and caches the JWKS by URL
+# internally (its own TTL cache); constructing it lazily at first non-local
+# request (never at import time) means local/test imports never touch the
+# network, and this module-level singleton avoids a JWKS refetch per request.
+# #VERIFY: test_oidc_verification.py monkeypatches _jwks_client, not the
+# network, so PyJWKClient's own caching is never exercised in the suite.
+_jwks_client_cache: jwt.PyJWKClient | None = None
+
+
+def _jwks_client() -> jwt.PyJWKClient:
+    """Return the lazily-constructed, process-wide JWKS client.
+
+    Returns:
+        jwt.PyJWKClient: The client backing OIDC signature verification.
+    """
+    global _jwks_client_cache  # noqa: PLW0603
+    if _jwks_client_cache is None:
+        if settings.oidc_jwks_url is None:
+            msg = "OIDC_JWKS_URL is not configured; cannot verify OIDC tokens"
+            raise ConfigurationError(msg)
+        _jwks_client_cache = jwt.PyJWKClient(settings.oidc_jwks_url)
+    return _jwks_client_cache
+
+
+def _verify_oidc_jwt(token: str) -> str:
+    """Verify a Supabase-issued JWT and return its subject.
+
+    Verifies signature (via the cached JWKS), issuer, audience, and expiry.
+    Only ``RS256``/``ES256`` are accepted; an explicit algorithm allowlist is
+    what defeats an ``alg=none`` or HS256-confusion forgery attempt, since
+    PyJWT never falls back to a caller-supplied algorithm.
+
+    Args:
+        token: The raw bearer token (a JWT, not the dev-stub's opaque string).
+
+    Returns:
+        str: The verified ``sub`` claim.
+
+    Raises:
+        AuthenticationError: If the token is malformed, unsigned, expired, or
+            fails signature, issuer, or audience verification. The underlying
+            PyJWT/JWKS error is never included in the message.
+    """
+    # #CRITICAL: security: this is the real verification path (ADR-009 P6-01).
+    # A failure here must never fall back to trusting the token unverified.
+    # #VERIFY: test_oidc_verification.py covers expired/wrong-issuer/
+    # wrong-audience/tampered-signature/alg-none, each asserting AuthenticationError.
+    try:
+        signing_key = _jwks_client().get_signing_key_from_jwt(token)
+        payload = jwt.decode(
+            token,
+            signing_key.key,  # pyright: ignore[reportAny]
+            algorithms=["RS256", "ES256"],
+            audience=settings.oidc_audience,
+            issuer=settings.oidc_issuer,
+        )
+    except jwt.PyJWKClientError as exc:
+        msg = "unable to fetch signing key for token verification"
+        raise AuthenticationError(msg) from exc
+    except jwt.PyJWTError as exc:
+        msg = "token failed verification"
+        raise AuthenticationError(msg) from exc
+    subject = payload.get("sub")
+    if not isinstance(subject, str) or not subject:
+        msg = "token is missing a subject claim"
+        raise AuthenticationError(msg)
+    return subject
+
+
+def _resolve_subject(token: str) -> str:
+    """Resolve the verified subject from a bearer token.
+
+    In ``local`` this trusts the token as-is (the dev/test auth seam,
+    documented at module level). Everywhere else it verifies the token as a
+    real Supabase JWT.
+
+    Args:
+        token: The raw bearer token.
+
+    Returns:
+        str: The verified (or, in ``local``, trusted) subject.
+    """
+    if settings.environment == "local":
+        return token
+    return _verify_oidc_jwt(token)
 
 
 async def require_principal(
@@ -174,9 +268,10 @@ async def require_principal(
         Principal: The authenticated principal.
 
     Raises:
-        AuthenticationError: If the token is missing or the subject is unknown.
+        AuthenticationError: If the token is missing, fails OIDC verification
+            outside ``local``, or the subject is unknown.
     """
-    subject = _extract_subject(authorization)
+    subject = _resolve_subject(_extract_subject(authorization))
     user = await session.scalar(select(User).where(User.authn_subject == subject))
     if user is None:
         msg = "unknown subject"

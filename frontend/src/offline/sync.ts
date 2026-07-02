@@ -177,9 +177,7 @@ export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
     const key = queueKey(item)
     const knownRevision = latestRevision.get(key)
     const state =
-      knownRevision === undefined
-        ? item.state
-        : { ...item.state, state_revision: knownRevision }
+      knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
     let res: PutResponse
     try {
       res = await api.putReadingState(item.profile_id, item.storybook_id, {

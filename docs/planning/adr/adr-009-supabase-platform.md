@@ -229,12 +229,34 @@ client-secret plumbing in the native path).
 ### Components Affected
 
 1. **`api/deps.py`** (P6-01): validate Supabase-issued JWTs (asymmetric signing keys,
-   cached JWKS); the dev stub remains for `environment == "local"`.
+   cached JWKS); the dev stub remains for `environment == "local"`. ✅ **Implemented**
+   (pulled forward into C4a-1, 2026-07-02): `_verify_oidc_jwt()` uses
+   `jwt.PyJWKClient` against `oidc_jwks_url`, allowlists `RS256`/`ES256` only
+   (defeats `alg=none`/algorithm-confusion), and checks issuer, audience, and
+   expiry. **Deviation from the P6-01 spec**: the spec calls for deleting the
+   import-time environment guard outright; instead the guard was kept but made
+   conditional (`environment != "local" and not (oidc_issuer and oidc_jwks_url)`
+   raises `ConfigurationError` at import time). Rationale: a process that starts
+   in a non-local environment with no way to verify any bearer token should fail
+   at startup, not on the first request.
 2. **`core/config.py`** (P6-02): `oidc_issuer`, `oidc_audience`, `oidc_jwks_url` point
    at the Supabase project; provider-agnostic names are deliberate (ejection path).
-3. **Onboarding** (P6-03): JIT provisioning keys on the Supabase `sub`.
+   ✅ **Implemented** (2026-07-02), including a `_require_oidc_config_outside_local`
+   model_validator mirroring the existing `_reject_dev_database_url_outside_local`
+   pattern, so `Settings()` itself refuses to construct outside `local` without
+   both values set (defense in depth alongside the deps.py guard above, since
+   deps.py's own tests mock `settings` directly and bypass Pydantic validation).
+3. **Onboarding** (P6-03): JIT provisioning keys on the Supabase `sub`. Not started;
+   `GET /api/v1/me` (added 2026-07-02) returns the verified subject and resolved
+   `Principal`, but does not yet provision a `User`/`family_id` row on first sign-in.
 4. **Frontend** (P6-06): supabase-js manages sessions, refresh, and Capacitor deep-link
-   callbacks; native Apple sign-in via `signInWithIdToken`.
+   callbacks; native Apple sign-in via `signInWithIdToken`. **Partially implemented**
+   (2026-07-02): `AuthContext` wraps `supabase.auth.getSession()` /
+   `onAuthStateChange()`, calls `GET /api/v1/me` to resolve a `Principal`, and syncs
+   the access token into the existing `useApi()` localStorage-based interceptor.
+   Native Apple `signInWithIdToken`, Capacitor deep-link callbacks, 401-triggered
+   token refresh in `useApi.ts`/`offline/sync.ts`, and the CSP `connect-src` update
+   are **not yet built** and remain scoped to a future P6-06 pass.
 5. **Deletion** (P7-04): Supabase Auth admin API + our Apple revocation call.
 6. **Infra** (P9-03): Supabase project (prod) + Supabase project (staging) + one
    container host for API and worker; queue decision executed here. The RQ surface
@@ -250,7 +272,10 @@ client-secret plumbing in the native path).
 ### Testing Strategy
 
 - The Phase 6 negative-token suite (expired, wrong issuer, wrong audience, algorithm
-  confusion, tampered signature) runs against Supabase-shaped JWTs.
+  confusion, tampered signature) runs against Supabase-shaped JWTs. ✅ **Implemented**
+  (`tests/unit/test_oidc_verification.py`, 2026-07-02) using real RSA keypairs and a
+  fake JWKS client; covers `alg=none` forgery, wrong signing key, missing subject
+  claim, and JWKS fetch failure in addition to the criteria above.
 - Queue evaluation: run the existing generation integration tests against pgmq before
   committing; fall back to Redis on any failure or time-box expiry.
 - Restore drill (P9-06) includes a full export from Supabase (schema + data + storage)

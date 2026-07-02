@@ -13,7 +13,15 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from cyo_adventure.api import approval, generation, health, library, ratings, reading
+from cyo_adventure.api import (
+    approval,
+    generation,
+    health,
+    library,
+    me,
+    ratings,
+    reading,
+)
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -124,6 +132,7 @@ def create_app() -> FastAPI:
     app.include_router(generation.router)
     app.include_router(ratings.router)
     app.include_router(approval.router)
+    app.include_router(me.router)
     return app
 
 

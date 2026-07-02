@@ -300,3 +300,23 @@ class ReviewSurfaceView(BaseModel):
             msg = "review surface must not contain a pass-verdict finding"
             raise ValueError(msg)
         return self
+
+
+# ---------------------------------------------------------------------------
+# Principal introspection
+# ---------------------------------------------------------------------------
+
+
+class MeResponse(BaseModel):
+    """The authenticated caller's own identity and role.
+
+    The frontend has no way to inspect a bearer token itself (it may be an
+    opaque dev-stub string locally, or a signed Supabase JWT it should not
+    parse); this is the sole source of truth for which shell (kid vs
+    guardian) and nav to render for the current session.
+    """
+
+    subject: str
+    role: str
+    family_id: str
+    profile_ids: list[str]
