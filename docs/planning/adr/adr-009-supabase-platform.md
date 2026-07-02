@@ -77,7 +77,8 @@ paper, than after Phase 6 builds against an issuer.
 
 ## Decision
 
-**We will build the public tier on Supabase: Auth, Postgres, and Storage adopted now,
+**We will build the public tier on Supabase: Auth and Postgres adopted now, the
+Storage seam reserved (adoption deferred until blobs externalize via `blob_ref`),
 Queues (pgmq) evaluated as the Redis/RQ replacement, with FastAPI and the generation
 worker deployed as our own containers on a single small host.**
 

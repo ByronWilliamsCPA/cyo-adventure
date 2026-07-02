@@ -203,7 +203,8 @@ family-tier data private while giving the public tier real availability.
 - The Sign in with Apple client secret is a signed JWT valid at most 6 months; key
   rotation must be operationalized (calendar + runbook) or logins silently break.
 - Apple returns name and email exactly once at first authorization; Authentik source
-  mapping must capture them at that moment.
+  mapping must capture them at that moment. *(Amended by ADR-009: the capture point is
+  the Supabase provider configuration; the one-shot constraint is unchanged.)*
 - Account deletion must call Apple's token-revocation endpoint; deletion is not
   complete without it.
 
@@ -225,9 +226,12 @@ family-tier data private while giving the public tier real availability.
    family-scoped `published` state; admin curation reuses the approval spine.
 6. **Frontend**: OIDC Authorization Code + PKCE, tokens out of `localStorage`
    (memory + silent refresh on web, Keychain in the shell), profile picker, parental
-   gate, paywall and restore-purchases screens.
+   gate, paywall and restore-purchases screens. *(Amended by ADR-009: supabase-js
+   session management replaces the hand-rolled OIDC flow; the rest stands.)*
 7. **Infra**: hosted Postgres/Redis/object storage/Authentik; live moderation
    classifiers mandatory; rate limiting; Sentry; backups and restore drill.
+   *(Amended by ADR-009: the hosted service set is Supabase plus one container host;
+   no production Authentik; Redis only if the pgmq evaluation fails.)*
 
 ### Testing Strategy
 
