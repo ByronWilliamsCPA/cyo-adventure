@@ -7,6 +7,7 @@ import uuid
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
+import jwt
 import pytest
 
 from cyo_adventure.api import deps
@@ -411,3 +412,74 @@ def test_principal_is_admin_role() -> None:
         profile_ids=frozenset(),
     )
     assert guardian.is_admin is False
+
+
+class TestJwksClient:
+    """Direct tests for the lazily-constructed JWKS client and its guards.
+
+    The OIDC negative-token suite (test_oidc_verification.py) monkeypatches
+    `_jwks_client`, so the function body, including the https guard, is
+    exercised only here.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _reset_jwks_cache(self) -> Iterator[None]:
+        """Isolate the process-wide `_jwks_client_cache` singleton per test."""
+        deps._jwks_client_cache = None
+        try:
+            yield
+        finally:
+            deps._jwks_client_cache = None
+
+    @pytest.mark.unit
+    def test_missing_jwks_url_raises(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """A None `oidc_jwks_url` cannot verify tokens and must fail fast."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.setattr(deps.settings, "oidc_jwks_url", None)
+        with pytest.raises(ConfigurationError, match="OIDC_JWKS_URL is not configured"):
+            deps._jwks_client()
+
+    @pytest.mark.unit
+    def test_non_https_jwks_url_rejected_outside_local(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """An http JWKS URL outside local is refused (on-path key substitution)."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        monkeypatch.setattr(deps.settings, "environment", "production")
+        monkeypatch.setattr(
+            deps.settings, "oidc_jwks_url", "http://example.supabase.co/jwks.json"
+        )
+        with pytest.raises(ConfigurationError, match="must use https"):
+            deps._jwks_client()
+
+    @pytest.mark.unit
+    def test_https_jwks_url_outside_local_builds_and_caches_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A https JWKS URL outside local constructs and caches the client.
+
+        PyJWKClient opens no network connection at construction, so this stays
+        offline; a second call returns the same cached instance.
+        """
+        monkeypatch.setattr(deps.settings, "environment", "production")
+        monkeypatch.setattr(
+            deps.settings,
+            "oidc_jwks_url",
+            "https://example.supabase.co/auth/v1/.well-known/jwks.json",
+        )
+        client = deps._jwks_client()
+        assert isinstance(client, jwt.PyJWKClient)
+        assert deps._jwks_client() is client
+
+    @pytest.mark.unit
+    def test_local_env_allows_http_jwks_url(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """In local the https requirement is not enforced (dev convenience)."""
+        monkeypatch.setattr(deps.settings, "environment", "local")
+        monkeypatch.setattr(
+            deps.settings, "oidc_jwks_url", "http://localhost:9999/jwks.json"
+        )
+        assert isinstance(deps._jwks_client(), jwt.PyJWKClient)
