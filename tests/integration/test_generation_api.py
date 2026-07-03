@@ -11,12 +11,12 @@ logged; the GenerationJob row is still created and 202 is returned.
 from __future__ import annotations
 
 import uuid
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Concept, GenerationJob
+from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -390,6 +390,20 @@ async def _seed_job(
         return str(job.id)
 
 
+async def _other_family_id(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> uuid.UUID:
+    """Resolve Family B's id via its seeded child profile.
+
+    The Seed dataclass does not carry Family B's family_id directly; the
+    other_child_profile_id row does.
+    """
+    async with sessions() as session:
+        profile = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile is not None
+        return profile.family_id
+
+
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_list_jobs_child_token_rejected(client: AsyncClient, seed: Seed) -> None:
@@ -405,18 +419,25 @@ async def test_list_jobs_is_family_scoped(
     seed: Seed,
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """Family B's guardian never sees family A's jobs."""
+    """Family B's guardian sees Family B's jobs and never Family A's."""
     a_job = await _seed_job(
         sessions,
         family_id=seed.family_id,
         status="queued",
         created_at=datetime(2026, 7, 2, 10, 0, tzinfo=UTC),
     )
+    b_job = await _seed_job(
+        sessions,
+        family_id=await _other_family_id(sessions, seed),
+        status="queued",
+        created_at=datetime(2026, 7, 2, 10, 30, tzinfo=UTC),
+    )
     resp = await client.get(
         "/api/v1/generation-jobs", headers=auth(seed.other_guardian_token)
     )
     assert resp.status_code == 200, resp.text
     ids = {row["id"] for row in resp.json()["jobs"]}
+    assert b_job in ids
     assert a_job not in ids
 
 
@@ -455,7 +476,11 @@ async def test_list_jobs_surfaces_storybook_status(
     seed: Seed,
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """A passed job linked to the published seed storybook reports its status."""
+    """A passed job linked to the published seed storybook reports its status.
+
+    A job with no linked storybook must report storybook_status None, so a
+    hardcoded "published" cannot satisfy this test.
+    """
     job_id = await _seed_job(
         sessions,
         family_id=seed.family_id,
@@ -463,13 +488,22 @@ async def test_list_jobs_surfaces_storybook_status(
         created_at=datetime(2026, 7, 2, 11, 0, tzinfo=UTC),
         storybook_id=seed.storybook_id,
     )
+    unlinked_id = await _seed_job(
+        sessions,
+        family_id=seed.family_id,
+        status="queued",
+        created_at=datetime(2026, 7, 2, 11, 30, tzinfo=UTC),
+        storybook_id=None,
+    )
     resp = await client.get(
         "/api/v1/generation-jobs", headers=auth(seed.guardian_token)
     )
     assert resp.status_code == 200, resp.text
-    row = next(r for r in resp.json()["jobs"] if r["id"] == job_id)
+    rows = {r["id"]: r for r in resp.json()["jobs"]}
+    row = rows[job_id]
     assert row["storybook_status"] == "published"
     assert row["age_band"] == _BRIEF_PAYLOAD["age_band"]
+    assert rows[unlinked_id]["storybook_status"] is None
 
 
 @pytest.mark.integration
@@ -495,3 +529,37 @@ async def test_list_jobs_never_exposes_report(
     assert "leak_marker" not in resp.text
     for row in resp.json()["jobs"]:
         assert "report" not in row
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_list_jobs_caps_at_50(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The list caps at 50 rows and truncates the oldest job first.
+
+    Seed 51 jobs with strictly increasing created_at; the response must hold
+    exactly 50 rows and the oldest (first-seeded) job must be the one dropped,
+    which also re-pins newest-first ordering under truncation.
+    """
+    base = datetime(2026, 6, 1, 8, 0, tzinfo=UTC)
+    job_ids = [
+        await _seed_job(
+            sessions,
+            family_id=seed.family_id,
+            status="queued",
+            created_at=base + timedelta(minutes=i),
+        )
+        for i in range(51)
+    ]
+    oldest = job_ids[0]
+    resp = await client.get(
+        "/api/v1/generation-jobs", headers=auth(seed.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    jobs = resp.json()["jobs"]
+    assert len(jobs) == 50
+    ids = {row["id"] for row in jobs}
+    assert oldest not in ids
