@@ -89,6 +89,9 @@ describe('makeReviewApi', () => {
           // backend default is `str = ""`). The `|| 'Untitled request'` fallback
           // must catch the empty string so the console never renders a blank row.
           { id: 'j2', status: 'queued', title: null, premise_snippet: '' },
+          // An empty-string title (not null) must also fall through: title is
+          // chained with `||`, not `??`, so "" does not render a blank row.
+          { id: 'j3', status: 'running', title: '', premise_snippet: 'from snippet' },
         ],
       },
     })
@@ -96,6 +99,7 @@ describe('makeReviewApi', () => {
     expect(result).toEqual([
       { job_id: 'j1', title: 'snippet only', status: 'running' },
       { job_id: 'j2', title: 'Untitled request', status: 'queued' },
+      { job_id: 'j3', title: 'from snippet', status: 'running' },
     ])
   })
 
@@ -115,17 +119,28 @@ describe('makeReviewApi', () => {
     expect(result).toEqual([{ job_id: 'j1', title: 'keep me', status: 'queued' }])
   })
 
-  it('stillProcessing resolves to [] on a 403 so it never sinks the console load', async () => {
+  it('stillProcessing resolves to [] on a 403 without logging (expected admin outcome)', async () => {
     const api = fakeAxios()
-    api.get.mockRejectedValue({ response: { status: 403 } })
+    // A real axios 403: the endpoint is guardian-only and the admin reviewer
+    // gets a 403, which must resolve to [] silently so it never sinks the queue.
+    api.get.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const result = await makeReviewApi(api as never).stillProcessing()
     expect(result).toEqual([])
+    // Deletion-sensitive: a 403 is expected and must not be logged as a failure.
+    expect(errorSpy).not.toHaveBeenCalled()
+    errorSpy.mockRestore()
   })
 
-  it('stillProcessing resolves to [] on a generic error rather than throwing', async () => {
+  it('stillProcessing resolves to [] on a non-403 error but logs it (not silent)', async () => {
     const api = fakeAxios()
     api.get.mockRejectedValue(new Error('network down'))
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const result = await makeReviewApi(api as never).stillProcessing()
     expect(result).toEqual([])
+    // Deletion-sensitive: a 500/network failure must surface in the log rather
+    // than degrade to an indistinguishable "nothing generating" with no trace.
+    expect(errorSpy).toHaveBeenCalledOnce()
+    errorSpy.mockRestore()
   })
 })

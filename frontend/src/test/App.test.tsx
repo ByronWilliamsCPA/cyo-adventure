@@ -132,13 +132,16 @@ describe('router: guardian surface', () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
-    // One shared get mock serves both the auth /v1/me lookup and the console's
-    // /v1/review-queue fetch, so branch on the URL: an empty queue is enough to
-    // confirm the console mounts (its behavioral matrix lives in
-    // ConsolePage.test.tsx).
+    // One shared get mock serves the auth /v1/me lookup and the console's
+    // /v1/review-queue and /v1/generation-jobs fetches, so branch on the URL:
+    // empty responses are enough to confirm the console mounts (its behavioral
+    // matrix lives in ConsolePage.test.tsx).
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/review-queue') {
         return Promise.resolve({ data: { items: [] } })
+      }
+      if (url === '/v1/generation-jobs') {
+        return Promise.resolve({ data: { jobs: [] } })
       }
       return Promise.resolve({
         data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },

@@ -38,8 +38,20 @@ function renderPage() {
   )
 }
 
+// The console loads /v1/review-queue and /v1/generation-jobs in one Promise.all,
+// so a realistic mock must branch on the URL: returning items-shaped data for
+// the jobs endpoint would throw in stillProcessing (res.data.jobs undefined).
+function mockQueue(items: unknown[], jobs: unknown[] = []) {
+  mockGet.mockImplementation((url: string) =>
+    url === '/v1/generation-jobs'
+      ? Promise.resolve({ data: { jobs } })
+      : Promise.resolve({ data: { items } })
+  )
+}
+
 beforeEach(() => {
-  mockGet.mockReset().mockResolvedValue({ data: { items: [FLAGGED, READY] } })
+  mockGet.mockReset()
+  mockQueue([FLAGGED, READY])
   mockPost.mockReset()
 })
 
@@ -66,13 +78,9 @@ describe('ConsolePage', () => {
   })
 
   it('buckets a never-screened story under Flagged with an Unscreened pill', async () => {
-    mockGet.mockResolvedValue({
-      data: {
-        items: [
-          { ...READY, storybook_id: 'raw-1', title: 'Raw Tale', screened: false, summary: null },
-        ],
-      },
-    })
+    mockQueue([
+      { ...READY, storybook_id: 'raw-1', title: 'Raw Tale', screened: false, summary: null },
+    ])
     renderPage()
     expect(await screen.findByText('Raw Tale')).toBeInTheDocument()
     expect(screen.getByText('Unscreened')).toBeInTheDocument()
@@ -91,9 +99,19 @@ describe('ConsolePage', () => {
   })
 
   it('shows the empty state when nothing is pending', async () => {
-    mockGet.mockResolvedValue({ data: { items: [] } })
+    mockQueue([])
     renderPage()
     expect(await screen.findByText(/Nothing to review/i)).toBeInTheDocument()
+  })
+
+  it('renders queued/running jobs in the Still processing section', async () => {
+    mockQueue(
+      [],
+      [{ id: 'j1', status: 'running', title: 'Brewing a Tale', premise_snippet: 'x' }]
+    )
+    renderPage()
+    expect(await screen.findByText('Brewing a Tale')).toBeInTheDocument()
+    expect(screen.getByText('Processing…')).toBeInTheDocument()
   })
 
   it('shows the safety-reviewer notice on a 403 (plain guardian token)', async () => {

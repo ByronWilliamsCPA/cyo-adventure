@@ -6,7 +6,7 @@
  * ReviewSurfaceView and the approval views in src/cyo_adventure/api/schemas.py.
  */
 
-import type { AxiosInstance } from 'axios'
+import { type AxiosInstance, isAxiosError } from 'axios'
 
 export type FindingVerdict = 'block' | 'flag' | 'advisory' | 'pass'
 
@@ -143,14 +143,23 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
           .filter((job) => job.status === 'queued' || job.status === 'running')
           .map((job) => ({
             job_id: job.id,
-            // Mirror IntakePage: `|| 'Untitled request'` so an empty-string
-            // premise_snippet (a reachable backend row: title null, premise
-            // blank) falls through to the generic label instead of rendering a
-            // blank console row. `??` would let "" pass through.
-            title: job.title ?? (job.premise_snippet || 'Untitled request'),
+            // Mirror IntakePage: chain with `||` (not `??`) so an empty-string
+            // title OR premise_snippet (both reachable backend rows) falls
+            // through to the generic label instead of rendering a blank console
+            // row. `??` would let a title of "" pass through unblanked.
+            title: job.title || job.premise_snippet || 'Untitled request',
             status: job.status,
           }))
-      } catch {
+      } catch (err) {
+        // A 403 is the expected admin outcome (this endpoint is guardian-only)
+        // and must resolve to [] so it never sinks the console load; but a 500,
+        // network failure, or malformed body should not be invisible. Log
+        // anything that is not a 403 before degrading to [].
+        if (!(isAxiosError(err) && err.response?.status === 403)) {
+          // Log the message, not the axios error object: err.config.headers
+          // carries the caller's Authorization bearer token.
+          console.error('still-processing load failed:', err instanceof Error ? err.message : err)
+        }
         return []
       }
     },

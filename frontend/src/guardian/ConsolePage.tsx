@@ -66,7 +66,9 @@ export function ConsolePage() {
           if (!cancelled) setState({ kind: 'forbidden' })
           return
         }
-        console.error('review queue load failed', err)
+        // Log the message, not the axios error object (its config.headers
+        // carries the caller's Authorization bearer token).
+        console.error('review queue load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setState({ kind: 'error' })
       }
     }

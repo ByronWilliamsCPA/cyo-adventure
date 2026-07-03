@@ -13,18 +13,29 @@ interface StoryNode {
   body: string
 }
 
-/** Read the story nodes from a loosely typed blob, skipping malformed entries. */
+/**
+ * Read the story nodes from a loosely typed blob.
+ *
+ * Keeps any entry that has a real id OR real prose, and synthesizes a stable id
+ * for a blank-id-but-has-prose node. This is deliberate for a safety surface: a
+ * passage with malformed id must not silently drop out of the reviewer's
+ * read-through, since the reviewer must see all prose before approving. A
+ * synthetic id simply won't match flagged-node highlighting; flagged content
+ * still appears in the server-driven flagged-passages section regardless. Only
+ * entries that are not objects, or have neither an id nor prose, are skipped.
+ */
 function readNodes(blob: Record<string, unknown>): StoryNode[] {
   const raw = blob.nodes
   if (!Array.isArray(raw)) return []
   const nodes: StoryNode[] = []
-  for (const entry of raw) {
-    if (typeof entry !== 'object' || entry === null) continue
+  raw.forEach((entry, index) => {
+    if (typeof entry !== 'object' || entry === null) return
     const record = entry as Record<string, unknown>
     const id = typeof record.id === 'string' ? record.id : ''
     const body = typeof record.body === 'string' ? record.body : ''
-    if (id) nodes.push({ id, body })
-  }
+    if (!id && !body) return
+    nodes.push({ id: id || `node-${index}`, body })
+  })
   return nodes
 }
 
@@ -71,7 +82,9 @@ export function ReviewDetailPage() {
         const surface = await reviewApi.surface(storybookId)
         if (!cancelled) setState({ kind: 'ready', surface })
       } catch (err) {
-        console.error('review surface load failed', err)
+        // Log the message, not the axios error object (its config.headers
+        // carries the caller's Authorization bearer token).
+        console.error('review surface load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setState({ kind: 'error' })
       }
     }
@@ -88,10 +101,25 @@ export function ReviewDetailPage() {
       await action()
       navigate('/guardian')
     } catch (err) {
-      console.error('review action failed', err)
+      console.error('review action failed:', err instanceof Error ? err.message : err)
       setActionError(true)
       setSubmitting(false)
     }
+  }
+
+  // Open/close reset the transient action state so a prior failure can never
+  // bleed into the other dialog: without this, a failed Approve leaves
+  // actionError set, and reopening (or switching to Send Back) would render a
+  // stale error alert for an action the reviewer never attempted.
+  function openDialog(kind: Exclude<ActionDialog, null>) {
+    setActionError(false)
+    setDialog(kind)
+  }
+
+  function closeDialog() {
+    setActionError(false)
+    setReason('')
+    setDialog(null)
   }
 
   if (state.kind === 'loading') {
@@ -175,19 +203,19 @@ export function ReviewDetailPage() {
       </div>
 
       <div className="review-actionbar">
-        <Button variant="danger" onClick={() => setDialog('sendback')}>
+        <Button variant="danger" onClick={() => openDialog('sendback')}>
           Send Back
         </Button>
-        <Button onClick={() => setDialog('approve')}>Approve</Button>
+        <Button onClick={() => openDialog('approve')}>Approve</Button>
       </div>
 
       {dialog === 'approve' ? (
         <Dialog
           title="Approve this story?"
-          onClose={() => setDialog(null)}
+          onClose={closeDialog}
           actions={
             <>
-              <Button variant="ghost" onClick={() => setDialog(null)}>
+              <Button variant="ghost" onClick={closeDialog}>
                 Cancel
               </Button>
               {/*
@@ -218,10 +246,10 @@ export function ReviewDetailPage() {
       {dialog === 'sendback' ? (
         <Dialog
           title="Send back for revision"
-          onClose={() => setDialog(null)}
+          onClose={closeDialog}
           actions={
             <>
-              <Button variant="ghost" onClick={() => setDialog(null)}>
+              <Button variant="ghost" onClick={closeDialog}>
                 Cancel
               </Button>
               {/*

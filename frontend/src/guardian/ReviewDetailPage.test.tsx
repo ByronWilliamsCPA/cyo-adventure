@@ -114,4 +114,20 @@ describe('ReviewDetailPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not/i)
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
+
+  it('does not bleed a prior action error into the other dialog', async () => {
+    const user = userEvent.setup()
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 400 } })
+    renderAt('s1')
+    // Fail an approve so actionError is set on the approve dialog.
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+    expect(await screen.findByText(/could not approve/i)).toBeInTheDocument()
+    // Cancel, then open Send Back: the prior approve failure must not render a
+    // stale "could not send back" alert for an action never attempted.
+    await user.click(screen.getByRole('button', { name: /^Cancel$/i }))
+    await user.click(screen.getByRole('button', { name: /^Send Back$/i }))
+    expect(screen.queryByText(/could not send this story back/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/could not approve/i)).not.toBeInTheDocument()
+  })
 })
