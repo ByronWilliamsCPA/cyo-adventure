@@ -7,6 +7,7 @@ and nothing else ties them together.
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import get_args
 
 from cyo_adventure.api.schemas import JobStatusLiteral
@@ -55,6 +56,7 @@ def test_generation_job_list_item_round_trips() -> None:
         age_band="8-11",
         created_at="2026-07-02T00:00:00Z",
     )
+    assert item.created_at == datetime(2026, 7, 2, tzinfo=UTC)
     dumped = item.model_dump()
     assert "report" not in dumped
     assert dumped["age_band"] == "8-11"
