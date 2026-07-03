@@ -150,8 +150,11 @@ def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
 # 13-16/16+ start at Medium and add the gamebook style; other bands are prose.
 # A story whose declared cell is absent here falls back to the band-level budget.
 # #ASSUME: data-integrity: this table is the single source for per-cell production
-# budgets; the Stage A generation prompt does NOT read it yet (generation stays on
-# the band-level budget until a later slice teaches it to select a cell).
+# budgets. Both the L1-7 gate (validate_layer1) and the Stage A generation prompt
+# (generation.prompts._budget_block) read it transitively through
+# resolve_node_budget -> production_cell_budget, so the prompt promises exactly what
+# the gate enforces for an offered cell. An off-matrix declared cell is absent here
+# and falls back to the band-level budget (PL-21 then rejects the off-matrix story).
 # #VERIFY: test_band_profile.py::test_production_cell_budget_matches_adr_envelopes.
 _PRODUCTION_CELLS: dict[tuple[str, str, str], tuple[int, int, int]] = {
     ("3-5", "short", "prose"): (10, 23, 15),

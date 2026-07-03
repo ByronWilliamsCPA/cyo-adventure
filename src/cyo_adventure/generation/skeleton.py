@@ -61,6 +61,13 @@ def is_production_eligible(story: dict[str, object]) -> bool:
     Returns:
         ``True`` unless ``metadata.production_eligible`` is explicitly ``False``.
     """
+    # #CRITICAL: security: this gate decides whether a skeleton is offered to a
+    # child; malformed or absent metadata defaults to eligible (the permissive
+    # direction), and the raw ``is not False`` test treats a JSON string "false" as
+    # eligible. A production selector MUST call this on already-schema-validated
+    # metadata (StoryMetadata.production_eligible: bool), not on arbitrary raw JSON.
+    # #VERIFY: production story selection screens skeletons through the Pydantic
+    # StoryMetadata model before calling this, so production_eligible is a real bool.
     meta = story.get("metadata")
     if not isinstance(meta, dict):
         return True

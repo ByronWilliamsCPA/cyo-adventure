@@ -44,8 +44,8 @@ def validate_series(books: Sequence[Storybook]) -> ValidationReport:
     """Validate a chain of books as an ADR-011 series.
 
     Args:
-        books: The books of a single series, in any order (the validator orders
-            them by ``book_index``).
+        books: The books of a single series, in any order. The checks key off
+            ``book_index`` and are order-independent; the input is not reordered.
 
     Returns:
         ValidationReport: SR-* findings; ``ok`` is ``True`` when none are errors.
@@ -191,7 +191,14 @@ def _check_final_flags(series_books: list[_Book], report: ValidationReport) -> N
 
 
 def _check_continuity(series_books: list[_Book], report: ValidationReport) -> None:
-    """SR-5: each non-final book wins into the next book's single entry node."""
+    """SR-5: each non-final book has a win ending and a next-book entry node.
+
+    This verifies the two ends of the continuation exist: the non-final book
+    declares a successful-completion ending, and the next book declares a single
+    ``series_entry_node``. It does NOT trace that the win ending targets that entry
+    node; books are independent graphs with no shared node ids, so cross-book target
+    convergence is not machine-checkable here.
+    """
     by_index = {series.book_index: (book, series) for book, series in series_books}
     last = len(series_books)
     for book, series in series_books:
