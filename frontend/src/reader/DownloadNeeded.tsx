@@ -25,7 +25,7 @@ export function DownloadNeeded({ onRetry, onBackToLibrary }: DownloadNeededProps
             </Button>
             {onBackToLibrary ? (
               <Button variant="ghost" data-testid="download-back" onClick={onBackToLibrary}>
-                Back to library
+                Back to my books
               </Button>
             ) : null}
           </>

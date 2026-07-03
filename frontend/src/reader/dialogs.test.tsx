@@ -33,7 +33,7 @@ describe('DownloadNeeded', () => {
   it('offers a back-to-library action when provided', () => {
     const onBack = vi.fn()
     render(<DownloadNeeded onRetry={() => {}} onBackToLibrary={onBack} />)
-    fireEvent.click(screen.getByRole('button', { name: 'Back to library' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Back to my books' }))
     expect(onBack).toHaveBeenCalledOnce()
   })
 })
