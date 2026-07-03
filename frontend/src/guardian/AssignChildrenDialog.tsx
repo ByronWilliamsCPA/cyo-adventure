@@ -66,8 +66,12 @@ export function AssignChildrenDialog({
     })
   }
 
+  const additions = useMemo(
+    () => [...picked].filter((id) => !assigned.has(id)),
+    [picked, assigned],
+  )
+
   async function save() {
-    const additions = [...picked].filter((id) => !assigned.has(id))
     if (additions.length === 0) {
       onClose()
       return
@@ -84,8 +88,6 @@ export function AssignChildrenDialog({
       setSaving(false)
     }
   }
-
-  const additions = [...picked].filter((id) => !assigned.has(id))
 
   return (
     <Dialog
@@ -106,7 +108,9 @@ export function AssignChildrenDialog({
       }
     >
       {loadError ? (
-        <p role="alert">We could not load your family&apos;s profiles.</p>
+        <p role="alert">
+          We could not load your family&apos;s profiles and assignments.
+        </p>
       ) : profiles === null ? (
         <div role="status" aria-live="polite">
           Loading…

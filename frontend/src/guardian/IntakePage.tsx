@@ -273,6 +273,7 @@ export function IntakePage() {
       )}
       {assigning ? (
         <AssignChildrenDialog
+          key={assigning}
           storybookId={assigning}
           onClose={() => setAssigning(null)}
         />
