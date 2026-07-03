@@ -1,7 +1,7 @@
 ---
 title: "Validation Rule Catalog"
 schema_type: planning
-status: draft
+status: accepted
 owner: core-maintainer
 purpose: "Define stable rule IDs, failure messages, and pass/fail semantics for every validation gate check."
 tags:
@@ -14,9 +14,9 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 
 # Validation Rule Catalog
 
-> **Status**: Draft | **Version**: 1.0 | **Updated**: 2026-06-20
-> **Scope**: All stories (Layer 1); Tier-2 stories only (Layer 2); all stories advisory (RL);
-> all stories always-human (SAFE)
+> **Status**: Accepted | **Version**: 1.1 | **Updated**: 2026-07-03
+> **Scope**: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
+> advisory (RL); all stories always-human (SAFE)
 
 ---
 
@@ -34,14 +34,18 @@ to this document.
 | Category | Behaviour | Blocks publish? |
 |----------|-----------|-----------------|
 | Layer 1 (L1) | Pass/fail | Yes |
+| Policy (PL) | Pass/fail (PL-19 story-mean sub-check is advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 
-Layer 1 and Layer 2 are hard gates: any failure blocks the story from advancing past
-`auto_check`. The reading-level check warns and logs but does not block. A safety hit flags
-the story for mandatory human review; the validator does not auto-reject, but no auto-publish
-path exists when the flag is set.
+Layer 1, Policy, and Layer 2 are hard gates, run in that order (`validator/gate.py::run_gate`):
+any failure fails the generation job (it lands in `failed`, not `passed`), so the story never
+advances to `in_review`. The Policy layer's PL-19 story-mean words-per-node sub-check is the
+one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+check warns and logs but does not block. A safety hit routes the generation job to
+`needs_review` for mandatory human review; the validator does not auto-reject, but no
+auto-publish path exists when the flag is set.
 
 **Layer 2 applies to Tier-2 stories only.** Running Layer 2 on a Tier-1 story (which carries
 no variables and has deterministic visibility for all choices) is a no-op and must not produce
@@ -62,7 +66,7 @@ must be sound before a state-space walk is meaningful.
 | L1-4 | 1 | **Termination (graph)**: every non-ending node must have at least one choice; every node must have at least one path to an ending node; every ending node must have zero choices and a complete `ending` block. | `L1-4 term: node '{node_id}' {reason} in story '{story_id}' (no path to any ending / missing ending block / non-ending node has zero choices)` |
 | L1-5 | 1 | **No trap loops (graph)**: every strongly connected component must have at least one exit edge leading toward an ending. A SCC with no exit is a trap loop. | `L1-5 trap: strongly connected component containing node '{node_id}' has no exit edge in story '{story_id}' (nodes in SCC: {scc_nodes})` |
 | L1-6 | 1 | **Condition and effect consistency**: conditions must use only whitelisted operators; every variable referenced in a condition or effect must be declared in `variables`; comparisons must agree in type with the declared variable type; no reachable transition may push an `int` variable past its declared `min` or `max`. | `L1-6 logic: {issue_type} in story '{story_id}' at {location}: {detail} (var='{var}', declared_type={declared_type}, bound={bound}, attempted={attempted})` |
-| L1-7 | 1 | **Length budget**: node count must be within the tier's defined range; branch depth must be within bounds; `metadata.ending_count` must equal the count of distinct ending nodes found in `nodes`. | `L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})` |
+| L1-7 | 1 | **Length budget**: node count must be within the (band x length x style) cell budget single-sourced in `validator/band_profile.py` (band-based per [ADR-011](./adr/adr-011-story-scale-framework.md), not tier-based); branch depth must be within bounds; `metadata.ending_count` must equal the count of distinct ending nodes found in `nodes`. | `L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})` |
 
 ---
 
@@ -95,7 +99,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
-| SAFE-14 | Safety | **Safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it blocks the `auto_check -> in_review` transition and requires a guardian to clear or escalate. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
+| SAFE-14 | Safety | **Safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to `needs_review` (not `passed`), so the story cannot reach `published` until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
 
 ---
 

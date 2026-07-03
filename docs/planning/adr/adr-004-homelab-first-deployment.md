@@ -14,6 +14,7 @@ tags:
 
 > **Status**: Proposed
 > **Date**: 2026-06-20
+> **Amended by**: ADR-008 (public-tier hosting), ADR-009 (Supabase platform); ADR-004 still governs the dev and family/homelab tier
 
 ## TL;DR
 
@@ -85,6 +86,10 @@ always-on uptime and managed backups if the need arises.
 
 - ⚠️ Uptime and backups are self-managed. Mitigation: nightly Postgres dump and MinIO
   snapshot, with a restore drill in Phase 5.
+- ⚠️ The "no minors' data on third-party infrastructure" stance is amended for the
+  **public tier** by [ADR-008](./adr-008-public-app-store-launch.md) and
+  [ADR-009](./adr-009-supabase-platform.md): the public tier runs on Supabase-managed
+  Postgres, a US processor. ADR-004 continues to govern the dev and family/homelab tier.
 
 ### Technical Debt
 
@@ -122,4 +127,8 @@ always-on uptime and managed backups if the need arises.
 
 - [ADR-003](./adr-003-frontier-llm-generation.md): the external generator call this
   posture constrains.
+- [ADR-008](./adr-008-public-app-store-launch.md): public-tier hosting that amends this
+  posture for the commercial tier.
+- [ADR-009](./adr-009-supabase-platform.md): the Supabase managed platform adopted for
+  the public tier's auth, database, and storage.
 - [Tech Spec: Infrastructure](../tech-spec.md#infrastructure)

@@ -13,24 +13,25 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Technical Implementation Spec: CYO Adventure
 
-> **Status**: Draft
-> **Version**: 1.0 | **Updated**: 2026-06-20
+> **Status**: Active
+> **Version**: 1.1 | **Updated**: 2026-07-03
 > **Codename**: Ariadne
 
 ## TL;DR
 
 A React/TypeScript PWA reader plays a versioned JSON Storybook offline; a Python/FastAPI
 backend serves the library, runs staged LLM generation behind a deterministic
-validation-and-moderation gate, and enforces a parent-approval state machine. Postgres
-holds metadata and reading state, MinIO holds immutable story blobs, all deployable to
-the homelab behind Pangolin and Authentik.
+validation-and-moderation gate, and enforces an admin approve-and-publish state machine. Postgres
+holds metadata, reading state, and (at launch) the story blobs inline as JSONB; MinIO is
+the deferred object-storage target for those blobs. Guardian identities authenticate via
+Supabase OIDC, all deployable to the homelab behind Pangolin.
 
 ## Technology Stack
 
 ### Core
 
 - **Language**: Python 3.12 backend; TypeScript frontend.
-- **Package Manager**: uv (Python), pnpm (frontend).
+- **Package Manager**: uv (Python), npm (frontend).
 - **Backend framework**: FastAPI + Pydantic v2.
 - **Frontend framework**: React 19 + Vite.
 
@@ -44,8 +45,10 @@ the homelab behind Pangolin and Authentik.
 
 - **Database**: PostgreSQL 16 + SQLAlchemy + Alembic. See
   [ADR-004](./adr/adr-004-homelab-first-deployment.md).
-- **Object storage**: MinIO via the S3 API (Azure Blob interchangeable); versioned,
-  immutable story blobs.
+- **Story blob storage**: inline in Postgres JSONB (`storybook_version.blob`) at launch
+  per [ADR-009](./adr/adr-009-supabase-platform.md). MinIO via the S3 API (Azure
+  Blob interchangeable) is the deferred object-storage target for versioned, immutable
+  story blobs; it does not hold them yet.
 - **Cache / queue broker**: Redis.
 - **Background work**: RQ (chosen over Celery for simplicity at this scale).
 
@@ -63,14 +66,18 @@ the homelab behind Pangolin and Authentik.
   [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md).
 - **Graph analysis**: networkx (reachability, cycle, termination).
 - **Readability**: textstat (Flesch-Kincaid grade, advisory).
-- **LLM**: Anthropic Claude primary; OpenRouter and Ollama fallback, behind a
-  provider-agnostic interface. See [ADR-003](./adr/adr-003-frontier-llm-generation.md).
+- **LLM**: OpenRouter primary (reaching Claude models: `anthropic/claude-haiku-4.5`, with
+  `anthropic/claude-sonnet-4.6` as the OpenRouter fallback), then local Ollama as the final
+  fallback, behind a provider-agnostic interface. A `mock` provider is the default in CI.
+  Direct Anthropic SDK access is deferred. See
+  [ADR-003](./adr/adr-003-frontier-llm-generation.md) (amended 2026-06-22).
 - **Moderation**: provider moderation API + an independent LLM-reviewer pass.
 
 ### Infrastructure
 
 - **CI/CD**: centralized GitHub Actions.
-- **Auth**: Authentik (OIDC), guardian and child roles.
+- **Auth**: Supabase OIDC (guardian identities), guardian and child roles; provider-agnostic
+  `oidc_*` config. See [ADR-009](./adr/adr-009-supabase-platform.md).
 - **Ingress / orchestration**: Pangolin (zero-trust) + Docker + Dockge.
 - **Observability**: Sentry + structured logging.
 
@@ -85,8 +92,9 @@ the homelab behind Pangolin and Authentik.
 ### Pattern
 
 A modular monolith backend (FastAPI) with an asynchronous worker for generation, and a
-single role-aware PWA client. Story blobs live in object storage; metadata and state in
-Postgres. No provider-specific services in the core.
+single role-aware PWA client. At launch, story blobs, metadata, and state all live in
+Postgres (blobs inline as JSONB); object storage is the deferred path for blobs. No
+provider-specific services in the core.
 
 ### Component Diagram
 
@@ -102,7 +110,7 @@ Postgres. No provider-specific services in the core.
                          │  Reader • Library • Review • Editor(P4b)  │
                          │  Service worker + IndexedDB (offline)     │
                          └───────────────┬──────────────────────────┘
-                                         │ REST /api/v1 (OIDC via Authentik)
+                                         │ REST /api/v1 (OIDC via Supabase)
                                          ▼
         ┌────────────────────────────────────────────────────────────────────┐
         │                          FastAPI backend                           │
@@ -115,23 +123,24 @@ Postgres. No provider-specific services in the core.
         │     ┌──────────────┼───────────────────────┐                      │
         │     ▼              ▼                        ▼                      │
         │  Validator    Moderation             Provider interface           │
-        │  (schema,     (API + LLM             (Claude/Local/                │
-        │  graph,       reviewer)              OpenRouter)                   │
+        │  (schema,     (API + LLM             (OpenRouter/                  │
+        │  graph,       reviewer)              Ollama/mock)                  │
         │  state-space) │                            │                      │
         └───────────────┼────────────────────────────┼──────────────────────┘
                  │       │                            │
                  ▼       ▼                            ▼
           ┌───────────┐  ┌───────────┐         ┌──────────────┐
           │ Postgres  │  │   MinIO   │         │  LLM provider│
-          │ metadata, │  │ story JSON│         │  (external/  │
-          │ state     │  │ blobs +   │         │   local)     │
-          └───────────┘  │ raw gen   │         └──────────────┘
-                         └───────────┘
-                              ▲
-                         ┌────┴─────┐
-                         │  Redis   │  background generation queue
-                         │ + worker │
-                         └──────────┘
+          │ metadata, │  │ (deferred │         │  (external/  │
+          │ state,    │  │  blob     │         │   local)     │
+          │ blobs +   │  │  target)  │         └──────────────┘
+          │ raw gen   │  └───────────┘
+          └───────────┘
+                ▲
+          ┌─────┴────┐
+          │  Redis   │  background generation queue
+          │ + worker │
+          └──────────┘
 ```
 
 ### Component Responsibilities
@@ -143,21 +152,21 @@ Postgres. No provider-specific services in the core.
 | Generation orchestrator | Drive staged passes | Structure, prose, repair; call provider and validator; write provenance |
 | Validator | Prove the graph holds together | Schema, graph integrity, state-space, reading level, length (deterministic, no LLM) |
 | Moderation | Independent safety signal | Provider moderation + LLM-reviewer; route risky passages to human review |
-| Publish state machine | Enforce parent approval | No path to a child library without `approved`; record approver and provenance |
+| Publish state machine | Enforce admin approval | No path to a child library without an admin approve-and-publish (`in_review -> published`); record approver and provenance |
 | Reading store | Per-child progress | Current node, var state, path, save slots, completions; revision-based sync |
 
 ## Data Model
 
-### Story format (the Storybook blob, in object storage)
+### Story format (the Storybook blob, stored inline in Postgres JSONB)
 
 ```text
 Storybook
-  - schema_version: String              # e.g. "1.0"
+  - schema_version: String              # "2.0"; exactly one version is accepted
   - id: String                          # stable across versions
   - version: Integer                    # immutable once published
   - title: String
   - metadata:
-      - age_band: Enum                  # "8-11" | "10-13" | "13-16"
+      - age_band: Enum                  # "3-5" | "5-8" | "8-11" | "10-13" | "13-16" | "16+"
       - reading_level: { scheme, target, tolerance }
       - tier: Integer                   # 1 = branching, 2 = state-tracking
       - themes: [String]
@@ -181,7 +190,8 @@ Node
   - on_enter: [Effect]                  # state changes on arrival
   - choices: [Choice]                   # empty iff is_ending
   - is_ending: Boolean
-  - ending: { id, type, title }         # required iff is_ending; id is stable
+  - ending: { id, valence, kind, title } # required iff is_ending; id is stable.
+                                        # Two axes: valence (Valence enum) + kind (EndingKind enum)
   - tags: [String]
 
 Choice
@@ -200,10 +210,10 @@ Effect
 
 The schema is defined once in Pydantic v2 and exported to `schema/storybook.schema.json`.
 It encodes: unique node ids, unique choice ids, unique ending ids, `min`/`max` on integer
-variables, optional `once` on effects, and `schema_version`. Schema bumps are handled by a
-read-time, in-memory upcaster chain keyed by `schema_version` (see
-[ADR-001](./adr/adr-001-story-format-json-storybook.md)); stored blobs are never
-batch-rewritten.
+variables, optional `once` on effects, and `schema_version`. The loader pins to
+`SCHEMA_VERSION = "2.0"` and accepts exactly that version; any other `schema_version` is
+rejected outright (see [ADR-001](./adr/adr-001-story-format-json-storybook.md)). A
+read-time upcaster chain is not built; migration, if ever needed, is a future decision.
 
 ### Operational entities (Postgres)
 
@@ -213,7 +223,8 @@ user              - id, family_id, role ("guardian" | "child"), authn_subject
 child_profile     - id, family_id, display_name, age_band,
                     reading_level_cap, allowed_content_flags, tts_enabled, avatar
 storybook         - id, family_id, current_published_version, status, created_by
-storybook_version - storybook_id, version, blob_ref, validation_report,
+storybook_version - storybook_id, version, blob (inline JSONB; blob_ref deferred),
+                    validation_report,
                     moderation_report, approved_by, published_at, model, prompt_version
 concept           - id, family_id, brief (JSON), created_by
 generation_job    - id, concept_id, model, provider, prompt_version,
@@ -229,25 +240,33 @@ review_item       - storybook_version ref, state, flags (JSON), assigned_to
 
 - `family` → `user`, `child_profile`, `storybook`, `concept`: one-to-many (family
   ownership is checked on every resource).
-- `storybook` → `storybook_version`: one-to-many; the blob lives in MinIO, referenced by
-  `blob_ref`.
+- `storybook` → `storybook_version`: one-to-many; the blob is stored inline in Postgres
+  JSONB (`blob`) at launch. Moving it to MinIO behind a `blob_ref` is a deferred future
+  path (ADR-009).
 - `child_profile` + `storybook` → `reading_state`: per-child, per-story progress.
 - `child_profile` + `storybook` → `completion`: one row per ending found.
 
-### Publish state machine
+### Generation and publish lifecycles
+
+Generation and publishing are two separate state machines, not one pipeline. There is no
+`generating`, `auto_check`, or `approved` storybook state.
 
 ```text
-draft → generating → auto_check ─┬─► needs_revision ──► (repair / regenerate) ──┐
-                                 │                                              │
-                                 └─► in_review ──► approved ──► published ──► archived
-                                          ▲                                     │
-                                          └──────────── (re-review on edit) ◄───┘
+GenerationJob:  queued → running ─┬─► passed        (L1/L2 + moderation gates pass)
+                                  ├─► needs_review  (safety flag; a human must clear it)
+                                  └─► failed        (hard validation failure)
+
+Storybook:      draft → in_review ─┬─► published → archived
+                  ▲                └─► needs_revision → (repair / regenerate) ──┐
+                  └────────────────────────── (re-review on edit) ◄────────────┘
 ```
 
-A story is visible to a child profile only in `published`. The transition
-`in_review → approved` requires a guardian. Auto checks (validator plus moderation) gate
-`generating → in_review`; failures route to `needs_revision`. See
-[ADR-005](./adr/adr-005-mandatory-human-approval.md).
+A story is visible to a child profile only in `published`. The `in_review → published`
+transition is a single approve-and-publish action that requires the global **admin** role
+(`is_admin`) and is applied cross-family (`authorize_family` is not called on approval). A
+draft version becomes reviewable only after its GenerationJob reaches `passed`; a
+`needs_review` job routes to a person and a `failed` job routes to repair or regeneration.
+See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 
 ### Multi-device sync rules
 
@@ -413,7 +432,7 @@ person.
 
 ## API Specification
 
-Versioned under `/api/v1`. OIDC via Authentik; child sessions are restricted to reader
+Versioned under `/api/v1`. OIDC via Supabase; child sessions are restricted to reader
 and library endpoints. The token subject maps to a set of allowed profiles; `profile_id`
 is never trusted on its own. Inputs are validated against the published story
 (`ending_id` must belong to the cited version; `current_node` must exist in it).
@@ -431,8 +450,7 @@ is never trusted on its own. Inputs are validated against the published story
 | POST | /api/v1/storybooks/{id}/versions/{v}/validate | Re-run the gate | Guardian |
 | PATCH | /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id} | Edit a passage (Phase 4b) | Guardian |
 | POST | /api/v1/storybooks/{id}/versions/{v}/submit-review | Move to review | Guardian |
-| POST | /api/v1/storybooks/{id}/versions/{v}/approve | Approve (→ approved) | Guardian |
-| POST | /api/v1/storybooks/{id}/versions/{v}/publish | Publish (→ published) | Guardian |
+| POST | /api/v1/storybooks/{id}/approve | Approve and publish in one step (→ published) | Admin |
 
 ### Request/Response Format (reading-state PUT)
 
@@ -449,15 +467,19 @@ is never trusted on its own. Inputs are validated against the published story
 }
 ```
 
-Story blobs are served via backend-mediated or signed access from a private bucket, never
-a broadly public URL.
+Story blobs are served backend-mediated from Postgres at launch. Under the deferred
+object-storage path they would be served via backend-mediated or signed access from a
+private bucket, never a broadly public URL.
 
 ## Security
 
 ### Authentication
 
-Authentik OIDC; roles `guardian` and `child`. Child tokens are scoped to reader and
-library endpoints. See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
+Supabase OIDC (provider-agnostic `oidc_*` config, guardian identities verified via
+`jwt.PyJWKClient`); roles `guardian` and `child`, with a guardian-identity vs
+child-session split. Child tokens are scoped to reader and library endpoints. See
+[ADR-009](./adr/adr-009-supabase-platform.md). Homelab/family-tier deployment remains per
+[ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
 ### Authorization
 
@@ -480,12 +502,15 @@ a guardian from another family accessing a story.
 
 ### Data Protection
 
-- **At Rest**: encrypt Postgres and object storage.
+- **At Rest**: encrypt Postgres (which holds the story blobs inline at launch) and, once
+  adopted, the deferred object storage.
 - **In Transit**: TLS via Pangolin.
 - **Content is data, never code**: the only state logic is the in-house whitelisted
   evaluator (ADR-006). No `eval`, no dynamic execution, no third-party logic library in
   the content path.
-- **Story blob access**: private bucket, backend-mediated or signed access only.
+- **Story blob access**: backend-mediated only; blobs live inline in Postgres at launch.
+  A deferred move to object storage would use a private bucket with backend-mediated or
+  signed access only.
 
 ### Privacy controls (family-only)
 
@@ -494,9 +519,13 @@ a guardian from another family accessing a story.
 - **Raw LLM outputs and prompts are admin-only and short-lived**: store the prompt
   template version and a hash rather than raw prompt text where it could carry
   child-specific detail; retain raw generations only as long as needed for debugging, then
-  purge. Moderation reports persist with the story version for audit.
-- **Deletion-readiness**: keep child-linked data in known places (Postgres rows, MinIO
-  blobs, raw generations); do not scatter it through logs and Sentry. A full deletion
+  purge. The retention purge is a scheduled pg_cron job per
+  [ADR-007](./adr/adr-007-raw-output-retention.md) and
+  [ADR-009](./adr/adr-009-supabase-platform.md) (Phase 5, not yet built). Moderation
+  reports persist with the story version for audit.
+- **Deletion-readiness**: keep child-linked data in known places (Postgres rows and inline
+  blobs, plus deferred-future object-storage blobs, raw generations); do not scatter it
+  through logs and Sentry. A full deletion
   subsystem is a later deliverable; the requirement now is that the data model does not make
   deletion impossible.
 - **Prompt-injection defense**: concept-brief text is untrusted; the generation system
@@ -520,7 +549,7 @@ cap.
 
 | Code | Meaning | User Action |
 |------|---------|-------------|
-| 401 | Unauthenticated | Sign in via Authentik |
+| 401 | Unauthenticated | Sign in via Supabase |
 | 403 | Profile or role not permitted | None (blocked by design) |
 | 404 | Story or version not found | Refresh the library |
 | 409 | Reading-state revision or version mismatch | Choose "this device" or "newer progress" |

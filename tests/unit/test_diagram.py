@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import cast
+
 import pytest
 
 from cyo_adventure.generation.diagram import (
@@ -145,6 +147,63 @@ def test_legend_reports_node_and_ending_counts_with_valence_split() -> None:
     assert "2 nodes" in out
     assert "1 ending" in out
     assert "1+ / 0n / 0-" in out
+
+
+@pytest.mark.unit
+def test_legend_marks_mvp_tier_when_not_production_eligible() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["production_eligible"] = False
+    out = skeleton_to_plantuml(skel)
+    assert "MVP/Test tier (not production-eligible)" in out
+
+
+@pytest.mark.unit
+def test_legend_marks_production_eligible_when_true() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["production_eligible"] = True
+    out = skeleton_to_plantuml(skel)
+    assert "Production-eligible" in out
+
+
+@pytest.mark.unit
+def test_legend_marks_production_eligible_when_field_absent() -> None:
+    """StoryMetadata.production_eligible defaults to True; an omitted field
+    must render the same as an explicit True, not disappear silently."""
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "Production-eligible" in out
+    assert "MVP/Test tier" not in out
+
+
+@pytest.mark.unit
+def test_legend_shows_scale_axis_when_length_and_style_set() -> None:
+    skel = _tiny_skeleton()
+    meta = cast("dict[str, object]", skel["metadata"])
+    meta["length"] = "short"
+    meta["narrative_style"] = "prose"
+    out = skeleton_to_plantuml(skel)
+    assert "Scale: short · prose" in out
+
+
+@pytest.mark.unit
+def test_legend_shows_scale_axis_with_placeholder_when_only_length_set() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["length"] = "short"
+    out = skeleton_to_plantuml(skel)
+    assert "Scale: short · ?" in out
+
+
+@pytest.mark.unit
+def test_legend_shows_scale_axis_with_placeholder_when_only_style_set() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["narrative_style"] = "prose"
+    out = skeleton_to_plantuml(skel)
+    assert "Scale: ? · prose" in out
+
+
+@pytest.mark.unit
+def test_legend_omits_scale_axis_when_length_and_style_both_absent() -> None:
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "Scale:" not in out
 
 
 @pytest.mark.unit

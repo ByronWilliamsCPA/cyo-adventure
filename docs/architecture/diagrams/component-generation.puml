@@ -7,10 +7,12 @@
 '   src/cyo_adventure/generation/orchestrator.py  (staged pipeline)
 '   src/cyo_adventure/generation/prompts.py       (cacheable prompt blocks)
 '   src/cyo_adventure/generation/pii.py           (PII guard)
-'   src/cyo_adventure/generation/provider.py      (GenerationProvider protocol)
+'   src/cyo_adventure/generation/provider.py      (GenerationProvider protocol,
+'                                                   build_provider() cascade)
 '   src/cyo_adventure/generation/providers/openrouter.py
 '   src/cyo_adventure/generation/providers/ollama.py
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
+'   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/concept.py       (ConceptBrief)
 '   src/cyo_adventure/generation/queue.py         (RQ queue)
 '   src/cyo_adventure/generation/worker.py        (async RQ worker)
@@ -39,11 +41,13 @@ package "Generation Pipeline" #FFF3E0 {
   component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story()\nStage A -> B -> C" as orchestrator #FFE0B2
 
   package "Provider Layer" #F3E5F5 {
-    component "FallbackProvider\ngeneration/providers/fallback.py\nLayer 2: ordered cascade\ncircuit breaker per leg" as fallback #F3E5F5
+    component "FallbackProvider\ngeneration/providers/fallback.py\nLayer 2: ordered 3-leg cascade\ncircuit breaker per leg" as fallback #F3E5F5
 
-    component "OpenRouterProvider\ngeneration/providers/openrouter.py\nLayer 1: transient retry\nexp. backoff, leg-fatal map" as openrouter #F3E5F5
+    component "OpenRouterProvider [primary]\ngeneration/providers/openrouter.py\nmodel: anthropic/claude-haiku-4.5\nLayer 1: transient retry\nexp. backoff, leg-fatal map" as openrouter #F3E5F5
 
-    component "OllamaProvider\ngeneration/providers/ollama.py\nLayer 1: transient retry\nlocal fallback" as ollama_prov #F3E5F5
+    component "OpenRouterProvider [fallback]\ngeneration/providers/openrouter.py\nmodel: anthropic/claude-sonnet-4.6\nsame adapter, second leg" as openrouter_fb #F3E5F5
+
+    component "OllamaProvider\ngeneration/providers/ollama.py\nLayer 1: transient retry\nlocal fallback (3rd leg)" as ollama_prov #F3E5F5
   }
 
   component "Validator Gate\nvalidator/gate.py\nrun_gate() -> GateResult\n(blocked, safety_flagged)" as gate #E8F5E9
@@ -66,9 +70,11 @@ concept --> orchestrator : "brief"
 orchestrator --> prompts : "build stage prompt"
 prompts --> pii : "StagePrompt"
 pii --> fallback : "guarded prompt\n(raises on PII hit)"
-fallback --> openrouter : "primary leg"
-fallback ..> ollama_prov : "failover leg"
+fallback --> openrouter : "leg 1 (primary)"
+fallback ..> openrouter_fb : "leg 2\n(failover, ADR-003 amended)"
+fallback ..> ollama_prov : "leg 3\n(failover)"
 openrouter --> or_api : "POST /chat/completions\n(httpx, retries)"
+openrouter_fb --> or_api : "POST /chat/completions\n(httpx, retries)"
 ollama_prov --> ol_api : "POST /api/generate\n(httpx, retries)"
 fallback --> orchestrator : "raw text"
 orchestrator --> gate : "parsed JSON doc\nrun_gate(doc)"

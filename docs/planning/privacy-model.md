@@ -1,7 +1,7 @@
 ---
 title: "Privacy and Provider Data-Handling Model"
 schema_type: planning
-status: draft
+status: active
 owner: core-maintainer
 purpose: "Document the data classification, retention rules, privacy controls, and open blockers for CYO Adventure's generation pipeline."
 tags:
@@ -13,14 +13,18 @@ source: "docs/planning/tech-spec.md sections Privacy controls, Data Protection, 
 
 # Privacy and Provider Data-Handling Model
 
-> **Status**: Draft | **Version**: 0.1 | **Updated**: 2026-06-20
+> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-03
 
 ## Overview
 
-CYO Adventure is a family-only application serving four children. Because stories are
+CYO Adventure serves children across deployment tiers. Because stories are
 machine-generated and read by minors, the privacy controls and provider data-handling
 decisions are Phase-0 hard blockers: they must be resolved before any real LLM call is
-made in Phase 2.
+made in Phase 2. Privacy posture is tier-specific: the dev and family / homelab tiers may
+keep all data local, while the public tier hosts child-linked data on Supabase-managed
+Postgres (a US processor). ADR-008 and ADR-009 amend ADR-004's original absolute "no
+child data on third-party infrastructure" stance for the public tier; that stance still
+governs the homelab / family tier.
 
 This document covers data classification, what is and is not allowed in prompts, raw
 output retention, moderation report persistence, deletion readiness, and prompt-injection
@@ -39,9 +43,11 @@ child. The following are classified as child-linked:
 - `reading_state` rows: `current_node`, `var_state`, `path`, `save_slots`, keyed by
   `child_profile_id`.
 - `completion` rows: `ending_id`, `found_at`, keyed by `child_profile_id`.
-- Raw LLM generation outputs stored in object storage, if they were generated in a
-  context where a concept brief containing profile attributes was used. These are
-  admin-only.
+- Raw LLM generation outputs stored in `generation_job.report` (a Postgres JSONB
+  column), if they were generated in a context where a concept brief containing profile
+  attributes was used. `GET /generation-jobs/{id}` exposes this field to the job's own
+  family guardian (family-scoped, guardian-gated, not admin-only); the list endpoint and
+  every child-facing endpoint exclude it.
 
 The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):
@@ -70,8 +76,8 @@ must be fictional), `point_of_view` (default 2nd person), `age_band`, `reading_l
 `tier`, `tone`, `themes_allowed[]`, `content_nogo[]`, `target_node_count`, `ending_count`,
 `structure_pattern`, `desired_variables[]?`, `special_constraints[]?`.
 
-`age_band` is a categorical value ("8-11", "10-13", "13-16"); it identifies a generation
-target, not an individual child. The backend must validate that the concept brief does not
+`age_band` is a categorical value (one of the six bands "3-5", "5-8", "8-11", "10-13",
+"13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
 contain free-text fields with real names before dispatching to the provider.
 
 ---
@@ -79,16 +85,30 @@ contain free-text fields with real names before dispatching to the provider.
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only and short-lived:
+text sent to the provider are guardian-visible (family-scoped, via the single-job GET
+endpoint only) and short-lived:
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
   audit without persisting the content.
-- **Raw generation outputs**: stored in object storage (`generation_job.raw_output_ref`)
-  only as long as needed for debugging and repair pass analysis, then purged. The
-  retention window is not yet defined; it must be set before Phase 2.
-- **Access control**: `raw_output_ref` objects in MinIO are in a private bucket, not
-  accessible via the story-serving path. Only admin-role users may retrieve them.
+- **Raw generation outputs**: stored in `generation_job.report`, a Postgres JSONB column
+  (not object storage; there is no `raw_output_ref` field), only as long as needed for
+  debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
+  days after job completion or on publish, whichever comes first, via a `pg_cron` job
+  (ADR-009). The purge worker is a Phase 5 deliverable and is not yet built.
+
+  ```python
+  # #CRITICAL: data integrity: generation_job.report holds raw LLM output that may
+  #            carry child-derived detail; it must be purged and never leaked.
+  # #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever
+  #          first) is implemented and scheduled before the public tier goes live;
+  #          confirm report stays off child-facing endpoints and the job-list endpoint.
+  ```
+
+- **Access control**: `generation_job.report` is guardian-visible via
+  `GET /generation-jobs/{id}` (family-scoped, guardian-gated), not admin-only. It is
+  excluded from the list endpoint (job status only) and every child-facing endpoint, and
+  is not accessible via the story-serving path.
 
 Moderation reports (the per-node flags and the moderation API response) persist with the
 `storybook_version` record for audit. They contain node IDs and flag categories, not raw
@@ -102,8 +122,8 @@ A full deletion subsystem is a later deliverable. The requirement at Phase 0 is 
 data model does not make deletion impossible. The following rules apply:
 
 - Child-linked data must be kept in known, enumerable places: `child_profile` rows in
-  Postgres, `reading_state` rows in Postgres, `completion` rows in Postgres, raw
-  generation outputs referenced by `generation_job.raw_output_ref` in MinIO.
+  Postgres, `reading_state` rows in Postgres, `completion` rows in Postgres, and raw
+  generation outputs in the `generation_job.report` JSONB column in Postgres.
 - Child-linked data must not be scattered through structured logs, Sentry breadcrumbs, or
   application-level caches that are not enumerated in the data model.
 - Sentry must not receive a child's reading content beyond a node ID or story ID. Exception
@@ -142,24 +162,28 @@ Defense controls:
 The following items gate both the Phase 0 exit and the first Phase 2 LLM call. No
 generation call may be made with a real concept brief until both are resolved.
 
-### Blocker 1: Anthropic API Data-Handling Terms
+### Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)
 
 ```python
-# #CRITICAL: external resource: Anthropic API data-handling terms (standard retention
-#            vs zero-data-retention) are unconfirmed.
+# #CRITICAL: external resource: OpenRouter data-handling terms (standard retention
+#            vs zero-data-retention) for the generation leg are unconfirmed.
 # #VERIFY: confirm with the provider in writing before the first real generation call
 #          in Phase 2; record the outcome here.
 ```
 
-The standard Anthropic API retains inputs and outputs for a period defined in its terms
-of service. A zero-data-retention (ZDR) agreement, where available, changes that posture.
-Because concept briefs may contain age-band data and fictional content derived from a
-child's interests, the applicable terms must be confirmed before dispatch.
+The production default routes generation through OpenRouter, which is the data-handling
+counterparty for the generation leg (not the direct Anthropic API). OpenRouter and its
+downstream model providers retain inputs and outputs per their terms unless a
+zero-data-retention (ZDR) path applies. Because concept briefs may carry age-band data
+and fictional content derived from a child's interests, the applicable terms must be
+confirmed before dispatch. The moderation / review provider on the safety leg is subject
+to the same data-handling review.
 
-**Required action**: contact Anthropic to determine whether the standard API retention
-path or a ZDR path applies to this use case. Record the outcome (path chosen, contract
-reference or API tier, effective date) in this section before Phase 2 begins. This is a
-hard blocker for the Phase 0 exit gate (plan item P0-09).
+**Required action**: confirm whether the standard OpenRouter retention path or a ZDR path
+applies to this use case for both the generation leg and the review / moderation
+provider. Record the outcome (provider and route chosen, contract reference or API tier,
+effective date) in this section before Phase 2 begins. This is a hard blocker for the
+Phase 0 exit gate (plan item P0-09).
 
 **Status**: OPEN. Phase 2 cannot begin until this entry is completed and this file is
 committed with the resolution.
@@ -180,10 +204,12 @@ The homelab must be reachable through the Pangolin zero-trust ingress before Pha
 begins, so that integration tests and the CI environment can reach the deployed stack.
 This is plan item P0-10 and a Phase 0 exit condition.
 
-**Required action**: stand up the bare environment (Postgres, Redis, MinIO behind
-Pangolin, Authentik configured with guardian and child roles). Verify reachability.
-Record the outcome in `TECHNICAL_BASELINE.md` and update this entry with a cross-reference
-date.
+**Required action**: stand up the bare homelab / family-tier environment (Postgres and
+Redis behind Pangolin). Verify reachability. Record the outcome in
+`TECHNICAL_BASELINE.md` and update this entry with a cross-reference date. Note this
+blocker is scoped to the homelab / family tier only. On the public tier, Supabase is the
+identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the datastore,
+so Pangolin ingress and a self-hosted IdP do not apply there.
 
 **Status**: OPEN. Phase 1 cannot begin until this entry is completed.
 
@@ -191,8 +217,11 @@ date.
 
 ## If Shared Beyond Family
 
-This design is calibrated for private family use. Before any non-family use, revisit with
-legal counsel:
+The controls above are calibrated for private family use and the homelab / family tier.
+The public tier (ADR-008 / ADR-009) takes this beyond private family use, so COPPA and
+Kids Category compliance become launch blockers. That compliance work is a future Phase 7
+deliverable and is not yet done. Before the public tier launches, revisit with legal
+counsel:
 
 - COPPA (US) and state-level children's privacy equivalents.
 - ICO Age Appropriate Design Code (UK) as a design reference.
@@ -211,4 +240,7 @@ This note is a design reference, not legal advice.
 - [Tech Spec: Privacy controls](./tech-spec.md#privacy-controls-family-only)
 - [Phase 0 Decision Log](../phase0-decisions.md)
 - [ADR-003: Frontier LLM for generation](./adr/adr-003-frontier-llm-generation.md)
-- [ADR-004: Homelab-first deployment](./adr/adr-004-homelab-first-deployment.md)
+- [ADR-004: Homelab-first deployment](./adr/adr-004-homelab-first-deployment.md) (governs the homelab / family tier)
+- [ADR-007: Raw output retention](./adr/adr-007-raw-output-retention.md)
+- [ADR-008: Public app store launch](./adr/adr-008-public-app-store-launch.md)
+- [ADR-009: Supabase platform (managed Postgres, OIDC)](./adr/adr-009-supabase-platform.md)

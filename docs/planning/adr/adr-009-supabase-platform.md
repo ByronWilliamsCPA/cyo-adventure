@@ -1,7 +1,7 @@
 ---
 title: "ADR-009: Supabase as the managed platform for auth, database, and storage"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to adopt Supabase (Auth, Postgres, Storage, queue evaluation)
   as the public-tier platform, replacing the self-hosted Authentik broker and the
@@ -15,7 +15,7 @@ tags:
 
 # ADR-009: Supabase as the managed platform for auth, database, and storage
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-03; auth decision ratified and implemented, while the P6/P7/P9 items (native Apple sign-in, Supabase Storage, and the pgmq queue) remain outstanding)
 > **Date**: 2026-07-02
 > **Amends**: [ADR-008](./adr-008-public-app-store-launch.md) (auth broker and public-tier
 > hosting; the distribution, monetization, and compliance decisions in ADR-008 stand)

@@ -1,7 +1,7 @@
 ---
 title: "ADR-006: Conditions use the JSONLogic shape with an in-house whitelisted evaluator"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to keep the JSONLogic object shape but evaluate it with small in-house interpreters."
 tags:
@@ -12,7 +12,7 @@ tags:
 
 # ADR-006: Conditions use the JSONLogic shape with an in-house whitelisted evaluator
 
-> **Status**: Proposed (supersedes the revision-2 decision to depend on third-party JSONLogic libraries)
+> **Status**: Accepted (2026-07-03; revises the earlier revision-2 tech-spec decision to depend on third-party JSONLogic libraries)
 > **Date**: 2026-06-20
 
 ## TL;DR

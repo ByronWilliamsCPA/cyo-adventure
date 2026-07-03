@@ -2,8 +2,9 @@
 schema_type: planning
 title: "CYO Adventure - Project Plan (Ariadne)"
 description: "Synthesized project plan for CYO Adventure: phased development strategy, git branch
-  map, quality gates, and risk register, derived from the planning documents. Covers Track 1
-  (family-first v1) and Track 2 (public App Store launch with subscription monetization, ADR-008)."
+  map, quality gates, and risk register, derived from the planning documents. Covers the release
+  ladder R1 (internal web release) through R2 (limited iOS release) and R3 (public App Store
+  launch with subscription monetization, ADR-008)."
 tags:
   - planning
   - roadmap
@@ -25,7 +26,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.3 | **Updated**: 2026-07-02
+> **Status**: Active | **Version**: 2.5 | **Updated**: 2026-07-03
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -36,8 +37,9 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 CYO Adventure is a family app that plays branching "choose your path" gamebook stories offline
 on a tablet or phone, paired with a content pipeline that turns a short concept plus a drafting
 guide into a finished, safety-reviewed story. It was built first for one family's four children
-(roughly ages 9 to 15), and no story reaches a child until a parent approves it; Track 2
-(below) extends it into a public, subscription-funded product under the same guarantee.
+(roughly ages 9 to 15), and no story reaches a child until a parent approves it; the public
+rungs R2 and R3 (below) extend it into a public, subscription-funded product under the same
+guarantee.
 
 The system has two halves that meet at a single file format: a **reader** plays stories and a
 **content pipeline** produces them. Both treat a story as one artifact, a versioned JSON graph
@@ -49,41 +51,65 @@ stages and a mandatory parent approval step before any story reaches a child's l
 mandatory guardian approval means correctness and safety are structural guarantees, not
 conventions.
 
-**Decided release cut**: Generation ships in the **first usable release**. Phases 0 through 3
-plus the minimal Phase 4a library-and-profiles slice constitute the first usable release
-(roughly 11 to 16 weeks for a 1 to 2 developer team). Phase 4b (node editor, ending tracker,
-read-aloud) and Phase 5 (hardening and restore drill) follow the first release.
+**Release ladder**: the product reaches users in three rungs, each an overlay on the phase
+plan in Section 5, not a new phase. Generation ships from the first rung.
 
-Because generation ships in the first release, two items are elevated to **Phase-0 hard
+- **Internal release (web only)** [R1]: the web PWA run for the maintainer's own family and
+  local testing, with no native app and no outside users. Scope is Phases 0 through 3 plus the
+  Phase 4a library-and-profiles slice (all merged as of 2026-07-03). This is the rung earlier
+  drafts called the "first usable release," now stated explicitly as web-only and internal.
+- **Limited release (adds iOS)** [R2]: the Capacitor iOS shell plus guardian authentication,
+  distributed to a controlled group over TestFlight. Scope adds Phase 6 (public auth) and
+  Phase 8 (iOS shell) on top of R1; the public catalog and the full public-submission
+  compliance gates are deferred to R3.
+- **Public launch** [R3]: the full public App Store product. Scope adds Phase 7 (Kids Category
+  and COPPA compliance) and Phase 9 (public catalog, hosted infra, submission).
+
+Phase 4b (node editor, ending tracker, read-aloud) and Phase 5 (hardening and restore drill)
+are post-R1 quality work, scheduled opportunistically; read-aloud (4b) is also an R2/R3
+subscription lever. The safety guarantee is identical on every rung: the validation gate,
+moderation, and mandatory guardian approval bind every story, and children never trigger
+generation or see raw model output.
+
+Because generation ships from the first rung (R1), two items are elevated to **Phase-0 hard
 blockers**: the LLM provider data-handling decision and the privacy controls (no real child PII
 in prompts; admin-only short-lived raw outputs).
 
 **Public launch decision (2026-07-02, [ADR-008](./adr/adr-008-public-app-store-launch.md),
 as amended by [ADR-009](./adr/adr-009-supabase-platform.md))**: the app will be offered
 publicly through the Apple App Store with a tiered family subscription. This adds
-**Track 2** (Phases 6 through 9): real multi-tenant authentication on Supabase Auth
-(native Sign in with Apple and Google, guardians only; children are never IdP
-identities), Kids Category and COPPA compliance, a Capacitor iOS shell with Apple
-In-App Purchase, and a curated public catalog on the Supabase platform (Postgres,
-Storage, queue) plus a single container host for the FastAPI app and worker. Track 2
-begins after the first usable release (Phase 4a) and changes nothing in the safety
-guarantee: validation gate, moderation, and mandatory guardian approval remain
+the **public rungs R2 and R3** (Phases 6 through 9): real multi-tenant authentication
+on Supabase Auth (native Sign in with Apple and Google, guardians only; children are
+never IdP identities), Kids Category and COPPA compliance, a Capacitor iOS shell with
+Apple In-App Purchase, and a curated public catalog on the Supabase platform (Postgres,
+Storage, queue) plus a single container host for the FastAPI app and worker. The public
+rungs begin after the internal web release (R1, through Phase 4a) and change nothing in
+the safety guarantee: validation gate, moderation, and mandatory guardian approval remain
 mandatory for every story, and children never trigger generation or see raw model
 output.
 
+**Content workstream (parallel)**: [ADR-011](./adr/adr-011-story-scale-framework.md)
+(story-scale: band x length x style) merged to `main` on 2026-07-03 (PR #70), establishing
+the corrected skeleton baseline (18-cell coverage grid, per-cell node budgets, PL-17..21
+policy teeth). `main` still has zero production-eligible skeletons; a parallel workstream
+(`feat/skeleton-library-expansion`) now authors production-eligible skeletons against that
+frozen contract. It feeds generation quality across all three rungs and gates none of them.
+Follow-on enabler refinements are tracked in issues #77, #78, and #79.
+
 **Timeline**:
 
-| Band | Scope | Estimate |
+| Rung / band | Scope | Estimate |
 |------|-------|----------|
-| First usable release (Track 1) | Phases 0-3 + Phase 4a | 11-16 weeks |
-| Full family v1 (Track 1) | All phases including 4b and 5 | 16-25 weeks |
-| Public App Store launch (Track 2) | Phases 6-9, after Phase 4a | +11-17 weeks after first release |
+| Internal release, web only [R1] | Phases 0-3 + Phase 4a (web PWA) | Feature-complete 2026-07-03 (pending release-readiness) |
+| Full family, web (R1 hardened) | R1 plus post-R1 Phases 4b and 5 | 16-25 weeks from start |
+| Limited release, adds iOS [R2] | R1 plus Phases 6 and 8 (TestFlight) | +6-9 weeks after R1 |
+| Public launch [R3] | R2 plus Phases 7 and 9 (App Store) | +11-17 weeks after R1 |
 
 Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
-[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
+[ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
-### Current status (2026-07-02)
+### Current status (2026-07-03)
 
 | Phase | Status |
 |-------|--------|
@@ -92,25 +118,26 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 2 Gen + Gate | ✅ Delivered (merged) |
 | 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
-| 4a Library + Profiles | 🔄 Backend partial (library/ratings API); frontend absent (wireframes #47, design system #44) |
-| 4b Editor + UX | ⏸️ Not started (post-release; read-aloud is also a Track 2 subscription lever) |
-| 5 Hardening | ⏸️ Not started (post-release; public-tier ops fold into Phase 9) |
-| 6 Public auth + multi-tenancy | ⏸️ Not started (Track 2; planned 2026-07-02) |
-| 7 Kids compliance + account lifecycle | ⏸️ Not started (Track 2) |
-| 8 iOS shell + subscriptions | ⏸️ Not started (Track 2) |
-| 9 Public catalog + hosted infra + launch | ⏸️ Not started (Track 2) |
+| 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete**, pending release-readiness (#73 auth redirect, docs sync #52) |
+| 4b Editor + UX | ⏸️ Not started (post-R1; read-aloud is also an R2/R3 subscription lever) |
+| 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9) |
+| 6 Public auth + multi-tenancy | ⏸️ Not started (R2; planned 2026-07-02) |
+| 7 Kids compliance + account lifecycle | ⏸️ Not started (R3) |
+| 8 iOS shell + subscriptions | ⏸️ Not started (R2) |
+| 9 Public catalog + hosted infra + launch | ⏸️ Not started (R3) |
 
-With the **Phase 3 backend merged, Phase 4a is now the entire critical path to the first
-usable release**: the approval, moderation, and review APIs exist and are enforced, but
-the guardian-facing UI has no app shell to build on yet (the frontend is a single-page
-reader demo with no routing). The concrete path from here is
-[`completion-plan.md`](./completion-plan.md).
+With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
+feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
+enforced, and the guardian-facing app shell, library, per-child profiles, guardian
+console, and concept intake are built and merged (C4a-1..6). What remains for R1 is
+release-readiness, not new build (#73 auth redirect, docs sync #52). The public rungs
+(R2/R3) are the next critical path; see Section 5.
 
 ---
 
 ## 2. Scope
 
-### In scope (MVP and first release)
+### In scope (MVP and R1 internal web release)
 
 - **Reader (PWA)**: offline play, save and resume, multi-device sync, multiple endings.
   ([ADR-002](./adr/adr-002-client-pwa.md))
@@ -127,7 +154,7 @@ reader demo with no routing). The concrete path from here is
 - **Homelab deployment**: behind Pangolin (zero-trust) and Authentik (OIDC), with cloud-portable
   containers. ([ADR-004](./adr/adr-004-homelab-first-deployment.md))
 
-### In scope, Track 2 (public launch; [ADR-008](./adr/adr-008-public-app-store-launch.md))
+### In scope, public rungs R2/R3 (public launch; [ADR-008](./adr/adr-008-public-app-store-launch.md))
 
 Three items originally out of scope for v1 are now planned, with the revisited privacy
 posture the vision document said they would require:
@@ -157,16 +184,17 @@ posture the vision document said they would require:
 - **Per-passage illustrations or AI-generated images.**
 
 Source: [Project Vision](./project-vision.md) section "Scope Definition";
-[ADR-008](./adr/adr-008-public-app-store-launch.md) for the Track 2 additions.
+[ADR-008](./adr/adr-008-public-app-store-launch.md) for the public-rung (R2/R3) additions.
 
 ---
 
 ## 3. Architecture Overview
 
 The system is a **modular monolith backend** (FastAPI) with an asynchronous RQ worker for
-generation, and a single role-aware PWA client. Story blobs live in object storage (MinIO,
-S3-compatible); metadata and reading state live in Postgres; the Redis queue drives background
-generation.
+generation, and a single role-aware PWA client. Story blobs are stored inline in Postgres
+JSONB (`storybook_version.blob`) at launch per ADR-009; the MinIO (S3-compatible) object-store
+path is deferred. Metadata and reading state also live in Postgres; the Redis queue drives
+background generation.
 
 Key architectural decisions, each recorded in an ADR:
 
@@ -174,28 +202,43 @@ Key architectural decisions, each recorded in an ADR:
 |-----|----------|-------------------|
 | [ADR-001](./adr/adr-001-story-format-json-storybook.md) | Custom versioned JSON Storybook schema | Most reliable LLM target; static safety properties are checkable; client-agnostic |
 | [ADR-002](./adr/adr-002-client-pwa.md) | PWA (React 19, TypeScript, Vite, service worker, IndexedDB) | One codebase, offline-capable, no app-store friction, client-agnostic format keeps native open |
-| [ADR-003](./adr/adr-003-frontier-llm-generation.md) | Anthropic Claude primary behind a `GenerationProvider` interface; Ollama and OpenRouter as fallback | Frontier models hold branching structure best; provider interface keeps switching cheap |
-| [ADR-004](./adr/adr-004-homelab-first-deployment.md) | Homelab-first (Pangolin, Authentik, Postgres, Redis, MinIO); cloud-portable containers | Minors' data stays on controlled hardware; existing infra reused; Azure Container Apps is a drop-in |
+| [ADR-003](./adr/adr-003-frontier-llm-generation.md) | OpenRouter primary behind a `GenerationProvider` interface (amended 2026-06-22; Claude reached via OpenRouter, direct Anthropic SDK deferred); Ollama local fallback | Frontier models hold branching structure best; provider interface keeps switching cheap |
+| [ADR-004](./adr/adr-004-homelab-first-deployment.md) | Homelab-first, dev/family tier (Pangolin, Authentik, Postgres, Redis, MinIO); cloud-portable containers | Minors' data stays on controlled hardware; existing infra reused; Azure Container Apps is a drop-in |
 | [ADR-005](./adr/adr-005-mandatory-human-approval.md) | Publish state machine with mandatory guardian approval; no auto-publish path | Automated moderation helps but cannot be the sole safeguard for machine-generated content read by children |
-| [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 8 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
+| [ADR-006](./adr/adr-006-conditions-inhouse-evaluator.md) | JSONLogic shape, in-house whitelisted evaluator (Python + TypeScript, 10 operators) | Tiny, exhaustively tested, no dependency, no supply-chain risk; validator and player guaranteed identical semantics |
 | [ADR-007](./adr/adr-007-raw-output-retention.md) | Raw LLM output retention policy for `GenerationJob.report` | Admin-only, short-lived raw outputs; audit without hoarding |
 | [ADR-008](./adr/adr-008-public-app-store-launch.md) | Public App Store launch: Capacitor shell, guardian-only IdP identities, tiered IAP subscription, hosted public tier | Reuses the existing client, auth seam, and approval pipeline; strongest child-privacy posture (no child IdP identities); amends ADR-002 and ADR-004 for the public tier; auth/hosting amended by ADR-009 |
 | [ADR-009](./adr/adr-009-supabase-platform.md) | Supabase platform for the public tier: Auth (native Apple/Google), Postgres, Storage, queue evaluation; FastAPI + worker on one container host | Guardian-only MAU makes auth cost negligible everywhere, so leverage decides; consolidates ~5 vendors to 2; retires the self-run-IdP risk; plain Postgres/S3/GoTrue keep the ejection path cheap |
 
+**ADR status** (as of 2026-07-03):
+
+- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-005, ADR-006, ADR-009,
+  [ADR-011](./adr/adr-011-story-scale-framework.md).
+- **Proposed**: ADR-004, ADR-007, ADR-008,
+  [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md).
+
+ADR-010 and ADR-011 are not in the index table above (which predates them); ADR-011 is
+the story-scale framework (band x length x style) and ADR-010 is the Modal review and
+gated-generation leg. Both are listed in Section 12 (Related Documents).
+
 ### Publish state machine
 
 ```text
-draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -+
-                                   |                                             |
-                                   +-> in_review -> approved -> published -> archived
-                                          ^
-                                          +-- (re-review on edit)
+GenerationJob:  queued -> running -+-> passed        (validator + moderation gates pass)
+                                   +-> needs_review  (safety flag; a human must clear it)
+                                   +-> failed        (hard validation failure)
+
+Storybook:      draft -> in_review -+-> published -> archived
+                  ^                 +-> needs_revision -> (repair / regenerate)
+                  +-- (re-review on edit)
 ```
 
-A story is visible to a child only in `published`. The transition `in_review -> approved`
-requires a guardian. Failures from the validator or moderation route to `needs_revision`.
+A story is visible to a child only in `published`. The `in_review -> published` transition
+is a single approve-and-publish action requiring the global **admin** role (`is_admin`),
+applied cross-family; there is no separate `approved` state. Failures from the validator or
+moderation route the GenerationJob to `needs_review` or `failed`.
 
-Track 2 adds one state on top of (not instead of) this machine: `published ->
+The public rungs (R2/R3) add one state on top of (not instead of) this machine: `published ->
 catalog_published`, an **admin-curated** transition that makes a story visible in the
 public catalog across families (P9-01). Family-scoped publishing is unchanged; the
 guardian-approval invariant applies to every story in both scopes.
@@ -216,16 +259,16 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Player state | XState | Story as a state machine; explicit, testable transitions |
 | Offline client store | IndexedDB (`idb`) | Cache only; Postgres is canonical |
 | Database | PostgreSQL 16, SQLAlchemy, Alembic | Metadata and reading state |
-| Object storage | MinIO (S3 API) | Versioned, immutable story blobs; Azure Blob is interchangeable |
+| Story blob storage | Inline Postgres JSONB (`storybook_version.blob`) at launch per ADR-009 | MinIO (S3 API) / `blob_ref` object-store path deferred; Azure Blob interchangeable if adopted |
 | Cache/queue | Redis | Background generation queue |
-| Condition evaluator | In-house Python + TypeScript (ADR-006) | Whitelisted 8-operator JSONLogic subset |
+| Condition evaluator | In-house Python + TypeScript (ADR-006) | Whitelisted 10-operator JSONLogic subset |
 | Graph analysis | networkx | Reachability, cycle detection, termination |
 | Readability | textstat | Flesch-Kincaid grade (advisory) |
-| LLM primary | Anthropic Claude | Behind `GenerationProvider` interface |
-| LLM fallback | Ollama (local P40), OpenRouter | Same interface |
+| LLM primary | OpenRouter (`anthropic/claude-haiku-4.5`) | Behind `GenerationProvider` interface; amended 2026-06-22 (ADR-003) |
+| LLM fallback | OpenRouter (`anthropic/claude-sonnet-4.6`), then Ollama (local P40); `mock` default in CI | Same interface; direct Anthropic SDK deferred |
 | Moderation | Provider moderation API + independent LLM-reviewer | |
-| Auth | Authentik (OIDC) | Guardian and child roles |
-| Ingress | Pangolin (zero-trust) | HTTPS; child sessions scoped to reader/library |
+| Auth | Supabase Auth (OIDC), guardians only ([ADR-009](./adr/adr-009-supabase-platform.md)) | Current app auth (pulled forward into C4a-1); children are backend-scoped profile sessions, never IdP identities. The homelab/family-tier deployment still uses Authentik (OIDC) per [ADR-004](./adr/adr-004-homelab-first-deployment.md) |
+| Ingress | Pangolin (zero-trust) | HTTPS; child sessions scoped to reader/library; homelab/family tier |
 | Observability | Sentry + structured JSON logging | Correlation IDs |
 | CI/CD | Centralized GitHub Actions | CodeQL, Trivy, CycloneDX SBOM, Cosign |
 | Testing (Python) | pytest, Hypothesis | Property-based for evaluator totality |
@@ -233,7 +276,7 @@ Source: [Tech Spec](./tech-spec.md) sections "Architecture" and "Data Model".
 | Linting/format | Ruff (88 chars, PyStrict-aligned); ESLint + Prettier | |
 | Type checking | BasedPyright (strict) | |
 
-**Track 2 additions** ([ADR-008](./adr/adr-008-public-app-store-launch.md),
+**Public-rung (R2/R3) additions** ([ADR-008](./adr/adr-008-public-app-store-launch.md),
 [ADR-009](./adr/adr-009-supabase-platform.md)):
 
 | Layer | Choice | Notes |
@@ -259,7 +302,7 @@ are pinned by tag; `latest` is never used.
 
 Source: [Tech Spec](./tech-spec.md) section "Technology Stack";
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
-[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
+[ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
 ---
 
@@ -268,38 +311,46 @@ Source: [Tech Spec](./tech-spec.md) section "Technology Stack";
 ### Phase overview and release cut
 
 ```text
-Track 1 (family v1)
+R1 and post-R1 (family, web)
 Phase 0: Foundations        (1-2 wks)   chore/phase-0-foundations
 Phase 1: Schema + Reader    (3-5 wks)   feat/phase-1-schema-reader
 Phase 2: Gen + Gate         (4-6 wks)   feat/phase-2-generation-gate
 Phase 3: Safety + Review    (3-4 wks)   feat/phase-3-safety-review
-Phase 4a: Library           (part of 3-5 wks)  feat/phase-4a-library-profiles  <- FIRST RELEASE
-Phase 4b: Editor + UX       (post-release)     feat/phase-4b-editor-ux
+Phase 4a: Library           (part of 3-5 wks)  feat/phase-4a-library-profiles  <- R1: INTERNAL RELEASE (web only)
+Phase 4b: Editor + UX       (post-R1)          feat/phase-4b-editor-ux
 Phase 5: Hardening          (2-3 wks)   chore/phase-5-hardening
 
-Track 2 (public App Store launch, ADR-008; starts after Phase 4a)
-Phase 6: Public auth + multi-tenancy   (3-4 wks)   feat/phase-6-public-auth
-Phase 7: Kids compliance + lifecycle   (2-3 wks, overlaps 6)  feat/phase-7-kids-compliance
-Phase 8: iOS shell + subscriptions     (3-5 wks)   feat/phase-8-ios-monetization
-Phase 9: Catalog + infra + launch      (3-5 wks)   feat/phase-9-public-launch  <- PUBLIC LAUNCH
+Public product R2/R3 (ADR-008; starts after R1) -- delivered in two rungs
+Phase 6: Public auth + multi-tenancy   (3-4 wks)   feat/phase-6-public-auth        [R2]
+Phase 7: Kids compliance + lifecycle   (2-3 wks, overlaps 6)  feat/phase-7-kids-compliance  [R3 gate]
+Phase 8: iOS shell + subscriptions     (3-5 wks)   feat/phase-8-ios-monetization   [R2]  <- R2: LIMITED RELEASE (iOS, TestFlight)
+Phase 9: Catalog + infra + launch      (3-5 wks)   feat/phase-9-public-launch      [R3]  <- R3: PUBLIC LAUNCH
+
+Content workstream (parallel; ADR-011 / PR #70 merged 2026-07-03)
+Skeleton authoring on the band x length x style baseline; feeds all rungs, gates none.
 ```
 
-**Critical path (Track 1)**: Schema (Phase 0) -> Player + Reader + Layer-1 validator (Phase 1)
--> Layer-2 state-space validator (Phase 2) -> Generation (Phase 2) -> Safety + review (Phase 3)
--> Library/profiles (Phase 4a). The schema is the keystone: settle and version it before writing
-any app code. The honest long pole is Phase 2, where generation reliability and the state-space
-validator absorb most of the iteration.
+**Critical path (R1, now delivered)**: Schema (Phase 0) -> Player + Reader + Layer-1 validator
+(Phase 1) -> Layer-2 state-space validator (Phase 2) -> Generation (Phase 2) -> Safety + review
+(Phase 3) -> Library/profiles (Phase 4a). The schema was the keystone, settled and versioned
+before app code; Phase 2 was the honest long pole, where generation reliability and the
+state-space validator absorbed most of the iteration. All of this path is merged as of
+2026-07-03; R1 is feature-complete.
 
-**Critical path (Track 2)**: Real OIDC + multi-tenancy (Phase 6) -> compliance and account
-lifecycle (Phase 7, overlapping 6) -> shell + entitlements (Phase 8) -> catalog, hosted infra,
-and submission (Phase 9). Auth is the keystone of this track: every later item (consent,
-deletion, entitlements, parental gate) hangs off the guardian identity and the child-session
-split, so Phase 6 must land before 8 and 9 start. Phase 4b is not on this path but read-aloud
-(4b) is a subscription selling point; schedule it opportunistically alongside Track 2.
+**Critical path (public rungs R2/R3)**: Real OIDC + multi-tenancy (Phase 6) -> compliance and
+account lifecycle (Phase 7, overlapping 6) -> shell + entitlements (Phase 8) -> catalog, hosted
+infra, and submission (Phase 9). Auth is the keystone of the public rungs: every later item
+(consent, deletion, entitlements, parental gate) hangs off the guardian identity and the
+child-session split, so Phase 6 must land before 8 and 9 start. Phase 4b is not on this path but
+read-aloud (4b) is a subscription selling point; schedule it opportunistically alongside the
+public rungs (R2/R3).
+Under the release ladder, Phases 6 and 8 make up the **limited release (R2)** distributed
+over TestFlight, while Phases 7 and 9 gate the **public launch (R3)**: Phase 7's compliance
+checklist gates the public submission, not the limited TestFlight rung.
 
 Source: [Roadmap](./roadmap.md) sections "Critical Path" and "Timeline Overview";
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
-[ADR-009](./adr/adr-009-supabase-platform.md) for Track 2.
+[ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
 ---
 
@@ -314,7 +365,7 @@ the Phase-0 punch list (PL-01..PL-18) is closed.
 **Objective**: Lock the decisions and artifacts that are expensive to change once code exists.
 No app code until this gate passes.
 
-**Phase-0 hard blockers** (elevated because generation ships in the first release):
+**Phase-0 hard blockers** (elevated because generation ships from the first rung, R1):
 
 1. **Provider data-handling decision**: confirm with the provider whether the standard API
    retention path or a zero-data-retention path applies. Document the outcome; do not assume
@@ -343,7 +394,7 @@ No app code until this gate passes.
 | P0-08 | Authorization matrix: endpoint access by guardian and child role; IDOR negative tests listed | See [Tech Spec: Security](./tech-spec.md#security) |
 | P0-09 | Privacy and provider data-handling model: data classification, retention, deletion-readiness | Hard blocker (see above) |
 | P0-10 | Repos scaffolded with full CI and security baseline green; hosting target chosen and bare environment reachable through Pangolin | See [ADR-004](./adr/adr-004-homelab-first-deployment.md) |
-| P0-11 | Drafting guide and stage prompt templates authored | 60% generation yield cannot be measured without them; hard blocker because generation ships in first release |
+| P0-11 | Drafting guide and stage prompt templates authored | 60% generation yield cannot be measured without them; hard blocker because generation ships in R1 |
 | P0-12 | Configuration-cap worked example | Practical Tier-2 variable budget that stays under 100,000 reachable configurations (e.g., 2 booleans + one int(0-5) across ~50 nodes) |
 | P0-13 | Alembic migration convention recorded in `TECHNICAL_BASELINE.md` | Naming, down-revision policy, CI migration check |
 
@@ -355,7 +406,7 @@ No app code until this gate passes.
 4. Family-only reach (see [Project Vision: Scope](./project-vision.md#scope-definition)).
 5. Tier-2 mechanics cap (no Tier-3 dice/luck checks in v1).
 6. Lightweight node editor deferred to Phase 4b.
-7. Generation in the first release (the decided release cut).
+7. Generation in R1, the first rung (the decided release cut).
 
 **Success criteria** (from [Roadmap](./roadmap.md)):
 
@@ -467,7 +518,7 @@ from Phase 0 are preconditions. See [ADR-003](./adr/adr-003-frontier-llm-generat
   - Stage C (Repair): named failing node IDs and specific violations; cap at 3 attempts;
     no-progress abort (report or output hash unchanged); on exhaustion route to full regeneration
     or human review. Never auto-publish.
-- **Provider interface** (`GenerationProvider`): Claude primary; Ollama and OpenRouter as fallback
+- **Provider interface** (`GenerationProvider`): OpenRouter primary (Claude reached via OpenRouter); Ollama local fallback; direct Anthropic SDK deferred (ADR-003, amended 2026-06-22)
   ([ADR-003](./adr/adr-003-frontier-llm-generation.md)).
 - **Concept intake**: concept brief fields as defined in [Tech Spec](./tech-spec.md#authoring-pipeline-staged-generation);
   no real child PII in prompts.
@@ -540,10 +591,12 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 - **Moderation pass**: provider moderation API plus an independent LLM-reviewer pass, scored
   against per-age-band policy; any hit flags the nodes and forces human review. Safety hits
   always route to a person; never auto-publish.
-- **Publish state machine** with the guardian-only approval transition:
-  `draft -> generating -> auto_check -> in_review -> approved -> published -> archived`,
-  with `needs_revision` on auto-check failure.
-- **Parent review surface**: a guardian can read the full story, see flagged passages, and
+- **Publish state machine** with the admin-only approve-and-publish transition
+  (`in_review -> published`, global `is_admin`, cross-family): the Storybook lifecycle is
+  `draft -> in_review -> published -> archived` with `needs_revision` on a failed gate, fed by
+  a GenerationJob (`queued -> running -> passed | needs_review | failed`). There is no
+  `generating`, `auto_check`, or `approved` storybook state.
+- **Admin review surface**: the global admin can read the full story, see flagged passages, and
   approve or send back. The review UI must make each approval achievable in a few minutes.
 - **Provenance and audit** on every published version: model, provider, prompt version, and
   approver ID persisted in `storybook_version`.
@@ -574,11 +627,11 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
       (mirroring the generation worker), and `publishing.service.approve` structurally refuses
       to publish any version with `moderation_report is None`, so no unmoderated path reaches
       `published` regardless of how a draft was created; the review surface also now exposes an
-      explicit `screened: bool` so the future C4a-4 console cannot mistake "never screened" for
+      explicit `screened: bool` so the C4a-4 console (merged, #76) cannot mistake "never screened" for
       "screened clean." Remaining: (c) run the credentialed adversarial harness against a live
       review model and archive per-class results for the model-dependent classes (A, B, E).
-      Under the two-track model this remainder is Track 1 (family) debt and a Track 2 (public
-      launch) blocker: the Kids Category / COPPA posture in
+      Under the release ladder this remainder is R1 (family) debt and a public-rung (R2/R3,
+      public launch) blocker: the Kids Category / COPPA posture in
       [ADR-008](./adr/adr-008-public-app-store-launch.md) makes an unbacked safety claim a
       compliance exposure, and P9-04 already mandates live moderation in production
 - [x] No high or critical security findings (Bandit, Semgrep, pip-audit)
@@ -590,19 +643,20 @@ Phase 2 once the validation gate and orchestrator are stable.
 
 ---
 
-### Phase 4a: Library and Profiles (part of 3-5 weeks; in the first release)
+### Phase 4a: Library and Profiles (part of 3-5 weeks; the R1 internal release line)
 
 **Branch**: `feat/phase-4a-library-profiles`
-**Milestone**: M4 - First usable release (generation + library)
-**Status**: 🔄 Backend partial; frontend not started. The `library` API (published,
-profile-scoped browsing) and the child `ratings` API are merged. The frontend has **no
-library, profile, guardian, or concept-intake UI and no routing** (it is still a
-single-page reader demo), so the guardian/parent app shell that Phases 3 and 4a both need
-is the largest remaining build for the first release.
+**Milestone**: M4 - Internal web release, R1 (generation + library)
+**Status**: ✅ Delivered; **R1 feature-complete** (C4a-1..6 merged: app shell/auth #56,
+profiles #60, library #68, guardian console #76, concept intake #69, assign-to-profile #75).
+The `library` API (published, profile-scoped browsing) and the child `ratings` API
+were joined by a full guardian/parent frontend: routing, the kid library UI, per-child
+profile management, the guardian review-and-approval console, and the concept-intake form.
+What remains for R1 is release-readiness, not new build (#73 auth redirect, docs sync #52).
 
-**Objective**: Make the first usable release shippable. A child sees only the stories permitted
-for their profile; a guardian can assign an approved generated story to one or more children.
-This is the **first release line**.
+**Objective**: Make the internal web release (R1) shippable. A child sees only the stories
+permitted for their profile; a guardian can assign an approved generated story to one or
+more children. This is the **R1 release line**.
 
 **Deliverables** (traced to [Roadmap Phase 4a](./roadmap.md)):
 
@@ -629,12 +683,12 @@ This is the **first release line**.
 - [ ] Ruff clean; BasedPyright strict clean
 - [ ] Pre-commit green; all commits signed with conventional messages
 
-**Dependencies**: Requires Phases 2 and 3. This phase closes the first release; Phase 4b and
-Phase 5 follow.
+**Dependencies**: Requires Phases 2 and 3. This phase closes R1 (the internal web release);
+Phase 4b and Phase 5 follow.
 
 ---
 
-### Phase 4b: Editor, Engagement, and UX (post-first-release)
+### Phase 4b: Editor, Engagement, and UX (post-R1)
 
 **Branch**: `feat/phase-4b-editor-ux`
 **Milestone**: (post-release; no milestone number assigned)
@@ -667,12 +721,12 @@ Phase 5 follow.
 - [ ] Ruff clean; BasedPyright strict clean
 - [ ] Pre-commit green; all commits signed with conventional messages
 
-**Dependencies**: 4b can begin after the first release (Phases 0 through 4a merged). Does not
+**Dependencies**: 4b can begin after R1 (Phases 0 through 4a merged). Does not
 block Phase 5.
 
 ---
 
-### Phase 5: Hardening and Deploy (2-3 weeks; post-first-release)
+### Phase 5: Hardening and Deploy (2-3 weeks; post-R1)
 
 **Branch**: `chore/phase-5-hardening`
 **Milestone**: M5 - Hardened, deployed, restore-tested v1
@@ -696,7 +750,7 @@ alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
 **Acceptance criteria** (from [Roadmap Phase 5](./roadmap.md)):
 
-- Deployed behind Pangolin with Authentik login; a restore from backup succeeds in a drill.
+- Deployed behind Pangolin with Supabase guardian login (ADR-009); a restore from backup succeeds in a drill.
 - Performance targets met on a real device on home wifi.
 
 **Quality gates**:
@@ -713,16 +767,17 @@ alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
 ---
 
-## Track 2: Public App Store Launch (Phases 6-9)
+## Public App Store Launch: rungs R2 and R3 (Phases 6-9)
 
-Track 2 implements [ADR-008](./adr/adr-008-public-app-store-launch.md) as amended by
-[ADR-009](./adr/adr-009-supabase-platform.md). It begins after the first usable release
-(Phase 4a) and turns the family app into a multi-tenant commercial product without
+The public rungs implement [ADR-008](./adr/adr-008-public-app-store-launch.md) as amended by
+[ADR-009](./adr/adr-009-supabase-platform.md). They begin after the internal web release
+(R1, through Phase 4a) and turn the family app into a multi-tenant commercial product without
 weakening the safety guarantee: validation gate, moderation, and mandatory guardian
 approval apply to every story in every tier, and children never trigger generation or
-see raw model output.
+see raw model output. R2 (limited release, TestFlight) is Phases 6 and 8; R3 (public launch)
+is Phases 7 and 9.
 
-**Standing constraints for every Track 2 phase** (in addition to the Section 7 gates):
+**Standing constraints for every public-rung phase** (in addition to the Section 7 gates):
 
 - No child identity ever exists in an identity provider; children are in-app profiles.
 - No third-party ad or analytics SDK ships in the kid context.
@@ -732,8 +787,8 @@ see raw model output.
 - Anything touching auth, payments, consent, or deletion carries RAD `#CRITICAL` tags and
   a named test per the package `CLAUDE.md`.
 
-**Deprecation register** (code Track 2 retires or demotes; each removal lands in the
-phase named):
+**Deprecation register** (code the public rungs R2/R3 retire or demote; each removal lands
+in the phase named):
 
 | Code | Disposition | Phase |
 |------|-------------|-------|
@@ -813,7 +868,7 @@ here as guidance, not as a competing ADR):
 - [ ] No secret (Apple `.p8`, client secrets) in the repo; detect-secrets clean
 
 **Dependencies**: Requires Phase 4a (app shell and guardian UI exist). P6-05 requires the
-Apple Developer account (P7-01), so enroll at Track 2 start. Requires a free-plan
+Apple Developer account (P7-01), so enroll at the start of the public rungs (R2/R3). Requires a free-plan
 Supabase project (dev/staging) created at phase start. Blocks Phases 8 and 9.
 
 ---
@@ -941,7 +996,7 @@ successful App Store submission.
 | P9-09 | TestFlight beta | At least a small set of external families through onboarding, subscription, and reading before submission; **upgrade the production Supabase project to Pro at TestFlight start** (free projects pause when inactive and lack daily backups) |
 | P9-10 | Submission and launch | Submit; respond to review; post-launch monitoring runbook (review queue, spend alarms, Sentry triage rota) |
 | P9-11 | Public-tier generation provider configuration | Production config uses OpenRouter only (primary model + in-provider fallback per ADR-003, reaffirmed by [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md)); the homelab Ollama leg is **not** a public-tier fallback (availability and provider-terms posture): set `provider_fallback_enabled` accordingly and leave `ollama_*` settings unset in production; Ollama remains a dev/family-tier leg only; the Modal generation leg (post-launch backlog) joins the public path only via the ADR-010 promotion gate |
-| P9-12 | Modal moderation review backend ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md), executes deferred slice 2b) | Implement `review_provider = "modal"` in `moderation/review_provider.py` (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in Track 2 (independent of Phases 6-8) |
+| P9-12 | Modal moderation review backend ([ADR-010](./adr/adr-010-modal-review-and-gated-generation.md), executes deferred slice 2b) | Implement `review_provider = "modal"` in `moderation/review_provider.py` (currently raises as deferred) against a Modal-served open-weight reviewer, weights prestaged on a Modal volume; reviewer independence from the generation provider is the point; Stage-0 deterministic classifiers stay mandatory; OpenRouter reviewer remains the fallback; can start any time in the public rungs R2/R3 (independent of Phases 6-8) |
 
 **Acceptance criteria**:
 
@@ -959,7 +1014,7 @@ successful App Store submission.
       simulated multi-family load
 - [ ] P7-08 compliance checklist re-verified at submission time
 
-**Dependencies**: Requires Phases 6, 7 (P7-08 gate), and 8. This phase closes Track 2.
+**Dependencies**: Requires Phases 6, 7 (P7-08 gate), and 8. This phase closes the public rungs (R2/R3).
 
 ---
 
@@ -1070,11 +1125,11 @@ documents.
 | Multi-device progress loss (iOS) | M | M | Revision-based concurrency; explicit 409 conflict resolution; server canonical; sync on every choice | 1 |
 | iOS PWA storage eviction | M | M | IndexedDB as cache only; Postgres canonical; offline-edge hardening in Phase 5; post-eviction UX designed in Phase 1 before tests written | 1, 5 |
 | Provider data-handling terms not confirmed before first LLM call | M | H | Phase-0 hard blocker: P0-09 must be resolved before Phase 2 begins | 0 |
-| Scope creep (dice/combat, social features) | M | M | Explicitly out of scope for all tracks; revisit only on demand; Track 2 scope is bounded by ADR-008 | All |
+| Scope creep (dice/combat, social features) | M | M | Explicitly out of scope on every rung; revisit only on demand; public-rung (R2/R3) scope is bounded by ADR-008 | All |
 | App Store rejection (4.2 web wrapper, kids' AI content, parental gate) | M | H | Native affordances checklist (P8-08), parental gate (P6-08), reviewer notes on the pre-moderated pipeline (P7-07), TestFlight beta before submission (P9-09) | 8, 9 |
 | COPPA / GDPR-K violation | L | H | Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08) | 6, 7 |
 | Auth defect enables cross-family data access | L | H | Reuse of proven `Principal` model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary | 6 |
-| Track 1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | L | M | **Narrowed 2026-07-02**: P6-01 real JWT validation was pulled forward into C4a-1 and now runs in every non-local environment (`Settings()` itself refuses to start outside `local` without `oidc_issuer`/`oidc_jwks_url`, per `_require_oidc_config_outside_local`); the stub is reachable only when `environment == "local"`, which remains acceptable for local/CI dev. Remaining exposure: no `Principal` is minted for a child session yet (P6-04) and no JIT guardian provisioning exists (P6-03), so the frontend has no way to reach a non-local backend as a real user until those land | 4a, 6 |
+| R1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | L | M | **Narrowed 2026-07-02**: P6-01 real JWT validation was pulled forward into C4a-1 and now runs in every non-local environment (`Settings()` itself refuses to start outside `local` without `oidc_issuer`/`oidc_jwks_url`, per `_require_oidc_config_outside_local`); the stub is reachable only when `environment == "local"`, which remains acceptable for local/CI dev. Remaining exposure: no `Principal` is minted for a child session yet (P6-04) and no JIT guardian provisioning exists (P6-03), so the frontend has no way to reach a non-local backend as a real user until those land | 4a, 6 |
 | LLM cost abuse at public scale | M | M | Metered credits (P8-05), per-family quotas, global spend cap with circuit breaker (P9-05) | 8, 9 |
 | Entitlement drift (payments vs access disagree) | M | M | Server-side receipt validation and webhook-driven transitions only (P8-04); sandbox lifecycle matrix (P8-07); forged-webhook negative test | 8 |
 | Supabase platform dependency (its incident is our login and data-plane outage) | M | M | Managed SLA on Pro (P9-09); open components underneath (Postgres, S3 API, GoTrue) keep ejection a migration, not a rewrite; export drill in P9-06 proves it | 6, 9 |
@@ -1098,7 +1153,7 @@ Source: [Project Vision](./project-vision.md) section "Success Metrics".
 | Safety | 0 stories reach a child profile without a recorded parent approval | Enforced by the publish state machine; transition tests in Phase 3 |
 | Offline reliability | A downloaded story plays start to finish with the network disabled | Playwright offline E2E test in Phase 1 |
 
-**Track 2 metrics** ([ADR-008](./adr/adr-008-public-app-store-launch.md)):
+**Public-rung (R2/R3) metrics** ([ADR-008](./adr/adr-008-public-app-store-launch.md)):
 
 | Metric | Target | Verification |
 |--------|--------|-------------|
@@ -1151,7 +1206,7 @@ These tasks are ready to start. No app code until this checklist is complete.
 - [ ] Write `TECHNICAL_BASELINE.md`: pinned versions for all components; RQ and in-house
       evaluator confirmed; no `latest` image tags; Alembic migration convention
 - [ ] Author the drafting guide and stage prompt templates (hard blocker for Phase 2 because
-      generation ships in the first release)
+      generation ships in R1)
 
 ---
 
@@ -1163,7 +1218,7 @@ These tasks are ready to start. No app code until this checklist is complete.
 | M1: Reader plays hand-authored stories offline | Phase 1 | 5-7 | M2 |
 | M2: Concept-to-story pipeline passes the full gate | Phase 2 | 9-12 | M3 |
 | M3: Parent approval gate enforced end to end | Phase 3 | 11-14 | M4 |
-| M4: First usable release (generation + library) | Phase 4a | 11-16 | M5 |
+| M4: Internal web release, R1 (generation + library) | Phase 4a | 11-16 | M5 |
 | M5: Hardened, deployed, restore-tested v1 | Phase 5 | 16-25 | - |
 | M6: Public auth live behind a flag (stranger family onboards in staging) | Phase 6 | 4a + 3-4 wks | M8, M9 |
 | M7: Compliance sign-off (checklist complete, deletion drill passes) | Phase 7 | 4a + 4-6 wks | M9 |
@@ -1189,18 +1244,25 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-005: Mandatory human approval | Publish state machine and child-safety guarantee | [docs/planning/adr/adr-005-mandatory-human-approval.md](./adr/adr-005-mandatory-human-approval.md) |
 | ADR-006: Conditions use in-house whitelisted evaluator | Condition DSL and conformance strategy | [docs/planning/adr/adr-006-conditions-inhouse-evaluator.md](./adr/adr-006-conditions-inhouse-evaluator.md) |
 | ADR-007: Raw LLM output retention policy | Retention for `GenerationJob.report` | [docs/planning/adr/adr-007-raw-output-retention.md](./adr/adr-007-raw-output-retention.md) |
-| ADR-008: Public App Store launch | Distribution, auth, monetization, hosting, and compliance pivots for Track 2 | [docs/planning/adr/adr-008-public-app-store-launch.md](./adr/adr-008-public-app-store-launch.md) |
+| ADR-008: Public App Store launch | Distribution, auth, monetization, hosting, and compliance pivots for the public rungs (R2/R3) | [docs/planning/adr/adr-008-public-app-store-launch.md](./adr/adr-008-public-app-store-launch.md) |
 | ADR-009: Supabase platform | Auth, database, storage, and queue topology for the public tier (amends ADR-008) | [docs/planning/adr/adr-009-supabase-platform.md](./adr/adr-009-supabase-platform.md) |
 | ADR-010: Modal review + gated generation leg | Moderation reviewer on Modal; evidence-gated path for Modal generation (amends ADR-003) | [docs/planning/adr/adr-010-modal-review-and-gated-generation.md](./adr/adr-010-modal-review-and-gated-generation.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
 
 ---
 
-**Last Updated**: 2026-07-02 (v2.3: Modal review backend + evidence-gated generation
+**Last Updated**: 2026-07-03 (v2.5: doc-consistency sweep: Phase 4a marked delivered and
+R1 feature-complete (C4a-1..6 merged); Supabase OIDC recorded as the app's current auth in
+the tech-stack table with Authentik retained for the homelab/family tier; ADR status
+promotions (001, 002, 003, 005, 006, 009, 011 Accepted; 004, 007, 008, 010 Proposed); old
+Track 1/Track 2 vocabulary retired in favour of the R1/R2/R3 rung language;
+v2.4: release ladder introduced (R1 internal web, R2 limited iOS, R3 public launch) as an
+overlay on the phase plan;
+v2.3: Modal review backend + evidence-gated generation
 leg per ADR-010; v2.2: code-audit refinements: deprecation register, inline-blob
 storage correction, guardian email column, public-tier provider config, pool sizing;
-v2.1: Track 2 pivoted to the Supabase platform per ADR-009;
-v2.0: Track 2 public App Store launch added per ADR-008)
-**Next Review**: At each phase boundary; Track 2 additionally at P7-08 compliance sign-off
-and pre-submission (P9-10)
+v2.1: platform pivoted to Supabase per ADR-009;
+v2.0: public App Store launch added per ADR-008)
+**Next Review**: At each phase boundary; the public rungs additionally at P7-08 compliance
+sign-off and pre-submission (P9-10)
 **Approved By**: Byron Williams (core-maintainer)

@@ -1,7 +1,7 @@
 ---
 title: "ADR-003: Frontier LLM for generation, local model as fallback"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to use a frontier LLM as the primary generator behind a provider-agnostic interface."
 tags:
@@ -12,7 +12,7 @@ tags:
 
 # ADR-003: Frontier LLM for generation, local model as fallback
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-03; amended 2026-06-22, see Amendment: OpenRouter primary)
 > **Date**: 2026-06-20
 
 ## TL;DR
@@ -130,6 +130,8 @@ model. Useful fallback inside the provider abstraction.
 - [ADR-004](./adr-004-homelab-first-deployment.md): the privacy posture for an external
   generator call.
 - [ADR-005](./adr-005-mandatory-human-approval.md): the human gate after generation.
+- [ADR-010](./adr-010-modal-review-and-gated-generation.md): adds a self-hosted Modal
+  generation leg behind the same provider seam.
 - [Tech Spec: Authoring pipeline](../tech-spec.md#authoring-pipeline-staged-generation)
 
 ## Amendment (2026-06-22): OpenRouter primary

@@ -1,7 +1,7 @@
 ---
 title: "Story Runtime Semantics v1"
 schema_type: planning
-status: draft
+status: accepted
 owner: core-maintainer
 purpose: "Define the canonical execution model shared by the player and the validator for Tier-2 story traversal."
 tags:
@@ -14,7 +14,7 @@ source: "tech-spec.md section 'Story Runtime Semantics v1'"
 
 # Story Runtime Semantics v1
 
-> **Status**: Draft | **Version**: 1.0 | **Updated**: 2026-06-20
+> **Status**: Accepted (cross-signed) | **Version**: 1.1 | **Updated**: 2026-07-03
 > **Scope**: Tier-1 and Tier-2 stories
 > **Binding on**: Player (TypeScript/XState) and Validator (Python/networkx)
 
@@ -81,7 +81,7 @@ not as designed behavior. Authors and the generator must not rely on runtime cla
 game logic.
 
 **Verification**: the Layer-1 validator (rule L1-6) checks that no reachable transition exceeds
-declared bounds. A story must not reach `approved` state if this check fails.
+declared bounds. A story must not reach `published` state if this check fails.
 
 ---
 
@@ -141,7 +141,8 @@ records `ending.id`, not the node id or the ending title, so it survives prose c
 not change the ending identity.
 
 **Structural requirement**: an ending node has `is_ending: true`, exactly zero `choices`, and
-a non-empty `ending` block containing a unique `ending.id`, `type`, and `title`.
+a non-empty `ending` block containing a unique `ending.id`, a two-axis `valence` and `kind`,
+and a `title` (two-axis endings per [ADR-001](./adr/adr-001-story-format-json-storybook.md)).
 
 ---
 
@@ -185,9 +186,11 @@ and the validator owner before Phase 1 begins:
 - Section 4: Hidden (not disabled) choices
 - Section 5: Save format fields (particularly `visit_set`)
 
-**OPEN: owner cross-sign required.** The player owner and the validator owner must both sign off
-on this document before any Phase-1 implementation begins. Record sign-off as a commit to this
-file with message: `docs: cross-sign runtime-semantics.md - <owner>`.
+**RESOLVED: cross-sign satisfied.** The player and validator implementations shipped in Phase 1
+(merged) and are held to this model by the shared conformance corpus; Phase 4a is feature-complete
+as of 2026-07-03. The cross-sign gate that once blocked Phase-1 implementation is closed. Any
+future change to a normative rule above still requires owner sign-off and a version bump to this
+document.
 
 ---
 

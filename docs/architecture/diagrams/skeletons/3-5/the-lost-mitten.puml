@@ -57,5 +57,6 @@ legend right
   Band 3-5 · Tier 1 · ~5 min
   Topology: loop_and_grow
   11 nodes · 3 endings (3+ / 0n / 0-)
+  MVP/Test tier (not production-eligible)
 endlegend
 @enduml

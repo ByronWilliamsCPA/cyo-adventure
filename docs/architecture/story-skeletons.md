@@ -52,6 +52,17 @@ by narrative role.
 
 <!-- END GENERATED: skeleton-catalog -->
 
+All three catalogued skeletons currently declare `production_eligible: false` and no
+`length` or `narrative_style`: they are ADR-011 section 1a MVP/Test-tier development
+seeds (a band-independent 8-45 node envelope, budgeted with `mvp_node_budget` in
+`validator/band_profile.py`), not examples of a production `(age_band, length,
+narrative_style)` cell. The catalog has no production-eligible skeleton yet. The
+"Length (min)" column above is `estimated_minutes` (a read-time estimate), not the
+ADR-011 `length` scale tier described below; per-cell production node budgets live in
+`validator/band_profile.py` (`_PRODUCTION_CELLS`), not a single fixed per-band range.
+The "Tier" column is the generation `tier` field (`1` forbids state variables, `2`
+allows them), a separate concept from the MVP/Test tier.
+
 ## Data dictionary
 
 Sourced from `src/cyo_adventure/storybook/models.py` (the enforced schema), with one
@@ -64,21 +75,41 @@ see template feedback for the doc-correction follow-up.
 | --- | --- | --- |
 | `age_band` | closed enum | `3-5`, `5-8`, `8-11`, `10-13`, `13-16`, `16+` |
 | `tier` | int 1-2 | `1`, `2` (tier 1 forbids state variables) |
-| `topology` | closed enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `loop_and_grow` |
+| `topology` | closed enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `loop_and_grow`, `open_map`, `sorting_hat` |
+| `length` | closed enum, optional | `short`, `medium`, `long`; the ADR-011 story-scale axis. Young bands (`3-5`, `5-8`) cap at `medium`. Omitted means the story is not scale-classified |
+| `narrative_style` | closed enum, optional | `prose`, `gamebook`; meaningful only for `13-16`/`16+`; every other band is implicitly `prose` |
+| `production_eligible` | bool | defaults to `true`; `false` marks a non-production MVP/Test-tier skeleton (ADR-011 section 1a) |
 | `valence` | closed enum | `positive`, `neutral`, `negative` |
 | `ending.kind` | closed enum | `success`, `setback`, `death`, `capture`, `completion`, `discovery` |
 | content flags | level enum per category | categories `violence`, `scariness`, `peril`; levels `none` < `mild` < `moderate` < `intense` |
-| `estimated_minutes` | int >= 1 | open (length is continuous; per-band ranges in `validator/band_profile.py`) |
+| `estimated_minutes` | int >= 1 | open (a read-time estimate; not the `length` scale tier above) |
 | node `role` | FILL directive | `setup`, `rising`, `choice`, `climax`, plus ending subtypes |
 
 ### Definitions
 
 - **age_band** -- the reading age the story targets; drives reading-level, content,
   and fail-state policy.
-- **length** -- `estimated_minutes`, an integer; not a fixed set. Per-band word and
-  node ranges are governed by `validator/band_profile.py`.
-- **tier** -- generation tier; tier 1 stories declare no state variables.
-- **topology** -- the branching shape of the graph (Ashwell vocabulary).
+- **estimated_minutes** -- an integer read-time estimate (the "Length (min)" catalog
+  column); distinct from the `length` scale-tier field below.
+- **length** -- the ADR-011 story-scale tier (`short` / `medium` / `long`), one axis of
+  the `(age_band, length, narrative_style)` production matrix whose per-cell node
+  budgets live in `validator/band_profile.py` (`_PRODUCTION_CELLS`). Optional: a
+  skeleton that declares no `length` is not scale-classified and keeps the band-level
+  budget instead of a per-cell production node budget.
+- **narrative_style** -- `prose` or `gamebook`; chunks the same word budget into
+  fewer/longer or more/shorter nodes. Meaningful only for `13-16` and `16+`; every
+  other band is implicitly `prose`.
+- **production_eligible** -- defaults to `true`. `false` marks a non-production
+  MVP/Test-tier skeleton (ADR-011 section 1a): a band-independent 8-45 node envelope
+  for prototyping and pipeline/generator testing, excluded from child-facing
+  production selection regardless of band. All three skeletons in this catalog are
+  currently `production_eligible: false` development seeds, not examples of a
+  production `(age_band, length, narrative_style)` cell.
+- **tier** -- generation tier; tier 1 stories declare no state variables. Not to be
+  confused with the MVP/Test tier above (a `production_eligible` concept).
+- **topology** -- the branching shape of the graph (Ashwell vocabulary). Six ADR-011
+  topologies: `time_cave`, `gauntlet`, `branch_and_bottleneck` (absorbs the retired
+  Ashwell `quest` variant), `loop_and_grow`, `open_map`, and `sorting_hat`.
 - **valence** -- how an ending feels (positive / neutral / negative), independent of
   what mechanically happened.
 - **ending.kind** -- what mechanically happened at an ending (closed set).

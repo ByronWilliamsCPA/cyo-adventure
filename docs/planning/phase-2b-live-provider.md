@@ -41,7 +41,9 @@ Phase 2 delivered the `GenerationProvider` protocol, the staged orchestrator, th
 yield harness, and all backend scaffolding for async generation. Two acceptance criteria were
 deliberately deferred because they require a live LLM provider:
 
-1. Concrete HTTP-client adapters for Claude (primary), Ollama, and OpenRouter.
+1. Concrete HTTP-client adapters for OpenRouter (primary), Ollama, and Claude via OpenRouter
+   (direct Anthropic SDK adapter deferred; see the amendment above and the In Scope section
+   below).
 2. Measured generation yield of at least 60% over a 20-story sample against a live provider.
 
 This document defines the scope, acceptance criteria, and key constraints for the follow-up
@@ -94,7 +96,8 @@ the defined extension points:
   dominant yield failure is L1-7 "budget" (`branch_depth` over the band cap, `ending_count` not
   matching the brief): the structure prompt defers these numbers to the injected drafting guide
   instead of stating them inline. State the hard band budget numerically and prominently (max
-  branch depth, min/max nodes from `layer1.py`'s band table, and "produce exactly `ending_count`
+  branch depth, min/max nodes from `band_profile.py`'s band table (the single source of truth
+  under ADR-011; `layer1` now delegates to it), and "produce exactly `ending_count`
   endings"). This is the highest-leverage yield lever and is model-independent. Document the
   change in the harness output per the out-of-scope note below.
 

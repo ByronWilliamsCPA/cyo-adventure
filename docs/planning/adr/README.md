@@ -25,17 +25,17 @@ ADRs document significant architectural decisions along with their context and c
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
-| [ADR-001](./adr-001-story-format-json-storybook.md) | Story format is a versioned JSON Storybook graph | Proposed | 2026-06-20 |
-| [ADR-002](./adr-002-client-pwa.md) | Client is a Progressive Web App | Proposed | 2026-06-20 |
-| [ADR-003](./adr-003-frontier-llm-generation.md) | Frontier LLM for generation, local model as fallback | Proposed | 2026-06-20 |
+| [ADR-001](./adr-001-story-format-json-storybook.md) | Story format is a versioned JSON Storybook graph | Accepted | 2026-06-20 |
+| [ADR-002](./adr-002-client-pwa.md) | Client is a Progressive Web App | Accepted | 2026-06-20 |
+| [ADR-003](./adr-003-frontier-llm-generation.md) | Frontier LLM for generation, local model as fallback | Accepted | 2026-06-20 |
 | [ADR-004](./adr-004-homelab-first-deployment.md) | Homelab-first deployment, Azure as the scale-out alternative | Proposed | 2026-06-20 |
-| [ADR-005](./adr-005-mandatory-human-approval.md) | Mandatory human approval before any story reaches a child | Proposed | 2026-06-20 |
-| [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Proposed | 2026-06-20 |
+| [ADR-005](./adr-005-mandatory-human-approval.md) | Mandatory human approval before any story reaches a child | Accepted | 2026-06-20 |
+| [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Accepted | 2026-06-20 |
 | [ADR-007](./adr-007-raw-output-retention.md) | Raw LLM output retention policy for GenerationJob.report | Proposed | 2026-06-29 |
 | [ADR-008](./adr-008-public-app-store-launch.md) | Public App Store launch with tiered subscription monetization | Proposed | 2026-07-02 |
-| [ADR-009](./adr-009-supabase-platform.md) | Supabase as the managed platform for auth, database, and storage | Proposed | 2026-07-02 |
+| [ADR-009](./adr-009-supabase-platform.md) | Supabase as the managed platform for auth, database, and storage | Accepted | 2026-07-02 |
 | [ADR-010](./adr-010-modal-review-and-gated-generation.md) | Modal for moderation review and an evidence-gated generation leg | Proposed | 2026-07-02 |
-| [ADR-011](./adr-011-story-scale-framework.md) | Story-scale framework (reading band x length x style) | Proposed | 2026-07-02 |
+| [ADR-011](./adr-011-story-scale-framework.md) | Story-scale framework (reading band x length x style) | Accepted | 2026-07-02 |
 
 ## Creating ADRs
 
