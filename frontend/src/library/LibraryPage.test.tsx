@@ -115,6 +115,26 @@ describe('LibraryPage', () => {
     expect(five).toHaveAttribute('aria-pressed', 'true')
   })
 
+  it('keeps the previous rating when the rating POST fails', async () => {
+    // NOT_STARTED is rated 3; a failed upsert must not fill the tapped star or
+    // crash the shelf (rate()'s .catch keeps the previous rating).
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce(new Error('rate boom'))
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    expect(mockPost).toHaveBeenCalledWith('/v1/ratings', {
+      profile_id: 'p1',
+      storybook_id: 's3',
+      value: 5,
+    })
+    const five = await screen.findByRole('button', { name: /5 stars/i })
+    expect(five).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute(
+      'aria-pressed',
+      'true'
+    )
+  })
+
   it('renders the shelf non-hero started book with a plain progress bar and no pages-explored label', async () => {
     mockGet.mockResolvedValue({ data: { stories: [OLDER_IN_PROGRESS, IN_PROGRESS] } })
     renderLibrary()

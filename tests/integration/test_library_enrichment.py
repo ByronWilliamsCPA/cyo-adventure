@@ -6,10 +6,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.db.models import Rating, ReadingState
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
@@ -59,10 +61,53 @@ async def test_library_reports_progress_and_rating(
     assert item["progress"]["current_node"] == _START_NODE
 
 
-async def test_other_childs_activity_not_leaked(
+async def test_no_activity_yields_null_enrichment(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """A profile with no activity sees null rating/progress, not another profile's data."""
+    """A profile with no reading state or rating of its own sees null enrichment."""
+    profile = str(seed.child_profile_id)
+    listing = await client.get(
+        f"/api/v1/library?profile_id={profile}", headers=auth(seed.child_token)
+    )
+    assert listing.status_code == 200
+    for story in listing.json()["stories"]:
+        assert story["rating"] is None
+        assert story["progress"] is None
+
+
+async def test_other_childs_activity_not_leaked(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Another profile's rating/state on the same book never surfaces for this child.
+
+    Seeds a *different* profile's reading state and rating directly on the
+    shared storybook (bypassing API authorization on purpose), then lists as
+    the authorized child. The enrichment queries are scoped to
+    ``child_profile_id == parsed``, so the foreign activity must be excluded; a
+    regression dropping that filter, or widening it to every profile, would
+    surface the other child's value here.
+    """
+    async with sessions() as session:
+        session.add(
+            ReadingState(
+                child_profile_id=seed.other_child_profile_id,
+                storybook_id=seed.storybook_id,
+                version=seed.version,
+                current_node=_START_NODE,
+                visit_set=[_START_NODE],
+            )
+        )
+        session.add(
+            Rating(
+                child_profile_id=seed.other_child_profile_id,
+                storybook_id=seed.storybook_id,
+                value=5,
+            )
+        )
+        await session.commit()
+
     profile = str(seed.child_profile_id)
     listing = await client.get(
         f"/api/v1/library?profile_id={profile}", headers=auth(seed.child_token)
