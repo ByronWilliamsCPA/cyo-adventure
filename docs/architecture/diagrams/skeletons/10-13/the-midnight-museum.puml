@@ -75,8 +75,8 @@ state k_stairs_up #D1C4E9
 k_stairs_up : rising · 95w
 state k_stairs_base #D1C4E9
 k_stairs_base : rising · 95w
-state k_study #FFF9C4
-k_study : choice · 110w
+state k_study #D1C4E9
+k_study : rising · 110w
 state n_cipher #FFF9C4
 n_cipher : choice · 115w
 state ci_stars #D1C4E9
@@ -353,5 +353,7 @@ legend right
   Band 10-13 · Tier 1 · ~9 min
   Topology: branch_and_bottleneck
   94 nodes · 19 endings (7+ / 3n / 9-)
+  Production-eligible
+  Scale: short · prose
 endlegend
 @enduml

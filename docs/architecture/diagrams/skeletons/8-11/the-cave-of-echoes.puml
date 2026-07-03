@@ -236,5 +236,7 @@ legend right
   Band 8-11 · Tier 1 · ~8 min
   Topology: time_cave
   64 nodes · 16 endings (10+ / 0n / 6-)
+  Production-eligible
+  Scale: short · prose
 endlegend
 @enduml

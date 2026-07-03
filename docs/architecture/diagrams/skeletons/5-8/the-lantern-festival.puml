@@ -152,5 +152,7 @@ legend right
   Band 5-8 · Tier 1 · ~6 min
   Topology: loop_and_grow
   36 nodes · 10 endings (7+ / 0n / 3-)
+  Production-eligible
+  Scale: short · prose
 endlegend
 @enduml
