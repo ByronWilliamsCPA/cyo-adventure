@@ -254,3 +254,40 @@
   color: var(--color-ink-secondary, #5a3e28);
   white-space: nowrap;
 }
+
+.flag-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: var(--text-sm, 0.9375rem);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.flag-badge--block,
+.flag-badge--unscreened {
+  background: rgb(179 38 30 / 12%);
+  color: var(--color-error, #b3261e);
+}
+
+.flag-badge--flag {
+  background: rgb(193 123 42 / 14%);
+  color: var(--color-amber, #c17b2a);
+}
+
+.flag-badge--advisory {
+  background: rgb(90 62 40 / 10%);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.flag-badge--clean {
+  background: rgb(45 90 61 / 12%);
+  color: var(--color-forest, #2d5a3d);
+}
+
+.flag-badge--processing {
+  background: rgb(140 111 86 / 12%);
+  color: var(--color-ink-muted, #8c6f56);
+}
