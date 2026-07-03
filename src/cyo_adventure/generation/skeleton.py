@@ -46,6 +46,34 @@ def load_skeleton(path: Path) -> dict[str, object]:
     return data
 
 
+def is_production_eligible(story: dict[str, object]) -> bool:
+    """Return whether a skeleton may be selected for a child-facing story.
+
+    A skeleton is production-eligible unless its metadata explicitly sets
+    ``production_eligible`` to ``False`` (the MVP/Test tier; see ADR-011).
+    Production story selection must exclude non-eligible skeletons; the gate
+    still accepts them (against the band-independent MVP node envelope) so they
+    remain usable for prototyping and pipeline testing.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        ``True`` unless ``metadata.production_eligible`` is explicitly ``False``.
+    """
+    # #CRITICAL: security: this gate decides whether a skeleton is offered to a
+    # child; malformed or absent metadata defaults to eligible (the permissive
+    # direction), and the raw ``is not False`` test treats a JSON string "false" as
+    # eligible. A production selector MUST call this on already-schema-validated
+    # metadata (StoryMetadata.production_eligible: bool), not on arbitrary raw JSON.
+    # #VERIFY: production story selection screens skeletons through the Pydantic
+    # StoryMetadata model before calling this, so production_eligible is a real bool.
+    meta = story.get("metadata")
+    if not isinstance(meta, dict):
+        return True
+    return meta.get("production_eligible") is not False
+
+
 def has_unfilled_directives(story: dict[str, object]) -> bool:
     """Return True if any node body still contains a ``<<FILL``-prefixed directive."""
     nodes = story.get("nodes")

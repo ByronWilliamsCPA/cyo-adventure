@@ -24,7 +24,8 @@
       "scariness": "mild",
       "peril": "mild"
     },
-    "topology": "branch_and_bottleneck"
+    "topology": "branch_and_bottleneck",
+    "production_eligible": false
   },
   "variables": [],
   "start_node": "n_start",

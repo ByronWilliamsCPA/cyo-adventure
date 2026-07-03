@@ -188,6 +188,25 @@
       "type": "string"
     },
     "JsonValue": {},
+    "Length": {
+      "description": "The story-scale (length) tier: a total-word budget, world size.\n\nProduction stories place themselves on the ``(band, length, style)`` matrix\nfrom ADR-011; the node-count envelope is derived per cell. Young bands cap\nat ``MEDIUM``; epic scale is a series, not a fourth tier. A story that\ndeclares no length is not scale-classified and keeps the band-level budget.",
+      "enum": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "title": "Length",
+      "type": "string"
+    },
+    "NarrativeStyle": {
+      "description": "Prose vs gamebook chunking of one word budget (ADR-011).\n\nMeaningful only for ``13-16`` and ``16+``; lower bands are implicitly\n``PROSE``. Gamebook packs the same total words into more, shorter nodes.",
+      "enum": [
+        "prose",
+        "gamebook"
+      ],
+      "title": "NarrativeStyle",
+      "type": "string"
+    },
     "Node": {
       "additionalProperties": false,
       "description": "A passage: prose plus either choices (branch) or an ending (terminal).",
@@ -291,6 +310,50 @@
       "title": "SafetyScope",
       "type": "string"
     },
+    "Series": {
+      "additionalProperties": false,
+      "description": "Campaign-continuity metadata chaining a story into a multi-book series.\n\nA series is a meta-skeleton (books are nodes, and the completion-to-entry\ncontinuations are edges); v1 is a linear chain. Each book is a standalone\nStorybook that passes its own gate; these fields let the cross-book\nmeta-validator check the ADR-011 section-8 invariant: in any non-final book,\nevery successful-completion ending converges on the next book's single\n``series_entry_node`` (many endings -> one entry), with declared state carried\nacross. Young or Tier-1 bands run **episodic** series that carry no state.",
+      "properties": {
+        "book_index": {
+          "minimum": 1,
+          "title": "Book Index",
+          "type": "integer"
+        },
+        "carries_state": {
+          "default": true,
+          "title": "Carries State",
+          "type": "boolean"
+        },
+        "is_final": {
+          "default": false,
+          "title": "Is Final",
+          "type": "boolean"
+        },
+        "series_entry_node": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Series Entry Node"
+        },
+        "series_id": {
+          "minLength": 1,
+          "title": "Series Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "series_id",
+        "book_index"
+      ],
+      "title": "Series",
+      "type": "object"
+    },
     "StoryMetadata": {
       "additionalProperties": false,
       "description": "Descriptive metadata carried by every Storybook.",
@@ -311,8 +374,39 @@
           "title": "Estimated Minutes",
           "type": "integer"
         },
+        "length": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Length"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "narrative_style": {
+          "$ref": "#/$defs/NarrativeStyle",
+          "default": "prose"
+        },
+        "production_eligible": {
+          "default": true,
+          "title": "Production Eligible",
+          "type": "boolean"
+        },
         "reading_level": {
           "$ref": "#/$defs/ReadingLevel"
+        },
+        "series": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Series"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "themes": {
           "items": {
@@ -343,12 +437,14 @@
       "type": "object"
     },
     "Topology": {
-      "description": "The branching shape of a story graph (Ashwell vocabulary).",
+      "description": "The branching shape of a story graph (Ashwell vocabulary).\n\nSix ADR-011 topologies compose from the flow primitives. ``open_map`` is a\nhub the reader explores in any order (loop/return edges make it cyclic);\n``sorting_hat`` sorts the reader at an early branch into parallel, never\nreconverging tracks (an acyclic branching tree with no cross-track\nbottleneck). The Ashwell ``quest`` folds into ``branch_and_bottleneck``.",
       "enum": [
         "time_cave",
         "gauntlet",
         "branch_and_bottleneck",
-        "loop_and_grow"
+        "loop_and_grow",
+        "open_map",
+        "sorting_hat"
       ],
       "title": "Topology",
       "type": "string"

@@ -15,10 +15,13 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.validator import Severity, layer1, validate_layer1
+from cyo_adventure.validator.band_profile import production_cell_budget
 from cyo_adventure.validator.layer1 import band_budget
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+
+    from cyo_adventure.validator.report import ValidationReport
 
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "storybook"
 _VALID = _FIXTURES / "valid"
@@ -402,3 +405,132 @@ def test_new_bands_have_budgets(band: str, expected: tuple[int, int, int]) -> No
     budget = band_budget(band)
     assert budget is not None, f"No budget entry found for band {band!r}"
     assert budget == expected
+
+
+def _node_count_errors(report: ValidationReport) -> list[str]:
+    """Return L1-7 node_count ERROR messages from a validation report."""
+    return [
+        f.message
+        for f in report.errors
+        if f.rule_id == "L1-7"
+        and f.severity is Severity.ERROR
+        and "node_count" in f.message
+    ]
+
+
+@pytest.mark.unit
+def test_mvp_tier_budget_overrides_band_ceiling() -> None:
+    """A non-production (MVP) story is capped at the MVP envelope, not the band's.
+
+    47 nodes sit within the 16+ production ceiling (60) but exceed the
+    band-independent MVP ceiling (45), so the same graph passes the node-count
+    budget as production and trips L1-7 node_count as MVP.
+    """
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(46)]
+    nodes = [*chain, _ending("n46")]
+    production_meta = _meta(age_band="16+", tier=1)
+    mvp_meta = {**_meta(age_band="16+", tier=1), "production_eligible": False}
+
+    production = validate_layer1(_story(nodes, meta=production_meta, start="n0"))
+    mvp = validate_layer1(_story(nodes, meta=mvp_meta, start="n0"))
+
+    assert _node_count_errors(production) == []
+    assert _node_count_errors(mvp), "MVP story above the 45-node envelope must error"
+
+
+@pytest.mark.unit
+def test_mvp_tier_below_envelope_warns_not_errors() -> None:
+    """An MVP story below the MVP floor warns (not errors), matching the band path."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(3)]
+    nodes = [*chain, _ending("n3")]
+    mvp_meta = {**_meta(age_band="16+", tier=1), "production_eligible": False}
+
+    report = validate_layer1(_story(nodes, meta=mvp_meta, start="n0"))
+
+    assert _node_count_errors(report) == []
+    assert any(
+        f.rule_id == "L1-7"
+        and f.severity is Severity.WARNING
+        and "node_count" in f.message
+        for f in report.findings
+    )
+
+
+@pytest.mark.unit
+def test_production_length_cell_lifts_the_band_ceiling() -> None:
+    """The same 80-node 8-11 story errors as band-scale but passes as 'short'.
+
+    Band-level 8-11 caps at 30 nodes; the ADR-011 'short' production cell allows
+    60-100, so declaring a length raises the node ceiling. (The linear fixture
+    also trips branch_depth, which ``_node_count_errors`` deliberately excludes.)
+    """
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(79)]
+    nodes = [*chain, _ending("n79")]  # 80 nodes
+    band_meta = _meta(age_band="8-11", tier=1)
+    cell_meta = {**band_meta, "length": "short", "narrative_style": "prose"}
+
+    band_scale = validate_layer1(_story(nodes, meta=band_meta, start="n0"))
+    cell_scale = validate_layer1(_story(nodes, meta=cell_meta, start="n0"))
+
+    assert _node_count_errors(band_scale)  # 80 > band 8-11 max 30
+    assert _node_count_errors(cell_scale) == []  # 80 within the 60-100 cell
+
+
+@pytest.mark.unit
+def test_production_cell_ceiling_still_blocks_above_max() -> None:
+    """A production story above its cell's max node count trips L1-7."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(100)]
+    nodes = [*chain, _ending("n100")]  # 101 nodes
+    cell_meta = {
+        **_meta(age_band="8-11", tier=1),
+        "length": "short",
+        "narrative_style": "prose",
+    }
+    report = validate_layer1(_story(nodes, meta=cell_meta, start="n0"))
+    assert _node_count_errors(report)  # 101 > 100 cell max
+
+
+@pytest.mark.unit
+def test_off_matrix_length_falls_back_to_band_budget() -> None:
+    """A length with no matching cell (3-5 'long') uses the band budget."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(30)]
+    nodes = [*chain, _ending("n30")]  # 31 nodes, above 3-5 band max 20
+    meta = {
+        **_meta(age_band="3-5", tier=1, ending_count=1),
+        "length": "long",
+        "narrative_style": "prose",
+    }
+    report = validate_layer1(_story(nodes, meta=meta, start="n0"))
+    assert _node_count_errors(report)  # no 3-5 'long' cell -> band max 20 applies
+
+
+@pytest.mark.unit
+def test_resolve_node_budget_precedence() -> None:
+    """The shared resolver applies MVP -> production-cell -> band precedence.
+
+    This is the single budget path both the gate and the Stage A prompt call, so
+    the precedence is asserted once here rather than through each caller.
+    """
+    from cyo_adventure.validator.band_profile import mvp_node_budget
+    from cyo_adventure.validator.layer1 import ScalePlacement, resolve_node_budget
+
+    # 1. MVP overrides everything, ignoring an otherwise-valid length cell.
+    assert resolve_node_budget(
+        "8-11",
+        ScalePlacement(length="short", production_eligible=False),
+        scale="standard",
+    ) == mvp_node_budget("8-11")
+    # 2. A declared, offered cell wins over the band budget.
+    assert resolve_node_budget(
+        "8-11",
+        ScalePlacement(length="short", narrative_style="prose"),
+        scale="standard",
+    ) == production_cell_budget("8-11", "short", "prose")
+    # 3. No length falls back to the band budget.
+    assert resolve_node_budget(
+        "8-11", ScalePlacement(), scale="standard"
+    ) == band_budget("8-11")
+    # 4. An off-matrix length also falls back to the band budget.
+    assert resolve_node_budget(
+        "3-5", ScalePlacement(length="long"), scale="standard"
+    ) == band_budget("3-5")

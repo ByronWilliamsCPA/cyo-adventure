@@ -12,10 +12,12 @@ from cyo_adventure.validator.report import (
     ValidationFinding,
     ValidationReport,
 )
+from cyo_adventure.validator.series import validate_series
 
 __all__ = [
     "Severity",
     "ValidationFinding",
     "ValidationReport",
     "validate_layer1",
+    "validate_series",
 ]

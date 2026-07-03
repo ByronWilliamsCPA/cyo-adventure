@@ -33,7 +33,11 @@ from typing import TYPE_CHECKING
 
 from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.storybook.schema_export import build_schema
-from cyo_adventure.validator.layer1 import Scale, band_budget
+from cyo_adventure.validator.band_profile import (
+    min_complete_floor,
+    words_per_node_profile,
+)
+from cyo_adventure.validator.layer1 import Scale, ScalePlacement, resolve_node_budget
 
 if TYPE_CHECKING:
     from cyo_adventure.generation.concept import ConceptBrief
@@ -174,12 +178,18 @@ def _budget_block(brief: ConceptBrief, scale: Scale = "standard") -> str:
         BusinessLogicError: If no budget is defined for the brief's age band.
     """
     # #CRITICAL: data-integrity: the prompt's promised budget must match the
-    # validator's enforced budget exactly; both read band_budget so they cannot
-    # drift. A None here means AgeBand and the validator budget table fell out of
-    # sync (an unreachable state given AgeBand is constrained to known bands).
+    # validator's enforced budget exactly; both read resolve_node_budget so they
+    # cannot drift. A None here means AgeBand and the validator budget table fell
+    # out of sync (an unreachable state given AgeBand is constrained to known
+    # bands and every brief is production-eligible with a valid band).
     # #VERIFY: test_prompts asserts the rendered budget numbers equal
-    # band_budget(brief.age_band) for every AgeBand member.
-    budget = band_budget(brief.age_band, scale)
+    # resolve_node_budget(brief.age_band, ...) for every AgeBand and cell.
+    placement = ScalePlacement(
+        length=brief.length.value if brief.length is not None else None,
+        narrative_style=brief.narrative_style.value,
+        production_eligible=True,
+    )
+    budget = resolve_node_budget(brief.age_band, placement, scale=scale)
     if budget is None:
         msg = f"no L1-7 budget defined for age band {brief.age_band!r}"
         raise BusinessLogicError(msg, rule="band_budget_missing")
@@ -202,7 +212,51 @@ def _budget_block(brief: ConceptBrief, scale: Scale = "standard") -> str:
         f"- Endings: produce EXACTLY {ending_count} ending node(s) (nodes with "
         f'`"is_ending": true`), each with a distinct ending id, and set '
         f"`metadata.ending_count` to {ending_count}. Not more, not fewer."
+        f"{_scale_cell_block(brief)}"
     )
+
+
+def _scale_cell_block(brief: ConceptBrief) -> str:
+    """Render the scale-cell constraints for a length-declared brief, else ``""``.
+
+    A brief with no ``length`` is not scale-classified: this returns the empty
+    string so the length-less prompt is byte-identical to the pre-scale prompt.
+    When a ``length`` is declared, the block states the ADR-011 words-per-node
+    envelope (PL-19) and the fastest-finish arc floor (PL-20) for the brief's
+    ``(band, length, style)`` cell, so the prompt promises exactly what those
+    policy rules enforce.
+
+    Args:
+        brief: The validated concept brief for this generation job.
+
+    Returns:
+        A leading-newline markdown block, or ``""`` when no length is declared.
+    """
+    if brief.length is None:
+        return ""
+    band = str(brief.age_band)
+    style = brief.narrative_style.value
+    lines = [
+        f"\n- Story scale: this is a {brief.length.value} {style} story for the "
+        f"{band} band. Size the world to that scale cell, not the band minimum."
+    ]
+    words = words_per_node_profile(band, style)
+    if words is not None:
+        mean, _advisory_lo, _advisory_hi, per_node_max = words
+        lines.append(
+            f"\n- Words per node: aim for a story-mean of about {mean} words per "
+            f"node, and keep every single node at or under {per_node_max} words "
+            f"(rule PL-19). A one-line beat is fine; no node may exceed the max."
+        )
+    floor = min_complete_floor(band, brief.length.value, style)
+    if floor is not None:
+        lines.append(
+            f"\n- Earned ending: the shortest path from the start node to any "
+            f"success or completion ending must be at least {floor} nodes long "
+            f"(rule PL-20). Do not offer a hollow quick win; make the reader earn "
+            f"a satisfying ending through at least {floor} passages."
+        )
+    return "".join(lines)
 
 
 # ---------------------------------------------------------------------------

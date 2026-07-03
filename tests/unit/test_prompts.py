@@ -28,7 +28,12 @@ from cyo_adventure.generation.prompts import (
     build_repair_prompt,
     build_structure_prompt,
 )
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.validator.band_profile import (
+    min_complete_floor,
+    production_cell_budget,
+    words_per_node_profile,
+)
 from cyo_adventure.validator.layer1 import band_budget
 
 # ---------------------------------------------------------------------------
@@ -215,6 +220,64 @@ class TestBuildStructurePrompt:
         min_nodes, max_nodes, max_depth = budget
         assert f"between {min_nodes} and {max_nodes} nodes" in result.user
         assert f"at most {max_depth} choices deep" in result.user
+
+    def test_length_less_brief_omits_scale_cell_block(
+        self, minimal_brief: ConceptBrief
+    ) -> None:
+        """A brief with no length renders no scale-cell lines (backward compatible)."""
+        result = build_structure_prompt(minimal_brief)
+        assert "Story scale:" not in result.user
+        assert "Words per node:" not in result.user
+        assert "Earned ending:" not in result.user
+
+    def test_length_declared_brief_uses_cell_budget(self) -> None:
+        """A length-declared brief promises the ADR-011 cell budget, not the band."""
+        brief = ConceptBrief(
+            premise="A layered mystery through a flooded city.",
+            protagonist=Protagonist(name="Isla", age=12, role="diver"),
+            age_band=AgeBand.BAND_8_11,
+            reading_level_target=5.0,
+            tier=1,
+            tone="mysterious",
+            target_node_count=120,
+            ending_count=6,
+            structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
+            length=Length.MEDIUM,
+        )
+        result = build_structure_prompt(brief)
+        cell = production_cell_budget("8-11", "medium", "prose")
+        assert cell is not None
+        min_nodes, max_nodes, _max_depth = cell
+        # The cell ceiling is far above the band ceiling; the prompt states it.
+        assert f"between {min_nodes} and {max_nodes} nodes" in result.user
+        band = band_budget("8-11")
+        assert band is not None
+        assert band[1] != max_nodes  # the cell genuinely lifts the band ceiling
+
+    def test_length_declared_brief_states_words_and_arc_floor(self) -> None:
+        """A scale-classified brief promises PL-19 words and the PL-20 arc floor."""
+        brief = ConceptBrief(
+            premise="A layered mystery through a flooded city.",
+            protagonist=Protagonist(name="Isla", age=12, role="diver"),
+            age_band=AgeBand.BAND_8_11,
+            reading_level_target=5.0,
+            tier=1,
+            tone="mysterious",
+            target_node_count=120,
+            ending_count=6,
+            structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
+        result = build_structure_prompt(brief)
+        words = words_per_node_profile("8-11", "prose")
+        assert words is not None
+        mean, _lo, _hi, per_node_max = words
+        assert f"story-mean of about {mean} words" in result.user
+        assert f"at or under {per_node_max} words" in result.user
+        floor = min_complete_floor("8-11", "medium", "prose")
+        assert floor is not None
+        assert f"at least {floor} nodes long" in result.user
 
     def test_no_unfilled_placeholders(self, minimal_brief: ConceptBrief) -> None:
         """No owned slot token remains unfilled.

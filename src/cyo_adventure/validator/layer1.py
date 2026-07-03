@@ -28,7 +28,11 @@ from cyo_adventure.storybook.condition import (
     validate_condition,
 )
 from cyo_adventure.storybook.schema_export import build_schema
-from cyo_adventure.validator.band_profile import profile_for
+from cyo_adventure.validator.band_profile import (
+    mvp_node_budget,
+    production_cell_budget,
+    profile_for,
+)
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -90,6 +94,64 @@ def band_budget(
     if profile is None:
         return None
     return (profile.min_nodes, profile.max_nodes, profile.max_depth)
+
+
+@dataclass(frozen=True, slots=True)
+class ScalePlacement:
+    """Where a story sits on the ADR-011 story-scale matrix.
+
+    Bundles the three metadata facts that together select a story's node budget:
+    its length tier, its narrative style, and whether it is a production or a
+    non-production MVP/Test skeleton. A default-constructed placement (no length,
+    prose, production-eligible) is a not-scale-classified story that keeps the
+    band-level budget, matching an omitted-fields brief and the existing corpus.
+    """
+
+    length: str | None = None
+    narrative_style: str = "prose"
+    production_eligible: bool = True
+
+
+def resolve_node_budget(
+    age_band: str, placement: ScalePlacement, *, scale: Scale
+) -> tuple[int, int, int] | None:
+    """Return the effective node budget for a story, applying ADR-011 precedence.
+
+    This is the single budget-resolution path shared by the L1-7 gate
+    (:func:`_check_budget`, reading raw JSON metadata) and the Stage A prompt
+    builder (``prompts._budget_block``, reading a validated brief). Keeping both
+    on one function preserves the prompt-promises-what-the-gate-enforces
+    invariant across all three tiers.
+
+    Precedence (highest first):
+
+    1. **MVP/Test** (``placement.production_eligible`` is ``False``): the
+       band-independent MVP node envelope, ignoring length/style/scale.
+    2. **Production cell** (a ``length`` that names an offered ADR-011
+       ``(band, length, style)`` cell): that cell's genre-faithful envelope.
+    3. **Band-level fallback** (no length, or an off-matrix length such as a
+       ``3-5`` ``long``): the band-level ``scale`` budget, so the existing corpus
+       and the length-less prompt are unaffected.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+        placement: The story's placement on the story-scale matrix.
+        scale: The band-level story-size profile used for the fallback budget.
+
+    Returns:
+        The ``(min_nodes, max_nodes, max_depth)`` triple, or ``None`` when no
+        budget applies (an unconfigured band, or an MVP story in a band with no
+        profile).
+    """
+    if not placement.production_eligible:
+        return mvp_node_budget(age_band)
+    if placement.length is not None:
+        cell = production_cell_budget(
+            age_band, placement.length, placement.narrative_style
+        )
+        if cell is not None:
+            return cell
+    return band_budget(age_band, scale)
 
 
 _ORDERING_OPERATORS: frozenset[str] = frozenset({"<", "<=", ">", ">="})
@@ -762,6 +824,30 @@ def _is_nontrivial_scc(graph: nx.DiGraph[str], component: set[str]) -> bool:
     return graph.has_edge(only, only)
 
 
+def _placement_from_metadata(metadata: dict[str, object]) -> ScalePlacement:
+    """Build a :class:`ScalePlacement` from raw story metadata.
+
+    Isolates the raw-JSON typing guards: a ``length`` or ``narrative_style`` is
+    honoured only when it is a string (an off-type value is treated as absent,
+    keeping the band-level / prose default), and ``production_eligible`` is
+    ``False`` only when the field is explicitly ``false`` (an absent or non-bool
+    value means production, matching the Pydantic default of ``True``).
+
+    Args:
+        metadata: The raw story metadata mapping.
+
+    Returns:
+        The story's scale placement.
+    """
+    raw_length = metadata.get("length")
+    raw_style = metadata.get("narrative_style")
+    return ScalePlacement(
+        length=raw_length if isinstance(raw_length, str) else None,
+        narrative_style=raw_style if isinstance(raw_style, str) else "prose",
+        production_eligible=metadata.get("production_eligible") is not False,
+    )
+
+
 def _check_budget(
     story: _Story,
     graph: nx.DiGraph[str],
@@ -771,7 +857,17 @@ def _check_budget(
     """L1-7: ending_count match, node-count band, and max branch depth."""
     _check_ending_count(story, report)
     band = story.metadata.get("age_band")
-    budget = band_budget(band, scale) if isinstance(band, str) else None
+    # #ASSUME: data-integrity: the scale placement is read from raw JSON;
+    # resolve_node_budget applies the MVP -> production-cell -> band-level
+    # precedence so the gate and the Stage A prompt cannot drift. See ADR-011,
+    # the MVP/Test tier and the story-scale matrix.
+    # #VERIFY: test_layer1_validator.py::test_mvp_tier_budget_overrides_band_ceiling
+    # and test_resolve_node_budget_precedence.
+    if not isinstance(band, str):
+        budget = None
+    else:
+        placement = _placement_from_metadata(story.metadata)
+        budget = resolve_node_budget(band, placement, scale=scale)
     if budget is None:
         if scale == "compact" and isinstance(band, str):
             report.add(

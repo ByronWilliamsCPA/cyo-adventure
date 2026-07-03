@@ -11,7 +11,7 @@ import pytest
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -185,6 +185,22 @@ def test_defaults_applied() -> None:
     assert brief.content_nogo == []
     assert brief.desired_variables == []
     assert brief.special_constraints == []
+    # A brief with no declared scale is not scale-classified (band budget).
+    assert brief.length is None
+    assert brief.narrative_style is NarrativeStyle.PROSE
+
+
+def test_scale_fields_accepted() -> None:
+    """A brief may declare an ADR-011 length and narrative style."""
+    brief = ConceptBrief(
+        **{
+            **VALID_BRIEF,
+            "length": Length.MEDIUM,
+            "narrative_style": NarrativeStyle.GAMEBOOK,
+        }
+    )
+    assert brief.length is Length.MEDIUM
+    assert brief.narrative_style is NarrativeStyle.GAMEBOOK
 
 
 def test_all_structure_patterns_valid() -> None:

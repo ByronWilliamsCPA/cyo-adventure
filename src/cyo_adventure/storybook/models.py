@@ -106,12 +106,46 @@ class EndingKind(StrEnum):
 
 
 class Topology(StrEnum):
-    """The branching shape of a story graph (Ashwell vocabulary)."""
+    """The branching shape of a story graph (Ashwell vocabulary).
+
+    Six ADR-011 topologies compose from the flow primitives. ``open_map`` is a
+    hub the reader explores in any order (loop/return edges make it cyclic);
+    ``sorting_hat`` sorts the reader at an early branch into parallel, never
+    reconverging tracks (an acyclic branching tree with no cross-track
+    bottleneck). The Ashwell ``quest`` folds into ``branch_and_bottleneck``.
+    """
 
     TIME_CAVE = "time_cave"
     GAUNTLET = "gauntlet"
     BRANCH_AND_BOTTLENECK = "branch_and_bottleneck"
     LOOP_AND_GROW = "loop_and_grow"
+    OPEN_MAP = "open_map"
+    SORTING_HAT = "sorting_hat"
+
+
+class Length(StrEnum):
+    """The story-scale (length) tier: a total-word budget, world size.
+
+    Production stories place themselves on the ``(band, length, style)`` matrix
+    from ADR-011; the node-count envelope is derived per cell. Young bands cap
+    at ``MEDIUM``; epic scale is a series, not a fourth tier. A story that
+    declares no length is not scale-classified and keeps the band-level budget.
+    """
+
+    SHORT = "short"
+    MEDIUM = "medium"
+    LONG = "long"
+
+
+class NarrativeStyle(StrEnum):
+    """Prose vs gamebook chunking of one word budget (ADR-011).
+
+    Meaningful only for ``13-16`` and ``16+``; lower bands are implicitly
+    ``PROSE``. Gamebook packs the same total words into more, shorter nodes.
+    """
+
+    PROSE = "prose"
+    GAMEBOOK = "gamebook"
 
 
 class SafetyScope(StrEnum):
@@ -143,6 +177,33 @@ class ContentFlags(BaseModel):
     peril: ContentFlagLevel = ContentFlagLevel.NONE
 
 
+class Series(BaseModel):
+    """Campaign-continuity metadata chaining a story into a multi-book series.
+
+    A series is a meta-skeleton (books are nodes, and the completion-to-entry
+    continuations are edges); v1 is a linear chain. Each book is a standalone
+    Storybook that passes its own gate; these fields let the cross-book
+    meta-validator check the ADR-011 section-8 invariant: in any non-final book,
+    every successful-completion ending converges on the next book's single
+    ``series_entry_node`` (many endings -> one entry), with declared state carried
+    across. Young or Tier-1 bands run **episodic** series that carry no state.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    series_id: str = Field(min_length=1)
+    # 1-based position of this book in the linear chain.
+    book_index: int = Field(ge=1)
+    # The node continuation from the previous book lands on. ``None`` for the
+    # first book (entered at ``start_node``); required for a continued-into book.
+    series_entry_node: str | None = None
+    # ``True`` only for the last book in the chain (it continues to no next book).
+    is_final: bool = False
+    # The state-export contract: ``True`` carries declared state to the next book;
+    # ``False`` is an episodic series (mandatory for young/Tier-1 bands).
+    carries_state: bool = True
+
+
 class StoryMetadata(BaseModel):
     """Descriptive metadata carried by every Storybook."""
 
@@ -156,6 +217,26 @@ class StoryMetadata(BaseModel):
     ending_count: int = Field(ge=1)
     content_flags: ContentFlags = Field(default_factory=ContentFlags)
     topology: Topology
+    # Story-scale placement on the ADR-011 (band, length, style) matrix. When a
+    # production story declares ``length``, the L1-7 node-count budget is that
+    # cell's genre-faithful envelope; a story with no length keeps the band-level
+    # budget (backward compatible). ``narrative_style`` chunks the word budget and
+    # only changes the envelope for 13-16/16+; lower bands are implicitly prose.
+    length: Length | None = None
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE
+    # A non-production MVP/Test skeleton exists for prototyping, pipeline and
+    # integration testing, and generator development. When ``False`` the L1-7
+    # node-count budget is the band-independent MVP envelope (not the band's
+    # production budget), and production story selection must exclude it. All
+    # other band policy (content ceiling, forbidden endings, floors, depth)
+    # still applies. Defaults to ``True`` so an omitted field means production.
+    # See ADR-011 (story-scale framework), the MVP/Test tier.
+    production_eligible: bool = True
+    # Optional campaign-continuity placement. When set, this story is one book of
+    # a linear multi-book series; the cross-book meta-validator (validator.series)
+    # checks the ADR-011 section-8 continuity invariant across the chain. A story
+    # with no ``series`` is a standalone book (backward compatible).
+    series: Series | None = None
 
 
 class Variable(BaseModel):

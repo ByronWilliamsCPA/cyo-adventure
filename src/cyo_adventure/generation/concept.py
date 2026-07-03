@@ -23,7 +23,7 @@ from typing import Annotated
 
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # Bounded free-text list item: non-empty and length-capped so a single brief
 # field cannot inflate prompt size unbounded or smuggle a large payload into a
@@ -153,6 +153,22 @@ class ConceptBrief(BaseModel):
     )
     structure_pattern: StructurePattern = Field(
         description="Narrative-structure template to apply.",
+    )
+
+    # Optional ADR-011 story-scale placement. When ``length`` names an offered
+    # ``(age_band, length, narrative_style)`` cell, the Stage A prompt promises
+    # that cell's genre-faithful node budget, words-per-node envelope, and
+    # fastest-finish arc floor instead of the band-level budget, so generation
+    # can request a scale-classified production story. A brief with no ``length``
+    # keeps the band-level budget (backward compatible). ``narrative_style``
+    # changes the envelope only for 13-16/16+; lower bands are implicitly prose.
+    length: Length | None = Field(
+        default=None,
+        description="Story-scale length tier (short/medium/long); None = band budget.",
+    )
+    narrative_style: NarrativeStyle = Field(
+        default=NarrativeStyle.PROSE,
+        description="Prose or gamebook chunking of the word budget (ADR-011).",
     )
 
     # Optional Tier-2 variable hints and free-form constraints.

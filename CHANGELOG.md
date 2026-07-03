@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Story-scale (P0) enabler implementing the ADR-011 band x length x style framework as
+  additive, opt-in validator and generation changes (no existing fixture or seed declares a
+  `length`, so the corpus is unaffected). A non-production MVP/Test tier
+  (`metadata.production_eligible`) budgets prototyping skeletons against a band-independent
+  node envelope; per-cell production budgets (`band_profile._PRODUCTION_CELLS`) lift the
+  band ceiling for a scale-classified story via a shared `layer1.resolve_node_budget` that
+  both the L1-7 gate and the Stage A prompt read, so the prompt promises exactly what the
+  gate enforces. New policy rules extend the gate to PL-21: PL-19 (per-node word wall guard
+  plus a scale-classified story-mean advisory), PL-20 (fastest-finish arc floor so a hollow
+  quick win blocks), breadth-scaled PL-17 ending/decision floors, and PL-21 (reject an
+  off-matrix `(band, length, style)` such as a 3-5 long instead of silently downgrading).
+  The `Topology` enum gains `open_map` and `sorting_hat` with classifier support; a `Series`
+  model plus a cross-book `validator.series` meta-validator (rules SR-1..SR-7) encode the
+  ADR-011 campaign-continuity invariant; and `band_profile.offered_cells` exposes the
+  coverage grid. `ConceptBrief` gains optional `length` and `narrative_style` so generation
+  can request a scale cell.
 - Guardian concept-intake UI (C4a-5): a "Request a story" form that picks a
   child, captures a premise and tone, builds a full ConceptBrief from
   band-derived defaults, posts the concept, and enqueues generation. A
