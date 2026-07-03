@@ -231,6 +231,26 @@ class RatingListView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Assignment schemas (C4a-6)
+# ---------------------------------------------------------------------------
+
+
+class AssignmentCreateBody(BaseModel):
+    """A guardian's request to assign a story to one or more child profiles."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_ids: list[str] = Field(min_length=1)
+
+
+class AssignmentListView(BaseModel):
+    """The full current set of profiles a story is assigned to."""
+
+    storybook_id: str
+    profile_ids: list[str]
+
+
+# ---------------------------------------------------------------------------
 # Profile schemas
 # ---------------------------------------------------------------------------
 
