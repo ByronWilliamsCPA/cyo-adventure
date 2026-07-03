@@ -5,6 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { _resetDbHandle, putReadingState } from '../offline/db'
@@ -41,13 +42,15 @@ describe('ReaderPage', () => {
   it('fetches and caches the story, then plays it to an ending', async () => {
     const fetchStory = vi.fn(() => Promise.resolve(lantern))
     render(
-      <ReaderPage
-        api={okApi()}
-        fetchStory={fetchStory}
-        profileId="p_play"
-        storybookId="s_lantern_cave"
-        version={1}
-      />
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={fetchStory}
+          profileId="p_play"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
     )
     await screen.findByTestId('reader')
     expect(fetchStory).toHaveBeenCalledOnce()
@@ -71,13 +74,15 @@ describe('ReaderPage', () => {
     }
     await putReadingState('p1', 's_lantern_cave', saved)
     render(
-      <ReaderPage
-        api={okApi()}
-        fetchStory={() => Promise.resolve(lantern)}
-        profileId="p1"
-        storybookId="s_lantern_cave"
-        version={1}
-      />
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p1"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
     )
     await screen.findByTestId('reader')
     expect(screen.getByTestId('passage-body').textContent).toContain('splits')
@@ -88,13 +93,15 @@ describe('ReaderPage', () => {
   it('shows download-needed when offline with no cached story', async () => {
     const fetchStory = vi.fn(() => Promise.reject(new Error('offline')))
     render(
-      <ReaderPage
-        api={okApi()}
-        fetchStory={fetchStory}
-        profileId="p_dl"
-        storybookId="s_lantern_cave"
-        version={1}
-      />
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={fetchStory}
+          profileId="p_dl"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
     )
     await screen.findByTestId('download-needed')
   })
@@ -121,13 +128,15 @@ describe('ReaderPage', () => {
       },
     }
     render(
-      <ReaderPage
-        api={api}
-        fetchStory={() => Promise.resolve(lantern)}
-        profileId="p_conf"
-        storybookId="s_lantern_cave"
-        version={1}
-      />
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_conf"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
     )
     // The initial save (on mount) returns 409, so the dialog appears.
     await screen.findByTestId('conflict-dialog')

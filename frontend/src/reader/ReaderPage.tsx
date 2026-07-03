@@ -175,6 +175,7 @@ export function ReaderPage({
         story={story}
         initialReading={initialReading}
         onProgress={handleProgress}
+        profileId={profileId}
       />
       {conflict ? (
         <ConflictDialog
