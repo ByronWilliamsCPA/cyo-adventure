@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import type { Storybook } from '../player/types'
@@ -20,14 +21,23 @@ afterEach(cleanup)
 
 describe('Reader', () => {
   it('renders the start passage and its visible choices', () => {
-    render(<Reader story={lantern} />)
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
     expect(screen.getByTestId('passage-body').textContent).toContain('lantern')
     expect(screen.getByTestId('choice-c_take_lantern')).toBeTruthy()
     expect(screen.getByTestId('choice-c_ignore_lantern')).toBeTruthy()
+    expect(screen.getByTestId('choice-c_take_lantern').textContent).toContain('›')
   })
 
   it('hides a choice whose condition is false', () => {
-    render(<Reader story={lantern} />)
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
     fireEvent.click(screen.getByTestId('choice-c_ignore_lantern'))
     // Without the lantern, the dark passage choice is not rendered.
     expect(screen.queryByTestId('choice-c_dark_passage')).toBeNull()
@@ -35,13 +45,21 @@ describe('Reader', () => {
   })
 
   it('reveals the conditional choice once the lantern is taken', () => {
-    render(<Reader story={lantern} />)
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
   })
 
   it('shows the ending screen on reaching an ending', () => {
-    render(<Reader story={lantern} />)
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} profileId="p1" />
+      </MemoryRouter>
+    )
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
     expect(screen.getByTestId('ending-screen')).toBeTruthy()
@@ -50,7 +68,11 @@ describe('Reader', () => {
 
   it('reports progress to onProgress', () => {
     const seen: string[] = []
-    render(<Reader story={lantern} onProgress={(r) => seen.push(r.current_node)} />)
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onProgress={(r) => seen.push(r.current_node)} profileId="p1" />
+      </MemoryRouter>
+    )
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     expect(seen).toContain('n_cave_fork')
   })
