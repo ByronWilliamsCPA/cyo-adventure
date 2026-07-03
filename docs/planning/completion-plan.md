@@ -117,7 +117,7 @@ landed next, and the feature UIs (C4a-2 through C4a-6) built on it.
 | C4a-5 | Concept intake UI + job status | ✅ #69. Form posting to the concept/generation API; shows job status (queued/running/passed/needs_review/failed) without exposing raw model output. |
 | C4a-6 | Assign-to-profile UI | ✅ #75. Guardian assigns an approved story to one or more children. |
 
-**Acceptance**: concept -> approved -> assigned -> a child reads it offline, entirely
+**Acceptance**: concept -> published -> assigned -> a child reads it offline, entirely
 through the UI; a child never sees a non-permitted or unapproved story.
 
 ### R1 (internal release) cut
