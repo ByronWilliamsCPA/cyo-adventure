@@ -1,0 +1,563 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_lantern_festival",
+  "version": 1,
+  "title": "The Lantern Festival",
+  "metadata": {
+    "age_band": "5-8",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 2.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "community",
+      "celebration",
+      "perseverance"
+    ],
+    "estimated_minutes": 6,
+    "ending_count": 10,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "none",
+      "peril": "none"
+    },
+    "topology": "loop_and_grow",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=90 beats='Tansy the young hedgehog stands in her cozy mossy stump clearing; tonight is the Woodland Lantern Festival and there is still so much to gather; she counts on her paws what she needs and decides where to set out first; warm and excited, never worried'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_berries",
+          "label": "Go pick glowberries by the bramble patch.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_willow",
+          "label": "Go invite your friends at the willow.",
+          "target": "n_willow1"
+        },
+        {
+          "id": "c_start_reeds",
+          "label": "Go cut reeds for lantern frames.",
+          "target": "n_reed1"
+        },
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey cakes.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_shed",
+          "label": "Go fetch the old paper lanterns.",
+          "target": "n_shed1"
+        },
+        {
+          "id": "c_start_crickets",
+          "label": "Go ask the cricket band to play.",
+          "target": "n_cricket1"
+        }
+      ]
+    },
+    {
+      "id": "n_berry1",
+      "body": "<<FILL role=choice words=80 beats='at the bramble patch the low berries are ripe and glowing softly, but a fatter cluster hangs high on a wobbly branch; Tansy decides whether to fill her basket with the easy low ones or stretch up for the high ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the ripe low glowberries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Climb for the high cluster.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "<<FILL role=rising words=80 beats='Tansy fills her basket with glowing berries that light her chin from below; the gathering is beginning to grow; she can carry the berries onward to the festival meadow or trot back to the clearing to fetch more things first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_meadow",
+          "label": "Carry the glowberries to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_berry_back",
+          "label": "Go back to the clearing for more.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_willow1",
+      "body": "<<FILL role=choice words=80 beats='under the old willow Tansy finds her friends dozing in the warm afternoon; she wants to invite them all to the festival; she decides whether to knock gently and wake them softly or clang the loud dinner bell to hurry things along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_knock",
+          "label": "Knock gently on the willow door.",
+          "target": "n_willow2"
+        },
+        {
+          "id": "c_willow_bell",
+          "label": "Clang the loud dinner bell.",
+          "target": "e_willow_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_willow2",
+      "body": "<<FILL role=rising words=80 beats='her friends yawn, smile, and say yes at once, grabbing their little lanterns; the group is growing; Tansy can lead the happy troop straight to the meadow or swing back by the clearing to grab the next thing on her list'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_willow_meadow",
+          "label": "Lead your friends to the meadow.",
+          "target": "n_meadow"
+        },
+        {
+          "id": "c_willow_back",
+          "label": "Pop back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed1",
+      "body": "<<FILL role=choice words=80 beats='at the reedy pond Tansy needs stalks to bend into lantern frames; the tall dry reeds rustle on the bank while fresh green ones lean out over the water; she decides which reeds to cut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_dry",
+          "label": "Cut the tall dry reeds.",
+          "target": "n_reed2"
+        },
+        {
+          "id": "c_reed_wet",
+          "label": "Cut the fresh green reeds.",
+          "target": "e_reed_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_reed2",
+      "body": "<<FILL role=rising words=80 beats='the dry reeds snap free in a neat golden bundle, perfect for bending; Tansy can start weaving the lantern frames right here by the pond or lug the whole bundle back to the clearing to work by her stump'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_weave",
+          "label": "Weave the frames here by the pond.",
+          "target": "n_reed3"
+        },
+        {
+          "id": "c_reed_back",
+          "label": "Carry the bundle back to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_reed3",
+      "body": "<<FILL role=rising words=75 beats='Tansy bends the reeds into round little lantern frames, humming as she works; a stack of them balances in her arms; there is only one thing to do now, carry the finished frames to the festival meadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reed_meadow",
+          "label": "Carry the lantern frames to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "<<FILL role=choice words=80 beats='at the round hive Tansy asks the bees for a few honey cakes for the festival feast; the bees buzz kindly; she decides whether to wait politely for them to pack a basket or dash back to the clearing and come by for the cakes later'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_wait",
+          "label": "Wait politely for the honey cakes.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_back",
+          "label": "Head back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "<<FILL role=rising words=75 beats='the bees load a basket with warm golden honey cakes that smell of clover; the feast is coming together; Tansy thanks them and carries the sweet-smelling basket straight to the festival meadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_meadow",
+          "label": "Carry the honey cakes to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_shed1",
+      "body": "<<FILL role=choice words=80 beats='in the little garden shed the old paper lanterns from last year sit dusty on a shelf; Tansy decides whether to dust each one off carefully now or scoot back to the clearing and fetch them on the next trip'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_dust",
+          "label": "Dust off the old paper lanterns.",
+          "target": "n_shed2"
+        },
+        {
+          "id": "c_shed_back",
+          "label": "Go back to the clearing for now.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_shed2",
+      "body": "<<FILL role=rising words=75 beats='the paper lanterns come up bright and pretty under Tansy's little cloth, their painted moons and leaves good as new; her armful of festival treasures keeps growing; she carries the lanterns off toward the meadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_shed_meadow",
+          "label": "Carry the paper lanterns to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket1",
+      "body": "<<FILL role=choice words=80 beats='by the tall grass the cricket band tunes their tiny fiddles; Tansy asks if they will play at the festival; they chirp eagerly; she decides whether to lead them along right away or pop back to the clearing to gather one more thing first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_lead",
+          "label": "Ask the crickets to follow you now.",
+          "target": "n_cricket2"
+        },
+        {
+          "id": "c_cricket_back",
+          "label": "Go back to the clearing first.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_cricket2",
+      "body": "<<FILL role=rising words=75 beats='the cricket band forms a cheerful little parade behind Tansy, fiddles under their arms; music will make the night complete; she leads the chirping players all the way to the festival meadow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cricket_meadow",
+          "label": "Lead the cricket band to the meadow.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "<<FILL role=choice words=90 beats='the festival meadow opens wide at dusk, ringed by the big oak and the still pond; everything Tansy has gathered is piling up and friends are arriving; she decides whether to start setting the festival up now or make one last trip back to the clearing for anything forgotten'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_meadow_setup",
+          "label": "Start setting up the festival.",
+          "target": "n_setup"
+        },
+        {
+          "id": "c_meadow_back",
+          "label": "Make one last trip to the clearing.",
+          "target": "n_start"
+        }
+      ]
+    },
+    {
+      "id": "n_setup",
+      "body": "<<FILL role=choice words=85 beats='in the meadow the reed frames get wrapped in bright paper and the glowberries tucked inside to shimmer; friends bustle everywhere; Tansy decides whether to hang the lanterns up in the great oak or spread out the picnic feast first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_setup_hang",
+          "label": "Hang the lanterns in the great oak.",
+          "target": "n_hang"
+        },
+        {
+          "id": "c_setup_picnic",
+          "label": "Spread out the picnic feast.",
+          "target": "n_picnic"
+        }
+      ]
+    },
+    {
+      "id": "n_hang",
+      "body": "<<FILL role=choice words=85 beats='friends lift the finished lanterns into the branches of the great oak, where they sway like sleepy fireflies; the sky is turning purple; Tansy decides whether to light them right this moment or wait for the very first star to appear'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hang_light",
+          "label": "Light the lanterns right now.",
+          "target": "n_light"
+        },
+        {
+          "id": "c_hang_star",
+          "label": "Wait for the first star.",
+          "target": "n_star"
+        }
+      ]
+    },
+    {
+      "id": "n_light",
+      "body": "<<FILL role=choice words=85 beats='one by one the lanterns wake up with warm glowberry light and the whole meadow glows gold; everyone gasps with delight; Tansy decides whether to set some lanterns floating out across the calm pond or keep them all glowing high in the oak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_light_pond",
+          "label": "Float lanterns on the pond.",
+          "target": "e_finale_pond"
+        },
+        {
+          "id": "c_light_oak",
+          "label": "Keep the lanterns in the oak.",
+          "target": "e_finale_oak"
+        }
+      ]
+    },
+    {
+      "id": "n_star",
+      "body": "<<FILL role=rising words=80 beats='everyone grows hushed and watches the darkening sky until the first tiny star blinks awake over the meadow; a happy cheer goes up; that is the signal, and Tansy lights the very first lantern to begin the festival glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star_glow",
+          "label": "Light the first lantern and begin.",
+          "target": "n_glow"
+        }
+      ]
+    },
+    {
+      "id": "n_glow",
+      "body": "<<FILL role=choice words=85 beats='lantern after lantern flickers on until the meadow is a sea of soft golden light and the pond mirrors it all; the crickets lift their fiddles; Tansy decides whether to start a lantern song for everyone or gather her friends to make a wish together'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glow_song",
+          "label": "Start a lantern song.",
+          "target": "n_song"
+        },
+        {
+          "id": "c_glow_wish",
+          "label": "Make a wish together.",
+          "target": "n_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_song",
+      "body": "<<FILL role=rising words=75 beats='the crickets strike up a bouncy tune and Tansy leads the first verse of the old lantern song; friends join line by line until the whole meadow is singing under the glowing oak'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_song_end",
+          "label": "Sing the festival into the night.",
+          "target": "e_finale_song"
+        }
+      ]
+    },
+    {
+      "id": "n_wish",
+      "body": "<<FILL role=rising words=75 beats='the friends gather in a ring around the brightest lantern, close their eyes, and hold paws; Tansy counts softly to three so everyone can make the same warm wish for the woodland at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_wish_end",
+          "label": "Make the wish all together.",
+          "target": "e_finale_wish"
+        }
+      ]
+    },
+    {
+      "id": "n_picnic",
+      "body": "<<FILL role=choice words=85 beats='Tansy spreads a checked cloth on the grass and lays out the honey cakes and berry treats while lanterns glow softly overhead; friends settle around; she decides whether to start sharing the honey cakes now or wait for old Granny Hedgehog to arrive and bless the feast'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_picnic_feast",
+          "label": "Start sharing the honey cakes.",
+          "target": "n_feast"
+        },
+        {
+          "id": "c_picnic_bless",
+          "label": "Wait for Granny Hedgehog.",
+          "target": "n_bless"
+        }
+      ]
+    },
+    {
+      "id": "n_feast",
+      "body": "<<FILL role=choice words=80 beats='the honey cakes go round the glowing circle and everyone munches happily under the swaying lanterns; the feast is a merry success; Tansy decides whether to let the feast roll on into the night or start a round of giggly riddles between bites'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_feast_end",
+          "label": "Let the happy feast roll on.",
+          "target": "e_finale_feast"
+        },
+        {
+          "id": "c_feast_riddle",
+          "label": "Start a round of riddles.",
+          "target": "n_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_riddle",
+      "body": "<<FILL role=rising words=75 beats='between bites of honey cake the friends trade silly riddles, each one sillier than the last, until everyone is laughing so hard the lantern light seems to giggle too; Tansy saves the very best riddle for the end'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_riddle_end",
+          "label": "Tell the very best riddle.",
+          "target": "e_finale_riddle"
+        }
+      ]
+    },
+    {
+      "id": "n_bless",
+      "body": "<<FILL role=rising words=80 beats='Granny Hedgehog arrives leaning on her cane, her spines silver in the lantern light; the friends make room and grow quiet; she smiles and begins the old story of the very first woodland lantern, just as she does every year'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bless_end",
+          "label": "Listen to Granny's lantern story.",
+          "target": "e_finale_story"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "<<FILL role=ending words=75 beats='Tansy stretches for the high cluster, the wobbly branch springs back, and her whole basket of berries bounces away into the soft ferns with a comic boing; nobody is hurt and she laughs, dusting off to trot back to the clearing and start her gathering again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Bouncing Berries"
+      }
+    },
+    {
+      "id": "e_willow_oops",
+      "body": "<<FILL role=ending words=75 beats='the loud dinner bell clangs and every sleepy friend tumbles out of the willow at once in a giggly, grumbly heap, blankets over their heads; it takes ages to sort out the muddle, so Tansy decides to start over and invite them the gentle way next time'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_willow_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Too Loud a Bell"
+      }
+    },
+    {
+      "id": "e_reed_oops",
+      "body": "<<FILL role=ending words=75 beats='the fresh green reeds are far too soft and wet to hold a shape; every frame Tansy bends just flops over like cooked noodles and drips on her paws; she laughs at the soggy mess and heads back to the clearing to begin again with the right reeds'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_reed_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Soggy Reeds"
+      }
+    },
+    {
+      "id": "e_finale_pond",
+      "body": "<<FILL role=completion words=85 beats='Tansy and her friends set glowing lanterns adrift on the still pond, where they float like little golden moons doubled in the water; the whole meadow ohhs together; the festival is beautiful and complete, and Tansy glows as bright as her lanterns'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_pond",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Lanterns on the Water"
+      }
+    },
+    {
+      "id": "e_finale_oak",
+      "body": "<<FILL role=completion words=85 beats='the great oak blazes with hanging lanterns like a tree full of warm stars, and everyone dances slowly beneath its golden branches; Tansy looks up at all she and her friends have made together, her heart as full and bright as the festival glow'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_oak",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Tree Full of Stars"
+      }
+    },
+    {
+      "id": "e_finale_song",
+      "body": "<<FILL role=completion words=85 beats='the whole meadow sings the old lantern song under the glowing oak, cricket fiddles sailing above every voice; the music rolls out over the pond and into the night; Tansy sings loudest of all, proud of the festival her gathering has grown into'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Lantern Song"
+      }
+    },
+    {
+      "id": "e_finale_wish",
+      "body": "<<FILL role=completion words=85 beats='in the ring of lantern light the friends make one warm wish together for a happy woodland year, then open their eyes to the glowing meadow all around them; Tansy squeezes her friends' paws, sure that this is the best festival there ever was'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_wish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "One Warm Wish"
+      }
+    },
+    {
+      "id": "e_finale_feast",
+      "body": "<<FILL role=completion words=85 beats='the honey cakes and berry treats go round and round beneath the swaying lanterns while everyone laughs and nibbles late into the glowing night; the feast Tansy gathered piece by piece has brought the whole woodland together, warm and merry'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_feast",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Feast"
+      }
+    },
+    {
+      "id": "e_finale_riddle",
+      "body": "<<FILL role=completion words=85 beats='Tansy tells the very best riddle of all and the whole glowing circle roars with laughter, honey cakes nearly forgotten; the lanterns seem to twinkle along with the giggling; it is the merriest festival night the woodland friends can remember'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_riddle",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Best Riddle of All"
+      }
+    },
+    {
+      "id": "e_finale_story",
+      "body": "<<FILL role=completion words=85 beats='Granny Hedgehog finishes the old tale of the very first woodland lantern just as every lantern in the meadow glows its brightest, and the friends clap softly; Tansy leans against Granny, happy that her gathering has kept the gentle festival alive one more year'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_finale_story",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Granny's Lantern Story"
+      }
+    }
+  ]
+}

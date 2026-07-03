@@ -1,0 +1,1340 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_midnight_museum",
+  "version": 1,
+  "title": "The Midnight Museum",
+  "metadata": {
+    "age_band": "10-13",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 5.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "mystery",
+      "puzzles",
+      "history",
+      "courage"
+    ],
+    "estimated_minutes": 9,
+    "ending_count": 19,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=120 beats='Nadia realises the school trip left without her and the Ellery Museum has locked its doors for the night; a note in her pocket, a half-torn map of the museum, hints at a hidden collection the old founder left behind; three ways lead off the dark rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_gems",
+          "label": "Slip into the Gallery of Gems.",
+          "target": "a_gems1"
+        },
+        {
+          "id": "c_start_egypt",
+          "label": "Head for the Egyptian Wing.",
+          "target": "b_egypt1"
+        },
+        {
+          "id": "c_start_archive",
+          "label": "Try the old Archive downstairs.",
+          "target": "c_archive1"
+        }
+      ]
+    },
+    {
+      "id": "a_gems1",
+      "body": "<<FILL role=rising words=100 beats='the Gallery of Gems glitters under low security lights; a big central case sits crooked on its plinth, and somewhere a soft electronic beeping starts up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gems_case",
+          "label": "Study the big central gem case.",
+          "target": "a_gems_case"
+        },
+        {
+          "id": "c_gems_alarm",
+          "label": "Follow the faint beeping toward a panel.",
+          "target": "a_gems_alarm"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_case",
+      "body": "<<FILL role=choice words=105 beats='the central case has been opened and closed in a hurry; a tilted vitrine and a little card fallen behind it both look like they were disturbed recently, maybe by whoever hid the founder's secret'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gems_vitrine",
+          "label": "Look under the tilted vitrine.",
+          "target": "a_gems_vitrine"
+        },
+        {
+          "id": "c_gems_note",
+          "label": "Read the little card that fell behind.",
+          "target": "a_gems_note"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_vitrine",
+      "body": "<<FILL role=rising words=95 beats='under the vitrine Nadia finds a scratched brass symbol matching the one on her torn map; it points toward a service corridor behind the gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vitrine_go",
+          "label": "Follow the symbol to the corridor.",
+          "target": "a_gems_corridor"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_note",
+      "body": "<<FILL role=rising words=95 beats='the fallen card is an old exhibit label in the founder's spidery hand, with a single word underlined that also marks a door on her map; it draws her toward the corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_note_go",
+          "label": "Head for the marked corridor.",
+          "target": "a_gems_corridor"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_corridor",
+      "body": "<<FILL role=rising words=100 beats='the narrow service corridor smells of dust and floor polish; at its end a small locked door has a keyhole shaped like the symbol, but no key in sight, only a loose skirting board'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_corridor_key",
+          "label": "Pry up the loose skirting board.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_alarm",
+      "body": "<<FILL role=choice words=100 beats='the beeping is a motion sensor blinking amber; a night guard's torch beam swings at the far end of the gallery, sweeping closer'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_alarm_hide",
+          "label": "Duck behind a plinth as the guard passes.",
+          "target": "a_gems_hide"
+        },
+        {
+          "id": "c_alarm_freeze",
+          "label": "Freeze in the open and hope.",
+          "target": "e_set_alarm"
+        }
+      ]
+    },
+    {
+      "id": "a_gems_hide",
+      "body": "<<FILL role=rising words=95 beats='crouched behind the plinth, Nadia waits until the torch beam moves on; when the guard's footsteps fade she spots a service corridor left ajar'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hide_go",
+          "label": "Slip into the service corridor.",
+          "target": "a_gems_corridor"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt1",
+      "body": "<<FILL role=rising words=100 beats='the Egyptian Wing is all long shadows and painted eyes; a great sarcophagus stands open-lidded, and a faded wall map shows the museum as it was a hundred years ago'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_egypt_sarco",
+          "label": "Examine the painted sarcophagus.",
+          "target": "b_egypt_sarco"
+        },
+        {
+          "id": "c_egypt_map",
+          "label": "Trace the wall map of the old museum.",
+          "target": "b_egypt_map"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_sarco",
+      "body": "<<FILL role=choice words=105 beats='the sarcophagus lid is heavier than it looks and sits slightly off; nearby an amulet display has one empty velvet dent, as if a piece was borrowed and never returned'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sarco_lid",
+          "label": "Peek under the loose lid.",
+          "target": "b_egypt_lid"
+        },
+        {
+          "id": "c_sarco_amulet",
+          "label": "Check the amulet display.",
+          "target": "b_egypt_amulet"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_lid",
+      "body": "<<FILL role=rising words=95 beats='under the lid, tucked in cotton wool, is a brass symbol twin to the one on her map; a draught tugs from a hall behind the wing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lid_hall",
+          "label": "Follow the draught to the hall.",
+          "target": "b_egypt_hall"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_amulet",
+      "body": "<<FILL role=rising words=95 beats='the empty velvet dent is labelled in the founder's hand; a thin arrow scratched into the case points toward a connecting hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_amulet_hall",
+          "label": "Take the arrow's direction to the hall.",
+          "target": "b_egypt_hall"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_hall",
+      "body": "<<FILL role=rising words=100 beats='the connecting hall is bare except for a small locked door with a symbol-shaped keyhole; a fire bucket of sand and old tools sits beside it, one loose floor tile rocking underfoot'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hall_key",
+          "label": "Lift the rocking floor tile.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_map",
+      "body": "<<FILL role=choice words=100 beats='the wall map shows a wing that is not on any modern floor plan; a display torch hangs on a bracket, and beyond a velvet rope a dim roped-off gallery beckons'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_map_torch",
+          "label": "Grab the display torch and press on.",
+          "target": "b_egypt_torch"
+        },
+        {
+          "id": "c_map_rope",
+          "label": "Duck under the rope into the dark gallery.",
+          "target": "e_set_locked_gallery"
+        }
+      ]
+    },
+    {
+      "id": "b_egypt_torch",
+      "body": "<<FILL role=rising words=95 beats='torch in hand, Nadia follows the map's forgotten wing to a hall she has not seen, where a small symbol-marked door waits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_torch_hall",
+          "label": "Approach the marked door.",
+          "target": "b_egypt_hall"
+        }
+      ]
+    },
+    {
+      "id": "c_archive1",
+      "body": "<<FILL role=rising words=100 beats='the Archive smells of old paper; a dusty visitor ledger lies open on a lectern, and beyond the reading lamps the back stacks fade into total dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arch_ledger",
+          "label": "Open the dusty visitor ledger.",
+          "target": "c_archive_ledger"
+        },
+        {
+          "id": "c_arch_dark",
+          "label": "Push into the unlit back stacks.",
+          "target": "c_archive_dark"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_ledger",
+      "body": "<<FILL role=choice words=105 beats='the ledger's last century of names ends abruptly; a card index and a sticking bottom drawer both seem to hold what the founder filed away before the museum forgot him'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ledger_index",
+          "label": "Check the card index.",
+          "target": "c_archive_index"
+        },
+        {
+          "id": "c_ledger_drawer",
+          "label": "Try the sticking bottom drawer.",
+          "target": "c_archive_drawer"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_index",
+      "body": "<<FILL role=rising words=95 beats='one index card is out of order, marked with the same brass symbol; it references a locked cabinet deep in the stacks'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_index_stack",
+          "label": "Follow the card into the stacks.",
+          "target": "c_archive_stack"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_drawer",
+      "body": "<<FILL role=rising words=95 beats='the drawer holds a folded plan of the stacks with one shelf circled; the circle matches a symbol on her torn map'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_drawer_stack",
+          "label": "Head for the circled shelf.",
+          "target": "c_archive_stack"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_stack",
+      "body": "<<FILL role=rising words=100 beats='deep in the stacks a low cabinet has a symbol-shaped keyhole and no key; a row of dictionaries hides a shallow gap behind, just wide enough for a hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stack_key",
+          "label": "Reach into the gap behind the books.",
+          "target": "n_key"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_dark",
+      "body": "<<FILL role=choice words=100 beats='the back stacks are pitch black and the shelves feel endless; a lantern shape hangs somewhere to the left, or she could just push on by feel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dark_lantern",
+          "label": "Feel along the shelf for a lantern.",
+          "target": "c_archive_lantern"
+        },
+        {
+          "id": "c_dark_blind",
+          "label": "Keep going blind into the dark.",
+          "target": "e_set_stuck_dark"
+        }
+      ]
+    },
+    {
+      "id": "c_archive_lantern",
+      "body": "<<FILL role=rising words=95 beats='her fingers close on a battery lantern; its beam shows a symbol-marked shelf ahead and a low cabinet tucked behind it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lantern_stack",
+          "label": "Cross to the marked shelf.",
+          "target": "c_archive_stack"
+        }
+      ]
+    },
+    {
+      "id": "n_key",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: whichever route she took, Nadia finds the same hidden brass key wrapped in oilcloth, stamped with the founder's symbol; a coded note is tied to it; the key could open the study, the sealed cabinet, or the service stairs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_key_founder",
+          "label": "Try the key on the founder's study door.",
+          "target": "k_founder"
+        },
+        {
+          "id": "c_key_display",
+          "label": "Try it on the sealed display cabinet.",
+          "target": "k_display"
+        },
+        {
+          "id": "c_key_stairs",
+          "label": "Try it on the locked service stairs.",
+          "target": "k_stairs"
+        }
+      ]
+    },
+    {
+      "id": "k_founder",
+      "body": "<<FILL role=rising words=100 beats='the key turns the study door; inside, a roll-top desk and a stern painted portrait of the founder watch over a room untouched for decades'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_founder_desk",
+          "label": "Search the roll-top desk.",
+          "target": "k_founder_desk"
+        },
+        {
+          "id": "c_founder_portrait",
+          "label": "Look behind the founder's portrait.",
+          "target": "k_founder_portrait"
+        }
+      ]
+    },
+    {
+      "id": "k_founder_desk",
+      "body": "<<FILL role=rising words=95 beats='the desk's pigeonholes hide a leather notebook; its first page carries the same coded note as the key, half of a cipher waiting to be read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_desk_study",
+          "label": "Carry the notebook to the reading table.",
+          "target": "k_study"
+        }
+      ]
+    },
+    {
+      "id": "k_founder_portrait",
+      "body": "<<FILL role=rising words=95 beats='behind the portrait a shallow safe stands open and empty but for a cipher wheel, the exact tool the coded note seems to need'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_portrait_study",
+          "label": "Take the cipher wheel to the table.",
+          "target": "k_study"
+        }
+      ]
+    },
+    {
+      "id": "k_display",
+      "body": "<<FILL role=rising words=100 beats='the sealed cabinet holds the founder's travel journals under stiff glass; the key fits the brass latch but the lid is jammed with age'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_display_open",
+          "label": "Ease the cabinet open.",
+          "target": "k_display_open"
+        },
+        {
+          "id": "c_display_force",
+          "label": "Force the stubborn latch.",
+          "target": "k_display_force"
+        }
+      ]
+    },
+    {
+      "id": "k_display_open",
+      "body": "<<FILL role=rising words=95 beats='patient wiggling frees the lid without a sound; inside, a slim ledger is bookmarked at a page of coded lines'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_open_cabinet",
+          "label": "Lift out the bookmarked ledger.",
+          "target": "k_cabinet"
+        }
+      ]
+    },
+    {
+      "id": "k_cabinet",
+      "body": "<<FILL role=rising words=95 beats='the ledger's coded page matches the note on the key; a reading table under a green lamp is the place to lay it all out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cabinet_study",
+          "label": "Spread the ledger on the reading table.",
+          "target": "k_study"
+        }
+      ]
+    },
+    {
+      "id": "k_display_force",
+      "body": "<<FILL role=choice words=100 beats='she leans hard on the latch and the old glass creaks in warning; ease off now, or give it one firm yank'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_force_careful",
+          "label": "Steady it before the glass cracks.",
+          "target": "k_display_careful"
+        },
+        {
+          "id": "c_force_yank",
+          "label": "Yank it hard.",
+          "target": "e_set_broken_case"
+        }
+      ]
+    },
+    {
+      "id": "k_display_careful",
+      "body": "<<FILL role=rising words=95 beats='she breathes, lifts gently, and the lid gives; the bookmarked ledger slides free with its coded page uppermost, ready to read'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_careful_cipher",
+          "label": "Settle in to read the code.",
+          "target": "n_cipher"
+        }
+      ]
+    },
+    {
+      "id": "k_stairs",
+      "body": "<<FILL role=rising words=100 beats='the key opens the service stairs; the stairwell climbs into shadow, and a small cupboard sits at its base with something pale inside'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stairs_up",
+          "label": "Climb toward the landing.",
+          "target": "k_stairs_up"
+        },
+        {
+          "id": "c_stairs_base",
+          "label": "Check the cupboard at the base.",
+          "target": "k_stairs_base"
+        }
+      ]
+    },
+    {
+      "id": "k_stairs_up",
+      "body": "<<FILL role=rising words=95 beats='the landing opens onto the founder's old reading table, a green lamp still on it, and beside the lamp the coded note and a cipher wheel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_up_study",
+          "label": "Sit at the reading table.",
+          "target": "k_study"
+        }
+      ]
+    },
+    {
+      "id": "k_stairs_base",
+      "body": "<<FILL role=rising words=95 beats='the cupboard holds a rolled chart and the founder's spare spectacles; the chart is a page of code that begs for a quiet table'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_base_study",
+          "label": "Take the chart up to the reading table.",
+          "target": "k_study"
+        }
+      ]
+    },
+    {
+      "id": "k_study",
+      "body": "<<FILL role=rising words=110 beats='BOTTLENECK: every route brings Nadia to the founder's reading table with the coded note and the cipher wheel together at last; under the green lamp she lines them up to read the first line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_study_cipher",
+          "label": "Read the first line of the cipher.",
+          "target": "n_cipher"
+        }
+      ]
+    },
+    {
+      "id": "n_cipher",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: the first cipher line resolves into a direction, follow the stars, and points to three named rooms that all ring the central rotunda; the Astronomy Hall, the Map Room, or the Clock Corridor'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cipher_stars",
+          "label": "Head to the Astronomy Hall the cipher names.",
+          "target": "ci_stars"
+        },
+        {
+          "id": "c_cipher_map",
+          "label": "Head to the Map Room.",
+          "target": "ci_map"
+        },
+        {
+          "id": "c_cipher_clock",
+          "label": "Head down the Clock Corridor.",
+          "target": "ci_clock"
+        }
+      ]
+    },
+    {
+      "id": "ci_stars",
+      "body": "<<FILL role=rising words=100 beats='the Astronomy Hall glimmers with a painted star dome; a spiral leads up toward the dome, and a maintenance ladder offers a shortcut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_stars_dome",
+          "label": "Climb toward the star dome.",
+          "target": "ci_stars_dome"
+        },
+        {
+          "id": "c_stars_ladder",
+          "label": "Take the maintenance ladder.",
+          "target": "ci_stars_ladder"
+        }
+      ]
+    },
+    {
+      "id": "ci_stars_dome",
+      "body": "<<FILL role=rising words=95 beats='under the dome a painted constellation matches the cipher's clue; a marked door beneath it opens toward the rotunda at the museum's heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dome_rotunda",
+          "label": "Take the marked door to the rotunda.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "ci_stars_ladder",
+      "body": "<<FILL role=choice words=100 beats='the ladder rises to a narrow catwalk high over the hall; a steady walk across leads to a service door, but the dark above tempts her higher'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ladder_cross",
+          "label": "Edge across the catwalk.",
+          "target": "ci_stars_cross"
+        },
+        {
+          "id": "c_ladder_up",
+          "label": "Climb higher into the dark dome.",
+          "target": "e_set_stuck_dome"
+        }
+      ]
+    },
+    {
+      "id": "ci_stars_cross",
+      "body": "<<FILL role=rising words=95 beats='she keeps her eyes forward and crosses the catwalk to a service door that lets down toward the rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cross_rotunda",
+          "label": "Descend toward the rotunda.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "ci_map",
+      "body": "<<FILL role=rising words=100 beats='the Map Room is lined with charts; a great floor globe stands on brass rails, and a giant bound atlas lies open on a slanted stand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_map_globe",
+          "label": "Spin the great floor globe.",
+          "target": "ci_map_globe"
+        },
+        {
+          "id": "c_map_atlas",
+          "label": "Open the giant atlas.",
+          "target": "ci_map_atlas"
+        }
+      ]
+    },
+    {
+      "id": "ci_map_globe",
+      "body": "<<FILL role=rising words=95 beats='turning the globe to the cipher's latitude clicks a hidden catch; a low panel swings aside onto a passage toward the rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_globe_rotunda",
+          "label": "Step through toward the rotunda.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "ci_map_atlas",
+      "body": "<<FILL role=rising words=95 beats='the atlas falls open at a hand-drawn page the founder added; a route is inked across it in faded red toward the museum's centre'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_atlas_follow",
+          "label": "Follow the inked red route.",
+          "target": "ci_atlas2"
+        }
+      ]
+    },
+    {
+      "id": "ci_atlas2",
+      "body": "<<FILL role=rising words=95 beats='the red route threads a back stair and a store room and comes out, exactly as drawn, at a door onto the central rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_atlas_rotunda",
+          "label": "Open the rotunda door.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "ci_clock",
+      "body": "<<FILL role=rising words=100 beats='the Clock Corridor ticks with a hundred old clocks; one doorway leads to the gear room behind them, another passes under a slow, heavy pendulum'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_clock_gears",
+          "label": "Follow the ticking to the gear room.",
+          "target": "ci_clock_gears"
+        },
+        {
+          "id": "c_clock_pendulum",
+          "label": "Cross under the great pendulum.",
+          "target": "ci_clock_pendulum"
+        }
+      ]
+    },
+    {
+      "id": "ci_clock_gears",
+      "body": "<<FILL role=rising words=95 beats='in the gear room the master clock's hands are set to the cipher's hour; nudging them true opens a maintenance door toward the rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gears_rotunda",
+          "label": "Go through the maintenance door.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "ci_clock_pendulum",
+      "body": "<<FILL role=choice words=100 beats='the pendulum swings across the only doorway on a slow, steady beat; she can time her steps and slip under, or rush it while it is far'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pendulum_time",
+          "label": "Time your steps past the pendulum.",
+          "target": "ci_clock_cross"
+        },
+        {
+          "id": "c_pendulum_rush",
+          "label": "Rush across before it swings back.",
+          "target": "e_set_pendulum"
+        }
+      ]
+    },
+    {
+      "id": "ci_clock_cross",
+      "body": "<<FILL role=rising words=95 beats='she counts the beat, waits, and walks through cleanly between swings; the passage beyond slopes down to the rotunda'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cross_rot",
+          "label": "Follow the passage to the rotunda.",
+          "target": "n_rotunda"
+        }
+      ]
+    },
+    {
+      "id": "n_rotunda",
+      "body": "<<FILL role=choice words=115 beats='BOTTLENECK: all roads meet at the central rotunda, where a great clockwork globe of brass rings stands under the glass dome; the cipher says the founder hid his real collection here; she can align the globe, hunt the pedestal for a panel, or check the guard's records room'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_rot_align",
+          "label": "Align the clockwork globe to the cipher.",
+          "target": "ro_align"
+        },
+        {
+          "id": "c_rot_panel",
+          "label": "Search the pedestal for a hidden panel.",
+          "target": "ro_panel"
+        },
+        {
+          "id": "c_rot_records",
+          "label": "Slip into the night-guard's records room.",
+          "target": "ro_records"
+        }
+      ]
+    },
+    {
+      "id": "ro_align",
+      "body": "<<FILL role=rising words=100 beats='the clockwork globe's brass rings turn with a whisper; the cipher gives an exact setting, but the rings are stiff and easy to spin past'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_align_set",
+          "label": "Set the rings exactly as decoded.",
+          "target": "ro_align_set"
+        },
+        {
+          "id": "c_align_guess",
+          "label": "Spin the rings by feel.",
+          "target": "ro_align_guess"
+        }
+      ]
+    },
+    {
+      "id": "ro_align_set",
+      "body": "<<FILL role=rising words=95 beats='she sets each ring to the decoded mark; the globe sighs, gears mesh, and a section of the marble floor slides back onto a stair going down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_set_vault",
+          "label": "Descend the hidden stair.",
+          "target": "n_vault"
+        }
+      ]
+    },
+    {
+      "id": "ro_align_guess",
+      "body": "<<FILL role=choice words=100 beats='spun by feel, the rings clunk into a wrong pattern and the globe groans; she can start over and decode it properly, or lean in and force the rings'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_guess_retry",
+          "label": "Start over and decode it properly.",
+          "target": "ro_align_retry"
+        },
+        {
+          "id": "c_guess_force",
+          "label": "Force the rings into place.",
+          "target": "e_set_jammed_globe"
+        }
+      ]
+    },
+    {
+      "id": "ro_align_retry",
+      "body": "<<FILL role=rising words=95 beats='she resets the rings, reads the cipher twice, and turns each to its true mark; this time the globe opens the floor onto a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_retry_vault",
+          "label": "Take the stair down.",
+          "target": "n_vault"
+        }
+      ]
+    },
+    {
+      "id": "ro_panel",
+      "body": "<<FILL role=rising words=100 beats='the pedestal under the globe is carved with sliding tiles; one seam breathes a cool draught, hinting at a side door as well as a puzzle'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_panel_solve",
+          "label": "Solve the little sliding puzzle.",
+          "target": "ro_panel_solve"
+        },
+        {
+          "id": "c_panel_secret",
+          "label": "Follow the draught to the side door.",
+          "target": "ro_panel_secret"
+        }
+      ]
+    },
+    {
+      "id": "ro_panel_solve",
+      "body": "<<FILL role=rising words=95 beats='sliding the tiles into the founder's symbol releases a catch under the pedestal; the marble opens onto the hidden stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_solve_vault",
+          "label": "Go down the hidden stair.",
+          "target": "n_vault"
+        }
+      ]
+    },
+    {
+      "id": "ro_panel_secret",
+      "body": "<<FILL role=rising words=95 beats='the draught leads to a low side door the plans never showed; it opens on a dusty room crowded with half-built clockwork and glass cases'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_secret_workshop",
+          "label": "Step into the hidden room.",
+          "target": "ro_workshop"
+        }
+      ]
+    },
+    {
+      "id": "ro_workshop",
+      "body": "<<FILL role=rising words=100 beats='this is the founder's private workshop, sealed and forgotten, its benches loaded with unfinished automata and labelled wonders; not the treasure the cipher promised, but a marvel all its own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_workshop_end",
+          "label": "Take it all in.",
+          "target": "e_win_secret_workshop"
+        }
+      ]
+    },
+    {
+      "id": "ro_records",
+      "body": "<<FILL role=rising words=100 beats='the guard's records room hums with old monitors; a rounds log lies open on the desk, and a heavy black telephone sits within reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_records_guard",
+          "label": "Read the guard's rounds log.",
+          "target": "ro_records_guard"
+        },
+        {
+          "id": "c_records_phone",
+          "label": "Use the desk phone.",
+          "target": "ro_records_phone"
+        }
+      ]
+    },
+    {
+      "id": "ro_records_guard",
+      "body": "<<FILL role=rising words=95 beats='the log's oldest entry, in the founder's hand, notes a stair that opens under the globe at the cipher's hour; she hurries back and the marble is already sliding open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_guard_vault",
+          "label": "Descend the opened stair.",
+          "target": "n_vault"
+        }
+      ]
+    },
+    {
+      "id": "ro_records_phone",
+      "body": "<<FILL role=rising words=95 beats='the phone still works; she could call for a lift home now, safe and sound, with the mystery half-solved and a story to tell'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_phone_call",
+          "label": "Call home from the museum desk.",
+          "target": "e_neutral_call_home"
+        }
+      ]
+    },
+    {
+      "id": "n_vault",
+      "body": "<<FILL role=choice words=120 beats='BOTTLENECK: the hidden stair opens on the founder's secret chamber, shelves of donated treasures he meant the whole town to share but never lived to reveal; a sealed letter, an old treasure map, and a decision, what to do with all of it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_vault_letter",
+          "label": "Read the founder's sealed letter.",
+          "target": "v_letter"
+        },
+        {
+          "id": "c_vault_map",
+          "label": "Study the old treasure map.",
+          "target": "v_map"
+        },
+        {
+          "id": "c_vault_share",
+          "label": "Decide who to tell.",
+          "target": "v_share"
+        },
+        {
+          "id": "c_vault_grab",
+          "label": "Grab something to prove it.",
+          "target": "v_grab"
+        }
+      ]
+    },
+    {
+      "id": "v_letter",
+      "body": "<<FILL role=rising words=100 beats='the letter explains everything: the founder hid the collection to protect it, and asks whoever finds it to give it back to the town; a last line points to one final resting clue'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_letter_reveal",
+          "label": "Follow the letter's final clue.",
+          "target": "v_letter_reveal"
+        },
+        {
+          "id": "c_letter_keep",
+          "label": "Keep the letter safe and leave the rest.",
+          "target": "v_letter_keep"
+        }
+      ]
+    },
+    {
+      "id": "v_letter_reveal",
+      "body": "<<FILL role=rising words=95 beats='the final clue lifts a false shelf to reveal the founder's catalogue, naming every piece and where it truly belongs; the whole mystery lies open in her hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_more",
+          "label": "Read the catalogue to the end.",
+          "target": "v_reveal2"
+        }
+      ]
+    },
+    {
+      "id": "v_reveal2",
+      "body": "<<FILL role=climax words=100 beats='page by page the catalogue tells the town's lost history and clears the founder's name; by dawn Nadia understands not just where the treasure is, but why it was hidden and how to give it back'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_reveal_end",
+          "label": "Carry the whole truth up into the morning.",
+          "target": "e_win_mystery_solved"
+        }
+      ]
+    },
+    {
+      "id": "v_letter_keep",
+      "body": "<<FILL role=rising words=95 beats='she tucks the letter into her coat and leaves the treasures untouched; the founder's words feel like a trust she means to honour, carefully, in daylight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_keep_end",
+          "label": "Slip out with the letter and a plan.",
+          "target": "e_win_quiet_keeper"
+        }
+      ]
+    },
+    {
+      "id": "v_map",
+      "body": "<<FILL role=choice words=105 beats='the old treasure map marks a walled-up wing where more of the collection waits; she could follow it now, photograph it for later, or lose herself tracing every faded line'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_map_follow",
+          "label": "Follow the map to the walled-up wing.",
+          "target": "v_map_follow"
+        },
+        {
+          "id": "c_map_photo",
+          "label": "Photograph the map and go.",
+          "target": "v_map_photo"
+        },
+        {
+          "id": "c_map_dawn",
+          "label": "Keep tracing it as the sky greys.",
+          "target": "e_set_dawn"
+        }
+      ]
+    },
+    {
+      "id": "v_map_follow",
+      "body": "<<FILL role=rising words=95 beats='the map leads her behind a plaster wall to a small sealed gallery of paintings the town thought lost forever; she marks the way and photographs each frame'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_follow_end",
+          "label": "Bring the lost wing to light.",
+          "target": "e_win_lost_wing"
+        }
+      ]
+    },
+    {
+      "id": "v_map_photo",
+      "body": "<<FILL role=rising words=95 beats='she photographs the map corner to corner and leaves the chamber exactly as she found it, evidence safe on her phone for whoever should decide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_photo_end",
+          "label": "Head out with the proof.",
+          "target": "e_neutral_evidence"
+        }
+      ]
+    },
+    {
+      "id": "v_share",
+      "body": "<<FILL role=choice words=105 beats='she thinks about who should know: the curator would make it right, her friends would keep it thrilling and secret, or she could simply leave it for the museum to rediscover on its own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_curator",
+          "label": "Wake the curator with proof.",
+          "target": "v_share_curator"
+        },
+        {
+          "id": "c_share_secret",
+          "label": "Keep it a secret with your friends.",
+          "target": "v_share_secret"
+        },
+        {
+          "id": "c_share_museum",
+          "label": "Leave it for the museum to find.",
+          "target": "v_share_museum"
+        }
+      ]
+    },
+    {
+      "id": "v_share_curator",
+      "body": "<<FILL role=rising words=95 beats='she gathers the letter and catalogue and, at first light, meets the astonished curator at the staff door with the whole discovery laid out'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_curator_end",
+          "label": "Hand over the founder's trust.",
+          "target": "e_win_hero_curator"
+        }
+      ]
+    },
+    {
+      "id": "v_share_secret",
+      "body": "<<FILL role=rising words=95 beats='she decides the chamber will be the secret of her and her closest friends, a private wonder to visit and protect, at least for now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_secret_end",
+          "label": "Seal the secret with a promise.",
+          "target": "e_win_secret_kept"
+        }
+      ]
+    },
+    {
+      "id": "v_share_museum",
+      "body": "<<FILL role=rising words=95 beats='she leaves the founder's own map propped open on the guard's desk with a note, trusting the museum to follow it and finish what he started'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_museum_end",
+          "label": "Leave the clue and slip away.",
+          "target": "e_win_donate"
+        }
+      ]
+    },
+    {
+      "id": "v_grab",
+      "body": "<<FILL role=rising words=100 beats='a small jewelled owl on the nearest shelf would prove everything in an instant; her hand hovers over it, and she weighs taking it against leaving it be'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_grab_run",
+          "label": "Slip it in your bag and run.",
+          "target": "v_grab_run"
+        },
+        {
+          "id": "c_grab_return",
+          "label": "Set it back where it belongs.",
+          "target": "v_grab_return"
+        }
+      ]
+    },
+    {
+      "id": "v_grab_run",
+      "body": "<<FILL role=rising words=95 beats='the owl in her bag, she bolts up the stair, but the owl's shelf was pressure-set and a gentle chime of bells follows her all the way to the hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_run_end",
+          "label": "Reach the hall with the bells ringing.",
+          "target": "e_set_caught"
+        }
+      ]
+    },
+    {
+      "id": "v_grab_return",
+      "body": "<<FILL role=rising words=95 beats='she sets the owl back on its velvet, deciding the truth is worth more than a trophy, and climbs out with only her notes and a clear conscience'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_return_end",
+          "label": "Leave with clean hands.",
+          "target": "e_neutral_wiser"
+        }
+      ]
+    },
+    {
+      "id": "e_set_alarm",
+      "body": "<<FILL role=failure words=85 beats='the guard's torch finds Nadia standing in the open; kindly but firmly he walks her to the lobby to wait for a lift, the mystery left for another day; safe, a little embarrassed, no harm done'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_alarm",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught at the Case"
+      }
+    },
+    {
+      "id": "e_set_locked_gallery",
+      "body": "<<FILL role=failure words=85 beats='the roped-off gallery's door clicks shut behind her and will not open from the inside; she settles on a bench to wait out the night, warm and safe, the founder's secret still hidden'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_locked_gallery",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Roped-Off Gallery"
+      }
+    },
+    {
+      "id": "e_set_stuck_dark",
+      "body": "<<FILL role=failure words=85 beats='blind in the endless stacks, Nadia loses all sense of direction and decides to sit tight until the lights come on at opening; uncomfortable and dusty, but perfectly safe, the cabinet unopened'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stuck_dark",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Stacks"
+      }
+    },
+    {
+      "id": "e_set_broken_case",
+      "body": "<<FILL role=failure words=85 beats='the glass cracks with a sharp snap and the noise brings the guard at a run; nothing is hurt but the case, and Nadia spends the rest of the night explaining herself in the lobby, the code unread'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_broken_case",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cracked Glass"
+      }
+    },
+    {
+      "id": "e_set_stuck_dome",
+      "body": "<<FILL role=failure words=85 beats='high in the dark dome the ladder ends at a bricked hatch; she climbs carefully back down and gives up the route, tired and dizzy but unhurt, the rotunda still out of reach tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_stuck_dome",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "High in the Dome"
+      }
+    },
+    {
+      "id": "e_set_pendulum",
+      "body": "<<FILL role=failure words=85 beats='she rushes and mistimes it; the slow pendulum bumps her back gently but firmly onto the safe side of the doorway, and she decides the Clock Corridor has beaten her for the night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pendulum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the Pendulum"
+      }
+    },
+    {
+      "id": "e_set_jammed_globe",
+      "body": "<<FILL role=failure words=85 beats='forced too hard, the brass rings lock solid and will not turn either way; the hidden stair stays shut, and Nadia sits by the silent globe to wait for morning, so close and yet stuck'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_jammed_globe",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Jammed Globe"
+      }
+    },
+    {
+      "id": "e_set_caught",
+      "body": "<<FILL role=failure words=90 beats='the ringing bells lead the guard straight to her; red-faced, Nadia hands back the little owl and puts everything right, let off with a stern word and a promise to return by daylight, the treasure safe and the lesson learned'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_caught",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught Red-Handed"
+      }
+    },
+    {
+      "id": "e_set_dawn",
+      "body": "<<FILL role=failure words=90 beats='lost in the map's every line, Nadia looks up to find the sky already grey and the staff arriving; she slips out with the mystery only half-traced, promising herself she will come back and finish it properly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_dawn",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out of Night"
+      }
+    },
+    {
+      "id": "e_win_secret_workshop",
+      "body": "<<FILL role=completion words=95 beats='the founder's forgotten workshop becomes Nadia's quiet triumph; she photographs the automata, leaves everything untouched, and by morning tells the curator of a whole lost room, a wonder no one knew survived; a warm, satisfying discovery'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_secret_workshop",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Hidden Workshop"
+      }
+    },
+    {
+      "id": "e_win_mystery_solved",
+      "body": "<<FILL role=completion words=100 beats='with the letter, the catalogue, and the whole truth, Nadia walks into the morning and hands the founder's story back to the town; the lost collection is found, his name is cleared, and the museum will never be quite the same; the main triumphant ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_mystery_solved",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Whole Truth"
+      }
+    },
+    {
+      "id": "e_win_quiet_keeper",
+      "body": "<<FILL role=completion words=90 beats='Nadia leaves with only the founder's letter and a promise to honour it; in the weeks that follow she quietly guides the curator toward the truth, keeper of a trust she chose to carry gently; a calm, happy ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_quiet_keeper",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Keeper of the Letter"
+      }
+    },
+    {
+      "id": "e_win_lost_wing",
+      "body": "<<FILL role=completion words=95 beats='the walled-up wing of lost paintings is Nadia's discovery to give; her photographs bring restorers and reporters, and the town crowds in to see what was hidden for a century; a proud, satisfying win'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_wing",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Walled-Up Wing"
+      }
+    },
+    {
+      "id": "e_win_hero_curator",
+      "body": "<<FILL role=completion words=95 beats='at first light the curator listens open-mouthed, then leads a careful team down the hidden stair; Nadia is thanked as the girl who gave the founder's gift back to everyone, exactly as he wished; a warm, complete ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_hero_curator",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Morning Heroes"
+      }
+    },
+    {
+      "id": "e_win_secret_kept",
+      "body": "<<FILL role=completion words=90 beats='the hidden chamber becomes the treasured secret of Nadia and her friends, a wonder they visit and guard together; it is theirs alone for now, a bond and a promise; a happy, private ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_secret_kept",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Secret Among Friends"
+      }
+    },
+    {
+      "id": "e_win_donate",
+      "body": "<<FILL role=completion words=90 beats='Nadia leaves the founder's own map open on the desk with a careful note; days later the museum follows it, finds the collection, and never learns whose small hands set them on the path; a quiet, generous ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_donate",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Left for the Light"
+      }
+    },
+    {
+      "id": "e_neutral_call_home",
+      "body": "<<FILL role=ending words=85 beats='Nadia calls home from the guard's desk and waits in the warm lobby for a lift, the mystery half-solved and safe in her notebook; not the full triumph, but a good night's adventure and a promise to return; safe and content'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_call_home",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Call Home"
+      }
+    },
+    {
+      "id": "e_neutral_evidence",
+      "body": "<<FILL role=ending words=85 beats='with the map safe on her phone and the chamber left untouched, Nadia slips out at dawn; she has proof enough to bring the right people back, and lets the grown-ups decide what happens next; a measured, open ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_evidence",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Proof in a Photo"
+      }
+    },
+    {
+      "id": "e_neutral_wiser",
+      "body": "<<FILL role=ending words=85 beats='Nadia leaves the treasures where they belong and climbs out with only her notes; she has not solved everything, but she has learned what she is willing to do and not do, and walks home wiser than she came; a thoughtful ending'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_wiser",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "Wiser by Morning"
+      }
+    }
+  ]
+}

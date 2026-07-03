@@ -1,0 +1,863 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_cave_of_echoes",
+  "version": 1,
+  "title": "The Cave of Echoes",
+  "metadata": {
+    "age_band": "8-11",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 4.5,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "exploration",
+      "courage",
+      "wonder",
+      "nature"
+    ],
+    "estimated_minutes": 8,
+    "ending_count": 16,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "moderate"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=110 beats='Maya and her dog Biscuit slip into the sea caves under the old lighthouse at low tide; three dark openings breathe cool air and throw back echoes; she must choose which echo to follow before the tide turns'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_left",
+          "label": "Follow the humming echo to the left.",
+          "target": "la_tunnel"
+        },
+        {
+          "id": "c_right",
+          "label": "Follow the dripping echo to the right.",
+          "target": "ra_drip"
+        },
+        {
+          "id": "c_down",
+          "label": "Follow the whispering echo straight down.",
+          "target": "da_dark"
+        }
+      ]
+    },
+    {
+      "id": "la_tunnel",
+      "body": "<<FILL role=rising words=95 beats='the left passage narrows into a low tunnel that hums like a held note; Biscuit's ears prick; Maya edges forward toward a distant glow and a soft rustling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_fork",
+          "label": "Press on toward the glow.",
+          "target": "la_fork"
+        }
+      ]
+    },
+    {
+      "id": "la_fork",
+      "body": "<<FILL role=choice words=100 beats='the tunnel splits: to one side a wall glitters faintly, to the other the humming grows into a warm murmur'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_glitter",
+          "label": "Go toward the glittering wall.",
+          "target": "la_glitter"
+        },
+        {
+          "id": "c_hum",
+          "label": "Go toward the warm murmur.",
+          "target": "la_hum"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter",
+      "body": "<<FILL role=rising words=95 beats='the glittering wall is flecked with tiny quartz that catches Maya's torchlight; the floor slopes gently down toward a narrow crack breathing cold air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_slope",
+          "label": "Follow the sloping floor down.",
+          "target": "la_glitter2"
+        }
+      ]
+    },
+    {
+      "id": "la_glitter2",
+      "body": "<<FILL role=rising words=95 beats='the slope opens into a small antechamber; a crack in the far wall glows with a soft blue light and the air smells of clean wet stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_crack",
+          "label": "Approach the glowing crack.",
+          "target": "la_grotto_app"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto_app",
+      "body": "<<FILL role=choice words=100 beats='the crack is just wide enough to squeeze through, but water is beginning to pool at Maya's boots; she can squeeze on or turn back to the mouth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_squeeze",
+          "label": "Squeeze through the glowing crack.",
+          "target": "la_squeeze"
+        },
+        {
+          "id": "c_retreat",
+          "label": "Turn back before the water rises.",
+          "target": "la_retreat_pool"
+        }
+      ]
+    },
+    {
+      "id": "la_retreat_pool",
+      "body": "<<FILL role=ending words=85 beats='Maya and Biscuit splash back to the cave mouth as the shallow water rises around their ankles; they reach daylight damp, muddy, and safe, promising to come back at the next low tide'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back to the Mouth"
+      }
+    },
+    {
+      "id": "la_squeeze",
+      "body": "<<FILL role=rising words=95 beats='they wriggle through the cool crack and pop out the other side; Biscuit shakes off and the blue glow brightens ahead into a wide shimmering room'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_room",
+          "label": "Step into the shimmering room.",
+          "target": "la_grotto"
+        }
+      ]
+    },
+    {
+      "id": "la_grotto",
+      "body": "<<FILL role=choice words=105 beats='a crystal grotto: walls studded with glowing crystals throw blue light everywhere; one loose crystal sits at eye level, and a deeper archway hums invitingly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_take",
+          "label": "Gently take the loose crystal.",
+          "target": "la_crystal_take"
+        },
+        {
+          "id": "c_deeper",
+          "label": "Follow the humming archway deeper.",
+          "target": "la_crystal_deeper"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_take",
+      "body": "<<FILL role=rising words=90 beats='Maya eases the loose crystal free; it fits her palm and glows softly, lighting a low passage that seems to curve back toward the lighthouse stairs'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_up",
+          "label": "Follow the crystal's light back up.",
+          "target": "la_crystal_out"
+        }
+      ]
+    },
+    {
+      "id": "la_crystal_out",
+      "body": "<<FILL role=completion words=90 beats='the glowing crystal lights their way up a stone stair to a little door behind the lighthouse; Maya steps into the evening with a real cave-crystal cupped in her hands and Biscuit at her heels'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crystal",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Glowing Crystal"
+      }
+    },
+    {
+      "id": "la_crystal_deeper",
+      "body": "<<FILL role=rising words=95 beats='the archway hum grows into a chord; the passage widens and the crystals thin out, replaced by smooth ribbed walls that seem shaped to carry sound'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chord",
+          "label": "Follow the chord toward the sound.",
+          "target": "la_song_app"
+        }
+      ]
+    },
+    {
+      "id": "la_song_app",
+      "body": "<<FILL role=rising words=95 beats='ahead the walls curve into a great round chamber; every drip and footstep rings and layers into music; Biscuit gives a wondering whine that echoes like a choir'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_sing",
+          "label": "Step into the ringing chamber.",
+          "target": "la_song"
+        }
+      ]
+    },
+    {
+      "id": "la_song",
+      "body": "<<FILL role=completion words=90 beats='Maya sings a single note and the whole chamber sings it back in shimmering harmony; she has found the chamber that sings, a secret only the old lighthouse keeper once knew, and hums all the way home'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Chamber That Sings"
+      }
+    },
+    {
+      "id": "la_hum",
+      "body": "<<FILL role=rising words=95 beats='the warm murmur leads down a rounded passage; the sound is not wind but something ringing, like a struck bell far below; Biscuit pads ahead confidently'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_ring",
+          "label": "Follow the ringing downward.",
+          "target": "la_hum2"
+        }
+      ]
+    },
+    {
+      "id": "la_hum2",
+      "body": "<<FILL role=rising words=95 beats='the passage steepens; the ringing steadies into a slow, deep chime, and pale light leaks up from a chamber below where something metal catches the glow'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_chime",
+          "label": "Climb down toward the chiming light.",
+          "target": "la_bell_app"
+        }
+      ]
+    },
+    {
+      "id": "la_bell_app",
+      "body": "<<FILL role=choice words=100 beats='a rope ladder left by someone long ago dangles into the chamber; the tide-clock in Maya's head says time is short; she can climb down or scramble back up while she still can'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bell",
+          "label": "Climb down the old rope ladder.",
+          "target": "la_bell"
+        },
+        {
+          "id": "c_humback",
+          "label": "Scramble back up to be safe.",
+          "target": "la_hum_back"
+        }
+      ]
+    },
+    {
+      "id": "la_hum_back",
+      "body": "<<FILL role=ending words=85 beats='Maya decides the chime can wait for a safer day; she and Biscuit climb back up the rounded passage and out to the mouth, salt-damp and a little breathless but perfectly safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_left_hum",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Another Low Tide"
+      }
+    },
+    {
+      "id": "la_bell",
+      "body": "<<FILL role=rising words=95 beats='the ladder holds; at the bottom a huge old ship's bell, green with age, hangs from a natural arch, still faintly ringing as slow drips strike its rim'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell2",
+          "label": "Walk up to the great bell.",
+          "target": "la_bell2"
+        }
+      ]
+    },
+    {
+      "id": "la_bell2",
+      "body": "<<FILL role=rising words=90 beats='letters are cast around the bell's lip, the name of a ship lost a hundred years ago; behind it a dry ledge holds a rusted lantern and a coil of good rope'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell3",
+          "label": "Read the name and look behind the bell.",
+          "target": "la_bell3"
+        }
+      ]
+    },
+    {
+      "id": "la_bell3",
+      "body": "<<FILL role=rising words=90 beats='Maya copies the ship's name into her notebook; the lantern still has a stub of candle, and the coil of rope could help them climb out the way they came'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_la_bell4",
+          "label": "Take the lantern and rope and head out.",
+          "target": "la_bell4"
+        }
+      ]
+    },
+    {
+      "id": "la_bell4",
+      "body": "<<FILL role=completion words=95 beats='with the rediscovered bell's name safe in her notebook and the old lantern lit, Maya and Biscuit climb the rope back to daylight; the whole town will want to hear about the lost ship that still rings under the sea'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Bell of the Lost Ship"
+      }
+    },
+    {
+      "id": "ra_drip",
+      "body": "<<FILL role=rising words=95 beats='the right passage drips steadily; Maya's torch shows wet black walls and a trickle running deeper into the dark; the air turns cold and briny'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_fork",
+          "label": "Follow the trickle deeper.",
+          "target": "ra_fork"
+        }
+      ]
+    },
+    {
+      "id": "ra_fork",
+      "body": "<<FILL role=choice words=100 beats='the trickle reaches a split: one way the sound of water grows into a hollow lapping, the other way a sharp briny smell drifts from a low side-tunnel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_lake",
+          "label": "Head toward the lapping water.",
+          "target": "ra_lake_way"
+        },
+        {
+          "id": "c_pool",
+          "label": "Follow the briny smell.",
+          "target": "ra_pool_way"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_way",
+      "body": "<<FILL role=rising words=95 beats='the lapping grows louder; the passage floor turns to smooth wet pebbles and the ceiling lifts away into darkness Maya's torch cannot reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_pebbles",
+          "label": "Cross the wet pebbles.",
+          "target": "ra_lake2"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake2",
+      "body": "<<FILL role=rising words=95 beats='the pebbles give way to a shelf of rock above black, still water that stretches out of sight; the lapping is only Biscuit's paw testing the cold edge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shelf",
+          "label": "Edge along the rocky shelf.",
+          "target": "ra_lake_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_app",
+      "body": "<<FILL role=choice words=105 beats='the shelf narrows and turns slick with weed; below, the underground lake waits; Maya can climb carefully down to its shore or back off before someone slips'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_descend",
+          "label": "Climb down to the lake shore.",
+          "target": "ra_descend"
+        },
+        {
+          "id": "c_lakeback",
+          "label": "Back off the slippery shelf.",
+          "target": "ra_lake_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_lake_back",
+      "body": "<<FILL role=ending words=85 beats='the weed-slick rock is too risky; Maya coaxes Biscuit back along the shelf and they retrace the drip to the cave mouth, arriving damp and muddy but safe, the black lake left for braver boots'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_lake",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Weed-Slick Shelf"
+      }
+    },
+    {
+      "id": "ra_descend",
+      "body": "<<FILL role=rising words=95 beats='they pick their way down to a pale gravel shore beside the vast still lake; the water is glassy and cold, and something long and dark rests half-pulled onto the gravel'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_shore",
+          "label": "Walk along the gravel shore.",
+          "target": "ra_lakeshore"
+        }
+      ]
+    },
+    {
+      "id": "ra_lakeshore",
+      "body": "<<FILL role=choice words=105 beats='the dark shape is an old wooden rowboat, cracked but whole; further along, the shallows glow faintly where the water is only ankle-deep'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_boat",
+          "label": "Examine the old rowboat.",
+          "target": "ra_boat"
+        },
+        {
+          "id": "c_wade",
+          "label": "Wade into the glowing shallows.",
+          "target": "ra_wade"
+        }
+      ]
+    },
+    {
+      "id": "ra_boat",
+      "body": "<<FILL role=rising words=95 beats='the rowboat still has its oars lashed inside; Maya tips out the rainwater, and the little craft floats, rocking gently, ready to carry them across the mirror-black lake'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_row",
+          "label": "Climb in and push off.",
+          "target": "ra_row"
+        }
+      ]
+    },
+    {
+      "id": "ra_row",
+      "body": "<<FILL role=completion words=95 beats='Maya rows Biscuit across the silent lake to a shelf of glimmering rock where a natural chimney lets in a coin of daylight; they climb out into the dunes, the first people in a lifetime to cross the lighthouse lake'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_rowboat",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Across the Hidden Lake"
+      }
+    },
+    {
+      "id": "ra_wade",
+      "body": "<<FILL role=rising words=95 beats='the shallows glow because thousands of tiny pale shells carpet the bottom, lighting up as Maya's feet stir them; the glow leads toward a low, bright opening'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_islet",
+          "label": "Follow the glowing shells.",
+          "target": "ra_islet"
+        }
+      ]
+    },
+    {
+      "id": "ra_islet",
+      "body": "<<FILL role=completion words=90 beats='the shells lead to a tiny islet of white sand under a shaft of open sky, ringed by glowing water like a secret pool; Maya fills a jar with the pale shells and wades back up into the daylight, sworn to keep the place secret'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_islet",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Glowing Islet"
+      }
+    },
+    {
+      "id": "ra_pool_way",
+      "body": "<<FILL role=rising words=95 beats='the briny side-tunnel is tight and smells of salt and seaweed; Maya crouches under dripping ledges while Biscuit squeezes ahead toward a paler light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_crouch",
+          "label": "Crouch through toward the pale light.",
+          "target": "ra_pool2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool2",
+      "body": "<<FILL role=rising words=95 beats='the tunnel opens a little; strands of green weed hang from the ceiling and a shallow channel of clear seawater runs along the floor toward a rounded chamber'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_channel",
+          "label": "Follow the clear channel.",
+          "target": "ra_pool_app"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_app",
+      "body": "<<FILL role=choice words=100 beats='the channel leads to a curtain of hanging weed; beyond it the light is bright and watery; but the incoming tide is filling the channel behind them, and Maya must choose quickly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_enter",
+          "label": "Push through the weed curtain.",
+          "target": "ra_pool_enter"
+        },
+        {
+          "id": "c_poolback",
+          "label": "Hurry back before the channel fills.",
+          "target": "ra_pool_back"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_back",
+      "body": "<<FILL role=ending words=85 beats='Maya will not risk the rising channel; she and Biscuit hurry back the way they came and reach the mouth as the sea pours in behind them, wet to the knees, hearts thumping, entirely safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_pool",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Beat the Tide Back"
+      }
+    },
+    {
+      "id": "ra_pool_enter",
+      "body": "<<FILL role=rising words=95 beats='through the weed the chamber opens into a bright hidden tide-pool, its water so clear it looks like air; anemones and darting fish fill the rocky bowl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_kneel",
+          "label": "Kneel by the clear tide-pool.",
+          "target": "ra_pool_chamber"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_chamber",
+      "body": "<<FILL role=choice words=105 beats='the tide-pool is a whole tiny world; in one corner a rare cushion starfish glows orange, and on the far side a crab-track leads to a deeper, darker basin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_star",
+          "label": "Look closely at the orange starfish.",
+          "target": "ra_starfish"
+        },
+        {
+          "id": "c_deep",
+          "label": "Follow the crab-track to the dark basin.",
+          "target": "ra_pool_deep"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish",
+      "body": "<<FILL role=rising words=95 beats='the cushion starfish is bigger than Maya's hand and the deep orange of a sunset; she sketches it carefully, leaving it exactly where it clings, and photographs the glowing pool'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_sketch",
+          "label": "Finish the sketch and slip out.",
+          "target": "ra_starfish2"
+        }
+      ]
+    },
+    {
+      "id": "ra_starfish2",
+      "body": "<<FILL role=completion words=90 beats='Maya backs out of the tide-pool with a page full of drawings of the rare orange starfish; the rockpool society will not believe her until they see the sketch, and she and Biscuit climb out grinning'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_starfish",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rare Starfish"
+      }
+    },
+    {
+      "id": "ra_pool_deep",
+      "body": "<<FILL role=rising words=95 beats='the crab-track leads to a darker basin where the water is deep green; something smooth and pale gleams at the bottom, half-buried, catching the last of the light'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ra_reach",
+          "label": "Reach into the green basin.",
+          "target": "ra_pool_deep2"
+        }
+      ]
+    },
+    {
+      "id": "ra_pool_deep2",
+      "body": "<<FILL role=completion words=95 beats='Maya lifts out a perfect spiral shell as big as her two hands, its inside pearled pink; it is the finest thing she has ever found, and she carries it up into the daylight like a trophy, Biscuit barking proudly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_shell",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Great Spiral Shell"
+      }
+    },
+    {
+      "id": "da_dark",
+      "body": "<<FILL role=rising words=95 beats='the straight-down passage is the darkest; the whispering echo turns out to be a draft over stone; Maya keeps one hand on the wall and Biscuit close as they descend'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_fork",
+          "label": "Feel along the wall downward.",
+          "target": "da_fork"
+        }
+      ]
+    },
+    {
+      "id": "da_fork",
+      "body": "<<FILL role=choice words=100 beats='the dark passage forks: from one branch comes a papery squeaking and flutter, from the other the creak of old wood and a glint of rusted iron'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_bat",
+          "label": "Go toward the squeaking and flutter.",
+          "target": "da_bat_way"
+        },
+        {
+          "id": "c_cache",
+          "label": "Go toward the creaking wood.",
+          "target": "da_cache_way"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_way",
+      "body": "<<FILL role=rising words=95 beats='the squeaking gets busier; the ceiling lifts and Maya's torch catches hundreds of small folded shapes hanging above; Biscuit presses to her leg, uncertain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_creep",
+          "label": "Creep on under the hanging shapes.",
+          "target": "da_bat2"
+        }
+      ]
+    },
+    {
+      "id": "da_bat2",
+      "body": "<<FILL role=rising words=95 beats='they are bats, roosting in a great vaulted chamber, twitching in their sleep; the air is warm and smells earthy, and a faint circle of grey light shows high in the roof'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_grey",
+          "label": "Move quietly toward the grey light.",
+          "target": "da_bat_app"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_app",
+      "body": "<<FILL role=choice words=105 beats='the grey light is a shaft in the roof, maybe a way up and out; but reaching it means crossing right under the sleeping bats; Maya can tiptoe on or back away and leave them in peace'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_batenter",
+          "label": "Tiptoe across under the bats.",
+          "target": "da_bat_enter"
+        },
+        {
+          "id": "c_batback",
+          "label": "Back away and leave the bats be.",
+          "target": "da_bat_back"
+        }
+      ]
+    },
+    {
+      "id": "da_bat_back",
+      "body": "<<FILL role=ending words=85 beats='Maya will not risk waking the whole sleeping roost; she and Biscuit ease back out of the warm chamber and return along the dark passage to the mouth, dusty and awed and safe'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_bat",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Let the Bats Sleep"
+      }
+    },
+    {
+      "id": "da_bat_enter",
+      "body": "<<FILL role=rising words=95 beats='they cross on soft feet; not a bat stirs; beneath the shaft a jumble of fallen rock makes a rough staircase toward the circle of daylight far above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_stair",
+          "label": "Start up the fallen-rock stair.",
+          "target": "da_roost"
+        }
+      ]
+    },
+    {
+      "id": "da_roost",
+      "body": "<<FILL role=rising words=95 beats='the rock stair is steep but solid; halfway up Maya finds an old carved arrow and initials, proof that someone climbed this secret chimney long before her'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_climb",
+          "label": "Climb on past the old carving.",
+          "target": "da_roost2"
+        }
+      ]
+    },
+    {
+      "id": "da_roost2",
+      "body": "<<FILL role=rising words=90 beats='the shaft narrows to a mossy funnel; green light and the smell of grass pour down; Maya boosts Biscuit ahead and hauls herself up the last mossy metres'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_push",
+          "label": "Push up through the mossy funnel.",
+          "target": "da_skylight"
+        }
+      ]
+    },
+    {
+      "id": "da_skylight",
+      "body": "<<FILL role=completion words=95 beats='they climb out through a hidden hole in the clifftop meadow, high above the lighthouse, blinking in the sun; Maya has found a secret way in and out of the caves, and a whole colony of bats to tell the museum about'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bats",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Skylight in the Meadow"
+      }
+    },
+    {
+      "id": "da_cache_way",
+      "body": "<<FILL role=rising words=95 beats='the creaking wood grows nearer; Maya's torch finds broken barrel-staves and a leaning door of grey planks wedged into a side-cave, iron nails weeping rust'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_door",
+          "label": "Approach the leaning plank door.",
+          "target": "da_cache2"
+        }
+      ]
+    },
+    {
+      "id": "da_cache2",
+      "body": "<<FILL role=rising words=95 beats='the old door swings with a groan; behind it a dry hollow has been walled off by hand, a hiding place, with the shapes of stacked crates in the shadows'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_peer",
+          "label": "Peer into the walled-off hollow.",
+          "target": "da_cache_app"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_app",
+      "body": "<<FILL role=choice words=105 beats='it is a smuggler's old cache, forgotten for a century; but the tide is turning and the floor already glistens wet; Maya can step inside for a quick look or leave the crates for another day'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_cacheenter",
+          "label": "Step in for a quick look.",
+          "target": "da_cache_enter"
+        },
+        {
+          "id": "c_cacheback",
+          "label": "Leave the cache and beat the tide.",
+          "target": "da_cache_back"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_back",
+      "body": "<<FILL role=ending words=85 beats='the wet floor decides it; Maya marks the spot on her map and hurries out with Biscuit ahead of the rising tide, reaching the mouth breathless, muddy, and safe, the cache saved for a drier day'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_set_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Mark It on the Map"
+      }
+    },
+    {
+      "id": "da_cache_enter",
+      "body": "<<FILL role=rising words=95 beats='inside, the crates are furred with dust; most have rotted to splinters, but two smaller boxes sit dry on a stone shelf, their lids stiff but whole'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_boxes",
+          "label": "Open the two dry boxes.",
+          "target": "da_cache_room"
+        }
+      ]
+    },
+    {
+      "id": "da_cache_room",
+      "body": "<<FILL role=choice words=105 beats='the first box holds a green-crusted brass compass; the second is heavy and rattles like coins; the water is creeping in, and Maya can only carry one out cleanly'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_compass",
+          "label": "Take the old brass compass.",
+          "target": "da_compass"
+        },
+        {
+          "id": "c_coins",
+          "label": "Take the heavy rattling box.",
+          "target": "da_coins"
+        }
+      ]
+    },
+    {
+      "id": "da_compass",
+      "body": "<<FILL role=rising words=95 beats='Maya wipes the compass; under the crust its needle still swings true, pointing her the quickest way back toward the cave mouth and the fading daylight'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_out",
+          "label": "Follow the compass out.",
+          "target": "da_compass2"
+        }
+      ]
+    },
+    {
+      "id": "da_compass2",
+      "body": "<<FILL role=completion words=95 beats='the century-old compass leads them straight out to the mouth just as the sea returns; Maya carries a real smuggler's compass that still finds north, and a story the whole town will beg to hear'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_compass",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Compass"
+      }
+    },
+    {
+      "id": "da_coins",
+      "body": "<<FILL role=rising words=95 beats='the heavy box is full of blackened old coins, foreign faces stamped in silver; Maya cannot count them now, but she can carry the whole box if she goes at once'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_da_carry",
+          "label": "Carry the box out quickly.",
+          "target": "da_coins2"
+        }
+      ]
+    },
+    {
+      "id": "da_coins2",
+      "body": "<<FILL role=completion words=95 beats='Maya lugs the box of tarnished coins up to daylight just ahead of the tide; the museum will polish them and put her name on the little card, the girl who found the lighthouse smugglers' hoard'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_coins",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Smuggler's Coins"
+      }
+    }
+  ]
+}

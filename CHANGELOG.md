@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- First production-eligible story skeletons (P1), one per launch cell of the ADR-011
+  matrix: `8-11 short prose` (The Cave of Echoes, time_cave, 64 nodes),
+  `5-8 short prose` (The Lantern Festival, loop_and_grow, 36 nodes), and
+  `10-13 short prose` (The Midnight Museum, branch_and_bottleneck, 94 nodes). Each
+  declares `length` + `narrative_style` + `production_eligible: true`, so it is
+  scale-classified and passes the full PL-17/19/20/21 gate; each is pinned
+  `blocked=False` by `test_production_skeletons_*` and rendered into the catalog. ADR-011
+  section 7 gains a per-band topology and flow-allowance table (folded from the retired
+  expansion-plan doc).
 - Story-scale (P0) enabler implementing the ADR-011 band x length x style framework as
   additive, opt-in validator and generation changes (no existing fixture or seed declares a
   `length`, so the corpus is unaffected). A non-production MVP/Test tier

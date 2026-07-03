@@ -1,0 +1,359 @@
+@startuml the-midnight-museum
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 120w
+state a_gems1 #D1C4E9
+a_gems1 : rising · 100w
+state a_gems_case #FFF9C4
+a_gems_case : choice · 105w
+state a_gems_vitrine #D1C4E9
+a_gems_vitrine : rising · 95w
+state a_gems_note #D1C4E9
+a_gems_note : rising · 95w
+state a_gems_corridor #D1C4E9
+a_gems_corridor : rising · 100w
+state a_gems_alarm #FFF9C4
+a_gems_alarm : choice · 100w
+state a_gems_hide #D1C4E9
+a_gems_hide : rising · 95w
+state b_egypt1 #D1C4E9
+b_egypt1 : rising · 100w
+state b_egypt_sarco #FFF9C4
+b_egypt_sarco : choice · 105w
+state b_egypt_lid #D1C4E9
+b_egypt_lid : rising · 95w
+state b_egypt_amulet #D1C4E9
+b_egypt_amulet : rising · 95w
+state b_egypt_hall #D1C4E9
+b_egypt_hall : rising · 100w
+state b_egypt_map #FFF9C4
+b_egypt_map : choice · 100w
+state b_egypt_torch #D1C4E9
+b_egypt_torch : rising · 95w
+state c_archive1 #D1C4E9
+c_archive1 : rising · 100w
+state c_archive_ledger #FFF9C4
+c_archive_ledger : choice · 105w
+state c_archive_index #D1C4E9
+c_archive_index : rising · 95w
+state c_archive_drawer #D1C4E9
+c_archive_drawer : rising · 95w
+state c_archive_stack #D1C4E9
+c_archive_stack : rising · 100w
+state c_archive_dark #FFF9C4
+c_archive_dark : choice · 100w
+state c_archive_lantern #D1C4E9
+c_archive_lantern : rising · 95w
+state n_key #FFF9C4
+n_key : choice · 115w
+state k_founder #D1C4E9
+k_founder : rising · 100w
+state k_founder_desk #D1C4E9
+k_founder_desk : rising · 95w
+state k_founder_portrait #D1C4E9
+k_founder_portrait : rising · 95w
+state k_display #D1C4E9
+k_display : rising · 100w
+state k_display_open #D1C4E9
+k_display_open : rising · 95w
+state k_cabinet #D1C4E9
+k_cabinet : rising · 95w
+state k_display_force #FFF9C4
+k_display_force : choice · 100w
+state k_display_careful #D1C4E9
+k_display_careful : rising · 95w
+state k_stairs #D1C4E9
+k_stairs : rising · 100w
+state k_stairs_up #D1C4E9
+k_stairs_up : rising · 95w
+state k_stairs_base #D1C4E9
+k_stairs_base : rising · 95w
+state k_study #D1C4E9
+k_study : rising · 110w
+state n_cipher #FFF9C4
+n_cipher : choice · 115w
+state ci_stars #D1C4E9
+ci_stars : rising · 100w
+state ci_stars_dome #D1C4E9
+ci_stars_dome : rising · 95w
+state ci_stars_ladder #FFF9C4
+ci_stars_ladder : choice · 100w
+state ci_stars_cross #D1C4E9
+ci_stars_cross : rising · 95w
+state ci_map #D1C4E9
+ci_map : rising · 100w
+state ci_map_globe #D1C4E9
+ci_map_globe : rising · 95w
+state ci_map_atlas #D1C4E9
+ci_map_atlas : rising · 95w
+state ci_atlas2 #D1C4E9
+ci_atlas2 : rising · 95w
+state ci_clock #D1C4E9
+ci_clock : rising · 100w
+state ci_clock_gears #D1C4E9
+ci_clock_gears : rising · 95w
+state ci_clock_pendulum #FFF9C4
+ci_clock_pendulum : choice · 100w
+state ci_clock_cross #D1C4E9
+ci_clock_cross : rising · 95w
+state n_rotunda #FFF9C4
+n_rotunda : choice · 115w
+state ro_align #D1C4E9
+ro_align : rising · 100w
+state ro_align_set #D1C4E9
+ro_align_set : rising · 95w
+state ro_align_guess #FFF9C4
+ro_align_guess : choice · 100w
+state ro_align_retry #D1C4E9
+ro_align_retry : rising · 95w
+state ro_panel #D1C4E9
+ro_panel : rising · 100w
+state ro_panel_solve #D1C4E9
+ro_panel_solve : rising · 95w
+state ro_panel_secret #D1C4E9
+ro_panel_secret : rising · 95w
+state ro_workshop #D1C4E9
+ro_workshop : rising · 100w
+state ro_records #D1C4E9
+ro_records : rising · 100w
+state ro_records_guard #D1C4E9
+ro_records_guard : rising · 95w
+state ro_records_phone #D1C4E9
+ro_records_phone : rising · 95w
+state n_vault #FFF9C4
+n_vault : choice · 120w
+state v_letter #D1C4E9
+v_letter : rising · 100w
+state v_letter_reveal #D1C4E9
+v_letter_reveal : rising · 95w
+state v_reveal2 #FFE0B2
+v_reveal2 : climax · 100w
+state v_letter_keep #D1C4E9
+v_letter_keep : rising · 95w
+state v_map #FFF9C4
+v_map : choice · 105w
+state v_map_follow #D1C4E9
+v_map_follow : rising · 95w
+state v_map_photo #D1C4E9
+v_map_photo : rising · 95w
+state v_share #FFF9C4
+v_share : choice · 105w
+state v_share_curator #D1C4E9
+v_share_curator : rising · 95w
+state v_share_secret #D1C4E9
+v_share_secret : rising · 95w
+state v_share_museum #D1C4E9
+v_share_museum : rising · 95w
+state v_grab #D1C4E9
+v_grab : rising · 100w
+state v_grab_run #D1C4E9
+v_grab_run : rising · 95w
+state v_grab_return #D1C4E9
+v_grab_return : rising · 95w
+state e_set_alarm #FFCDD2
+e_set_alarm : setback (negative)
+e_set_alarm : "Caught at the Case"
+state e_set_locked_gallery #FFCDD2
+e_set_locked_gallery : setback (negative)
+e_set_locked_gallery : "The Roped-Off Gallery"
+state e_set_stuck_dark #FFCDD2
+e_set_stuck_dark : setback (negative)
+e_set_stuck_dark : "Lost in the Stacks"
+state e_set_broken_case #FFCDD2
+e_set_broken_case : setback (negative)
+e_set_broken_case : "The Cracked Glass"
+state e_set_stuck_dome #FFCDD2
+e_set_stuck_dome : setback (negative)
+e_set_stuck_dome : "High in the Dome"
+state e_set_pendulum #FFCDD2
+e_set_pendulum : setback (negative)
+e_set_pendulum : "Under the Pendulum"
+state e_set_jammed_globe #FFCDD2
+e_set_jammed_globe : setback (negative)
+e_set_jammed_globe : "The Jammed Globe"
+state e_set_caught #FFCDD2
+e_set_caught : setback (negative)
+e_set_caught : "Caught Red-Handed"
+state e_set_dawn #FFCDD2
+e_set_dawn : setback (negative)
+e_set_dawn : "Out of Night"
+state e_win_secret_workshop #C8E6C9
+e_win_secret_workshop : success (positive)
+e_win_secret_workshop : "The Hidden Workshop"
+state e_win_mystery_solved #C8E6C9
+e_win_mystery_solved : completion (positive)
+e_win_mystery_solved : "The Whole Truth"
+state e_win_quiet_keeper #C8E6C9
+e_win_quiet_keeper : success (positive)
+e_win_quiet_keeper : "Keeper of the Letter"
+state e_win_lost_wing #C8E6C9
+e_win_lost_wing : success (positive)
+e_win_lost_wing : "The Walled-Up Wing"
+state e_win_hero_curator #C8E6C9
+e_win_hero_curator : completion (positive)
+e_win_hero_curator : "Morning Heroes"
+state e_win_secret_kept #C8E6C9
+e_win_secret_kept : success (positive)
+e_win_secret_kept : "A Secret Among Friends"
+state e_win_donate #C8E6C9
+e_win_donate : success (positive)
+e_win_donate : "Left for the Light"
+state e_neutral_call_home #E0E0E0
+e_neutral_call_home : discovery (neutral)
+e_neutral_call_home : "The Call Home"
+state e_neutral_evidence #E0E0E0
+e_neutral_evidence : discovery (neutral)
+e_neutral_evidence : "Proof in a Photo"
+state e_neutral_wiser #E0E0E0
+e_neutral_wiser : discovery (neutral)
+e_neutral_wiser : "Wiser by Morning"
+n_start --> a_gems1 : Slip into the Gallery of Gems.
+n_start --> b_egypt1 : Head for the Egyptian Wing.
+n_start --> c_archive1 : Try the old Archive downstairs.
+a_gems1 --> a_gems_case : Study the big central gem case.
+a_gems1 --> a_gems_alarm : Follow the faint beeping toward a panel.
+a_gems_case --> a_gems_vitrine : Look under the tilted vitrine.
+a_gems_case --> a_gems_note : Read the little card that fell behind.
+a_gems_vitrine --> a_gems_corridor : Follow the symbol to the corridor.
+a_gems_note --> a_gems_corridor : Head for the marked corridor.
+a_gems_corridor --> n_key : Pry up the loose skirting board.
+a_gems_alarm --> a_gems_hide : Duck behind a plinth as the guard passes...
+a_gems_alarm --> e_set_alarm : Freeze in the open and hope.
+a_gems_hide --> a_gems_corridor : Slip into the service corridor.
+b_egypt1 --> b_egypt_sarco : Examine the painted sarcophagus.
+b_egypt1 --> b_egypt_map : Trace the wall map of the old museum.
+b_egypt_sarco --> b_egypt_lid : Peek under the loose lid.
+b_egypt_sarco --> b_egypt_amulet : Check the amulet display.
+b_egypt_lid --> b_egypt_hall : Follow the draught to the hall.
+b_egypt_amulet --> b_egypt_hall : Take the arrow's direction to the hall.
+b_egypt_hall --> n_key : Lift the rocking floor tile.
+b_egypt_map --> b_egypt_torch : Grab the display torch and press on.
+b_egypt_map --> e_set_locked_gallery : Duck under the rope into the dark galler...
+b_egypt_torch --> b_egypt_hall : Approach the marked door.
+c_archive1 --> c_archive_ledger : Open the dusty visitor ledger.
+c_archive1 --> c_archive_dark : Push into the unlit back stacks.
+c_archive_ledger --> c_archive_index : Check the card index.
+c_archive_ledger --> c_archive_drawer : Try the sticking bottom drawer.
+c_archive_index --> c_archive_stack : Follow the card into the stacks.
+c_archive_drawer --> c_archive_stack : Head for the circled shelf.
+c_archive_stack --> n_key : Reach into the gap behind the books.
+c_archive_dark --> c_archive_lantern : Feel along the shelf for a lantern.
+c_archive_dark --> e_set_stuck_dark : Keep going blind into the dark.
+c_archive_lantern --> c_archive_stack : Cross to the marked shelf.
+n_key --> k_founder : Try the key on the founder's study door.
+n_key --> k_display : Try it on the sealed display cabinet.
+n_key --> k_stairs : Try it on the locked service stairs.
+k_founder --> k_founder_desk : Search the roll-top desk.
+k_founder --> k_founder_portrait : Look behind the founder's portrait.
+k_founder_desk --> k_study : Carry the notebook to the reading table.
+k_founder_portrait --> k_study : Take the cipher wheel to the table.
+k_display --> k_display_open : Ease the cabinet open.
+k_display --> k_display_force : Force the stubborn latch.
+k_display_open --> k_cabinet : Lift out the bookmarked ledger.
+k_cabinet --> k_study : Spread the ledger on the reading table.
+k_display_force --> k_display_careful : Steady it before the glass cracks.
+k_display_force --> e_set_broken_case : Yank it hard.
+k_display_careful --> n_cipher : Settle in to read the code.
+k_stairs --> k_stairs_up : Climb toward the landing.
+k_stairs --> k_stairs_base : Check the cupboard at the base.
+k_stairs_up --> k_study : Sit at the reading table.
+k_stairs_base --> k_study : Take the chart up to the reading table.
+k_study --> n_cipher : Read the first line of the cipher.
+n_cipher --> ci_stars : Head to the Astronomy Hall the cipher na...
+n_cipher --> ci_map : Head to the Map Room.
+n_cipher --> ci_clock : Head down the Clock Corridor.
+ci_stars --> ci_stars_dome : Climb toward the star dome.
+ci_stars --> ci_stars_ladder : Take the maintenance ladder.
+ci_stars_dome --> n_rotunda : Take the marked door to the rotunda.
+ci_stars_ladder --> ci_stars_cross : Edge across the catwalk.
+ci_stars_ladder --> e_set_stuck_dome : Climb higher into the dark dome.
+ci_stars_cross --> n_rotunda : Descend toward the rotunda.
+ci_map --> ci_map_globe : Spin the great floor globe.
+ci_map --> ci_map_atlas : Open the giant atlas.
+ci_map_globe --> n_rotunda : Step through toward the rotunda.
+ci_map_atlas --> ci_atlas2 : Follow the inked red route.
+ci_atlas2 --> n_rotunda : Open the rotunda door.
+ci_clock --> ci_clock_gears : Follow the ticking to the gear room.
+ci_clock --> ci_clock_pendulum : Cross under the great pendulum.
+ci_clock_gears --> n_rotunda : Go through the maintenance door.
+ci_clock_pendulum --> ci_clock_cross : Time your steps past the pendulum.
+ci_clock_pendulum --> e_set_pendulum : Rush across before it swings back.
+ci_clock_cross --> n_rotunda : Follow the passage to the rotunda.
+n_rotunda --> ro_align : Align the clockwork globe to the cipher.
+n_rotunda --> ro_panel : Search the pedestal for a hidden panel.
+n_rotunda --> ro_records : Slip into the night-guard's records room...
+ro_align --> ro_align_set : Set the rings exactly as decoded.
+ro_align --> ro_align_guess : Spin the rings by feel.
+ro_align_set --> n_vault : Descend the hidden stair.
+ro_align_guess --> ro_align_retry : Start over and decode it properly.
+ro_align_guess --> e_set_jammed_globe : Force the rings into place.
+ro_align_retry --> n_vault : Take the stair down.
+ro_panel --> ro_panel_solve : Solve the little sliding puzzle.
+ro_panel --> ro_panel_secret : Follow the draught to the side door.
+ro_panel_solve --> n_vault : Go down the hidden stair.
+ro_panel_secret --> ro_workshop : Step into the hidden room.
+ro_workshop --> e_win_secret_workshop : Take it all in.
+ro_records --> ro_records_guard : Read the guard's rounds log.
+ro_records --> ro_records_phone : Use the desk phone.
+ro_records_guard --> n_vault : Descend the opened stair.
+ro_records_phone --> e_neutral_call_home : Call home from the museum desk.
+n_vault --> v_letter : Read the founder's sealed letter.
+n_vault --> v_map : Study the old treasure map.
+n_vault --> v_share : Decide who to tell.
+n_vault --> v_grab : Grab something to prove it.
+v_letter --> v_letter_reveal : Follow the letter's final clue.
+v_letter --> v_letter_keep : Keep the letter safe and leave the rest.
+v_letter_reveal --> v_reveal2 : Read the catalogue to the end.
+v_reveal2 --> e_win_mystery_solved : Carry the whole truth up into the mornin...
+v_letter_keep --> e_win_quiet_keeper : Slip out with the letter and a plan.
+v_map --> v_map_follow : Follow the map to the walled-up wing.
+v_map --> v_map_photo : Photograph the map and go.
+v_map --> e_set_dawn : Keep tracing it as the sky greys.
+v_map_follow --> e_win_lost_wing : Bring the lost wing to light.
+v_map_photo --> e_neutral_evidence : Head out with the proof.
+v_share --> v_share_curator : Wake the curator with proof.
+v_share --> v_share_secret : Keep it a secret with your friends.
+v_share --> v_share_museum : Leave it for the museum to find.
+v_share_curator --> e_win_hero_curator : Hand over the founder's trust.
+v_share_secret --> e_win_secret_kept : Seal the secret with a promise.
+v_share_museum --> e_win_donate : Leave the clue and slip away.
+v_grab --> v_grab_run : Slip it in your bag and run.
+v_grab --> v_grab_return : Set it back where it belongs.
+v_grab_run --> e_set_caught : Reach the hall with the bells ringing.
+v_grab_return --> e_neutral_wiser : Leave with clean hands.
+e_set_alarm --> [*]
+e_set_locked_gallery --> [*]
+e_set_stuck_dark --> [*]
+e_set_broken_case --> [*]
+e_set_stuck_dome --> [*]
+e_set_pendulum --> [*]
+e_set_jammed_globe --> [*]
+e_set_caught --> [*]
+e_set_dawn --> [*]
+e_win_secret_workshop --> [*]
+e_win_mystery_solved --> [*]
+e_win_quiet_keeper --> [*]
+e_win_lost_wing --> [*]
+e_win_hero_curator --> [*]
+e_win_secret_kept --> [*]
+e_win_donate --> [*]
+e_neutral_call_home --> [*]
+e_neutral_evidence --> [*]
+e_neutral_wiser --> [*]
+
+legend right
+  The Midnight Museum
+  Band 10-13 · Tier 1 · ~9 min
+  Topology: branch_and_bottleneck
+  94 nodes · 19 endings (7+ / 3n / 9-)
+  Production-eligible
+  Scale: short · prose
+endlegend
+@enduml

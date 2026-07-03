@@ -53,10 +53,8 @@ def test_skeletons_load_under_schema_2_0(rel: str) -> None:
             assert set(ending) == {"id", "valence", "kind", "title"}
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
-def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
-    """Each demo skeleton passes the full gate, including the policy layer."""
+def _assert_passes_full_gate(rel: str) -> None:
+    """Load the skeleton at ``rel`` and assert it passes the full gate."""
     import json
 
     from cyo_adventure.validator.gate import run_gate
@@ -64,6 +62,13 @@ def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
     data = json.loads(Path(rel).read_text(encoding="utf-8"))
     result = run_gate(data)
     assert not result.blocked, [f.message for f in result.report.errors]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
+    """Each demo skeleton passes the full gate, including the policy layer."""
+    _assert_passes_full_gate(rel)
 
 
 @pytest.mark.unit
@@ -85,3 +90,44 @@ def test_seed_skeletons_are_mvp_non_production(rel: str) -> None:
 def test_is_production_eligible_missing_metadata_defaults_true() -> None:
     """A malformed skeleton with no metadata is treated as production-eligible."""
     assert is_production_eligible({}) is True
+
+
+# Production-eligible (scale-classified) skeletons authored against ADR-011.
+# Each declares ``length`` + ``narrative_style`` + ``production_eligible: true``,
+# which arms the PL-17/19/20/21 story-scale rules, so passing the full gate here
+# pins the seed as launch-ready in CI. Discovered by scanning ``skeletons/`` so
+# new cells are picked up automatically (MVP/Test seeds are excluded by their
+# ``production_eligible: false`` flag), and no per-cell list edit is needed.
+def _discover_production_skeletons() -> list[str]:
+    import json
+
+    found: list[str] = []
+    for path in sorted(Path("skeletons").glob("*/*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if is_production_eligible(data):
+            found.append(str(path))
+    return found
+
+
+_PRODUCTION_SKELETONS = _discover_production_skeletons()
+
+
+@pytest.mark.unit
+def test_at_least_one_production_skeleton_exists() -> None:
+    """Guard the discovery glob: the launch corpus is never silently empty."""
+    assert _PRODUCTION_SKELETONS, "no production-eligible skeletons discovered"
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+def test_production_skeletons_pass_full_gate(rel: str) -> None:
+    """Each production skeleton passes the full gate (blocked is False)."""
+    _assert_passes_full_gate(rel)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+def test_production_skeletons_are_production_eligible(rel: str) -> None:
+    """Each production skeleton is scale-classified as production-eligible."""
+    data = load_skeleton(Path(rel))
+    assert is_production_eligible(data) is True
