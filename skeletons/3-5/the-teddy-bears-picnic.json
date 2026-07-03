@@ -1,0 +1,478 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_teddy_bears_picnic",
+  "version": 1,
+  "title": "The Teddy Bears' Picnic",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "friendship",
+      "sharing",
+      "kindness",
+      "celebration"
+    ],
+    "estimated_minutes": 5,
+    "ending_count": 11,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "loop_and_grow",
+    "length": "medium",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=46 beats='Clover the little bear cub spreads a checked blanket in the sunny meadow for a teddy bears picnic; the basket is empty and no friends are here yet; she claps her paws and decides what to fetch first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_start_honey",
+          "label": "Go ask the bees for honey.",
+          "target": "n_honey1"
+        },
+        {
+          "id": "c_start_berry",
+          "label": "Go pick red berries at the bramble.",
+          "target": "n_berry1"
+        },
+        {
+          "id": "c_start_ball",
+          "label": "Go find the big red ball.",
+          "target": "n_ball1"
+        },
+        {
+          "id": "c_start_kite",
+          "label": "Go fetch the bright paper kite.",
+          "target": "n_kite1"
+        },
+        {
+          "id": "c_start_owl",
+          "label": "Go wake sleepy Owl in the oak.",
+          "target": "n_owl1"
+        },
+        {
+          "id": "c_start_music",
+          "label": "Go find the little music box.",
+          "target": "n_music1"
+        }
+      ]
+    },
+    {
+      "id": "n_honey1",
+      "body": "<<FILL role=choice words=42 beats='Clover pads to the round beehive to ask for a pot of golden honey; the bees hum kindly in the sun; she can ask nicely and wait or poke the hive to hurry them along'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_ask",
+          "label": "Ask the bees nicely and wait.",
+          "target": "n_honey2"
+        },
+        {
+          "id": "c_honey_poke",
+          "label": "Poke the hive to hurry.",
+          "target": "e_honey_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_honey2",
+      "body": "<<FILL role=rising words=40 beats='the bees fill a little pot with warm golden honey and Clover hugs it close; the picnic is growing; she can carry it back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_honey_back",
+          "label": "Carry the honey back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_honey_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_honey_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover pokes the hive and out floats a puff of buzzy bees that chase her in a silly circle round the meadow; nobody is stung and she giggles, trotting back to the blanket to try again the gentle way'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_honey_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Buzzy Bees"
+      }
+    },
+    {
+      "id": "n_berry1",
+      "body": "<<FILL role=choice words=42 beats='Clover skips to the bramble bush for a basket of red berries; plump ripe ones sit low and shiny; she can pick the easy low berries or stretch up for the wobbly high ones'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_low",
+          "label": "Pick the easy low berries.",
+          "target": "n_berry2"
+        },
+        {
+          "id": "c_berry_high",
+          "label": "Stretch for the wobbly high ones.",
+          "target": "e_berry_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_berry2",
+      "body": "<<FILL role=rising words=40 beats='Clover’s basket fills with sweet red berries that stain her paws pink; the picnic keeps growing; she can carry them back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_berry_back",
+          "label": "Carry the berries back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_berry_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_berry_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover stretches for the high berries, the branch springs back, and the whole basket tips into the soft grass with a plop; the berries roll everywhere and she laughs, heading back to the blanket to start over'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_berry_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, Tumbling Berries"
+      }
+    },
+    {
+      "id": "n_ball1",
+      "body": "<<FILL role=choice words=40 beats='Clover remembers the big red ball is somewhere in the tall meadow grass; she hunts for it happily; she can follow the little bounce marks or just dive into the grass headfirst'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_track",
+          "label": "Follow the little bounce marks.",
+          "target": "n_ball2"
+        },
+        {
+          "id": "c_ball_dive",
+          "label": "Dive into the tall grass.",
+          "target": "e_ball_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_ball2",
+      "body": "<<FILL role=rising words=38 beats='there in the grass sits the shiny red ball, just right for a picnic game; the fun is growing; she can roll it back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ball_back",
+          "label": "Roll the ball back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_ball_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_ball_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover dives into the tall grass and pops up with a ticklish grasshopper on her nose instead of the ball; she sneezes a giggly sneeze and trots back to the blanket to look for the ball again later'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Ticklish Hopper"
+      }
+    },
+    {
+      "id": "n_kite1",
+      "body": "<<FILL role=choice words=42 beats='Clover wants the bright paper kite for the breezy meadow; it lies folded by the old wooden fence; she can carry it gently under her arm or let it flap wide open in the wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_carry",
+          "label": "Carry the kite gently under her arm.",
+          "target": "n_kite2"
+        },
+        {
+          "id": "c_kite_flap",
+          "label": "Let the kite flap open in the wind.",
+          "target": "e_kite_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_kite2",
+      "body": "<<FILL role=rising words=38 beats='Clover tucks the folded kite safely under her arm, ready for flying; the picnic keeps growing; she can bring it back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_kite_back",
+          "label": "Bring the kite back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_kite_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_kite_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover lets the kite flap open and a gust tugs it into a giggly tumble that wraps the string around a fence post; she untangles the muddle, laughing, and heads back to the blanket to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Windy Muddle"
+      }
+    },
+    {
+      "id": "n_owl1",
+      "body": "<<FILL role=choice words=44 beats='sleepy Owl dozes on a branch of the oak and Clover wants to invite him to the picnic; his round eyes are shut tight; she can hoot softly to wake him gently or shake the whole branch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_hoot",
+          "label": "Hoot softly to wake Owl gently.",
+          "target": "n_owl2"
+        },
+        {
+          "id": "c_owl_shake",
+          "label": "Shake the whole branch.",
+          "target": "e_owl_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_owl2",
+      "body": "<<FILL role=rising words=40 beats='Owl blinks his big eyes, yawns, and says yes to the picnic with a happy hoot; the friends are growing; Clover can walk him back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_owl_back",
+          "label": "Walk Owl back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_owl_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_owl_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover shakes the branch and a shower of crunchy leaves tumbles down and buries her in a giggly pile; Owl only snores a little louder; she brushes off the leaves and heads back to the blanket to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_owl_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Pile of Leaves"
+      }
+    },
+    {
+      "id": "n_music1",
+      "body": "<<FILL role=choice words=42 beats='Clover looks for the little music box to play picnic tunes; it sits closed on a mossy stump; she can lift the lid carefully and peek inside or give the handle a big fast wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_lift",
+          "label": "Lift the lid carefully.",
+          "target": "n_music2"
+        },
+        {
+          "id": "c_music_wind",
+          "label": "Give the handle a big fast wind.",
+          "target": "e_music_oops"
+        }
+      ]
+    },
+    {
+      "id": "n_music2",
+      "body": "<<FILL role=rising words=38 beats='the music box tinkles a soft, sweet picnic tune and Clover hums along; the picnic keeps growing; she can carry it back to the blanket or call the bears and start the picnic now'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_music_back",
+          "label": "Carry the music box back to the blanket.",
+          "target": "n_start"
+        },
+        {
+          "id": "c_music_start",
+          "label": "Ring the bell and start the picnic.",
+          "target": "n_gather"
+        }
+      ]
+    },
+    {
+      "id": "e_music_oops",
+      "body": "<<FILL role=ending words=44 beats='Clover winds the handle too fast and the music box plays a silly, speedy, jumbled tune that makes her paws dance all wrong; she giggles at the muddle and heads back to the blanket to try again slowly'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_oops",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Oops, a Jumbled Tune"
+      }
+    },
+    {
+      "id": "n_gather",
+      "body": "<<FILL role=rising words=40 beats='Clover rings the little picnic bell and teddy bears come waddling from every corner of the meadow; the blanket is ready at last; she waves them all over to the sunny checked blanket'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_gather_welcome",
+          "label": "Welcome the teddy bears in.",
+          "target": "n_welcome"
+        }
+      ]
+    },
+    {
+      "id": "n_welcome",
+      "body": "<<FILL role=rising words=40 beats='the teddy bears settle in a happy ring on the blanket, wiggling with excitement; everything Clover fetched is piled up in the middle; she looks at the growing feast and gets ready to begin'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_welcome_arrange",
+          "label": "Lay out all the picnic treats.",
+          "target": "n_arrange"
+        }
+      ]
+    },
+    {
+      "id": "n_arrange",
+      "body": "<<FILL role=choice words=40 beats='Clover spreads out the honey pot, the red berries, and all the treats in the warm sun; the friends lick their lips and wiggle their paws; she decides how to start the picnic fun'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_arrange_share",
+          "label": "Share the honey and berries.",
+          "target": "n_share"
+        },
+        {
+          "id": "c_arrange_game",
+          "label": "Start a picnic game.",
+          "target": "n_game"
+        }
+      ]
+    },
+    {
+      "id": "n_share",
+      "body": "<<FILL role=choice words=40 beats='the honey and berries go round the circle and everyone munches happily in the sunshine; the picnic is merry and full; Clover thinks of the coziest way to keep the good fun going'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_song",
+          "label": "Sing the teddy bears' picnic song.",
+          "target": "e_song"
+        },
+        {
+          "id": "c_share_music",
+          "label": "Wind up the music box and sway.",
+          "target": "e_music_finale"
+        },
+        {
+          "id": "c_share_nap",
+          "label": "Curl up for a cozy nap in the sun.",
+          "target": "e_nap"
+        }
+      ]
+    },
+    {
+      "id": "n_game",
+      "body": "<<FILL role=choice words=36 beats='the teddy bears are ready to play in the breezy meadow and Clover claps with joy; the picnic is a happy, growing party; she decides which cheerful game the friends should have'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_game_ball",
+          "label": "Roll the big red ball around the ring.",
+          "target": "e_ball_game"
+        },
+        {
+          "id": "c_game_kite",
+          "label": "Fly the bright kite in the breeze.",
+          "target": "e_kite_game"
+        }
+      ]
+    },
+    {
+      "id": "e_song",
+      "body": "<<FILL role=completion words=46 beats='everyone joins paws and sings the teddy bears’ picnic song under the warm sun, swaying together in the meadow; Clover’s picnic has come together just perfectly, and her heart is as full as the honey pot'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_song",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Picnic Song"
+      }
+    },
+    {
+      "id": "e_music_finale",
+      "body": "<<FILL role=completion words=44 beats='the little music box tinkles its sweet tune and all the teddy bears sway and hum along on the sunny blanket; Clover’s picnic is cozy and complete, and she beams at every one of her happy friends'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_music_finale",
+        "valence": "positive",
+        "kind": "success",
+        "title": "A Sweet Little Tune"
+      }
+    },
+    {
+      "id": "e_nap",
+      "body": "<<FILL role=completion words=44 beats='full of honey and berries, the teddy bears and Clover curl up in a soft heap on the warm blanket for a happy afternoon nap; the picnic she built piece by piece is perfect and peaceful'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_nap",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Cozy Sunny Nap"
+      }
+    },
+    {
+      "id": "e_ball_game",
+      "body": "<<FILL role=completion words=44 beats='the big red ball rolls round and round the giggling ring of teddy bears in the sunny meadow; Clover’s picnic is a bouncy, happy success and all the friends cheer for one more roll'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_ball_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Rolling Red Ball"
+      }
+    },
+    {
+      "id": "e_kite_game",
+      "body": "<<FILL role=completion words=44 beats='the bright kite dips and soars over the meadow while the teddy bears cheer from the blanket; Clover’s picnic has come together beautifully and she flies the kite proudly in the warm breeze'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "end_kite_game",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The High Bright Kite"
+      }
+    }
+  ]
+}
