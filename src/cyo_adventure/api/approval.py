@@ -23,6 +23,7 @@ from cyo_adventure.api.review_surface import (
 from cyo_adventure.api.schemas import (
     ApprovedView,
     ArchivedView,
+    ReviewQueueItem,
     ReviewQueueView,
     ReviewSurfaceView,
     SendBackRequest,
@@ -37,11 +38,14 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service as approval_service
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
+
+_logger = get_logger(__name__)
 
 _IN_REVIEW = "in_review"
 
@@ -288,6 +292,14 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
     )
     latest: dict[str, int] = dict(latest_rows)
     keys = list(latest.items())
+    # #EDGE: data integrity: keys is empty only when every in_review story lacks
+    # a version row (a corrupt-at-rest anomaly). Short-circuit before issuing a
+    # degenerate empty composite-IN query, and log it so the anomaly is visible.
+    # #VERIFY: tests/integration/test_approval_api.py seeds an in_review story
+    # with no version row.
+    if not keys:
+        _logger.warning("review_queue_all_stories_unversioned", story_count=len(books))
+        return ReviewQueueView(items=[])
     version_rows = (
         await ctx.session.scalars(
             select(StorybookVersion).where(
@@ -298,15 +310,47 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
         )
     ).all()
     by_key = {(row.storybook_id, row.version): row for row in version_rows}
-    items = [
-        build_review_queue_item(
-            storybook_id=book.id,
-            status=book.status,
-            version=latest[book.id],
-            blob=by_key[(book.id, latest[book.id])].blob,
-            moderation_report=by_key[(book.id, latest[book.id])].moderation_report,
-        )
-        for book in books
-        if book.id in latest and (book.id, latest[book.id]) in by_key
-    ]
+    items: list[ReviewQueueItem] = []
+    for book in books:
+        version = latest.get(book.id)
+        # #EDGE: data integrity: an in_review story with no resolvable latest
+        # version is an anomaly; log it (with its id) rather than dropping it
+        # silently, since this queue is the operator's only surface for it.
+        if version is None:
+            _logger.warning(
+                "review_queue_storybook_missing_version", storybook_id=book.id
+            )
+            continue
+        row = by_key.get((book.id, version))
+        if row is None:
+            _logger.warning(
+                "review_queue_storybook_missing_version",
+                storybook_id=book.id,
+                version=version,
+            )
+            continue
+        try:
+            items.append(
+                build_review_queue_item(
+                    storybook_id=book.id,
+                    status=book.status,
+                    version=version,
+                    blob=row.blob,
+                    moderation_report=row.moderation_report,
+                )
+            )
+        except ValidationError as exc:
+            # #EDGE: data integrity: one story's moderation_report is corrupt at
+            # rest. Isolate the bad row (logged with its id) instead of failing
+            # the whole queue with a 422: the queue is the safety operator's only
+            # surface, so one corrupt row must not deny review of every other
+            # pending story. Mirrors library.py's per-row degrade-with-warning.
+            # #VERIFY: tests/integration/test_approval_api.py corrupt-report case.
+            _logger.warning(
+                "review_queue_item_corrupt",
+                storybook_id=book.id,
+                version=version,
+                error=str(exc),
+            )
+            continue
     return ReviewQueueView(items=items)

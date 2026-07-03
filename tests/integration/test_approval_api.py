@@ -532,3 +532,115 @@ async def test_guardian_cannot_read_review_queue(
     await _seed_two_family_queue(sessions)
     resp = await client.get("/api/v1/review-queue", headers=auth("guardian-a"))
     assert resp.status_code == 403
+
+
+def _corrupt_report() -> dict[str, object]:
+    """A moderation report that fails validation at rest (stage outside 0..4)."""
+    return {
+        "findings": [
+            {
+                "stage": 99,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "message": "corrupt",
+            }
+        ],
+        "summary": None,
+    }
+
+
+async def test_review_queue_isolates_corrupt_report(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """One corrupt-at-rest report is dropped from the queue, not fatal to it.
+
+    Seeds a healthy in_review story alongside one whose stored moderation_report
+    is corrupt. The queue must return 200 with only the healthy story rather
+    than 422-ing the whole response: the operator's only review surface must not
+    be denied by a single bad row. Deletion-sensitive: without the per-row
+    try/except in get_review_queue, the corrupt row raises and the request 422s.
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(Storybook(id="healthy", family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id="healthy",
+                version=1,
+                blob={"title": "Healthy", "nodes": []},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        session.add(Storybook(id="corrupt", family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id="corrupt",
+                version=1,
+                blob={"title": "Corrupt", "nodes": []},
+                moderation_report=_corrupt_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
+    assert resp.status_code == 200
+    ids = {item["storybook_id"] for item in resp.json()["items"]}
+    assert ids == {"healthy"}
+
+
+async def test_review_queue_drops_story_with_no_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An in_review story with no version row is dropped, not fatal to the queue.
+
+    Seeds a healthy in_review story alongside an in_review story that has no
+    StorybookVersion rows (an integrity anomaly). The queue returns 200 with
+    only the healthy story; the version-less one is logged and skipped.
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(Storybook(id="healthy", family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id="healthy",
+                version=1,
+                blob={"title": "Healthy", "nodes": []},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        # in_review but with no StorybookVersion rows at all.
+        session.add(Storybook(id="orphan", family_id=fam.id, status="in_review"))
+        await session.commit()
+    resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
+    assert resp.status_code == 200
+    ids = {item["storybook_id"] for item in resp.json()["items"]}
+    assert ids == {"healthy"}
+
+
+async def test_review_queue_all_unversioned_returns_empty(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """If every in_review story lacks a version row, the queue is empty, not 500.
+
+    Exercises the empty-composite-IN short-circuit: with no version rows the key
+    list is empty, so the handler returns [] rather than issuing a degenerate
+    tuple_(...).in_([]) query.
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(Storybook(id="orphan", family_id=fam.id, status="in_review"))
+        await session.commit()
+    resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
+    assert resp.status_code == 200
+    assert resp.json()["items"] == []

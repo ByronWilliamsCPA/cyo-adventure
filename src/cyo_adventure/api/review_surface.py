@@ -243,12 +243,15 @@ def build_review_queue_item(
         ValidationError: If the stored moderation report is corrupt at rest
             (propagated from ``build_review_surface``).
     """
-    # #EDGE: data integrity: a single corrupt moderation_report raises here and
-    # would fail the whole queue rather than degrade one row; in_review stories
-    # come from the pipeline, so a corrupt report is the rare corrupt-at-rest
-    # case this surfaces (as a 422) rather than papers over.
+    # #EDGE: data integrity: a single corrupt moderation_report raises here. The
+    # caller (get_review_queue) isolates this per row: it logs the bad row with
+    # its storybook_id and drops it, so one corrupt-at-rest story no longer fails
+    # the whole queue. build_review_surface still surfaces the corruption loudly
+    # (as a ValidationError) rather than papering over it.
     # #VERIFY: build_review_surface maps a PydanticValidationError to
-    # ValidationError; tests/unit/test_review_surface.py covers the malformed case.
+    # ValidationError; tests/unit/test_review_surface.py covers the malformed
+    # case, and tests/integration/test_approval_api.py covers the per-row queue
+    # isolation (one corrupt row does not fail the whole queue).
     surface = build_review_surface(
         status=status,
         storybook_id=storybook_id,
