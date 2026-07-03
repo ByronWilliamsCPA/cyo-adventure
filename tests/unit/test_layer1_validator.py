@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.validator import Severity, layer1, validate_layer1
+from cyo_adventure.validator.band_profile import production_cell_budget
 from cyo_adventure.validator.layer1 import band_budget
 
 if TYPE_CHECKING:
@@ -501,3 +502,35 @@ def test_off_matrix_length_falls_back_to_band_budget() -> None:
     }
     report = validate_layer1(_story(nodes, meta=meta, start="n0"))
     assert _node_count_errors(report)  # no 3-5 'long' cell -> band max 20 applies
+
+
+@pytest.mark.unit
+def test_resolve_node_budget_precedence() -> None:
+    """The shared resolver applies MVP -> production-cell -> band precedence.
+
+    This is the single budget path both the gate and the Stage A prompt call, so
+    the precedence is asserted once here rather than through each caller.
+    """
+    from cyo_adventure.validator.band_profile import mvp_node_budget
+    from cyo_adventure.validator.layer1 import ScalePlacement, resolve_node_budget
+
+    # 1. MVP overrides everything, ignoring an otherwise-valid length cell.
+    assert resolve_node_budget(
+        "8-11",
+        ScalePlacement(length="short", production_eligible=False),
+        scale="standard",
+    ) == mvp_node_budget("8-11")
+    # 2. A declared, offered cell wins over the band budget.
+    assert resolve_node_budget(
+        "8-11",
+        ScalePlacement(length="short", narrative_style="prose"),
+        scale="standard",
+    ) == production_cell_budget("8-11", "short", "prose")
+    # 3. No length falls back to the band budget.
+    assert resolve_node_budget(
+        "8-11", ScalePlacement(), scale="standard"
+    ) == band_budget("8-11")
+    # 4. An off-matrix length also falls back to the band budget.
+    assert resolve_node_budget(
+        "3-5", ScalePlacement(length="long"), scale="standard"
+    ) == band_budget("3-5")
