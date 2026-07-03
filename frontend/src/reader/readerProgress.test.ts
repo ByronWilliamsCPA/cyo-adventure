@@ -45,4 +45,8 @@ describe('readerProgress', () => {
   it('formats a pages-explored label matching the library wording', () => {
     expect(readerProgressLabel(story(14), reading(2))).toBe('2 of 14 pages explored')
   })
+
+  it('clamps the label so a stale visit_set cannot exceed the total', () => {
+    expect(readerProgressLabel(story(10), reading(20))).toBe('10 of 10 pages explored')
+  })
 })

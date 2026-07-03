@@ -10,7 +10,11 @@ export function readerProgressPercent(story: Storybook, reading: ReadingState): 
   return Math.min(100, Math.round((100 * reading.visit_set.length) / total))
 }
 
-/** "X of Y pages explored", matching the library's BookCard label wording. */
+/** "X of Y pages explored", matching the library's BookCard label wording. Clamps
+ * the visited count like readerProgressPercent so a resumed/replayed state with
+ * a stale visit_set can't render "20 of 10 pages explored". */
 export function readerProgressLabel(story: Storybook, reading: ReadingState): string {
-  return `${reading.visit_set.length} of ${story.nodes.length} pages explored`
+  const total = story.nodes.length
+  const visited = Math.min(reading.visit_set.length, total)
+  return `${visited} of ${total} pages explored`
 }
