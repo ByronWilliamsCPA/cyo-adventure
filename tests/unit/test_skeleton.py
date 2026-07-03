@@ -53,10 +53,8 @@ def test_skeletons_load_under_schema_2_0(rel: str) -> None:
             assert set(ending) == {"id", "valence", "kind", "title"}
 
 
-@pytest.mark.unit
-@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
-def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
-    """Each demo skeleton passes the full gate, including the policy layer."""
+def _assert_passes_full_gate(rel: str) -> None:
+    """Load the skeleton at ``rel`` and assert it passes the full gate."""
     import json
 
     from cyo_adventure.validator.gate import run_gate
@@ -64,6 +62,13 @@ def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
     data = json.loads(Path(rel).read_text(encoding="utf-8"))
     result = run_gate(data)
     assert not result.blocked, [f.message for f in result.report.errors]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _DEMO_SKELETONS)
+def test_skeletons_pass_full_gate_including_policy(rel: str) -> None:
+    """Each demo skeleton passes the full gate, including the policy layer."""
+    _assert_passes_full_gate(rel)
 
 
 @pytest.mark.unit
@@ -117,13 +122,7 @@ def test_at_least_one_production_skeleton_exists() -> None:
 @pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
 def test_production_skeletons_pass_full_gate(rel: str) -> None:
     """Each production skeleton passes the full gate (blocked is False)."""
-    import json
-
-    from cyo_adventure.validator.gate import run_gate
-
-    data = json.loads(Path(rel).read_text(encoding="utf-8"))
-    result = run_gate(data)
-    assert not result.blocked, [f.message for f in result.report.errors]
+    _assert_passes_full_gate(rel)
 
 
 @pytest.mark.unit
