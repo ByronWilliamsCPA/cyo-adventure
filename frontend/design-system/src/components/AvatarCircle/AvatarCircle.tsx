@@ -19,13 +19,13 @@ export function AvatarCircle({ avatar, name }: AvatarCircleProps) {
   const glyph = avatarGlyph(avatar)
   if (glyph) {
     return (
-      <span className="avatar-circle" aria-hidden="true">
+      <span className="cyo-avatar" aria-hidden="true">
         {glyph}
       </span>
     )
   }
   return (
-    <span className="avatar-circle avatar-circle--fallback" aria-hidden="true">
+    <span className="cyo-avatar cyo-avatar--fallback" aria-hidden="true">
       {name.trim().charAt(0).toUpperCase() || '?'}
     </span>
   )

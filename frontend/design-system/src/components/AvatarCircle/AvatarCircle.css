@@ -1,4 +1,4 @@
-.avatar-circle {
+.cyo-avatar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -11,7 +11,7 @@
   line-height: 1;
 }
 
-.avatar-circle--fallback {
+.cyo-avatar--fallback {
   border-style: dashed;
   color: var(--color-ink-muted, #8c6f56);
   font-family: var(--font-sans, 'Segoe UI', sans-serif);

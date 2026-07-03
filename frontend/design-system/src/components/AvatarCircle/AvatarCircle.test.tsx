@@ -7,27 +7,27 @@ import { AvatarCircle } from './AvatarCircle'
 describe('AvatarCircle', () => {
   it('renders the catalog glyph for a known avatar id', () => {
     const { container } = render(<AvatarCircle avatar="fox" name="Remy" />)
-    const circle = container.querySelector('.avatar-circle')
+    const circle = container.querySelector('.cyo-avatar')
     expect(circle).not.toBeNull()
     expect(circle).toHaveTextContent('\u{1F98A}')
-    expect(circle).not.toHaveClass('avatar-circle--fallback')
+    expect(circle).not.toHaveClass('cyo-avatar--fallback')
   })
 
   it('falls back to the name initial in a dashed circle when avatar is null', () => {
     const { container } = render(<AvatarCircle avatar={null} name="zoe" />)
-    const circle = container.querySelector('.avatar-circle--fallback')
+    const circle = container.querySelector('.cyo-avatar--fallback')
     expect(circle).not.toBeNull()
     expect(circle).toHaveTextContent('Z')
   })
 
   it('falls back to the initial for an unknown avatar id', () => {
     const { container } = render(<AvatarCircle avatar="not-a-preset" name="Ada" />)
-    expect(container.querySelector('.avatar-circle--fallback')).toHaveTextContent('A')
+    expect(container.querySelector('.cyo-avatar--fallback')).toHaveTextContent('A')
   })
 
   it('renders ? when the name is blank', () => {
     const { container } = render(<AvatarCircle avatar={null} name="   " />)
-    expect(container.querySelector('.avatar-circle--fallback')).toHaveTextContent('?')
+    expect(container.querySelector('.cyo-avatar--fallback')).toHaveTextContent('?')
   })
 
   it('is decorative: aria-hidden on both variants', () => {
