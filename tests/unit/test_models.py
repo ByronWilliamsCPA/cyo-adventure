@@ -37,6 +37,8 @@ def test_new_enum_values():
         "gauntlet",
         "branch_and_bottleneck",
         "loop_and_grow",
+        "open_map",
+        "sorting_hat",
     }
     assert {s.value for s in SafetyScope} == {
         "peril",

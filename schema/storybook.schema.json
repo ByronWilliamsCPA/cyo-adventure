@@ -382,12 +382,14 @@
       "type": "object"
     },
     "Topology": {
-      "description": "The branching shape of a story graph (Ashwell vocabulary).",
+      "description": "The branching shape of a story graph (Ashwell vocabulary).\n\nSix ADR-011 topologies compose from the flow primitives. ``open_map`` is a\nhub the reader explores in any order (loop/return edges make it cyclic);\n``sorting_hat`` sorts the reader at an early branch into parallel, never\nreconverging tracks (an acyclic branching tree with no cross-track\nbottleneck). The Ashwell ``quest`` folds into ``branch_and_bottleneck``.",
       "enum": [
         "time_cave",
         "gauntlet",
         "branch_and_bottleneck",
-        "loop_and_grow"
+        "loop_and_grow",
+        "open_map",
+        "sorting_hat"
       ],
       "title": "Topology",
       "type": "string"

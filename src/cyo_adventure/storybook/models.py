@@ -106,12 +106,21 @@ class EndingKind(StrEnum):
 
 
 class Topology(StrEnum):
-    """The branching shape of a story graph (Ashwell vocabulary)."""
+    """The branching shape of a story graph (Ashwell vocabulary).
+
+    Six ADR-011 topologies compose from the flow primitives. ``open_map`` is a
+    hub the reader explores in any order (loop/return edges make it cyclic);
+    ``sorting_hat`` sorts the reader at an early branch into parallel, never
+    reconverging tracks (an acyclic branching tree with no cross-track
+    bottleneck). The Ashwell ``quest`` folds into ``branch_and_bottleneck``.
+    """
 
     TIME_CAVE = "time_cave"
     GAUNTLET = "gauntlet"
     BRANCH_AND_BOTTLENECK = "branch_and_bottleneck"
     LOOP_AND_GROW = "loop_and_grow"
+    OPEN_MAP = "open_map"
+    SORTING_HAT = "sorting_hat"
 
 
 class Length(StrEnum):
