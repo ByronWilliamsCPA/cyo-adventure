@@ -43,10 +43,17 @@ type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
 // 'reading' variant is the only one carrying a story, so phase === 'reading'
 // guarantees story is present at the type level instead of relying on a
 // defensive `phase === 'offline' || !story` check to paper over a desync.
+// Each error phase gets its own member (not one `{ phase: ErrorPhase }`
+// member): TypeScript can only narrow a member fully away via a sequence of
+// separate `if (x.phase === '...') return` checks when every member's
+// discriminant is a single literal, not a multi-value union.
 type PageState =
   | { phase: 'loading' }
   | { phase: 'reading'; story: Storybook; initialReading: ReadingState | undefined }
-  | { phase: ErrorPhase }
+  | { phase: 'not-found' }
+  | { phase: 'forbidden' }
+  | { phase: 'offline' }
+  | { phase: 'error' }
 
 interface ConflictState {
   local: ReadingState

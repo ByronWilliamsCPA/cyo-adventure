@@ -41,9 +41,14 @@ export class OfflineError extends Error {
  * instead of treating it as a routine retry-later network blip.
  */
 export class LocalWriteError extends Error {
-  constructor(message = 'local write failed', options?: ErrorOptions) {
-    super(message, options)
+  // Manually assigned, not via the ES2022 Error(message, {cause}) constructor
+  // signature: this project's build target is ES2020.
+  readonly cause?: unknown
+
+  constructor(message = 'local write failed', cause?: unknown) {
+    super(message)
     this.name = 'LocalWriteError'
+    this.cause = cause
   }
 }
 
@@ -100,7 +105,7 @@ export async function saveProgress(
   try {
     await putReadingState(profileId, storybookId, state)
   } catch (cause) {
-    throw new LocalWriteError('failed to write reading state to the local cache', { cause })
+    throw new LocalWriteError('failed to write reading state to the local cache', cause)
   }
   const body: SaveBody = {
     ...state,
@@ -115,7 +120,7 @@ export async function saveProgress(
     try {
       await putReadingState(profileId, storybookId, res.row)
     } catch (cause) {
-      throw new LocalWriteError('failed to refresh the local cache after saving', { cause })
+      throw new LocalWriteError('failed to refresh the local cache after saving', cause)
     }
     return { kind: 'saved', row: res.row }
   } catch (error) {
@@ -140,7 +145,7 @@ export async function saveProgress(
     try {
       await enqueueWrite(queued)
     } catch (cause) {
-      throw new LocalWriteError('failed to enqueue the offline write', { cause })
+      throw new LocalWriteError('failed to enqueue the offline write', cause)
     }
     return { kind: 'queued', eventId }
   }
