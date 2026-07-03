@@ -71,8 +71,14 @@ const PROFILES = {
   ],
 }
 
-// One approved (published) generation job so IntakePage renders an "Assign more"
-// row. statusPill maps storybook_status 'published' to the "Approved" pill.
+// Two jobs. job-1 is approved (published) so IntakePage renders an "Assign more"
+// row (statusPill maps storybook_status 'published' -> "Approved"). job-2 is a
+// NEGATIVE CONTROL: needs_review with a non-null storybook_id but
+// storybook_status 'in_review', so statusPill yields "Waiting for review". It
+// passes the `storybook_id !== null` guard yet must be excluded by the
+// `pill === 'Approved'` gate. Asserting exactly one "Assign more" button
+// therefore makes that gate deletion-sensitive: dropping `pill === 'Approved'`
+// would render the button on job-2 too and fail the count assertion.
 const JOBS = {
   jobs: [
     {
@@ -84,6 +90,18 @@ const JOBS = {
       error: null,
       title: 'The Brave Little Fox',
       premise_snippet: 'A fox learns to be brave',
+      age_band: '10-13',
+      created_at: '2026-07-02T00:00:00Z',
+    },
+    {
+      id: 'job-2',
+      status: 'needs_review',
+      storybook_id: 'story-2',
+      storybook_status: 'in_review',
+      version: 1,
+      error: null,
+      title: 'A Story Awaiting Review',
+      premise_snippet: 'Still with the safety reviewer',
       age_band: '10-13',
       created_at: '2026-07-02T00:00:00Z',
     },
@@ -122,6 +140,9 @@ test('assigning a sibling posts only the new profile id', async ({ page }) => {
   })
 
   await page.goto('/guardian/intake')
+  // Exactly one "Assign more" button: only the Approved job-1, never the
+  // needs_review negative control job-2. Pins the pill gate (see JOBS comment).
+  await expect(page.getByRole('button', { name: /assign more/i })).toHaveCount(1)
   await page.getByRole('button', { name: /assign more/i }).first().click()
   await page.getByRole('checkbox', { name: /Reader A2/ }).click()
   await page.getByRole('button', { name: /^Assign$/ }).click()
