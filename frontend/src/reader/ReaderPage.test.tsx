@@ -8,7 +8,8 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { StoryNotFoundError } from '../api/readerApi'
+import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
+import * as db from '../offline/db'
 import { _resetDbHandle, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
 import { OfflineError } from '../offline/sync'
@@ -46,7 +47,10 @@ beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
 })
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  vi.restoreAllMocks()
+})
 
 describe('ReaderPage', () => {
   it('fetches and caches the story, then plays it to an ending', async () => {
@@ -130,6 +134,61 @@ describe('ReaderPage', () => {
   it('shows a generic error screen on other failures', async () => {
     renderPage(() => Promise.reject(new Error('boom')))
     expect(await screen.findByText('Something went wrong')).toBeTruthy()
+  })
+
+  it('shows a forbidden screen on a 403, with no retry that could never succeed', async () => {
+    renderPage(() => Promise.reject(new ForbiddenError()))
+    expect(await screen.findByText("You don't have access to this story")).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull()
+    expect(screen.getByRole('button', { name: 'Back to my books' })).toBeTruthy()
+  })
+
+  it('warns immediately when a save is lost locally, not just server-side', async () => {
+    vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_lost"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // The mount-time save (Reader's initial progress report) hits the mocked
+    // rejection; a single local-write failure is real loss, so it must not
+    // wait for a second occurrence before surfacing.
+    expect(await screen.findByTestId('save-warning')).toHaveTextContent(
+      "couldn't save that step"
+    )
+  })
+
+  it('warns after repeated remote save failures but not after just one', async () => {
+    const api: SyncApi = {
+      putReadingState: () => Promise.reject(new Error('500 server error')),
+    }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_failing"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // The mount-time save is the first failure; a single blip is not yet
+    // surfaced.
+    await screen.findByTestId('reader')
+    await waitFor(() => expect(screen.queryByTestId('save-warning')).toBeNull())
+    // A second, consecutive failure (from the next progress report) crosses
+    // the threshold.
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    expect(await screen.findByTestId('save-warning')).toHaveTextContent(
+      'trouble saving your progress'
+    )
   })
 
   it('surfaces the conflict dialog on a 409 and resolves it', async () => {

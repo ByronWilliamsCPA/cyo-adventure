@@ -13,9 +13,15 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 
-import { StoryNotFoundError } from '../api/readerApi'
+import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
 import { cacheStorybook, getCachedStorybook, getReadingState } from '../offline/db'
-import { OfflineError, type SyncApi, resolveConflict, saveProgress } from '../offline/sync'
+import {
+  LocalWriteError,
+  OfflineError,
+  type SyncApi,
+  resolveConflict,
+  saveProgress,
+} from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
 import { ConflictDialog } from './ConflictDialog'
@@ -31,15 +37,25 @@ export interface ReaderPageProps {
   deviceId?: string
 }
 
-type Phase = 'loading' | 'reading' | 'not-found' | 'offline' | 'error'
+type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
+
+// A discriminated union, not parallel phase/story/initialReading state: the
+// 'reading' variant is the only one carrying a story, so phase === 'reading'
+// guarantees story is present at the type level instead of relying on a
+// defensive `phase === 'offline' || !story` check to paper over a desync.
+type PageState =
+  | { phase: 'loading' }
+  | { phase: 'reading'; story: Storybook; initialReading: ReadingState | undefined }
+  | { phase: ErrorPhase }
 
 interface ConflictState {
   local: ReadingState
   server: ReadingState
 }
 
-function loadErrorPhase(error: unknown): Phase {
+function loadErrorPhase(error: unknown): ErrorPhase {
   if (error instanceof StoryNotFoundError) return 'not-found'
+  if (error instanceof ForbiddenError) return 'forbidden'
   if (error instanceof OfflineError) return 'offline'
   return 'error'
 }
@@ -52,63 +68,65 @@ export function ReaderPage({
   version,
   deviceId,
 }: ReaderPageProps) {
-  const [story, setStory] = useState<Storybook | null>(null)
-  const [initialReading, setInitialReading] = useState<ReadingState | undefined>(undefined)
-  const [phase, setPhase] = useState<Phase>('loading')
+  const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
+  // A single-instance-lifetime warning, not tied to the load phase: a dropped
+  // save doesn't stop the reader from playing, so it renders as a banner
+  // alongside the reading UI rather than as its own page state.
+  const [saveWarning, setSaveWarning] = useState<'lost' | 'failing' | null>(null)
   // Bumped to remount the Reader (and re-seed its machine) when we adopt the
   // server's state; the machine reads its input only at creation.
   const [readerKey, setReaderKey] = useState(0)
   const revisionRef = useRef(0)
+  const failedSaveCountRef = useRef(0)
+  // Guards a load() call against a later, fresher load() resolving first (e.g.
+  // a double-clicked "Try again"). ReaderRoute also keys ReaderPage by story
+  // identity so navigating to a different story remounts instead of reusing
+  // this guard across stories.
+  const loadGenerationRef = useRef(0)
   const navigate = useNavigate()
 
   const load = useCallback(async () => {
-    let cached = await getCachedStorybook(storybookId, version)
+    const generation = ++loadGenerationRef.current
+    const stale = () => loadGenerationRef.current !== generation
+
+    let cached: Storybook | undefined
+    try {
+      cached = await getCachedStorybook(storybookId, version)
+    } catch (error) {
+      if (!stale()) setPageState({ phase: loadErrorPhase(error) })
+      return
+    }
     if (!cached) {
       try {
         cached = await fetchStory(storybookId, version)
         await cacheStorybook(cached)
       } catch (error) {
-        setPhase(loadErrorPhase(error))
+        if (!stale()) setPageState({ phase: loadErrorPhase(error) })
         return
       }
     }
-    const saved = await getReadingState(profileId, storybookId)
+    let saved: ReadingState | undefined
+    try {
+      saved = await getReadingState(profileId, storybookId)
+    } catch (error) {
+      if (!stale()) setPageState({ phase: loadErrorPhase(error) })
+      return
+    }
+    if (stale()) return
     revisionRef.current = saved?.state_revision ?? 0
-    setStory(cached)
-    setInitialReading(saved)
-    setPhase('reading')
+    setPageState({ phase: 'reading', story: cached, initialReading: saved })
   }, [fetchStory, profileId, storybookId, version])
 
-  // Load on mount and whenever the load inputs change. The body is inlined here
-  // (rather than calling load()) and every setState runs after an await, so
-  // react-hooks/set-state-in-effect sees no synchronous state update. The
-  // cancelled guard prevents a state update if the inputs change mid-load.
+  // Load on mount and whenever the load inputs change.
   useEffect(() => {
-    let cancelled = false
-    void (async () => {
-      let cached = await getCachedStorybook(storybookId, version)
-      if (cancelled) return
-      if (!cached) {
-        try {
-          cached = await fetchStory(storybookId, version)
-          await cacheStorybook(cached)
-        } catch (error) {
-          if (!cancelled) setPhase(loadErrorPhase(error))
-          return
-        }
-      }
-      const saved = await getReadingState(profileId, storybookId)
-      if (cancelled) return
-      revisionRef.current = saved?.state_revision ?? 0
-      setStory(cached)
-      setInitialReading(saved)
-      setPhase('reading')
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [fetchStory, profileId, storybookId, version])
+    void load()
+  }, [load])
+
+  const retry = useCallback(() => {
+    setPageState({ phase: 'loading' })
+    void load()
+  }, [load])
 
   const persist = useCallback(
     async (reading: ReadingState) => {
@@ -120,22 +138,43 @@ export function ReaderPage({
         const result = await saveProgress(api, profileId, storybookId, stamped, {
           deviceId,
         })
+        failedSaveCountRef.current = 0
+        setSaveWarning(null)
         if (result.kind === 'saved') {
           revisionRef.current = result.row.state_revision
         } else if (result.kind === 'conflict') {
           setConflict({ local: stamped, server: result.currentRow })
         }
       } catch (error) {
-        // #CRITICAL: concurrency: a dropped save must not silently lose progress.
-        // #VERIFY: saveProgress already wrote the local IndexedDB cache before the
-        // server call, so reading state is not lost; only this step's server sync
-        // failed. Log with context and continue rather than crash the reader.
+        if (error instanceof LocalWriteError) {
+          // #CRITICAL: data-integrity: this step is cached nowhere, not locally
+          // and not on the server, and nothing else will ever retry it.
+          // #VERIFY: surface it immediately (not only after repeats): unlike a
+          // remote hiccup, a single occurrence here already means real loss.
+          console.error('[reader] local progress write failed', {
+            profileId,
+            storybookId,
+            revision: revisionRef.current,
+            error,
+          })
+          setSaveWarning('lost')
+          return
+        }
+        failedSaveCountRef.current += 1
         console.error('[reader] progress save failed', {
           profileId,
           storybookId,
           revision: revisionRef.current,
+          attempt: failedSaveCountRef.current,
           error,
         })
+        // #ASSUME: external-resources: a single dropped remote save is often a
+        // transient network blip; only a repeated failure indicates a real,
+        // ongoing problem worth interrupting the reader for.
+        // #VERIFY: two consecutive failures is the threshold before surfacing.
+        if (failedSaveCountRef.current >= 2) {
+          setSaveWarning('failing')
+        }
       }
     },
     [api, profileId, storybookId, deviceId]
@@ -174,17 +213,19 @@ export function ReaderPage({
       { deviceId }
     )
     revisionRef.current = conflict.server.state_revision
-    setInitialReading(conflict.server)
+    setPageState((prev) =>
+      prev.phase === 'reading' ? { ...prev, initialReading: conflict.server } : prev
+    )
     // Remount the Reader so its machine re-initialises from the adopted server
     // state; without this the reader keeps playing from the local position.
     setReaderKey((key) => key + 1)
     setConflict(null)
   }, [api, conflict, deviceId, profileId, storybookId])
 
-  if (phase === 'loading') {
+  if (pageState.phase === 'loading') {
     return <p data-testid="loading">Loading...</p>
   }
-  if (phase === 'not-found') {
+  if (pageState.phase === 'not-found') {
     return (
       <EmptyState
         title="We couldn't find that story"
@@ -193,20 +234,23 @@ export function ReaderPage({
       />
     )
   }
-  if (phase === 'error') {
+  if (pageState.phase === 'forbidden') {
+    return (
+      <EmptyState
+        title="You don't have access to this story"
+        description="This story isn't available on this profile. Let's head back to your books."
+        actions={<BackToLibrary profileId={profileId} />}
+      />
+    )
+  }
+  if (pageState.phase === 'error') {
     return (
       <EmptyState
         title="Something went wrong"
         description="We couldn't open this story right now. Please try again."
         actions={
           <>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setPhase('loading')
-                void load()
-              }}
-            >
+            <Button variant="primary" onClick={retry}>
               Try again
             </Button>
             <BackToLibrary profileId={profileId} />
@@ -215,19 +259,24 @@ export function ReaderPage({
       />
     )
   }
-  if (phase === 'offline' || !story) {
+  if (pageState.phase === 'offline') {
     return (
       <DownloadNeeded
-        onRetry={() => {
-          setPhase('loading')
-          void load()
-        }}
+        onRetry={retry}
         onBackToLibrary={() => navigate(`/library/${profileId}`)}
       />
     )
   }
+  const { story, initialReading } = pageState
   return (
     <>
+      {saveWarning ? (
+        <p role="alert" className="reader-save-warning" data-testid="save-warning">
+          {saveWarning === 'lost'
+            ? "We couldn't save that step. We'll keep trying."
+            : "We're having trouble saving your progress. Keep reading; we'll keep trying."}
+        </p>
+      ) : null}
       <Reader
         key={readerKey}
         story={story}

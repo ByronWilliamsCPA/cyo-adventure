@@ -52,7 +52,12 @@ export function ReaderRoute() {
   }
 
   return (
+    // Keyed by the route params so navigating to a different story (or a
+    // different version/profile) fully remounts ReaderPage instead of reusing
+    // the same instance; a stale in-flight load from the old story can then
+    // never resolve into the new one's state.
     <ReaderPage
+      key={`${profileId}:${storybookId}:${parsedVersion}`}
       api={syncApi}
       fetchStory={fetchStory}
       profileId={profileId}
