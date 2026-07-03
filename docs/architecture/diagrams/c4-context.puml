@@ -67,8 +67,9 @@ note bottom of pwa
 end note
 
 note right of openrouter
-  Provider fallback cascade:
-  OpenRouter (primary) ->
+  Provider fallback cascade (3 legs):
+  OpenRouter haiku (primary) ->
+  OpenRouter sonnet (fallback) ->
   Ollama (local fallback)
   Layer 1: per-adapter retry
   Layer 2: FallbackProvider cascade

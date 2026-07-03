@@ -24,14 +24,17 @@ From `docs/planning/validator-rules.md`:
 1. **Layer 1 (L1-1..L1-7): graph structure and schema** (always runs first)
 2. **Early exit on any L1 ERROR**: the graph must be structurally sound before a
    state-space walk is meaningful; an L1 error means the document may not even parse.
-3. **Layer 2 (L2-9..L2-12): state-space walk** (Tier-2 stories only; Tier-1 short-circuits)
-4. **RL-13: advisory reading-level check** (WARNING severity, never blocks)
-5. **SAFE-14: safety content check** (Phase 2 stub, always empty)
+3. **Policy (PL-15..PL-21): age-safety and story-scale invariants** (ADR-011; forbidden
+   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage). ERROR-severity
+   PL findings block.
+4. **Layer 2 (L2-9..L2-12): state-space walk** (Tier-2 stories only; Tier-1 short-circuits)
+5. **RL-13: advisory reading-level check** (WARNING severity, never blocks)
+6. **SAFE-14: safety content check** (Phase 2 stub, always empty)
 
 ### Blocking Semantics
 
 `blocked` is `True` when any `ERROR`-severity finding whose `rule_id` starts with
-`"L1"` or `"L2"` is present in the merged report. RL-13 findings are `WARNING` and
+`"L1"`, `"L2"`, or `"PL"` is present in the merged report. RL-13 findings are `WARNING` and
 never block. SAFE-14 findings route to human review via `safety_flagged`, not `blocked`.
 
 ### Layer 1 Rules

@@ -21,7 +21,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 A React/TypeScript PWA reader plays a versioned JSON Storybook offline; a Python/FastAPI
 backend serves the library, runs staged LLM generation behind a deterministic
-validation-and-moderation gate, and enforces a parent-approval state machine. Postgres
+validation-and-moderation gate, and enforces an admin approve-and-publish state machine. Postgres
 holds metadata, reading state, and (at launch) the story blobs inline as JSONB; MinIO is
 the deferred object-storage target for those blobs. Guardian identities authenticate via
 Supabase OIDC, all deployable to the homelab behind Pangolin.
@@ -152,7 +152,7 @@ provider-specific services in the core.
 | Generation orchestrator | Drive staged passes | Structure, prose, repair; call provider and validator; write provenance |
 | Validator | Prove the graph holds together | Schema, graph integrity, state-space, reading level, length (deterministic, no LLM) |
 | Moderation | Independent safety signal | Provider moderation + LLM-reviewer; route risky passages to human review |
-| Publish state machine | Enforce parent approval | No path to a child library without `approved`; record approver and provenance |
+| Publish state machine | Enforce admin approval | No path to a child library without an admin approve-and-publish (`in_review -> published`); record approver and provenance |
 | Reading store | Per-child progress | Current node, var state, path, save slots, completions; revision-based sync |
 
 ## Data Model
@@ -450,8 +450,7 @@ is never trusted on its own. Inputs are validated against the published story
 | POST | /api/v1/storybooks/{id}/versions/{v}/validate | Re-run the gate | Guardian |
 | PATCH | /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id} | Edit a passage (Phase 4b) | Guardian |
 | POST | /api/v1/storybooks/{id}/versions/{v}/submit-review | Move to review | Guardian |
-| POST | /api/v1/storybooks/{id}/versions/{v}/approve | Approve (→ approved) | Guardian |
-| POST | /api/v1/storybooks/{id}/versions/{v}/publish | Publish (→ published) | Guardian |
+| POST | /api/v1/storybooks/{id}/versions/{v}/approve | Approve and publish in one step (→ published) | Admin |
 
 ### Request/Response Format (reading-state PUT)
 

@@ -16,7 +16,7 @@ generation pipeline behind a mandatory admin approval gate (ADR-005).
 
 ## C4 Level 1: System Context
 
-The system context shows the two human actors and the external systems the CYO
+The system context shows the three human actors and the external systems the CYO
 Adventure system depends on.
 
 ![C4 System Context](diagrams/c4-context.svg)

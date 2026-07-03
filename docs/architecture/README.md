@@ -34,7 +34,7 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | C4 Context (L1) | [c4-context.puml](diagrams/c4-context.puml) / [.svg](diagrams/c4-context.svg) | Actors and external systems |
 | C4 Container (L2) | [c4-container.puml](diagrams/c4-container.puml) / [.svg](diagrams/c4-container.svg) | Runtime containers and data stores |
 | Generation Pipeline | [component-generation.puml](diagrams/component-generation.puml) / [.svg](diagrams/component-generation.svg) | Orchestrator, prompts, providers, gate |
-| Validator Gate | [component-validator.puml](diagrams/component-validator.puml) / [.svg](diagrams/component-validator.svg) | L1/L2/RL/SAFE layers |
+| Validator Gate | [component-validator.puml](diagrams/component-validator.puml) / [.svg](diagrams/component-validator.svg) | L1/Policy/L2/RL/SAFE layers |
 | Player Engine | [component-player.puml](diagrams/component-player.puml) / [.svg](diagrams/component-player.svg) | StoryEngine, evaluator, XState |
 | API and Persistence | [component-api-persistence.puml](diagrams/component-api-persistence.puml) / [.svg](diagrams/component-api-persistence.svg) | Routers, auth seam, ORM |
 | Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
@@ -70,7 +70,8 @@ FastAPI backend (Python 3.12)
   - player/: StoryEngine (Runtime Semantics v1, pure)
   - validator/: gate (L1+L2+RL+SAFE), walk, report
   - generation/: orchestrator (Stage A->B->C), prompts, PII guard,
-                 providers (OpenRouter primary, Ollama fallback),
+                 providers (3-leg cascade: OpenRouter haiku primary,
+                 OpenRouter sonnet fallback, then Ollama local),
                  FallbackProvider cascade, queue, worker
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |

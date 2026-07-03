@@ -81,7 +81,7 @@ not as designed behavior. Authors and the generator must not rely on runtime cla
 game logic.
 
 **Verification**: the Layer-1 validator (rule L1-6) checks that no reachable transition exceeds
-declared bounds. A story must not reach `approved` state if this check fails.
+declared bounds. A story must not reach `published` state if this check fails.
 
 ---
 

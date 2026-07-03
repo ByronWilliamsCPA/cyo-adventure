@@ -80,16 +80,21 @@ the budget.
 
 Other supported structure patterns (for the concept brief `structure_pattern` field):
 
-- `time_cave`: the reader loops back to a central hub from multiple branches; useful for
-  exploration stories. Every hub exit must lead toward an ending to pass the loop-escape
-  check.
+- `time_cave`: branches fan out to many distinct endings with little or no reconvergence;
+  the oldest and simplest branching shape. Good when you want lots of divergent outcomes.
 - `gauntlet`: a mostly linear sequence with a few decision points; suitable for the 8-11
   band where too many choices are overwhelming.
-- `quest`: a multi-stage journey where each stage has its own branch-and-bottleneck; the
-  stages connect in a fixed order.
 - `loop_and_grow`: the reader may revisit nodes, with state tracking their progress across
   loops. Requires Tier 2; the loop-escape check requires that every cycle has an exit path
   to an ending.
+- `open_map`: a hub the reader explores in any order, with loop/return edges and
+  bottlenecks; every reachable path must still lead to an ending.
+- `sorting_hat`: an early branch sorts the reader into parallel tracks that never
+  reconverge (no cross-track bottleneck); each track is its own subtree to an ending.
+
+The Ashwell `quest` (a multi-stage journey where each stage has its own
+branch-and-bottleneck) is not a separate pattern; it folds into `branch_and_bottleneck`
+(ADR-011).
 
 Avoid fully symmetric trees (binary trees where every non-ending node has exactly two
 choices): they produce the node-count explosion described above and do not generate well
@@ -214,7 +219,8 @@ Each ending node requires an `ending` block:
 ```json
 {
   "id": "ending_sunrise",
-  "type": "success",
+  "valence": "positive",
+  "kind": "success",
   "title": "The sunrise ending"
 }
 ```
@@ -223,9 +229,12 @@ The `id` is stable across prose edits and is the anchor for the ending tracker (
 Use a slug that describes the outcome, not a number ("ending_escape", "ending_captured",
 "ending_befriended"), so it remains meaningful after the prose changes.
 
-Ending types: `success`, `failure`, `bittersweet`, `open`. These are metadata only; the
-validator does not restrict ending types. Use them to give the parent reviewer a quick
-read on the emotional tone of each outcome.
+Each ending is typed on two axes, and both are required (the `ending` block forbids extra
+fields, so a single `type` field is rejected). `valence` is how the ending feels:
+`positive`, `neutral`, or `negative`. `kind` is what mechanically happened, a closed set:
+`success`, `setback`, `death`, `capture`, `completion`, or `discovery`. The age-band policy
+gate (PL-15) rejects any ending `kind` forbidden for the band, so pick a `kind` appropriate
+to the reader; the two axes together give the reviewer a quick read on each outcome.
 
 ---
 
@@ -248,7 +257,7 @@ generation prompt as `{concept_brief}`. Fields marked with `?` are optional.
 | `content_nogo` | string[] | e.g. `["graphic violence", "romantic content"]` |
 | `target_node_count` | int | Target total node count (see budgets above) |
 | `ending_count` | int | Number of distinct endings (minimum 2) |
-| `structure_pattern` | enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `quest`, `loop_and_grow` |
+| `structure_pattern` | enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `loop_and_grow`, `open_map`, `sorting_hat` |
 | `desired_variables[]?` | object[] | For Tier 2: each has `name`, `type`, `initial`, `min?`, `max?`, `description` |
 | `special_constraints[]?` | string[] | Freeform constraints for the LLM; length-limited; no real PII |
 
