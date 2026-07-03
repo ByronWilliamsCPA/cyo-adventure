@@ -1,0 +1,299 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_clover_butterfly",
+  "version": 1,
+  "title": "Clover and the Butterfly",
+  "metadata": {
+    "age_band": "3-5",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 1.0,
+      "tolerance": 1.0
+    },
+    "tier": 1,
+    "themes": [
+      "nature",
+      "curiosity",
+      "friendship",
+      "gentleness"
+    ],
+    "estimated_minutes": 3,
+    "ending_count": 7,
+    "content_flags": {
+      "violence": "none",
+      "scariness": "mild",
+      "peril": "mild"
+    },
+    "topology": "time_cave",
+    "length": "short",
+    "narrative_style": "prose",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=45 beats='Clover the little kitten sees a bright blue butterfly in the sunny garden; it flutters past the daisies, past the little pond, and toward the tall grass; Clover wants to follow it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_daisies",
+          "label": "Follow it to the daisy patch.",
+          "target": "n_daisies"
+        },
+        {
+          "id": "c_pond",
+          "label": "Follow it to the little pond.",
+          "target": "n_pond"
+        },
+        {
+          "id": "c_grass",
+          "label": "Follow it to the tall grass.",
+          "target": "n_grass"
+        }
+      ]
+    },
+    {
+      "id": "n_daisies",
+      "body": "<<FILL role=choice words=40 beats='the butterfly dances over white daisies where a soft, fuzzy bumblebee hums a happy tune; then it floats on toward the stone birdbath; Clover can watch the bee or keep following'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_watch_bee",
+          "label": "Stop and watch the bumblebee.",
+          "target": "n_bee_end"
+        },
+        {
+          "id": "c_to_birdbath",
+          "label": "Keep following the butterfly.",
+          "target": "n_birdbath"
+        }
+      ]
+    },
+    {
+      "id": "n_bee_end",
+      "body": "<<FILL role=ending words=40 beats='Clover watches the happy bumblebee bumble from flower to flower; when Clover looks up, the blue butterfly is gone; Clover trots back to the sunny porch, warm and glad anyway'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_bee_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Busy Bumblebee"
+      }
+    },
+    {
+      "id": "n_birdbath",
+      "body": "<<FILL role=rising words=38 beats='at the stone birdbath a little robin splashes and shakes bright drops in the sun; the blue butterfly rests on the rim, then drifts on toward the ripe red strawberries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_strawberries",
+          "label": "Follow the butterfly to the strawberries.",
+          "target": "n_strawberries"
+        }
+      ]
+    },
+    {
+      "id": "n_strawberries",
+      "body": "<<FILL role=rising words=38 beats='sweet red strawberries hide under cool green leaves; the butterfly loops around them and flutters deeper into the garden toward a soft, grassy clover nook'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_meadow",
+          "label": "Tiptoe after the butterfly.",
+          "target": "n_meadow"
+        }
+      ]
+    },
+    {
+      "id": "n_meadow",
+      "body": "<<FILL role=choice words=40 beats='in a cozy patch of clover and grass the butterfly slows down and floats gently, right in front of Clovers little nose; nearby sits a tiny ring of flowers; Clover holds very still'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_hold_still",
+          "label": "Hold still and wait.",
+          "target": "n_nose_end"
+        },
+        {
+          "id": "c_flower_ring",
+          "label": "Peek at the little flower ring.",
+          "target": "n_crown_end"
+        }
+      ]
+    },
+    {
+      "id": "n_nose_end",
+      "body": "<<FILL role=completion words=40 beats='the gentle butterfly lands softly right on the tip of Clovers nose; its wings open and close like two tiny blue fans; Clover giggles, still as can be, the happiest kitten in the whole garden'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_nose",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "On Clovers Nose"
+      }
+    },
+    {
+      "id": "n_crown_end",
+      "body": "<<FILL role=completion words=40 beats='beside the clover patch Clover finds a little ring of daisies, a tiny flower crown just her size; the butterfly circles it once, and Clover wears the crown proudly, a sweet garden treasure'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_crown",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Daisy Crown"
+      }
+    },
+    {
+      "id": "n_pond",
+      "body": "<<FILL role=choice words=40 beats='by the little pond a green frog sits on a lily pad and blinks; the blue butterfly skims over the water toward the tall reeds; Clover can play with the frog or follow on'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_play_frog",
+          "label": "Play peekaboo with the frog.",
+          "target": "n_frog_end"
+        },
+        {
+          "id": "c_to_reeds",
+          "label": "Follow the butterfly to the reeds.",
+          "target": "n_reeds"
+        }
+      ]
+    },
+    {
+      "id": "n_frog_end",
+      "body": "<<FILL role=ending words=40 beats='Clover and the frog play a giggly game of peekaboo around the lily pad, splish, splash, hop; by the time the game ends the butterfly has floated away, and Clover pads home for a cozy nap, content'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_frog_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Peekaboo Frog"
+      }
+    },
+    {
+      "id": "n_reeds",
+      "body": "<<FILL role=rising words=38 beats='the butterfly weaves between the whispering green reeds; a shiny dragonfly zips by like a tiny helicopter; the butterfly leads Clover onward toward a soft, mossy log'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_hedgehog",
+          "label": "Follow past the mossy log.",
+          "target": "n_hedgehog"
+        }
+      ]
+    },
+    {
+      "id": "n_hedgehog",
+      "body": "<<FILL role=rising words=38 beats='under the mossy log a small hedgehog snoozes in a ball of soft prickles; Clover steps quietly so it can sleep, and follows the butterfly into a cool, shady corner'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_friend",
+          "label": "Tiptoe into the shady corner.",
+          "target": "n_friend"
+        }
+      ]
+    },
+    {
+      "id": "n_friend",
+      "body": "<<FILL role=rising words=38 beats='in the shady corner Clover meets Pip, a friendly little bunny nibbling sweet clover leaves; the butterfly rests on a leaf above them, and Pip smiles a shy hello'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_share_berries",
+          "label": "Share the sweet berries with Pip.",
+          "target": "n_share_end"
+        }
+      ]
+    },
+    {
+      "id": "n_share_end",
+      "body": "<<FILL role=completion words=42 beats='Clover and Pip share ripe red strawberries that grow nearby while the blue butterfly watches from a leaf; two happy new friends, sticky little paws, and a lovely, sunny garden afternoon together'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_share",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Berries to Share"
+      }
+    },
+    {
+      "id": "n_grass",
+      "body": "<<FILL role=choice words=40 beats='in the tall, tickly grass the butterfly bounces up and down like a little kite; Clover can dash after it fast, or tiptoe slow and quiet through the soft green blades'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_dash",
+          "label": "Dash after it fast!",
+          "target": "n_lost_end"
+        },
+        {
+          "id": "c_tiptoe",
+          "label": "Tiptoe slow and quiet.",
+          "target": "n_sunflower"
+        }
+      ]
+    },
+    {
+      "id": "n_lost_end",
+      "body": "<<FILL role=ending words=40 beats='Clover pounces and dashes, paws thumping, so fast that the surprised butterfly zips high over the fence; Clover cannot follow up there, so she trots back to the warm porch, tail high and happy'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_lost_setback",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Fast!"
+      }
+    },
+    {
+      "id": "n_sunflower",
+      "body": "<<FILL role=rising words=38 beats='stepping softly, Clover follows the butterfly under a row of tall golden sunflowers nodding in the breeze; the butterfly floats on toward a little wooden garden gate'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_gate",
+          "label": "Follow toward the garden gate.",
+          "target": "n_gate"
+        }
+      ]
+    },
+    {
+      "id": "n_gate",
+      "body": "<<FILL role=rising words=38 beats='the butterfly slips through the small wooden gate into a quiet flower corner full of purple and pink blooms; Clover squeezes gently after it, whiskers twitching'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_to_arch",
+          "label": "Follow into the flower corner.",
+          "target": "n_arch"
+        }
+      ]
+    },
+    {
+      "id": "n_arch",
+      "body": "<<FILL role=rising words=38 beats='in the flower corner a green leafy arch curves overhead, dripping with sweet honeysuckle; the butterfly circles the arch and slows, as if it is waiting just for Clover'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_sit_arch",
+          "label": "Sit quietly beneath the arch.",
+          "target": "n_perch_end"
+        }
+      ]
+    },
+    {
+      "id": "n_perch_end",
+      "body": "<<FILL role=completion words=42 beats='Clover sits very still beneath the flowery arch, and the blue butterfly settles on her soft ear like a little bow; they rest together in the sweet-smelling shade, calm and cozy and glad'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_perch",
+        "valence": "positive",
+        "kind": "success",
+        "title": "Under the Flower Arch"
+      }
+    }
+  ]
+}
