@@ -14,6 +14,7 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.api.schemas import (
     FindingView,
     FlaggedPassage,
+    ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
 )
@@ -212,3 +213,67 @@ def _as_bool(value: object) -> bool:
     # gating flag on by accident.
     # #VERIFY: tests/unit/test_review_surface.py::test_summary_rejects_non_bool_gate_values.
     return value if isinstance(value, bool) else False
+
+
+def build_review_queue_item(
+    *,
+    storybook_id: str,
+    status: str,
+    version: int,
+    blob: dict[str, object],
+    moderation_report: dict[str, object] | None,
+) -> ReviewQueueItem:
+    """Project one storybook version into a review-queue item.
+
+    Reuses ``build_review_surface`` so the Verdict.PASS filtering and the
+    screened-versus-unscreened rule are defined in exactly one place.
+
+    Args:
+        storybook_id: The story id.
+        status: The storybook's lifecycle status.
+        version: The version under review (latest).
+        blob: The stored story blob (source of the title).
+        moderation_report: The stored report, or ``None`` if unmoderated.
+
+    Returns:
+        ReviewQueueItem: Title, status, version, screened flag, flagged count,
+            and the gating summary (``None`` when unmoderated).
+
+    Raises:
+        ValidationError: If the stored moderation report is corrupt at rest
+            (propagated from ``build_review_surface``).
+    """
+    # #EDGE: data integrity: a single corrupt moderation_report raises here. The
+    # caller (get_review_queue) isolates this per row: it logs the bad row with
+    # its storybook_id and drops it, so one corrupt-at-rest story no longer fails
+    # the whole queue. build_review_surface still surfaces the corruption loudly
+    # (as a ValidationError) rather than papering over it.
+    # #VERIFY: build_review_surface maps a PydanticValidationError to
+    # ValidationError; tests/unit/test_review_surface.py covers the malformed
+    # case, and tests/integration/test_approval_api.py covers the per-row queue
+    # isolation (one corrupt row does not fail the whole queue).
+    surface = build_review_surface(
+        status=status,
+        storybook_id=storybook_id,
+        version=version,
+        blob=blob,
+        moderation_report=moderation_report,
+    )
+    flagged_count = sum(
+        len(passage.findings) for passage in surface.flagged_passages
+    ) + len(surface.story_level_findings)
+    return ReviewQueueItem(
+        storybook_id=storybook_id,
+        title=_queue_title(blob, storybook_id),
+        status=status,
+        version=version,
+        screened=surface.screened,
+        flagged_count=flagged_count,
+        summary=surface.summary,
+    )
+
+
+def _queue_title(blob: dict[str, object], storybook_id: str) -> str:
+    """Return the story title from the blob, or the id as a fallback."""
+    title = blob.get("title")
+    return title if isinstance(title, str) and title else storybook_id

@@ -333,7 +333,15 @@ class SendBackRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    reason: str = Field(min_length=1, max_length=2000)
+    # #ASSUME: security: a whitespace-only reason must not pass server-side.
+    # strip_whitespace runs before the length check so "   " collapses to ""
+    # and fails min_length=1 (422). The frontend already rejects blank reasons;
+    # this closes the direct-API bypass and trims the logged value.
+    # #VERIFY: test_send_back_rejects_whitespace_only_reason (422).
+    # Mirrors the DisplayName constraint above.
+    reason: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)
+    ]
 
 
 class SubmittedView(BaseModel):
@@ -439,6 +447,34 @@ class ReviewSurfaceView(BaseModel):
             msg = "review surface must not contain a pass-verdict finding"
             raise ValueError(msg)
         return self
+
+
+# ---------------------------------------------------------------------------
+# Review-queue schemas (C4a-4)
+# ---------------------------------------------------------------------------
+
+
+class ReviewQueueItem(BaseModel):
+    """One storybook in the admin review queue, shaped for client bucketing.
+
+    ``screened`` plus ``flagged_count`` let the console bucket into "Flagged"
+    (screened with findings, or never screened) versus "Ready to review"
+    (screened clean). ``summary`` carries the report's gating flags when present.
+    """
+
+    storybook_id: str
+    title: str
+    status: str
+    version: int
+    screened: bool
+    flagged_count: int = Field(ge=0)
+    summary: ReviewSummary | None
+
+
+class ReviewQueueView(BaseModel):
+    """The admin review queue: storybooks awaiting a publish decision."""
+
+    items: list[ReviewQueueItem]
 
 
 # ---------------------------------------------------------------------------
