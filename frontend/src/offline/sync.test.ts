@@ -109,7 +109,10 @@ describe('saveProgress', () => {
     expect(api.calls).toHaveLength(0)
   })
 
-  it('throws LocalWriteError when caching the saved server row fails', async () => {
+  it('still returns saved when only the post-save cache refresh fails', async () => {
+    // The server already accepted this step; a failure to mirror it locally
+    // afterward is not a loss and must not make the caller skip adopting the
+    // new revision (that would desync it from the server on the next save).
     const original = db.putReadingState
     let calls = 0
     vi.spyOn(db, 'putReadingState').mockImplementation(async (...args) => {
@@ -118,9 +121,8 @@ describe('saveProgress', () => {
       return original(...args)
     })
     const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
-    await expect(
-      saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
-    ).rejects.toBeInstanceOf(LocalWriteError)
+    const result = await saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    expect(result).toEqual({ kind: 'saved', row: rowAt('n_mid', 1) })
   })
 
   it('throws LocalWriteError when enqueueing an offline write fails', async () => {

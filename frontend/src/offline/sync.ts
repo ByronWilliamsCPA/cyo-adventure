@@ -34,11 +34,17 @@ export class OfflineError extends Error {
 }
 
 /**
- * Raised when a local IndexedDB write inside saveProgress itself fails (quota
- * exceeded, private-browsing restriction, iOS eviction mid-write). Distinct
- * from OfflineError/HTTP failures so the caller knows this step was not
- * cached anywhere, not merely unsynced, and can surface that immediately
+ * Raised when a local IndexedDB write inside saveProgress fails somewhere
+ * that leaves this step stored nowhere at all: the initial cache write
+ * (before the server is even tried) or the offline-queue enqueue (the server
+ * was unreachable and the fallback write also failed). Distinct from
+ * OfflineError/HTTP failures so the caller can surface it immediately
  * instead of treating it as a routine retry-later network blip.
+ *
+ * Deliberately NOT raised when only the post-save local cache refresh fails
+ * (the server already has this step; see saveProgress): that failure means
+ * the local mirror is stale, not that the step is lost, and must not stop
+ * the caller from adopting the server's new revision.
  */
 export class LocalWriteError extends Error {
   // Manually assigned, not via the ES2022 Error(message, {cause}) constructor
@@ -120,7 +126,12 @@ export async function saveProgress(
     try {
       await putReadingState(profileId, storybookId, res.row)
     } catch (cause) {
-      throw new LocalWriteError('failed to refresh the local cache after saving', cause)
+      // The server already accepted this step: res.row is now authoritative
+      // and this save is not lost, only its local mirror is stale. Log and
+      // keep going rather than throw LocalWriteError, which would make the
+      // caller skip adopting res.row's revision and desync it from the
+      // server on the very next save.
+      console.error('[reader] failed to refresh the local cache after saving', { cause })
     }
     return { kind: 'saved', row: res.row }
   } catch (error) {
