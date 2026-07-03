@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
+import { EmptyState } from '@ds/components/EmptyState'
+import { Button } from '@ds/components/Button'
 import { makeFetchStory, makeSyncApi } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
+import { BackToLibrary } from './BackToLibrary'
 import { ReaderPage } from './ReaderPage'
 
 /**
@@ -22,13 +25,30 @@ export function ReaderRoute() {
   const api = useApi()
   const syncApi = useMemo(() => makeSyncApi(api), [api])
   const fetchStory = useMemo(() => makeFetchStory(api), [api])
+  const navigate = useNavigate()
 
   if (!profileId || !storybookId || !version) {
-    return <p role="alert">Missing story reference in the URL.</p>
+    return (
+      <EmptyState
+        title="That story link looks wrong"
+        description="We couldn't tell which story to open. Let's go back to the start."
+        actions={
+          <Button variant="ghost" onClick={() => navigate('/')}>
+            Back to start
+          </Button>
+        }
+      />
+    )
   }
   const parsedVersion = Number(version)
   if (!Number.isInteger(parsedVersion) || parsedVersion < 1) {
-    return <p role="alert">Invalid story version in the URL.</p>
+    return (
+      <EmptyState
+        title="That story link looks wrong"
+        description="This story link isn't valid. Let's go back to your books."
+        actions={<BackToLibrary profileId={profileId} />}
+      />
+    )
   }
 
   return (
