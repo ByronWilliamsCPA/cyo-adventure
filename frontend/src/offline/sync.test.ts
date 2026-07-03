@@ -1,10 +1,12 @@
 import 'fake-indexeddb/auto'
 
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ReadingState } from '../player/types'
+import * as db from './db'
 import { _resetDbHandle, getReadingState, listQueue } from './db'
 import {
+  LocalWriteError,
   OfflineError,
   type PutResponse,
   type SyncApi,
@@ -51,6 +53,7 @@ beforeEach(() => {
   _resetDbHandle()
   idCounter = 0
 })
+afterEach(() => vi.restoreAllMocks())
 
 describe('saveProgress', () => {
   it('returns saved and caches the server row on 200', async () => {
@@ -93,6 +96,41 @@ describe('saveProgress', () => {
     await expect(
       saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
     ).rejects.toThrow('500 server error')
+    expect(await listQueue()).toHaveLength(0)
+  })
+
+  it('throws LocalWriteError when the initial local cache write fails', async () => {
+    vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
+    const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+    await expect(
+      saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    ).rejects.toBeInstanceOf(LocalWriteError)
+    // The server was never called: the step never left the device.
+    expect(api.calls).toHaveLength(0)
+  })
+
+  it('throws LocalWriteError when caching the saved server row fails', async () => {
+    const original = db.putReadingState
+    let calls = 0
+    vi.spyOn(db, 'putReadingState').mockImplementation(async (...args) => {
+      calls += 1
+      if (calls === 2) throw new Error('quota exceeded')
+      return original(...args)
+    })
+    const api = fakeApi(() => ({ status: 200, row: rowAt('n_mid', 1) }))
+    await expect(
+      saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    ).rejects.toBeInstanceOf(LocalWriteError)
+  })
+
+  it('throws LocalWriteError when enqueueing an offline write fails', async () => {
+    vi.spyOn(db, 'enqueueWrite').mockRejectedValueOnce(new Error('quota exceeded'))
+    const api = fakeApi(() => {
+      throw new OfflineError()
+    })
+    await expect(
+      saveProgress(api, 'p1', 's1', makeState('n_mid', 0), { newId: ids })
+    ).rejects.toBeInstanceOf(LocalWriteError)
     expect(await listQueue()).toHaveLength(0)
   })
 })
