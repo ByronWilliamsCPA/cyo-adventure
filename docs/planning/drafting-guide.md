@@ -146,8 +146,12 @@ feeling sparse.
 
 ## Tier-2 Variables and Conditions
 
-Tier-2 mechanics are available for the 10-13 and 13-16 bands. Use them sparingly; every
-variable multiplies the state space.
+The schema does not gate Tier-2 by age band: `metadata.tier` is any of 1 or 2, and the
+only hard rule is that a Tier-1 story must not declare variables (`tier 1 stories must not
+declare variables`). As an authoring guideline, reserve state-tracking (Tier-2) for the
+bands where a reader can follow persistent state: the 8-11, 10-13, 13-16, and 16+ bands.
+Keep the youngest bands (3-5 and 5-8) at Tier-1. Use variables sparingly at any band;
+every variable multiplies the state space (see the configuration cap below).
 
 **Variable rules**:
 

@@ -373,7 +373,8 @@ class GenerationJob(Base):
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
     # 30 days or when the linked storybook version reaches "published" status.
-    # #VERIFY: Phase 5 scheduled RQ job nulls this column; guardian/child API
+    # #VERIFY: Phase 5 scheduled pg_cron job nulls this column (ADR-009 moved the
+    # ADR-007 retention purge from RQ to pg_cron); guardian/child API
     # endpoints must never expose report content (expose job status only). There
     # is no separate stage_log column today; persisting a redacted stage log for
     # post-purge auditability is a Phase 5 task (see ADR-007).
