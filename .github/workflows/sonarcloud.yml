@@ -40,7 +40,12 @@ jobs:
     with:
       sonar-organization: 'byronwilliamscpa'
       sonar-project-key: 'ByronWilliamsCPA_cyo-adventure'
-      python-version: '3.12'
+      # 3.14, not the 3.12 local target: under CPython 3.12 coverage.py
+      # silently drops the async handler bodies in api/profiles.py (tests
+      # pass, lines execute, zero hits recorded; reproduced with both the
+      # sysmon and ctrace cores and with coverage 7.6/7.14). 3.14 records
+      # them correctly, so it is the truthful measurement interpreter.
+      python-version: '3.14'
       source-directory: 'src'
       coverage-paths: 'coverage.xml'
       # Enforce the quality gate only on push to a protected branch. On
