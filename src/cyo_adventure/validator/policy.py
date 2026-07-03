@@ -1,24 +1,48 @@
-"""Age-policy gate layer (rules PL-15..PL-18).
+"""Age-policy gate layer (rules PL-15..PL-20).
 
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
-choice graph. All findings are ERROR-severity and blocking. These rules convert
-age-safety and shape judgments into deterministic invariants.
+choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
+words-per-node check is advisory (WARNING). These rules convert age-safety, shape,
+and story-scale judgments into deterministic invariants.
 
-Rule source: docs/superpowers/specs/2026-06-24-typed-story-metadata-design.md.
+Rule sources: docs/superpowers/specs/2026-06-24-typed-story-metadata-design.md
+(PL-15..PL-18); docs/planning/adr/adr-011-story-scale-framework.md (PL-19
+words-per-node and PL-20 fastest-finish arc floor).
 """
 
 from __future__ import annotations
 
+import re
+
 import networkx as nx
 
-from cyo_adventure.storybook.models import Storybook, level_rank
-from cyo_adventure.validator.band_profile import BandProfile, profile_for
+from cyo_adventure.storybook.models import EndingKind, Storybook, level_rank
+from cyo_adventure.validator.band_profile import (
+    BandProfile,
+    min_complete_floor,
+    profile_for,
+    words_per_node_profile,
+)
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
     ValidationReport,
 )
 from cyo_adventure.validator.topology import admissible_topologies
+
+# A skeleton node body is a ``<<FILL role=... words=N ...>>`` directive carrying
+# the author's declared word target; a filled node body is prose. The
+# words-per-node check reads the declared target for skeletons and the actual
+# word count for prose, so it applies pre-fill and post-fill. This regex is a
+# local copy (not imported from generation.diagram) to keep the validator from
+# depending on the generation layer.
+_FILL_MARKER = "<<FILL"
+_FILL_WORDS_RE = re.compile(r"\bwords=(\d+)")
+
+# Endings that count as a *satisfying* completion for the PL-20 arc floor. A
+# fail-fast negative ending (setback/death/capture) may be reached quickly; only
+# a win must be earned over the cell's minimum node count.
+_SATISFYING_KINDS = frozenset({EndingKind.SUCCESS, EndingKind.COMPLETION})
 
 
 def validate_policy(story: Storybook) -> ValidationReport:
@@ -44,6 +68,8 @@ def validate_policy(story: Storybook) -> ValidationReport:
     _check_content_ceiling(story, profile, report)
     _check_floors(story, profile, report)
     _check_topology(story, report)
+    _check_words_per_node(story, report)
+    _check_min_to_complete(story, report)
     return report
 
 
@@ -165,3 +191,143 @@ def _check_topology(story: Storybook, report: ValidationReport) -> None:
                 ),
             )
         )
+
+
+def node_word_count(body: str) -> int:
+    """Return a node's word count: the declared FILL target, else prose words.
+
+    A skeleton node body is a ``<<FILL ... words=N ...>>`` directive; its budget
+    is the declared ``N``. A filled node body is prose; its count is the number
+    of whitespace-separated tokens. A FILL directive without a ``words=`` token
+    counts as 0 (below every per-node max, and there is no per-node minimum).
+
+    Args:
+        body: The node ``body`` string.
+
+    Returns:
+        The word count used by the PL-19 words-per-node check.
+    """
+    if _FILL_MARKER in body:
+        match = _FILL_WORDS_RE.search(body)
+        return int(match.group(1)) if match is not None else 0
+    return len(body.split())
+
+
+def _check_words_per_node(story: Storybook, report: ValidationReport) -> None:
+    """PL-19: per-node word wall guard (ERROR) and story-mean advisory (WARNING).
+
+    The per-node maximum is a hard wall guard applied to every story: a single
+    node whose word budget exceeds the band+style maximum blocks. The story-mean
+    advisory band is checked only for a scale-classified production story (one
+    that declares a ``length``), because the mean is meaningful only against a
+    chosen scale cell; it is a WARNING and never blocks. There is no per-node
+    minimum (a one-line beat is legitimate). See ADR-011 section 3.
+    """
+    band = story.metadata.age_band.value
+    style = story.metadata.narrative_style.value
+    profile = words_per_node_profile(band, style)
+    if profile is None:
+        return
+    _mean_target, advisory_lo, advisory_hi, per_node_max = profile
+    counts: list[int] = []
+    for node in story.nodes:
+        count = node_word_count(node.body)
+        counts.append(count)
+        if count > per_node_max:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-19",
+                    severity=Severity.ERROR,
+                    story_id=story.id,
+                    node_id=node.id,
+                    message=(
+                        f"PL-19 words: node '{node.id}' body is {count} words, over "
+                        f"the band '{band}' {style} per-node max {per_node_max} in "
+                        f"story '{story.id}'"
+                    ),
+                )
+            )
+    scale_classified = (
+        story.metadata.length is not None and story.metadata.production_eligible
+    )
+    if scale_classified and counts:
+        mean = sum(counts) / len(counts)
+        if not advisory_lo <= mean <= advisory_hi:
+            report.add(
+                ValidationFinding(
+                    rule_id="PL-19",
+                    severity=Severity.WARNING,
+                    story_id=story.id,
+                    message=(
+                        f"PL-19 words: story-mean {mean:.1f} words/node is outside the "
+                        f"band '{band}' {style} advisory {advisory_lo}-{advisory_hi} in "
+                        f"story '{story.id}'"
+                    ),
+                )
+            )
+
+
+def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
+    """PL-20: the shortest satisfying-completion path must meet the arc floor.
+
+    Only a scale-classified production story (one that declares a ``length``) has
+    a fastest-finish floor, taken from the ADR-011 cell. The shortest path in
+    nodes from ``start_node`` to any success/completion ending must be at least
+    that floor; a too-short winning path (a hollow quick win) blocks. Fail-fast
+    negative endings are unaffected, and a story with no satisfying ending is
+    left to the ending-floor rules (PL-17). See ADR-011 section 4.
+    """
+    length = story.metadata.length
+    if length is None or not story.metadata.production_eligible:
+        return
+    floor = min_complete_floor(
+        story.metadata.age_band.value,
+        length.value,
+        story.metadata.narrative_style.value,
+    )
+    if floor is None:
+        return
+    satisfying = {
+        node.id
+        for node in story.nodes
+        if node.ending is not None and node.ending.kind in _SATISFYING_KINDS
+    }
+    if not satisfying:
+        return
+    graph = _build_graph(story)
+    shortest = _shortest_path_nodes(graph, story.start_node, satisfying)
+    if shortest is not None and shortest < floor:
+        report.add(
+            ValidationFinding(
+                rule_id="PL-20",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                message=(
+                    f"PL-20 arc: shortest satisfying completion is {shortest} node(s), "
+                    f"below the '{story.metadata.age_band.value}' {length.value} "
+                    f"{story.metadata.narrative_style.value} floor {floor} in story "
+                    f"'{story.id}'"
+                ),
+            )
+        )
+
+
+def _shortest_path_nodes(
+    graph: nx.DiGraph[str], start: str, targets: set[str]
+) -> int | None:
+    """Return the fewest nodes on any path from ``start`` to a target.
+
+    Path length is measured in nodes (hops + 1). Unreachable targets are
+    ignored; returns ``None`` when no target is reachable from ``start``.
+    """
+    best: int | None = None
+    for target in targets:
+        if target not in graph or start not in graph:
+            continue
+        if not nx.has_path(graph, start, target):
+            continue
+        hops = int(nx.shortest_path_length(graph, start, target))
+        nodes = hops + 1
+        if best is None or nodes < best:
+            best = nodes
+    return best

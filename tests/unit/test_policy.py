@@ -1,10 +1,13 @@
 """Unit tests for the age-policy gate layer (PL-15..PL-18)."""
 
 from cyo_adventure.storybook.models import (
+    AgeBand,
     Choice,
     ContentFlags,
     Ending,
     EndingKind,
+    Length,
+    NarrativeStyle,
     Node,
     ReadingLevel,
     Storybook,
@@ -12,7 +15,7 @@ from cyo_adventure.storybook.models import (
     Topology,
     Valence,
 )
-from cyo_adventure.validator.policy import validate_policy
+from cyo_adventure.validator.policy import node_word_count, validate_policy
 
 
 def _story(
@@ -177,3 +180,232 @@ def test_fully_compliant_story_has_no_policy_findings():
     report = validate_policy(_two_ending_story("3-5", Topology.TIME_CAVE))
     assert report.ok
     assert report.findings == []
+
+
+# --- PL-19 words-per-node and PL-20 fastest-finish arc floor -------------------
+
+
+def test_node_word_count_reads_fill_directive():
+    """A skeleton FILL directive contributes its declared word target."""
+    assert node_word_count("<<FILL role=setup words=85 beats='a b c'>>") == 85
+
+
+def test_node_word_count_counts_prose_words():
+    """A filled (prose) body contributes its actual word count."""
+    assert node_word_count("one two three four five") == 5
+
+
+def test_node_word_count_fill_without_words_is_zero():
+    """A FILL directive with no words= token counts as zero (no per-node min)."""
+    assert node_word_count("<<FILL role=setup beats='x'>>") == 0
+
+
+def _fill(words: int) -> str:
+    """A FILL directive body with an exact declared word target."""
+    return f"<<FILL role=x words={words} beats='b'>>"
+
+
+def _linear_scale_story(
+    *,
+    middles: int,
+    ending_kind: EndingKind = EndingKind.SUCCESS,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length | None = Length.SHORT,
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE,
+    words: int = 100,
+    production_eligible: bool = True,
+) -> Storybook:
+    """Build ``start -> m0 -> ... -> end``: one linear satisfying path.
+
+    The satisfying-completion path is ``middles + 2`` nodes (start + middles +
+    end). Bodies are FILL directives so the per-node word budget is exact.
+    """
+    body = _fill(words)
+    first = "m0" if middles > 0 else "n_end"
+    nodes: list[Node] = [
+        Node(id="n0", body=body, choices=[Choice(id="c0", label="go", target=first)])
+    ]
+    for i in range(middles):
+        target = f"m{i + 1}" if i + 1 < middles else "n_end"
+        nodes.append(
+            Node(
+                id=f"m{i}",
+                body=body,
+                choices=[Choice(id=f"cm{i}", label="go", target=target)],
+            )
+        )
+    nodes.append(
+        Node(
+            id="n_end",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="e1", valence=Valence.POSITIVE, kind=ending_kind, title="End"
+            ),
+        )
+    )
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=1,
+            topology=Topology.GAUNTLET,
+            length=length,
+            narrative_style=narrative_style,
+            production_eligible=production_eligible,
+        ),
+    )
+
+
+def test_pl19_blocks_node_over_per_node_max():
+    """A node whose word budget exceeds the band+style per-node max blocks."""
+    over = "word " * 100  # 100 prose words, over the 3-5 prose max of 90
+    win = Node(
+        id="e1n",
+        body="a",
+        is_ending=True,
+        ending=Ending(
+            id="e1", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="A"
+        ),
+    )
+    other = Node(
+        id="e2n",
+        body="b",
+        is_ending=True,
+        ending=Ending(
+            id="e2", valence=Valence.NEUTRAL, kind=EndingKind.DISCOVERY, title="B"
+        ),
+    )
+    start = Node(
+        id="n0",
+        body=over,
+        choices=[
+            Choice(id="c1", label="x", target="e1n"),
+            Choice(id="c2", label="y", target="e2n"),
+        ],
+    )
+    story = Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=[start, win, other],
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_3_5,
+            reading_level=ReadingLevel(target=1.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.TIME_CAVE,
+        ),
+    )
+    report = validate_policy(story)
+    assert any(f.rule_id == "PL-19" and f.node_id == "n0" for f in report.errors)
+
+
+def test_pl19_warns_when_scale_story_mean_below_advisory():
+    """A scale-classified story whose mean words/node is off-band warns (PL-19)."""
+    # 8-11 short advisory mean band is 70-135; 40-word nodes average below it.
+    report = validate_policy(_linear_scale_story(middles=7, words=40))
+    assert any(f.rule_id == "PL-19" for f in report.warnings)
+
+
+def test_pl19_mean_not_checked_without_length():
+    """A story with no length is not scale-classified, so the mean is not judged."""
+    report = validate_policy(_linear_scale_story(middles=7, words=40, length=None))
+    assert not any(f.rule_id == "PL-19" for f in report.warnings)
+
+
+def test_pl20_blocks_too_short_satisfying_path():
+    """A scale story whose shortest win is below the arc floor blocks (PL-20)."""
+    # 8-11 short floor is 9 nodes; start -> end is only 2.
+    report = validate_policy(_linear_scale_story(middles=0))
+    assert any(f.rule_id == "PL-20" for f in report.errors)
+
+
+def test_pl20_allows_path_meeting_the_floor():
+    """A satisfying path that meets the arc floor passes PL-20."""
+    # 8-11 short floor is 9 nodes; start + 7 middles + end is exactly 9.
+    report = validate_policy(_linear_scale_story(middles=7))
+    assert not any(f.rule_id == "PL-20" for f in report.errors)
+
+
+def test_pl20_skipped_without_length():
+    """A non-scale story (no length) has no arc floor."""
+    report = validate_policy(_linear_scale_story(middles=0, length=None))
+    assert not any(f.rule_id == "PL-20" for f in report.errors)
+
+
+def test_pl20_skipped_for_mvp_even_with_length():
+    """An MVP (non-production) story waives the arc floor even with a length."""
+    report = validate_policy(_linear_scale_story(middles=0, production_eligible=False))
+    assert not any(f.rule_id == "PL-20" for f in report.errors)
+
+
+def test_pl20_allows_fast_fail_when_win_is_deep():
+    """A quick fail-fast ending is fine; only the winning path is floored."""
+    body = _fill(100)
+    nodes: list[Node] = [
+        Node(
+            id="n0",
+            body=body,
+            choices=[
+                Choice(id="c_win", label="win", target="w0"),
+                Choice(id="c_fail", label="fail", target="n_fail"),
+            ],
+        )
+    ]
+    for i in range(7):  # w0..w6, then n_win: a 9-node winning path
+        target = f"w{i + 1}" if i < 6 else "n_win"
+        nodes.append(
+            Node(
+                id=f"w{i}",
+                body=body,
+                choices=[Choice(id=f"cw{i}", label="go", target=target)],
+            )
+        )
+    nodes.append(
+        Node(
+            id="n_win",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="ew", valence=Valence.POSITIVE, kind=EndingKind.SUCCESS, title="Win"
+            ),
+        )
+    )
+    nodes.append(
+        Node(
+            id="n_fail",
+            body=body,
+            is_ending=True,
+            ending=Ending(
+                id="ef", valence=Valence.NEGATIVE, kind=EndingKind.SETBACK, title="Fail"
+            ),
+        )
+    )
+    story = Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=AgeBand.BAND_8_11,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=2,
+            topology=Topology.GAUNTLET,
+            length=Length.SHORT,
+        ),
+    )
+    report = validate_policy(story)
+    assert not any(f.rule_id == "PL-20" for f in report.errors)

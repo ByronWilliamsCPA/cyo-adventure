@@ -6,9 +6,11 @@ from cyo_adventure.validator.band_profile import (
     MVP_MAX_NODES,
     MVP_MIN_NODES,
     BandProfile,
+    min_complete_floor,
     mvp_node_budget,
     production_cell_budget,
     profile_for,
+    words_per_node_profile,
 )
 
 
@@ -78,3 +80,33 @@ def test_production_cell_budget_off_matrix_is_none():
     assert production_cell_budget("3-5", "long", "prose") is None
     assert production_cell_budget("8-11", "short", "gamebook") is None
     assert production_cell_budget("13-16", "short", "prose") is None
+
+
+def test_words_per_node_profile_matches_adr():
+    """The words-per-node envelopes match the ADR-011 section 3 table."""
+    assert words_per_node_profile("8-11", "prose") == (100, 70, 135, 220)
+    assert words_per_node_profile("16+", "gamebook") == (80, 55, 110, 175)
+
+
+def test_words_per_node_profile_young_gamebook_falls_back_to_prose():
+    """A young-band gamebook has no cell; the wall guard uses the prose envelope."""
+    assert words_per_node_profile("8-11", "gamebook") == words_per_node_profile(
+        "8-11", "prose"
+    )
+
+
+def test_words_per_node_profile_unknown_band_is_none():
+    """An unknown band has no words-per-node envelope."""
+    assert words_per_node_profile("99-100", "prose") is None
+
+
+def test_min_complete_floor_matches_adr():
+    """The fastest-finish arc floors match the ADR-011 master-cell table."""
+    assert min_complete_floor("8-11", "short", "prose") == 9
+    assert min_complete_floor("16+", "long", "gamebook") == 37
+
+
+def test_min_complete_floor_off_matrix_is_none():
+    """Off-matrix combinations have no arc floor."""
+    assert min_complete_floor("3-5", "long", "prose") is None
+    assert min_complete_floor("8-11", "short", "gamebook") is None
