@@ -374,10 +374,13 @@ class GenerationJob(Base):
     # #CRITICAL: privacy: raw multi-stage LLM outputs; purge per ADR-007 after
     # 30 days or when the linked storybook version reaches "published" status.
     # #VERIFY: Phase 5 scheduled pg_cron job nulls this column (ADR-009 moved the
-    # ADR-007 retention purge from RQ to pg_cron); guardian/child API
-    # endpoints must never expose report content (expose job status only). There
-    # is no separate stage_log column today; persisting a redacted stage log for
-    # post-purge auditability is a Phase 5 task (see ADR-007).
+    # ADR-007 retention purge from RQ to pg_cron); GET /generation-jobs/{id}
+    # (api/generation.py::get_generation_job) returns this field to the job's
+    # own family guardian, family-scoped and guardian-gated, not admin-only;
+    # only the list endpoint (GenerationJobListView) excludes it, and it is
+    # never exposed to a child principal. There is no separate stage_log
+    # column today; persisting a redacted stage log for post-purge
+    # auditability is a Phase 5 task (see ADR-007).
     # #ASSUME: data integrity: ``report`` schema is determined by
     # GenerationOutcome at the application layer; no DB-level constraint
     # enforces its shape.

@@ -182,7 +182,7 @@ Generation ships in **R1 (the internal release)**. The kids' first version alrea
 writes its own LLM-generated stories, gated by validation and parent approval. This
 elevates two items to Phase-0 hard blockers, because the first external LLM call ships in
 R1: the provider data-handling decision and the privacy controls (no real child PII in
-prompts; admin-only short-lived raw outputs).
+prompts; guardian-visible, family-scoped, short-lived raw outputs).
 
 ## Assumptions to Validate
 

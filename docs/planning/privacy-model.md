@@ -45,7 +45,9 @@ child. The following are classified as child-linked:
 - `completion` rows: `ending_id`, `found_at`, keyed by `child_profile_id`.
 - Raw LLM generation outputs stored in `generation_job.report` (a Postgres JSONB
   column), if they were generated in a context where a concept brief containing profile
-  attributes was used. These are admin-only and kept off guardian and child endpoints.
+  attributes was used. `GET /generation-jobs/{id}` exposes this field to the job's own
+  family guardian (family-scoped, guardian-gated, not admin-only); the list endpoint and
+  every child-facing endpoint exclude it.
 
 The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):
@@ -83,7 +85,8 @@ contain free-text fields with real names before dispatching to the provider.
 ## Raw LLM Outputs and Prompt Text
 
 Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only and short-lived:
+text sent to the provider are guardian-visible (family-scoped, via the single-job GET
+endpoint only) and short-lived:
 
 - **Prompt text**: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
@@ -99,12 +102,13 @@ text sent to the provider are admin-only and short-lived:
   #            carry child-derived detail; it must be purged and never leaked.
   # #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever
   #          first) is implemented and scheduled before the public tier goes live;
-  #          confirm report stays off guardian/child endpoints.
+  #          confirm report stays off child-facing endpoints and the job-list endpoint.
   ```
 
-- **Access control**: `generation_job.report` is admin-only. It is kept off the
-  guardian and child endpoints entirely (those return job status only, never the report
-  body) and is not accessible via the story-serving path.
+- **Access control**: `generation_job.report` is guardian-visible via
+  `GET /generation-jobs/{id}` (family-scoped, guardian-gated), not admin-only. It is
+  excluded from the list endpoint (job status only) and every child-facing endpoint, and
+  is not accessible via the story-serving path.
 
 Moderation reports (the per-node flags and the moderation API response) persist with the
 `storybook_version` record for audit. They contain node IDs and flag categories, not raw
