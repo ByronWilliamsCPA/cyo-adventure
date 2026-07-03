@@ -22,7 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   now require an assignment row for the child's profile, so a child sees only
   stories explicitly assigned to them. An Alembic migration backfills one row per
   (child, published story) per family, preserving prior visibility. Frontend adds
-  a guardian `AssignChildrenDialog` multi-select and `makeAssignApi` adapter.
+  a guardian `AssignChildrenDialog` multi-select and `makeAssignApi` adapter,
+  wired into the intake page's approved-request rows via an "Assign more" action.
 
 ### Security
 - Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the

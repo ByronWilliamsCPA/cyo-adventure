@@ -43,6 +43,12 @@ def upgrade() -> None:
     # Backfill: preserve exactly today's visibility (every child in a family sees
     # every published story in that family). assigned_by NULL marks the system
     # backfill. Books published AFTER this migration require an explicit assign.
+    # #CRITICAL: data integrity: this INSERT ... SELECT is the sole guarantee that
+    # no currently-visible story disappears on deploy; the family-scoped JOIN plus
+    # the published filter must exactly reproduce prior visibility, never widening
+    # it across families nor narrowing it below the pre-assignment gate.
+    # #VERIFY: test_assignment_backfill_data_integrity asserts exact-set equality
+    # across two families (no cross-family pair, no draft row).
     op.execute(
         sa.text(
             "INSERT INTO storybook_assignment "
@@ -56,8 +62,5 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Drop the assignment table and its index."""
-    op.drop_index(
-        "ix_storybook_assignment_storybook_id", table_name="storybook_assignment"
-    )
+    """Drop the assignment table (Postgres drops its dependent index with it)."""
     op.drop_table("storybook_assignment")

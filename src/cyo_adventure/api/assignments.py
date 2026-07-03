@@ -7,9 +7,10 @@ child token is rejected. It is add-only and idempotent (re-assigning an already
 assigned profile is a no-op). There is no unassign endpoint: removing access has
 reading-state and offline-cache implications deferred past the first release.
 
-Error ordering follows the repo convention (ratings.py:60-68 and
-library.py:346-356): an unknown storybook id is 404, while an EXISTING storybook
-owned by another family is 403 via ``authorize_family``.
+Error ordering follows the repo convention in ``ratings.py`` and
+``library.py`` (``get_storybook_version``): an unknown storybook id is 404,
+while an EXISTING storybook owned by another family is 403 via
+``authorize_family``.
 """
 
 from __future__ import annotations
@@ -68,9 +69,9 @@ async def _require_guardian_family_book(ctx: Context, storybook_id: str) -> Stor
     """
     # #CRITICAL: security: guardian-only; a child token cannot read or widen
     # assignments, and an admin (a cross-family safety reviewer, not a family
-    # assigner) is rejected here too. Error ordering matches ratings.py:60-68 and
-    # library.py:346-356: 404-if-missing precedes authorize_family, so an
-    # unknown id is 404 and an existing cross-family book is 403.
+    # assigner) is rejected here too. Error ordering matches ratings.py and
+    # library.py (get_storybook_version): 404-if-missing precedes
+    # authorize_family, so an unknown id is 404 and a cross-family book is 403.
     # #VERIFY: is_guardian gate -> 403; None -> 404; authorize_family -> 403.
     if not ctx.principal.is_guardian:
         msg = "only a guardian may manage assignments"
