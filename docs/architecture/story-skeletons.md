@@ -38,6 +38,7 @@ by narrative role.
 | The Clocktower Cipher | 10-13 | 18 | 1 | branch_and_bottleneck | 25 | 3/1/4 | [svg](diagrams/skeletons/10-13/the-clocktower-cipher.svg) |
 | The Sunken Signal | 16+ | 30 | 2 | branch_and_bottleneck | 32 | 1/1/12 | [svg](diagrams/skeletons/16+/the-sunken-signal.svg) |
 | The Lost Mitten | 3-5 | 5 | 1 | loop_and_grow | 11 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-lost-mitten.svg) |
+| The Cave of Echoes | 8-11 | 8 | 1 | time_cave | 64 | 10/0/6 | [svg](diagrams/skeletons/8-11/the-cave-of-echoes.svg) |
 
 ### Band coverage
 
@@ -45,7 +46,7 @@ by narrative role.
 | --- | --- |
 | 3-5 | yes |
 | 5-8 | none yet |
-| 8-11 | none yet |
+| 8-11 | yes |
 | 10-13 | yes |
 | 13-16 | none yet |
 | 16+ | yes |

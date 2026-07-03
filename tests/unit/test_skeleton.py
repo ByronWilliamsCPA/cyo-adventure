@@ -85,3 +85,33 @@ def test_seed_skeletons_are_mvp_non_production(rel: str) -> None:
 def test_is_production_eligible_missing_metadata_defaults_true() -> None:
     """A malformed skeleton with no metadata is treated as production-eligible."""
     assert is_production_eligible({}) is True
+
+
+# Production-eligible (scale-classified) skeletons authored against ADR-011.
+# Each declares ``length`` + ``narrative_style`` + ``production_eligible: true``,
+# which arms the PL-17/19/20/21 story-scale rules, so passing the full gate here
+# pins the seed as launch-ready in CI. Extend this list as new cells are seeded.
+_PRODUCTION_SKELETONS = [
+    "skeletons/8-11/the-cave-of-echoes.json",
+]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+def test_production_skeletons_pass_full_gate(rel: str) -> None:
+    """Each production skeleton passes the full gate (blocked is False)."""
+    import json
+
+    from cyo_adventure.validator.gate import run_gate
+
+    data = json.loads(Path(rel).read_text(encoding="utf-8"))
+    result = run_gate(data)
+    assert not result.blocked, [f.message for f in result.report.errors]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("rel", _PRODUCTION_SKELETONS)
+def test_production_skeletons_are_production_eligible(rel: str) -> None:
+    """Each production skeleton is scale-classified as production-eligible."""
+    data = load_skeleton(Path(rel))
+    assert is_production_eligible(data) is True
