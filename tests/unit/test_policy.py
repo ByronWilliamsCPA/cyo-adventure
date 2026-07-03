@@ -463,6 +463,39 @@ def test_pl17_length_less_story_keeps_band_floor_only():
     assert not any(f.rule_id == "PL-17" for f in report.errors)
 
 
+# --- PL-21 off-matrix cell rejection ------------------------------------------
+
+
+def test_pl21_blocks_off_matrix_length():
+    """A 3-5 'long' story is off-matrix (young bands cap at Medium) and blocks."""
+    report = validate_policy(
+        _linear_scale_story(middles=5, age_band=AgeBand.BAND_3_5, length=Length.LONG)
+    )
+    assert any(f.rule_id == "PL-21" for f in report.errors)
+
+
+def test_pl21_blocks_gamebook_for_young_band():
+    """An 8-11 gamebook is off-matrix (gamebook is 13-16/16+ only) and blocks."""
+    report = validate_policy(
+        _linear_scale_story(
+            middles=5, length=Length.MEDIUM, narrative_style=NarrativeStyle.GAMEBOOK
+        )
+    )
+    assert any(f.rule_id == "PL-21" for f in report.errors)
+
+
+def test_pl21_allows_offered_cell():
+    """An offered cell (8-11 short prose) raises no PL-21 finding."""
+    report = validate_policy(_linear_scale_story(middles=7, length=Length.SHORT))
+    assert not any(f.rule_id == "PL-21" for f in report.errors)
+
+
+def test_pl21_not_checked_without_length():
+    """A length-less story is not scale-classified, so PL-21 does not apply."""
+    report = validate_policy(_linear_scale_story(middles=5, length=None))
+    assert not any(f.rule_id == "PL-21" for f in report.errors)
+
+
 def test_pl20_skipped_without_length():
     """A non-scale story (no length) has no arc floor."""
     report = validate_policy(_linear_scale_story(middles=0, length=None))

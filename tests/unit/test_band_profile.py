@@ -7,8 +7,10 @@ from cyo_adventure.validator.band_profile import (
     MVP_MIN_NODES,
     BandProfile,
     breadth_scaled_floors,
+    is_offered_cell,
     min_complete_floor,
     mvp_node_budget,
+    offered_cells,
     production_cell_budget,
     profile_for,
     words_per_node_profile,
@@ -128,3 +130,23 @@ def test_breadth_scaled_floors_gamebook_endings_higher():
 def test_breadth_scaled_floors_unknown_style_uses_prose():
     """An unknown style falls back to the prose ending fraction."""
     assert breadth_scaled_floors(100, "mystery") == breadth_scaled_floors(100, "prose")
+
+
+def test_offered_cells_matches_production_cells():
+    """The coverage grid enumerates exactly the production-cell keys."""
+    cells = offered_cells()
+    assert ("8-11", "short", "prose") in cells
+    assert ("16+", "long", "gamebook") in cells
+    # Off-matrix combinations are absent from the grid.
+    assert ("3-5", "long", "prose") not in cells
+    assert ("8-11", "short", "gamebook") not in cells
+    assert len(cells) == 18
+
+
+def test_is_offered_cell():
+    """is_offered_cell agrees with the coverage grid membership."""
+    assert is_offered_cell("8-11", "medium", "prose")
+    assert is_offered_cell("13-16", "long", "gamebook")
+    assert not is_offered_cell("3-5", "long", "prose")
+    assert not is_offered_cell("8-11", "short", "gamebook")
+    assert not is_offered_cell("13-16", "short", "prose")

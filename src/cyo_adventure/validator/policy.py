@@ -1,4 +1,4 @@
-"""Age-policy gate layer (rules PL-15..PL-20).
+"""Age-policy gate layer (rules PL-15..PL-21).
 
 Runs after Layer 1 passes and the Storybook parses, on the typed model plus the
 choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mean
@@ -7,7 +7,7 @@ and story-scale judgments into deterministic invariants.
 
 Rule sources: docs/superpowers/specs/2026-06-24-typed-story-metadata-design.md
 (PL-15..PL-18); docs/planning/adr/adr-011-story-scale-framework.md (PL-19
-words-per-node and PL-20 fastest-finish arc floor).
+words-per-node, PL-20 fastest-finish arc floor, and PL-21 off-matrix rejection).
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ from cyo_adventure.storybook.models import EndingKind, Storybook, level_rank
 from cyo_adventure.validator.band_profile import (
     BandProfile,
     breadth_scaled_floors,
+    is_offered_cell,
     min_complete_floor,
     profile_for,
     words_per_node_profile,
@@ -71,6 +72,7 @@ def validate_policy(story: Storybook) -> ValidationReport:
     _check_topology(story, report)
     _check_words_per_node(story, report)
     _check_min_to_complete(story, report)
+    _check_off_matrix_cell(story, report)
     return report
 
 
@@ -338,6 +340,37 @@ def _check_min_to_complete(story: Storybook, report: ValidationReport) -> None:
                     f"below the '{story.metadata.age_band.value}' {length.value} "
                     f"{story.metadata.narrative_style.value} floor {floor} in story "
                     f"'{story.id}'"
+                ),
+            )
+        )
+
+
+def _check_off_matrix_cell(story: Storybook, report: ValidationReport) -> None:
+    """PL-21: a scale-classified story must declare an offered scale cell.
+
+    A story that declares a ``length`` places itself on the ADR-011
+    ``(band, length, style)`` matrix. If that combination is not an offered cell
+    (for example a ``3-5`` ``long``, or an ``8-11`` ``gamebook``), the L1-7 budget
+    silently falls back to the band-level budget; this rule surfaces that as an
+    ERROR instead, so a mis-declared scale is caught rather than quietly
+    downgraded. A story with no ``length`` (or an MVP story) is not
+    scale-classified and is not checked. See ADR-011 (the story-scale matrix).
+    """
+    length = story.metadata.length
+    if length is None or not story.metadata.production_eligible:
+        return
+    band = story.metadata.age_band.value
+    style = story.metadata.narrative_style.value
+    if not is_offered_cell(band, length.value, style):
+        report.add(
+            ValidationFinding(
+                rule_id="PL-21",
+                severity=Severity.ERROR,
+                story_id=story.id,
+                message=(
+                    f"PL-21 scale: ({band}, {length.value}, {style}) is not an "
+                    f"offered story-scale cell in story '{story.id}'; declare an "
+                    f"offered cell or remove the length"
                 ),
             )
         )

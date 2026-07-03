@@ -175,6 +175,36 @@ _PRODUCTION_CELLS: dict[tuple[str, str, str], tuple[int, int, int]] = {
 }
 
 
+def offered_cells() -> frozenset[tuple[str, str, str]]:
+    """Return every ``(age_band, length, narrative_style)`` cell the matrix offers.
+
+    This is the coverage-grid source: the full set of production story-scale
+    cells ADR-011 defines. A tool can cross it with the authored skeleton library
+    to report which cells are covered, and the PL-21 policy rule uses it to reject
+    a story that declares an off-matrix combination.
+
+    Returns:
+        The frozen set of offered cell keys.
+    """
+    return frozenset(_PRODUCTION_CELLS)
+
+
+def is_offered_cell(age_band: str, length: str, narrative_style: str) -> bool:
+    """Return whether ``(band, length, style)`` is an offered production cell.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+        length: The story-scale length tier (``"short"``/``"medium"``/``"long"``).
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        ``True`` when the combination is an offered cell (for example ``8-11``
+        ``short`` ``prose``); ``False`` for an off-matrix combination (for example
+        a ``3-5`` ``long`` or an ``8-11`` ``gamebook``).
+    """
+    return (age_band, length, narrative_style) in _PRODUCTION_CELLS
+
+
 def production_cell_budget(
     age_band: str, length: str, narrative_style: str
 ) -> tuple[int, int, int] | None:
