@@ -94,6 +94,7 @@ def test_is_production_eligible_missing_metadata_defaults_true() -> None:
 _PRODUCTION_SKELETONS = [
     "skeletons/5-8/the-lantern-festival.json",
     "skeletons/8-11/the-cave-of-echoes.json",
+    "skeletons/10-13/the-midnight-museum.json",
 ]
 
 
