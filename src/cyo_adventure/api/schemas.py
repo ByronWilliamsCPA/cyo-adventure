@@ -164,6 +164,34 @@ class GenerationJobResponse(BaseModel):
     error: str | None = None
 
 
+class GenerationJobListItem(BaseModel):
+    """One row in the guardian's "My Requests" list.
+
+    Deliberately omits the raw ``report`` column (ADR-007): guardian-facing
+    endpoints expose job status and the linked storybook only, never the
+    multi-stage model output. ``storybook_status`` is the linked storybook's
+    current lifecycle state (or ``None`` when no storybook row exists yet), so
+    the UI can tell an awaiting-review story from a published one.
+    """
+
+    id: str
+    status: JobStatusLiteral
+    storybook_id: str | None = None
+    storybook_status: str | None = None
+    version: int | None = None
+    error: str | None = None
+    title: str | None = None
+    premise_snippet: str = ""
+    age_band: str | None = None
+    created_at: datetime
+
+
+class GenerationJobListView(BaseModel):
+    """The generation jobs visible to the calling guardian's family."""
+
+    jobs: list[GenerationJobListItem]
+
+
 class ValidateResponse(BaseModel):
     """Response returned by the re-validate endpoint."""
 

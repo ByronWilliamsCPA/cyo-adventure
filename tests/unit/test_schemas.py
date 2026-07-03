@@ -30,3 +30,31 @@ def test_job_status_literal_matches_db_constraint() -> None:
         "JobStatusLiteral has drifted from the ck_generation_job_status CHECK "
         f"constraint: literal={literal_values!r} db={db_values!r}"
     )
+
+
+def test_generation_job_list_item_has_no_report_field() -> None:
+    """The list item must not carry the raw report column (ADR-007 safety)."""
+    from cyo_adventure.api.schemas import GenerationJobListItem
+
+    assert "report" not in GenerationJobListItem.model_fields
+
+
+def test_generation_job_list_item_round_trips() -> None:
+    """A minimal list item serializes with the label fields and no report."""
+    from cyo_adventure.api.schemas import GenerationJobListItem
+
+    item = GenerationJobListItem(
+        id="j1",
+        status="queued",
+        storybook_id=None,
+        storybook_status=None,
+        version=None,
+        error=None,
+        title="The Cave",
+        premise_snippet="A hero enters a cave.",
+        age_band="8-11",
+        created_at="2026-07-02T00:00:00Z",
+    )
+    dumped = item.model_dump()
+    assert "report" not in dumped
+    assert dumped["age_band"] == "8-11"
