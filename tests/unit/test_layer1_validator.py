@@ -453,3 +453,51 @@ def test_mvp_tier_below_envelope_warns_not_errors() -> None:
         and "node_count" in f.message
         for f in report.findings
     )
+
+
+@pytest.mark.unit
+def test_production_length_cell_lifts_the_band_ceiling() -> None:
+    """The same 80-node 8-11 story errors as band-scale but passes as 'short'.
+
+    Band-level 8-11 caps at 30 nodes; the ADR-011 'short' production cell allows
+    60-100, so declaring a length raises the node ceiling. (The linear fixture
+    also trips branch_depth, which ``_node_count_errors`` deliberately excludes.)
+    """
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(79)]
+    nodes = [*chain, _ending("n79")]  # 80 nodes
+    band_meta = _meta(age_band="8-11", tier=1)
+    cell_meta = {**band_meta, "length": "short", "narrative_style": "prose"}
+
+    band_scale = validate_layer1(_story(nodes, meta=band_meta, start="n0"))
+    cell_scale = validate_layer1(_story(nodes, meta=cell_meta, start="n0"))
+
+    assert _node_count_errors(band_scale)  # 80 > band 8-11 max 30
+    assert _node_count_errors(cell_scale) == []  # 80 within the 60-100 cell
+
+
+@pytest.mark.unit
+def test_production_cell_ceiling_still_blocks_above_max() -> None:
+    """A production story above its cell's max node count trips L1-7."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(100)]
+    nodes = [*chain, _ending("n100")]  # 101 nodes
+    cell_meta = {
+        **_meta(age_band="8-11", tier=1),
+        "length": "short",
+        "narrative_style": "prose",
+    }
+    report = validate_layer1(_story(nodes, meta=cell_meta, start="n0"))
+    assert _node_count_errors(report)  # 101 > 100 cell max
+
+
+@pytest.mark.unit
+def test_off_matrix_length_falls_back_to_band_budget() -> None:
+    """A length with no matching cell (3-5 'long') uses the band budget."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(30)]
+    nodes = [*chain, _ending("n30")]  # 31 nodes, above 3-5 band max 20
+    meta = {
+        **_meta(age_band="3-5", tier=1, ending_count=1),
+        "length": "long",
+        "narrative_style": "prose",
+    }
+    report = validate_layer1(_story(nodes, meta=meta, start="n0"))
+    assert _node_count_errors(report)  # no 3-5 'long' cell -> band max 20 applies

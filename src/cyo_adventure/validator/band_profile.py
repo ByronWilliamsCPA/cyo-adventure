@@ -133,3 +133,65 @@ def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
     if profile is None:
         return None
     return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth)
+
+
+# Genre-faithful production node envelopes, keyed on the ADR-011 story-scale
+# matrix cell ``(age_band, length, narrative_style)``. Each value is
+# ``(min_nodes, max_nodes, max_depth)``:
+#   - min/max come from the ADR-011 master-cell "total nodes" column (the derived
+#     world-size envelope); below-min is a WARNING and above-max is an ERROR, per
+#     the L1-7 semantics.
+#   - max_depth is a product-tuned guardrail (~2.5x the cell's fastest-finish
+#     floor, rounded), generous enough not to reject a legitimate genre structure
+#     while still catching a runaway near-linear chain. It is NOT from research;
+#     treat it as tunable, like the ADR's product-defined 3-5/16+ budgets.
+# Only the cells offered by ADR-011 exist: young bands (3-5, 5-8) cap at Medium;
+# 13-16/16+ start at Medium and add the gamebook style; other bands are prose.
+# A story whose declared cell is absent here falls back to the band-level budget.
+# #ASSUME: data-integrity: this table is the single source for per-cell production
+# budgets; the Stage A generation prompt does NOT read it yet (generation stays on
+# the band-level budget until a later slice teaches it to select a cell).
+# #VERIFY: test_band_profile.py::test_production_cell_budget_matches_adr_envelopes.
+_PRODUCTION_CELLS: dict[tuple[str, str, str], tuple[int, int, int]] = {
+    ("3-5", "short", "prose"): (10, 23, 15),
+    ("3-5", "medium", "prose"): (23, 45, 18),
+    ("5-8", "short", "prose"): (29, 50, 18),
+    ("5-8", "medium", "prose"): (50, 86, 23),
+    ("8-11", "short", "prose"): (60, 100, 23),
+    ("8-11", "medium", "prose"): (100, 160, 30),
+    ("8-11", "long", "prose"): (160, 240, 35),
+    ("10-13", "short", "prose"): (90, 140, 28),
+    ("10-13", "medium", "prose"): (140, 220, 35),
+    ("10-13", "long", "prose"): (220, 340, 43),
+    ("13-16", "medium", "prose"): (115, 170, 38),
+    ("13-16", "medium", "gamebook"): (245, 370, 60),
+    ("13-16", "long", "prose"): (170, 270, 50),
+    ("13-16", "long", "gamebook"): (370, 585, 80),
+    ("16+", "medium", "prose"): (135, 215, 45),
+    ("16+", "medium", "gamebook"): (300, 475, 73),
+    ("16+", "long", "prose"): (215, 345, 58),
+    ("16+", "long", "gamebook"): (475, 750, 93),
+}
+
+
+def production_cell_budget(
+    age_band: str, length: str, narrative_style: str
+) -> tuple[int, int, int] | None:
+    """Return the production ``(min_nodes, max_nodes, max_depth)`` for a cell.
+
+    Looks up the genre-faithful node envelope for a scale-classified production
+    story on the ADR-011 ``(band, length, style)`` matrix.
+
+    Args:
+        age_band: The story age band value (for example ``"8-11"``).
+        length: The story-scale length tier (``"short"``, ``"medium"``,
+            ``"long"``).
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        The ``(min_nodes, max_nodes, max_depth)`` triple for the cell, or
+        ``None`` when the combination is not an offered cell (for example a
+        ``3-5`` ``long`` story, or an ``8-11`` ``gamebook``), in which case the
+        caller falls back to the band-level budget.
+    """
+    return _PRODUCTION_CELLS.get((age_band, length, narrative_style))

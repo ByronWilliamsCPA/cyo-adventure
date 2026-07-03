@@ -7,6 +7,7 @@ from cyo_adventure.validator.band_profile import (
     MVP_MIN_NODES,
     BandProfile,
     mvp_node_budget,
+    production_cell_budget,
     profile_for,
 )
 
@@ -63,3 +64,17 @@ def test_mvp_node_budget_is_band_independent_with_band_depth():
 def test_mvp_node_budget_unknown_band_is_none():
     """An unknown band has no MVP budget (keeps the depth cap band-anchored)."""
     assert mvp_node_budget("99-100") is None
+
+
+def test_production_cell_budget_matches_adr_envelopes():
+    """The per-cell node envelopes match the ADR-011 master-cell table."""
+    assert production_cell_budget("8-11", "short", "prose") == (60, 100, 23)
+    assert production_cell_budget("10-13", "long", "prose") == (220, 340, 43)
+    assert production_cell_budget("16+", "long", "gamebook") == (475, 750, 93)
+
+
+def test_production_cell_budget_off_matrix_is_none():
+    """Off-matrix combinations have no cell and fall back to the band budget."""
+    assert production_cell_budget("3-5", "long", "prose") is None
+    assert production_cell_budget("8-11", "short", "gamebook") is None
+    assert production_cell_budget("13-16", "short", "prose") is None

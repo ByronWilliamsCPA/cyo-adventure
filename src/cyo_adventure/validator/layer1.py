@@ -28,7 +28,11 @@ from cyo_adventure.storybook.condition import (
     validate_condition,
 )
 from cyo_adventure.storybook.schema_export import build_schema
-from cyo_adventure.validator.band_profile import mvp_node_budget, profile_for
+from cyo_adventure.validator.band_profile import (
+    mvp_node_budget,
+    production_cell_budget,
+    profile_for,
+)
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -762,6 +766,37 @@ def _is_nontrivial_scc(graph: nx.DiGraph[str], component: set[str]) -> bool:
     return graph.has_edge(only, only)
 
 
+def _production_budget(
+    metadata: dict[str, object], band: str, scale: Scale
+) -> tuple[int, int, int] | None:
+    """Return the node budget for a production (non-MVP) story.
+
+    A story that declares a ``length`` places itself on the ADR-011
+    ``(band, length, style)`` scale matrix and is budgeted against that cell's
+    genre-faithful envelope. A story with no ``length`` (or an off-matrix
+    combination such as a ``3-5`` ``long``) is not scale-classified and keeps
+    the band-level budget, so the existing corpus and the generation prompt are
+    unaffected.
+
+    Args:
+        metadata: The raw story metadata mapping.
+        band: The story age band value (already confirmed to be a string).
+        scale: The band-level story-size profile used for the fallback budget.
+
+    Returns:
+        The ``(min_nodes, max_nodes, max_depth)`` triple, or ``None`` when the
+        band has no configured budget at all.
+    """
+    length = metadata.get("length")
+    if isinstance(length, str):
+        raw_style = metadata.get("narrative_style")
+        style = raw_style if isinstance(raw_style, str) else "prose"
+        cell = production_cell_budget(band, length, style)
+        if cell is not None:
+            return cell
+    return band_budget(band, scale)
+
+
 def _check_budget(
     story: _Story,
     graph: nx.DiGraph[str],
@@ -777,10 +812,12 @@ def _check_budget(
     # Pydantic default of True. See ADR-011, the MVP/Test tier.
     # #VERIFY: test_layer1_validator.py::test_mvp_tier_budget_overrides_band_ceiling.
     is_mvp = story.metadata.get("production_eligible") is False
-    if isinstance(band, str) and is_mvp:
+    if not isinstance(band, str):
+        budget = None
+    elif is_mvp:
         budget = mvp_node_budget(band)
     else:
-        budget = band_budget(band, scale) if isinstance(band, str) else None
+        budget = _production_budget(story.metadata, band, scale)
     if budget is None:
         if scale == "compact" and isinstance(band, str):
             report.add(

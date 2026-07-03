@@ -188,6 +188,25 @@
       "type": "string"
     },
     "JsonValue": {},
+    "Length": {
+      "description": "The story-scale (length) tier: a total-word budget, world size.\n\nProduction stories place themselves on the ``(band, length, style)`` matrix\nfrom ADR-011; the node-count envelope is derived per cell. Young bands cap\nat ``MEDIUM``; epic scale is a series, not a fourth tier. A story that\ndeclares no length is not scale-classified and keeps the band-level budget.",
+      "enum": [
+        "short",
+        "medium",
+        "long"
+      ],
+      "title": "Length",
+      "type": "string"
+    },
+    "NarrativeStyle": {
+      "description": "Prose vs gamebook chunking of one word budget (ADR-011).\n\nMeaningful only for ``13-16`` and ``16+``; lower bands are implicitly\n``PROSE``. Gamebook packs the same total words into more, shorter nodes.",
+      "enum": [
+        "prose",
+        "gamebook"
+      ],
+      "title": "NarrativeStyle",
+      "type": "string"
+    },
     "Node": {
       "additionalProperties": false,
       "description": "A passage: prose plus either choices (branch) or an ending (terminal).",
@@ -310,6 +329,21 @@
           "minimum": 1,
           "title": "Estimated Minutes",
           "type": "integer"
+        },
+        "length": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Length"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "narrative_style": {
+          "$ref": "#/$defs/NarrativeStyle",
+          "default": "prose"
         },
         "production_eligible": {
           "default": true,
