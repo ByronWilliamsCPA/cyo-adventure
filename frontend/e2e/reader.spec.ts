@@ -67,3 +67,36 @@ test('state-gated choice is hidden until its condition holds (US-102)', async ({
   await expect(page.getByTestId('choice-c_dark_passage')).toHaveCount(0)
   await expect(page.getByTestId('choice-c_bright_tunnel')).toBeVisible()
 })
+
+test('a malformed story link shows an exit, not a dead end', async ({ page }) => {
+  await page.goto('/read/child-a/s_lantern_cave/abc')
+  await expect(page.getByText('That story link looks wrong')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Back to my books' })).toBeVisible()
+})
+
+test('a missing story shows not-found, not the offline copy', async ({ page }) => {
+  // Override the beforeEach storybooks route with a 404 (last-registered route wins).
+  await page.route('**/api/v1/storybooks/**', (route) =>
+    route.fulfill({ status: 404, json: { error: 'not found' } })
+  )
+  await page.goto('/read/child-a/does_not_exist/1')
+  await expect(page.getByText("We couldn't find that story")).toBeVisible()
+  await expect(page.getByText(/save space/)).toHaveCount(0)
+})
+
+test('the reader column has no horizontal scroll at 390px', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth > document.documentElement.clientWidth
+  )
+  expect(overflow).toBe(false)
+})
+
+test('choice buttons meet the 44px tap target', async ({ page }) => {
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  const box = await page.getByTestId('choice-c_take_lantern').boundingBox()
+  expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
+})
