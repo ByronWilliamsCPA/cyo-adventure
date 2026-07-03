@@ -44,7 +44,7 @@ rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as syst
 ' --- External systems ---
 rectangle "OpenRouter\n[Primary LLM provider]\nMulti-model API gateway" as openrouter #F3E5F5
 rectangle "Ollama\n[Local fallback LLM]\nSelf-hosted, homelab" as ollama #FFEBEE
-rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian sign-in (Apple/Google);\nAdmin is a Supabase identity with is_admin" as supabase_auth #E0F7FA
+rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_auth #E0F7FA
 rectangle "PostgreSQL\n[Operational database]\nMetadata and reading state" as postgres #FFF8E1
 rectangle "Redis + RQ\n[Job queue]\nAsync generation jobs" as redis #E0E0E0
 

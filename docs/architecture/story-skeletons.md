@@ -77,7 +77,7 @@ see template feedback for the doc-correction follow-up.
 | `tier` | int 1-2 | `1`, `2` (tier 1 forbids state variables) |
 | `topology` | closed enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `loop_and_grow`, `open_map`, `sorting_hat` |
 | `length` | closed enum, optional | `short`, `medium`, `long`; the ADR-011 story-scale axis. Young bands (`3-5`, `5-8`) cap at `medium`. Omitted means the story is not scale-classified |
-| `narrative_style` | closed enum | `prose`, `gamebook`; meaningful only for `13-16`/`16+`; every other band is implicitly `prose` |
+| `narrative_style` | closed enum, optional | `prose`, `gamebook`; meaningful only for `13-16`/`16+`; every other band is implicitly `prose` |
 | `production_eligible` | bool | defaults to `true`; `false` marks a non-production MVP/Test-tier skeleton (ADR-011 section 1a) |
 | `valence` | closed enum | `positive`, `neutral`, `negative` |
 | `ending.kind` | closed enum | `success`, `setback`, `death`, `capture`, `completion`, `discovery` |

@@ -41,9 +41,9 @@ Phase 2 delivered the `GenerationProvider` protocol, the staged orchestrator, th
 yield harness, and all backend scaffolding for async generation. Two acceptance criteria were
 deliberately deferred because they require a live LLM provider:
 
-1. Concrete HTTP-client adapters for Claude (primary), Ollama, and OpenRouter (superseded
-   2026-06-22: OpenRouter is primary, Claude is reached through it, and the direct Anthropic
-   SDK adapter is deferred; see the amendment above and the In Scope section below).
+1. Concrete HTTP-client adapters for OpenRouter (primary), Ollama, and Claude via OpenRouter
+   (direct Anthropic SDK adapter deferred; see the amendment above and the In Scope section
+   below).
 2. Measured generation yield of at least 60% over a 20-story sample against a live provider.
 
 This document defines the scope, acceptance criteria, and key constraints for the follow-up

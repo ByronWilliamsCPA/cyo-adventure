@@ -25,7 +25,7 @@ node "Family Devices\n[browsers, tablets]" as devices #E3F2FD {
 }
 
 cloud "OpenRouter API\nhttps://openrouter.ai" as openrouter_cloud #F3E5F5
-cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian sign-in (Apple/Google)" as supabase_cloud #E0F7FA
+cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_cloud #E0F7FA
 
 node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 
