@@ -2558,18 +2558,21 @@ implementation will actually use:</p>
 <h2 id="4-the-five-pages">4. The five pages<a class="headerlink" href="#4-the-five-pages" title="Permanent link">&para;</a></h2>
 <h3 id="41-profile-picker-kid-surface-entry-point">4.1 Profile Picker (kid surface, entry point)<a class="headerlink" href="#41-profile-picker-kid-surface-entry-point" title="Permanent link">&para;</a></h3>
 <p><strong>Confirmed concept</strong>: 2-column avatar grid (not a carousel or full-width rows), where each
-avatar is a <strong>custom child photo</strong> (not just an initial) inside a bordered circle, with a name
-label and a small colored <strong>status pill</strong> beneath it showing the currently-in-progress book title
-(or a "new story ready!" state when a guardian has just approved something). A dashed-outline
-"Add Child" tile completes the grid. A child with no photo yet falls back to a dashed
-placeholder circle rather than blocking the flow.</p>
+avatar is a <strong>preset illustrated avatar</strong> (not just an initial) inside a bordered circle, with a
+name label and a small colored <strong>status pill</strong> beneath it showing the currently-in-progress book
+title (or a "new story ready!" state when a guardian has just approved something). A dashed-outline
+"Add Child" tile completes the grid. A child with no avatar selected falls back to a dashed
+placeholder circle rather than blocking the flow. (See the RESOLVED note below: avatars are
+preset-only, never custom photos.)</p>
 <p><strong>Why this shape</strong>: the grid reads as a familiar "device lock screen" pattern and scales to more
 children by adding rows; the status pill reuses the same visual language as PR #44's
 <code>StatusBadge</code> component, so "new story ready" can share styling with other status states later.</p>
-<p><strong>Open flag, needs a deliberate answer before C4a-2 build</strong>: custom child photos mean this
-screen stores images of children. Decide explicitly whether photos are local-device-only or
-synced to the backend, and confirm a default illustrated avatar is always an acceptable fallback
-(not a required upload); this is a privacy decision, not a default to fall into.</p>
+<p><strong>RESOLVED 2026-07-02</strong>: child avatars are preset-only, permanently; there is no photo upload
+and no custom image path, so this screen never stores images of children. A curated set of
+generated illustrated avatars will replace the interim emoji glyphs (tracked in issue #65);
+the avatar ids in the catalog are the stable contract, so the art swap requires no data
+migration. A child with no avatar selected falls back to a dashed initial circle, exactly as
+wireframed.</p>
 <h3 id="42-library-bookshelf-kid-surface-home-screen">4.2 Library / Bookshelf (kid surface, home screen)<a class="headerlink" href="#42-library-bookshelf-kid-surface-home-screen" title="Permanent link">&para;</a></h3>
 <p><strong>Confirmed concept</strong>: a "Continue Reading" hero card for the most recently active book (cover,
 chapter count, and a <strong>full-width progress bar</strong>), followed by a "More to Explore" shelf grid
@@ -2652,8 +2655,8 @@ generation pipeline a concrete age-band target from the start.</p>
 <tbody>
 <tr>
 <td>Child profile photos: local-only or synced? Is a photo ever required?</td>
-<td>Storing images of children is a privacy decision, not a UI detail (Section 4.1).</td>
-<td>Product decision before C4a-2</td>
+<td>RESOLVED 2026-07-02: preset-only avatars, no photos ever; generated illustrated set replaces emoji glyphs (issue #65). See Section 4.1.</td>
+<td>Closed</td>
 </tr>
 <tr>
 <td>Does "Assign more" need per-child unassign too, or only additive assignment?</td>
@@ -2694,7 +2697,7 @@ per-page implementation plans that reference the corresponding section above.</p
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 10:45:57 UTC">July 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 03:09:24 UTC">July 3, 2026</span>
   </span>
 
     
