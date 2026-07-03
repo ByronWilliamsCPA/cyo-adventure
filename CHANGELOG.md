@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Guardian concept-intake UI (C4a-5): a "Request a story" form that picks a
+  child, captures a premise and tone, builds a full ConceptBrief from
+  band-derived defaults, posts the concept, and enqueues generation. A
+  persistent "My Requests" list polls while a request is generating and shows a
+  status pill (Generating / Waiting for review / Approved / Failed) per request.
+- `GET /api/v1/generation-jobs`: a guardian-only, family-scoped endpoint that
+  lists a family's generation jobs newest-first with the linked storybook
+  status, and never returns the raw generation report (ADR-007).
+
 ### Security
 - Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the
   adversarial safety evaluation: `generation/import_story.py::import_filled_story`
