@@ -8,10 +8,16 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
+import { Button } from '@ds/components/Button'
+import { EmptyState } from '@ds/components/EmptyState'
+
+import { StoryNotFoundError } from '../api/readerApi'
 import { cacheStorybook, getCachedStorybook, getReadingState } from '../offline/db'
-import { type SyncApi, resolveConflict, saveProgress } from '../offline/sync'
+import { OfflineError, type SyncApi, resolveConflict, saveProgress } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
+import { BackToLibrary } from './BackToLibrary'
 import { ConflictDialog } from './ConflictDialog'
 import { DownloadNeeded } from './DownloadNeeded'
 import { Reader } from './Reader'
@@ -25,11 +31,17 @@ export interface ReaderPageProps {
   deviceId?: string
 }
 
-type Phase = 'loading' | 'reading' | 'download-needed'
+type Phase = 'loading' | 'reading' | 'not-found' | 'offline' | 'error'
 
 interface ConflictState {
   local: ReadingState
   server: ReadingState
+}
+
+function loadErrorPhase(error: unknown): Phase {
+  if (error instanceof StoryNotFoundError) return 'not-found'
+  if (error instanceof OfflineError) return 'offline'
+  return 'error'
 }
 
 export function ReaderPage({
@@ -48,6 +60,7 @@ export function ReaderPage({
   // server's state; the machine reads its input only at creation.
   const [readerKey, setReaderKey] = useState(0)
   const revisionRef = useRef(0)
+  const navigate = useNavigate()
 
   const load = useCallback(async () => {
     let cached = await getCachedStorybook(storybookId, version)
@@ -55,8 +68,8 @@ export function ReaderPage({
       try {
         cached = await fetchStory(storybookId, version)
         await cacheStorybook(cached)
-      } catch {
-        setPhase('download-needed')
+      } catch (error) {
+        setPhase(loadErrorPhase(error))
         return
       }
     }
@@ -80,8 +93,8 @@ export function ReaderPage({
         try {
           cached = await fetchStory(storybookId, version)
           await cacheStorybook(cached)
-        } catch {
-          if (!cancelled) setPhase('download-needed')
+        } catch (error) {
+          if (!cancelled) setPhase(loadErrorPhase(error))
           return
         }
       }
@@ -103,13 +116,26 @@ export function ReaderPage({
         ...reading,
         state_revision: revisionRef.current,
       }
-      const result = await saveProgress(api, profileId, storybookId, stamped, {
-        deviceId,
-      })
-      if (result.kind === 'saved') {
-        revisionRef.current = result.row.state_revision
-      } else if (result.kind === 'conflict') {
-        setConflict({ local: stamped, server: result.currentRow })
+      try {
+        const result = await saveProgress(api, profileId, storybookId, stamped, {
+          deviceId,
+        })
+        if (result.kind === 'saved') {
+          revisionRef.current = result.row.state_revision
+        } else if (result.kind === 'conflict') {
+          setConflict({ local: stamped, server: result.currentRow })
+        }
+      } catch (error) {
+        // #CRITICAL: concurrency: a dropped save must not silently lose progress.
+        // #VERIFY: saveProgress already wrote the local IndexedDB cache before the
+        // server call, so reading state is not lost; only this step's server sync
+        // failed. Log with context and continue rather than crash the reader.
+        console.error('[reader] progress save failed', {
+          profileId,
+          storybookId,
+          revision: revisionRef.current,
+          error,
+        })
       }
     },
     [api, profileId, storybookId, deviceId]
@@ -158,13 +184,45 @@ export function ReaderPage({
   if (phase === 'loading') {
     return <p data-testid="loading">Loading...</p>
   }
-  if (phase === 'download-needed' || !story) {
+  if (phase === 'not-found') {
+    return (
+      <EmptyState
+        title="We couldn't find that story"
+        description="This story isn't available. It may have been removed. Let's head back to your books."
+        actions={<BackToLibrary profileId={profileId} />}
+      />
+    )
+  }
+  if (phase === 'error') {
+    return (
+      <EmptyState
+        title="Something went wrong"
+        description="We couldn't open this story right now. Please try again."
+        actions={
+          <>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setPhase('loading')
+                void load()
+              }}
+            >
+              Try again
+            </Button>
+            <BackToLibrary profileId={profileId} />
+          </>
+        }
+      />
+    )
+  }
+  if (phase === 'offline' || !story) {
     return (
       <DownloadNeeded
         onRetry={() => {
           setPhase('loading')
           void load()
         }}
+        onBackToLibrary={() => navigate(`/library/${profileId}`)}
       />
     )
   }

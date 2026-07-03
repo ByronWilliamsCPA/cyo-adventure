@@ -8,8 +8,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { StoryNotFoundError } from '../api/readerApi'
 import { _resetDbHandle, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
+import { OfflineError } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderPage } from './ReaderPage'
 
@@ -30,6 +32,14 @@ function okApi(): SyncApi {
         row: { ..._b, state_revision: ++rev },
       }),
   }
+}
+
+function renderPage(fetchStory: (id: string, v: number) => Promise<Storybook>, api = okApi()) {
+  return render(
+    <MemoryRouter>
+      <ReaderPage api={api} fetchStory={fetchStory} profileId="p1" storybookId="s" version={1} />
+    </MemoryRouter>
+  )
 }
 
 beforeEach(() => {
@@ -91,7 +101,7 @@ describe('ReaderPage', () => {
   })
 
   it('shows download-needed when offline with no cached story', async () => {
-    const fetchStory = vi.fn(() => Promise.reject(new Error('offline')))
+    const fetchStory = vi.fn(() => Promise.reject(new OfflineError()))
     render(
       <MemoryRouter>
         <ReaderPage
@@ -104,6 +114,22 @@ describe('ReaderPage', () => {
       </MemoryRouter>
     )
     await screen.findByTestId('download-needed')
+  })
+
+  it('shows a not-found screen when the story does not exist', async () => {
+    renderPage(() => Promise.reject(new StoryNotFoundError()))
+    expect(await screen.findByText("We couldn't find that story")).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Back to my books' })).toBeTruthy()
+  })
+
+  it('shows the offline screen on a transport failure', async () => {
+    renderPage(() => Promise.reject(new OfflineError()))
+    expect(await screen.findByTestId('download-needed')).toBeTruthy()
+  })
+
+  it('shows a generic error screen on other failures', async () => {
+    renderPage(() => Promise.reject(new Error('boom')))
+    expect(await screen.findByText('Something went wrong')).toBeTruthy()
   })
 
   it('surfaces the conflict dialog on a 409 and resolves it', async () => {
