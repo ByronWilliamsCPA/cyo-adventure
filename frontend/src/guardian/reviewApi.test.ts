@@ -51,10 +51,80 @@ describe('makeReviewApi', () => {
     })
   })
 
-  it('stillProcessing returns an empty list until C4a-5 wires the jobs endpoint', async () => {
+  it('stillProcessing lists queued/running jobs from GET /v1/generation-jobs', async () => {
     const api = fakeAxios()
+    api.get.mockResolvedValue({
+      data: {
+        jobs: [
+          {
+            id: 'j1',
+            status: 'queued',
+            title: 'The Brave Fox',
+            premise_snippet: 'A fox sets out...',
+          },
+          {
+            id: 'j2',
+            status: 'running',
+            title: null,
+            premise_snippet: 'A robot learns to paint...',
+          },
+        ],
+      },
+    })
+    const result = await makeReviewApi(api as never).stillProcessing()
+    expect(api.get).toHaveBeenCalledWith('/v1/generation-jobs')
+    expect(result).toEqual([
+      { job_id: 'j1', title: 'The Brave Fox', status: 'queued' },
+      { job_id: 'j2', title: 'A robot learns to paint...', status: 'running' },
+    ])
+  })
+
+  it('stillProcessing falls back to premise snippet then a generic label for the title', async () => {
+    const api = fakeAxios()
+    api.get.mockResolvedValue({
+      data: {
+        jobs: [
+          { id: 'j1', status: 'running', title: null, premise_snippet: 'snippet only' },
+          // A malformed row missing premise_snippet exercises the final generic
+          // fallback under the nullish-coalescing mapping.
+          { id: 'j2', status: 'queued', title: null },
+        ],
+      },
+    })
+    const result = await makeReviewApi(api as never).stillProcessing()
+    expect(result).toEqual([
+      { job_id: 'j1', title: 'snippet only', status: 'running' },
+      { job_id: 'j2', title: 'Untitled request', status: 'queued' },
+    ])
+  })
+
+  it('stillProcessing excludes needs_review, passed, and failed jobs', async () => {
+    const api = fakeAxios()
+    api.get.mockResolvedValue({
+      data: {
+        jobs: [
+          { id: 'j1', status: 'queued', title: 'keep me', premise_snippet: 'p' },
+          { id: 'j2', status: 'needs_review', title: 'drop', premise_snippet: 'p' },
+          { id: 'j3', status: 'passed', title: 'drop', premise_snippet: 'p' },
+          { id: 'j4', status: 'failed', title: 'drop', premise_snippet: 'p' },
+        ],
+      },
+    })
+    const result = await makeReviewApi(api as never).stillProcessing()
+    expect(result).toEqual([{ job_id: 'j1', title: 'keep me', status: 'queued' }])
+  })
+
+  it('stillProcessing resolves to [] on a 403 so it never sinks the console load', async () => {
+    const api = fakeAxios()
+    api.get.mockRejectedValue({ response: { status: 403 } })
     const result = await makeReviewApi(api as never).stillProcessing()
     expect(result).toEqual([])
-    expect(api.get).not.toHaveBeenCalled()
+  })
+
+  it('stillProcessing resolves to [] on a generic error rather than throwing', async () => {
+    const api = fakeAxios()
+    api.get.mockRejectedValue(new Error('network down'))
+    const result = await makeReviewApi(api as never).stillProcessing()
+    expect(result).toEqual([])
   })
 })

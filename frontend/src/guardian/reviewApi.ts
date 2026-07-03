@@ -70,13 +70,26 @@ export interface SentBackResult {
 }
 
 /**
- * Shape of a "Still processing" row. The generation-jobs LIST endpoint is
- * C4a-5's (a parallel branch); until it merges stillProcessing() returns [].
+ * Shape of a "Still processing" row, mapped from a C4a-5 generation-job that is
+ * genuinely still generating (queued or running).
  */
 export interface StillProcessingItem {
   job_id: string
   title: string
   status: string
+}
+
+/**
+ * Minimal view of a C4a-5 generation-job row consumed by stillProcessing().
+ * Deliberately hand-typed to mirror GenerationJobSummary in intakeApi.ts (the
+ * generated client is not committed) without coupling the two adapters. Only
+ * the fields this section reads are declared.
+ */
+interface GenerationJobRow {
+  id: string
+  status: 'queued' | 'running' | 'passed' | 'needs_review' | 'failed'
+  title: string | null
+  premise_snippet: string
 }
 
 export interface ReviewApi {
@@ -110,12 +123,32 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
       })
       return res.data
     },
-    // The generation-jobs LIST endpoint is C4a-5's (a parallel branch). Until it
-    // merges this returns an empty list so the console's "Still processing"
-    // section renders an empty state rather than 404ing. Task 11 wires the real
-    // GET once C4a-5 has merged.
+    // Wires C4a-5's guardian-only generation-jobs list into the console's
+    // "Still processing" section. Only queued/running jobs are genuinely
+    // generating: needs_review/passed/failed are terminal or belong in the
+    // review queue (per C4a-5's statusPill), so including them here would
+    // double-count or mislead.
+    //
+    // #CRITICAL: security: this endpoint is guardian-only, but the console's
+    // primary user is the admin reviewer, for whom queue() succeeds and this
+    // 403s. ConsolePage.load() awaits both in one Promise.all, so a reject here
+    // would hide the admin's loaded review queue behind the forbidden branch.
+    // Swallow every error and return [] so this can never sink the console load.
+    // #VERIFY: reviewApi.test.ts asserts a 403 and a generic error both resolve
+    // to [] (the deletion-sensitive tests proving this catch is load-bearing).
     async stillProcessing(): Promise<StillProcessingItem[]> {
-      return []
+      try {
+        const res = await api.get<{ jobs: GenerationJobRow[] }>('/v1/generation-jobs')
+        return res.data.jobs
+          .filter((job) => job.status === 'queued' || job.status === 'running')
+          .map((job) => ({
+            job_id: job.id,
+            title: job.title ?? job.premise_snippet ?? 'Untitled request',
+            status: job.status,
+          }))
+      } catch {
+        return []
+      }
     },
   }
 }
