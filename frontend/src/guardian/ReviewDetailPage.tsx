@@ -190,6 +190,13 @@ export function ReviewDetailPage() {
               <Button variant="ghost" onClick={() => setDialog(null)}>
                 Cancel
               </Button>
+              {/*
+                #CRITICAL: security: confirming approve publishes this version to
+                the assigned children; a misclick must not ship unreviewed content.
+                #VERIFY: this confirm dialog gates the action and the backend
+                re-checks the story is screened and still in review, rejecting
+                anything unscreened (ReviewDetailPage.test.tsx approve + rejection).
+              */}
               <Button
                 disabled={submitting}
                 onClick={() => void runAction(() => reviewApi.approve(storybookId))}
@@ -217,6 +224,13 @@ export function ReviewDetailPage() {
               <Button variant="ghost" onClick={() => setDialog(null)}>
                 Cancel
               </Button>
+              {/*
+                #CRITICAL: security: confirming send back changes review state and
+                returns the story to its author with a reason.
+                #VERIFY: reasonValid plus this confirm dialog gate the action; the
+                backend re-checks the story is still in review
+                (ReviewDetailPage.test.tsx reason-required + whitespace-only tests).
+              */}
               <Button
                 variant="danger"
                 disabled={!reasonValid || submitting}

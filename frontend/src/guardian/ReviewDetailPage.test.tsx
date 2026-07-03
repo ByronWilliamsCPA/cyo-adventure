@@ -95,6 +95,16 @@ describe('ReviewDetailPage', () => {
     expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
   })
 
+  it('keeps send back disabled for a whitespace-only reason', async () => {
+    const user = userEvent.setup()
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: /Send Back/i }))
+    const submit = await screen.findByRole('button', { name: /Confirm send back/i })
+    expect(submit).toBeDisabled()
+    await user.type(screen.getByLabelText(/reason/i), '   ')
+    expect(submit).toBeDisabled()
+  })
+
   it('surfaces a backend rejection without navigating away', async () => {
     const user = userEvent.setup()
     mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 400 } })
