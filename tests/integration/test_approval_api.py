@@ -435,6 +435,20 @@ async def _seed_two_family_queue(
         session.add(
             StorybookVersion(storybook_id="draft-a", version=1, blob={"id": "draft-a"})
         )
+        # Family A: an in_review story that reached review WITHOUT screening
+        # (moderation_report is None). It must appear in the queue but be pinned
+        # unscreened so a route hardcoding screened=True cannot pass.
+        session.add(
+            Storybook(id="unscreened-a", family_id=fam_a.id, status="in_review")
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="unscreened-a",
+                version=1,
+                blob={"title": "Unscreened A", "nodes": []},
+                moderation_report=None,
+            )
+        )
         # Family B: a clean in_review story (cross-family visibility for the admin)
         session.add(Storybook(id="clean-b", family_id=fam_b.id, status="in_review"))
         session.add(
@@ -456,12 +470,18 @@ async def test_admin_review_queue_lists_both_families(
     resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
     assert resp.status_code == 200
     items = {item["storybook_id"]: item for item in resp.json()["items"]}
-    assert set(items) == {"flagged-a", "clean-b"}  # draft-a excluded
+    # draft-a excluded; unscreened-a is in_review so it is queued.
+    assert set(items) == {"flagged-a", "clean-b", "unscreened-a"}
     assert items["flagged-a"]["screened"] is True
     assert items["flagged-a"]["flagged_count"] == 1
     assert items["flagged-a"]["title"] == "Scary A"
     assert items["clean-b"]["screened"] is True
     assert items["clean-b"]["flagged_count"] == 0
+    # An unscreened in_review item must be pinned screened=False with no summary
+    # (guards against a route hardcoding screened=True).
+    assert items["unscreened-a"]["screened"] is False
+    assert items["unscreened-a"]["summary"] is None
+    assert items["unscreened-a"]["flagged_count"] == 0
 
 
 async def test_review_queue_excludes_needs_revision_and_published(
