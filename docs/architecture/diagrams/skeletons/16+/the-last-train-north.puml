@@ -1,0 +1,528 @@
+@startuml the-last-train-north
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 210w
+state g0a0_1 #D1C4E9
+g0a0_1 : rising · 165w
+state g0a0_2 #FFF9C4
+g0a0_2 : choice · 180w
+state g0a0_3a #D1C4E9
+g0a0_3a : rising · 150w
+state g0a0_3b #FFF9C4
+g0a0_3b : choice · 175w
+state g0a0_4 #D1C4E9
+g0a0_4 : rising · 160w
+state g0a0_5 #D1C4E9
+g0a0_5 : rising · 170w
+state g0a0_end #FFCDD2
+g0a0_end : setback (negative)
+g0a0_end : "You Slept Through the Stop"
+state g0a1_1 #D1C4E9
+g0a1_1 : rising · 165w
+state g0a1_2 #FFF9C4
+g0a1_2 : choice · 180w
+state g0a1_3a #D1C4E9
+g0a1_3a : rising · 150w
+state g0a1_3b #FFF9C4
+g0a1_3b : choice · 175w
+state g0a1_4 #D1C4E9
+g0a1_4 : rising · 160w
+state g0a1_5 #D1C4E9
+g0a1_5 : rising · 170w
+state g0a1_end #FFCDD2
+g0a1_end : setback (negative)
+g0a1_end : "A Door You Did Not Open"
+state g0a2_1 #D1C4E9
+g0a2_1 : rising · 165w
+state g0a2_2 #FFF9C4
+g0a2_2 : choice · 180w
+state g0a2_3a #D1C4E9
+g0a2_3a : rising · 150w
+state g0a2_3b #FFF9C4
+g0a2_3b : choice · 175w
+state g0a2_4 #D1C4E9
+g0a2_4 : rising · 160w
+state g0a2_5 #D1C4E9
+g0a2_5 : rising · 170w
+state g0a2_end #FFCDD2
+g0a2_end : setback (negative)
+g0a2_end : "The Page Blurs to Nothing"
+state g0a3_1 #D1C4E9
+g0a3_1 : rising · 165w
+state g0a3_2 #FFF9C4
+g0a3_2 : choice · 180w
+state g0a3_3a #D1C4E9
+g0a3_3a : rising · 150w
+state g0a3_3b #FFF9C4
+g0a3_3b : choice · 175w
+state g0a3_4 #D1C4E9
+g0a3_4 : rising · 160w
+state g0a3_5 #D1C4E9
+g0a3_5 : rising · 170w
+state g0a3_end #FFCDD2
+g0a3_end : setback (negative)
+g0a3_end : "Lulled by the Snow"
+state g1a0_1 #D1C4E9
+g1a0_1 : rising · 165w
+state g1a0_2 #FFF9C4
+g1a0_2 : choice · 180w
+state g1a0_3a #D1C4E9
+g1a0_3a : rising · 150w
+state g1a0_3b #FFF9C4
+g1a0_3b : choice · 175w
+state g1a0_4 #D1C4E9
+g1a0_4 : rising · 160w
+state g1a0_5 #D1C4E9
+g1a0_5 : rising · 170w
+state g1a0_end #E0E0E0
+g1a0_end : discovery (neutral)
+g1a0_end : "The Same Four Faces"
+state g1a1_1 #D1C4E9
+g1a1_1 : rising · 165w
+state g1a1_2 #FFF9C4
+g1a1_2 : choice · 180w
+state g1a1_3a #D1C4E9
+g1a1_3a : rising · 150w
+state g1a1_3b #FFF9C4
+g1a1_3b : choice · 175w
+state g1a1_4 #D1C4E9
+g1a1_4 : rising · 160w
+state g1a1_5 #D1C4E9
+g1a1_5 : rising · 170w
+state g1a1_end #E0E0E0
+g1a1_end : discovery (neutral)
+g1a1_end : "What the Child Knows"
+state g1a2_1 #D1C4E9
+g1a2_1 : rising · 165w
+state g1a2_2 #FFF9C4
+g1a2_2 : choice · 180w
+state g1a2_3a #D1C4E9
+g1a2_3a : rising · 150w
+state g1a2_3b #FFF9C4
+g1a2_3b : choice · 175w
+state g1a2_4 #D1C4E9
+g1a2_4 : rising · 160w
+state g1a2_5 #D1C4E9
+g1a2_5 : rising · 170w
+state g1a2_end #E0E0E0
+g1a2_end : discovery (neutral)
+g1a2_end : "Numbers Without a Sum"
+state g1a3_1 #D1C4E9
+g1a3_1 : rising · 165w
+state g1a3_2 #FFF9C4
+g1a3_2 : choice · 180w
+state g1a3_3a #D1C4E9
+g1a3_3a : rising · 150w
+state g1a3_3b #FFF9C4
+g1a3_3b : choice · 175w
+state g1a3_4 #D1C4E9
+g1a3_4 : rising · 160w
+state g1a3_5 #D1C4E9
+g1a3_5 : rising · 170w
+state g1a3_end #E0E0E0
+g1a3_end : discovery (neutral)
+g1a3_end : "A Grief Held Very Still"
+state g2a0_1 #D1C4E9
+g2a0_1 : rising · 165w
+state g2a0_2 #FFF9C4
+g2a0_2 : choice · 180w
+state g2a0_3a #D1C4E9
+g2a0_3a : rising · 150w
+state g2a0_3b #FFF9C4
+g2a0_3b : choice · 175w
+state g2a0_4 #D1C4E9
+g2a0_4 : rising · 160w
+state g2a0_5 #D1C4E9
+g2a0_5 : rising · 170w
+state g2a0_end #E0E0E0
+g2a0_end : discovery (neutral)
+g2a0_end : "What the Conductor Won't Say"
+state g2a1_1 #D1C4E9
+g2a1_1 : rising · 165w
+state g2a1_2 #FFF9C4
+g2a1_2 : choice · 180w
+state g2a1_3a #D1C4E9
+g2a1_3a : rising · 150w
+state g2a1_3b #FFF9C4
+g2a1_3b : choice · 175w
+state g2a1_4 #D1C4E9
+g2a1_4 : rising · 160w
+state g2a1_5 #D1C4E9
+g2a1_5 : rising · 170w
+state g2a1_end #FFCDD2
+g2a1_end : setback (negative)
+g2a1_end : "The Ink Runs in the Cold"
+state g2a2_1 #D1C4E9
+g2a2_1 : rising · 165w
+state g2a2_2 #FFF9C4
+g2a2_2 : choice · 180w
+state g2a2_3a #D1C4E9
+g2a2_3a : rising · 150w
+state g2a2_3b #FFF9C4
+g2a2_3b : choice · 175w
+state g2a2_4 #D1C4E9
+g2a2_4 : rising · 160w
+state g2a2_5 #D1C4E9
+g2a2_5 : rising · 170w
+state g2a2_end #E0E0E0
+g2a2_end : discovery (neutral)
+g2a2_end : "Green, and Then Not"
+state g2a3_1 #D1C4E9
+g2a3_1 : rising · 165w
+state g2a3_2 #FFF9C4
+g2a3_2 : choice · 180w
+state g2a3_3a #D1C4E9
+g2a3_3a : rising · 150w
+state g2a3_3b #FFF9C4
+g2a3_3b : choice · 175w
+state g2a3_4 #D1C4E9
+g2a3_4 : rising · 160w
+state g2a3_5 #D1C4E9
+g2a3_5 : rising · 170w
+state g2a3_end #FFCDD2
+g2a3_end : setback (negative)
+g2a3_end : "No One Will Meet Your Eye"
+state g3a0_1 #D1C4E9
+g3a0_1 : rising · 165w
+state g3a0_2 #FFF9C4
+g3a0_2 : choice · 180w
+state g3a0_3a #D1C4E9
+g3a0_3a : rising · 150w
+state g3a0_3b #FFF9C4
+g3a0_3b : choice · 175w
+state g3a0_4 #D1C4E9
+g3a0_4 : rising · 160w
+state g3a0_5 #D1C4E9
+g3a0_5 : rising · 170w
+state g3a0_end #E0E0E0
+g3a0_end : discovery (neutral)
+g3a0_end : "What the Conductor Carries"
+state g3a1_1 #D1C4E9
+g3a1_1 : rising · 165w
+state g3a1_2 #FFF9C4
+g3a1_2 : choice · 180w
+state g3a1_3a #D1C4E9
+g3a1_3a : rising · 150w
+state g3a1_3b #FFF9C4
+g3a1_3b : choice · 175w
+state g3a1_4 #D1C4E9
+g3a1_4 : rising · 160w
+state g3a1_5 #D1C4E9
+g3a1_5 : rising · 170w
+state g3a1_end #C8E6C9
+g3a1_end : completion (positive)
+g3a1_end : "The Child Shows the Way"
+state g3a2_1 #D1C4E9
+g3a2_1 : rising · 165w
+state g3a2_2 #FFF9C4
+g3a2_2 : choice · 180w
+state g3a2_3a #D1C4E9
+g3a2_3a : rising · 150w
+state g3a2_3b #FFF9C4
+g3a2_3b : choice · 175w
+state g3a2_4 #D1C4E9
+g3a2_4 : rising · 160w
+state g3a2_5 #D1C4E9
+g3a2_5 : rising · 170w
+state g3a2_end #C8E6C9
+g3a2_end : success (positive)
+g3a2_end : "You Carried Her Message"
+state g3a3_1 #D1C4E9
+g3a3_1 : rising · 165w
+state g3a3_2 #FFF9C4
+g3a3_2 : choice · 180w
+state g3a3_3a #D1C4E9
+g3a3_3a : rising · 150w
+state g3a3_3b #FFF9C4
+g3a3_3b : choice · 175w
+state g3a3_4 #D1C4E9
+g3a3_4 : rising · 160w
+state g3a3_5 #D1C4E9
+g3a3_5 : rising · 170w
+state g3a3_end #FFCDD2
+g3a3_end : setback (negative)
+g3a3_end : "Lost Among the Columns"
+state p1_never_arrives #ECEFF1
+p1_never_arrives : pivot · 205w
+state p2_who_passengers #ECEFF1
+p2_who_passengers : pivot · 205w
+state p3_tunnel_choice #ECEFF1
+p3_tunnel_choice : pivot · 205w
+state p4_dawn_reveal #ECEFF1
+p4_dawn_reveal : pivot · 205w
+state r_peace1 #ECEFF1
+r_peace1 : resolution · 185w
+state r_peace2 #FFF9C4
+r_peace2 : choice · 180w
+state r_peace3 #ECEFF1
+r_peace3 : resolution · 185w
+state e_peace_early #FFCDD2
+e_peace_early : setback (negative)
+e_peace_early : "A Calm You Cannot Keep"
+state r_help1 #ECEFF1
+r_help1 : resolution · 185w
+state r_help2 #FFF9C4
+r_help2 : choice · 180w
+state r_help3 #ECEFF1
+r_help3 : resolution · 185w
+state e_help_early #FFCDD2
+e_help_early : setback (negative)
+e_help_early : "The Hand You Did Not Take"
+state r_truth1 #ECEFF1
+r_truth1 : resolution · 185w
+state r_truth2 #FFF9C4
+r_truth2 : choice · 180w
+state r_truth3 #ECEFF1
+r_truth3 : resolution · 185w
+state e_truth_early #E0E0E0
+e_truth_early : discovery (neutral)
+e_truth_early : "Half the Timetable"
+state r_leave1 #ECEFF1
+r_leave1 : resolution · 185w
+state r_leave2 #FFF9C4
+r_leave2 : choice · 180w
+state r_leave3 #ECEFF1
+r_leave3 : resolution · 185w
+state e_leave_early #FFCDD2
+e_leave_early : setback (negative)
+e_leave_early : "Back at the First Platform"
+state r_dawn #ECEFF1
+r_dawn : pivot · 200w
+state r_choice_peace #ECEFF1
+r_choice_peace : resolution · 190w
+state r_choice_help #FFF9C4
+r_choice_help : choice · 180w
+state r_choice_truth #ECEFF1
+r_choice_truth : resolution · 190w
+state r_choice_safe #ECEFF1
+r_choice_safe : resolution · 185w
+state e_make_peace #C8E6C9
+e_make_peace : success (positive)
+e_make_peace : "The Last Train North"
+state e_help_passenger #C8E6C9
+e_help_passenger : completion (positive)
+e_help_passenger : "A Seat Beside Her"
+state e_help_cost #FFCDD2
+e_help_cost : setback (negative)
+e_help_cost : "You Stayed Too Long"
+state e_uncover_truth #C8E6C9
+e_uncover_truth : discovery (positive)
+e_uncover_truth : "The Northbound Names"
+state e_unsettled_safe #E0E0E0
+e_unsettled_safe : setback (neutral)
+e_unsettled_safe : "Awake and Unharmed"
+n_start --> g0a0_1 : Find the night conductor.
+n_start --> g0a1_1 : Walk the sleeper cars.
+n_start --> g0a2_1 : Read the left-behind letter.
+n_start --> g0a3_1 : Watch the changing land.
+g0a0_1 --> g0a0_2 : Look closer.
+g0a0_2 --> g0a0_3a : Press in directly.
+g0a0_2 --> g0a0_3b : Hang back and watch.
+g0a0_3a --> g0a0_4 : Carry the fact onward.
+g0a0_3b --> g0a0_4 : Hold the thread and go on.
+g0a0_3b --> g0a0_end : Let the hour take you.
+g0a0_4 --> g0a0_5 : Press on.
+g0a0_5 --> p1_never_arrives : Follow it to the pivot.
+g0a1_1 --> g0a1_2 : Look closer.
+g0a1_2 --> g0a1_3a : Press in directly.
+g0a1_2 --> g0a1_3b : Hang back and watch.
+g0a1_3a --> g0a1_4 : Carry the fact onward.
+g0a1_3b --> g0a1_4 : Hold the thread and go on.
+g0a1_3b --> g0a1_end : Let the hour take you.
+g0a1_4 --> g0a1_5 : Press on.
+g0a1_5 --> p1_never_arrives : Follow it to the pivot.
+g0a2_1 --> g0a2_2 : Look closer.
+g0a2_2 --> g0a2_3a : Press in directly.
+g0a2_2 --> g0a2_3b : Hang back and watch.
+g0a2_3a --> g0a2_4 : Carry the fact onward.
+g0a2_3b --> g0a2_4 : Hold the thread and go on.
+g0a2_3b --> g0a2_end : Let the hour take you.
+g0a2_4 --> g0a2_5 : Press on.
+g0a2_5 --> p1_never_arrives : Follow it to the pivot.
+g0a3_1 --> g0a3_2 : Look closer.
+g0a3_2 --> g0a3_3a : Press in directly.
+g0a3_2 --> g0a3_3b : Hang back and watch.
+g0a3_3a --> g0a3_4 : Carry the fact onward.
+g0a3_3b --> g0a3_4 : Hold the thread and go on.
+g0a3_3b --> g0a3_end : Let the hour take you.
+g0a3_4 --> g0a3_5 : Press on.
+g0a3_5 --> p1_never_arrives : Follow it to the pivot.
+g1a0_1 --> g1a0_2 : Look closer.
+g1a0_2 --> g1a0_3a : Press in directly.
+g1a0_2 --> g1a0_3b : Hang back and watch.
+g1a0_3a --> g1a0_4 : Carry the fact onward.
+g1a0_3b --> g1a0_4 : Hold the thread and go on.
+g1a0_3b --> g1a0_end : Let the hour take you.
+g1a0_4 --> g1a0_5 : Press on.
+g1a0_5 --> p2_who_passengers : Follow it to the pivot.
+g1a1_1 --> g1a1_2 : Look closer.
+g1a1_2 --> g1a1_3a : Press in directly.
+g1a1_2 --> g1a1_3b : Hang back and watch.
+g1a1_3a --> g1a1_4 : Carry the fact onward.
+g1a1_3b --> g1a1_4 : Hold the thread and go on.
+g1a1_3b --> g1a1_end : Let the hour take you.
+g1a1_4 --> g1a1_5 : Press on.
+g1a1_5 --> p2_who_passengers : Follow it to the pivot.
+g1a2_1 --> g1a2_2 : Look closer.
+g1a2_2 --> g1a2_3a : Press in directly.
+g1a2_2 --> g1a2_3b : Hang back and watch.
+g1a2_3a --> g1a2_4 : Carry the fact onward.
+g1a2_3b --> g1a2_4 : Hold the thread and go on.
+g1a2_3b --> g1a2_end : Let the hour take you.
+g1a2_4 --> g1a2_5 : Press on.
+g1a2_5 --> p2_who_passengers : Follow it to the pivot.
+g1a3_1 --> g1a3_2 : Look closer.
+g1a3_2 --> g1a3_3a : Press in directly.
+g1a3_2 --> g1a3_3b : Hang back and watch.
+g1a3_3a --> g1a3_4 : Carry the fact onward.
+g1a3_3b --> g1a3_4 : Hold the thread and go on.
+g1a3_3b --> g1a3_end : Let the hour take you.
+g1a3_4 --> g1a3_5 : Press on.
+g1a3_5 --> p2_who_passengers : Follow it to the pivot.
+g2a0_1 --> g2a0_2 : Look closer.
+g2a0_2 --> g2a0_3a : Press in directly.
+g2a0_2 --> g2a0_3b : Hang back and watch.
+g2a0_3a --> g2a0_4 : Carry the fact onward.
+g2a0_3b --> g2a0_4 : Hold the thread and go on.
+g2a0_3b --> g2a0_end : Let the hour take you.
+g2a0_4 --> g2a0_5 : Press on.
+g2a0_5 --> p3_tunnel_choice : Follow it to the pivot.
+g2a1_1 --> g2a1_2 : Look closer.
+g2a1_2 --> g2a1_3a : Press in directly.
+g2a1_2 --> g2a1_3b : Hang back and watch.
+g2a1_3a --> g2a1_4 : Carry the fact onward.
+g2a1_3b --> g2a1_4 : Hold the thread and go on.
+g2a1_3b --> g2a1_end : Let the hour take you.
+g2a1_4 --> g2a1_5 : Press on.
+g2a1_5 --> p3_tunnel_choice : Follow it to the pivot.
+g2a2_1 --> g2a2_2 : Look closer.
+g2a2_2 --> g2a2_3a : Press in directly.
+g2a2_2 --> g2a2_3b : Hang back and watch.
+g2a2_3a --> g2a2_4 : Carry the fact onward.
+g2a2_3b --> g2a2_4 : Hold the thread and go on.
+g2a2_3b --> g2a2_end : Let the hour take you.
+g2a2_4 --> g2a2_5 : Press on.
+g2a2_5 --> p3_tunnel_choice : Follow it to the pivot.
+g2a3_1 --> g2a3_2 : Look closer.
+g2a3_2 --> g2a3_3a : Press in directly.
+g2a3_2 --> g2a3_3b : Hang back and watch.
+g2a3_3a --> g2a3_4 : Carry the fact onward.
+g2a3_3b --> g2a3_4 : Hold the thread and go on.
+g2a3_3b --> g2a3_end : Let the hour take you.
+g2a3_4 --> g2a3_5 : Press on.
+g2a3_5 --> p3_tunnel_choice : Follow it to the pivot.
+g3a0_1 --> g3a0_2 : Look closer.
+g3a0_2 --> g3a0_3a : Press in directly.
+g3a0_2 --> g3a0_3b : Hang back and watch.
+g3a0_3a --> g3a0_4 : Carry the fact onward.
+g3a0_3b --> g3a0_4 : Hold the thread and go on.
+g3a0_3b --> g3a0_end : Let the hour take you.
+g3a0_4 --> g3a0_5 : Press on.
+g3a0_5 --> p4_dawn_reveal : Follow it to the pivot.
+g3a1_1 --> g3a1_2 : Look closer.
+g3a1_2 --> g3a1_3a : Press in directly.
+g3a1_2 --> g3a1_3b : Hang back and watch.
+g3a1_3a --> g3a1_4 : Carry the fact onward.
+g3a1_3b --> g3a1_4 : Hold the thread and go on.
+g3a1_3b --> g3a1_end : Let the hour take you.
+g3a1_4 --> g3a1_5 : Press on.
+g3a1_5 --> p4_dawn_reveal : Follow it to the pivot.
+g3a2_1 --> g3a2_2 : Look closer.
+g3a2_2 --> g3a2_3a : Press in directly.
+g3a2_2 --> g3a2_3b : Hang back and watch.
+g3a2_3a --> g3a2_4 : Carry the fact onward.
+g3a2_3b --> g3a2_4 : Hold the thread and go on.
+g3a2_3b --> g3a2_end : Let the hour take you.
+g3a2_4 --> g3a2_5 : Press on.
+g3a2_5 --> p4_dawn_reveal : Follow it to the pivot.
+g3a3_1 --> g3a3_2 : Look closer.
+g3a3_2 --> g3a3_3a : Press in directly.
+g3a3_2 --> g3a3_3b : Hang back and watch.
+g3a3_3a --> g3a3_4 : Carry the fact onward.
+g3a3_3b --> g3a3_4 : Hold the thread and go on.
+g3a3_3b --> g3a3_end : Let the hour take you.
+g3a3_4 --> g3a3_5 : Press on.
+g3a3_5 --> p4_dawn_reveal : Follow it to the pivot.
+p1_never_arrives --> g1a0_1 : Sit with the dining-car regulars.
+p1_never_arrives --> g1a1_1 : Find the child who never sleeps.
+p1_never_arrives --> g1a2_1 : Follow the man counting stations.
+p1_never_arrives --> g1a3_1 : Approach the woman in mourning.
+p2_who_passengers --> g2a0_1 : Consult the conductor again.
+p2_who_passengers --> g2a1_1 : Decode the letter's map.
+p2_who_passengers --> g2a2_1 : Read the tunnel signal lights.
+p2_who_passengers --> g2a3_1 : Gather the passengers to decide.
+p3_tunnel_choice --> g3a0_1 : Ask the conductor for the whole truth.
+p3_tunnel_choice --> g3a1_1 : Let the child lead you.
+p3_tunnel_choice --> g3a2_1 : Answer the mourning woman's request.
+p3_tunnel_choice --> g3a3_1 : Search the endless timetable.
+p4_dawn_reveal --> r_peace1 : Ride on and simply be present.
+p4_dawn_reveal --> r_help1 : Turn to the traveler who needs you.
+p4_dawn_reveal --> r_truth1 : Chase the last of the truth.
+p4_dawn_reveal --> r_leave1 : Try to get off before the tunnel.
+r_peace1 --> r_peace2 : Follow it toward dawn.
+r_peace2 --> r_peace3 : Stay open to the dawn.
+r_peace2 --> e_peace_early : Close it here.
+r_peace3 --> r_dawn : Meet the dawn.
+r_help1 --> r_help2 : Follow it toward dawn.
+r_help2 --> r_help3 : Stay open to the dawn.
+r_help2 --> e_help_early : Close it here.
+r_help3 --> r_dawn : Meet the dawn.
+r_truth1 --> r_truth2 : Follow it toward dawn.
+r_truth2 --> r_truth3 : Stay open to the dawn.
+r_truth2 --> e_truth_early : Close it here.
+r_truth3 --> r_dawn : Meet the dawn.
+r_leave1 --> r_leave2 : Follow it toward dawn.
+r_leave2 --> r_leave3 : Stay open to the dawn.
+r_leave2 --> e_leave_early : Close it here.
+r_leave3 --> r_dawn : Meet the dawn.
+r_dawn --> r_choice_peace : Set the night down and stay.
+r_dawn --> r_choice_help : Give the traveler your seat.
+r_dawn --> r_choice_truth : Name what you have understood.
+r_dawn --> r_choice_safe : Ask only to wake unharmed.
+r_choice_peace --> e_make_peace : Make peace with the journey.
+r_choice_help --> e_help_passenger : Stay beside her.
+r_choice_help --> e_help_cost : Stay far too long.
+r_choice_truth --> e_uncover_truth : Speak the northbound names.
+r_choice_safe --> e_unsettled_safe : Wake unharmed.
+g0a0_end --> [*]
+g0a1_end --> [*]
+g0a2_end --> [*]
+g0a3_end --> [*]
+g1a0_end --> [*]
+g1a1_end --> [*]
+g1a2_end --> [*]
+g1a3_end --> [*]
+g2a0_end --> [*]
+g2a1_end --> [*]
+g2a2_end --> [*]
+g2a3_end --> [*]
+g3a0_end --> [*]
+g3a1_end --> [*]
+g3a2_end --> [*]
+g3a3_end --> [*]
+e_peace_early --> [*]
+e_help_early --> [*]
+e_truth_early --> [*]
+e_leave_early --> [*]
+e_make_peace --> [*]
+e_help_passenger --> [*]
+e_help_cost --> [*]
+e_uncover_truth --> [*]
+e_unsettled_safe --> [*]
+
+legend right
+  The Last Train North
+  Band 16+ · Tier 1 · ~14 min
+  Topology: branch_and_bottleneck
+  143 nodes · 25 endings (5+ / 9n / 11-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml
