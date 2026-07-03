@@ -358,7 +358,7 @@ async def test_get_generation_job(
 
 
 # ---------------------------------------------------------------------------
-# Test 8: GET /generation-jobs list endpoint (failing until Task 3 lands)
+# Test 8: GET /generation-jobs list endpoint
 # ---------------------------------------------------------------------------
 
 

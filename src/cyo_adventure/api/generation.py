@@ -34,6 +34,7 @@ from typing import Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks
 from sqlalchemy import select
+from sqlalchemy.orm import defer
 
 from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.schemas import (
@@ -285,13 +286,25 @@ async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
     # on the joined Concept.family_id so family B never sees family A's jobs.
     # A single query with an outer join to Storybook avoids an N+1 status lookup.
     # #VERIFY: test_generation_api::test_list_jobs_is_family_scoped.
+    #
+    # #CRITICAL: security: never load the raw ``report`` JSON (ADR-007: admin/system
+    # only) for the guardian list view. defer(..., raiseload=True) drops ``report``
+    # from the emitted SELECT AND turns any accidental future access into a loud
+    # error instead of a silent lazy-load, closing the leak-on-refactor hazard
+    # structurally rather than relying on the response schema alone.
+    # #VERIFY: test_generation_api::test_list_jobs_never_exposes_report.
     stmt = (
         select(GenerationJob, Concept.brief, Storybook.status)
         .join(Concept, GenerationJob.concept_id == Concept.id)
         .outerjoin(Storybook, GenerationJob.storybook_id == Storybook.id)
         .where(Concept.family_id == ctx.principal.family_id)
-        .order_by(GenerationJob.created_at.desc())
+        # #ASSUME: data-integrity: created_at can tie for rows inserted within one
+        # timestamp tick; the id tiebreaker makes ordering (and which row the
+        # 50-cap drops at the boundary) deterministic instead of engine-defined.
+        # #VERIFY: test_generation_api::test_list_jobs_cap_of_50.
+        .order_by(GenerationJob.created_at.desc(), GenerationJob.id.desc())
         .limit(_JOB_LIST_LIMIT)
+        .options(defer(GenerationJob.report, raiseload=True))
     )
     rows = (await ctx.session.execute(stmt)).all()
 
