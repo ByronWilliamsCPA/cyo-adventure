@@ -287,6 +287,9 @@ def _legend_lines(data: _ObjectMap, nodes: list[_ObjectMap]) -> list[str]:
     tier = meta.get("tier")
     minutes = meta.get("estimated_minutes")
     topology = meta.get("topology")
+    production_eligible = meta.get("production_eligible")
+    length = meta.get("length")
+    narrative_style = meta.get("narrative_style")
     ending_total = sum(1 for n in nodes if bool(n.get("is_ending")))
     pos, neu, neg = valence_split(nodes)
     band_text = band if isinstance(band, str) else "?"
@@ -294,11 +297,21 @@ def _legend_lines(data: _ObjectMap, nodes: list[_ObjectMap]) -> list[str]:
     minutes_text = str(minutes) if isinstance(minutes, int) else "?"
     topology_text = topology if isinstance(topology, str) else "?"
     ending_word = "ending" if ending_total == 1 else "endings"
-    return [
+    lines = [
         "legend right",
         f"  {title_text}",
         f"  Band {band_text} · Tier {tier_text} · ~{minutes_text} min",
         f"  Topology: {topology_text}",
         f"  {len(nodes)} nodes · {ending_total} {ending_word} ({pos}+ / {neu}n / {neg}-)",
-        "endlegend",
     ]
+    # ADR-011 story-scale: surface production-eligibility so a reader never
+    # mistakes an MVP/Test seed (small node budget) for a production-scale
+    # claim, and the length x style axis when the skeleton declares it.
+    if production_eligible is False:
+        lines.append("  MVP/Test tier (not production-eligible)")
+    elif production_eligible is True:
+        lines.append("  Production-eligible")
+    if isinstance(length, str) and isinstance(narrative_style, str):
+        lines.append(f"  Scale: {length} · {narrative_style}")
+    lines.append("endlegend")
+    return lines

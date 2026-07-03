@@ -150,5 +150,6 @@ legend right
   Band 16+ · Tier 2 · ~30 min
   Topology: branch_and_bottleneck
   32 nodes · 14 endings (1+ / 1n / 12-)
+  MVP/Test tier (not production-eligible)
 endlegend
 @enduml

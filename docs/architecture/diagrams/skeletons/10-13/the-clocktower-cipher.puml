@@ -113,5 +113,6 @@ legend right
   Band 10-13 · Tier 1 · ~18 min
   Topology: branch_and_bottleneck
   25 nodes · 8 endings (3+ / 1n / 4-)
+  MVP/Test tier (not production-eligible)
 endlegend
 @enduml
