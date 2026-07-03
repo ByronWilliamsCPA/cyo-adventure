@@ -21,4 +21,20 @@ describe('ReaderChrome', () => {
     render(<ReaderChrome percent={0} label="Not started" />)
     expect(screen.getByText('Offline')).toBeTruthy()
   })
+
+  it('hides the numeric label by default (the total is not reliable)', () => {
+    setOnLine(true)
+    render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
+    expect(screen.queryByText('2 of 5 pages explored')).toBeNull()
+    // The bar is still there and still accessible via aria-label.
+    expect(screen.getByRole('progressbar').getAttribute('aria-label')).toBe(
+      '2 of 5 pages explored'
+    )
+  })
+
+  it('shows the numeric label when the caller vouches for it', () => {
+    setOnLine(true)
+    render(<ReaderChrome percent={40} label="2 of 5 pages explored" showLabel />)
+    expect(screen.getByText('2 of 5 pages explored')).toBeTruthy()
+  })
 })

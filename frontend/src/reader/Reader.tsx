@@ -46,6 +46,10 @@ export function Reader({ story, initialReading, onProgress, profileId }: ReaderP
     send({ type: 'CHOOSE', choiceId })
   }
 
+  // showLabel is left at its default (hidden): the percent's denominator is all
+  // of the story's nodes, not the reachable subset for this branch, so it can
+  // never hit 100% on a real playthrough. The bar's fill and aria-label still
+  // convey progress; only the misleading numeric text is withheld.
   const chrome = (
     <ReaderChrome
       percent={readerProgressPercent(story, reading)}
