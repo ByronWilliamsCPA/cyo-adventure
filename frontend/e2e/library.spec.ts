@@ -99,3 +99,42 @@ test('empty library shows the no-books state', async ({ page }) => {
   await expect(page.getByText('No books yet')).toBeVisible()
   await expect(page.getByText(/ask a grown-up/i)).toBeVisible()
 })
+
+test('shelf grid does not overflow the viewport on a phone screen', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const stories = {
+    stories: [
+      ...STORIES.stories,
+      {
+        id: 's4',
+        title: 'Moonlit Meadow',
+        version: 1,
+        age_band: '6-8',
+        tier: 1,
+        reading_level_target: 2,
+        node_count: 6,
+        rating: null,
+        progress: null,
+      },
+    ],
+  }
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: stories }))
+  await page.goto('/library/p1')
+  const shelf = page.getByRole('region', { name: 'More to Explore' })
+  await expect(shelf).toContainText('Acorn Detectives')
+  await expect(shelf).toContainText('Moonlit Meadow')
+
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+  )
+  expect(overflow).toBe(0)
+
+  const shelfCards = page.locator('.library__shelf > li')
+  const count = await shelfCards.count()
+  expect(count).toBe(2)
+  for (let i = 0; i < count; i += 1) {
+    const box = await shelfCards.nth(i).boundingBox()
+    expect(box).not.toBeNull()
+    expect(box!.x + box!.width).toBeLessThanOrEqual(390)
+  }
+})

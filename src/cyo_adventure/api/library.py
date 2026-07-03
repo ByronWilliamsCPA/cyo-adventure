@@ -212,7 +212,7 @@ def _library_item(
         # #EDGE: data integrity: the saved state may be pinned to an older
         # version than the currently published one, so nodes_visited can exceed
         # node_count after a republish; the frontend clamps percent at 100.
-        # #VERIFY: LibraryPage.percent() uses Math.min(100, ...).
+        # #VERIFY: frontend bookCardUtils.percentComplete clamps at 100.
         visit_set = state.visit_set if isinstance(state.visit_set, list) else []
         progress = LibraryProgress(
             current_node=state.current_node,
