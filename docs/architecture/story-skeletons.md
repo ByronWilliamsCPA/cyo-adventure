@@ -40,7 +40,11 @@ by narrative role.
 | The Mapmaker's Island | 10-13 | 22 | 1 | branch_and_bottleneck | 224 | 11/32/29 | [svg](diagrams/skeletons/10-13/the-mapmakers-island.svg) |
 | The Midnight Museum | 10-13 | 9 | 1 | branch_and_bottleneck | 94 | 7/3/9 | [svg](diagrams/skeletons/10-13/the-midnight-museum.svg) |
 | The Signal in the Static | 13-16 | 11 | 1 | branch_and_bottleneck | 123 | 11/0/21 | [svg](diagrams/skeletons/13-16/the-signal-in-the-static.svg) |
+| The Sunspire Ascent | 13-16 | 15 | 1 | branch_and_bottleneck | 252 | 2/5/67 | [svg](diagrams/skeletons/13-16/the-sunspire-ascent.svg) |
+| The Thornwood Trial | 13-16 | 24 | 1 | branch_and_bottleneck | 375 | 4/0/111 | [svg](diagrams/skeletons/13-16/the-thornwood-trial.svg) |
 | The Vanishing Orchard | 13-16 | 18 | 1 | branch_and_bottleneck | 177 | 5/5/23 | [svg](diagrams/skeletons/13-16/the-vanishing-orchard.svg) |
+| The Ashfall Expedition | 16+ | 30 | 1 | branch_and_bottleneck | 505 | 3/0/140 | [svg](diagrams/skeletons/16+/the-ashfall-expedition.svg) |
+| The Drowned Court | 16+ | 18 | 1 | branch_and_bottleneck | 314 | 5/2/98 | [svg](diagrams/skeletons/16+/the-drowned-court.svg) |
 | The Last Train North | 16+ | 14 | 1 | branch_and_bottleneck | 143 | 5/9/11 | [svg](diagrams/skeletons/16+/the-last-train-north.svg) |
 | The Salt Archive | 16+ | 24 | 1 | branch_and_bottleneck | 225 | 15/21/18 | [svg](diagrams/skeletons/16+/the-salt-archive.svg) |
 | The Sunken Signal | 16+ | 30 | 2 | branch_and_bottleneck | 32 | 1/1/12 | [svg](diagrams/skeletons/16+/the-sunken-signal.svg) |

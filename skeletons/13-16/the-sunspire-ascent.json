@@ -1,0 +1,3461 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_sunspire_ascent",
+  "version": 1,
+  "title": "The Sunspire Ascent",
+  "metadata": {
+    "age_band": "13-16",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 7.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "courage",
+      "perseverance",
+      "mystery"
+    ],
+    "estimated_minutes": 15,
+    "ending_count": 74,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=88 beats='Rowan reaches the foot of the cursed Sunspire as the long night begins to fall, the beacon at its summit dark for a hundred years; four ways lead to the tower base, the crumbled moat causeway, the ivy on the north face, the servants tunnel, and the wide front stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Cross the crumbled moat causeway.",
+          "target": "a_ap1"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Climb the ivy on the north face.",
+          "target": "a_ap2"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Slip into the servants tunnel.",
+          "target": "a_ap3"
+        },
+        {
+          "id": "c_n_start_4",
+          "label": "Take the wide front stair.",
+          "target": "a_ap4"
+        }
+      ]
+    },
+    {
+      "id": "a_ap1",
+      "body": "<<FILL role=rising words=60 beats='the causeway stones shift underfoot but hold, and the great tower gate looms ahead, half open on darkness'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap1_1",
+          "label": "Reach the tower gate.",
+          "target": "b_towergate"
+        }
+      ]
+    },
+    {
+      "id": "a_ap2",
+      "body": "<<FILL role=rising words=64 beats='the ivy tears loose in Rowan grip but a lower window gives onto the entry hall, and the tower gate stands just within'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap2_1",
+          "label": "Drop down to the tower gate.",
+          "target": "b_towergate"
+        }
+      ]
+    },
+    {
+      "id": "a_ap3",
+      "body": "<<FILL role=choice words=70 beats='the servants tunnel forks in the dark, one branch sloping up toward the gate hall, the other dropping into a flooded dead end'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_a_ap3_1",
+          "label": "Climb toward the gate hall.",
+          "target": "b_towergate"
+        },
+        {
+          "id": "c_a_ap3_2",
+          "label": "Follow the downward branch.",
+          "target": "a_ap3_bad"
+        }
+      ]
+    },
+    {
+      "id": "a_ap3_bad",
+      "body": "<<FILL role=failure words=58 beats='the downward branch ends in a collapsed sump full of black water, and Rowan must turn back to wait for a safer night to try the climb again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_ap3_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Flooded Dead End"
+      }
+    },
+    {
+      "id": "a_ap4",
+      "body": "<<FILL role=failure words=62 beats='the wide front stair is a trap, its steps hinged over a pit, and Rowan scrambles back to solid ground as the night thickens, driven off before the climb even starts'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_a_ap4",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Hinged Stair"
+      }
+    },
+    {
+      "id": "b_towergate",
+      "body": "<<FILL role=choice words=78 beats='inside the tower gate the air is cold and old; a stair descends into the sound of water while a warmer draught rises from a side arch, and somewhere above the beacon waits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_towergate_1",
+          "label": "Descend toward the water.",
+          "target": "c_descent"
+        },
+        {
+          "id": "c_b_towergate_2",
+          "label": "Follow the warm draught aside.",
+          "target": "b_gate_pod"
+        }
+      ]
+    },
+    {
+      "id": "b_gate_pod",
+      "body": "<<FILL role=rising words=66 beats='the warm draught leads to a bricked-up furnace room, a dead end, but a maintenance ladder in the corner rejoins the descending stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gate_pod_1",
+          "label": "Take the ladder down.",
+          "target": "c_descent"
+        }
+      ]
+    },
+    {
+      "id": "c_descent",
+      "body": "<<FILL role=rising words=60 beats='the stair spirals down worn and green with damp until it opens on the lapping edge of the flooded undercroft, the first tier of the climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_descent_1",
+          "label": "Enter the undercroft.",
+          "target": "h_u"
+        }
+      ]
+    },
+    {
+      "id": "h_u",
+      "body": "<<FILL role=hub words=82 beats='Rowan wades into the flooded undercroft where black water laps the drowned stair and three archways breathe cold air; the first key-shard is said to rest under the sluice'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_u_1",
+          "label": "Take the direct route.",
+          "target": "s_u1"
+        },
+        {
+          "id": "c_h_u_2",
+          "label": "Try the flanking passage.",
+          "target": "u_pa1"
+        },
+        {
+          "id": "c_h_u_3",
+          "label": "Search the side chamber.",
+          "target": "u_pb1"
+        },
+        {
+          "id": "c_h_u_4",
+          "label": "Force the near door.",
+          "target": "u_pc1"
+        },
+        {
+          "id": "c_h_u_5",
+          "label": "Follow the low path.",
+          "target": "u_pd_p1"
+        },
+        {
+          "id": "c_h_u_6",
+          "label": "Chance the far gallery.",
+          "target": "u_pe1"
+        },
+        {
+          "id": "c_h_u_7",
+          "label": "Explore the outer galleries.",
+          "target": "u_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_u1",
+      "body": "<<FILL role=rising words=58 beats='the water rises to Rowan waist as broken lantern-glass drifts past and a current tugs toward a rusted sluice gate ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_u1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "g_u",
+      "body": "<<FILL role=bottleneck words=84 beats='the rusted sluice gate bars the way, its wheel seized with rust and weed; beyond it the drowned shard glints on a submerged plinth'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_u_1",
+          "label": "Win through the barrier.",
+          "target": "s_u2"
+        },
+        {
+          "id": "c_g_u_2",
+          "label": "Attempt the risky bypass.",
+          "target": "u_ga1"
+        },
+        {
+          "id": "c_g_u_3",
+          "label": "Probe the mechanism.",
+          "target": "u_gb1"
+        },
+        {
+          "id": "c_g_u_4",
+          "label": "Look for another handhold.",
+          "target": "u_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_u2",
+      "body": "<<FILL role=rising words=66 beats='the sluice grinds open and Rowan hauls the drowned shard free, one of three, then finds the spiral stair climbing out of the water toward warmer stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_u2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_c"
+        }
+      ]
+    },
+    {
+      "id": "u_pa1",
+      "body": "<<FILL role=rising words=72 beats='the flanking passage skirts wide around the undercroft and rejoins the way just before the barrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "u_pb1",
+      "body": "<<FILL role=rising words=61 beats='the side chamber of the undercroft is choked with wreckage that Rowan must clear by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "u_pb2"
+        }
+      ]
+    },
+    {
+      "id": "u_pb2",
+      "body": "<<FILL role=choice words=72 beats='past the wreckage two ways open, a narrow crawl back toward the barrier and a sagging floor over open dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_u"
+        },
+        {
+          "id": "c_u_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "u_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "u_pb_bad",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Rowan into a sealed vault below the undercroft, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Undercroft"
+      }
+    },
+    {
+      "id": "u_pc1",
+      "body": "<<FILL role=rising words=69 beats='beyond the near door a corridor of the undercroft runs long and lightless, the ceiling dripping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "u_pc2"
+        }
+      ]
+    },
+    {
+      "id": "u_pc2",
+      "body": "<<FILL role=choice words=74 beats='the corridor ends at a choice of two low arches, one breathing cold air, one warm and close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "u_pc_bad1"
+        },
+        {
+          "id": "c_u_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "u_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "u_pc_bad1",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Rowan backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "u_pc_bad2",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of the tower vermin that swarm the light, and Rowan retreats coughing into the dark, the way lost for tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "u_pd_p1",
+      "body": "<<FILL role=rising words=55 beats='the low path of the undercroft slopes down into standing water and colder air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p1_1",
+          "label": "Press on.",
+          "target": "u_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_p2",
+      "body": "<<FILL role=rising words=63 beats='the passage narrows until Rowan must turn sideways between wet stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p2_1",
+          "label": "Press on.",
+          "target": "u_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_p3",
+      "body": "<<FILL role=rising words=74 beats='the ceiling drops lower and the way ahead pinches almost shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pd_p3_1",
+          "label": "Press on.",
+          "target": "u_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "u_pd_end",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Rowan is turned back from the undercroft, the climb halted before it truly began'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Undercroft"
+      }
+    },
+    {
+      "id": "u_pe1",
+      "body": "<<FILL role=rising words=60 beats='the far gallery of the undercroft is quiet, and in a dry alcove Rowan finds an old climber cache of rope and chalk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "u_pe2"
+        },
+        {
+          "id": "c_u_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "u_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "u_pe_rest",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Rowan lets the hour slip; the night deepens and the undercroft must be left for a stronger attempt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "u_pe2",
+      "body": "<<FILL role=rising words=67 beats='rope coiled and hands chalked, the gallery bends back toward the main barrier by a hidden fault in the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_u"
+        }
+      ]
+    },
+    {
+      "id": "u_ga1",
+      "body": "<<FILL role=rising words=58 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the undercroft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "u_ga2"
+        }
+      ]
+    },
+    {
+      "id": "u_ga2",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Rowan boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Rowan back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "u_gb1",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the undercroft, Rowan finds a release lever and a tangle of counterweights that could go either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_u2"
+        },
+        {
+          "id": "c_u_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "u_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "u_gb_bad",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Rowan climbs back down to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "u_gc_p1",
+      "body": "<<FILL role=rising words=66 beats='the search for another handhold leads Rowan out onto the raw face of the undercroft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gc_p1_1",
+          "label": "Press on.",
+          "target": "u_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gc_p2",
+      "body": "<<FILL role=rising words=72 beats='the holds run out and the wind or water pulls hard at every finger'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gc_p2_1",
+          "label": "Press on.",
+          "target": "u_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gc_end",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Rowan retreats down a tier to find a safer night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Undercroft Barrier"
+      }
+    },
+    {
+      "id": "u_gal",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the undercroft spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_1",
+          "label": "Try passage 1.",
+          "target": "u_gal_c1_p1"
+        },
+        {
+          "id": "c_u_gal_2",
+          "label": "Try passage 2.",
+          "target": "u_gal_c2_p1"
+        },
+        {
+          "id": "c_u_gal_3",
+          "label": "Try passage 3.",
+          "target": "u_gal_c3_p1"
+        },
+        {
+          "id": "c_u_gal_4",
+          "label": "Try passage 4.",
+          "target": "u_gal_c4_p1"
+        },
+        {
+          "id": "c_u_gal_5",
+          "label": "Try passage 5.",
+          "target": "u_gal_c5_p1"
+        },
+        {
+          "id": "c_u_gal_6",
+          "label": "Try passage 6.",
+          "target": "u_gal_c6_p1"
+        },
+        {
+          "id": "c_u_gal_7",
+          "label": "Try passage 7.",
+          "target": "u_gal_c7_p1"
+        },
+        {
+          "id": "c_u_gal_8",
+          "label": "Try passage 8.",
+          "target": "u_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p1",
+      "body": "<<FILL role=rising words=61 beats='passage 1 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p2",
+      "body": "<<FILL role=rising words=69 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_p3",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c1_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "u_gal_c2_p1",
+      "body": "<<FILL role=rising words=63 beats='passage 2 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_p2",
+      "body": "<<FILL role=rising words=74 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_p3",
+      "body": "<<FILL role=rising words=60 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c2_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "u_gal_c3_p1",
+      "body": "<<FILL role=rising words=67 beats='passage 3 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c3_p2",
+      "body": "<<FILL role=rising words=58 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c3_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "u_gal_c4_p1",
+      "body": "<<FILL role=rising words=66 beats='passage 4 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_p2",
+      "body": "<<FILL role=rising words=72 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_p3",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c4_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "u_gal_c5_p1",
+      "body": "<<FILL role=rising words=69 beats='passage 5 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_p2",
+      "body": "<<FILL role=rising words=55 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_p3",
+      "body": "<<FILL role=rising words=63 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c5_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "u_gal_c6_p1",
+      "body": "<<FILL role=rising words=74 beats='passage 6 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c6_p2",
+      "body": "<<FILL role=rising words=60 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c6_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "u_gal_c7_p1",
+      "body": "<<FILL role=rising words=67 beats='passage 7 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_p2",
+      "body": "<<FILL role=rising words=58 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_p3",
+      "body": "<<FILL role=rising words=66 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "u_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c7_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "u_gal_c8_p1",
+      "body": "<<FILL role=rising words=72 beats='passage 8 of the undercroft narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "u_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c8_p2",
+      "body": "<<FILL role=rising words=61 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_u_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "u_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "u_gal_c8_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the undercroft for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_u_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_c",
+      "body": "<<FILL role=hub words=82 beats='the clockwork galleries tick and turn, brass automata frozen mid-stride while great gears grind overhead; the gear-shard sits locked in a stalled mechanism'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_c_1",
+          "label": "Take the direct route.",
+          "target": "s_c1"
+        },
+        {
+          "id": "c_h_c_2",
+          "label": "Try the flanking passage.",
+          "target": "c_pa1"
+        },
+        {
+          "id": "c_h_c_3",
+          "label": "Search the side chamber.",
+          "target": "c_pb1"
+        },
+        {
+          "id": "c_h_c_4",
+          "label": "Force the near door.",
+          "target": "c_pc1"
+        },
+        {
+          "id": "c_h_c_5",
+          "label": "Follow the low path.",
+          "target": "c_pd_p1"
+        },
+        {
+          "id": "c_h_c_6",
+          "label": "Chance the far gallery.",
+          "target": "c_pe1"
+        },
+        {
+          "id": "c_h_c_7",
+          "label": "Explore the outer galleries.",
+          "target": "c_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_c1",
+      "body": "<<FILL role=rising words=69 beats='Rowan edges between swinging pendulums that sweep the floor in slow bright arcs, timing each step to the ticking of the tower heart'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "g_c",
+      "body": "<<FILL role=bottleneck words=84 beats='a jammed master-gear blocks the gallery, teeth locked on a snapped brass key; the gear-shard rides the hub of the wheel just out of reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_c_1",
+          "label": "Win through the barrier.",
+          "target": "s_c2"
+        },
+        {
+          "id": "c_g_c_2",
+          "label": "Attempt the risky bypass.",
+          "target": "c_ga1"
+        },
+        {
+          "id": "c_g_c_3",
+          "label": "Probe the mechanism.",
+          "target": "c_gb1"
+        },
+        {
+          "id": "c_g_c_4",
+          "label": "Look for another handhold.",
+          "target": "c_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_c2",
+      "body": "<<FILL role=rising words=55 beats='the freed gear turns with a shudder and the gear-shard drops into Rowan palm, two of three, as a brass stair unfolds toward the next tier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_c2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_l"
+        }
+      ]
+    },
+    {
+      "id": "c_pa1",
+      "body": "<<FILL role=rising words=63 beats='the flanking passage skirts wide around the clockwork galleries and rejoins the way just before the barrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "c_pb1",
+      "body": "<<FILL role=rising words=74 beats='the side chamber of the clockwork galleries is choked with wreckage that Rowan must clear by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "c_pb2"
+        }
+      ]
+    },
+    {
+      "id": "c_pb2",
+      "body": "<<FILL role=choice words=72 beats='past the wreckage two ways open, a narrow crawl back toward the barrier and a sagging floor over open dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_c"
+        },
+        {
+          "id": "c_c_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "c_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "c_pb_bad",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Rowan into a sealed vault below the clockwork galleries, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Clockwork Galleries"
+      }
+    },
+    {
+      "id": "c_pc1",
+      "body": "<<FILL role=rising words=60 beats='beyond the near door a corridor of the clockwork galleries runs long and lightless, the ceiling dripping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "c_pc2"
+        }
+      ]
+    },
+    {
+      "id": "c_pc2",
+      "body": "<<FILL role=choice words=74 beats='the corridor ends at a choice of two low arches, one breathing cold air, one warm and close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "c_pc_bad1"
+        },
+        {
+          "id": "c_c_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "c_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "c_pc_bad1",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Rowan backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "c_pc_bad2",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of the tower vermin that swarm the light, and Rowan retreats coughing into the dark, the way lost for tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "c_pd_p1",
+      "body": "<<FILL role=rising words=67 beats='the low path of the clockwork galleries slopes down into standing water and colder air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p1_1",
+          "label": "Press on.",
+          "target": "c_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_p2",
+      "body": "<<FILL role=rising words=58 beats='the passage narrows until Rowan must turn sideways between wet stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p2_1",
+          "label": "Press on.",
+          "target": "c_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_p3",
+      "body": "<<FILL role=rising words=66 beats='the ceiling drops lower and the way ahead pinches almost shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pd_p3_1",
+          "label": "Press on.",
+          "target": "c_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "c_pd_end",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Rowan is turned back from the clockwork galleries, the climb halted before it truly began'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Clockwork Galleries"
+      }
+    },
+    {
+      "id": "c_pe1",
+      "body": "<<FILL role=rising words=72 beats='the far gallery of the clockwork galleries is quiet, and in a dry alcove Rowan finds an old climber cache of rope and chalk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "c_pe2"
+        },
+        {
+          "id": "c_c_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "c_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "c_pe_rest",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Rowan lets the hour slip; the night deepens and the clockwork galleries must be left for a stronger attempt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "c_pe2",
+      "body": "<<FILL role=rising words=61 beats='rope coiled and hands chalked, the gallery bends back toward the main barrier by a hidden fault in the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_c"
+        }
+      ]
+    },
+    {
+      "id": "c_ga1",
+      "body": "<<FILL role=rising words=69 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the clockwork galleries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "c_ga2"
+        }
+      ]
+    },
+    {
+      "id": "c_ga2",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Rowan boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Rowan back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "c_gb1",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the clockwork galleries, Rowan finds a release lever and a tangle of counterweights that could go either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_c2"
+        },
+        {
+          "id": "c_c_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "c_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "c_gb_bad",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Rowan climbs back down to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "c_gc_p1",
+      "body": "<<FILL role=rising words=55 beats='the search for another handhold leads Rowan out onto the raw face of the clockwork galleries'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gc_p1_1",
+          "label": "Press on.",
+          "target": "c_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gc_p2",
+      "body": "<<FILL role=rising words=63 beats='the holds run out and the wind or water pulls hard at every finger'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gc_p2_1",
+          "label": "Press on.",
+          "target": "c_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gc_end",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Rowan retreats down a tier to find a safer night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Clockwork Galleries Barrier"
+      }
+    },
+    {
+      "id": "c_gal",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the clockwork galleries spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_1",
+          "label": "Try passage 1.",
+          "target": "c_gal_c1_p1"
+        },
+        {
+          "id": "c_c_gal_2",
+          "label": "Try passage 2.",
+          "target": "c_gal_c2_p1"
+        },
+        {
+          "id": "c_c_gal_3",
+          "label": "Try passage 3.",
+          "target": "c_gal_c3_p1"
+        },
+        {
+          "id": "c_c_gal_4",
+          "label": "Try passage 4.",
+          "target": "c_gal_c4_p1"
+        },
+        {
+          "id": "c_c_gal_5",
+          "label": "Try passage 5.",
+          "target": "c_gal_c5_p1"
+        },
+        {
+          "id": "c_c_gal_6",
+          "label": "Try passage 6.",
+          "target": "c_gal_c6_p1"
+        },
+        {
+          "id": "c_c_gal_7",
+          "label": "Try passage 7.",
+          "target": "c_gal_c7_p1"
+        },
+        {
+          "id": "c_c_gal_8",
+          "label": "Try passage 8.",
+          "target": "c_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p1",
+      "body": "<<FILL role=rising words=74 beats='passage 1 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p2",
+      "body": "<<FILL role=rising words=60 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_p3",
+      "body": "<<FILL role=rising words=67 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c1_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "c_gal_c2_p1",
+      "body": "<<FILL role=rising words=58 beats='passage 2 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_p2",
+      "body": "<<FILL role=rising words=66 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_p3",
+      "body": "<<FILL role=rising words=72 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c2_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "c_gal_c3_p1",
+      "body": "<<FILL role=rising words=61 beats='passage 3 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c3_p2",
+      "body": "<<FILL role=rising words=69 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c3_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "c_gal_c4_p1",
+      "body": "<<FILL role=rising words=55 beats='passage 4 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_p2",
+      "body": "<<FILL role=rising words=63 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_p3",
+      "body": "<<FILL role=rising words=74 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c4_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "c_gal_c5_p1",
+      "body": "<<FILL role=rising words=60 beats='passage 5 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_p2",
+      "body": "<<FILL role=rising words=67 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_p3",
+      "body": "<<FILL role=rising words=58 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c5_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "c_gal_c6_p1",
+      "body": "<<FILL role=rising words=66 beats='passage 6 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c6_p2",
+      "body": "<<FILL role=rising words=72 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c6_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "c_gal_c7_p1",
+      "body": "<<FILL role=rising words=61 beats='passage 7 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_p2",
+      "body": "<<FILL role=rising words=69 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_p3",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "c_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c7_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "c_gal_c8_p1",
+      "body": "<<FILL role=rising words=63 beats='passage 8 of the clockwork galleries narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "c_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c8_p2",
+      "body": "<<FILL role=rising words=74 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_c_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "c_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "c_gal_c8_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the clockwork galleries for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_c_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_l",
+      "body": "<<FILL role=hub words=82 beats='the whispering library climbs into darkness, shelf upon shelf murmuring in dead languages while loose pages drift like moths; the ink-shard is bound inside a locked ledger'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_l_1",
+          "label": "Take the direct route.",
+          "target": "s_l1"
+        },
+        {
+          "id": "c_h_l_2",
+          "label": "Try the flanking passage.",
+          "target": "l_pa1"
+        },
+        {
+          "id": "c_h_l_3",
+          "label": "Search the side chamber.",
+          "target": "l_pb1"
+        },
+        {
+          "id": "c_h_l_4",
+          "label": "Force the near door.",
+          "target": "l_pc1"
+        },
+        {
+          "id": "c_h_l_5",
+          "label": "Follow the low path.",
+          "target": "l_pd_p1"
+        },
+        {
+          "id": "c_h_l_6",
+          "label": "Chance the far gallery.",
+          "target": "l_pe1"
+        },
+        {
+          "id": "c_h_l_7",
+          "label": "Explore the outer galleries.",
+          "target": "l_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_l1",
+      "body": "<<FILL role=rising words=60 beats='the whispers sharpen into half-heard warnings and a folded paper sentinel unfolds from the stacks, watching Rowan with inkblot eyes'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_l1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "g_l",
+      "body": "<<FILL role=bottleneck words=84 beats='the paper guardian blocks the ladder to the upper stacks and will not let a climber pass without answering the riddle carved in the reading-desk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_l_1",
+          "label": "Win through the barrier.",
+          "target": "s_l2"
+        },
+        {
+          "id": "c_g_l_2",
+          "label": "Attempt the risky bypass.",
+          "target": "l_ga1"
+        },
+        {
+          "id": "c_g_l_3",
+          "label": "Probe the mechanism.",
+          "target": "l_gb1"
+        },
+        {
+          "id": "c_g_l_4",
+          "label": "Look for another handhold.",
+          "target": "l_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_l2",
+      "body": "<<FILL role=rising words=67 beats='the riddle answered, the ledger falls open and the ink-shard lifts from the page, three of three, while a hidden stair spirals up toward the wind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_l2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_r"
+        }
+      ]
+    },
+    {
+      "id": "l_pa1",
+      "body": "<<FILL role=rising words=58 beats='the flanking passage skirts wide around the whispering library and rejoins the way just before the barrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "l_pb1",
+      "body": "<<FILL role=rising words=66 beats='the side chamber of the whispering library is choked with wreckage that Rowan must clear by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "l_pb2"
+        }
+      ]
+    },
+    {
+      "id": "l_pb2",
+      "body": "<<FILL role=choice words=72 beats='past the wreckage two ways open, a narrow crawl back toward the barrier and a sagging floor over open dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_l"
+        },
+        {
+          "id": "c_l_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "l_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "l_pb_bad",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Rowan into a sealed vault below the whispering library, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Whispering Library"
+      }
+    },
+    {
+      "id": "l_pc1",
+      "body": "<<FILL role=rising words=72 beats='beyond the near door a corridor of the whispering library runs long and lightless, the ceiling dripping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "l_pc2"
+        }
+      ]
+    },
+    {
+      "id": "l_pc2",
+      "body": "<<FILL role=choice words=74 beats='the corridor ends at a choice of two low arches, one breathing cold air, one warm and close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "l_pc_bad1"
+        },
+        {
+          "id": "c_l_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "l_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "l_pc_bad1",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Rowan backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "l_pc_bad2",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of the tower vermin that swarm the light, and Rowan retreats coughing into the dark, the way lost for tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "l_pd_p1",
+      "body": "<<FILL role=rising words=61 beats='the low path of the whispering library slopes down into standing water and colder air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p1_1",
+          "label": "Press on.",
+          "target": "l_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_p2",
+      "body": "<<FILL role=rising words=69 beats='the passage narrows until Rowan must turn sideways between wet stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p2_1",
+          "label": "Press on.",
+          "target": "l_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_p3",
+      "body": "<<FILL role=rising words=55 beats='the ceiling drops lower and the way ahead pinches almost shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pd_p3_1",
+          "label": "Press on.",
+          "target": "l_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "l_pd_end",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Rowan is turned back from the whispering library, the climb halted before it truly began'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Whispering Library"
+      }
+    },
+    {
+      "id": "l_pe1",
+      "body": "<<FILL role=rising words=63 beats='the far gallery of the whispering library is quiet, and in a dry alcove Rowan finds an old climber cache of rope and chalk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "l_pe2"
+        },
+        {
+          "id": "c_l_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "l_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "l_pe_rest",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Rowan lets the hour slip; the night deepens and the whispering library must be left for a stronger attempt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "l_pe2",
+      "body": "<<FILL role=rising words=74 beats='rope coiled and hands chalked, the gallery bends back toward the main barrier by a hidden fault in the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_l"
+        }
+      ]
+    },
+    {
+      "id": "l_ga1",
+      "body": "<<FILL role=rising words=60 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the whispering library'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "l_ga2"
+        }
+      ]
+    },
+    {
+      "id": "l_ga2",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Rowan boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Rowan back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "l_gb1",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the whispering library, Rowan finds a release lever and a tangle of counterweights that could go either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_l2"
+        },
+        {
+          "id": "c_l_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "l_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "l_gb_bad",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Rowan climbs back down to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "l_gc_p1",
+      "body": "<<FILL role=rising words=67 beats='the search for another handhold leads Rowan out onto the raw face of the whispering library'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gc_p1_1",
+          "label": "Press on.",
+          "target": "l_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gc_p2",
+      "body": "<<FILL role=rising words=58 beats='the holds run out and the wind or water pulls hard at every finger'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gc_p2_1",
+          "label": "Press on.",
+          "target": "l_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gc_end",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Rowan retreats down a tier to find a safer night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Whispering Library Barrier"
+      }
+    },
+    {
+      "id": "l_gal",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the whispering library spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_1",
+          "label": "Try passage 1.",
+          "target": "l_gal_c1_p1"
+        },
+        {
+          "id": "c_l_gal_2",
+          "label": "Try passage 2.",
+          "target": "l_gal_c2_p1"
+        },
+        {
+          "id": "c_l_gal_3",
+          "label": "Try passage 3.",
+          "target": "l_gal_c3_p1"
+        },
+        {
+          "id": "c_l_gal_4",
+          "label": "Try passage 4.",
+          "target": "l_gal_c4_p1"
+        },
+        {
+          "id": "c_l_gal_5",
+          "label": "Try passage 5.",
+          "target": "l_gal_c5_p1"
+        },
+        {
+          "id": "c_l_gal_6",
+          "label": "Try passage 6.",
+          "target": "l_gal_c6_p1"
+        },
+        {
+          "id": "c_l_gal_7",
+          "label": "Try passage 7.",
+          "target": "l_gal_c7_p1"
+        },
+        {
+          "id": "c_l_gal_8",
+          "label": "Try passage 8.",
+          "target": "l_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p1",
+      "body": "<<FILL role=rising words=66 beats='passage 1 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p2",
+      "body": "<<FILL role=rising words=72 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_p3",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c1_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "l_gal_c2_p1",
+      "body": "<<FILL role=rising words=69 beats='passage 2 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_p2",
+      "body": "<<FILL role=rising words=55 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_p3",
+      "body": "<<FILL role=rising words=63 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c2_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "l_gal_c3_p1",
+      "body": "<<FILL role=rising words=74 beats='passage 3 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c3_p2",
+      "body": "<<FILL role=rising words=60 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c3_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "l_gal_c4_p1",
+      "body": "<<FILL role=rising words=67 beats='passage 4 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_p2",
+      "body": "<<FILL role=rising words=58 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_p3",
+      "body": "<<FILL role=rising words=66 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c4_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "l_gal_c5_p1",
+      "body": "<<FILL role=rising words=72 beats='passage 5 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_p2",
+      "body": "<<FILL role=rising words=61 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_p3",
+      "body": "<<FILL role=rising words=69 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c5_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "l_gal_c6_p1",
+      "body": "<<FILL role=rising words=55 beats='passage 6 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c6_p2",
+      "body": "<<FILL role=rising words=63 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c6_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "l_gal_c7_p1",
+      "body": "<<FILL role=rising words=74 beats='passage 7 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_p2",
+      "body": "<<FILL role=rising words=60 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_p3",
+      "body": "<<FILL role=rising words=67 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "l_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c7_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "l_gal_c8_p1",
+      "body": "<<FILL role=rising words=58 beats='passage 8 of the whispering library narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "l_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c8_p2",
+      "body": "<<FILL role=rising words=66 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_l_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "l_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "l_gal_c8_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the whispering library for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_l_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_r",
+      "body": "<<FILL role=hub words=82 beats='the wind-scoured ramparts ring the tower under a bruised sky, narrow ledges slick with spray and stone gargoyles crouched along a bridge that has half fallen away'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_r_1",
+          "label": "Take the direct route.",
+          "target": "s_r1"
+        },
+        {
+          "id": "c_h_r_2",
+          "label": "Try the flanking passage.",
+          "target": "r_pa1"
+        },
+        {
+          "id": "c_h_r_3",
+          "label": "Search the side chamber.",
+          "target": "r_pb1"
+        },
+        {
+          "id": "c_h_r_4",
+          "label": "Force the near door.",
+          "target": "r_pc1"
+        },
+        {
+          "id": "c_h_r_5",
+          "label": "Follow the low path.",
+          "target": "r_pd_p1"
+        },
+        {
+          "id": "c_h_r_6",
+          "label": "Chance the far gallery.",
+          "target": "r_pe1"
+        },
+        {
+          "id": "c_h_r_7",
+          "label": "Explore the outer galleries.",
+          "target": "r_gal"
+        }
+      ]
+    },
+    {
+      "id": "s_r1",
+      "body": "<<FILL role=rising words=72 beats='the gale shoves Rowan against the parapet and the broken bridge groans, one span still standing over a long dark drop to the clouds below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r1_1",
+          "label": "Push toward the barrier.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "g_r",
+      "body": "<<FILL role=bottleneck words=84 beats='the tower guardian wakes, a great stone sentinel that steps from the rampart wall to bar the last stair, eyes lit with the old curse'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_r_1",
+          "label": "Win through the barrier.",
+          "target": "s_r2"
+        },
+        {
+          "id": "c_g_r_2",
+          "label": "Attempt the risky bypass.",
+          "target": "r_ga1"
+        },
+        {
+          "id": "c_g_r_3",
+          "label": "Probe the mechanism.",
+          "target": "r_gb1"
+        },
+        {
+          "id": "c_g_r_4",
+          "label": "Look for another handhold.",
+          "target": "r_gc_p1"
+        }
+      ]
+    },
+    {
+      "id": "s_r2",
+      "body": "<<FILL role=rising words=61 beats='the sentinel outwitted, it grinds back into the wall and the final stair stands open, the beacon chamber glowing faintly at the top of the world'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_r2_1",
+          "label": "Climb to the next tier.",
+          "target": "h_b"
+        }
+      ]
+    },
+    {
+      "id": "r_pa1",
+      "body": "<<FILL role=rising words=69 beats='the flanking passage skirts wide around the wind-scoured ramparts and rejoins the way just before the barrier'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pa1_1",
+          "label": "Rejoin the barrier.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "r_pb1",
+      "body": "<<FILL role=rising words=55 beats='the side chamber of the wind-scoured ramparts is choked with wreckage that Rowan must clear by hand'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pb1_1",
+          "label": "Dig deeper in.",
+          "target": "r_pb2"
+        }
+      ]
+    },
+    {
+      "id": "r_pb2",
+      "body": "<<FILL role=choice words=72 beats='past the wreckage two ways open, a narrow crawl back toward the barrier and a sagging floor over open dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pb2_1",
+          "label": "Crawl back to the barrier.",
+          "target": "g_r"
+        },
+        {
+          "id": "c_r_pb2_2",
+          "label": "Cross the sagging floor.",
+          "target": "r_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "r_pb_bad",
+      "body": "<<FILL role=failure words=60 beats='the sagging floor gives way and drops Rowan into a sealed vault below the wind-scoured ramparts, the trapdoor slamming shut overhead, and the only choice left is to wait and climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Under the Wind-Scoured Ramparts"
+      }
+    },
+    {
+      "id": "r_pc1",
+      "body": "<<FILL role=rising words=63 beats='beyond the near door a corridor of the wind-scoured ramparts runs long and lightless, the ceiling dripping'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pc1_1",
+          "label": "Feel along the wall.",
+          "target": "r_pc2"
+        }
+      ]
+    },
+    {
+      "id": "r_pc2",
+      "body": "<<FILL role=choice words=74 beats='the corridor ends at a choice of two low arches, one breathing cold air, one warm and close'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pc2_1",
+          "label": "Take the cold arch.",
+          "target": "r_pc_bad1"
+        },
+        {
+          "id": "c_r_pc2_2",
+          "label": "Take the warm arch.",
+          "target": "r_pc_bad2"
+        }
+      ]
+    },
+    {
+      "id": "r_pc_bad1",
+      "body": "<<FILL role=failure words=58 beats='the cold arch opens on a sheer shaft with no floor, and Rowan backs out just in time, driven down a tier by the near fall and forced to begin the ascent again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pc_bad1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floorless Shaft"
+      }
+    },
+    {
+      "id": "r_pc_bad2",
+      "body": "<<FILL role=failure words=56 beats='the warm arch is a nest of the tower vermin that swarm the light, and Rowan retreats coughing into the dark, the way lost for tonight'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pc_bad2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Warm Nest"
+      }
+    },
+    {
+      "id": "r_pd_p1",
+      "body": "<<FILL role=rising words=74 beats='the low path of the wind-scoured ramparts slopes down into standing water and colder air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p1_1",
+          "label": "Press on.",
+          "target": "r_pd_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_p2",
+      "body": "<<FILL role=rising words=60 beats='the passage narrows until Rowan must turn sideways between wet stone'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p2_1",
+          "label": "Press on.",
+          "target": "r_pd_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_p3",
+      "body": "<<FILL role=rising words=67 beats='the ceiling drops lower and the way ahead pinches almost shut'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pd_p3_1",
+          "label": "Press on.",
+          "target": "r_pd_end"
+        }
+      ]
+    },
+    {
+      "id": "r_pd_end",
+      "body": "<<FILL role=failure words=62 beats='the low path dead-ends at a caved-in wall with no way through, and Rowan is turned back from the wind-scoured ramparts, the climb halted before it truly began'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pd_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Wind-Scoured Ramparts"
+      }
+    },
+    {
+      "id": "r_pe1",
+      "body": "<<FILL role=rising words=58 beats='the far gallery of the wind-scoured ramparts is quiet, and in a dry alcove Rowan finds an old climber cache of rope and chalk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pe1_1",
+          "label": "Take the cache and press on.",
+          "target": "r_pe2"
+        },
+        {
+          "id": "c_r_pe1_2",
+          "label": "Rest a moment in the alcove.",
+          "target": "r_pe_rest"
+        }
+      ]
+    },
+    {
+      "id": "r_pe_rest",
+      "body": "<<FILL role=discovery words=64 beats='the alcove is warm and safe and the cache is a small mercy, but resting here Rowan lets the hour slip; the night deepens and the wind-scoured ramparts must be left for a stronger attempt'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_pe_rest",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Climber Cache"
+      }
+    },
+    {
+      "id": "r_pe2",
+      "body": "<<FILL role=rising words=66 beats='rope coiled and hands chalked, the gallery bends back toward the main barrier by a hidden fault in the wall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_pe2_1",
+          "label": "Follow the fault back.",
+          "target": "g_r"
+        }
+      ]
+    },
+    {
+      "id": "r_ga1",
+      "body": "<<FILL role=rising words=72 beats='the risky bypass climbs outside the barrier along a crumbling ledge of the wind-scoured ramparts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_ga1_1",
+          "label": "Edge along the ledge.",
+          "target": "r_ga2"
+        }
+      ]
+    },
+    {
+      "id": "r_ga2",
+      "body": "<<FILL role=failure words=60 beats='the crumbling ledge shears away under Rowan boot and only a lucky handhold saves the fall, but the bypass is gone and the barrier undefeated, so the tier turns Rowan back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_ga2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sheared Ledge"
+      }
+    },
+    {
+      "id": "r_gb1",
+      "body": "<<FILL role=choice words=76 beats='probing the barrier mechanism of the wind-scoured ramparts, Rowan finds a release lever and a tangle of counterweights that could go either way'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gb1_1",
+          "label": "Trip the release lever.",
+          "target": "s_r2"
+        },
+        {
+          "id": "c_r_gb1_2",
+          "label": "Cut the counterweights.",
+          "target": "r_gb_bad"
+        }
+      ]
+    },
+    {
+      "id": "r_gb_bad",
+      "body": "<<FILL role=failure words=62 beats='cutting the counterweights drops the whole barrier into a locked position with a boom, sealing the way for good tonight, and Rowan climbs back down to try again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Barrier"
+      }
+    },
+    {
+      "id": "r_gc_p1",
+      "body": "<<FILL role=rising words=61 beats='the search for another handhold leads Rowan out onto the raw face of the wind-scoured ramparts'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gc_p1_1",
+          "label": "Press on.",
+          "target": "r_gc_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gc_p2",
+      "body": "<<FILL role=rising words=69 beats='the holds run out and the wind or water pulls hard at every finger'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gc_p2_1",
+          "label": "Press on.",
+          "target": "r_gc_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gc_end",
+      "body": "<<FILL role=failure words=62 beats='there is simply no way around the barrier here, and clinging on grows too dangerous, so Rowan retreats down a tier to find a safer night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gc_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back at the Wind-Scoured Ramparts Barrier"
+      }
+    },
+    {
+      "id": "r_gal",
+      "body": "<<FILL role=hub words=80 beats='the outer galleries of the wind-scoured ramparts spread out in a maze of side passages, each promising a way up and most leading nowhere good'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_1",
+          "label": "Try passage 1.",
+          "target": "r_gal_c1_p1"
+        },
+        {
+          "id": "c_r_gal_2",
+          "label": "Try passage 2.",
+          "target": "r_gal_c2_p1"
+        },
+        {
+          "id": "c_r_gal_3",
+          "label": "Try passage 3.",
+          "target": "r_gal_c3_p1"
+        },
+        {
+          "id": "c_r_gal_4",
+          "label": "Try passage 4.",
+          "target": "r_gal_c4_p1"
+        },
+        {
+          "id": "c_r_gal_5",
+          "label": "Try passage 5.",
+          "target": "r_gal_c5_p1"
+        },
+        {
+          "id": "c_r_gal_6",
+          "label": "Try passage 6.",
+          "target": "r_gal_c6_p1"
+        },
+        {
+          "id": "c_r_gal_7",
+          "label": "Try passage 7.",
+          "target": "r_gal_c7_p1"
+        },
+        {
+          "id": "c_r_gal_8",
+          "label": "Try passage 8.",
+          "target": "r_gal_c8_p1"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p1",
+      "body": "<<FILL role=rising words=55 beats='passage 1 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p2",
+      "body": "<<FILL role=rising words=63 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_p3",
+      "body": "<<FILL role=rising words=74 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c1_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c1_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c1_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Blind Turning"
+      }
+    },
+    {
+      "id": "r_gal_c2_p1",
+      "body": "<<FILL role=rising words=60 beats='passage 2 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_p2",
+      "body": "<<FILL role=rising words=67 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_p3",
+      "body": "<<FILL role=rising words=58 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c2_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c2_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c2_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Choked Vent"
+      }
+    },
+    {
+      "id": "r_gal_c3_p1",
+      "body": "<<FILL role=rising words=66 beats='passage 3 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c3_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c3_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c3_p2",
+      "body": "<<FILL role=rising words=72 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c3_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c3_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c3_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Cell"
+      }
+    },
+    {
+      "id": "r_gal_c4_p1",
+      "body": "<<FILL role=rising words=61 beats='passage 4 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_p2",
+      "body": "<<FILL role=rising words=69 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_p3",
+      "body": "<<FILL role=rising words=55 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c4_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c4_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c4_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Winch"
+      }
+    },
+    {
+      "id": "r_gal_c5_p1",
+      "body": "<<FILL role=rising words=63 beats='passage 5 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_p2",
+      "body": "<<FILL role=rising words=74 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_p3",
+      "body": "<<FILL role=rising words=60 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c5_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c5_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c5_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Cold Larder"
+      }
+    },
+    {
+      "id": "r_gal_c6_p1",
+      "body": "<<FILL role=rising words=67 beats='passage 6 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c6_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c6_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c6_p2",
+      "body": "<<FILL role=rising words=58 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c6_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c6_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c6_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Fallen Arch"
+      }
+    },
+    {
+      "id": "r_gal_c7_p1",
+      "body": "<<FILL role=rising words=66 beats='passage 7 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_p2",
+      "body": "<<FILL role=rising words=72 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_p3"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_p3",
+      "body": "<<FILL role=rising words=61 beats='the way pinches down until Rowan can barely squeeze ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c7_p3_1",
+          "label": "Press on.",
+          "target": "r_gal_c7_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c7_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silent Well"
+      }
+    },
+    {
+      "id": "r_gal_c8_p1",
+      "body": "<<FILL role=rising words=69 beats='passage 8 of the wind-scoured ramparts narrows and turns, the light failing behind'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c8_p1_1",
+          "label": "Press on.",
+          "target": "r_gal_c8_p2"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c8_p2",
+      "body": "<<FILL role=rising words=55 beats='loose stone shifts and the air grows close and stale'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_r_gal_c8_p2_1",
+          "label": "Press on.",
+          "target": "r_gal_c8_end"
+        }
+      ]
+    },
+    {
+      "id": "r_gal_c8_end",
+      "body": "<<FILL role=failure words=62 beats='the passage ends against blank tower stone with no way on, and Rowan must back out and give up the wind-scoured ramparts for tonight, to climb again another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_r_gal_c8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Locked Grate"
+      }
+    },
+    {
+      "id": "h_b",
+      "body": "<<FILL role=hub words=86 beats='the beacon chamber crowns the Sunspire, its great dark lantern cold at the center while the long night gathers at the glass and the three shards hum in Rowan’s hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_h_b_1",
+          "label": "Approach the lantern crown.",
+          "target": "s_b1"
+        },
+        {
+          "id": "c_h_b_2",
+          "label": "Circle the chamber first.",
+          "target": "b_pa1"
+        },
+        {
+          "id": "c_h_b_3",
+          "label": "Study the curse-shadow.",
+          "target": "b_pb1"
+        },
+        {
+          "id": "c_h_b_4",
+          "label": "Search for the keeper remains.",
+          "target": "b_pc1"
+        },
+        {
+          "id": "c_h_b_5",
+          "label": "Brace the doors against the night.",
+          "target": "b_pd1"
+        }
+      ]
+    },
+    {
+      "id": "s_b1",
+      "body": "<<FILL role=rising words=70 beats='the shards must be set into the lantern crown in the right order or the curse will smother the spark; the beacon mechanism waits, patient and dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b1_1",
+          "label": "Read the crown order.",
+          "target": "g_b"
+        }
+      ]
+    },
+    {
+      "id": "g_b",
+      "body": "<<FILL role=bottleneck words=88 beats='the curse itself rises as a shadow across the lantern, whispering that the night is kinder than the climb and that Rowan should set the shards down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_g_b_1",
+          "label": "Refuse the shadow and set the shards.",
+          "target": "s_b2"
+        },
+        {
+          "id": "c_g_b_2",
+          "label": "Bargain with the shadow.",
+          "target": "b_ga1"
+        },
+        {
+          "id": "c_g_b_3",
+          "label": "Try to set the shards blind.",
+          "target": "b_gb1"
+        }
+      ]
+    },
+    {
+      "id": "s_b2",
+      "body": "<<FILL role=climax words=84 beats='Rowan refuses the shadow and fits the three shards to the crown, and the old mechanism drinks the light and begins to warm beneath both hands'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b2_1",
+          "label": "Speak the old keeper words.",
+          "target": "s_b3"
+        },
+        {
+          "id": "c_s_b2_2",
+          "label": "Force the spark at once.",
+          "target": "b_force"
+        }
+      ]
+    },
+    {
+      "id": "s_b3",
+      "body": "<<FILL role=climax words=80 beats='the crown warms and the first true light in a hundred years gathers under Rowan’s hands, but the curse-shadow claws at the glass one last time and the order of the final turn must be chosen'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b3_1",
+          "label": "Turn the crown sunwise, as the log said.",
+          "target": "e_relight"
+        },
+        {
+          "id": "c_s_b3_2",
+          "label": "Turn the crown widdershins, to spite the curse.",
+          "target": "b_widder"
+        }
+      ]
+    },
+    {
+      "id": "e_relight",
+      "body": "<<FILL role=resolution words=96 beats='sunwise the crown turns and the beacon blazes gold across the whole coast, the long night breaking apart and the curse unspooling into morning; the Sunspire stands lit and free, and Rowan is the keeper who climbed the whole cursed tower and brought the light back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_relight",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Beacon Relit"
+      }
+    },
+    {
+      "id": "b_widder",
+      "body": "<<FILL role=failure words=74 beats='widdershins the crown fights back and the gathered light gutters out in a cold rush, the shadow laughing as it fades, and Rowan is left in the dark chamber having reached the very top yet failing the last turn, to rest and try the final ritual again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_widder",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Last Turn Wrong"
+      }
+    },
+    {
+      "id": "b_force",
+      "body": "<<FILL role=failure words=70 beats='forced too soon the spark leaps wild and throws Rowan back from the crown, the shards scattering across the floor; the beacon stays dark and the long night holds, so the climber must gather the shards and steady before trying once more'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_force",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wild Spark"
+      }
+    },
+    {
+      "id": "b_pa1",
+      "body": "<<FILL role=rising words=64 beats='circling the beacon chamber Rowan finds the old keeper log open on a lectern, its last page describing the sunwise turn of the crown'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pa1_1",
+          "label": "Read on, then approach the crown.",
+          "target": "s_b1"
+        }
+      ]
+    },
+    {
+      "id": "b_pb1",
+      "body": "<<FILL role=choice words=72 beats='studying the curse-shadow, Rowan sees it flinches from the shards light; there is a moment to strike past it or to keep watching and lose it'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pb1_1",
+          "label": "Slip past to the crown.",
+          "target": "s_b1"
+        },
+        {
+          "id": "c_b_pb1_2",
+          "label": "Keep watching, transfixed.",
+          "target": "b_pb_bad"
+        }
+      ]
+    },
+    {
+      "id": "b_pb_bad",
+      "body": "<<FILL role=failure words=62 beats='watching the shadow too long, Rowan feels the night pour in and the cold take the chamber; the moment passes and the climb must be abandoned to the dark, to be attempted again'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_pb_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Held by the Shadow"
+      }
+    },
+    {
+      "id": "b_pc1",
+      "body": "<<FILL role=rising words=60 beats='in a cold alcove Rowan finds the last keeper, only bones and a ring of keys now, one key still fitting the crown housing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_pc1_1",
+          "label": "Take the key to the crown.",
+          "target": "s_b1"
+        }
+      ]
+    },
+    {
+      "id": "b_pd1",
+      "body": "<<FILL role=discovery words=66 beats='bracing the great doors, Rowan holds the night out for one long hour and buys the coast a little dawn, but the beacon stays dark behind and the true climb is left unfinished for a braver night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_pd1",
+        "valence": "neutral",
+        "kind": "discovery",
+        "title": "The Braced Doors"
+      }
+    },
+    {
+      "id": "b_ga1",
+      "body": "<<FILL role=choice words=74 beats='bargaining, Rowan offers the shadow a single shard for safe passage, and it reaches out a smoke-cold hand to take the bargain'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_ga1_1",
+          "label": "Snatch the shard back and run for the crown.",
+          "target": "s_b2b"
+        },
+        {
+          "id": "c_b_ga1_2",
+          "label": "Let the shadow take the shard.",
+          "target": "b_ga_bad"
+        }
+      ]
+    },
+    {
+      "id": "b_ga_bad",
+      "body": "<<FILL role=failure words=64 beats='the shadow takes the shard and swallows the light with it, and now only two shards remain, not enough to wake the crown; Rowan retreats down the tower to seek the lost shard another night'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_ga_bad",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bargained Shard"
+      }
+    },
+    {
+      "id": "b_gb1",
+      "body": "<<FILL role=rising words=62 beats='setting the shards blind, Rowan feels for the housings in the dark and gets two seated true before the third resists'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_b_gb1_1",
+          "label": "Force the third by feel.",
+          "target": "b_gb2"
+        }
+      ]
+    },
+    {
+      "id": "b_gb2",
+      "body": "<<FILL role=failure words=60 beats='the third shard jams half-seated and the crown locks against it, refusing the light until it is cleared; Rowan must climb down, rest, and come back to seat the shards in the light'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_b_gb2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Jammed Housing"
+      }
+    },
+    {
+      "id": "s_b2b",
+      "body": "<<FILL role=climax words=78 beats='shards snatched back and clutched tight, Rowan sprints the last curve of the chamber ahead of the shadow and reaches the crown from the far side, breath ragged, the housings open and waiting'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_s_b2b_1",
+          "label": "Set the shards from the far side.",
+          "target": "e_clever"
+        }
+      ]
+    },
+    {
+      "id": "e_clever",
+      "body": "<<FILL role=resolution words=90 beats='from the far side Rowan drives the three shards home all at once and the crown catches with a roar of gold, the beacon flaring to life and the shadow torn apart; it is not the keeper way but it is a lit tower and an ending to the long night, won by nerve and a clever line'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_e_clever",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Clever Summit"
+      }
+    }
+  ]
+}

@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Gamebook production skeletons (Batch 5), one per gamebook cell of the ADR-011 matrix, all
+  `branch_and_bottleneck`: `13-16 medium` (The Sunspire Ascent, 252 nodes, 74 endings),
+  `16+ medium` (The Drowned Court, 314 nodes, 105 endings), `13-16 long` (The Thornwood Trial,
+  375 nodes, 115 endings), and `16+ long` (The Ashfall Expedition, 505 nodes, 143 endings).
+  Gamebooks use terse sections and the 0.25 breadth floor, so each fans out into many short
+  non-lethal `setback` endings off a long spine of hub nodes, with a handful of winning arcs
+  earned deep (shortest satisfying paths 26/30/35/48 nodes, each above its cell floor). Every
+  cell is scale-classified and clears the full PL-17/19/20/21 gate. **This completes the launch
+  corpus: all 18 offered cells of the ADR-011 band x length x style matrix now have at least one
+  production-eligible skeleton.**
 - Long-prose production skeletons (Batch 4), one per long-length prose cell of the ADR-011
   matrix, all `branch_and_bottleneck`: `8-11 long` (The Clockwork Menagerie, 166 nodes,
   27 endings), `10-13 long` (The Mapmaker's Island, 224 nodes, 72 endings), `13-16 long`

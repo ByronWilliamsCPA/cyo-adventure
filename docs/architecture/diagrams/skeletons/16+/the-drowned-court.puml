@@ -1,0 +1,1183 @@
+@startuml the-drowned-court
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_ap_moat #D1C4E9
+n_ap_moat : rising · 70w
+state n_ap_sluice #D1C4E9
+n_ap_sluice : rising · 68w
+state n_ap_scaff #D1C4E9
+n_ap_scaff : rising · 66w
+state n_ap_undertow #FFCDD2
+n_ap_undertow : setback (negative)
+n_ap_undertow : "Taken by the Undertow"
+state n_start #BBDEFB
+n_start : setup · 92w
+state fan_tg_s0 #FFCDD2
+fan_tg_s0 : setback (negative)
+fan_tg_s0 : "Pinned at the Gate"
+state fan_tg_s1 #FFCDD2
+fan_tg_s1 : setback (negative)
+fan_tg_s1 : "The Arch Comes Down"
+state n_tidegate_hub #FFF9C4
+n_tidegate_hub : choice · 84w
+state n_tg_gallery #D1C4E9
+n_tg_gallery : rising · 78w
+state n_tg_left #D1C4E9
+n_tg_left : rising · 60w
+state fan_tgr_s0 #FFCDD2
+fan_tgr_s0 : setback (negative)
+fan_tgr_s0 : "Lost the Line"
+state n_tg_right #FFF9C4
+n_tg_right : choice · 70w
+state n_tg_stair #D1C4E9
+n_tg_stair : rising · 58w
+state fan_throne_s0 #FFCDD2
+fan_throne_s0 : setback (negative)
+fan_throne_s0 : "The Floor Gives"
+state fan_throne_s1 #FFCDD2
+fan_throne_s1 : setback (negative)
+fan_throne_s1 : "Walled from the Crown"
+state n_throne_hub #FFF9C4
+n_throne_hub : choice · 86w
+state n_throne_dais #FFE0B2
+n_throne_dais : climax · 88w
+state n_throne_race #FFCDD2
+n_throne_race : setback (negative)
+n_throne_race : "Outraced at the Throne"
+state n_throne_feint #D1C4E9
+n_throne_feint : rising · 64w
+state n_throne_cut #FFF9C4
+n_throne_cut : choice · 72w
+state n_throne_greed #FFCDD2
+n_throne_greed : setback (negative)
+n_throne_greed : "Greed in the Green Dark"
+state n_circlet_taken #D1C4E9
+n_circlet_taken : rising · 66w
+state fan_thex_s0 #FFCDD2
+fan_thex_s0 : setback (negative)
+fan_thex_s0 : "Cut Off with One Piece"
+state n_throne_exit #FFF9C4
+n_throne_exit : choice · 70w
+state fan_reliq_s0 #FFCDD2
+fan_reliq_s0 : setback (negative)
+fan_reliq_s0 : "The Wards Wake"
+state fan_reliq_s1 #FFCDD2
+fan_reliq_s1 : setback (negative)
+fan_reliq_s1 : "Wedged in the Oubliette"
+state n_reliquary_hub #FFF9C4
+n_reliquary_hub : choice · 88w
+state n_reliq_study #D1C4E9
+n_reliq_study : rising · 84w
+state n_reliq_time #D1C4E9
+n_reliq_time : rising · 62w
+state n_reliq_force #FFCDD2
+n_reliq_force : setback (negative)
+n_reliq_force : "The Bar Snaps"
+state n_reliq_flood #FFF9C4
+n_reliq_flood : choice · 70w
+state n_reliq_shore #FFCDD2
+n_reliq_shore : setback (negative)
+n_reliq_shore : "The Vault Sloughs"
+state n_scepter_taken #D1C4E9
+n_scepter_taken : rising · 64w
+state n_reliq_exit #FFF9C4
+n_reliq_exit : choice · 74w
+state n_reliq_spill #FFF9C4
+n_reliq_spill : choice · 66w
+state n_reliq_ride_fail #FFCDD2
+n_reliq_ride_fail : setback (negative)
+n_reliq_ride_fail : "Caught on the Grille"
+state fan_cist_s0 #FFCDD2
+fan_cist_s0 : setback (negative)
+fan_cist_s0 : "The Bottomless Sump"
+state fan_cist_s1 #FFCDD2
+fan_cist_s1 : setback (negative)
+fan_cist_s1 : "The Wrong Seam"
+state n_cistern_hub #FFF9C4
+n_cistern_hub : choice · 88w
+state n_cistern_font #FFE0B2
+n_cistern_font : climax · 86w
+state n_cistern_confront #FFF9C4
+n_cistern_confront : choice · 74w
+state n_cistern_wrestle #FFCDD2
+n_cistern_wrestle : setback (negative)
+n_cistern_wrestle : "A Draw in the Cold"
+state n_cistern_shadow #D1C4E9
+n_cistern_shadow : rising · 60w
+state n_cistern_collapse #FFF9C4
+n_cistern_collapse : choice · 70w
+state n_cistern_cache #FFCDD2
+n_cistern_cache : setback (negative)
+n_cistern_cache : "The Decoy Cache"
+state n_ring_taken #D1C4E9
+n_ring_taken : rising · 66w
+state n_cistern_exit #FFF9C4
+n_cistern_exit : choice · 76w
+state n_cist_orrery #D1C4E9
+n_cist_orrery : rising · 62w
+state fan_dome_s0 #FFCDD2
+fan_dome_s0 : setback (negative)
+fan_dome_s0 : "The Dome Rib Fails"
+state n_cist_dome #FFF9C4
+n_cist_dome : choice · 66w
+state n_obs_deep_d #D1C4E9
+n_obs_deep_d : rising · 60w
+state n_obs_deep_c #D1C4E9
+n_obs_deep_c : rising · 58w
+state n_obs_deep_b #D1C4E9
+n_obs_deep_b : rising · 58w
+state n_obs_deep_a #D1C4E9
+n_obs_deep_a : rising · 58w
+state fan_obs_s0 #FFCDD2
+fan_obs_s0 : setback (negative)
+fan_obs_s0 : "Sealed Below"
+state n_observatory_hub #FFF9C4
+n_observatory_hub : choice · 90w
+state n_obs_control #FFE0B2
+n_obs_control : climax · 90w
+state n_obs_bargain #FFF9C4
+n_obs_bargain : choice · 78w
+state n_obs_refuse #FFCDD2
+n_obs_refuse : setback (negative)
+n_obs_refuse : "Outpaced at the Last"
+state n_obs_climb #D1C4E9
+n_obs_climb : rising · 64w
+state n_obs_race #FFF9C4
+n_obs_race : choice · 72w
+state n_obs_seal_choice #FFE0B2
+n_obs_seal_choice : climax · 88w
+state n_seal_fast #FFF9C4
+n_seal_fast : choice · 74w
+state n_seal_force #D1C4E9
+n_seal_force : rising · 60w
+state n_seal_true #D1C4E9
+n_seal_true : rising · 62w
+state n_ascent_full #ECEFF1
+n_ascent_full : resolution · 78w
+state n_ascent_push #ECEFF1
+n_ascent_push : resolution · 70w
+state n_end_full_best #C8E6C9
+n_end_full_best : success (positive)
+n_end_full_best : "The Court Sealed, The Regalia Home"
+state n_end_full_second #C8E6C9
+n_end_full_second : success (positive)
+n_end_full_second : "All Three, and the Court Closed"
+state n_end_full_rough #C8E6C9
+n_end_full_rough : completion (positive)
+n_end_full_rough : "A Hard-Won Surfacing"
+state n_ascent_partial #ECEFF1
+n_ascent_partial : resolution · 64w
+state n_end_partial_seal #C8E6C9
+n_end_partial_seal : completion (positive)
+n_end_partial_seal : "The Regalia Up, The Court Ajar"
+state n_obs_open_ascent #ECEFF1
+n_obs_open_ascent : resolution · 74w
+state n_open_rivalrope #FFCDD2
+n_open_rivalrope : setback (negative)
+n_open_rivalrope : "Fouled on the Rival Line"
+state n_end_open_full #C8E6C9
+n_end_open_full : completion (positive)
+n_end_open_full : "Regalia Recovered, Court Left to the Sea"
+state n_obs_trade_circlet #ECEFF1
+n_obs_trade_circlet : resolution · 62w
+state n_end_trade_circlet #E0E0E0
+n_end_trade_circlet : completion (neutral)
+n_end_trade_circlet : "Two of Three, a Truce Kept"
+state n_obs_trade_ring #ECEFF1
+n_obs_trade_ring : resolution · 62w
+state n_end_trade_ring #E0E0E0
+n_end_trade_ring : completion (neutral)
+n_end_trade_ring : "The Ring Given, Two Brought Home"
+state xf_tg_e0 #FFCDD2
+xf_tg_e0 : setback (negative)
+xf_tg_e0 : "The Winch Gallery"
+state xf_tg_e1 #FFCDD2
+xf_tg_e1 : setback (negative)
+xf_tg_e1 : "The Eel-Run Drain"
+state xf_tg_e2 #FFCDD2
+xf_tg_e2 : setback (negative)
+xf_tg_e2 : "The Crawl Dead-Ends"
+state xf_tg_e3 #FFCDD2
+xf_tg_e3 : setback (negative)
+xf_tg_e3 : "The Branch Pinches Out"
+state xf_tg_dec #FFF9C4
+xf_tg_dec : choice · 68w
+state xf_tgg_e0 #FFCDD2
+xf_tgg_e0 : setback (negative)
+xf_tgg_e0 : "The Kings Say Nothing"
+state xf_tgg_e1 #FFCDD2
+xf_tgg_e1 : setback (negative)
+xf_tgg_e1 : "A Fool Trinket"
+state xf_tgg_e2 #FFCDD2
+xf_tgg_e2 : setback (negative)
+xf_tgg_e2 : "The Branch Pinches Out"
+state xf_tgg_dec #FFF9C4
+xf_tgg_dec : choice · 68w
+state xf_th_e0 #FFCDD2
+xf_th_e0 : setback (negative)
+xf_th_e0 : "Empty Courtier Galleries"
+state xf_th_e1 #FFCDD2
+xf_th_e1 : setback (negative)
+xf_th_e1 : "The Offering Pool"
+state xf_th_e2 #FFCDD2
+xf_th_e2 : setback (negative)
+xf_th_e2 : "Behind the Choir-Screen"
+state xf_th_e3 #FFCDD2
+xf_th_e3 : setback (negative)
+xf_th_e3 : "The Branch Pinches Out"
+state xf_th_dec #FFF9C4
+xf_th_dec : choice · 68w
+state xf_thx_e0 #FFCDD2
+xf_thx_e0 : setback (negative)
+xf_thx_e0 : "The Drowned Kitchens"
+state xf_thx_e1 #FFCDD2
+xf_thx_e1 : setback (negative)
+xf_thx_e1 : "The Minstrel Gallery"
+state xf_thx_e2 #FFCDD2
+xf_thx_e2 : setback (negative)
+xf_thx_e2 : "The Branch Pinches Out"
+state xf_thx_dec #FFF9C4
+xf_thx_dec : choice · 68w
+state xf_rl_e0 #FFCDD2
+xf_rl_e0 : setback (negative)
+xf_rl_e0 : "The Lesser Niches"
+state xf_rl_e1 #FFCDD2
+xf_rl_e1 : setback (negative)
+xf_rl_e1 : "The Rival Buoy"
+state xf_rl_e2 #FFCDD2
+xf_rl_e2 : setback (negative)
+xf_rl_e2 : "The Sealed Ambry"
+state xf_rl_e3 #FFCDD2
+xf_rl_e3 : setback (negative)
+xf_rl_e3 : "The Branch Pinches Out"
+state xf_rl_dec #FFF9C4
+xf_rl_dec : choice · 68w
+state xf_rlx_e0 #FFCDD2
+xf_rlx_e0 : setback (negative)
+xf_rlx_e0 : "The Scriptorium Turn"
+state xf_rlx_e1 #FFCDD2
+xf_rlx_e1 : setback (negative)
+xf_rlx_e1 : "A False Ascent"
+state xf_rlx_e2 #FFCDD2
+xf_rlx_e2 : setback (negative)
+xf_rlx_e2 : "The Branch Pinches Out"
+state xf_rlx_dec #FFF9C4
+xf_rlx_dec : choice · 68w
+state xf_ci_e0 #FFCDD2
+xf_ci_e0 : setback (negative)
+xf_ci_e0 : "The Pillar-Forest"
+state xf_ci_e1 #FFCDD2
+xf_ci_e1 : setback (negative)
+xf_ci_e1 : "The Overflow Weir"
+state xf_ci_e2 #FFCDD2
+xf_ci_e2 : setback (negative)
+xf_ci_e2 : "The Wellhouse"
+state xf_ci_e3 #FFCDD2
+xf_ci_e3 : setback (negative)
+xf_ci_e3 : "The Branch Pinches Out"
+state xf_ci_dec #FFF9C4
+xf_ci_dec : choice · 68w
+state xf_cix_e0 #FFCDD2
+xf_cix_e0 : setback (negative)
+xf_cix_e0 : "The Stores"
+state xf_cix_e1 #FFCDD2
+xf_cix_e1 : setback (negative)
+xf_cix_e1 : "The Astronomer Stair"
+state xf_cix_e2 #FFCDD2
+xf_cix_e2 : setback (negative)
+xf_cix_e2 : "The Branch Pinches Out"
+state xf_cix_dec #FFF9C4
+xf_cix_dec : choice · 68w
+state xf_ob_e0 #FFCDD2
+xf_ob_e0 : setback (negative)
+xf_ob_e0 : "The Broken Orrery"
+state xf_ob_e1 #FFCDD2
+xf_ob_e1 : setback (negative)
+xf_ob_e1 : "A Premature Signal"
+state xf_ob_e2 #FFCDD2
+xf_ob_e2 : setback (negative)
+xf_ob_e2 : "The Branch Pinches Out"
+state xf_ob_dec #FFF9C4
+xf_ob_dec : choice · 68w
+state ds_obs_e0 #FFCDD2
+ds_obs_e0 : setback (negative)
+ds_obs_e0 : "Feint at the Shaft"
+state ds_obs_b0 #D1C4E9
+ds_obs_b0 : rising · 58w
+state ds_obs_e1 #FFCDD2
+ds_obs_e1 : setback (negative)
+ds_obs_e1 : "Under the Peeling Dome"
+state ds_obs_b1 #D1C4E9
+ds_obs_b1 : rising · 58w
+state ds_cf_e0 #FFCDD2
+ds_cf_e0 : setback (negative)
+ds_cf_e0 : "The Deeper Drop"
+state ds_cf_b0 #D1C4E9
+ds_cf_b0 : rising · 58w
+state ds_td_e0 #FFCDD2
+ds_td_e0 : setback (negative)
+ds_td_e0 : "The False Truce"
+state ds_td_b0 #D1C4E9
+ds_td_b0 : rising · 58w
+state pad1_end #FFCDD2
+pad1_end : setback (negative)
+pad1_end : "Cut Off in the Flood"
+state pad1_b0 #D1C4E9
+pad1_b0 : rising · 56w
+state pad1_b1 #D1C4E9
+pad1_b1 : rising · 62w
+state pad1_b2 #D1C4E9
+pad1_b2 : rising · 68w
+state pad2_end #FFCDD2
+pad2_end : setback (negative)
+pad2_end : "Turned Back by the Tide"
+state pad2_b0 #D1C4E9
+pad2_b0 : rising · 56w
+state pad2_b1 #D1C4E9
+pad2_b1 : rising · 62w
+state pad2_b2 #D1C4E9
+pad2_b2 : rising · 68w
+state pad2_b3 #D1C4E9
+pad2_b3 : rising · 74w
+state pad3_end #FFCDD2
+pad3_end : setback (negative)
+pad3_end : "Lost in the Galleries"
+state pad3_b0 #D1C4E9
+pad3_b0 : rising · 56w
+state pad3_b1 #D1C4E9
+pad3_b1 : rising · 62w
+state pad4_end #FFCDD2
+pad4_end : setback (negative)
+pad4_end : "Driven Off the Ward"
+state pad4_b0 #D1C4E9
+pad4_b0 : rising · 56w
+state pad4_b1 #D1C4E9
+pad4_b1 : rising · 62w
+state pad4_b2 #D1C4E9
+pad4_b2 : rising · 68w
+state pad4_b3 #D1C4E9
+pad4_b3 : rising · 74w
+state pad4_b4 #D1C4E9
+pad4_b4 : rising · 56w
+state pad5_end #FFCDD2
+pad5_end : setback (negative)
+pad5_end : "Out of Line in the Deep"
+state pad5_b0 #D1C4E9
+pad5_b0 : rising · 56w
+state pad5_b1 #D1C4E9
+pad5_b1 : rising · 62w
+state pad5_b2 #D1C4E9
+pad5_b2 : rising · 68w
+state pad6_end #FFCDD2
+pad6_end : setback (negative)
+pad6_end : "Beaten to It Again"
+state pad6_b0 #D1C4E9
+pad6_b0 : rising · 56w
+state pad6_b1 #D1C4E9
+pad6_b1 : rising · 62w
+state pad6_b2 #D1C4E9
+pad6_b2 : rising · 68w
+state pad6_b3 #D1C4E9
+pad6_b3 : rising · 74w
+state pad7_end #FFCDD2
+pad7_end : setback (negative)
+pad7_end : "Walled in the Vault"
+state pad7_b0 #D1C4E9
+pad7_b0 : rising · 56w
+state pad7_b1 #D1C4E9
+pad7_b1 : rising · 62w
+state pad7_b2 #D1C4E9
+pad7_b2 : rising · 68w
+state pad7_b3 #D1C4E9
+pad7_b3 : rising · 74w
+state pad7_b4 #D1C4E9
+pad7_b4 : rising · 56w
+state pad7_b5 #D1C4E9
+pad7_b5 : rising · 62w
+state pad8_end #FFCDD2
+pad8_end : setback (negative)
+pad8_end : "Swept from the Route"
+state pad8_b0 #D1C4E9
+pad8_b0 : rising · 56w
+state pad8_b1 #D1C4E9
+pad8_b1 : rising · 62w
+state pad9_end #FFCDD2
+pad9_end : setback (negative)
+pad9_end : "Empty-Handed and Cold"
+state pad9_b0 #D1C4E9
+pad9_b0 : rising · 56w
+state pad9_b1 #D1C4E9
+pad9_b1 : rising · 62w
+state pad9_b2 #D1C4E9
+pad9_b2 : rising · 68w
+state pad9_b3 #D1C4E9
+pad9_b3 : rising · 74w
+state pad10_end #FFCDD2
+pad10_end : setback (negative)
+pad10_end : "The Passage Closes"
+state pad10_b0 #D1C4E9
+pad10_b0 : rising · 56w
+state pad10_b1 #D1C4E9
+pad10_b1 : rising · 62w
+state pad10_b2 #D1C4E9
+pad10_b2 : rising · 68w
+state pad11_end #FFCDD2
+pad11_end : setback (negative)
+pad11_end : "No Way Through"
+state pad11_b0 #D1C4E9
+pad11_b0 : rising · 56w
+state pad11_b1 #D1C4E9
+pad11_b1 : rising · 62w
+state pad11_b2 #D1C4E9
+pad11_b2 : rising · 68w
+state pad11_b3 #D1C4E9
+pad11_b3 : rising · 74w
+state pad11_b4 #D1C4E9
+pad11_b4 : rising · 56w
+state pad12_end #FFCDD2
+pad12_end : setback (negative)
+pad12_end : "Forced to Surface"
+state pad12_b0 #D1C4E9
+pad12_b0 : rising · 56w
+state pad12_b1 #D1C4E9
+pad12_b1 : rising · 62w
+state pad12_b2 #D1C4E9
+pad12_b2 : rising · 68w
+state pad13_end #FFCDD2
+pad13_end : setback (negative)
+pad13_end : "Adrift in the Dark"
+state pad13_b0 #D1C4E9
+pad13_b0 : rising · 56w
+state pad13_b1 #D1C4E9
+pad13_b1 : rising · 62w
+state pad14_end #FFCDD2
+pad14_end : setback (negative)
+pad14_end : "The Current Wins"
+state pad14_b0 #D1C4E9
+pad14_b0 : rising · 56w
+state pad14_b1 #D1C4E9
+pad14_b1 : rising · 62w
+state pad14_b2 #D1C4E9
+pad14_b2 : rising · 68w
+state pad14_b3 #D1C4E9
+pad14_b3 : rising · 74w
+state pad15_end #FFCDD2
+pad15_end : setback (negative)
+pad15_end : "A Dead Reckoning"
+state pad15_b0 #D1C4E9
+pad15_b0 : rising · 56w
+state pad15_b1 #D1C4E9
+pad15_b1 : rising · 62w
+state pad15_b2 #D1C4E9
+pad15_b2 : rising · 68w
+state pad16_end #FFCDD2
+pad16_end : setback (negative)
+pad16_end : "Back to Open Water"
+state pad16_b0 #D1C4E9
+pad16_b0 : rising · 56w
+state pad16_b1 #D1C4E9
+pad16_b1 : rising · 62w
+state pad16_b2 #D1C4E9
+pad16_b2 : rising · 68w
+state pad16_b3 #D1C4E9
+pad16_b3 : rising · 74w
+state pad17_end #FFCDD2
+pad17_end : setback (negative)
+pad17_end : "The Silt Swallows It"
+state pad17_b0 #D1C4E9
+pad17_b0 : rising · 56w
+state pad17_b1 #D1C4E9
+pad17_b1 : rising · 62w
+state pad18_end #FFCDD2
+pad18_end : setback (negative)
+pad18_end : "Too Slow by a Breath"
+state pad18_b0 #D1C4E9
+pad18_b0 : rising · 56w
+state pad18_b1 #D1C4E9
+pad18_b1 : rising · 62w
+state pad18_b2 #D1C4E9
+pad18_b2 : rising · 68w
+state pad18_b3 #D1C4E9
+pad18_b3 : rising · 74w
+state pad18_b4 #D1C4E9
+pad18_b4 : rising · 56w
+state pad19_end #FFCDD2
+pad19_end : setback (negative)
+pad19_end : "Cut Off in the Flood"
+state pad19_b0 #D1C4E9
+pad19_b0 : rising · 56w
+state pad19_b1 #D1C4E9
+pad19_b1 : rising · 62w
+state pad19_b2 #D1C4E9
+pad19_b2 : rising · 68w
+state pad20_end #FFCDD2
+pad20_end : setback (negative)
+pad20_end : "Turned Back by the Tide"
+state pad20_b0 #D1C4E9
+pad20_b0 : rising · 56w
+state pad20_b1 #D1C4E9
+pad20_b1 : rising · 62w
+state pad20_b2 #D1C4E9
+pad20_b2 : rising · 68w
+state pad20_b3 #D1C4E9
+pad20_b3 : rising · 74w
+state pad21_end #FFCDD2
+pad21_end : setback (negative)
+pad21_end : "Lost in the Galleries"
+state pad21_b0 #D1C4E9
+pad21_b0 : rising · 56w
+state pad21_b1 #D1C4E9
+pad21_b1 : rising · 62w
+state pad21_b2 #D1C4E9
+pad21_b2 : rising · 68w
+state pad21_b3 #D1C4E9
+pad21_b3 : rising · 74w
+state pad21_b4 #D1C4E9
+pad21_b4 : rising · 56w
+state pad21_b5 #D1C4E9
+pad21_b5 : rising · 62w
+state pad22_end #FFCDD2
+pad22_end : setback (negative)
+pad22_end : "Driven Off the Ward"
+state pad22_b0 #D1C4E9
+pad22_b0 : rising · 56w
+state pad22_b1 #D1C4E9
+pad22_b1 : rising · 62w
+state pad23_end #FFCDD2
+pad23_end : setback (negative)
+pad23_end : "Out of Line in the Deep"
+state pad23_b0 #D1C4E9
+pad23_b0 : rising · 56w
+state pad23_b1 #D1C4E9
+pad23_b1 : rising · 62w
+state pad23_b2 #D1C4E9
+pad23_b2 : rising · 68w
+state pad23_b3 #D1C4E9
+pad23_b3 : rising · 74w
+state pad24_end #FFCDD2
+pad24_end : setback (negative)
+pad24_end : "Beaten to It Again"
+state pad24_b0 #D1C4E9
+pad24_b0 : rising · 56w
+state pad24_b1 #D1C4E9
+pad24_b1 : rising · 62w
+state pad24_b2 #D1C4E9
+pad24_b2 : rising · 68w
+state pad25_end #FFCDD2
+pad25_end : setback (negative)
+pad25_end : "Walled in the Vault"
+state pad25_b0 #D1C4E9
+pad25_b0 : rising · 56w
+state pad25_b1 #D1C4E9
+pad25_b1 : rising · 62w
+state pad25_b2 #D1C4E9
+pad25_b2 : rising · 68w
+state pad25_b3 #D1C4E9
+pad25_b3 : rising · 74w
+state pad25_b4 #D1C4E9
+pad25_b4 : rising · 56w
+state pad26_end #FFCDD2
+pad26_end : setback (negative)
+pad26_end : "Swept from the Route"
+state pad26_b0 #D1C4E9
+pad26_b0 : rising · 56w
+state pad26_b1 #D1C4E9
+pad26_b1 : rising · 62w
+state pad26_b2 #D1C4E9
+pad26_b2 : rising · 68w
+state pad27_end #FFCDD2
+pad27_end : setback (negative)
+pad27_end : "Empty-Handed and Cold"
+state pad27_b0 #D1C4E9
+pad27_b0 : rising · 56w
+state pad27_b1 #D1C4E9
+pad27_b1 : rising · 62w
+state pad28_end #FFCDD2
+pad28_end : setback (negative)
+pad28_end : "The Passage Closes"
+state pad28_b0 #D1C4E9
+pad28_b0 : rising · 56w
+state pad28_b1 #D1C4E9
+pad28_b1 : rising · 62w
+state pad28_b2 #D1C4E9
+pad28_b2 : rising · 68w
+state pad28_b3 #D1C4E9
+pad28_b3 : rising · 74w
+state pad29_end #FFCDD2
+pad29_end : setback (negative)
+pad29_end : "No Way Through"
+state pad29_b0 #D1C4E9
+pad29_b0 : rising · 56w
+state pad29_b1 #D1C4E9
+pad29_b1 : rising · 62w
+state pad29_b2 #D1C4E9
+pad29_b2 : rising · 68w
+state pad30_end #FFCDD2
+pad30_end : setback (negative)
+pad30_end : "Forced to Surface"
+state pad30_b0 #D1C4E9
+pad30_b0 : rising · 56w
+state pad30_b1 #D1C4E9
+pad30_b1 : rising · 62w
+state pad30_b2 #D1C4E9
+pad30_b2 : rising · 68w
+state pad30_b3 #D1C4E9
+pad30_b3 : rising · 74w
+state pad31_end #FFCDD2
+pad31_end : setback (negative)
+pad31_end : "Adrift in the Dark"
+state pad31_b0 #D1C4E9
+pad31_b0 : rising · 56w
+state pad31_b1 #D1C4E9
+pad31_b1 : rising · 62w
+state pad32_end #FFCDD2
+pad32_end : setback (negative)
+pad32_end : "The Current Wins"
+state pad32_b0 #D1C4E9
+pad32_b0 : rising · 56w
+state pad32_b1 #D1C4E9
+pad32_b1 : rising · 62w
+state pad32_b2 #D1C4E9
+pad32_b2 : rising · 68w
+state pad32_b3 #D1C4E9
+pad32_b3 : rising · 74w
+state pad32_b4 #D1C4E9
+pad32_b4 : rising · 56w
+state pad33_end #FFCDD2
+pad33_end : setback (negative)
+pad33_end : "A Dead Reckoning"
+state pad33_b0 #D1C4E9
+pad33_b0 : rising · 56w
+state pad33_b1 #D1C4E9
+pad33_b1 : rising · 62w
+state pad33_b2 #D1C4E9
+pad33_b2 : rising · 68w
+state pad34_end #FFCDD2
+pad34_end : setback (negative)
+pad34_end : "Back to Open Water"
+state pad34_b0 #D1C4E9
+pad34_b0 : rising · 56w
+state pad34_b1 #D1C4E9
+pad34_b1 : rising · 62w
+state pad34_b2 #D1C4E9
+pad34_b2 : rising · 68w
+state pad34_b3 #D1C4E9
+pad34_b3 : rising · 74w
+state pad35_end #FFCDD2
+pad35_end : setback (negative)
+pad35_end : "The Silt Swallows It"
+state pad35_b0 #D1C4E9
+pad35_b0 : rising · 56w
+state pad35_b1 #D1C4E9
+pad35_b1 : rising · 62w
+state pad35_b2 #D1C4E9
+pad35_b2 : rising · 68w
+state pad35_b3 #D1C4E9
+pad35_b3 : rising · 74w
+state pad35_b4 #D1C4E9
+pad35_b4 : rising · 56w
+state pad35_b5 #D1C4E9
+pad35_b5 : rising · 62w
+state pad36_end #FFCDD2
+pad36_end : setback (negative)
+pad36_end : "Too Slow by a Breath"
+state pad36_b0 #D1C4E9
+pad36_b0 : rising · 56w
+state pad36_b1 #D1C4E9
+pad36_b1 : rising · 62w
+state pad37_end #FFCDD2
+pad37_end : setback (negative)
+pad37_end : "Cut Off in the Flood"
+state pad37_b0 #D1C4E9
+pad37_b0 : rising · 56w
+state pad37_b1 #D1C4E9
+pad37_b1 : rising · 62w
+state pad37_b2 #D1C4E9
+pad37_b2 : rising · 68w
+state pad37_b3 #D1C4E9
+pad37_b3 : rising · 74w
+state pad38_end #FFCDD2
+pad38_end : setback (negative)
+pad38_end : "Turned Back by the Tide"
+state pad38_b0 #D1C4E9
+pad38_b0 : rising · 56w
+state pad38_b1 #D1C4E9
+pad38_b1 : rising · 62w
+state pad38_b2 #D1C4E9
+pad38_b2 : rising · 68w
+state pad39_end #FFCDD2
+pad39_end : setback (negative)
+pad39_end : "Lost in the Galleries"
+state pad39_b0 #D1C4E9
+pad39_b0 : rising · 56w
+state pad39_b1 #D1C4E9
+pad39_b1 : rising · 62w
+state pad39_b2 #D1C4E9
+pad39_b2 : rising · 68w
+state pad39_b3 #D1C4E9
+pad39_b3 : rising · 74w
+state pad39_b4 #D1C4E9
+pad39_b4 : rising · 56w
+state pad40_end #FFCDD2
+pad40_end : setback (negative)
+pad40_end : "Driven Off the Ward"
+state pad40_b0 #D1C4E9
+pad40_b0 : rising · 56w
+state pad40_b1 #D1C4E9
+pad40_b1 : rising · 62w
+state pad40_b2 #D1C4E9
+pad40_b2 : rising · 68w
+state pad41_end #FFCDD2
+pad41_end : setback (negative)
+pad41_end : "Out of Line in the Deep"
+state pad41_b0 #D1C4E9
+pad41_b0 : rising · 56w
+state pad41_b1 #D1C4E9
+pad41_b1 : rising · 62w
+n_ap_moat --> n_tidegate_hub : Press on.
+n_ap_sluice --> n_tidegate_hub : Press on.
+n_ap_scaff --> n_tidegate_hub : Press on.
+n_start --> n_ap_moat : Swim the drowned moat.
+n_start --> n_ap_sluice : Force the old sluice channel.
+n_start --> n_ap_scaff : Climb the rival scaffold.
+n_start --> n_ap_undertow : Chance the seaward culvert.
+n_tidegate_hub --> fan_tg_s0 : Wrench the rusted counterweight.
+n_tidegate_hub --> fan_tg_s1 : Blast the silt with a burst of air.
+n_tidegate_hub --> n_tg_gallery : Ease through the flooded gallery mouth.
+n_tidegate_hub --> xf_tg_dec : Explore a side passage first.
+n_tidegate_hub --> pad1_b2 : Try the flooded side-corridor.
+n_tidegate_hub --> pad22_b1 : Follow the warded march.
+n_tg_gallery --> n_tg_left : Take the left archway.
+n_tg_gallery --> n_tg_right : Take the right archway.
+n_tg_gallery --> n_tg_stair : Descend the grand stair.
+n_tg_gallery --> xf_tgg_dec : Explore a side passage first.
+n_tg_gallery --> pad2_b3 : Chase the trailing bubbles.
+n_tg_gallery --> pad23_b3 : Ride the surge sideways.
+n_tg_left --> n_throne_hub : Press on.
+n_tg_right --> fan_tgr_s0 : Pry the barnacled reliquary door here.
+n_tg_right --> n_throne_hub : Follow the court script downward.
+n_tg_right --> pad3_b1 : Detour through the caved vault.
+n_tg_right --> pad24_b2 : Probe the drowned gallery.
+n_tg_stair --> n_throne_hub : Press on.
+n_throne_hub --> fan_throne_s0 : Cross the cracked mosaic floor.
+n_throne_hub --> fan_throne_s1 : Loot the sunken sarcophagi.
+n_throne_hub --> n_throne_dais : Work toward the throne dais.
+n_throne_hub --> xf_th_dec : Explore a side passage first.
+n_throne_hub --> pad4_b4 : Test the deeper stair.
+n_throne_hub --> pad25_b4 : Try the flooded side-corridor.
+n_throne_dais --> n_throne_race : Race the rival for the circlet.
+n_throne_dais --> n_throne_feint : Feint low and take the high approach.
+n_throne_dais --> n_throne_cut : Cut the rival tether.
+n_throne_dais --> ds_td_b0 : The rival calls a false truce at the dai...
+n_throne_feint --> n_circlet_taken : Press on.
+n_throne_cut --> n_circlet_taken : Grab the circlet and go.
+n_throne_cut --> n_throne_greed : Strip the rival gear first.
+n_throne_cut --> pad6_b3 : Follow the warded march.
+n_throne_cut --> pad27_b1 : Detour through the caved vault.
+n_circlet_taken --> n_throne_exit : Press on.
+n_throne_exit --> fan_thex_s0 : Rest in the flooded alcove.
+n_throne_exit --> n_reliquary_hub : Take the colonnade march.
+n_throne_exit --> xf_thx_dec : Explore a side passage first.
+n_throne_exit --> pad5_b2 : Squeeze the silt crawl.
+n_throne_exit --> pad26_b2 : Chase the trailing bubbles.
+n_reliquary_hub --> fan_reliq_s0 : Trip the ward-lattice by hand.
+n_reliquary_hub --> fan_reliq_s1 : Squeeze the flooded oubliette.
+n_reliquary_hub --> n_reliq_study : Study the ward-lattice pattern.
+n_reliquary_hub --> xf_rl_dec : Explore a side passage first.
+n_reliquary_hub --> pad7_b5 : Ride the surge sideways.
+n_reliquary_hub --> pad28_b3 : Test the deeper stair.
+n_reliq_study --> n_reliq_time : Time the lattice gaps.
+n_reliq_study --> n_reliq_force : Force it with the pry-bar.
+n_reliq_study --> n_reliq_flood : Flood the trapped air bubble.
+n_reliq_study --> pad8_b1 : Probe the drowned gallery.
+n_reliq_study --> pad29_b2 : Squeeze the silt crawl.
+n_reliq_time --> n_scepter_taken : Press on.
+n_reliq_flood --> n_scepter_taken : Take the scepter and run.
+n_reliq_flood --> n_reliq_shore : Shore the ceiling first.
+n_reliq_flood --> pad9_b3 : Try the flooded side-corridor.
+n_reliq_flood --> pad30_b3 : Follow the warded march.
+n_scepter_taken --> n_reliq_exit : Press on.
+n_reliq_exit --> n_reliq_spill : Ride the spillway shaft.
+n_reliq_exit --> n_cistern_hub : Take the silted stair.
+n_reliq_exit --> xf_rlx_dec : Explore a side passage first.
+n_reliq_exit --> pad10_b2 : Chase the trailing bubbles.
+n_reliq_exit --> pad31_b1 : Ride the surge sideways.
+n_reliq_spill --> n_reliq_ride_fail : Ride it out.
+n_reliq_spill --> n_cistern_hub : Grab a rung and slow.
+n_reliq_spill --> pad11_b4 : Detour through the caved vault.
+n_reliq_spill --> pad32_b4 : Probe the drowned gallery.
+n_cistern_hub --> fan_cist_s0 : Wade the deep sump for the shortcut.
+n_cistern_hub --> fan_cist_s1 : Chisel the crusted vault seam.
+n_cistern_hub --> n_cistern_font : Move pillar to pillar toward the font.
+n_cistern_hub --> xf_ci_dec : Explore a side passage first.
+n_cistern_hub --> pad12_b2 : Test the deeper stair.
+n_cistern_hub --> pad33_b2 : Try the flooded side-corridor.
+n_cistern_font --> n_cistern_confront : Confront the rival at the font.
+n_cistern_font --> n_cistern_shadow : Shadow the rival and wait.
+n_cistern_font --> n_cistern_collapse : Collapse the font arch.
+n_cistern_font --> ds_cf_b0 : The font silt hides a second, deeper dro...
+n_cistern_font --> pad13_b1 : Squeeze the silt crawl.
+n_cistern_font --> pad34_b3 : Chase the trailing bubbles.
+n_cistern_confront --> n_cistern_wrestle : Wrestle for the ring.
+n_cistern_confront --> n_ring_taken : Kill the lamp and take it in the dark.
+n_cistern_confront --> pad14_b3 : Follow the warded march.
+n_cistern_confront --> pad35_b5 : Detour through the caved vault.
+n_cistern_shadow --> n_ring_taken : Press on.
+n_cistern_collapse --> n_ring_taken : Snatch the ring and move.
+n_cistern_collapse --> n_cistern_cache : Search the rival dropped cache too.
+n_cistern_collapse --> pad15_b2 : Ride the surge sideways.
+n_cistern_collapse --> pad36_b1 : Test the deeper stair.
+n_ring_taken --> n_cistern_exit : Press on.
+n_cistern_exit --> n_cist_orrery : Cross the flooded orrery hall.
+n_cistern_exit --> n_cist_dome : Climb the collapsed dome gallery.
+n_cistern_exit --> xf_cix_dec : Explore a side passage first.
+n_cistern_exit --> pad16_b3 : Probe the drowned gallery.
+n_cistern_exit --> pad37_b3 : Squeeze the silt crawl.
+n_cist_orrery --> n_observatory_hub : Press on.
+n_cist_dome --> fan_dome_s0 : Trust the cracked dome ribs.
+n_cist_dome --> n_observatory_hub : Take the low crawl.
+n_cist_dome --> pad21_b5 : Squeeze the silt crawl.
+n_obs_deep_d --> n_obs_control : Press on.
+n_obs_deep_c --> n_obs_deep_d : Press on.
+n_obs_deep_b --> n_obs_deep_c : Press on.
+n_obs_deep_a --> n_obs_deep_b : Press on.
+n_observatory_hub --> fan_obs_s0 : Force the seized shutter mechanism.
+n_observatory_hub --> n_obs_deep_a : Move on the rival at the control ring.
+n_observatory_hub --> xf_ob_dec : Explore a side passage first.
+n_observatory_hub --> pad17_b1 : Try the flooded side-corridor.
+n_observatory_hub --> pad38_b2 : Follow the warded march.
+n_obs_control --> n_obs_bargain : Bargain a shared surfacing.
+n_obs_control --> n_obs_climb : Out-climb the rival to the shaft.
+n_obs_control --> n_obs_race : Race the rising water straight up.
+n_obs_control --> ds_obs_b0 : The rival feints toward the ascent shaft...
+n_obs_control --> ds_obs_b1 : A wing of the dome peels loose above the...
+n_obs_control --> pad18_b4 : Chase the trailing bubbles.
+n_obs_control --> pad39_b4 : Ride the surge sideways.
+n_obs_bargain --> n_obs_trade_circlet : Trade away the circlet.
+n_obs_bargain --> n_obs_trade_ring : Trade away the seal-ring.
+n_obs_bargain --> n_obs_refuse : Refuse and gamble on the water.
+n_obs_bargain --> pad19_b2 : Detour through the caved vault.
+n_obs_bargain --> pad40_b2 : Probe the drowned gallery.
+n_obs_climb --> n_obs_seal_choice : Press on.
+n_obs_race --> n_obs_seal_choice : Turn back to seal the court.
+n_obs_race --> n_obs_open_ascent : Climb now, leave the court open.
+n_obs_race --> pad20_b3 : Test the deeper stair.
+n_obs_race --> pad41_b1 : Try the flooded side-corridor.
+n_obs_seal_choice --> n_seal_fast : Seal fast and rough.
+n_obs_seal_choice --> n_seal_true : Seal slow and true.
+n_obs_seal_choice --> n_obs_open_ascent : Skip the seal, secure your ascent.
+n_seal_fast --> n_seal_force : Force it fully home.
+n_seal_fast --> n_ascent_partial : Accept the partial seal and climb.
+n_seal_force --> n_ascent_full : Press on.
+n_seal_true --> n_ascent_full : Press on.
+n_ascent_full --> n_end_full_best : Hold the decompression stops.
+n_ascent_full --> n_ascent_push : Push the ascent to beat the rival.
+n_ascent_push --> n_end_full_second : Ease off at the last stop.
+n_ascent_push --> n_end_full_rough : Commit to the fast surface.
+n_ascent_partial --> n_end_partial_seal : Press on.
+n_obs_open_ascent --> n_end_open_full : Climb your own line.
+n_obs_open_ascent --> n_open_rivalrope : Take the rival trailing line.
+n_obs_trade_circlet --> n_end_trade_circlet : Press on.
+n_obs_trade_ring --> n_end_trade_ring : Press on.
+xf_tg_dec --> xf_tg_e0 : Probe the winch chain gallery.
+xf_tg_dec --> xf_tg_e1 : Follow the eel-run drain.
+xf_tg_dec --> xf_tg_e2 : Test the maintenance crawl.
+xf_tg_dec --> xf_tg_e3 : Push the passage to its end.
+xf_tgg_dec --> xf_tgg_e0 : Read the drowned king inscriptions.
+xf_tgg_dec --> xf_tgg_e1 : Pocket a loose gilt tessera.
+xf_tgg_dec --> xf_tgg_e2 : Push the passage to its end.
+xf_th_dec --> xf_th_e0 : Search the courtier galleries.
+xf_th_dec --> xf_th_e1 : Dredge the offering pool.
+xf_th_dec --> xf_th_e2 : Force the choir-screen.
+xf_th_dec --> xf_th_e3 : Push the passage to its end.
+xf_thx_dec --> xf_thx_e0 : Detour through the drowned kitchens.
+xf_thx_dec --> xf_thx_e1 : Climb the minstrel gallery.
+xf_thx_dec --> xf_thx_e2 : Push the passage to its end.
+xf_rl_dec --> xf_rl_e0 : Rifle the lesser niches.
+xf_rl_dec --> xf_rl_e1 : Chase the rival marker buoy.
+xf_rl_dec --> xf_rl_e2 : Pry the sealed ambry.
+xf_rl_dec --> xf_rl_e3 : Push the passage to its end.
+xf_rlx_dec --> xf_rlx_e0 : Take the flooded scriptorium turn.
+xf_rlx_dec --> xf_rlx_e1 : Follow the rope of bubbles up.
+xf_rlx_dec --> xf_rlx_e2 : Push the passage to its end.
+xf_ci_dec --> xf_ci_e0 : Sound the pillar-forest for a shortcut.
+xf_ci_dec --> xf_ci_e1 : Drain-dive the overflow weir.
+xf_ci_dec --> xf_ci_e2 : Search the drowned wellhouse.
+xf_ci_dec --> xf_ci_e3 : Push the passage to its end.
+xf_cix_dec --> xf_cix_e0 : Cut through the sunken observatory store...
+xf_cix_dec --> xf_cix_e1 : Try the astronomer stair.
+xf_cix_dec --> xf_cix_e2 : Push the passage to its end.
+xf_ob_dec --> xf_ob_e0 : Salvage the shattered dome instruments.
+xf_ob_dec --> xf_ob_e1 : Signal the surface too early.
+xf_ob_dec --> xf_ob_e2 : Push the passage to its end.
+ds_obs_b0 --> ds_obs_e0 : Press on.
+ds_obs_b1 --> ds_obs_e1 : Press on.
+ds_cf_b0 --> ds_cf_e0 : Press on.
+ds_td_b0 --> ds_td_e0 : Press on.
+pad1_b0 --> pad1_end : Press on.
+pad1_b1 --> pad1_b0 : Press on.
+pad1_b2 --> pad1_b1 : Press on.
+pad2_b0 --> pad2_end : Press on.
+pad2_b1 --> pad2_b0 : Press on.
+pad2_b2 --> pad2_b1 : Press on.
+pad2_b3 --> pad2_b2 : Press on.
+pad3_b0 --> pad3_end : Press on.
+pad3_b1 --> pad3_b0 : Press on.
+pad4_b0 --> pad4_end : Press on.
+pad4_b1 --> pad4_b0 : Press on.
+pad4_b2 --> pad4_b1 : Press on.
+pad4_b3 --> pad4_b2 : Press on.
+pad4_b4 --> pad4_b3 : Press on.
+pad5_b0 --> pad5_end : Press on.
+pad5_b1 --> pad5_b0 : Press on.
+pad5_b2 --> pad5_b1 : Press on.
+pad6_b0 --> pad6_end : Press on.
+pad6_b1 --> pad6_b0 : Press on.
+pad6_b2 --> pad6_b1 : Press on.
+pad6_b3 --> pad6_b2 : Press on.
+pad7_b0 --> pad7_end : Press on.
+pad7_b1 --> pad7_b0 : Press on.
+pad7_b2 --> pad7_b1 : Press on.
+pad7_b3 --> pad7_b2 : Press on.
+pad7_b4 --> pad7_b3 : Press on.
+pad7_b5 --> pad7_b4 : Press on.
+pad8_b0 --> pad8_end : Press on.
+pad8_b1 --> pad8_b0 : Press on.
+pad9_b0 --> pad9_end : Press on.
+pad9_b1 --> pad9_b0 : Press on.
+pad9_b2 --> pad9_b1 : Press on.
+pad9_b3 --> pad9_b2 : Press on.
+pad10_b0 --> pad10_end : Press on.
+pad10_b1 --> pad10_b0 : Press on.
+pad10_b2 --> pad10_b1 : Press on.
+pad11_b0 --> pad11_end : Press on.
+pad11_b1 --> pad11_b0 : Press on.
+pad11_b2 --> pad11_b1 : Press on.
+pad11_b3 --> pad11_b2 : Press on.
+pad11_b4 --> pad11_b3 : Press on.
+pad12_b0 --> pad12_end : Press on.
+pad12_b1 --> pad12_b0 : Press on.
+pad12_b2 --> pad12_b1 : Press on.
+pad13_b0 --> pad13_end : Press on.
+pad13_b1 --> pad13_b0 : Press on.
+pad14_b0 --> pad14_end : Press on.
+pad14_b1 --> pad14_b0 : Press on.
+pad14_b2 --> pad14_b1 : Press on.
+pad14_b3 --> pad14_b2 : Press on.
+pad15_b0 --> pad15_end : Press on.
+pad15_b1 --> pad15_b0 : Press on.
+pad15_b2 --> pad15_b1 : Press on.
+pad16_b0 --> pad16_end : Press on.
+pad16_b1 --> pad16_b0 : Press on.
+pad16_b2 --> pad16_b1 : Press on.
+pad16_b3 --> pad16_b2 : Press on.
+pad17_b0 --> pad17_end : Press on.
+pad17_b1 --> pad17_b0 : Press on.
+pad18_b0 --> pad18_end : Press on.
+pad18_b1 --> pad18_b0 : Press on.
+pad18_b2 --> pad18_b1 : Press on.
+pad18_b3 --> pad18_b2 : Press on.
+pad18_b4 --> pad18_b3 : Press on.
+pad19_b0 --> pad19_end : Press on.
+pad19_b1 --> pad19_b0 : Press on.
+pad19_b2 --> pad19_b1 : Press on.
+pad20_b0 --> pad20_end : Press on.
+pad20_b1 --> pad20_b0 : Press on.
+pad20_b2 --> pad20_b1 : Press on.
+pad20_b3 --> pad20_b2 : Press on.
+pad21_b0 --> pad21_end : Press on.
+pad21_b1 --> pad21_b0 : Press on.
+pad21_b2 --> pad21_b1 : Press on.
+pad21_b3 --> pad21_b2 : Press on.
+pad21_b4 --> pad21_b3 : Press on.
+pad21_b5 --> pad21_b4 : Press on.
+pad22_b0 --> pad22_end : Press on.
+pad22_b1 --> pad22_b0 : Press on.
+pad23_b0 --> pad23_end : Press on.
+pad23_b1 --> pad23_b0 : Press on.
+pad23_b2 --> pad23_b1 : Press on.
+pad23_b3 --> pad23_b2 : Press on.
+pad24_b0 --> pad24_end : Press on.
+pad24_b1 --> pad24_b0 : Press on.
+pad24_b2 --> pad24_b1 : Press on.
+pad25_b0 --> pad25_end : Press on.
+pad25_b1 --> pad25_b0 : Press on.
+pad25_b2 --> pad25_b1 : Press on.
+pad25_b3 --> pad25_b2 : Press on.
+pad25_b4 --> pad25_b3 : Press on.
+pad26_b0 --> pad26_end : Press on.
+pad26_b1 --> pad26_b0 : Press on.
+pad26_b2 --> pad26_b1 : Press on.
+pad27_b0 --> pad27_end : Press on.
+pad27_b1 --> pad27_b0 : Press on.
+pad28_b0 --> pad28_end : Press on.
+pad28_b1 --> pad28_b0 : Press on.
+pad28_b2 --> pad28_b1 : Press on.
+pad28_b3 --> pad28_b2 : Press on.
+pad29_b0 --> pad29_end : Press on.
+pad29_b1 --> pad29_b0 : Press on.
+pad29_b2 --> pad29_b1 : Press on.
+pad30_b0 --> pad30_end : Press on.
+pad30_b1 --> pad30_b0 : Press on.
+pad30_b2 --> pad30_b1 : Press on.
+pad30_b3 --> pad30_b2 : Press on.
+pad31_b0 --> pad31_end : Press on.
+pad31_b1 --> pad31_b0 : Press on.
+pad32_b0 --> pad32_end : Press on.
+pad32_b1 --> pad32_b0 : Press on.
+pad32_b2 --> pad32_b1 : Press on.
+pad32_b3 --> pad32_b2 : Press on.
+pad32_b4 --> pad32_b3 : Press on.
+pad33_b0 --> pad33_end : Press on.
+pad33_b1 --> pad33_b0 : Press on.
+pad33_b2 --> pad33_b1 : Press on.
+pad34_b0 --> pad34_end : Press on.
+pad34_b1 --> pad34_b0 : Press on.
+pad34_b2 --> pad34_b1 : Press on.
+pad34_b3 --> pad34_b2 : Press on.
+pad35_b0 --> pad35_end : Press on.
+pad35_b1 --> pad35_b0 : Press on.
+pad35_b2 --> pad35_b1 : Press on.
+pad35_b3 --> pad35_b2 : Press on.
+pad35_b4 --> pad35_b3 : Press on.
+pad35_b5 --> pad35_b4 : Press on.
+pad36_b0 --> pad36_end : Press on.
+pad36_b1 --> pad36_b0 : Press on.
+pad37_b0 --> pad37_end : Press on.
+pad37_b1 --> pad37_b0 : Press on.
+pad37_b2 --> pad37_b1 : Press on.
+pad37_b3 --> pad37_b2 : Press on.
+pad38_b0 --> pad38_end : Press on.
+pad38_b1 --> pad38_b0 : Press on.
+pad38_b2 --> pad38_b1 : Press on.
+pad39_b0 --> pad39_end : Press on.
+pad39_b1 --> pad39_b0 : Press on.
+pad39_b2 --> pad39_b1 : Press on.
+pad39_b3 --> pad39_b2 : Press on.
+pad39_b4 --> pad39_b3 : Press on.
+pad40_b0 --> pad40_end : Press on.
+pad40_b1 --> pad40_b0 : Press on.
+pad40_b2 --> pad40_b1 : Press on.
+pad41_b0 --> pad41_end : Press on.
+pad41_b1 --> pad41_b0 : Press on.
+n_ap_undertow --> [*]
+fan_tg_s0 --> [*]
+fan_tg_s1 --> [*]
+fan_tgr_s0 --> [*]
+fan_throne_s0 --> [*]
+fan_throne_s1 --> [*]
+n_throne_race --> [*]
+n_throne_greed --> [*]
+fan_thex_s0 --> [*]
+fan_reliq_s0 --> [*]
+fan_reliq_s1 --> [*]
+n_reliq_force --> [*]
+n_reliq_shore --> [*]
+n_reliq_ride_fail --> [*]
+fan_cist_s0 --> [*]
+fan_cist_s1 --> [*]
+n_cistern_wrestle --> [*]
+n_cistern_cache --> [*]
+fan_dome_s0 --> [*]
+fan_obs_s0 --> [*]
+n_obs_refuse --> [*]
+n_end_full_best --> [*]
+n_end_full_second --> [*]
+n_end_full_rough --> [*]
+n_end_partial_seal --> [*]
+n_open_rivalrope --> [*]
+n_end_open_full --> [*]
+n_end_trade_circlet --> [*]
+n_end_trade_ring --> [*]
+xf_tg_e0 --> [*]
+xf_tg_e1 --> [*]
+xf_tg_e2 --> [*]
+xf_tg_e3 --> [*]
+xf_tgg_e0 --> [*]
+xf_tgg_e1 --> [*]
+xf_tgg_e2 --> [*]
+xf_th_e0 --> [*]
+xf_th_e1 --> [*]
+xf_th_e2 --> [*]
+xf_th_e3 --> [*]
+xf_thx_e0 --> [*]
+xf_thx_e1 --> [*]
+xf_thx_e2 --> [*]
+xf_rl_e0 --> [*]
+xf_rl_e1 --> [*]
+xf_rl_e2 --> [*]
+xf_rl_e3 --> [*]
+xf_rlx_e0 --> [*]
+xf_rlx_e1 --> [*]
+xf_rlx_e2 --> [*]
+xf_ci_e0 --> [*]
+xf_ci_e1 --> [*]
+xf_ci_e2 --> [*]
+xf_ci_e3 --> [*]
+xf_cix_e0 --> [*]
+xf_cix_e1 --> [*]
+xf_cix_e2 --> [*]
+xf_ob_e0 --> [*]
+xf_ob_e1 --> [*]
+xf_ob_e2 --> [*]
+ds_obs_e0 --> [*]
+ds_obs_e1 --> [*]
+ds_cf_e0 --> [*]
+ds_td_e0 --> [*]
+pad1_end --> [*]
+pad2_end --> [*]
+pad3_end --> [*]
+pad4_end --> [*]
+pad5_end --> [*]
+pad6_end --> [*]
+pad7_end --> [*]
+pad8_end --> [*]
+pad9_end --> [*]
+pad10_end --> [*]
+pad11_end --> [*]
+pad12_end --> [*]
+pad13_end --> [*]
+pad14_end --> [*]
+pad15_end --> [*]
+pad16_end --> [*]
+pad17_end --> [*]
+pad18_end --> [*]
+pad19_end --> [*]
+pad20_end --> [*]
+pad21_end --> [*]
+pad22_end --> [*]
+pad23_end --> [*]
+pad24_end --> [*]
+pad25_end --> [*]
+pad26_end --> [*]
+pad27_end --> [*]
+pad28_end --> [*]
+pad29_end --> [*]
+pad30_end --> [*]
+pad31_end --> [*]
+pad32_end --> [*]
+pad33_end --> [*]
+pad34_end --> [*]
+pad35_end --> [*]
+pad36_end --> [*]
+pad37_end --> [*]
+pad38_end --> [*]
+pad39_end --> [*]
+pad40_end --> [*]
+pad41_end --> [*]
+
+legend right
+  The Drowned Court
+  Band 16+ · Tier 1 · ~18 min
+  Topology: branch_and_bottleneck
+  314 nodes · 105 endings (5+ / 2n / 98-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml
