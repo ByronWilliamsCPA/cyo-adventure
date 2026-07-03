@@ -1,7 +1,7 @@
 ---
 title: "Validation Rule Catalog"
 schema_type: planning
-status: draft
+status: accepted
 owner: core-maintainer
 purpose: "Define stable rule IDs, failure messages, and pass/fail semantics for every validation gate check."
 tags:
@@ -14,7 +14,7 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 
 # Validation Rule Catalog
 
-> **Status**: Draft | **Version**: 1.0 | **Updated**: 2026-06-20
+> **Status**: Accepted | **Version**: 1.1 | **Updated**: 2026-07-03
 > **Scope**: All stories (Layer 1); Tier-2 stories only (Layer 2); all stories advisory (RL);
 > all stories always-human (SAFE)
 
@@ -62,7 +62,7 @@ must be sound before a state-space walk is meaningful.
 | L1-4 | 1 | **Termination (graph)**: every non-ending node must have at least one choice; every node must have at least one path to an ending node; every ending node must have zero choices and a complete `ending` block. | `L1-4 term: node '{node_id}' {reason} in story '{story_id}' (no path to any ending / missing ending block / non-ending node has zero choices)` |
 | L1-5 | 1 | **No trap loops (graph)**: every strongly connected component must have at least one exit edge leading toward an ending. A SCC with no exit is a trap loop. | `L1-5 trap: strongly connected component containing node '{node_id}' has no exit edge in story '{story_id}' (nodes in SCC: {scc_nodes})` |
 | L1-6 | 1 | **Condition and effect consistency**: conditions must use only whitelisted operators; every variable referenced in a condition or effect must be declared in `variables`; comparisons must agree in type with the declared variable type; no reachable transition may push an `int` variable past its declared `min` or `max`. | `L1-6 logic: {issue_type} in story '{story_id}' at {location}: {detail} (var='{var}', declared_type={declared_type}, bound={bound}, attempted={attempted})` |
-| L1-7 | 1 | **Length budget**: node count must be within the tier's defined range; branch depth must be within bounds; `metadata.ending_count` must equal the count of distinct ending nodes found in `nodes`. | `L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})` |
+| L1-7 | 1 | **Length budget**: node count must be within the (band x length x style) cell budget single-sourced in `validator/band_profile.py` (band-based per [ADR-011](./adr/adr-011-story-scale-framework.md), not tier-based); branch depth must be within bounds; `metadata.ending_count` must equal the count of distinct ending nodes found in `nodes`. | `L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})` |
 
 ---
 
