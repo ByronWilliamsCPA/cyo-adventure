@@ -33,7 +33,7 @@ package "Backend Player (Python)" #E3F2FD {
 
   component "Condition DSL Validator\nstorybook/condition.py\nvalidate_condition()\nwhitelisted-op check at schema time" as cond_validator #BBDEFB
 
-  component "Condition Evaluator\nstorybook/evaluator.py\nevaluate(condition, var_state)\nwhitelisted ops: eq, ne, lt, gt,\nlte, gte, and, or, not, var, literal\nstrict equality, no coercion" as evaluator #BBDEFB
+  component "Condition Evaluator\nstorybook/evaluator.py\nevaluate(condition, var_state)\nwhitelisted 10-op JSONLogic subset:\nvar, !, and, or, ==, !=, <, <=, >, >=\nstrict equality, no coercion" as evaluator #BBDEFB
 
   component "Story Engine\nplayer/engine.py\nStoryEngine: start(), choose(),\nvisible_choices(), is_ending()\nPure: no I/O, no async" as engine #1565C0
 

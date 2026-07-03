@@ -18,6 +18,7 @@
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
 '   src/cyo_adventure/db/models.py           (9 ORM tables)
 '   docs/planning/authorization-matrix.md
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -38,7 +39,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
   }
 
   package "Dependencies\napi/deps.py" #DCEDC8 {
-    component "Auth Seam\n_extract_subject()\n[dev: token-as-subject]\n[prod: Authentik OIDC JWT]" as auth_seam #DCEDC8
+    component "Auth Seam\n_extract_subject()\n[local: token-as-subject]\n[non-local: Supabase OIDC JWT,\nADR-009]" as auth_seam #DCEDC8
     component "Principal\nrole, family_id, profile_ids\nauthorize_profile()\nauthorize_family()" as principal #DCEDC8
     component "DbSession\nasync unit-of-work\ncommit on success,\nrollback on exception" as db_session_dep #DCEDC8
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
@@ -94,11 +95,14 @@ exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers
 exceptions --> gen_router
 
 note right of auth_seam
-  dev seam: treats bearer token
-  as OIDC subject without signature check.
-  Replace _extract_subject() with
-  real Authentik JWT validation
-  before any non-local deployment.
+  local-only seam: treats bearer token
+  as OIDC subject without signature check;
+  fails to start outside "local" unless
+  OIDC_ISSUER + OIDC_JWKS_URL are set.
+  Non-local: _verify_oidc_jwt() validates a
+  real Supabase-issued JWT (signature, issuer,
+  audience, expiry) via cached JWKS
+  (jwt.PyJWKClient), per ADR-009.
 end note
 
 note right of reading_router

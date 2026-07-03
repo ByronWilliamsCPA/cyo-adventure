@@ -6,12 +6,17 @@
 ' Source files:
 '   src/cyo_adventure/validator/gate.py          (run_gate, GateResult)
 '   src/cyo_adventure/validator/layer1.py        (L1-1..L1-7 graph rules)
+'   src/cyo_adventure/validator/policy.py        (PL-15..PL-21 age/scale policy)
+'   src/cyo_adventure/validator/band_profile.py  (BandProfile per age band,
+'                                                  six bands: 3-5, 5-8, 8-11,
+'                                                  10-13, 13-16, 16+)
 '   src/cyo_adventure/validator/layer2.py        (L2-9..L2-12 state-space)
 '   src/cyo_adventure/validator/reading_level.py (RL-13, advisory)
 '   src/cyo_adventure/validator/safety.py        (SAFE-14, Phase 2 stub)
 '   src/cyo_adventure/validator/walk.py          (state-space walk)
 '   src/cyo_adventure/validator/report.py        (ValidationReport, Finding, Severity)
 '   docs/planning/validator-rules.md
+'   docs/planning/adr/adr-011-story-scale-framework.md (band x length x style)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -30,6 +35,12 @@ package "Validator Gate" #E8F5E9 {
 
   package "Layer 1: Graph Structure" #DCEDC8 {
     component "validate_layer1()\nvalidator/layer1.py\nL1-1: schema conformance (jsonschema)\nL1-2: start_node exists\nL1-3: all nodes reachable\nL1-4: at least one ending\nL1-5: no dangling targets\nL1-6: variable usage consistent\nL1-7: depth budget enforced" as layer1 #DCEDC8
+  }
+
+  package "Policy Layer: age/scale invariants (ADR-011)" #A5D6A7 {
+    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection" as policy #A5D6A7
+
+    component "band_profile.py\nBandProfile per age band:\n3-5 | 5-8 | 8-11 | 10-13 |\n13-16 | 16+\nnode/depth budget, content ceilings,\nforbidden endings, ending/decision floors" as band_profile #A5D6A7
   }
 
   package "Layer 2: State-Space Walk (Tier-2 only)" #C8E6C9 {
@@ -63,6 +74,9 @@ layer1 --> report : "L1 findings"
 gate ..> layer1 : "early exit if\nany L1 ERROR"
 gate --> storybook_model : "model_validate()\n[after L1 clean]"
 storybook_model --> gate : "Storybook"
+gate --> policy : "Storybook\n[after L1 clean]"
+policy --> band_profile : "profile_for(age_band)"
+policy --> report : "PL findings"
 gate --> layer2 : "Storybook\n[Tier-2 only;\nTier-1 short-circuits]"
 layer2 --> walk_comp : "state-space exploration"
 layer2 --> report : "L2 findings"
@@ -74,15 +88,18 @@ safety --> report : "SAFE-14\n(stub empty in Phase 2)"
 gate --> orch_caller : "GateResult\n(report, blocked, safety_flagged)"
 
 note right of gate
-  Rule application order (validator-rules.md):
+  Rule application order (gate.py, validator-rules.md):
   1. L1 (always): graph structure + schema
   2. Early return on any L1 ERROR
-  3. L2 (Tier-2 only): state-space walk
-  4. RL-13: advisory reading-level (WARNING)
-  5. SAFE-14: safety stub (always empty now)
+  3. Policy (PL-15..PL-21): age/scale invariants
+     on the parsed Storybook (ADR-011 band x
+     length x style)
+  4. L2 (Tier-2 only): state-space walk
+  5. RL-13: advisory reading-level (WARNING)
+  6. SAFE-14: safety stub (always empty now)
 
   blocked = any ERROR with rule_id starting
-    with "L1" or "L2"
+    with "L1", "L2", or "PL"
   safety_flagged = any finding with
     rule_id == "SAFE-14"
 end note

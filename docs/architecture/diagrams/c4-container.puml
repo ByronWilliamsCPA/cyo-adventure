@@ -13,6 +13,7 @@
 '   docs/planning/tech-spec.md
 '   docs/planning/adr/adr-002-client-pwa.md
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -60,7 +61,7 @@ rectangle "MinIO\n[Object storage, deferred Phase 5]\nStorybook blobs via S3 API
 ' --- External LLMs ---
 rectangle "OpenRouter\n[Primary LLM]" as openrouter #F3E5F5
 rectangle "Ollama\n[Local fallback]" as ollama #FFEBEE
-rectangle "Authentik\n[OIDC]" as authentik #E0F7FA
+rectangle "Supabase\n[OIDC, ADR-009]" as supabase_auth #E0F7FA
 
 ' --- Relationships ---
 child --> reader
@@ -82,7 +83,7 @@ worker --> openrouter : "provider.complete()"
 worker ..> ollama : "fallback"
 worker --> postgres : "update GenerationJob"
 worker ..> minio : "[planned Phase 5]\nblob_ref store"
-backend --> authentik : "OIDC validation\n[dev: token-as-subject seam]"
+backend --> supabase_auth : "OIDC validation\n[local: token-as-subject seam;\nnon-local: verified Supabase JWT]"
 
 note bottom of gen_client
   Regenerated from http://localhost:8000/openapi.json

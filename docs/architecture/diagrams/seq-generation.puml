@@ -6,7 +6,9 @@
 '
 ' Source files:
 '   src/cyo_adventure/generation/orchestrator.py  (module docstring + generate_story)
+'   src/cyo_adventure/generation/provider.py      (build_default_provider(): 3-leg cascade)
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
+'   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/pii.py
 '   src/cyo_adventure/generation/prompts.py
 '   src/cyo_adventure/validator/gate.py
@@ -26,8 +28,9 @@ participant "Orchestrator\norchestrator.py" as orch
 participant "Prompt Builder\nprompts.py" as prompts
 participant "PII Guard\npii.py" as pii
 participant "FallbackProvider\nfallback.py" as fallback
-participant "OpenRouter\n[primary leg]" as or_provider
-participant "Ollama\n[fallback leg]" as ol_provider
+participant "OpenRouter\n[leg 1: primary,\nclaude-haiku-4.5]" as or_provider
+participant "OpenRouter\n[leg 2: fallback,\nclaude-sonnet-4.6]" as or_provider_fb
+participant "Ollama\n[leg 3: local fallback]" as ol_provider
 participant "Validator Gate\ngate.py" as gate
 database "PostgreSQL\nGenerationJob" as pg
 
@@ -46,7 +49,7 @@ prompts --> orch : "StagePrompt (system + user)"
 orch -> pii : "assert_prompt_pii_safe(system)\nassert_prompt_pii_safe(user)"
 pii --> orch : "OK (or raises ValidationError -> abort)"
 orch -> fallback : "provider.complete(system, user, max_tokens=16384)"
-fallback -> or_provider : "attempt leg 0 (OpenRouter)"
+fallback -> or_provider : "attempt leg 1 (OpenRouter primary)"
 
 alt transient failure (429/5xx)
   or_provider --> fallback : "httpx error / HTTP 429"
@@ -54,9 +57,16 @@ alt transient failure (429/5xx)
   or_provider --> fallback : "success after retry"
 else leg-fatal failure (401/400)
   or_provider --> fallback : "HTTP 401/400"
-  fallback -> fallback : "mark leg 0 dead\nfail over to leg 1"
-  fallback -> ol_provider : "attempt leg 1 (Ollama)"
-  ol_provider --> fallback : "raw text"
+  fallback -> fallback : "mark leg 1 dead\nfail over to leg 2"
+  fallback -> or_provider_fb : "attempt leg 2\n(OpenRouter fallback model)"
+  alt leg 2 also leg-fatal
+    or_provider_fb --> fallback : "HTTP 401/400"
+    fallback -> fallback : "mark leg 2 dead\nfail over to leg 3"
+    fallback -> ol_provider : "attempt leg 3 (Ollama)"
+    ol_provider --> fallback : "raw text"
+  else leg 2 succeeds
+    or_provider_fb --> fallback : "raw text"
+  end
 end
 
 fallback --> orch : "raw text"

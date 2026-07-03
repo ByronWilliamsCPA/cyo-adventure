@@ -5,10 +5,15 @@
 '
 ' Source files:
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik as app IdP)
 '   docs/planning/tech-spec.md  (Infrastructure section)
-'   CLAUDE.md (Docker, Pangolin zero-trust, Authentik, Dockge)
+'   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
 '
 ' Note: MinIO shown as planned (deferred Phase 5).
+' Note: homelab Authentik keeps its existing internal homelab-service roles
+' (ADR-009) but is no longer the app's OIDC identity provider. All app
+' principals, guardians and the global admin approver alike, authenticate
+' via Supabase OIDC (the admin is a Supabase identity with is_admin), shown below.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -20,7 +25,7 @@ node "Family Devices\n[browsers, tablets]" as devices #E3F2FD {
 }
 
 cloud "OpenRouter API\nhttps://openrouter.ai" as openrouter_cloud #F3E5F5
-cloud "Authentik\n[OIDC provider]\nhomelab or cloud" as authentik_cloud #E0F7FA
+cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian sign-in (Apple/Google)" as supabase_cloud #E0F7FA
 
 node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 
@@ -66,8 +71,8 @@ rq_worker --> pg_db : "update job\n5432"
 rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
 rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
-pwa_client --> authentik_cloud : "OIDC auth flow"
-fastapi_app --> authentik_cloud : "OIDC token validation\n[prod; dev uses token-as-subject]"
+pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
+fastapi_app --> supabase_cloud : "OIDC token validation\n[non-local; local uses token-as-subject]"
 
 note right of worker_container
   The worker runs in a separate container

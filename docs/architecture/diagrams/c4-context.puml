@@ -4,11 +4,13 @@
 ' CYO Adventure: Choose-Your-Own-Adventure reading app for kids
 '
 ' Source files:
-'   src/cyo_adventure/api/deps.py      (Principal/role model)
+'   src/cyo_adventure/api/deps.py      (Principal/role model: guardian, child, admin)
 '   src/cyo_adventure/api/generation.py (guardian-only authoring)
 '   src/cyo_adventure/api/reading.py   (child reading endpoints)
-'   docs/planning/adr/adr-005-mandatory-human-approval.md
+'   src/cyo_adventure/db/models.py     (Storybook + GenerationJob lifecycles)
+'   docs/planning/adr/adr-005-mandatory-human-approval.md (amended: global-admin approver)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
 '   docs/planning/tech-spec.md
 ' ============================================================
 
@@ -29,8 +31,9 @@ skinparam actor {
 }
 
 ' --- Actors ---
-actor "Child Reader\n(age 8-16)" as child #E3F2FD
+actor "Child Reader\n(age 3-16+)" as child #E3F2FD
 actor "Guardian / Author\n(parent or carer)" as guardian #E8F5E9
+actor "Admin\n(global safety operator,\ncross-family, ADR-005)" as admin #EDE7F6
 
 ' --- System boundary ---
 rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as system #FFF3E0 {
@@ -41,17 +44,18 @@ rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as syst
 ' --- External systems ---
 rectangle "OpenRouter\n[Primary LLM provider]\nMulti-model API gateway" as openrouter #F3E5F5
 rectangle "Ollama\n[Local fallback LLM]\nSelf-hosted, homelab" as ollama #FFEBEE
-rectangle "Authentik\n[OIDC identity provider]\nGuardian and child roles" as authentik #E0F7FA
+rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian sign-in only (Apple/Google)" as supabase_auth #E0F7FA
 rectangle "PostgreSQL\n[Operational database]\nMetadata and reading state" as postgres #FFF8E1
 rectangle "Redis + RQ\n[Job queue]\nAsync generation jobs" as redis #E0E0E0
 
 ' --- Relationships ---
 child --> pwa : "Reads stories,\nchooses paths"
-guardian --> pwa : "Authors concepts,\napproves stories (ADR-005)"
+guardian --> pwa : "Authors concepts,\nsubmits for review (ADR-005)"
+admin --> pwa : "Reviews and approves/rejects\nstorybooks, cross-family (ADR-005)"
 pwa --> backend : "REST /api/v1\n(OIDC bearer token)"
 backend --> openrouter : "LLM completions\n(primary, ADR-003)"
 backend ..> ollama : "LLM completions\n(local fallback)"
-backend --> authentik : "OIDC token validation"
+backend --> supabase_auth : "OIDC token validation\n(JWKS, ADR-009)"
 backend --> postgres : "Async SQLAlchemy 2"
 backend --> redis : "Enqueue generation jobs"
 
@@ -72,12 +76,16 @@ note right of openrouter
 end note
 
 note bottom of backend
-  Mandatory human approval (ADR-005):
+  Mandatory human approval (ADR-005, amended):
   no story reaches a child profile without
-  a recorded guardian approval.
-  State machine: draft -> generating ->
-  auto_check -> in_review -> approved ->
-  published -> archived
+  a recorded admin approval (global, cross-family;
+  guardians author and submit, they do not approve).
+  Two separate lifecycles:
+  - GenerationJob: queued -> running ->
+    passed | needs_review | failed
+  - Storybook: draft -> in_review ->
+    needs_revision | published | archived
+  ("approved" is an action, not a resting state)
 end note
 
 @enduml

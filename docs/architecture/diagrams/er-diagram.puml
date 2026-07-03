@@ -26,7 +26,7 @@ entity "user" as user_t #E3F2FD {
   * id : UUID <<PK>>
   --
   * family_id : UUID <<FK family.id>>
-  role : VARCHAR(16) [guardian | child]
+  role : VARCHAR(16) [guardian | child | admin]
   authn_subject : VARCHAR(255) <<UNIQUE>>
   child_profile_id : UUID <<FK child_profile.id, NULL>>
   created_at : TIMESTAMPTZ
@@ -37,7 +37,7 @@ entity "child_profile" as child_profile #FFF3E0 {
   --
   * family_id : UUID <<FK family.id>>
   display_name : VARCHAR(120)
-  age_band : VARCHAR(16) [8-11 | 10-13 | 13-16]
+  age_band : VARCHAR(16) [3-5 | 5-8 | 8-11 | 10-13 | 13-16 | 16+]
   reading_level_cap : FLOAT [default 99.0]
   allowed_content_flags : JSONB
   tts_enabled : BOOLEAN
@@ -50,7 +50,7 @@ entity "storybook" as storybook #F3E5F5 {
   --
   * family_id : UUID <<FK family.id>>
   current_published_version : INT NULL
-  status : VARCHAR(20) [draft|generating|auto_check|in_review|approved|published|archived|needs_revision]
+  status : VARCHAR(20) [draft|in_review|needs_revision|published|archived]
   created_by : UUID <<FK user.id, NULL>>
   created_at : TIMESTAMPTZ
 }
