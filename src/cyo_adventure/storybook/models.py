@@ -177,6 +177,33 @@ class ContentFlags(BaseModel):
     peril: ContentFlagLevel = ContentFlagLevel.NONE
 
 
+class Series(BaseModel):
+    """Campaign-continuity metadata chaining a story into a multi-book series.
+
+    A series is a meta-skeleton (books are nodes, and the completion-to-entry
+    continuations are edges); v1 is a linear chain. Each book is a standalone
+    Storybook that passes its own gate; these fields let the cross-book
+    meta-validator check the ADR-011 section-8 invariant: in any non-final book,
+    every successful-completion ending converges on the next book's single
+    ``series_entry_node`` (many endings -> one entry), with declared state carried
+    across. Young or Tier-1 bands run **episodic** series that carry no state.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    series_id: str = Field(min_length=1)
+    # 1-based position of this book in the linear chain.
+    book_index: int = Field(ge=1)
+    # The node continuation from the previous book lands on. ``None`` for the
+    # first book (entered at ``start_node``); required for a continued-into book.
+    series_entry_node: str | None = None
+    # ``True`` only for the last book in the chain (it continues to no next book).
+    is_final: bool = False
+    # The state-export contract: ``True`` carries declared state to the next book;
+    # ``False`` is an episodic series (mandatory for young/Tier-1 bands).
+    carries_state: bool = True
+
+
 class StoryMetadata(BaseModel):
     """Descriptive metadata carried by every Storybook."""
 
@@ -205,6 +232,11 @@ class StoryMetadata(BaseModel):
     # still applies. Defaults to ``True`` so an omitted field means production.
     # See ADR-011 (story-scale framework), the MVP/Test tier.
     production_eligible: bool = True
+    # Optional campaign-continuity placement. When set, this story is one book of
+    # a linear multi-book series; the cross-book meta-validator (validator.series)
+    # checks the ADR-011 section-8 continuity invariant across the chain. A story
+    # with no ``series`` is a standalone book (backward compatible).
+    series: Series | None = None
 
 
 class Variable(BaseModel):

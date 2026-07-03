@@ -310,6 +310,50 @@
       "title": "SafetyScope",
       "type": "string"
     },
+    "Series": {
+      "additionalProperties": false,
+      "description": "Campaign-continuity metadata chaining a story into a multi-book series.\n\nA series is a meta-skeleton (books are nodes, and the completion-to-entry\ncontinuations are edges); v1 is a linear chain. Each book is a standalone\nStorybook that passes its own gate; these fields let the cross-book\nmeta-validator check the ADR-011 section-8 invariant: in any non-final book,\nevery successful-completion ending converges on the next book's single\n``series_entry_node`` (many endings -> one entry), with declared state carried\nacross. Young or Tier-1 bands run **episodic** series that carry no state.",
+      "properties": {
+        "book_index": {
+          "minimum": 1,
+          "title": "Book Index",
+          "type": "integer"
+        },
+        "carries_state": {
+          "default": true,
+          "title": "Carries State",
+          "type": "boolean"
+        },
+        "is_final": {
+          "default": false,
+          "title": "Is Final",
+          "type": "boolean"
+        },
+        "series_entry_node": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Series Entry Node"
+        },
+        "series_id": {
+          "minLength": 1,
+          "title": "Series Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "series_id",
+        "book_index"
+      ],
+      "title": "Series",
+      "type": "object"
+    },
     "StoryMetadata": {
       "additionalProperties": false,
       "description": "Descriptive metadata carried by every Storybook.",
@@ -352,6 +396,17 @@
         },
         "reading_level": {
           "$ref": "#/$defs/ReadingLevel"
+        },
+        "series": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Series"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "themes": {
           "items": {
