@@ -40,6 +40,8 @@ from cyo_adventure.api.schemas import (
     ConceptCreatedResponse,
     ConceptCreateRequest,
     GenerationEnqueuedResponse,
+    GenerationJobListItem,
+    GenerationJobListView,
     GenerationJobResponse,
     JobStatusLiteral,
     ValidateResponse,
@@ -236,6 +238,88 @@ async def enqueue_concept_generation(
     return GenerationEnqueuedResponse(
         job_id=str(job.id), status=cast("Literal['queued']", job.status)
     )
+
+
+# Cap the number of jobs returned so the list stays a bounded, single query.
+_JOB_LIST_LIMIT = 50
+
+# Longest premise prefix shown as a row label; keeps the payload compact and
+# avoids echoing a long free-text brief back into the list view.
+_PREMISE_SNIPPET_LEN = 120
+
+
+def _str_or_none(value: object) -> str | None:
+    """Return ``value`` if it is a non-empty string, else ``None``.
+
+    The brief is stored as loosely-typed JSON (Concept.brief), so a reader must
+    tolerate missing or wrong-typed keys rather than trust the shape.
+    """
+    return value if isinstance(value, str) and value else None
+
+
+@router.get("/generation-jobs")
+async def list_generation_jobs(ctx: Context) -> GenerationJobListView:
+    """List the calling guardian's family generation jobs, newest first.
+
+    Guardian-only. Scoped to the principal's family via the Concept join. The
+    raw ``report`` column is never selected or returned (ADR-007): only status,
+    the linked storybook id/status/version, the short error, and enough brief
+    context to label the row.
+
+    Args:
+        ctx: The request context (principal and session).
+
+    Returns:
+        GenerationJobListView: Up to the 50 most recent jobs for the family.
+
+    Raises:
+        AuthorizationError: If the principal is not a guardian (-> 403).
+    """
+    # #CRITICAL: security: guardian-only; a child token must never enumerate
+    # a family's generation jobs (authorization-matrix.md).
+    # #VERIFY: test_generation_api::test_list_jobs_child_token_rejected.
+    if not ctx.principal.is_guardian:
+        raise AuthorizationError(_GUARDIAN_REQUIRED)
+
+    # #CRITICAL: security: family-scoped IDOR guard -- the WHERE clause filters
+    # on the joined Concept.family_id so family B never sees family A's jobs.
+    # A single query with an outer join to Storybook avoids an N+1 status lookup.
+    # #VERIFY: test_generation_api::test_list_jobs_is_family_scoped.
+    stmt = (
+        select(GenerationJob, Concept.brief, Storybook.status)
+        .join(Concept, GenerationJob.concept_id == Concept.id)
+        .outerjoin(Storybook, GenerationJob.storybook_id == Storybook.id)
+        .where(Concept.family_id == ctx.principal.family_id)
+        .order_by(GenerationJob.created_at.desc())
+        .limit(_JOB_LIST_LIMIT)
+    )
+    rows = (await ctx.session.execute(stmt)).all()
+
+    items: list[GenerationJobListItem] = []
+    for job, brief, storybook_status in rows:
+        # #ASSUME: data-integrity: ``brief`` is loosely-typed JSON; read defensively.
+        # #VERIFY: _str_or_none tolerates missing/wrong-typed premise/title/age_band.
+        brief_map = brief if isinstance(brief, dict) else {}
+        premise = _str_or_none(brief_map.get("premise")) or ""
+        items.append(
+            GenerationJobListItem(
+                id=str(job.id),
+                # #ASSUME: data-integrity: job.status is one of JobStatusLiteral's
+                # five values (ck_generation_job_status); cast mirrors
+                # get_generation_job so no new str->Literal error is introduced.
+                # #VERIFY: JobStatusLiteral matches _GENERATION_JOB_STATUS_VALUES.
+                status=cast("JobStatusLiteral", job.status),
+                storybook_id=job.storybook_id,
+                storybook_status=storybook_status,
+                version=job.version,
+                error=job.error,
+                title=_str_or_none(brief_map.get("title")),
+                premise_snippet=premise[:_PREMISE_SNIPPET_LEN],
+                age_band=_str_or_none(brief_map.get("age_band")),
+                created_at=job.created_at,
+            )
+        )
+    return GenerationJobListView(jobs=items)
 
 
 @router.get("/generation-jobs/{job_id}")
