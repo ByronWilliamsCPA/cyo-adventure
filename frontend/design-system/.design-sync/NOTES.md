@@ -8,7 +8,7 @@
 - Entry for converter: `./dist/cyo-design-system.js` (ESM bundle)
 - CSS entry: `dist/cyo-design-system.css` (tokens + all component CSS bundled by Vite)
 - tsconfig: `./tsconfig.json` sets `noEmit: true`, so no `.d.ts` files in dist; converter cannot auto-discover components via `.d.ts` scan
-- FIX: `componentSrcMap` in `design-sync.config.json` seeds the component list explicitly; without it the converter logs `[ZERO_MATCH]` and falls through to tokens-only mode
+- FIX: `componentSrcMap` in `.design-sync/config.json` seeds the component list explicitly; without it the converter logs `[ZERO_MATCH]` and falls through to tokens-only mode
 
 ## First sync: 2026-06-30
 
@@ -52,7 +52,7 @@
 
 ## Drift risks (external resource / data integrity)
 
-- #ASSUME: external resource: `projectId` in `design-sync.config.json` points to a
+- #ASSUME: external resource: `projectId` in `.design-sync/config.json` points to a
   specific claude.ai/design project that this repo does not control the lifecycle of.
   #VERIFY: before running a re-sync, confirm the project still exists and this branch
   is still the intended target; a deleted or renamed project fails the sync silently

@@ -14,9 +14,10 @@ components render as unstyled browser defaults. Load `styles.css` plus
 
 ## Styling idiom
 
-Components style themselves via props (see each `<Name>.d.ts` for the exact
-API, e.g. Button's `variant` and `size`, StatusBadge's `status`). Their CSS
-class names are internal; never target or invent component classes.
+Components style themselves via props (see each component's documented prop
+contract for the exact API, e.g. Button's `variant` and `size`, StatusBadge's
+`status`). Their CSS class names are internal; never target or invent component
+classes.
 
 For your own layout glue (page shells, grids, spacing), write plain CSS or
 inline styles using the token custom properties. The full set lives in
