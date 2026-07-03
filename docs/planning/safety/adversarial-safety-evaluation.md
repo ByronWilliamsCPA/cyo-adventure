@@ -61,8 +61,8 @@ concept brief or an imported story into the pipeline (a guardian, an admin, or t
 identity layer that decides who can submit briefs and approve stories is governed by
 [ADR-008](../adr/adr-008-public-app-store-launch.md) and
 [ADR-009](../adr/adr-009-supabase-platform.md): real authentication lands in Phase 6
-(Supabase, guardians-only IdP identities), and Track 1 ships in the interim on the
-dev-stub auth seam, so for Track 1 every submitter is effectively a trusted household
+(Supabase, guardians-only IdP identities), and R1 ships in the interim on the
+dev-stub auth seam, so for R1 every submitter is effectively a trusted household
 member. The asset under protection is the child reader: no generated or
 imported content should reach a child's library without either an automated safety
 gate flagging it or a human approving it with full visibility of what was (and was
@@ -412,7 +412,7 @@ code paths that can reach `submit`/`approve`, or the band policy profile MUST:
 - [ADR-008: Public App Store launch](../adr/adr-008-public-app-store-launch.md) and
   [ADR-009: Supabase platform](../adr/adr-009-supabase-platform.md) (the identity layer
   that decides who can submit briefs and approve stories; real auth is Phase 6, and the
-  Kids Category / COPPA posture makes an unbacked safety claim a Track 2 launch blocker).
+  Kids Category / COPPA posture makes an unbacked safety claim a public-launch (R2/R3) blocker).
 - [ADR-010: Modal review and gated generation](../adr/adr-010-modal-review-and-gated-generation.md)
   (adds `review_provider = "modal"`, an independent open-weight reviewer; the credentialed
   harness run should gain a `modal` provider choice once P9-12 lands, alongside the existing

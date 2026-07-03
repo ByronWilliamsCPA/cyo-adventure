@@ -86,9 +86,12 @@ green before Phase 3 closes.
 The publish state machine transitions are enforced as follows:
 
 ```text
-draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -+
-                                   |                                             |
-                                   +-> in_review -> published -> archived
+GenerationJob:  queued -> running -+-> passed        (validator + moderation gates pass)
+                                   +-> needs_review  (safety flag; a human must clear it)
+                                   +-> failed        (hard validation failure)
+
+Storybook:      draft -> in_review -+-> published -> archived
+                                    +-> needs_revision -> (repair / regenerate)
 ```
 
 - `in_review -> published`: global admin role required (`Role.ADMIN` / `is_admin`). This
@@ -100,10 +103,11 @@ draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -
   approve-then-publish split (with an intermediate `approved` state audited independently)
   remains a not-yet-built future design if separate audit of approval and publish is
   later required.
-- `auto_check -> in_review`: automated; triggered by the validator and moderation gate
-  passing. No role check needed because no human action initiates it.
-- `auto_check -> needs_revision`: automated on gate failure. Routes to human review if
-  moderation flags content; routes to repair if only structural issues are found.
+- `running -> passed`: automated; the GenerationJob's validator and moderation gates pass,
+  and the resulting draft version becomes reviewable. No role check because no human initiates it.
+- `running -> needs_review` / `running -> failed`: automated on gate outcome. A safety flag
+  routes the job to `needs_review` (a person must clear it); a hard validation failure routes
+  to `failed` for repair or regeneration.
 
 A story is visible in a child's library only in the `published` state.
 

@@ -246,20 +246,27 @@ review_item       - storybook_version ref, state, flags (JSON), assigned_to
 - `child_profile` + `storybook` → `reading_state`: per-child, per-story progress.
 - `child_profile` + `storybook` → `completion`: one row per ending found.
 
-### Publish state machine
+### Generation and publish lifecycles
+
+Generation and publishing are two separate state machines, not one pipeline. There is no
+`generating`, `auto_check`, or `approved` storybook state.
 
 ```text
-draft → generating → auto_check ─┬─► needs_revision ──► (repair / regenerate) ──┐
-                                 │                                              │
-                                 └─► in_review ──► approved ──► published ──► archived
-                                          ▲                                     │
-                                          └──────────── (re-review on edit) ◄───┘
+GenerationJob:  queued → running ─┬─► passed        (L1/L2 + moderation gates pass)
+                                  ├─► needs_review  (safety flag; a human must clear it)
+                                  └─► failed        (hard validation failure)
+
+Storybook:      draft → in_review ─┬─► published → archived
+                  ▲                └─► needs_revision → (repair / regenerate) ──┐
+                  └────────────────────────── (re-review on edit) ◄────────────┘
 ```
 
-A story is visible to a child profile only in `published`. The transition
-`in_review → approved` requires a guardian. Auto checks (validator plus moderation) gate
-`generating → in_review`; failures route to `needs_revision`. See
-[ADR-005](./adr/adr-005-mandatory-human-approval.md).
+A story is visible to a child profile only in `published`. The `in_review → published`
+transition is a single approve-and-publish action that requires the global **admin** role
+(`is_admin`) and is applied cross-family (`authorize_family` is not called on approval). A
+draft version becomes reviewable only after its GenerationJob reaches `passed`; a
+`needs_review` job routes to a person and a `failed` job routes to repair or regeneration.
+See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 
 ### Multi-device sync rules
 

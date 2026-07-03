@@ -19,6 +19,14 @@ This page records the seven decisions ratified as "Part V" of the CYO Adventure 
 handoff. These decisions are locked before any app code is written (Phase 0 exit gate).
 Each entry states the decision, the one-line rationale, and the authoritative source.
 
+> **Status note (2026-07-03):** This is a historical Phase 0 record. Three of these decisions
+> have since evolved; the current position lives in later ADRs. The LLM provider is now
+> OpenRouter-primary with an Ollama fallback (ADR-003 as amended, not Anthropic-direct). App
+> authentication is now Supabase OIDC (ADR-009 supersedes Authentik as the app identity
+> provider; Authentik remains only for homelab-internal ingress under ADR-004). The "first
+> usable release" is the R1 internal-web rung of the R1/R2/R3 release ladder. The entries
+> below are preserved as ratified; follow the linked ADRs for the current state.
+
 Provider data-handling confirmation status is tracked as an OPEN BLOCKER; see
 `docs/planning/privacy-model.md`.
 

@@ -389,8 +389,8 @@ runs on Supabase-managed infrastructure instead of the homelab; see
 
 ### Success Criteria
 
-- ✅ Deployed behind Pangolin with Authentik login; a restore from backup succeeds in a
-  drill.
+- ✅ Deployed behind Pangolin with Supabase guardian login (ADR-009); a restore from backup
+  succeeds in a drill.
 - ✅ Performance targets met on a real device on home wifi.
 
 ### Dependencies

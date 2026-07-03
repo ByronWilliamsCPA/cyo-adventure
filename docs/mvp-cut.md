@@ -15,7 +15,7 @@ tags:
 
 ## Overview
 
-This page records the agreed scope boundary for the first usable release of CYO Adventure
+This page records the agreed scope boundary for R1, the internal-web release of CYO Adventure
 (Phases 0 through 3 plus the Phase 4a library-and-profiles slice). It is a one-page
 reference that the team checks before adding anything to a phase branch.
 

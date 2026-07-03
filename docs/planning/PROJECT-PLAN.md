@@ -224,15 +224,19 @@ gated-generation leg. Both are listed in Section 12 (Related Documents).
 ### Publish state machine
 
 ```text
-draft -> generating -> auto_check -+-> needs_revision -> (repair / regenerate) -+
-                                   |                                             |
-                                   +-> in_review -> approved -> published -> archived
-                                          ^
-                                          +-- (re-review on edit)
+GenerationJob:  queued -> running -+-> passed        (validator + moderation gates pass)
+                                   +-> needs_review  (safety flag; a human must clear it)
+                                   +-> failed        (hard validation failure)
+
+Storybook:      draft -> in_review -+-> published -> archived
+                  ^                 +-> needs_revision -> (repair / regenerate)
+                  +-- (re-review on edit)
 ```
 
-A story is visible to a child only in `published`. The transition `in_review -> approved`
-requires a guardian. Failures from the validator or moderation route to `needs_revision`.
+A story is visible to a child only in `published`. The `in_review -> published` transition
+is a single approve-and-publish action requiring the global **admin** role (`is_admin`),
+applied cross-family; there is no separate `approved` state. Failures from the validator or
+moderation route the GenerationJob to `needs_review` or `failed`.
 
 The public rungs (R2/R3) add one state on top of (not instead of) this machine: `published ->
 catalog_published`, an **admin-curated** transition that makes a story visible in the
@@ -587,10 +591,12 @@ guardian approval. See [ADR-005](./adr/adr-005-mandatory-human-approval.md).
 - **Moderation pass**: provider moderation API plus an independent LLM-reviewer pass, scored
   against per-age-band policy; any hit flags the nodes and forces human review. Safety hits
   always route to a person; never auto-publish.
-- **Publish state machine** with the guardian-only approval transition:
-  `draft -> generating -> auto_check -> in_review -> approved -> published -> archived`,
-  with `needs_revision` on auto-check failure.
-- **Parent review surface**: a guardian can read the full story, see flagged passages, and
+- **Publish state machine** with the admin-only approve-and-publish transition
+  (`in_review -> published`, global `is_admin`, cross-family): the Storybook lifecycle is
+  `draft -> in_review -> published -> archived` with `needs_revision` on a failed gate, fed by
+  a GenerationJob (`queued -> running -> passed | needs_review | failed`). There is no
+  `generating`, `auto_check`, or `approved` storybook state.
+- **Admin review surface**: the global admin can read the full story, see flagged passages, and
   approve or send back. The review UI must make each approval achievable in a few minutes.
 - **Provenance and audit** on every published version: model, provider, prompt version, and
   approver ID persisted in `storybook_version`.
@@ -744,7 +750,7 @@ alternative). See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
 **Acceptance criteria** (from [Roadmap Phase 5](./roadmap.md)):
 
-- Deployed behind Pangolin with Authentik login; a restore from backup succeeds in a drill.
+- Deployed behind Pangolin with Supabase guardian login (ADR-009); a restore from backup succeeds in a drill.
 - Performance targets met on a real device on home wifi.
 
 **Quality gates**:
