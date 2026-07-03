@@ -6,6 +6,7 @@ from cyo_adventure.validator.band_profile import (
     MVP_MAX_NODES,
     MVP_MIN_NODES,
     BandProfile,
+    breadth_scaled_floors,
     min_complete_floor,
     mvp_node_budget,
     production_cell_budget,
@@ -110,3 +111,20 @@ def test_min_complete_floor_off_matrix_is_none():
     """Off-matrix combinations have no arc floor."""
     assert min_complete_floor("3-5", "long", "prose") is None
     assert min_complete_floor("8-11", "short", "gamebook") is None
+
+
+def test_breadth_scaled_floors_prose():
+    """Prose floors scale at 15% endings and 8% decisions of node count."""
+    # 100 nodes: ceil(100*0.15)=15 endings, ceil(100*0.08)=8 decisions.
+    assert breadth_scaled_floors(100, "prose") == (15, 8)
+
+
+def test_breadth_scaled_floors_gamebook_endings_higher():
+    """Gamebook floors scale endings at 25% (few wins, many fail terminals)."""
+    # 200 nodes: ceil(200*0.25)=50 endings, ceil(200*0.08)=16 decisions.
+    assert breadth_scaled_floors(200, "gamebook") == (50, 16)
+
+
+def test_breadth_scaled_floors_unknown_style_uses_prose():
+    """An unknown style falls back to the prose ending fraction."""
+    assert breadth_scaled_floors(100, "mystery") == breadth_scaled_floors(100, "prose")

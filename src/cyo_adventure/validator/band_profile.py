@@ -8,6 +8,7 @@ measured; 3-5 and 16+ ceilings and floors are product-defined and tunable.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -276,3 +277,42 @@ def min_complete_floor(age_band: str, length: str, narrative_style: str) -> int 
         ``None`` when the combination is not an offered cell.
     """
     return _MIN_COMPLETE.get((age_band, length, narrative_style))
+
+
+# Breadth-scaled PL-17 floors for a scale-classified production story. The band
+# profile floors (``min_endings`` / ``min_decisions``) are absolute minimums tuned
+# for band-scale stories; a large scale-classified world must not pass with a
+# handful of endings or a near-linear spine, so its floors scale with node count.
+# ADR-011 section 6: endings are reconvergent leaves scaling with node count
+# (prose ~15-22%), and a gamebook is "few wins + many fails" (~25-35% terminals);
+# the fractions below are the LOW end of those bands, so the floor is a
+# non-inflating minimum. The decision fraction is a product-tuned guardrail
+# (~half the prose ending fraction, since ADR-011 holds ~2-3 choices per decision
+# and decisions-per-PATH constant): it bounds total decision *breadth*, not path
+# depth, so it catches an almost-linear large story without inflating decisions.
+# Both are tunable, like the ADR's product-defined budgets.
+_ENDINGS_FRACTION: dict[str, float] = {"prose": 0.15, "gamebook": 0.25}
+_DECISIONS_FRACTION = 0.08
+
+
+def breadth_scaled_floors(node_count: int, narrative_style: str) -> tuple[int, int]:
+    """Return ``(min_endings, min_decisions)`` scaled to a story's node count.
+
+    Only a scale-classified production story uses these; the caller takes the
+    ``max`` of the band-level floor and the scaled floor, so a small scale story
+    never drops below its band minimum. An unknown style falls back to the prose
+    ending fraction.
+
+    Args:
+        node_count: The total number of nodes in the story.
+        narrative_style: ``"prose"`` or ``"gamebook"``.
+
+    Returns:
+        The breadth-scaled ``(min_endings, min_decisions)`` floor pair.
+    """
+    endings_fraction = _ENDINGS_FRACTION.get(
+        narrative_style, _ENDINGS_FRACTION["prose"]
+    )
+    min_endings = math.ceil(node_count * endings_fraction)
+    min_decisions = math.ceil(node_count * _DECISIONS_FRACTION)
+    return min_endings, min_decisions

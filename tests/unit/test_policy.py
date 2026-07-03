@@ -337,6 +337,132 @@ def test_pl20_allows_path_meeting_the_floor():
     assert not any(f.rule_id == "PL-20" for f in report.errors)
 
 
+# --- PL-17 breadth-scaled floors ----------------------------------------------
+
+
+def _wide_scale_story(
+    *,
+    node_count: int,
+    endings: int,
+    decisions: int,
+    age_band: AgeBand = AgeBand.BAND_8_11,
+    length: Length | None = Length.MEDIUM,
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE,
+) -> Storybook:
+    """Build a wide story with exact node, ending, and decision counts.
+
+    Structure: a start node, ``decisions`` two-choice decision nodes, ``endings``
+    success endings, and single-choice filler nodes padding to ``node_count``.
+    Targets all resolve to real nodes; the shape reconverges, so it is declared
+    ``branch_and_bottleneck`` to keep PL-18 clean. (PL-20's arc floor is not the
+    subject here, so tests filter on the PL-17 rule id.)
+    """
+    nodes: list[Node] = [
+        Node(
+            id=f"e{i}",
+            body=_fill(50),
+            is_ending=True,
+            ending=Ending(
+                id=f"end{i}",
+                valence=Valence.POSITIVE,
+                kind=EndingKind.SUCCESS,
+                title="W",
+            ),
+        )
+        for i in range(endings)
+    ]
+    second = "e1" if endings > 1 else "e0"
+    nodes.extend(
+        Node(
+            id=f"d{i}",
+            body=_fill(50),
+            choices=[
+                Choice(id=f"d{i}a", label="a", target="e0"),
+                Choice(id=f"d{i}b", label="b", target=second),
+            ],
+        )
+        for i in range(decisions)
+    )
+    fillers = node_count - endings - decisions - 1  # minus the start node
+    nodes.extend(
+        Node(
+            id=f"f{i}",
+            body=_fill(50),
+            choices=[Choice(id=f"f{i}c", label="go", target="e0")],
+        )
+        for i in range(fillers)
+    )
+    start_target = "d0" if decisions else "e0"
+    nodes.insert(
+        0,
+        Node(
+            id="n0",
+            body=_fill(50),
+            choices=[Choice(id="c0", label="go", target=start_target)],
+        ),
+    )
+    return Storybook(
+        id="s",
+        version=1,
+        title="T",
+        start_node="n0",
+        nodes=nodes,
+        metadata=StoryMetadata(
+            age_band=age_band,
+            reading_level=ReadingLevel(target=2.0),
+            tier=1,
+            estimated_minutes=5,
+            ending_count=max(1, endings),
+            topology=Topology.BRANCH_AND_BOTTLENECK,
+            length=length,
+            narrative_style=narrative_style,
+        ),
+    )
+
+
+def test_pl17_scaled_endings_floor_blocks_large_thin_story():
+    """A large scale story with only band-floor endings trips the scaled floor."""
+    # 8-11 medium, 100 nodes: prose endings floor = ceil(100 * 0.15) = 15.
+    # 3 endings clears the band floor (3) but not the breadth-scaled floor.
+    report = validate_policy(_wide_scale_story(node_count=100, endings=3, decisions=40))
+    assert any(
+        f.rule_id == "PL-17" and "ending" in f.message and "scale-adjusted" in f.message
+        for f in report.errors
+    )
+
+
+def test_pl17_scaled_decisions_floor_blocks_near_linear_story():
+    """A large scale story with too few decision nodes trips the scaled floor."""
+    # 8-11 medium, 100 nodes: decisions floor = ceil(100 * 0.08) = 8.
+    # 3 decisions clears the band floor (3) but not the breadth-scaled floor.
+    report = validate_policy(_wide_scale_story(node_count=100, endings=20, decisions=3))
+    assert any(
+        f.rule_id == "PL-17"
+        and "decision" in f.message
+        and "scale-adjusted" in f.message
+        for f in report.errors
+    )
+
+
+def test_pl17_scaled_floor_passes_when_breadth_met():
+    """A scale story meeting the breadth-scaled floors has no PL-17 finding."""
+    # 100 nodes: endings floor 15, decisions floor 8; supply 20 and 12.
+    report = validate_policy(
+        _wide_scale_story(node_count=100, endings=20, decisions=12)
+    )
+    assert not any(f.rule_id == "PL-17" for f in report.errors)
+
+
+def test_pl17_length_less_story_keeps_band_floor_only():
+    """A length-less story is not scale-classified; only the band floor applies."""
+    # 100 nodes, 8-11 band floor is 3 endings / 3 decisions. With no length the
+    # breadth floor (which would demand 15/8) must NOT apply, so 4/4 passes.
+    report = validate_policy(
+        _wide_scale_story(node_count=100, endings=4, decisions=4, length=None)
+    )
+    assert not any(f.rule_id == "PL-17" for f in report.errors)
+
+
 def test_pl20_skipped_without_length():
     """A non-scale story (no length) has no arc floor."""
     report = validate_policy(_linear_scale_story(middles=0, length=None))

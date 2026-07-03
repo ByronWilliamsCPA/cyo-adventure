@@ -19,6 +19,7 @@ import networkx as nx
 from cyo_adventure.storybook.models import EndingKind, Storybook, level_rank
 from cyo_adventure.validator.band_profile import (
     BandProfile,
+    breadth_scaled_floors,
     min_complete_floor,
     profile_for,
     words_per_node_profile,
@@ -139,37 +140,67 @@ def _build_graph(story: Storybook) -> nx.DiGraph[str]:
     return graph
 
 
+def _effective_floors(story: Storybook, profile: BandProfile) -> tuple[int, int, bool]:
+    """Return the ``(min_endings, min_decisions, scaled)`` PL-17 floors.
+
+    A scale-classified production story (one that declares a ``length``) scales
+    its floors with node count so a large world cannot pass with the band-scale
+    minimums: the effective floor is the ``max`` of the band floor and the
+    breadth-scaled floor, so a small scale story never drops below its band
+    minimum. Any other story keeps the band floors unchanged. See ADR-011
+    section 6.
+
+    Args:
+        story: The parsed Storybook.
+        profile: The band policy profile supplying the absolute floors.
+
+    Returns:
+        The effective ``min_endings`` and ``min_decisions`` and whether the
+        breadth-scaled floor was applied (for the finding message).
+    """
+    if story.metadata.length is None or not story.metadata.production_eligible:
+        return profile.min_endings, profile.min_decisions, False
+    scaled_endings, scaled_decisions = breadth_scaled_floors(
+        len(story.nodes), story.metadata.narrative_style.value
+    )
+    return (
+        max(profile.min_endings, scaled_endings),
+        max(profile.min_decisions, scaled_decisions),
+        True,
+    )
+
+
 def _check_floors(
     story: Storybook, profile: BandProfile, report: ValidationReport
 ) -> None:
-    """PL-17: endings and decision nodes must meet the band floors."""
+    """PL-17: endings and decision nodes must meet the (possibly scaled) floors."""
     endings = sum(1 for node in story.nodes if node.is_ending)
     decisions = sum(
         1 for node in story.nodes if not node.is_ending and len(node.choices) >= 2
     )
-    if endings < profile.min_endings:
+    min_endings, min_decisions, scaled = _effective_floors(story, profile)
+    scope = "scale-adjusted" if scaled else f"band '{story.metadata.age_band.value}'"
+    if endings < min_endings:
         report.add(
             ValidationFinding(
                 rule_id="PL-17",
                 severity=Severity.ERROR,
                 story_id=story.id,
                 message=(
-                    f"PL-17 floor: {endings} ending(s) below band "
-                    f"'{story.metadata.age_band.value}' minimum "
-                    f"{profile.min_endings} in story '{story.id}'"
+                    f"PL-17 floor: {endings} ending(s) below {scope} minimum "
+                    f"{min_endings} in story '{story.id}'"
                 ),
             )
         )
-    if decisions < profile.min_decisions:
+    if decisions < min_decisions:
         report.add(
             ValidationFinding(
                 rule_id="PL-17",
                 severity=Severity.ERROR,
                 story_id=story.id,
                 message=(
-                    f"PL-17 floor: {decisions} decision node(s) below band "
-                    f"'{story.metadata.age_band.value}' minimum "
-                    f"{profile.min_decisions} in story '{story.id}'"
+                    f"PL-17 floor: {decisions} decision node(s) below {scope} "
+                    f"minimum {min_decisions} in story '{story.id}'"
                 ),
             )
         )
