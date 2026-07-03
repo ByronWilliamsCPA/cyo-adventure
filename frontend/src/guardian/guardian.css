@@ -410,3 +410,34 @@
   background: var(--color-parchment-dark, #ede6d0);
   border-top: 1px solid rgb(44 26 14 / 12%);
 }
+
+.intake-request__assign {
+  border: 1px solid var(--color-amber, #c17b2a);
+  background: transparent;
+  color: var(--color-amber, #c17b2a);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.intake-request__assign:hover {
+  background: var(--color-amber-subtle, #fdf6ec);
+}
+
+.assign__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.assign__row label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}

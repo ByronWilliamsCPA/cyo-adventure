@@ -231,6 +231,30 @@ class RatingListView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Assignment schemas (C4a-6)
+# ---------------------------------------------------------------------------
+
+
+class AssignmentCreateBody(BaseModel):
+    """A guardian's request to assign a story to one or more child profiles."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    # #ASSUME: security: a family has a small number of child profiles, so a cap
+    # of 64 comfortably exceeds any real assign batch while bounding a single
+    # request's per-id authorize/insert work against batch-abuse.
+    # #VERIFY: min_length rejects [] (422); max_length rejects an oversized list.
+    profile_ids: list[str] = Field(min_length=1, max_length=64)
+
+
+class AssignmentListView(BaseModel):
+    """The full current set of profiles a story is assigned to."""
+
+    storybook_id: str
+    profile_ids: list[str]
+
+
+# ---------------------------------------------------------------------------
 # Profile schemas
 # ---------------------------------------------------------------------------
 
