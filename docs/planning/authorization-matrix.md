@@ -118,5 +118,5 @@ A story is visible in a child's library only in the `published` state.
 - [Tech Spec: Security](./tech-spec.md#security)
 - [Tech Spec: API Specification](./tech-spec.md#api-specification)
 - [ADR-005: Mandatory human approval](./adr/adr-005-mandatory-human-approval.md) (amended 2026-06-30: approver is the global admin role)
-- [ADR-009: Supabase OIDC and guardian-identity / child-session split](./adr/adr-009-supabase-platform.md)
+- [ADR-009: Supabase as the managed platform for auth, database, and storage](./adr/adr-009-supabase-platform.md)
 - [ADR-004: Homelab-first deployment](./adr/adr-004-homelab-first-deployment.md) (governs the homelab / family tier)

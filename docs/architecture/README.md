@@ -79,8 +79,9 @@ FastAPI backend (Python 3.12)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker
-        -> OpenRouter (primary LLM)
-        -> Ollama (local fallback)
+        -> OpenRouter haiku (leg 1, primary)
+        -> OpenRouter sonnet (leg 2, fallback)
+        -> Ollama (leg 3, local fallback)
         -> [Phase 5] MinIO (blob_ref object storage)
 ```
 

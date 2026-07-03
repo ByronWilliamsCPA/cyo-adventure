@@ -373,7 +373,7 @@ light it did not earn.
 title?, premise, protagonist (name/age/role), point_of_view (default 2nd person),
 age_band, reading_level_target, tier, tone, themes_allowed[], content_nogo[],
 target_node_count, ending_count, structure_pattern
-  (time_cave | gauntlet | branch_and_bottleneck | loop_and_grow | open_map | sorting_hat),
+  (time_cave | gauntlet | branch_and_bottleneck | quest | loop_and_grow),
 desired_variables[]?, special_constraints[]?
 ```
 
@@ -450,7 +450,7 @@ is never trusted on its own. Inputs are validated against the published story
 | POST | /api/v1/storybooks/{id}/versions/{v}/validate | Re-run the gate | Guardian |
 | PATCH | /api/v1/storybooks/{id}/versions/{v}/nodes/{node_id} | Edit a passage (Phase 4b) | Guardian |
 | POST | /api/v1/storybooks/{id}/versions/{v}/submit-review | Move to review | Guardian |
-| POST | /api/v1/storybooks/{id}/versions/{v}/approve | Approve and publish in one step (→ published) | Admin |
+| POST | /api/v1/storybooks/{id}/approve | Approve and publish in one step (→ published) | Admin |
 
 ### Request/Response Format (reading-state PUT)
 

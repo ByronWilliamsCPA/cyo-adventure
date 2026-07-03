@@ -6,7 +6,7 @@
 '
 ' Source files:
 '   src/cyo_adventure/generation/orchestrator.py  (module docstring + generate_story)
-'   src/cyo_adventure/generation/provider.py      (build_default_provider(): 3-leg cascade)
+'   src/cyo_adventure/generation/provider.py      (build_provider(): 3-leg cascade)
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
 '   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/pii.py

@@ -78,7 +78,8 @@ in nodes at every level. A 6-level tree has 63 nodes; a 10-level tree has 1,023.
 let you write distinctive experiences on each branch while keeping total node count inside
 the budget.
 
-Other supported structure patterns (for the concept brief `structure_pattern` field):
+Other supported structure patterns (for the concept brief `structure_pattern` field,
+`generation/concept.py::StructurePattern`):
 
 - `time_cave`: branches fan out to many distinct endings with little or no reconvergence;
   the oldest and simplest branching shape. Good when you want lots of divergent outcomes.
@@ -87,14 +88,15 @@ Other supported structure patterns (for the concept brief `structure_pattern` fi
 - `loop_and_grow`: the reader may revisit nodes, with state tracking their progress across
   loops. Requires Tier 2; the loop-escape check requires that every cycle has an exit path
   to an ending.
-- `open_map`: a hub the reader explores in any order, with loop/return edges and
-  bottlenecks; every reachable path must still lead to an ending.
-- `sorting_hat`: an early branch sorts the reader into parallel tracks that never
-  reconverge (no cross-track bottleneck); each track is its own subtree to an ending.
+- `quest`: a multi-stage journey where each stage has its own branch-and-bottleneck shape.
+  A distinct, requestable pattern; it is not folded into `branch_and_bottleneck`.
 
-The Ashwell `quest` (a multi-stage journey where each stage has its own
-branch-and-bottleneck) is not a separate pattern; it folds into `branch_and_bottleneck`
-(ADR-011).
+`open_map` and `sorting_hat` are `topology` values the validator can classify a finished
+graph as (see [story-skeletons.md](../architecture/story-skeletons.md)), but they are not
+currently requestable via the concept brief's `structure_pattern` intake field. Do not
+conflate the two enums: `structure_pattern` is the author's requested shape at intake time;
+`topology` is the validator's post-hoc classification of the shape the graph actually has,
+and the two can diverge.
 
 Avoid fully symmetric trees (binary trees where every non-ending node has exactly two
 choices): they produce the node-count explosion described above and do not generate well

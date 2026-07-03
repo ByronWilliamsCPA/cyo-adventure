@@ -30,10 +30,12 @@ Adventure system depends on.
 - **Admin (Approver)** is a global, cross-family role (`is_admin`) that reviews and
   approves stories before any child can see them (ADR-005: mandatory approval).
   Guardians and children who attempt the approve action receive 403.
-- **OpenRouter** is the primary LLM provider. Stories are generated through a
-  three-stage pipeline (Structure, Prose, Repair) with a provider fallback cascade.
-- **Ollama** is the local fallback LLM. If OpenRouter fails (leg-fatal errors), the
-  `FallbackProvider` cascade tries Ollama before giving up.
+- **OpenRouter** is the primary LLM provider, tried across two legs: leg 1 (primary
+  model, claude-haiku-4.5) then leg 2 (fallback model, claude-sonnet-4.6). Stories are
+  generated through a three-stage pipeline (Structure, Prose, Repair) with a provider
+  fallback cascade.
+- **Ollama** is the local fallback LLM (leg 3). If both OpenRouter legs fail
+  (leg-fatal errors), the `FallbackProvider` cascade tries Ollama before giving up.
 - **Supabase Auth** provides OIDC identity (ADR-009). The guardian identity and child
   session are encoded in the token; the local dev environment uses a token-as-subject
   seam, while non-local environments verify the JWT via `jwt.PyJWKClient` (see `api/deps.py`).

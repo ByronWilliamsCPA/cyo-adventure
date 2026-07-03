@@ -42,7 +42,7 @@ An authenticated user within a family. Role is `guardian`, `child`, or `admin`.
 | family_id | UUID FK | family.id |
 | role | VARCHAR(16) | `guardian`, `child`, or `admin` |
 | authn_subject | VARCHAR(255) UNIQUE | OIDC `sub` claim |
-| child_profile_id | UUID FK NULL | child_profile.id; NULL for guardians |
+| child_profile_id | UUID FK NULL | child_profile.id; NULL for guardians and admins |
 | created_at | TIMESTAMPTZ | |
 
 ### `child_profile`

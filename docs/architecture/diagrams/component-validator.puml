@@ -38,7 +38,7 @@ package "Validator Gate" #E8F5E9 {
   }
 
   package "Policy Layer: age/scale invariants (ADR-011)" #A5D6A7 {
-    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection" as policy #A5D6A7
+    component "validate_policy()\nvalidator/policy.py\nPL-15: forbidden ending kinds per band\nPL-16: content-flag ceilings per band\nPL-17: ending/decision floors per band\nPL-18: choice-graph topology\nPL-19: words-per-node cap (blocking) + story-mean (advisory)\nPL-20: fastest-finish arc floor\nPL-21: off-matrix cell rejection" as policy #A5D6A7
 
     component "band_profile.py\nBandProfile per age band:\n3-5 | 5-8 | 8-11 | 10-13 |\n13-16 | 16+\nnode/depth budget, content ceilings,\nforbidden endings, ending/decision floors" as band_profile #A5D6A7
   }

@@ -15,8 +15,8 @@ source: "tech-spec.md section 'Validation gate (deterministic, no LLM)'"
 # Validation Rule Catalog
 
 > **Status**: Accepted | **Version**: 1.1 | **Updated**: 2026-07-03
-> **Scope**: All stories (Layer 1); Tier-2 stories only (Layer 2); all stories advisory (RL);
-> all stories always-human (SAFE)
+> **Scope**: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
+> advisory (RL); all stories always-human (SAFE)
 
 ---
 
@@ -34,15 +34,18 @@ to this document.
 | Category | Behaviour | Blocks publish? |
 |----------|-----------|-----------------|
 | Layer 1 (L1) | Pass/fail | Yes |
+| Policy (PL) | Pass/fail (PL-19 story-mean sub-check is advisory) | Yes |
 | Layer 2 (L2) | Pass/fail | Yes (Tier-2 only) |
 | Reading Level (RL) | Advisory | No (warns only) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 
-Layer 1 and Layer 2 are hard gates: any failure fails the generation job (it lands in
-`failed`, not `passed`), so the story never advances to `in_review`. The reading-level check
-warns and logs but does not block. A safety hit routes the generation job to `needs_review`
-for mandatory human review; the validator does not auto-reject, but no auto-publish path
-exists when the flag is set.
+Layer 1, Policy, and Layer 2 are hard gates, run in that order (`validator/gate.py::run_gate`):
+any failure fails the generation job (it lands in `failed`, not `passed`), so the story never
+advances to `in_review`. The Policy layer's PL-19 story-mean words-per-node sub-check is the
+one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+check warns and logs but does not block. A safety hit routes the generation job to
+`needs_review` for mandatory human review; the validator does not auto-reject, but no
+auto-publish path exists when the flag is set.
 
 **Layer 2 applies to Tier-2 stories only.** Running Layer 2 on a Tier-1 story (which carries
 no variables and has deterministic visibility for all choices) is a no-op and must not produce

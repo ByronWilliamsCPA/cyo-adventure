@@ -8,7 +8,7 @@
 '   src/cyo_adventure/generation/prompts.py       (cacheable prompt blocks)
 '   src/cyo_adventure/generation/pii.py           (PII guard)
 '   src/cyo_adventure/generation/provider.py      (GenerationProvider protocol,
-'                                                   build_default_provider() cascade)
+'                                                   build_provider() cascade)
 '   src/cyo_adventure/generation/providers/openrouter.py
 '   src/cyo_adventure/generation/providers/ollama.py
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
