@@ -1,0 +1,416 @@
+@startuml the-sky-ship-stowaway
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 115w
+state a_eng1 #D1C4E9
+a_eng1 : rising · 100w
+state a_eng_deep #FFF9C4
+a_eng_deep : choice · 100w
+state a_eng_a #D1C4E9
+a_eng_a : rising · 95w
+state a_eng_a2 #D1C4E9
+a_eng_a2 : rising · 95w
+state a_eng_b #D1C4E9
+a_eng_b : rising · 95w
+state a_eng_b2 #D1C4E9
+a_eng_b2 : rising · 95w
+state a_eng_conv #D1C4E9
+a_eng_conv : rising · 95w
+state a_eng_risk #FFF9C4
+a_eng_risk : choice · 100w
+state a_eng_recover #D1C4E9
+a_eng_recover : rising · 90w
+state e_set_eng #FFCDD2
+e_set_eng : setback (negative)
+e_set_eng : "Caught by the Coal Fire"
+state b_hold1 #D1C4E9
+b_hold1 : rising · 100w
+state b_hold_deep #FFF9C4
+b_hold_deep : choice · 100w
+state b_hold_a #D1C4E9
+b_hold_a : rising · 95w
+state b_hold_a2 #D1C4E9
+b_hold_a2 : rising · 95w
+state b_hold_b #D1C4E9
+b_hold_b : rising · 95w
+state b_hold_b2 #D1C4E9
+b_hold_b2 : rising · 95w
+state b_hold_conv #D1C4E9
+b_hold_conv : rising · 95w
+state b_hold_risk #FFF9C4
+b_hold_risk : choice · 100w
+state b_hold_recover #D1C4E9
+b_hold_recover : rising · 90w
+state e_set_hold #FFCDD2
+e_set_hold : setback (negative)
+e_set_hold : "Boxed In Below"
+state c_nest1 #D1C4E9
+c_nest1 : rising · 100w
+state c_nest_deep #FFF9C4
+c_nest_deep : choice · 100w
+state c_nest_a #D1C4E9
+c_nest_a : rising · 95w
+state c_nest_a2 #D1C4E9
+c_nest_a2 : rising · 95w
+state c_nest_b #D1C4E9
+c_nest_b : rising · 95w
+state c_nest_b2 #D1C4E9
+c_nest_b2 : rising · 95w
+state c_nest_conv #D1C4E9
+c_nest_conv : rising · 95w
+state c_nest_risk #FFF9C4
+c_nest_risk : choice · 100w
+state c_nest_recover #D1C4E9
+c_nest_recover : rising · 90w
+state e_set_nest #FFCDD2
+e_set_nest : setback (negative)
+e_set_nest : "Down from the Windy Nest"
+state d_salon1 #D1C4E9
+d_salon1 : rising · 100w
+state d_salon_deep #FFF9C4
+d_salon_deep : choice · 100w
+state d_salon_a #D1C4E9
+d_salon_a : rising · 95w
+state d_salon_a2 #D1C4E9
+d_salon_a2 : rising · 95w
+state d_salon_b #D1C4E9
+d_salon_b : rising · 95w
+state d_salon_b2 #D1C4E9
+d_salon_b2 : rising · 95w
+state d_salon_conv #D1C4E9
+d_salon_conv : rising · 95w
+state d_salon_risk #FFF9C4
+d_salon_risk : choice · 100w
+state d_salon_recover #D1C4E9
+d_salon_recover : rising · 90w
+state e_set_salon #FFCDD2
+e_set_salon : setback (negative)
+e_set_salon : "Spotted in the Saloon"
+state n_friend #FFF9C4
+n_friend : choice · 115w
+state f_galley1 #FFF9C4
+f_galley1 : choice · 100w
+state f_galley_a #D1C4E9
+f_galley_a : rising · 95w
+state f_galley_b #FFF9C4
+f_galley_b : choice · 100w
+state f_galley_mid #D1C4E9
+f_galley_mid : rising · 95w
+state e_set_galley #FFCDD2
+e_set_galley : setback (negative)
+e_set_galley : "The Cook Catches On"
+state f_cabin1 #FFF9C4
+f_cabin1 : choice · 100w
+state f_cabin_a #D1C4E9
+f_cabin_a : rising · 95w
+state f_cabin_b #FFF9C4
+f_cabin_b : choice · 100w
+state f_cabin_mid #D1C4E9
+f_cabin_mid : rising · 95w
+state e_set_cabin #FFCDD2
+e_set_cabin : setback (negative)
+e_set_cabin : "Under the Chart Table"
+state f_rig1 #FFF9C4
+f_rig1 : choice · 100w
+state f_rig_a #D1C4E9
+f_rig_a : rising · 95w
+state f_rig_b #FFF9C4
+f_rig_b : choice · 100w
+state f_rig_mid #D1C4E9
+f_rig_mid : rising · 95w
+state e_set_rig #FFCDD2
+e_set_rig : setback (negative)
+e_set_rig : "Grounded from the Rigging"
+state n_storm #FFF9C4
+n_storm : choice · 115w
+state s_deck1 #FFF9C4
+s_deck1 : choice · 100w
+state s_deck_a #D1C4E9
+s_deck_a : rising · 95w
+state s_deck_b #FFF9C4
+s_deck_b : choice · 100w
+state s_deck_mid #D1C4E9
+s_deck_mid : rising · 95w
+state e_set_storm1 #FFCDD2
+e_set_storm1 : setback (negative)
+e_set_storm1 : "Waiting Out the Blow"
+state s_crew1 #FFF9C4
+s_crew1 : choice · 100w
+state s_crew_a #D1C4E9
+s_crew_a : rising · 95w
+state s_crew_b #FFF9C4
+s_crew_b : choice · 100w
+state s_crew_mid #D1C4E9
+s_crew_mid : rising · 95w
+state e_set_storm2 #FFCDD2
+e_set_storm2 : setback (negative)
+e_set_storm2 : "Knocked Off Her Feet"
+state s_hold1 #FFF9C4
+s_hold1 : choice · 100w
+state s_hold_a #D1C4E9
+s_hold_a : rising · 95w
+state s_hold_b #D1C4E9
+s_hold_b : rising · 95w
+state s_hold_mid #D1C4E9
+s_hold_mid : rising · 95w
+state n_secret #FFF9C4
+n_secret : choice · 120w
+state p_save1 #FFF9C4
+p_save1 : choice · 100w
+state p_save_a #D1C4E9
+p_save_a : rising · 95w
+state p_save_b #D1C4E9
+p_save_b : rising · 95w
+state p_save_mid #D1C4E9
+p_save_mid : rising · 95w
+state p_reveal1 #FFF9C4
+p_reveal1 : choice · 100w
+state p_reveal_a #D1C4E9
+p_reveal_a : rising · 95w
+state p_reveal_a2 #D1C4E9
+p_reveal_a2 : rising · 95w
+state p_reveal_mid #D1C4E9
+p_reveal_mid : rising · 95w
+state e_set_reveal #FFCDD2
+e_set_reveal : setback (negative)
+e_set_reveal : "Too Slow Through the Flood"
+state p_people1 #FFF9C4
+p_people1 : choice · 100w
+state p_people_a #D1C4E9
+p_people_a : rising · 95w
+state p_people_b #D1C4E9
+p_people_b : rising · 95w
+state p_people_mid #D1C4E9
+p_people_mid : rising · 95w
+state n_bridge #FFF9C4
+n_bridge : choice · 120w
+state b_steer1 #FFF9C4
+b_steer1 : choice · 100w
+state b_steer_ok #D1C4E9
+b_steer_ok : rising · 95w
+state b_steer_ok2 #FFE0B2
+b_steer_ok2 : climax · 100w
+state e_set_final #FFCDD2
+e_set_final : setback (negative)
+e_set_final : "Put Ashore at Port"
+state e_win_save_ship #C8E6C9
+e_win_save_ship : completion (positive)
+e_win_save_ship : "The Cirrus Sails On"
+state b_patch1 #FFF9C4
+b_patch1 : choice · 100w
+state b_patch_ok #D1C4E9
+b_patch_ok : rising · 95w
+state b_patch_alt #D1C4E9
+b_patch_alt : rising · 95w
+state e_win_patch #C8E6C9
+e_win_patch : success (positive)
+e_win_patch : "The Mended Envelope"
+state e_win_steer #C8E6C9
+e_win_steer : success (positive)
+e_win_steer : "Steady Lift Wins"
+state b_free1 #FFF9C4
+b_free1 : choice · 100w
+state b_free_ok #D1C4E9
+b_free_ok : rising · 95w
+state b_free_ok2 #FFE0B2
+b_free_ok2 : climax · 100w
+state e_win_free #C8E6C9
+e_win_free : success (positive)
+e_win_free : "The Sky-Whale Rises"
+state b_free_alt #D1C4E9
+b_free_alt : rising · 95w
+state e_win_friend #C8E6C9
+e_win_friend : success (positive)
+e_win_friend : "Nimbus Safe Ashore"
+state b_tell1 #FFF9C4
+b_tell1 : choice · 100w
+state b_tell_crew #D1C4E9
+b_tell_crew : rising · 95w
+state e_win_crew #C8E6C9
+e_win_crew : success (positive)
+e_win_crew : "One of the Crew"
+state b_tell_captain #FFF9C4
+b_tell_captain : choice · 100w
+state e_win_captain #C8E6C9
+e_win_captain : completion (positive)
+e_win_captain : "The Captain's Word"
+state e_neu_home #E0E0E0
+e_neu_home : discovery (neutral)
+e_neu_home : "Safe Below, Secret Kept"
+state b_tell_reveal #D1C4E9
+b_tell_reveal : rising · 95w
+state e_win_discovery #C8E6C9
+e_win_discovery : completion (positive)
+e_win_discovery : "The Secret of the Cirrus"
+n_start --> a_eng1 : Slip down toward the roaring engine room...
+n_start --> b_hold1 : Creep into the dark cargo hold.
+n_start --> c_nest1 : Climb up toward the crow's nest.
+n_start --> d_salon1 : Sneak into the grand saloon.
+a_eng1 --> a_eng_deep : Creep along the catwalk deeper in.
+a_eng1 --> a_eng_risk : Dart straight across the open floor.
+a_eng_deep --> a_eng_a : Study the glowing dials.
+a_eng_deep --> a_eng_b : Climb down toward the scuffling.
+a_eng_a --> a_eng_a2 : Duck through the low hatch.
+a_eng_a2 --> a_eng_conv : Follow the mewing along the passage.
+a_eng_b --> a_eng_b2 : Squeeze through the loose hatch.
+a_eng_b2 --> a_eng_conv : Head toward the meeting of the passages.
+a_eng_conv --> n_friend : Kneel down and look behind the crate.
+a_eng_risk --> a_eng_recover : Dive behind the coal chute.
+a_eng_risk --> e_set_eng : Freeze in the open lamplight.
+a_eng_recover --> a_eng_deep : Slip on into the pipe maze.
+b_hold1 --> b_hold_deep : Follow the tidy aisle of crates.
+b_hold1 --> b_hold_risk : Wriggle into the loose netting.
+b_hold_deep --> b_hold_a : Read the crest on the crates.
+b_hold_deep --> b_hold_b : Crawl through the barrel tunnel.
+b_hold_a --> b_hold_a2 : Slip through the gap in the cargo.
+b_hold_a2 --> b_hold_conv : Walk softly toward the shining eyes.
+b_hold_b --> b_hold_b2 : Take the walkway inward.
+b_hold_b2 --> b_hold_conv : Follow the hopeful little sound.
+b_hold_conv --> n_friend : Peek gently behind the crate.
+b_hold_risk --> b_hold_recover : Scramble clear of the leaning crates.
+b_hold_risk --> e_set_hold : Squeeze into the gap and wait.
+b_hold_recover --> b_hold_deep : Take the safer route deeper in.
+c_nest1 --> c_nest_deep : Climb the sheltered inner ladder.
+c_nest1 --> c_nest_risk : Edge along the open mast rungs.
+c_nest_deep --> c_nest_a : Study the envelope through the spyglass.
+c_nest_deep --> c_nest_b : Slide down the rope-run inward.
+c_nest_a --> c_nest_a2 : Climb down the rigging line.
+c_nest_a2 --> c_nest_conv : Follow the curious sound down.
+c_nest_b --> c_nest_b2 : Take the warm inner passage.
+c_nest_b2 --> c_nest_conv : Follow the mewing toward the middle.
+c_nest_conv --> n_friend : Look softly behind the crate.
+c_nest_risk --> c_nest_recover : Grab the safety line and hold on.
+c_nest_risk --> e_set_nest : Scramble up before the next gust.
+c_nest_recover --> c_nest_deep : Return to the sheltered ladder.
+d_salon1 --> d_salon_deep : Edge along the curtained wall.
+d_salon1 --> d_salon_risk : Duck under the linen tables.
+d_salon_deep --> d_salon_a : Peer into the case of ship's models.
+d_salon_deep --> d_salon_b : Slip through the steward's door.
+d_salon_a --> d_salon_a2 : Follow the steward's corridor.
+d_salon_a2 --> d_salon_conv : Follow the hopeful sound inward.
+d_salon_b --> d_salon_b2 : Follow the plain corridor onward.
+d_salon_b2 --> d_salon_conv : Follow the mewing toward the middle.
+d_salon_conv --> n_friend : Look gently behind the crate.
+d_salon_risk --> d_salon_recover : Roll behind the serving trolley.
+d_salon_risk --> e_set_salon : Bolt for the door in the open.
+d_salon_recover --> d_salon_deep : Make for the service alcove.
+n_friend --> f_galley1 : Sneak to the galley with Pip for food.
+n_friend --> f_cabin1 : Slip toward the captain's cabin.
+n_friend --> f_rig1 : Climb into the rigging with Pip.
+f_galley1 --> f_galley_a : Creep to the open larder.
+f_galley1 --> f_galley_b : Wait behind the flour sacks.
+f_galley_a --> f_galley_mid : Steady yourself as the ship lurches.
+f_galley_b --> f_galley_mid : Scoop up Pip and slip out fast.
+f_galley_b --> e_set_galley : Hold still and hope.
+f_galley_mid --> n_storm : Hurry toward the clanging bell.
+f_cabin1 --> f_cabin_a : Listen carefully at the door.
+f_cabin1 --> f_cabin_b : Slip inside for a quick look.
+f_cabin_a --> f_cabin_mid : Back away as the bell rings.
+f_cabin_b --> f_cabin_mid : Duck behind the long curtain.
+f_cabin_b --> e_set_cabin : Dive under the chart table.
+f_cabin_mid --> n_storm : Follow the running crew.
+f_rig1 --> f_rig_a : Take the steady catwalk.
+f_rig1 --> f_rig_b : Cross the swinging rope-bridge.
+f_rig_a --> f_rig_mid : Grip the rail as the ship leans.
+f_rig_b --> f_rig_mid : Lunge for the far platform.
+f_rig_b --> e_set_rig : Freeze and grip the swinging ropes.
+f_rig_mid --> n_storm : Climb down toward the shouting.
+n_storm --> s_deck1 : Fight your way to the weather deck.
+n_storm --> s_crew1 : Join the struggling crew.
+n_storm --> s_hold1 : Go down to the groaning deep hold.
+s_deck1 --> s_deck_a : Crawl low toward the loose line.
+s_deck1 --> s_deck_b : Grab a stanchion and steady up.
+s_deck_a --> s_deck_mid : Take the hatch down into the ship.
+s_deck_b --> s_deck_mid : Scramble down the deck hatch.
+s_deck_b --> e_set_storm1 : Dash across the open deck.
+s_deck_mid --> n_secret : Follow the groan down to the hold.
+s_crew1 --> s_crew_a : Grab the rope and pull with them.
+s_crew1 --> s_crew_b : Run for the sand-buckets they need.
+s_crew_a --> s_crew_mid : Head down the ladder to the hold.
+s_crew_b --> s_crew_mid : Steady the load and finish the job.
+s_crew_b --> e_set_storm2 : Let it go and scramble clear.
+s_crew_mid --> n_secret : Go down toward the sealed hold.
+s_hold1 --> s_hold_a : Peer through the small inspection hatch.
+s_hold1 --> s_hold_b : Study the keyed control panel.
+s_hold_a --> s_hold_mid : Find a way in to the frightened creature...
+s_hold_b --> s_hold_mid : Ease the sheltering door open.
+s_hold_mid --> n_secret : Step closer to the ship's secret.
+n_secret --> p_save1 : Try to help calm Nimbus and save the shi...
+n_secret --> p_reveal1 : Race to tell the bridge what you found.
+n_secret --> p_people1 : Fetch the crew and the captain.
+p_save1 --> p_save_a : Hum softly to calm the frightened calf.
+p_save1 --> p_save_b : Loosen the tangled harness.
+p_save_a --> p_save_mid : Head for the bridge with a plan.
+p_save_b --> p_save_mid : Hurry up toward the bridge.
+p_save_mid --> n_bridge : Climb to the wheelhouse.
+p_reveal1 --> p_reveal_a : Take the long safe stair.
+p_reveal1 --> e_set_reveal : Risk the short flooded passage.
+p_reveal_a --> p_reveal_a2 : Keep climbing toward the bridge.
+p_reveal_a2 --> p_reveal_mid : Push on to the wheelhouse door.
+p_reveal_mid --> n_bridge : Step into the wheelhouse.
+p_people1 --> p_people_a : Fetch the friendly bosun.
+p_people1 --> p_people_b : Go straight to the captain.
+p_people_a --> p_people_mid : Go with the bosun to the wheelhouse.
+p_people_b --> p_people_mid : Follow the captain to the wheel.
+p_people_mid --> n_bridge : Enter the bridge together.
+n_bridge --> b_steer1 : Steady Nimbus so the ship can fly true.
+n_bridge --> b_patch1 : Help patch the straining envelope.
+n_bridge --> b_free1 : Help ease Nimbus to open air.
+n_bridge --> b_tell1 : Tell everyone the secret and rally the c...
+b_steer1 --> b_steer_ok : Hum slow and sure into the tube.
+b_steer1 --> e_set_final : Rush the song in a panic.
+b_steer_ok --> b_steer_ok2 : Hold the calf steady through the worst o...
+b_steer_ok2 --> e_win_save_ship : Ride out into the calm moonlit sky.
+b_patch1 --> b_patch_ok : Climb the rigging to reach the tear.
+b_patch1 --> b_patch_alt : Work the winch from below.
+b_patch_ok --> e_win_patch : Watch the mended envelope hold.
+b_patch_alt --> e_win_steer : Feel the ship steady beneath you.
+b_free1 --> b_free_ok : Help ease Nimbus out to the open air.
+b_free1 --> b_free_alt : Coax Nimbus to a calmer inner bay.
+b_free_ok --> b_free_ok2 : Watch the sky-whale take to the air.
+b_free_ok2 --> e_win_free : Follow Nimbus toward safe harbour.
+b_free_alt --> e_win_friend : Settle Nimbus safe for the voyage.
+b_tell1 --> b_tell_crew : Rally the working crew.
+b_tell1 --> b_tell_captain : Put it to the captain.
+b_tell1 --> b_tell_reveal : Show them all the sky-whale.
+b_tell_crew --> e_win_crew : Take your place among the crew.
+b_tell_captain --> e_win_captain : Accept the captain's trust and a real ta...
+b_tell_captain --> e_neu_home : Let the captain send you safely below.
+b_tell_reveal --> e_win_discovery : Save the ship together, secret and all.
+e_set_eng --> [*]
+e_set_hold --> [*]
+e_set_nest --> [*]
+e_set_salon --> [*]
+e_set_galley --> [*]
+e_set_cabin --> [*]
+e_set_rig --> [*]
+e_set_storm1 --> [*]
+e_set_storm2 --> [*]
+e_set_reveal --> [*]
+e_set_final --> [*]
+e_win_save_ship --> [*]
+e_win_patch --> [*]
+e_win_steer --> [*]
+e_win_free --> [*]
+e_win_friend --> [*]
+e_win_crew --> [*]
+e_win_captain --> [*]
+e_neu_home --> [*]
+e_win_discovery --> [*]
+
+legend right
+  The Sky-Ship Stowaway
+  Band 8-11 · Tier 1 · ~11 min
+  Topology: branch_and_bottleneck
+  111 nodes · 20 endings (8+ / 1n / 11-)
+  Production-eligible
+  Scale: medium · prose
+endlegend
+@enduml

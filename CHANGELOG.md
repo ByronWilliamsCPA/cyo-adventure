@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Medium-prose production skeletons (Batch 3), one per remaining medium-length prose cell of
+  the ADR-011 matrix, all `branch_and_bottleneck`: `8-11 medium` (The Sky-Ship Stowaway,
+  111 nodes, 20 endings), `10-13 medium` (The Hollow Lighthouse, 148 nodes, 31 endings),
+  `13-16 medium` (The Signal in the Static, 123 nodes, 32 endings), and `16+ medium`
+  (The Last Train North, 143 nodes, 25 endings). Each is scale-classified
+  (`length` + `narrative_style` + `production_eligible: true`), clears the full
+  PL-17/19/20/21 gate with its fastest satisfying arc above the cell floor, keeps every
+  failure outcome a non-lethal `setback`, and is auto-discovered by
+  `test_production_skeletons_*` and rendered into the catalog. This brings the launch corpus
+  to 10 of the 18 offered cells.
 - Three more production-eligible story skeletons (Batch 2), completing the small-prose
   corner of the ADR-011 matrix: `3-5 short prose` (Clover and the Butterfly, time_cave,
   20 nodes), `3-5 medium prose` (The Teddy Bears' Picnic, loop_and_grow, 29 nodes), and
