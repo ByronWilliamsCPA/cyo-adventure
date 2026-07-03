@@ -12,7 +12,7 @@ tags:
 CYO Adventure is a choose-your-own-adventure reading app for kids. A React 19 PWA
 lets children read branching stories offline; a FastAPI backend serves the library,
 manages reading progress, and runs an LLM-powered generation pipeline behind a
-deterministic validation gate and mandatory guardian approval (ADR-005).
+deterministic validation gate and mandatory admin approval (ADR-005).
 
 ## Architecture Pages
 
@@ -23,7 +23,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
 | [Data Model](data-model.md) | 9 ORM tables, ER diagram, relationships |
 | [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
-| [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Authentik, MinIO (Phase 5) |
+| [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5) |
 
 ## Diagram Index
 
@@ -41,7 +41,7 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
 | ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 9 ORM tables and FK relationships |
-| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Authentik |
+| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Supabase OIDC |
 
 To regenerate SVGs after editing a PUML file:
 
@@ -61,7 +61,7 @@ PWA (React 19, TypeScript)
   - Reader: XState + TS engine + TS evaluator
   - Offline: IndexedDB cache + write queue (event_id idempotency)
   - API client: generated from OpenAPI schema (not hand-written)
-  |  REST /api/v1 + Bearer token (OIDC via Authentik)
+  |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
 FastAPI backend (Python 3.12)
   - api/: health, library, reading, generation (guardian-only)
@@ -87,7 +87,7 @@ FastAPI backend (Python 3.12)
 
 | Decision | Rationale |
 | -------- | --------- |
-| Mandatory guardian approval (ADR-005) | No story reaches a child without a human in the loop |
+| Mandatory admin approval (ADR-005) | No story reaches a child without a human (global admin) in the loop |
 | JSON Storybook format (ADR-001) | Deterministic, validatable, no runtime parsing ambiguity |
 | PWA offline-first (ADR-002) | Children can read without network connectivity |
 | Staged LLM generation with repair (ADR-003) | Improves schema conformance; bounded, not unbounded retries |

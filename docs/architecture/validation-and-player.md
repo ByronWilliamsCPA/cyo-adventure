@@ -96,11 +96,13 @@ The condition evaluator (`storybook/evaluator.py`) implements the whitelisted-op
 subset of a JSONLogic-shaped condition DSL (ADR-006: in-house evaluator, no third-party
 logic library).
 
-**Whitelisted operators:** `eq`, `ne`, `lt`, `gt`, `lte`, `gte`, `and`, `or`, `not`,
-`var`, and literal values.
+**Whitelisted operators (10):** `var`, `!`, `and`, `or`, `==`, `!=`, `<`, `<=`, `>`,
+`>=`. A `{"var": name}` operand resolves to a variable's value; anything else is a
+literal. Any operator outside this whitelist is rejected.
 
-**Strict equality, no coercion:** `eq` uses `==` without type coercion. A `bool`
-variable is never equal to an `int` under the evaluator.
+**Strict equality, no coercion:** `==` compares without type coercion. A `bool`
+variable is never equal to an `int` under the evaluator (Python's `True == 1` is
+explicitly rejected), matching the TypeScript `===` mirror.
 
 The TypeScript evaluator (`frontend/src/player/evaluator.ts`) mirrors this behavior.
 Shared conformance fixtures run against both implementations to detect divergence.

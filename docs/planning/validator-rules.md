@@ -38,10 +38,11 @@ to this document.
 | Reading Level (RL) | Advisory | No (warns only) |
 | Safety (SAFE) | Always human-routed | Yes (routes to human review, not auto-rejected) |
 
-Layer 1 and Layer 2 are hard gates: any failure blocks the story from advancing past
-`auto_check`. The reading-level check warns and logs but does not block. A safety hit flags
-the story for mandatory human review; the validator does not auto-reject, but no auto-publish
-path exists when the flag is set.
+Layer 1 and Layer 2 are hard gates: any failure fails the generation job (it lands in
+`failed`, not `passed`), so the story never advances to `in_review`. The reading-level check
+warns and logs but does not block. A safety hit routes the generation job to `needs_review`
+for mandatory human review; the validator does not auto-reject, but no auto-publish path
+exists when the flag is set.
 
 **Layer 2 applies to Tier-2 stories only.** Running Layer 2 on a Tier-1 story (which carries
 no variables and has deterministic visibility for all choices) is a no-op and must not produce
@@ -95,7 +96,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 
 | Rule ID | Layer | Description | Failure Message Template |
 |---------|-------|-------------|--------------------------|
-| SAFE-14 | Safety | **Safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it blocks the `auto_check -> in_review` transition and requires a guardian to clear or escalate. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
+| SAFE-14 | Safety | **Safety moderation**: moderation runs over all `body` and `label` text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to `needs_review` (not `passed`), so the story cannot reach `published` until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set. | `SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)` |
 
 ---
 

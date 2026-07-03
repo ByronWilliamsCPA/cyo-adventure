@@ -11,8 +11,8 @@ tags:
 
 CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
 by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
-zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Authentik provides OIDC
-identity for both guardian and child roles.
+zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
+identity for the guardian, child, and admin roles (ADR-009).
 
 ## Deployment Diagram
 
@@ -73,14 +73,19 @@ detected in a non-local environment, preventing accidental credential leakage.
 
 ## Authentication Flow
 
-**Production:** The PWA initiates an OIDC authorization code flow with Authentik.
-The resulting access token is sent as a `Bearer` header with every API request. The
-backend validates the token signature, issuer, audience, and expiry against Authentik.
+**Production:** The PWA initiates an OIDC authorization code flow with Supabase Auth
+(ADR-009). The resulting access token is sent as a `Bearer` header with every API
+request. Outside the `local` environment the backend verifies the token signature via
+`jwt.PyJWKClient` (JWKS fetched from `OIDC_JWKS_URL`), plus issuer, audience, and
+expiry (`_verify_oidc_jwt` in `api/deps.py`). Supabase is reached through the
+provider-agnostic `oidc_*` config, so no Supabase SDK is imported.
 
-**Development seam:** `api/deps.py` uses a `_extract_subject()` stub that treats
-the raw bearer token as the verified OIDC subject without signature validation.
-This stub must be replaced with real JWT validation before any non-local deployment
-(`#CRITICAL: security` marker in `deps.py`).
+**Development seam:** in the `local` environment only, `api/deps.py` uses a
+`_extract_subject()` stub that treats the raw bearer token as the verified OIDC
+subject without signature validation. A `#CRITICAL: security` guard raises
+`ConfigurationError` at import time if the environment is non-local and
+`OIDC_ISSUER`/`OIDC_JWKS_URL` are unset, so the stub can never be active outside
+local development.
 
 ## Container Images
 

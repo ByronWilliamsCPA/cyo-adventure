@@ -34,13 +34,13 @@ data.
 
 ### `user`
 
-An authenticated user within a family. Role is either `guardian` or `child`.
+An authenticated user within a family. Role is `guardian`, `child`, or `admin`.
 
 | Column | Type | Notes |
 |--------|------|-------|
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
-| role | VARCHAR(16) | `guardian` or `child` |
+| role | VARCHAR(16) | `guardian`, `child`, or `admin` |
 | authn_subject | VARCHAR(255) UNIQUE | OIDC `sub` claim |
 | child_profile_id | UUID FK NULL | child_profile.id; NULL for guardians |
 | created_at | TIMESTAMPTZ | |
@@ -55,7 +55,7 @@ Per-child reading profile. Age band and content caps filter which stories are vi
 | id | UUID PK | |
 | family_id | UUID FK | family.id |
 | display_name | VARCHAR(120) | Used in PII screening |
-| age_band | VARCHAR(16) | `8-11`, `10-13`, `13-16` |
+| age_band | VARCHAR(16) | one of `3-5`, `5-8`, `8-11`, `10-13`, `13-16`, `16+` |
 | reading_level_cap | FLOAT | Flesch-Kincaid cap; default 99.0 |
 | allowed_content_flags | JSONB | Per-flag content permissions |
 | tts_enabled | BOOLEAN | TTS feature flag |
@@ -77,8 +77,10 @@ children.
 | created_by | UUID FK NULL | user.id of guardian who created it |
 | created_at | TIMESTAMPTZ | |
 
-**Status values:** `draft`, `generating`, `auto_check`, `in_review`, `approved`,
-`published`, `archived`, `needs_revision`.
+**Status values:** `draft`, `in_review`, `needs_revision`, `published`, `archived`
+(see `publishing/state_machine.py`). There is no `generating`, `auto_check`, or
+`approved` storybook status; staged-generation state lives in `generation_job`, and
+publication is the admin approve action.
 
 ### `storybook_version`
 
@@ -92,16 +94,18 @@ An immutable snapshot of a story. Composite primary key `(storybook_id, version)
 | blob_ref | VARCHAR(512) NULL | MinIO object key (reserved, Phase 5) |
 | validation_report | JSONB NULL | Gate report at generation time |
 | moderation_report | JSONB NULL | Moderation report |
-| approved_by | UUID FK NULL | Guardian user who approved |
+| approved_by | UUID FK NULL | Admin user who approved (global, cross-family) |
 | published_at | TIMESTAMPTZ NULL | |
 | model | VARCHAR(120) NULL | LLM model id used |
 | prompt_version | VARCHAR(120) NULL | Prompt template version |
 | created_at | TIMESTAMPTZ | |
 
-Phase 1 stores the Storybook JSON inline in `blob` (JSONB). The `blob_ref` column
-is reserved for the MinIO object key once object storage is wired (Phase 5). Stored
-blobs are never batch-rewritten; an in-memory upcaster chain handles schema version
-bumps at read time (ADR-001).
+At launch the Storybook JSON is stored inline in `blob` (JSONB). The `blob_ref`
+column is deferred: it holds the MinIO object key once object storage is wired
+(ADR-009 defers MinIO to a future object-store target). The schema is versioned at
+`2.0` and validated on read with a reject-on-mismatch check; there is no upcaster,
+so a stored blob whose `schema_version` does not match is rejected rather than
+migrated (ADR-001).
 
 ### `reading_state`
 

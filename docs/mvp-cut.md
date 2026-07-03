@@ -37,7 +37,7 @@ The following capabilities are committed for the first release:
 
 3. **Staged LLM generation**: concept brief to finished story through Structure (Stage A),
    Prose (Stage B), and Repair (Stage C) passes behind a `GenerationProvider` interface.
-   Claude is the primary provider; Ollama and OpenRouter are fallback targets.
+   OpenRouter is the primary provider; Ollama is the local development and fallback target.
    ([ADR-003](planning/adr/adr-003-frontier-llm-generation.md))
 
 4. **Validation gate**: deterministic Layer-1 graph checks (schema, reference integrity,
