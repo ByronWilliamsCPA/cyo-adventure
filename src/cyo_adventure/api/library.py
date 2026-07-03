@@ -18,7 +18,7 @@ import uuid
 from typing import TYPE_CHECKING, TypeGuard
 
 from fastapi import APIRouter
-from sqlalchemy import and_, select, tuple_
+from sqlalchemy import and_, exists, select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
@@ -28,7 +28,13 @@ from cyo_adventure.api.deps import (
 )
 from cyo_adventure.api.schemas import LibraryItem, LibraryProgress, LibraryView
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
-from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    Rating,
+    ReadingState,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -250,9 +256,11 @@ async def list_library(
         LibraryView: The published stories in the profile's family.
     """
     # #CRITICAL: security: the library is scoped to the principal's own family,
-    # the requested profile is authorized, and only APPROVED published versions
-    # are listed (read-path leg of the no-unapproved-publish invariant).
-    # #VERIFY: the join requires approved_by IS NOT NULL on the published version.
+    # the requested profile is authorized, only APPROVED published versions are
+    # listed, AND the story must be assigned to this profile (the read-path leg
+    # of the no-unpermitted-story invariant).
+    # #VERIFY: the join requires approved_by IS NOT NULL; the EXISTS requires a
+    # storybook_assignment row for (this story, this profile).
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
     rows = await session.scalars(
@@ -269,6 +277,10 @@ async def list_library(
             Storybook.status == _PUBLISHED,
             Storybook.current_published_version.is_not(None),
             StorybookVersion.approved_by.is_not(None),
+            exists().where(
+                StorybookAssignment.storybook_id == Storybook.id,
+                StorybookAssignment.child_profile_id == parsed,
+            ),
         )
     )
     books = [

@@ -38,6 +38,52 @@ async def _add_unapproved_published_story(
         return story_id
 
 
+async def _add_approved_unassigned_story(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> str:
+    """Insert an approved, published story in Family A with no profile assignment."""
+    async with sessions() as session:
+        story_id = "approved-but-unassigned"
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=seed.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_unassigned_story_not_in_library(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An approved published story unassigned to the profile is excluded (Task 6).
+
+    Pins the assignment gate behaviorally: the story clears every other predicate
+    (family, published, approved, current), so its absence proves the EXISTS on
+    storybook_assignment, not another filter, is what withholds it.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 200
+    listed = {item["id"] for item in resp.json()["stories"]}
+    assert seed.storybook_id in listed  # the assigned seed story shows
+    assert unassigned_id not in listed  # the unassigned one does not leak
+
+
 async def test_unapproved_story_not_in_library(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:

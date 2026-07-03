@@ -444,6 +444,11 @@ class TestListLibrary:
         assert family_id in storybook_params  # bound to the caller's family
         assert "published" in storybook_params  # not "draft" / inverted
 
+        # Assignment gate: the storybook query must correlate to an assignment
+        # for the authorized profile, so an unassigned book cannot leak.
+        assert "storybook_assignment" in storybook_where
+        assert profile_id in storybook_params  # gate bound to the authorized profile
+
         # Composite (storybook_id, version) IN (...) bulk fetch, not per-story.
         # Qualify the version column: the bare substring "version" also matches
         # the table name "storybook_version", so it would pass even if the
