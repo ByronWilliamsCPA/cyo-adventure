@@ -307,11 +307,23 @@ def _legend_lines(data: _ObjectMap, nodes: list[_ObjectMap]) -> list[str]:
     # ADR-011 story-scale: surface production-eligibility so a reader never
     # mistakes an MVP/Test seed (small node budget) for a production-scale
     # claim, and the length x style axis when the skeleton declares it.
+    # #EDGE: data integrity: production_eligible is read from the raw
+    # skeleton dict, not the validated StoryMetadata model, so a
+    # present-but-non-bool value is technically possible ahead of full
+    # schema validation. None (the field is absent) is treated as eligible
+    # to match StoryMetadata.production_eligible's schema default of True;
+    # a non-bool, non-None value falls through with no legend line, same as
+    # before this fix.
+    # #VERIFY: if skeleton-authoring tooling is ever found producing a
+    # non-bool production_eligible value, add an explicit branch here rather
+    # than relying on this silent fallthrough.
     if production_eligible is False:
         lines.append("  MVP/Test tier (not production-eligible)")
-    elif production_eligible is True:
+    elif production_eligible is True or production_eligible is None:
         lines.append("  Production-eligible")
-    if isinstance(length, str) and isinstance(narrative_style, str):
-        lines.append(f"  Scale: {length} · {narrative_style}")
+    if isinstance(length, str) or isinstance(narrative_style, str):
+        length_text = length if isinstance(length, str) else "?"
+        style_text = narrative_style if isinstance(narrative_style, str) else "?"
+        lines.append(f"  Scale: {length_text} · {style_text}")
     lines.append("endlegend")
     return lines

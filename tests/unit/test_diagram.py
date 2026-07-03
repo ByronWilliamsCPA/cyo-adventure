@@ -166,6 +166,15 @@ def test_legend_marks_production_eligible_when_true() -> None:
 
 
 @pytest.mark.unit
+def test_legend_marks_production_eligible_when_field_absent() -> None:
+    """StoryMetadata.production_eligible defaults to True; an omitted field
+    must render the same as an explicit True, not disappear silently."""
+    out = skeleton_to_plantuml(_tiny_skeleton())
+    assert "Production-eligible" in out
+    assert "MVP/Test tier" not in out
+
+
+@pytest.mark.unit
 def test_legend_shows_scale_axis_when_length_and_style_set() -> None:
     skel = _tiny_skeleton()
     meta = cast("dict[str, object]", skel["metadata"])
@@ -176,7 +185,23 @@ def test_legend_shows_scale_axis_when_length_and_style_set() -> None:
 
 
 @pytest.mark.unit
-def test_legend_omits_scale_axis_when_length_absent() -> None:
+def test_legend_shows_scale_axis_with_placeholder_when_only_length_set() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["length"] = "short"
+    out = skeleton_to_plantuml(skel)
+    assert "Scale: short · ?" in out
+
+
+@pytest.mark.unit
+def test_legend_shows_scale_axis_with_placeholder_when_only_style_set() -> None:
+    skel = _tiny_skeleton()
+    cast("dict[str, object]", skel["metadata"])["narrative_style"] = "prose"
+    out = skeleton_to_plantuml(skel)
+    assert "Scale: ? · prose" in out
+
+
+@pytest.mark.unit
+def test_legend_omits_scale_axis_when_length_and_style_both_absent() -> None:
     out = skeleton_to_plantuml(_tiny_skeleton())
     assert "Scale:" not in out
 
