@@ -13,13 +13,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
-from sqlalchemy import func, select
+from sqlalchemy import func, select, tuple_
 
 from cyo_adventure.api.deps import Context
-from cyo_adventure.api.review_surface import build_review_surface
+from cyo_adventure.api.review_surface import (
+    build_review_queue_item,
+    build_review_surface,
+)
 from cyo_adventure.api.schemas import (
     ApprovedView,
     ArchivedView,
+    ReviewQueueView,
     ReviewSurfaceView,
     SendBackRequest,
     SentBackView,
@@ -38,6 +42,8 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
+
+_IN_REVIEW = "in_review"
 
 # #ASSUME: data integrity: each `cast("Literal[...]", book.status)` call below
 # assumes approval_service's corresponding call (submit/approve/send_back/archive)
@@ -222,3 +228,85 @@ async def get_review_surface(
         blob=version_row.blob,
         moderation_report=version_row.moderation_report,
     )
+
+
+@router.get("/review-queue")
+async def get_review_queue(ctx: Context) -> ReviewQueueView:
+    """Return every storybook awaiting an admin publish decision (admin only).
+
+    Args:
+        ctx: The request context (principal and session).
+
+    Returns:
+        ReviewQueueView: One item per ``in_review`` storybook, across all
+            families, carrying the screened flag and flagged count so the
+            console can bucket Flagged versus Ready to review.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+    """
+    # #CRITICAL: security: admin-only GLOBAL queue. The role is checked before
+    # any row is read (a non-admin never learns which stories are in review),
+    # and authorize_family is intentionally NOT called: the safety operator
+    # screens cross-family, mirroring get_review_surface / _load_admin_story.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_queue_blocks_non_admin
+    # (no DB round trip) and tests/integration/test_approval_api.py cross-family case.
+    if not ctx.principal.is_admin:
+        msg = "admin role required"
+        raise AuthorizationError(msg, required_permission="admin")
+    books = (
+        await ctx.session.scalars(
+            select(Storybook).where(Storybook.status == _IN_REVIEW)
+        )
+    ).all()
+    if not books:
+        return ReviewQueueView(items=[])
+    # #ASSUME: external resources: resolve the latest version per story and load
+    # those version rows in two bulk queries (grouped max, then a composite
+    # (storybook_id, version) IN filter), never one round trip per story.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_queue_is_bulk_not_n_plus_one
+    # asserts exactly two scalars() and one execute() for two stories.
+    ids = [book.id for book in books]
+    # #ASSUME: data integrity: the grouped-max query returns untyped SQL Row
+    # objects; cast the result to its known (storybook_id, max_version) shape at
+    # this boundary so the queue's version lookups are concretely typed, not Any.
+    # This mirrors the module's existing cast() use at typing boundaries.
+    # #VERIFY: each group has at least one version row, so max_version is never
+    # None; a story with no versions never appears here and is dropped below.
+    latest_rows = cast(
+        "list[tuple[str, int]]",
+        (
+            await ctx.session.execute(
+                select(
+                    StorybookVersion.storybook_id,
+                    func.max(StorybookVersion.version),
+                )
+                .where(StorybookVersion.storybook_id.in_(ids))
+                .group_by(StorybookVersion.storybook_id)
+            )
+        ).all(),
+    )
+    latest: dict[str, int] = dict(latest_rows)
+    keys = list(latest.items())
+    version_rows = (
+        await ctx.session.scalars(
+            select(StorybookVersion).where(
+                tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                    keys
+                )
+            )
+        )
+    ).all()
+    by_key = {(row.storybook_id, row.version): row for row in version_rows}
+    items = [
+        build_review_queue_item(
+            storybook_id=book.id,
+            status=book.status,
+            version=latest[book.id],
+            blob=by_key[(book.id, latest[book.id])].blob,
+            moderation_report=by_key[(book.id, latest[book.id])].moderation_report,
+        )
+        for book in books
+        if book.id in latest and (book.id, latest[book.id]) in by_key
+    ]
+    return ReviewQueueView(items=items)

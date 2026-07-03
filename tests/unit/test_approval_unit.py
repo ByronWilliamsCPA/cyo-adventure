@@ -15,7 +15,7 @@ import pytest
 
 from cyo_adventure.api import approval
 from cyo_adventure.api.deps import Principal, RequestContext
-from cyo_adventure.api.schemas import SendBackRequest
+from cyo_adventure.api.schemas import ReviewQueueView, SendBackRequest
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
@@ -379,3 +379,109 @@ async def test_review_surface_rejects_negative_version() -> None:
 
     with pytest.raises(ValidationError):
         await approval.get_review_surface(book.id, ctx, version=-1)
+
+
+# ---------------------------------------------------------------------------
+# get_review_queue
+# ---------------------------------------------------------------------------
+
+
+class _Rows:
+    """A minimal Result/ScalarResult double exposing .all()."""
+
+    def __init__(self, rows: list[object]) -> None:
+        self._rows = rows
+
+    def all(self) -> list[object]:
+        """Return the seeded rows."""
+        return list(self._rows)
+
+
+class _QueueSession:
+    """Session double for get_review_queue that counts DB round trips.
+
+    The handler makes two scalars() calls (storybooks, then version rows) and
+    one execute() call (the grouped max-version query). This double returns the
+    seeded rows in that order and records call counts so a test can prove the
+    handler is O(1) queries, not O(stories).
+    """
+
+    def __init__(
+        self,
+        *,
+        storybooks: list[object],
+        latest: list[object],
+        versions: list[object],
+    ) -> None:
+        self._storybooks = storybooks
+        self._latest = latest
+        self._versions = versions
+        self.scalars_calls = 0
+        self.execute_calls = 0
+
+    async def scalars(self, _stmt: object) -> _Rows:
+        """Return storybooks on the first call, version rows on the second."""
+        self.scalars_calls += 1
+        if self.scalars_calls == 1:
+            return _Rows(self._storybooks)
+        return _Rows(self._versions)
+
+    async def execute(self, _stmt: object) -> _Rows:
+        """Return the seeded (storybook_id, max_version) tuples."""
+        self.execute_calls += 1
+        return _Rows(self._latest)
+
+
+@pytest.mark.unit
+async def test_review_queue_blocks_non_admin() -> None:
+    """A non-admin caller raises AuthorizationError without any DB round trip."""
+    session = _QueueSession(storybooks=[], latest=[], versions=[])
+    ctx = RequestContext(principal=_principal("guardian"), session=session)  # type: ignore[arg-type]
+
+    with pytest.raises(AuthorizationError):
+        await approval.get_review_queue(ctx)
+
+    assert session.scalars_calls == 0
+    assert session.execute_calls == 0
+
+
+@pytest.mark.unit
+async def test_review_queue_empty_returns_no_items() -> None:
+    """No in_review stories yields an empty queue after a single scalars call."""
+    session = _QueueSession(storybooks=[], latest=[], versions=[])
+    ctx = RequestContext(principal=_principal("admin"), session=session)  # type: ignore[arg-type]
+
+    view = await approval.get_review_queue(ctx)
+
+    assert isinstance(view, ReviewQueueView)
+    assert view.items == []
+    assert session.scalars_calls == 1  # short-circuits before the version query
+    assert session.execute_calls == 0
+
+
+@pytest.mark.unit
+async def test_review_queue_is_bulk_not_n_plus_one() -> None:
+    """Two in_review stories still cost exactly three DB round trips."""
+    book_a = _story("in_review")
+    book_a.id = "a"
+    book_b = _story("in_review")
+    book_b.id = "b"
+    ver_a = StorybookVersion(
+        storybook_id="a", version=1, blob={"title": "A", "nodes": []}
+    )
+    ver_b = StorybookVersion(
+        storybook_id="b", version=3, blob={"title": "B", "nodes": []}
+    )
+    session = _QueueSession(
+        storybooks=[book_a, book_b],
+        latest=[("a", 1), ("b", 3)],
+        versions=[ver_a, ver_b],
+    )
+    ctx = RequestContext(principal=_principal("admin"), session=session)  # type: ignore[arg-type]
+
+    view = await approval.get_review_queue(ctx)
+
+    assert {item.storybook_id for item in view.items} == {"a", "b"}
+    assert {item.version for item in view.items} == {1, 3}
+    assert session.scalars_calls == 2
+    assert session.execute_calls == 1
