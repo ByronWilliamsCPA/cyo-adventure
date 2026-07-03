@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Long-prose production skeletons (Batch 4), one per long-length prose cell of the ADR-011
+  matrix, all `branch_and_bottleneck`: `8-11 long` (The Clockwork Menagerie, 166 nodes,
+  27 endings), `10-13 long` (The Mapmaker's Island, 224 nodes, 72 endings), `13-16 long`
+  (The Vanishing Orchard, 177 nodes, 33 endings), and `16+ long` (The Salt Archive, 225
+  nodes, 54 endings). Each is scale-classified (`length` + `narrative_style` +
+  `production_eligible: true`) and clears the full PL-17/19/20/21 gate, with every satisfying
+  arc earned above the cell floor (28/18/43/43 nodes) and every failure outcome a non-lethal
+  `setback`. Node counts sit near the low end of each cell budget so the breadth-scaled PL-17
+  floors stay proportionate. This brings the launch corpus to 14 of the 18 offered cells; only
+  the four gamebook cells remain.
 - Medium-prose production skeletons (Batch 3), one per remaining medium-length prose cell of
   the ADR-011 matrix, all `branch_and_bottleneck`: `8-11 medium` (The Sky-Ship Stowaway,
   111 nodes, 20 endings), `10-13 medium` (The Hollow Lighthouse, 148 nodes, 31 endings),
