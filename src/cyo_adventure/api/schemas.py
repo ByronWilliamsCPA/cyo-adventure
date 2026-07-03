@@ -418,6 +418,34 @@ class ReviewSurfaceView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Review-queue schemas (C4a-4)
+# ---------------------------------------------------------------------------
+
+
+class ReviewQueueItem(BaseModel):
+    """One storybook in the admin review queue, shaped for client bucketing.
+
+    ``screened`` plus ``flagged_count`` let the console bucket into "Flagged"
+    (screened with findings, or never screened) versus "Ready to review"
+    (screened clean). ``summary`` carries the report's gating flags when present.
+    """
+
+    storybook_id: str
+    title: str
+    status: str
+    version: int
+    screened: bool
+    flagged_count: int = Field(ge=0)
+    summary: ReviewSummary | None
+
+
+class ReviewQueueView(BaseModel):
+    """The admin review queue: storybooks awaiting a publish decision."""
+
+    items: list[ReviewQueueItem]
+
+
+# ---------------------------------------------------------------------------
 # Principal introspection
 # ---------------------------------------------------------------------------
 

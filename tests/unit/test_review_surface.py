@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import pytest
 
-from cyo_adventure.api.review_surface import build_review_surface
+from cyo_adventure.api.review_surface import (
+    build_review_queue_item,
+    build_review_surface,
+)
 from cyo_adventure.core.exceptions import ValidationError
 
 
@@ -272,3 +275,89 @@ def test_out_of_range_stage_rejected() -> None:
             blob=_blob(),
             moderation_report=report,
         )
+
+
+@pytest.mark.unit
+def test_queue_item_flagged_counts_all_findings() -> None:
+    """A screened story with findings reports screened=True and a flagged count."""
+    item = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=2,
+        blob={"title": "The Lantern", "nodes": [{"id": "n1", "body": "Hi."}]},
+        moderation_report={
+            "findings": [
+                {
+                    "stage": 1,
+                    "source": "llm_safety",
+                    "category": "safety",
+                    "node_id": "n1",
+                    "verdict": "flag",
+                    "score": None,
+                    "message": "m",
+                },
+                {
+                    "stage": 2,
+                    "source": "pipeline",
+                    "category": "coherence",
+                    "node_id": None,
+                    "verdict": "advisory",
+                    "score": None,
+                    "message": "story-level",
+                },
+            ],
+            "summary": {
+                "count": 2,
+                "hard_block": False,
+                "soft_flag": True,
+                "repaired": False,
+                "reviewer_independent": True,
+            },
+        },
+    )
+    assert item.title == "The Lantern"
+    assert item.version == 2
+    assert item.screened is True
+    assert item.flagged_count == 2
+    assert item.summary is not None
+    assert item.summary.soft_flag is True
+
+
+@pytest.mark.unit
+def test_queue_item_screened_clean_has_zero_flags() -> None:
+    """A screened-clean story reports screened=True, flagged_count=0."""
+    item = build_review_queue_item(
+        storybook_id="s2",
+        status="in_review",
+        version=1,
+        blob={"nodes": []},
+        moderation_report={
+            "findings": [],
+            "summary": {
+                "count": 0,
+                "hard_block": False,
+                "soft_flag": False,
+                "repaired": False,
+                "reviewer_independent": False,
+            },
+        },
+    )
+    assert item.title == "s2"  # falls back to the storybook id
+    assert item.screened is True
+    assert item.flagged_count == 0
+    assert item.summary is not None
+
+
+@pytest.mark.unit
+def test_queue_item_unscreened_has_no_summary() -> None:
+    """An unmoderated story reports screened=False and summary=None."""
+    item = build_review_queue_item(
+        storybook_id="s3",
+        status="in_review",
+        version=1,
+        blob={"title": "Draft"},
+        moderation_report=None,
+    )
+    assert item.screened is False
+    assert item.summary is None
+    assert item.flagged_count == 0
