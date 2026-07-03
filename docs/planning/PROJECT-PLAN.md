@@ -25,7 +25,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.3 | **Updated**: 2026-07-02
+> **Status**: Active | **Version**: 2.4 | **Updated**: 2026-07-03
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -49,10 +49,25 @@ stages and a mandatory parent approval step before any story reaches a child's l
 mandatory guardian approval means correctness and safety are structural guarantees, not
 conventions.
 
-**Decided release cut**: Generation ships in the **first usable release**. Phases 0 through 3
-plus the minimal Phase 4a library-and-profiles slice constitute the first usable release
-(roughly 11 to 16 weeks for a 1 to 2 developer team). Phase 4b (node editor, ending tracker,
-read-aloud) and Phase 5 (hardening and restore drill) follow the first release.
+**Release ladder**: the product reaches users in three rungs, each an overlay on the phase
+plan in Section 5, not a new phase. Generation ships from the first rung.
+
+- **Internal release (web only)** [R1]: the web PWA run for the maintainer's own family and
+  local testing, with no native app and no outside users. Scope is Phases 0 through 3 plus the
+  Phase 4a library-and-profiles slice (all merged as of 2026-07-03). This is the rung earlier
+  drafts called the "first usable release," now stated explicitly as web-only and internal.
+- **Limited release (adds iOS)** [R2]: the Capacitor iOS shell plus guardian authentication,
+  distributed to a controlled group over TestFlight. Scope adds Phase 6 (public auth) and
+  Phase 8 (iOS shell) on top of R1; the public catalog and the full public-submission
+  compliance gates are deferred to R3.
+- **Public launch** [R3]: the full public App Store product. Scope adds Phase 7 (Kids Category
+  and COPPA compliance) and Phase 9 (public catalog, hosted infra, submission).
+
+Phase 4b (node editor, ending tracker, read-aloud) and Phase 5 (hardening and restore drill)
+are post-R1 quality work, scheduled opportunistically; read-aloud (4b) is also a Track 2
+subscription lever. The safety guarantee is identical on every rung: the validation gate,
+moderation, and mandatory guardian approval bind every story, and children never trigger
+generation or see raw model output.
 
 Because generation ships in the first release, two items are elevated to **Phase-0 hard
 blockers**: the LLM provider data-handling decision and the privacy controls (no real child PII
@@ -71,13 +86,22 @@ guarantee: validation gate, moderation, and mandatory guardian approval remain
 mandatory for every story, and children never trigger generation or see raw model
 output.
 
+**Content workstream (parallel)**: [ADR-011](./adr/adr-011-story-scale-framework.md)
+(story-scale: band x length x style) merged to `main` on 2026-07-03 (PR #70), establishing
+the corrected skeleton baseline (18-cell coverage grid, per-cell node budgets, PL-17..21
+policy teeth). `main` still has zero production-eligible skeletons; a parallel workstream
+(`feat/skeleton-library-expansion`) now authors production-eligible skeletons against that
+frozen contract. It feeds generation quality across all three rungs and gates none of them.
+Follow-on enabler refinements are tracked in issues #77, #78, and #79.
+
 **Timeline**:
 
-| Band | Scope | Estimate |
+| Rung / band | Scope | Estimate |
 |------|-------|----------|
-| First usable release (Track 1) | Phases 0-3 + Phase 4a | 11-16 weeks |
-| Full family v1 (Track 1) | All phases including 4b and 5 | 16-25 weeks |
-| Public App Store launch (Track 2) | Phases 6-9, after Phase 4a | +11-17 weeks after first release |
+| Internal release, web only [R1] | Phases 0-3 + Phase 4a (web PWA) | Feature-complete 2026-07-03 (pending release-readiness) |
+| Full family v1 (Track 1) | R1 plus Phases 4b and 5 | 16-25 weeks from start |
+| Limited release, adds iOS [R2] | R1 plus Phases 6 and 8 (TestFlight) | +6-9 weeks after R1 |
+| Public launch [R3] | R2 plus Phases 7 and 9 (App Store) | +11-17 weeks after R1 |
 
 Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
@@ -92,7 +116,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 2 Gen + Gate | ✅ Delivered (merged) |
 | 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
-| 4a Library + Profiles | 🔄 Backend partial (library/ratings API); frontend absent (wireframes #47, design system #44) |
+| 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete**, pending release-readiness (#73 auth redirect, docs sync #52) |
 | 4b Editor + UX | ⏸️ Not started (post-release; read-aloud is also a Track 2 subscription lever) |
 | 5 Hardening | ⏸️ Not started (post-release; public-tier ops fold into Phase 9) |
 | 6 Public auth + multi-tenancy | ⏸️ Not started (Track 2; planned 2026-07-02) |
@@ -273,15 +297,18 @@ Phase 0: Foundations        (1-2 wks)   chore/phase-0-foundations
 Phase 1: Schema + Reader    (3-5 wks)   feat/phase-1-schema-reader
 Phase 2: Gen + Gate         (4-6 wks)   feat/phase-2-generation-gate
 Phase 3: Safety + Review    (3-4 wks)   feat/phase-3-safety-review
-Phase 4a: Library           (part of 3-5 wks)  feat/phase-4a-library-profiles  <- FIRST RELEASE
+Phase 4a: Library           (part of 3-5 wks)  feat/phase-4a-library-profiles  <- R1: INTERNAL RELEASE (web only)
 Phase 4b: Editor + UX       (post-release)     feat/phase-4b-editor-ux
 Phase 5: Hardening          (2-3 wks)   chore/phase-5-hardening
 
-Track 2 (public App Store launch, ADR-008; starts after Phase 4a)
-Phase 6: Public auth + multi-tenancy   (3-4 wks)   feat/phase-6-public-auth
-Phase 7: Kids compliance + lifecycle   (2-3 wks, overlaps 6)  feat/phase-7-kids-compliance
-Phase 8: iOS shell + subscriptions     (3-5 wks)   feat/phase-8-ios-monetization
-Phase 9: Catalog + infra + launch      (3-5 wks)   feat/phase-9-public-launch  <- PUBLIC LAUNCH
+Track 2 (public product, ADR-008; starts after R1) -- delivered in two rungs
+Phase 6: Public auth + multi-tenancy   (3-4 wks)   feat/phase-6-public-auth        [R2]
+Phase 7: Kids compliance + lifecycle   (2-3 wks, overlaps 6)  feat/phase-7-kids-compliance  [R3 gate]
+Phase 8: iOS shell + subscriptions     (3-5 wks)   feat/phase-8-ios-monetization   [R2]  <- R2: LIMITED RELEASE (iOS, TestFlight)
+Phase 9: Catalog + infra + launch      (3-5 wks)   feat/phase-9-public-launch      [R3]  <- R3: PUBLIC LAUNCH
+
+Content workstream (parallel; ADR-011 / PR #70 merged 2026-07-03)
+Skeleton authoring on the band x length x style baseline; feeds all rungs, gates none.
 ```
 
 **Critical path (Track 1)**: Schema (Phase 0) -> Player + Reader + Layer-1 validator (Phase 1)
@@ -296,6 +323,9 @@ and submission (Phase 9). Auth is the keystone of this track: every later item (
 deletion, entitlements, parental gate) hangs off the guardian identity and the child-session
 split, so Phase 6 must land before 8 and 9 start. Phase 4b is not on this path but read-aloud
 (4b) is a subscription selling point; schedule it opportunistically alongside Track 2.
+Under the release ladder, Phases 6 and 8 make up the **limited release (R2)** distributed
+over TestFlight, while Phases 7 and 9 gate the **public launch (R3)**: Phase 7's compliance
+checklist gates the public submission, not the limited TestFlight rung.
 
 Source: [Roadmap](./roadmap.md) sections "Critical Path" and "Timeline Overview";
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
