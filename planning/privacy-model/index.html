@@ -1489,7 +1489,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1768,7 +1768,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1803,7 +1803,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1838,7 +1838,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1908,7 +1908,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1943,7 +1943,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2405,10 +2405,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#blocker-1-anthropic-api-data-handling-terms" class="md-nav__link">
+  <a href="#blocker-1-llm-provider-data-handling-terms-openrouter" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Blocker 1: Anthropic API Data-Handling Terms
+        Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)
       
     </span>
   </a>
@@ -2475,13 +2475,17 @@
 
 <h1 id="privacy-and-provider-data-handling-model">Privacy and Provider Data-Handling Model<a class="headerlink" href="#privacy-and-provider-data-handling-model" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 0.1 | <strong>Updated</strong>: 2026-06-20</p>
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.2 | <strong>Updated</strong>: 2026-07-03</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>CYO Adventure is a family-only application serving four children. Because stories are
+<p>CYO Adventure serves children across deployment tiers. Because stories are
 machine-generated and read by minors, the privacy controls and provider data-handling
 decisions are Phase-0 hard blockers: they must be resolved before any real LLM call is
-made in Phase 2.</p>
+made in Phase 2. Privacy posture is tier-specific: the dev and family / homelab tiers may
+keep all data local, while the public tier hosts child-linked data on Supabase-managed
+Postgres (a US processor). ADR-008 and ADR-009 amend ADR-004's original absolute "no
+child data on third-party infrastructure" stance for the public tier; that stance still
+governs the homelab / family tier.</p>
 <p>This document covers data classification, what is and is not allowed in prompts, raw
 output retention, moderation report persistence, deletion readiness, and prompt-injection
 defense. Open blockers that gate the Phase 0 exit and the first Phase 2 LLM call are
@@ -2496,9 +2500,11 @@ child. The following are classified as child-linked:</p>
 <li><code>reading_state</code> rows: <code>current_node</code>, <code>var_state</code>, <code>path</code>, <code>save_slots</code>, keyed by
   <code>child_profile_id</code>.</li>
 <li><code>completion</code> rows: <code>ending_id</code>, <code>found_at</code>, keyed by <code>child_profile_id</code>.</li>
-<li>Raw LLM generation outputs stored in object storage, if they were generated in a
-  context where a concept brief containing profile attributes was used. These are
-  admin-only.</li>
+<li>Raw LLM generation outputs stored in <code>generation_job.report</code> (a Postgres JSONB
+  column), if they were generated in a context where a concept brief containing profile
+  attributes was used. <code>GET /generation-jobs/{id}</code> exposes this field to the job's own
+  family guardian (family-scoped, guardian-gated, not admin-only); the list endpoint and
+  every child-facing endpoint exclude it.</li>
 </ul>
 <p>The following are not child-linked on their own (they link to a family or a story, not
 to an individual child):</p>
@@ -2524,22 +2530,35 @@ contain:</p>
 must be fictional), <code>point_of_view</code> (default 2<sup>nd</sup> person), <code>age_band</code>, <code>reading_level_target</code>,
 <code>tier</code>, <code>tone</code>, <code>themes_allowed[]</code>, <code>content_nogo[]</code>, <code>target_node_count</code>, <code>ending_count</code>,
 <code>structure_pattern</code>, <code>desired_variables[]?</code>, <code>special_constraints[]?</code>.</p>
-<p><code>age_band</code> is a categorical value ("8-11", "10-13", "13-16"); it identifies a generation
-target, not an individual child. The backend must validate that the concept brief does not
+<p><code>age_band</code> is a categorical value (one of the six bands "3-5", "5-8", "8-11", "10-13",
+"13-16", "16+"); it identifies a generation target, not an individual child. The backend must validate that the concept brief does not
 contain free-text fields with real names before dispatching to the provider.</p>
 <hr />
 <h2 id="raw-llm-outputs-and-prompt-text">Raw LLM Outputs and Prompt Text<a class="headerlink" href="#raw-llm-outputs-and-prompt-text" title="Permanent link">&para;</a></h2>
 <p>Raw LLM outputs (the full text returned by the provider for each stage) and the prompt
-text sent to the provider are admin-only and short-lived:</p>
+text sent to the provider are guardian-visible (family-scoped, via the single-job GET
+endpoint only) and short-lived:</p>
 <ul>
 <li><strong>Prompt text</strong>: store the prompt template version and a hash, not the full rendered
   prompt, where the rendered text could carry child-specific detail. The hash allows
   audit without persisting the content.</li>
-<li><strong>Raw generation outputs</strong>: stored in object storage (<code>generation_job.raw_output_ref</code>)
-  only as long as needed for debugging and repair pass analysis, then purged. The
-  retention window is not yet defined; it must be set before Phase 2.</li>
-<li><strong>Access control</strong>: <code>raw_output_ref</code> objects in MinIO are in a private bucket, not
-  accessible via the story-serving path. Only admin-role users may retrieve them.</li>
+<li><strong>Raw generation outputs</strong>: stored in <code>generation_job.report</code>, a Postgres JSONB column
+  (not object storage; there is no <code>raw_output_ref</code> field), only as long as needed for
+  debugging and repair-pass analysis. The retention window is defined (ADR-007): purge 30
+  days after job completion or on publish, whichever comes first, via a <code>pg_cron</code> job
+  (ADR-009). The purge worker is a Phase 5 deliverable and is not yet built.</li>
+</ul>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #CRITICAL: data integrity: generation_job.report holds raw LLM output that may</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#            carry child-derived detail; it must be purged and never leaked.</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: the pg_cron purge job (30 days post-completion or on-publish, whichever</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          first) is implemented and scheduled before the public tier goes live;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#          confirm report stays off child-facing endpoints and the job-list endpoint.</span>
+</span></code></pre></div>
+<ul>
+<li><strong>Access control</strong>: <code>generation_job.report</code> is guardian-visible via
+  <code>GET /generation-jobs/{id}</code> (family-scoped, guardian-gated), not admin-only. It is
+  excluded from the list endpoint (job status only) and every child-facing endpoint, and
+  is not accessible via the story-serving path.</li>
 </ul>
 <p>Moderation reports (the per-node flags and the moderation API response) persist with the
 <code>storybook_version</code> record for audit. They contain node IDs and flag categories, not raw
@@ -2550,8 +2569,8 @@ child data.</p>
 data model does not make deletion impossible. The following rules apply:</p>
 <ul>
 <li>Child-linked data must be kept in known, enumerable places: <code>child_profile</code> rows in
-  Postgres, <code>reading_state</code> rows in Postgres, <code>completion</code> rows in Postgres, raw
-  generation outputs referenced by <code>generation_job.raw_output_ref</code> in MinIO.</li>
+  Postgres, <code>reading_state</code> rows in Postgres, <code>completion</code> rows in Postgres, and raw
+  generation outputs in the <code>generation_job.report</code> JSONB column in Postgres.</li>
 <li>Child-linked data must not be scattered through structured logs, Sentry breadcrumbs, or
   application-level caches that are not enumerated in the data model.</li>
 <li>Sentry must not receive a child's reading content beyond a node ID or story ID. Exception
@@ -2584,42 +2603,51 @@ skips moderation.</p>
 <h2 id="open-blockers">OPEN BLOCKERS<a class="headerlink" href="#open-blockers" title="Permanent link">&para;</a></h2>
 <p>The following items gate both the Phase 0 exit and the first Phase 2 LLM call. No
 generation call may be made with a real concept brief until both are resolved.</p>
-<h3 id="blocker-1-anthropic-api-data-handling-terms">Blocker 1: Anthropic API Data-Handling Terms<a class="headerlink" href="#blocker-1-anthropic-api-data-handling-terms" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># #CRITICAL: external resource: Anthropic API data-handling terms (standard retention</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#            vs zero-data-retention) are unconfirmed.</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># #VERIFY: confirm with the provider in writing before the first real generation call</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#          in Phase 2; record the outcome here.</span>
+<h3 id="blocker-1-llm-provider-data-handling-terms-openrouter">Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)<a class="headerlink" href="#blocker-1-llm-provider-data-handling-terms-openrouter" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># #CRITICAL: external resource: OpenRouter data-handling terms (standard retention</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#            vs zero-data-retention) for the generation leg are unconfirmed.</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># #VERIFY: confirm with the provider in writing before the first real generation call</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#          in Phase 2; record the outcome here.</span>
 </span></code></pre></div>
-<p>The standard Anthropic API retains inputs and outputs for a period defined in its terms
-of service. A zero-data-retention (ZDR) agreement, where available, changes that posture.
-Because concept briefs may contain age-band data and fictional content derived from a
-child's interests, the applicable terms must be confirmed before dispatch.</p>
-<p><strong>Required action</strong>: contact Anthropic to determine whether the standard API retention
-path or a ZDR path applies to this use case. Record the outcome (path chosen, contract
-reference or API tier, effective date) in this section before Phase 2 begins. This is a
-hard blocker for the Phase 0 exit gate (plan item P0-09).</p>
+<p>The production default routes generation through OpenRouter, which is the data-handling
+counterparty for the generation leg (not the direct Anthropic API). OpenRouter and its
+downstream model providers retain inputs and outputs per their terms unless a
+zero-data-retention (ZDR) path applies. Because concept briefs may carry age-band data
+and fictional content derived from a child's interests, the applicable terms must be
+confirmed before dispatch. The moderation / review provider on the safety leg is subject
+to the same data-handling review.</p>
+<p><strong>Required action</strong>: confirm whether the standard OpenRouter retention path or a ZDR path
+applies to this use case for both the generation leg and the review / moderation
+provider. Record the outcome (provider and route chosen, contract reference or API tier,
+effective date) in this section before Phase 2 begins. This is a hard blocker for the
+Phase 0 exit gate (plan item P0-09).</p>
 <p><strong>Status</strong>: OPEN. Phase 2 cannot begin until this entry is completed and this file is
 committed with the resolution.</p>
 <hr />
 <h3 id="blocker-2-homelab-reachability-through-pangolin-p0-10">Blocker 2: Homelab Reachability Through Pangolin (P0-10)<a class="headerlink" href="#blocker-2-homelab-reachability-through-pangolin-p0-10" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># #CRITICAL: external resource: homelab hosting reachability through Pangolin has not</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#            been verified for this project&#39;s deployment.</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># #VERIFY: confirm that a bare environment is reachable through Pangolin before the</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#          Phase 0 exit gate; record the verification outcome in TECHNICAL_BASELINE.md</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#          and cross-reference here.</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># #CRITICAL: external resource: homelab hosting reachability through Pangolin has not</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">#            been verified for this project&#39;s deployment.</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># #VERIFY: confirm that a bare environment is reachable through Pangolin before the</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">#          Phase 0 exit gate; record the verification outcome in TECHNICAL_BASELINE.md</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">#          and cross-reference here.</span>
 </span></code></pre></div>
 <p>The homelab must be reachable through the Pangolin zero-trust ingress before Phase 1
 begins, so that integration tests and the CI environment can reach the deployed stack.
 This is plan item P0-10 and a Phase 0 exit condition.</p>
-<p><strong>Required action</strong>: stand up the bare environment (Postgres, Redis, MinIO behind
-Pangolin, Authentik configured with guardian and child roles). Verify reachability.
-Record the outcome in <code>TECHNICAL_BASELINE.md</code> and update this entry with a cross-reference
-date.</p>
+<p><strong>Required action</strong>: stand up the bare homelab / family-tier environment (Postgres and
+Redis behind Pangolin). Verify reachability. Record the outcome in
+<code>TECHNICAL_BASELINE.md</code> and update this entry with a cross-reference date. Note this
+blocker is scoped to the homelab / family tier only. On the public tier, Supabase is the
+identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the datastore,
+so Pangolin ingress and a self-hosted IdP do not apply there.</p>
 <p><strong>Status</strong>: OPEN. Phase 1 cannot begin until this entry is completed.</p>
 <hr />
 <h2 id="if-shared-beyond-family">If Shared Beyond Family<a class="headerlink" href="#if-shared-beyond-family" title="Permanent link">&para;</a></h2>
-<p>This design is calibrated for private family use. Before any non-family use, revisit with
-legal counsel:</p>
+<p>The controls above are calibrated for private family use and the homelab / family tier.
+The public tier (ADR-008 / ADR-009) takes this beyond private family use, so COPPA and
+Kids Category compliance become launch blockers. That compliance work is a future Phase 7
+deliverable and is not yet done. Before the public tier launches, revisit with legal
+counsel:</p>
 <ul>
 <li>COPPA (US) and state-level children's privacy equivalents.</li>
 <li>ICO Age Appropriate Design Code (UK) as a design reference.</li>
@@ -2636,7 +2664,10 @@ legal counsel:</p>
 <li><a href="../tech-spec/#privacy-controls-family-only">Tech Spec: Privacy controls</a></li>
 <li><a href="../../phase0-decisions/">Phase 0 Decision Log</a></li>
 <li><a href="../adr/adr-003-frontier-llm-generation/">ADR-003: Frontier LLM for generation</a></li>
-<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a></li>
+<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
+<li><a href="../adr/adr-007-raw-output-retention/">ADR-007: Raw output retention</a></li>
+<li><a href="../adr/adr-008-public-app-store-launch/">ADR-008: Public app store launch</a></li>
+<li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase platform (managed Postgres, OIDC)</a></li>
 </ul>
 
 
@@ -2660,7 +2691,7 @@ legal counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

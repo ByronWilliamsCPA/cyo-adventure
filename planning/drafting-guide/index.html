@@ -1489,7 +1489,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1768,7 +1768,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1803,7 +1803,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1838,7 +1838,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1908,7 +1908,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1943,7 +1943,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2458,7 +2458,7 @@
 
 <h1 id="story-drafting-guide">Story Drafting Guide<a class="headerlink" href="#story-drafting-guide" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 0.1 | <strong>Updated</strong>: 2026-06-20</p>
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.2 | <strong>Updated</strong>: 2026-07-03</p>
 </blockquote>
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
 <p>This guide is the reference document inserted into Stage A (Structure) and Stage B (Prose)
@@ -2468,43 +2468,25 @@ gate enforces, so following this guide is the fastest path to a story that passe
 first attempt.</p>
 <hr />
 <h2 id="node-and-depth-budgets">Node and Depth Budgets<a class="headerlink" href="#node-and-depth-budgets" title="Permanent link">&para;</a></h2>
-<p>Node count and branch depth are enforced by the Layer-1 graph validator. Stay within these
-ranges:</p>
-<table>
-<thead>
-<tr>
-<th>Age band</th>
-<th>Tier</th>
-<th>Target node count</th>
-<th>Max branch depth</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>8-11</td>
-<td>1 (branching only)</td>
-<td>15-30 nodes</td>
-<td>6 levels</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>1 or 2</td>
-<td>25-50 nodes</td>
-<td>8 levels</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>1 or 2</td>
-<td>30-60 nodes</td>
-<td>10 levels</td>
-</tr>
-</tbody>
-</table>
+<p>Node count and branch depth are enforced by the Layer-1 graph validator. The old fixed
+per-band node-count ranges (for example "8-11 -&gt; 15-30 nodes") are superseded by ADR-011's
+story-scale framework: budgets are now a <code>band x length x style</code> matrix where length
+(short / medium / long) is the primary driver and cells are total-words-driven. Do not
+hardcode a node range from memory; the authoritative source is the per-cell envelope in
+<code>validator/band_profile.py</code>, single-sourced there and described in
+<a href="../adr/adr-011-story-scale-framework/">ADR-011</a>.</p>
+<ul>
+<li><strong>Bands</strong>: the six supported bands are "3-5", "5-8", "8-11", "10-13", "13-16", "16+".</li>
+<li><strong>Length x style</strong>: each band crosses <code>length</code> (short / medium / long) and <code>style</code>
+  (prose / gamebook); the resulting cell sets the node-count envelope and depth ceiling.</li>
+<li><strong>MVP / Test tier</strong>: there is a non-production MVP/Test tier (<code>production_eligible =
+  false</code>) with compact envelopes for pipeline testing; do not ship its output to readers.</li>
+</ul>
 <p>"Node count" is the total number of <code>Node</code> records in the story, including all endings.
 "Branch depth" is the longest path from <code>start_node</code> to any ending node, measured in
 hops.</p>
-<p>The validator fails stories that exceed the upper bounds. Stories below the lower bound
-trigger a warning (not a hard failure), but very short stories rarely satisfy the
+<p>The validator fails stories that exceed the cell's upper bound. Stories below the lower
+bound trigger a warning (not a hard failure), but very short stories rarely satisfy the
 <code>ending_count</code> minimum of two distinct endings.</p>
 <p><strong>Configuration cap</strong>: for Tier-2 stories, keep the reachable state space below 100,000
 configurations. A configuration is a <code>(node_id, var_state)</code> pair. To stay safely within
@@ -2528,19 +2510,25 @@ and keeps the validator's reachability check tractable.</p>
 in nodes at every level. A 6-level tree has 63 nodes; a 10-level tree has 1,023. Bottlenecks
 let you write distinctive experiences on each branch while keeping total node count inside
 the budget.</p>
-<p>Other supported structure patterns (for the concept brief <code>structure_pattern</code> field):</p>
+<p>Other supported structure patterns (for the concept brief <code>structure_pattern</code> field,
+<code>generation/concept.py::StructurePattern</code>):</p>
 <ul>
-<li><code>time_cave</code>: the reader loops back to a central hub from multiple branches; useful for
-  exploration stories. Every hub exit must lead toward an ending to pass the loop-escape
-  check.</li>
+<li><code>time_cave</code>: branches fan out to many distinct endings with little or no reconvergence;
+  the oldest and simplest branching shape. Good when you want lots of divergent outcomes.</li>
 <li><code>gauntlet</code>: a mostly linear sequence with a few decision points; suitable for the 8-11
   band where too many choices are overwhelming.</li>
-<li><code>quest</code>: a multi-stage journey where each stage has its own branch-and-bottleneck; the
-  stages connect in a fixed order.</li>
 <li><code>loop_and_grow</code>: the reader may revisit nodes, with state tracking their progress across
   loops. Requires Tier 2; the loop-escape check requires that every cycle has an exit path
   to an ending.</li>
+<li><code>quest</code>: a multi-stage journey where each stage has its own branch-and-bottleneck shape.
+  A distinct, requestable pattern; it is not folded into <code>branch_and_bottleneck</code>.</li>
 </ul>
+<p><code>open_map</code> and <code>sorting_hat</code> are <code>topology</code> values the validator can classify a finished
+graph as (see <a href="../../architecture/story-skeletons/">story-skeletons.md</a>), but they are not
+currently requestable via the concept brief's <code>structure_pattern</code> intake field. Do not
+conflate the two enums: <code>structure_pattern</code> is the author's requested shape at intake time;
+<code>topology</code> is the validator's post-hoc classification of the shape the graph actually has,
+and the two can diverge.</p>
 <p>Avoid fully symmetric trees (binary trees where every non-ending node has exactly two
 choices): they produce the node-count explosion described above and do not generate well
 because the LLM runs out of distinctive beats.</p>
@@ -2578,6 +2566,16 @@ The validator checks against this target with the <code>tolerance</code> defined
 </thead>
 <tbody>
 <tr>
+<td>3-5</td>
+<td>0.0 to 1.5</td>
+<td>Very short sentences (5-8 words average). Read-aloud cadence, repetition, and concrete nouns. Minimal abstraction.</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>1.5 to 3.0</td>
+<td>Short sentences (8-12 words average). Simple vocabulary with gentle stretch words explained in context.</td>
+</tr>
+<tr>
 <td>8-11</td>
 <td>3.0 to 4.5</td>
 <td>Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery.</td>
@@ -2592,15 +2590,29 @@ The validator checks against this target with the <code>tolerance</code> defined
 <td>7.0 to 9.5</td>
 <td>Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate.</td>
 </tr>
+<tr>
+<td>16+</td>
+<td>9.5 to 12.0</td>
+<td>Adult-YA register. Complex syntax, layered themes, and morally ambiguous outcomes are acceptable.</td>
+</tr>
 </tbody>
 </table>
-<p>Node body length: aim for 80-150 words per node for the 8-11 band, 100-200 words for the
-10-13 band, and 120-250 words for the 13-16 band. Longer bodies push the FK grade up and
-slow the reading experience; shorter bodies leave the story feeling sparse.</p>
+<p>Node body length scales with the band and with the ADR-011 length / style cell. The
+authoritative per-node envelope is the <code>_WORDS_PER_NODE</code> table in
+<code>validator/band_profile.py</code>; do not hardcode from memory. As a story-mean advisory band
+per that table, aim for roughly 28-55 words per node at 3-5, 50-95 at 5-8, 70-135 at both
+8-11 and 10-13, 100-185 at 13-16, and 125-230 at 16+ (prose; gamebook nodes run shorter).
+Each cell also sets a hard per-node maximum well above these advisory bands. Longer bodies
+push the FK grade up and slow the reading experience; shorter bodies leave the story
+feeling sparse.</p>
 <hr />
 <h2 id="tier-2-variables-and-conditions">Tier-2 Variables and Conditions<a class="headerlink" href="#tier-2-variables-and-conditions" title="Permanent link">&para;</a></h2>
-<p>Tier-2 mechanics are available for the 10-13 and 13-16 bands. Use them sparingly; every
-variable multiplies the state space.</p>
+<p>The schema does not gate Tier-2 by age band: <code>metadata.tier</code> is any of 1 or 2, and the
+only hard rule is that a Tier-1 story must not declare variables (<code>tier 1 stories must not
+declare variables</code>). As an authoring guideline, reserve state-tracking (Tier-2) for the
+bands where a reader can follow persistent state: the 8-11, 10-13, 13-16, and 16+ bands.
+Keep the youngest bands (3-5 and 5-8) at Tier-1. Use variables sparingly at any band;
+every variable multiplies the state space (see the configuration cap below).</p>
 <p><strong>Variable rules</strong>:</p>
 <ul>
 <li>Declare all variables in the <code>variables</code> block at the top of the story. Every variable
@@ -2651,16 +2663,20 @@ count of ending nodes.</p>
 <p>Each ending node requires an <code>ending</code> block:</p>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ending_sunrise&quot;</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The sunrise ending&quot;</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">}</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;valence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="nt">&quot;kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span><span class="nt">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;The sunrise ending&quot;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>The <code>id</code> is stable across prose edits and is the anchor for the ending tracker (Phase 4b).
 Use a slug that describes the outcome, not a number ("ending_escape", "ending_captured",
 "ending_befriended"), so it remains meaningful after the prose changes.</p>
-<p>Ending types: <code>success</code>, <code>failure</code>, <code>bittersweet</code>, <code>open</code>. These are metadata only; the
-validator does not restrict ending types. Use them to give the parent reviewer a quick
-read on the emotional tone of each outcome.</p>
+<p>Each ending is typed on two axes, and both are required (the <code>ending</code> block forbids extra
+fields, so a single <code>type</code> field is rejected). <code>valence</code> is how the ending feels:
+<code>positive</code>, <code>neutral</code>, or <code>negative</code>. <code>kind</code> is what mechanically happened, a closed set:
+<code>success</code>, <code>setback</code>, <code>death</code>, <code>capture</code>, <code>completion</code>, or <code>discovery</code>. The age-band policy
+gate (PL-15) rejects any ending <code>kind</code> forbidden for the band, so pick a <code>kind</code> appropriate
+to the reader; the two axes together give the reviewer a quick read on each outcome.</p>
 <hr />
 <h2 id="concept-brief-field-list">Concept Brief Field List<a class="headerlink" href="#concept-brief-field-list" title="Permanent link">&para;</a></h2>
 <p>The concept brief is the structured input to Stage A. All fields are passed to the
@@ -2697,7 +2713,7 @@ generation prompt as <code>{concept_brief}</code>. Fields marked with <code>?</c
 <tr>
 <td><code>age_band</code></td>
 <td>enum</td>
-<td><code>"8-11"</code>, <code>"10-13"</code>, or <code>"13-16"</code></td>
+<td>one of <code>"3-5"</code>, <code>"5-8"</code>, <code>"8-11"</code>, <code>"10-13"</code>, <code>"13-16"</code>, <code>"16+"</code></td>
 </tr>
 <tr>
 <td><code>reading_level_target</code></td>
@@ -2737,7 +2753,7 @@ generation prompt as <code>{concept_brief}</code>. Fields marked with <code>?</c
 <tr>
 <td><code>structure_pattern</code></td>
 <td>enum</td>
-<td><code>time_cave</code>, <code>gauntlet</code>, <code>branch_and_bottleneck</code>, <code>quest</code>, <code>loop_and_grow</code></td>
+<td><code>time_cave</code>, <code>gauntlet</code>, <code>branch_and_bottleneck</code>, <code>loop_and_grow</code>, <code>open_map</code>, <code>sorting_hat</code></td>
 </tr>
 <tr>
 <td><code>desired_variables[]?</code></td>
@@ -2813,6 +2829,7 @@ the provider.</p>
 <li><a href="../stage-prompts/repair/">Stage C Repair Prompt</a></li>
 <li><a href="../adr/adr-001-story-format-json-storybook/">ADR-001: JSON Storybook format</a></li>
 <li><a href="../adr/adr-006-conditions-inhouse-evaluator/">ADR-006: Conditions in-house evaluator</a></li>
+<li><a href="../adr/adr-011-story-scale-framework/">ADR-011: Story-scale framework (band x length x style)</a></li>
 </ul>
 
 
@@ -2836,7 +2853,7 @@ the provider.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

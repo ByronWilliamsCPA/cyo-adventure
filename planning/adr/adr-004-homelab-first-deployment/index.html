@@ -1498,7 +1498,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1780,7 +1780,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1815,7 +1815,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1850,7 +1850,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2241,7 +2241,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2276,7 +2276,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2949,7 +2949,8 @@
 <h1 id="adr-004-homelab-first-deployment-azure-as-the-scale-out-alternative">ADR-004: Homelab-first deployment, Azure as the scale-out alternative<a class="headerlink" href="#adr-004-homelab-first-deployment-azure-as-the-scale-out-alternative" title="Permanent link">&para;</a></h1>
 <blockquote>
 <p><strong>Status</strong>: Proposed
-<strong>Date</strong>: 2026-06-20</p>
+<strong>Date</strong>: 2026-06-20
+<strong>Amended by</strong>: ADR-008 (public-tier hosting), ADR-009 (Supabase platform); ADR-004 still governs the dev and family/homelab tier</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <p>Deploy to the homelab first (containers behind Pangolin zero-trust ingress, Authentik
@@ -3002,6 +3003,10 @@ always-on uptime and managed backups if the need arises.</p>
 <ul>
 <li>⚠️ Uptime and backups are self-managed. Mitigation: nightly Postgres dump and MinIO
   snapshot, with a restore drill in Phase 5.</li>
+<li>⚠️ The "no minors' data on third-party infrastructure" stance is amended for the
+  <strong>public tier</strong> by <a href="../adr-008-public-app-store-launch/">ADR-008</a> and
+  <a href="../adr-009-supabase-platform/">ADR-009</a>: the public tier runs on Supabase-managed
+  Postgres, a US processor. ADR-004 continues to govern the dev and family/homelab tier.</li>
 </ul>
 <h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3037,6 +3042,10 @@ always-on uptime and managed backups if the need arises.</p>
 <ul>
 <li><a href="../adr-003-frontier-llm-generation/">ADR-003</a>: the external generator call this
   posture constrains.</li>
+<li><a href="../adr-008-public-app-store-launch/">ADR-008</a>: public-tier hosting that amends this
+  posture for the commercial tier.</li>
+<li><a href="../adr-009-supabase-platform/">ADR-009</a>: the Supabase managed platform adopted for
+  the public tier's auth, database, and storage.</li>
 <li><a href="../../tech-spec/#infrastructure">Tech Spec: Infrastructure</a></li>
 </ul>
 
@@ -3061,7 +3070,7 @@ always-on uptime and managed backups if the need arises.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 05:16:41 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

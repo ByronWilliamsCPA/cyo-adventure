@@ -1498,7 +1498,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1780,7 +1780,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1815,7 +1815,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1850,7 +1850,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1929,7 +1929,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1954,7 +1954,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2287,7 +2287,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2970,7 +2970,7 @@
 
 <h1 id="adr-005-mandatory-human-approval-before-any-story-reaches-a-child">ADR-005: Mandatory human approval before any story reaches a child<a class="headerlink" href="#adr-005-mandatory-human-approval-before-any-story-reaches-a-child" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Proposed (amended 2026-06-30, see Amendment below)
+<p><strong>Status</strong>: Accepted (2026-07-03; amended 2026-06-30, see Amendment below)
 <strong>Date</strong>: 2026-06-20</p>
 </blockquote>
 <h2 id="amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent">Amendment (2026-06-30): the approver is a global admin, not the child's parent<a class="headerlink" href="#amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent" title="Permanent link">&para;</a></h2>
@@ -2990,9 +2990,9 @@ versus a per-parent approval, while keeping the human-in-the-loop guarantee abso
 the sections below say "parent" or "guardian" as the approver, read "global admin (safety
 operator)"; the structural guarantee they describe is otherwise as written.</p>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>A story can enter a child's library only after a parent approves it, encoded as a state
-machine with no path from generation to a child profile that bypasses the <code>approved</code>
-state, because automated moderation helps but cannot be the only line for
+<p>A story can enter a child's library only after a human approves it, encoded as a state
+machine with no path from generation to a child profile that bypasses the recorded
+admin-approval step, because automated moderation helps but cannot be the only line for
 machine-generated content read by children.</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
@@ -3053,17 +3053,24 @@ ever shared beyond the family.</p>
 </ul>
 <h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
-<li>The transition <code>in_review -&gt; approved</code> requires a guardian; auto checks (validator
-  plus moderation) gate <code>generating -&gt; in_review</code>, and failures route to
+<li>Automated checks (validator plus moderation) run on the GenerationJob
+  (<code>running -&gt; passed | needs_review | failed</code>) and gate whether a Storybook may enter
+  <code>in_review</code>; the approve action then moves the Storybook directly to <code>published</code> (there
+  is no separate <code>approved</code> resting state), and a rejected review routes to
   <code>needs_revision</code>. A story is visible to a child only in <code>published</code>.</li>
 </ul>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Publish state machine</strong>: <code>draft -&gt; generating -&gt; auto_check -&gt; in_review -&gt;
-   approved -&gt; published -&gt; archived</code>, with <code>needs_revision</code> on failures.</li>
-<li><strong>Authorization</strong>: an approver (guardian) role; child tokens cannot approve or
-   publish.</li>
+<li><strong>Two lifecycles, not one pipeline</strong>: a <strong>GenerationJob</strong> state machine
+   (<code>queued -&gt; running -&gt; passed | needs_review | failed</code>) drives generation and the
+   automated gate, and a separate <strong>Storybook</strong> state machine
+   (<code>draft -&gt; in_review -&gt; published | needs_revision | archived</code>) drives review and
+   publication. There is no single <code>approved</code> resting state: <code>approved</code> is collapsed into
+   the approve action, which publishes in one step. A story is visible to a child only in
+   the Storybook <code>published</code> state.</li>
+<li><strong>Authorization</strong>: the approver is a <strong>global admin</strong> (<code>principal.is_admin</code>) who
+   screens cross-family; child and guardian tokens cannot approve or publish.</li>
 <li><strong>Provenance</strong>: model, provider, prompt version, and approver persisted per
    published version.</li>
 </ol>
@@ -3123,7 +3130,7 @@ ever shared beyond the family.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 14:45:32 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

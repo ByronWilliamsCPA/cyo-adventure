@@ -971,10 +971,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#publish-state-machine" class="md-nav__link">
+  <a href="#lifecycle-state-machines" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish State Machine
+        Lifecycle State Machines
       
     </span>
   </a>
@@ -1592,7 +1592,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1871,7 +1871,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1906,7 +1906,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1941,7 +1941,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2011,7 +2011,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2046,7 +2046,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2450,10 +2450,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#publish-state-machine" class="md-nav__link">
+  <a href="#lifecycle-state-machines" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish State Machine
+        Lifecycle State Machines
       
     </span>
   </a>
@@ -2496,23 +2496,29 @@
 <p>CYO Adventure is a choose-your-own-adventure reading app for kids. A React 19 PWA
 lets children read and play through branching stories offline; a FastAPI backend
 serves the story library, manages reading progress, and runs an LLM-powered story
-generation pipeline behind a mandatory guardian approval gate (ADR-005).</p>
+generation pipeline behind a mandatory admin approval gate (ADR-005).</p>
 <h2 id="c4-level-1-system-context">C4 Level 1: System Context<a class="headerlink" href="#c4-level-1-system-context" title="Permanent link">&para;</a></h2>
-<p>The system context shows the two human actors and the external systems the CYO
+<p>The system context shows the three human actors and the external systems the CYO
 Adventure system depends on.</p>
 <p><img alt="C4 System Context" src="../diagrams/c4-context.svg" /></p>
 <p><strong>Key relationships:</strong></p>
 <ul>
 <li><strong>Child Reader</strong> uses the PWA to read stories, make choices, and progress through
   branching narratives, including while offline.</li>
-<li><strong>Guardian/Author</strong> uses the PWA to submit story concepts, monitor generation jobs,
-  and approve stories before any child can see them (ADR-005: mandatory approval).</li>
-<li><strong>OpenRouter</strong> is the primary LLM provider. Stories are generated through a
-  three-stage pipeline (Structure, Prose, Repair) with a provider fallback cascade.</li>
-<li><strong>Ollama</strong> is the local fallback LLM. If OpenRouter fails (leg-fatal errors), the
-  <code>FallbackProvider</code> cascade tries Ollama before giving up.</li>
-<li><strong>Authentik</strong> provides OIDC identity. Guardian and child roles are encoded in the
-  token; the dev environment uses a token-as-subject seam (see <code>api/deps.py</code>).</li>
+<li><strong>Guardian/Author</strong> uses the PWA to submit story concepts and monitor generation
+  jobs for the family; a guardian cannot self-approve.</li>
+<li><strong>Admin (Approver)</strong> is a global, cross-family role (<code>is_admin</code>) that reviews and
+  approves stories before any child can see them (ADR-005: mandatory approval).
+  Guardians and children who attempt the approve action receive 403.</li>
+<li><strong>OpenRouter</strong> is the primary LLM provider, tried across two legs: leg 1 (primary
+  model, claude-haiku-4.5) then leg 2 (fallback model, claude-sonnet-4.6). Stories are
+  generated through a three-stage pipeline (Structure, Prose, Repair) with a provider
+  fallback cascade.</li>
+<li><strong>Ollama</strong> is the local fallback LLM (leg 3). If both OpenRouter legs fail
+  (leg-fatal errors), the <code>FallbackProvider</code> cascade tries Ollama before giving up.</li>
+<li><strong>Supabase Auth</strong> provides OIDC identity (ADR-009). The guardian identity and child
+  session are encoded in the token; the local dev environment uses a token-as-subject
+  seam, while non-local environments verify the JWT via <code>jwt.PyJWKClient</code> (see <code>api/deps.py</code>).</li>
 <li><strong>PostgreSQL</strong> holds all operational metadata: family records, users, child profiles,
   storybook lifecycle, reading state, completions, generation jobs.</li>
 </ul>
@@ -2568,16 +2574,30 @@ Adventure system depends on.</p>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>frontend<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>npm<span class="w"> </span>run<span class="w"> </span>generate-client
 </span></code></pre></div>
 <p>Treat <code>frontend/src/client/</code> as build output; do not edit files there directly.</p>
-<h2 id="publish-state-machine">Publish State Machine<a class="headerlink" href="#publish-state-machine" title="Permanent link">&para;</a></h2>
-<p>No story reaches a child profile without a recorded guardian approval (ADR-005).
-The lifecycle is enforced as a state machine with no bypass path:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>draft -&gt; generating -&gt; auto_check -+-&gt; needs_revision -&gt; (repair/regenerate) -+
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                                   |                                           |
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                                   +-&gt; in_review -&gt; approved -&gt; published -&gt; archived
+<h2 id="lifecycle-state-machines">Lifecycle State Machines<a class="headerlink" href="#lifecycle-state-machines" title="Permanent link">&para;</a></h2>
+<p>No story reaches a child profile without a recorded admin approval (ADR-005).
+Two independent lifecycles enforce this, with no bypass path.</p>
+<p><strong>GenerationJob</strong> tracks one staged-generation attempt:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>queued -&gt; running -&gt; passed | needs_review | failed
 </span></code></pre></div>
-<p>The <code>in_review -&gt; approved</code> transition requires a guardian. Automated checks
-(validation gate plus moderation) gate <code>generating -&gt; in_review</code>; failures route
-to <code>needs_revision</code>. A story is visible to a child only in <code>published</code>.</p>
+<p><strong>Storybook</strong> tracks the review-and-publish lifecycle of a story
+(<code>publishing/state_machine.py</code>):</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>draft ----submit-----&gt; in_review ----approve----&gt; published --archive--&gt; archived
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  |                        |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  |auto_reject             |send_back
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  v                        v
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>needs_revision &lt;-----------+
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  |
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  +--submit--&gt; in_review
+</span></code></pre></div>
+<p>The <code>in_review -&gt; published</code> (approve) transition requires a <strong>global admin</strong>
+(<code>is_admin</code>), which is cross-family; a guardian or child who attempts it receives
+403. Automated checks (validation gate plus moderation) drive <code>draft -&gt; in_review</code>
+or <code>draft -&gt; needs_revision</code>; a reviewer can send a story back with
+<code>in_review -&gt; needs_revision</code>. There is no <code>generating</code>, <code>auto_check</code>, or <code>approved</code>
+storybook state; those live only in the GenerationJob lifecycle (<code>passed</code>,
+<code>needs_review</code>) or are folded into <code>published</code>. A story is visible to a child only
+in <code>published</code>.</p>
 <h2 id="further-reading">Further Reading<a class="headerlink" href="#further-reading" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="../generation-pipeline/">Generation Pipeline</a>: staged LLM generation and provider cascade</li>
@@ -2609,7 +2629,7 @@ to <code>needs_revision</code>. A story is visible to a child only in <code>publ
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 23, 2026 15:53:50 UTC">June 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

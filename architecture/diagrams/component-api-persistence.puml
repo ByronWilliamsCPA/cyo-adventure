@@ -9,6 +9,11 @@
 '   src/cyo_adventure/api/library.py         (story library endpoints)
 '   src/cyo_adventure/api/reading.py         (reading-state + completions)
 '   src/cyo_adventure/api/generation.py      (guardian-only: concepts, jobs, validate)
+'   src/cyo_adventure/api/profiles.py        (guardian-only: child profile CRUD)
+'   src/cyo_adventure/api/assignments.py     (guardian-only: assign storybooks to profiles)
+'   src/cyo_adventure/api/approval.py        (global admin: submit/approve/send-back/archive/review)
+'   src/cyo_adventure/api/ratings.py         (kid ratings)
+'   src/cyo_adventure/api/me.py              (principal identity)
 '   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
 '   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam)
 '   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware, added first)
@@ -18,6 +23,7 @@
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
 '   src/cyo_adventure/db/models.py           (9 ORM tables)
 '   docs/planning/authorization-matrix.md
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -38,7 +44,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
   }
 
   package "Dependencies\napi/deps.py" #DCEDC8 {
-    component "Auth Seam\n_extract_subject()\n[dev: token-as-subject]\n[prod: Authentik OIDC JWT]" as auth_seam #DCEDC8
+    component "Auth Seam\n_extract_subject()\n[local: token-as-subject]\n[non-local: Supabase OIDC JWT,\nADR-009]" as auth_seam #DCEDC8
     component "Principal\nrole, family_id, profile_ids\nauthorize_profile()\nauthorize_family()" as principal #DCEDC8
     component "DbSession\nasync unit-of-work\ncommit on success,\nrollback on exception" as db_session_dep #DCEDC8
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
@@ -52,6 +58,16 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "reading.py\nGET /reading-state/{profile}/{story}\nPUT /reading-state/{profile}/{story}\n(revision-based OCC, idempotent event_id)\nPOST /completions" as reading_router #B2DFDB
 
     component "generation.py [guardian-only]\nPOST /concepts (PII-screened)\nPOST /concepts/{id}/generate\nGET /generation-jobs/{id}\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
+
+    component "profiles.py [guardian-only]\nGET /profiles\nPOST /profiles\nPATCH /profiles/{id}" as profiles_router #B2DFDB
+
+    component "assignments.py [guardian-only]\nPOST /storybooks/{id}/assignments\nGET /storybooks/{id}/assignments" as assignments_router #B2DFDB
+
+    component "approval.py [global admin]\nPOST /storybooks/{id}/submit\nPOST /storybooks/{id}/approve\nPOST /storybooks/{id}/send-back\nPOST /storybooks/{id}/archive\nGET /storybooks/{id}/review\nGET /review-queue" as approval_router #B2DFDB
+
+    component "ratings.py\nPOST /ratings\nGET /ratings/{profile_id}" as ratings_router #B2DFDB
+
+    component "me.py\nGET /me (principal identity)" as me_router #B2DFDB
   }
 
   package "Core" #A5D6A7 {
@@ -80,6 +96,11 @@ ctx --> reading_router
 ctx --> library_router
 ctx --> gen_router
 ctx --> health_router
+ctx --> profiles_router
+ctx --> assignments_router
+ctx --> approval_router
+ctx --> ratings_router
+ctx --> me_router
 
 reading_router --> models_a
 reading_router --> models_b
@@ -94,11 +115,14 @@ exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers
 exceptions --> gen_router
 
 note right of auth_seam
-  dev seam: treats bearer token
-  as OIDC subject without signature check.
-  Replace _extract_subject() with
-  real Authentik JWT validation
-  before any non-local deployment.
+  local-only seam: treats bearer token
+  as OIDC subject without signature check;
+  fails to start outside "local" unless
+  OIDC_ISSUER + OIDC_JWKS_URL are set.
+  Non-local: _verify_oidc_jwt() validates a
+  real Supabase-issued JWT (signature, issuer,
+  audience, expiry) via cached JWKS
+  (jwt.PyJWKClient), per ADR-009.
 end note
 
 note right of reading_router

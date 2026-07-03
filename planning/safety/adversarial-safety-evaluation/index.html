@@ -1489,7 +1489,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1768,7 +1768,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1803,7 +1803,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1838,7 +1838,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1908,7 +1908,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1943,7 +1943,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2677,8 +2677,8 @@ concept brief or an imported story into the pipeline (a guardian, an admin, or t
 identity layer that decides who can submit briefs and approve stories is governed by
 <a href="../../adr/adr-008-public-app-store-launch/">ADR-008</a> and
 <a href="../../adr/adr-009-supabase-platform/">ADR-009</a>: real authentication lands in Phase 6
-(Supabase, guardians-only IdP identities), and Track 1 ships in the interim on the
-dev-stub auth seam, so for Track 1 every submitter is effectively a trusted household
+(Supabase, guardians-only IdP identities), and R1 ships in the interim on the
+dev-stub auth seam, so for R1 every submitter is effectively a trusted household
 member. The asset under protection is the child reader: no generated or
 imported content should reach a child's library without either an automated safety
 gate flagging it or a human approving it with full visibility of what was (and was
@@ -3019,7 +3019,7 @@ code paths that can reach <code>submit</code>/<code>approve</code>, or the band 
 <li><a href="../../adr/adr-008-public-app-store-launch/">ADR-008: Public App Store launch</a> and
   <a href="../../adr/adr-009-supabase-platform/">ADR-009: Supabase platform</a> (the identity layer
   that decides who can submit briefs and approve stories; real auth is Phase 6, and the
-  Kids Category / COPPA posture makes an unbacked safety claim a Track 2 launch blocker).</li>
+  Kids Category / COPPA posture makes an unbacked safety claim a public-launch (R2/R3) blocker).</li>
 <li><a href="../../adr/adr-010-modal-review-and-gated-generation/">ADR-010: Modal review and gated generation</a>
   (adds <code>review_provider = "modal"</code>, an independent open-weight reviewer; the credentialed
   harness run should gain a <code>modal</code> provider choice once P9-12 lands, alongside the existing
@@ -3052,7 +3052,7 @@ code paths that can reach <code>submit</code>/<code>approve</code>, or the band 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 14:45:32 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

@@ -1498,7 +1498,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1777,7 +1777,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1812,7 +1812,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1847,7 +1847,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1917,7 +1917,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1952,7 +1952,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2413,7 +2413,7 @@
 <p>CYO Adventure is a choose-your-own-adventure reading app for kids. A React 19 PWA
 lets children read branching stories offline; a FastAPI backend serves the library,
 manages reading progress, and runs an LLM-powered generation pipeline behind a
-deterministic validation gate and mandatory guardian approval (ADR-005).</p>
+deterministic validation gate and mandatory admin approval (ADR-005).</p>
 <h2 id="architecture-pages">Architecture Pages<a class="headerlink" href="#architecture-pages" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2445,7 +2445,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 </tr>
 <tr>
 <td><a href="deployment/">Deployment</a></td>
-<td>Homelab Docker stack, Pangolin, Authentik, MinIO (Phase 5)</td>
+<td>Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5)</td>
 </tr>
 </tbody>
 </table>
@@ -2478,7 +2478,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 <tr>
 <td>Validator Gate</td>
 <td><a href="diagrams/component-validator.puml">component-validator.puml</a> / <a href="diagrams/component-validator.svg">.svg</a></td>
-<td>L1/L2/RL/SAFE layers</td>
+<td>L1/Policy/L2/RL/SAFE layers</td>
 </tr>
 <tr>
 <td>Player Engine</td>
@@ -2513,7 +2513,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 <tr>
 <td>Deployment</td>
 <td><a href="diagrams/deployment.puml">deployment.puml</a> / <a href="diagrams/deployment.svg">.svg</a></td>
-<td>Docker containers, Pangolin, Authentik</td>
+<td>Docker containers, Pangolin, Supabase OIDC</td>
 </tr>
 </tbody>
 </table>
@@ -2529,7 +2529,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  - Reader: XState + TS engine + TS evaluator
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  - Offline: IndexedDB cache + write queue (event_id idempotency)
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  - API client: generated from OpenAPI schema (not hand-written)
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  |  REST /api/v1 + Bearer token (OIDC via Authentik)
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  v
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>FastAPI backend (Python 3.12)
 </span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  - api/: health, library, reading, generation (guardian-only)
@@ -2538,17 +2538,19 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 </span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  - player/: StoryEngine (Runtime Semantics v1, pure)
 </span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  - validator/: gate (L1+L2+RL+SAFE), walk, report
 </span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  - generation/: orchestrator (Stage A-&gt;B-&gt;C), prompts, PII guard,
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                 providers (OpenRouter primary, Ollama fallback),
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                 FallbackProvider cascade, queue, worker
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  |
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  +-- Redis 7 (RQ job queue)
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  |
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>  +-- [worker container] RQ worker
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>        -&gt; OpenRouter (primary LLM)
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>        -&gt; Ollama (local fallback)
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        -&gt; [Phase 5] MinIO (blob_ref object storage)
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                 providers (3-leg cascade: OpenRouter haiku primary,
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                 OpenRouter sonnet fallback, then Ollama local),
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>                 FallbackProvider cascade, queue, worker
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  |
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  +-- Redis 7 (RQ job queue)
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>  |
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>  +-- [worker container] RQ worker
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>        -&gt; OpenRouter haiku (leg 1, primary)
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        -&gt; OpenRouter sonnet (leg 2, fallback)
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        -&gt; Ollama (leg 3, local fallback)
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        -&gt; [Phase 5] MinIO (blob_ref object storage)
 </span></code></pre></div>
 <h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
 <table>
@@ -2560,8 +2562,8 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
 </thead>
 <tbody>
 <tr>
-<td>Mandatory guardian approval (ADR-005)</td>
-<td>No story reaches a child without a human in the loop</td>
+<td>Mandatory admin approval (ADR-005)</td>
+<td>No story reaches a child without a human (global admin) in the loop</td>
 </tr>
 <tr>
 <td>JSON Storybook format (ADR-001)</td>
@@ -2649,7 +2651,7 @@ deterministic validation gate and mandatory guardian approval (ADR-005).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 00:11:06 UTC">July 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

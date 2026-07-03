@@ -1731,7 +1731,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -2010,7 +2010,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2045,7 +2045,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2080,7 +2080,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2150,7 +2150,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2185,7 +2185,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2782,13 +2782,16 @@ decoded Storybook JSON document. It orchestrates four layers in a fixed order.</
 <li><strong>Layer 1 (L1-1..L1-7): graph structure and schema</strong> (always runs first)</li>
 <li><strong>Early exit on any L1 ERROR</strong>: the graph must be structurally sound before a
    state-space walk is meaningful; an L1 error means the document may not even parse.</li>
+<li><strong>Policy (PL-15..PL-21): age-safety and story-scale invariants</strong> (ADR-011; forbidden
+   ending kinds, content-flag ceilings, breadth/depth floors, scale coverage). ERROR-severity
+   PL findings block.</li>
 <li><strong>Layer 2 (L2-9..L2-12): state-space walk</strong> (Tier-2 stories only; Tier-1 short-circuits)</li>
 <li><strong>RL-13: advisory reading-level check</strong> (WARNING severity, never blocks)</li>
 <li><strong>SAFE-14: safety content check</strong> (Phase 2 stub, always empty)</li>
 </ol>
 <h3 id="blocking-semantics">Blocking Semantics<a class="headerlink" href="#blocking-semantics" title="Permanent link">&para;</a></h3>
 <p><code>blocked</code> is <code>True</code> when any <code>ERROR</code>-severity finding whose <code>rule_id</code> starts with
-<code>"L1"</code> or <code>"L2"</code> is present in the merged report. RL-13 findings are <code>WARNING</code> and
+<code>"L1"</code>, <code>"L2"</code>, or <code>"PL"</code> is present in the merged report. RL-13 findings are <code>WARNING</code> and
 never block. SAFE-14 findings route to human review via <code>safety_flagged</code>, not <code>blocked</code>.</p>
 <h3 id="layer-1-rules">Layer 1 Rules<a class="headerlink" href="#layer-1-rules" title="Permanent link">&para;</a></h3>
 <table>
@@ -2879,10 +2882,12 @@ mutated. This makes saves, save-slot snapshots, and test replays reliable.</p>
 <p>The condition evaluator (<code>storybook/evaluator.py</code>) implements the whitelisted-operator
 subset of a JSONLogic-shaped condition DSL (ADR-006: in-house evaluator, no third-party
 logic library).</p>
-<p><strong>Whitelisted operators:</strong> <code>eq</code>, <code>ne</code>, <code>lt</code>, <code>gt</code>, <code>lte</code>, <code>gte</code>, <code>and</code>, <code>or</code>, <code>not</code>,
-<code>var</code>, and literal values.</p>
-<p><strong>Strict equality, no coercion:</strong> <code>eq</code> uses <code>==</code> without type coercion. A <code>bool</code>
-variable is never equal to an <code>int</code> under the evaluator.</p>
+<p><strong>Whitelisted operators (10):</strong> <code>var</code>, <code>!</code>, <code>and</code>, <code>or</code>, <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>,
+<code>&gt;=</code>. A <code>{"var": name}</code> operand resolves to a variable's value; anything else is a
+literal. Any operator outside this whitelist is rejected.</p>
+<p><strong>Strict equality, no coercion:</strong> <code>==</code> compares without type coercion. A <code>bool</code>
+variable is never equal to an <code>int</code> under the evaluator (Python's <code>True == 1</code> is
+explicitly rejected), matching the TypeScript <code>===</code> mirror.</p>
 <p>The TypeScript evaluator (<code>frontend/src/player/evaluator.ts</code>) mirrors this behavior.
 Shared conformance fixtures run against both implementations to detect divergence.</p>
 <h2 id="reading-state-sync">Reading-State Sync<a class="headerlink" href="#reading-state-sync" title="Permanent link">&para;</a></h2>
@@ -3019,7 +3024,7 @@ yields a 409, the client presents a conflict resolution UI per <code>docs/design
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 23, 2026 15:53:50 UTC">June 23, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

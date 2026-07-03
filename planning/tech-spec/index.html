@@ -1498,7 +1498,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1797,10 +1797,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#story-format-the-storybook-blob-in-object-storage" class="md-nav__link">
+  <a href="#story-format-the-storybook-blob-stored-inline-in-postgres-jsonb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Story format (the Storybook blob, in object storage)
+        Story format (the Storybook blob, stored inline in Postgres JSONB)
       
     </span>
   </a>
@@ -1830,10 +1830,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#publish-state-machine" class="md-nav__link">
+  <a href="#generation-and-publish-lifecycles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish state machine
+        Generation and publish lifecycles
       
     </span>
   </a>
@@ -2311,7 +2311,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2346,7 +2346,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2381,7 +2381,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2451,7 +2451,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2486,7 +2486,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -3026,10 +3026,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#story-format-the-storybook-blob-in-object-storage" class="md-nav__link">
+  <a href="#story-format-the-storybook-blob-stored-inline-in-postgres-jsonb" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Story format (the Storybook blob, in object storage)
+        Story format (the Storybook blob, stored inline in Postgres JSONB)
       
     </span>
   </a>
@@ -3059,10 +3059,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#publish-state-machine" class="md-nav__link">
+  <a href="#generation-and-publish-lifecycles" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Publish state machine
+        Generation and publish lifecycles
       
     </span>
   </a>
@@ -3368,21 +3368,22 @@
 
 <h1 id="technical-implementation-spec-cyo-adventure">Technical Implementation Spec: CYO Adventure<a class="headerlink" href="#technical-implementation-spec-cyo-adventure" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft
-<strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
+<p><strong>Status</strong>: Active
+<strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-07-03
 <strong>Codename</strong>: Ariadne</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <p>A React/TypeScript PWA reader plays a versioned JSON Storybook offline; a Python/FastAPI
 backend serves the library, runs staged LLM generation behind a deterministic
-validation-and-moderation gate, and enforces a parent-approval state machine. Postgres
-holds metadata and reading state, MinIO holds immutable story blobs, all deployable to
-the homelab behind Pangolin and Authentik.</p>
+validation-and-moderation gate, and enforces an admin approve-and-publish state machine. Postgres
+holds metadata, reading state, and (at launch) the story blobs inline as JSONB; MinIO is
+the deferred object-storage target for those blobs. Guardian identities authenticate via
+Supabase OIDC, all deployable to the homelab behind Pangolin.</p>
 <h2 id="technology-stack">Technology Stack<a class="headerlink" href="#technology-stack" title="Permanent link">&para;</a></h2>
 <h3 id="core">Core<a class="headerlink" href="#core" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Language</strong>: Python 3.12 backend; TypeScript frontend.</li>
-<li><strong>Package Manager</strong>: uv (Python), pnpm (frontend).</li>
+<li><strong>Package Manager</strong>: uv (Python), npm (frontend).</li>
 <li><strong>Backend framework</strong>: FastAPI + Pydantic v2.</li>
 <li><strong>Frontend framework</strong>: React 19 + Vite.</li>
 </ul>
@@ -3396,8 +3397,10 @@ the homelab behind Pangolin and Authentik.</p>
 <ul>
 <li><strong>Database</strong>: PostgreSQL 16 + SQLAlchemy + Alembic. See
   <a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>.</li>
-<li><strong>Object storage</strong>: MinIO via the S3 API (Azure Blob interchangeable); versioned,
-  immutable story blobs.</li>
+<li><strong>Story blob storage</strong>: inline in Postgres JSONB (<code>storybook_version.blob</code>) at launch
+  per <a href="../adr/adr-009-supabase-platform/">ADR-009</a>. MinIO via the S3 API (Azure
+  Blob interchangeable) is the deferred object-storage target for versioned, immutable
+  story blobs; it does not hold them yet.</li>
 <li><strong>Cache / queue broker</strong>: Redis.</li>
 <li><strong>Background work</strong>: RQ (chosen over Celery for simplicity at this scale).</li>
 </ul>
@@ -3415,14 +3418,18 @@ the homelab behind Pangolin and Authentik.</p>
   <a href="../adr/adr-006-conditions-inhouse-evaluator/">ADR-006</a>.</li>
 <li><strong>Graph analysis</strong>: networkx (reachability, cycle, termination).</li>
 <li><strong>Readability</strong>: textstat (Flesch-Kincaid grade, advisory).</li>
-<li><strong>LLM</strong>: Anthropic Claude primary; OpenRouter and Ollama fallback, behind a
-  provider-agnostic interface. See <a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a>.</li>
+<li><strong>LLM</strong>: OpenRouter primary (reaching Claude models: <code>anthropic/claude-haiku-4.5</code>, with
+  <code>anthropic/claude-sonnet-4.6</code> as the OpenRouter fallback), then local Ollama as the final
+  fallback, behind a provider-agnostic interface. A <code>mock</code> provider is the default in CI.
+  Direct Anthropic SDK access is deferred. See
+  <a href="../adr/adr-003-frontier-llm-generation/">ADR-003</a> (amended 2026-06-22).</li>
 <li><strong>Moderation</strong>: provider moderation API + an independent LLM-reviewer pass.</li>
 </ul>
 <h3 id="infrastructure">Infrastructure<a class="headerlink" href="#infrastructure" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>CI/CD</strong>: centralized GitHub Actions.</li>
-<li><strong>Auth</strong>: Authentik (OIDC), guardian and child roles.</li>
+<li><strong>Auth</strong>: Supabase OIDC (guardian identities), guardian and child roles; provider-agnostic
+  <code>oidc_*</code> config. See <a href="../adr/adr-009-supabase-platform/">ADR-009</a>.</li>
 <li><strong>Ingress / orchestration</strong>: Pangolin (zero-trust) + Docker + Dockge.</li>
 <li><strong>Observability</strong>: Sentry + structured logging.</li>
 </ul>
@@ -3436,8 +3443,9 @@ MinIO container tags, Node via <code>.nvmrc</code>). Container images are pinned
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <h3 id="pattern">Pattern<a class="headerlink" href="#pattern" title="Permanent link">&para;</a></h3>
 <p>A modular monolith backend (FastAPI) with an asynchronous worker for generation, and a
-single role-aware PWA client. Story blobs live in object storage; metadata and state in
-Postgres. No provider-specific services in the core.</p>
+single role-aware PWA client. At launch, story blobs, metadata, and state all live in
+Postgres (blobs inline as JSONB); object storage is the deferred path for blobs. No
+provider-specific services in the core.</p>
 <h3 id="component-diagram">Component Diagram<a class="headerlink" href="#component-diagram" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                         ┌──────────────────────────────────────────┐
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                         │              Family devices               │
@@ -3450,7 +3458,7 @@ Postgres. No provider-specific services in the core.</p>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                         │  Reader • Library • Review • Editor(P4b)  │
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                         │  Service worker + IndexedDB (offline)     │
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                         └───────────────┬──────────────────────────┘
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                         │ REST /api/v1 (OIDC via Authentik)
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                         │ REST /api/v1 (OIDC via Supabase)
 </span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                         ▼
 </span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        ┌────────────────────────────────────────────────────────────────────┐
 </span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        │                          FastAPI backend                           │
@@ -3463,23 +3471,24 @@ Postgres. No provider-specific services in the core.</p>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>        │     ┌──────────────┼───────────────────────┐                      │
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>        │     ▼              ▼                        ▼                      │
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        │  Validator    Moderation             Provider interface           │
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        │  (schema,     (API + LLM             (Claude/Local/                │
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        │  graph,       reviewer)              OpenRouter)                   │
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        │  (schema,     (API + LLM             (OpenRouter/                  │
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        │  graph,       reviewer)              Ollama/mock)                  │
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>        │  state-space) │                            │                      │
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>        └───────────────┼────────────────────────────┼──────────────────────┘
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>                 │       │                            │
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>                 ▼       ▼                            ▼
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>          ┌───────────┐  ┌───────────┐         ┌──────────────┐
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>          │ Postgres  │  │   MinIO   │         │  LLM provider│
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>          │ metadata, │  │ story JSON│         │  (external/  │
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>          │ state     │  │ blobs +   │         │   local)     │
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>          └───────────┘  │ raw gen   │         └──────────────┘
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>                         └───────────┘
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>                              ▲
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>                         ┌────┴─────┐
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>                         │  Redis   │  background generation queue
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>                         │ + worker │
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>                         └──────────┘
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>          │ metadata, │  │ (deferred │         │  (external/  │
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>          │ state,    │  │  blob     │         │   local)     │
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>          │ blobs +   │  │  target)  │         └──────────────┘
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>          │ raw gen   │  └───────────┘
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>          └───────────┘
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>                ▲
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>          ┌─────┴────┐
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>          │  Redis   │  background generation queue
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>          │ + worker │
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>          └──────────┘
 </span></code></pre></div>
 <h3 id="component-responsibilities">Component Responsibilities<a class="headerlink" href="#component-responsibilities" title="Permanent link">&para;</a></h3>
 <table>
@@ -3518,8 +3527,8 @@ Postgres. No provider-specific services in the core.</p>
 </tr>
 <tr>
 <td>Publish state machine</td>
-<td>Enforce parent approval</td>
-<td>No path to a child library without <code>approved</code>; record approver and provenance</td>
+<td>Enforce admin approval</td>
+<td>No path to a child library without an admin approve-and-publish (<code>in_review -&gt; published</code>); record approver and provenance</td>
 </tr>
 <tr>
 <td>Reading store</td>
@@ -3529,14 +3538,14 @@ Postgres. No provider-specific services in the core.</p>
 </tbody>
 </table>
 <h2 id="data-model">Data Model<a class="headerlink" href="#data-model" title="Permanent link">&para;</a></h2>
-<h3 id="story-format-the-storybook-blob-in-object-storage">Story format (the Storybook blob, in object storage)<a class="headerlink" href="#story-format-the-storybook-blob-in-object-storage" title="Permanent link">&para;</a></h3>
+<h3 id="story-format-the-storybook-blob-stored-inline-in-postgres-jsonb">Story format (the Storybook blob, stored inline in Postgres JSONB)<a class="headerlink" href="#story-format-the-storybook-blob-stored-inline-in-postgres-jsonb" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Storybook
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  - schema_version: String              # e.g. &quot;1.0&quot;
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  - schema_version: String              # &quot;2.0&quot;; exactly one version is accepted
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  - id: String                          # stable across versions
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  - version: Integer                    # immutable once published
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  - title: String
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  - metadata:
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>      - age_band: Enum                  # &quot;8-11&quot; | &quot;10-13&quot; | &quot;13-16&quot;
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>      - age_band: Enum                  # &quot;3-5&quot; | &quot;5-8&quot; | &quot;8-11&quot; | &quot;10-13&quot; | &quot;13-16&quot; | &quot;16+&quot;
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>      - reading_level: { scheme, target, tolerance }
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>      - tier: Integer                   # 1 = branching, 2 = state-tracking
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>      - themes: [String]
@@ -3560,65 +3569,74 @@ Postgres. No provider-specific services in the core.</p>
 </span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>  - on_enter: [Effect]                  # state changes on arrival
 </span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>  - choices: [Choice]                   # empty iff is_ending
 </span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>  - is_ending: Boolean
-</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>  - ending: { id, type, title }         # required iff is_ending; id is stable
-</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  - tags: [String]
-</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>
-</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>Choice
-</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>  - id: String                          # unique within the story (audit/debug)
-</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>  - label: String                       # choice text shown to the reader
-</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>  - target: String                      # an existing node id
-</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>  - condition: JSONLogic                # optional; whitelisted operators (ADR-006)
-</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>  - effects: [Effect]                   # optional state changes when chosen
-</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>
-</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>Effect
-</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>  - op: Enum                            # &quot;set&quot; | &quot;inc&quot; | &quot;dec&quot;
-</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>  - var: String                         # a declared variable
-</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>  - value: any                          # for &quot;set&quot;; numeric for inc/dec
-</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>  - once: Boolean                       # optional; applies only the first visit
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>  - ending: { id, valence, kind, title } # required iff is_ending; id is stable.
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>                                        # Two axes: valence (Valence enum) + kind (EndingKind enum)
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>  - tags: [String]
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>Choice
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>  - id: String                          # unique within the story (audit/debug)
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>  - label: String                       # choice text shown to the reader
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>  - target: String                      # an existing node id
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>  - condition: JSONLogic                # optional; whitelisted operators (ADR-006)
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>  - effects: [Effect]                   # optional state changes when chosen
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>Effect
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>  - op: Enum                            # &quot;set&quot; | &quot;inc&quot; | &quot;dec&quot;
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a>  - var: String                         # a declared variable
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>  - value: any                          # for &quot;set&quot;; numeric for inc/dec
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a>  - once: Boolean                       # optional; applies only the first visit
 </span></code></pre></div>
 <p>The schema is defined once in Pydantic v2 and exported to <code>schema/storybook.schema.json</code>.
 It encodes: unique node ids, unique choice ids, unique ending ids, <code>min</code>/<code>max</code> on integer
-variables, optional <code>once</code> on effects, and <code>schema_version</code>. Schema bumps are handled by a
-read-time, in-memory upcaster chain keyed by <code>schema_version</code> (see
-<a href="../adr/adr-001-story-format-json-storybook/">ADR-001</a>); stored blobs are never
-batch-rewritten.</p>
+variables, optional <code>once</code> on effects, and <code>schema_version</code>. The loader pins to
+<code>SCHEMA_VERSION = "2.0"</code> and accepts exactly that version; any other <code>schema_version</code> is
+rejected outright (see <a href="../adr/adr-001-story-format-json-storybook/">ADR-001</a>). A
+read-time upcaster chain is not built; migration, if ever needed, is a future decision.</p>
 <h3 id="operational-entities-postgres">Operational entities (Postgres)<a class="headerlink" href="#operational-entities-postgres" title="Permanent link">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>family            - id, name, created_at
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>user              - id, family_id, role (&quot;guardian&quot; | &quot;child&quot;), authn_subject
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>child_profile     - id, family_id, display_name, age_band,
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                    reading_level_cap, allowed_content_flags, tts_enabled, avatar
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>storybook         - id, family_id, current_published_version, status, created_by
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>storybook_version - storybook_id, version, blob_ref, validation_report,
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                    moderation_report, approved_by, published_at, model, prompt_version
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>concept           - id, family_id, brief (JSON), created_by
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>generation_job    - id, concept_id, model, provider, prompt_version,
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                    raw_output_ref, validation_report, status, cost, created_at
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>reading_state     - child_profile_id, storybook_id, version, current_node,
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                    var_state (JSON), path (JSON), save_slots (JSON),
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                    state_revision (Integer), updated_by_device_id, last_synced_at
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>completion        - child_profile_id, storybook_id, version, ending_id, found_at
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>review_item       - storybook_version ref, state, flags (JSON), assigned_to
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>storybook_version - storybook_id, version, blob (inline JSONB; blob_ref deferred),
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                    validation_report,
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                    moderation_report, approved_by, published_at, model, prompt_version
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>concept           - id, family_id, brief (JSON), created_by
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>generation_job    - id, concept_id, model, provider, prompt_version,
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                    raw_output_ref, validation_report, status, cost, created_at
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>reading_state     - child_profile_id, storybook_id, version, current_node,
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                    var_state (JSON), path (JSON), save_slots (JSON),
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                    state_revision (Integer), updated_by_device_id, last_synced_at
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>completion        - child_profile_id, storybook_id, version, ending_id, found_at
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>review_item       - storybook_version ref, state, flags (JSON), assigned_to
 </span></code></pre></div>
 <h3 id="relationships">Relationships<a class="headerlink" href="#relationships" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>family</code> → <code>user</code>, <code>child_profile</code>, <code>storybook</code>, <code>concept</code>: one-to-many (family
   ownership is checked on every resource).</li>
-<li><code>storybook</code> → <code>storybook_version</code>: one-to-many; the blob lives in MinIO, referenced by
-  <code>blob_ref</code>.</li>
+<li><code>storybook</code> → <code>storybook_version</code>: one-to-many; the blob is stored inline in Postgres
+  JSONB (<code>blob</code>) at launch. Moving it to MinIO behind a <code>blob_ref</code> is a deferred future
+  path (ADR-009).</li>
 <li><code>child_profile</code> + <code>storybook</code> → <code>reading_state</code>: per-child, per-story progress.</li>
 <li><code>child_profile</code> + <code>storybook</code> → <code>completion</code>: one row per ending found.</li>
 </ul>
-<h3 id="publish-state-machine">Publish state machine<a class="headerlink" href="#publish-state-machine" title="Permanent link">&para;</a></h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>draft → generating → auto_check ─┬─► needs_revision ──► (repair / regenerate) ──┐
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                 │                                              │
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                 └─► in_review ──► approved ──► published ──► archived
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                                          ▲                                     │
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                          └──────────── (re-review on edit) ◄───┘
+<h3 id="generation-and-publish-lifecycles">Generation and publish lifecycles<a class="headerlink" href="#generation-and-publish-lifecycles" title="Permanent link">&para;</a></h3>
+<p>Generation and publishing are two separate state machines, not one pipeline. There is no
+<code>generating</code>, <code>auto_check</code>, or <code>approved</code> storybook state.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>GenerationJob:  queued → running ─┬─► passed        (L1/L2 + moderation gates pass)
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                  ├─► needs_review  (safety flag; a human must clear it)
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                                  └─► failed        (hard validation failure)
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Storybook:      draft → in_review ─┬─► published → archived
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                  ▲                └─► needs_revision → (repair / regenerate) ──┐
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                  └────────────────────────── (re-review on edit) ◄────────────┘
 </span></code></pre></div>
-<p>A story is visible to a child profile only in <code>published</code>. The transition
-<code>in_review → approved</code> requires a guardian. Auto checks (validator plus moderation) gate
-<code>generating → in_review</code>; failures route to <code>needs_revision</code>. See
-<a href="../adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
+<p>A story is visible to a child profile only in <code>published</code>. The <code>in_review → published</code>
+transition is a single approve-and-publish action that requires the global <strong>admin</strong> role
+(<code>is_admin</code>) and is applied cross-family (<code>authorize_family</code> is not called on approval). A
+draft version becomes reviewable only after its GenerationJob reaches <code>passed</code>; a
+<code>needs_review</code> job routes to a person and a <code>failed</code> job routes to repair or regeneration.
+See <a href="../adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
 <h3 id="multi-device-sync-rules">Multi-device sync rules<a class="headerlink" href="#multi-device-sync-rules" title="Permanent link">&para;</a></h3>
 <p>The server is canonical; IndexedDB is a cache. Concurrency is revision-based, not
 last-write-wins.</p>
@@ -3764,7 +3782,7 @@ integers, the space stays tractable when variables are few.</p>
 <p>Layers 1 and 2 are pass/fail. Reading level warns only. A safety hit always routes to a
 person.</p>
 <h2 id="api-specification">API Specification<a class="headerlink" href="#api-specification" title="Permanent link">&para;</a></h2>
-<p>Versioned under <code>/api/v1</code>. OIDC via Authentik; child sessions are restricted to reader
+<p>Versioned under <code>/api/v1</code>. OIDC via Supabase; child sessions are restricted to reader
 and library endpoints. The token subject maps to a set of allowed profiles; <code>profile_id</code>
 is never trusted on its own. Inputs are validated against the published story
 (<code>ending_id</code> must belong to the cited version; <code>current_node</code> must exist in it).</p>
@@ -3846,15 +3864,9 @@ is never trusted on its own. Inputs are validated against the published story
 </tr>
 <tr>
 <td>POST</td>
-<td>/api/v1/storybooks/{id}/versions/{v}/approve</td>
-<td>Approve (→ approved)</td>
-<td>Guardian</td>
-</tr>
-<tr>
-<td>POST</td>
-<td>/api/v1/storybooks/{id}/versions/{v}/publish</td>
-<td>Publish (→ published)</td>
-<td>Guardian</td>
+<td>/api/v1/storybooks/{id}/approve</td>
+<td>Approve and publish in one step (→ published)</td>
+<td>Admin</td>
 </tr>
 </tbody>
 </table>
@@ -3870,12 +3882,16 @@ is never trusted on its own. Inputs are validated against the published story
 </span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="nt">&quot;event_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;evt_01H...&quot;</span>
 </span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="p">}</span>
 </span></code></pre></div>
-<p>Story blobs are served via backend-mediated or signed access from a private bucket, never
-a broadly public URL.</p>
+<p>Story blobs are served backend-mediated from Postgres at launch. Under the deferred
+object-storage path they would be served via backend-mediated or signed access from a
+private bucket, never a broadly public URL.</p>
 <h2 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h2>
 <h3 id="authentication">Authentication<a class="headerlink" href="#authentication" title="Permanent link">&para;</a></h3>
-<p>Authentik OIDC; roles <code>guardian</code> and <code>child</code>. Child tokens are scoped to reader and
-library endpoints. See <a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>.</p>
+<p>Supabase OIDC (provider-agnostic <code>oidc_*</code> config, guardian identities verified via
+<code>jwt.PyJWKClient</code>); roles <code>guardian</code> and <code>child</code>, with a guardian-identity vs
+child-session split. Child tokens are scoped to reader and library endpoints. See
+<a href="../adr/adr-009-supabase-platform/">ADR-009</a>. Homelab/family-tier deployment remains per
+<a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>.</p>
 <h3 id="authorization">Authorization<a class="headerlink" href="#authorization" title="Permanent link">&para;</a></h3>
 <p>Enforced server-side on every endpoint. The token subject maps to an allowed-profile set;
 a guardian may act on any profile in their family, a child only on its own assigned
@@ -3928,12 +3944,15 @@ a child mutating <code>profile_id</code> in a reading-state <code>PUT</code>; a 
 a guardian from another family accessing a story.</p>
 <h3 id="data-protection">Data Protection<a class="headerlink" href="#data-protection" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>At Rest</strong>: encrypt Postgres and object storage.</li>
+<li><strong>At Rest</strong>: encrypt Postgres (which holds the story blobs inline at launch) and, once
+  adopted, the deferred object storage.</li>
 <li><strong>In Transit</strong>: TLS via Pangolin.</li>
 <li><strong>Content is data, never code</strong>: the only state logic is the in-house whitelisted
   evaluator (ADR-006). No <code>eval</code>, no dynamic execution, no third-party logic library in
   the content path.</li>
-<li><strong>Story blob access</strong>: private bucket, backend-mediated or signed access only.</li>
+<li><strong>Story blob access</strong>: backend-mediated only; blobs live inline in Postgres at launch.
+  A deferred move to object storage would use a private bucket with backend-mediated or
+  signed access only.</li>
 </ul>
 <h3 id="privacy-controls-family-only">Privacy controls (family-only)<a class="headerlink" href="#privacy-controls-family-only" title="Permanent link">&para;</a></h3>
 <ul>
@@ -3942,9 +3961,13 @@ a guardian from another family accessing a story.</p>
 <li><strong>Raw LLM outputs and prompts are admin-only and short-lived</strong>: store the prompt
   template version and a hash rather than raw prompt text where it could carry
   child-specific detail; retain raw generations only as long as needed for debugging, then
-  purge. Moderation reports persist with the story version for audit.</li>
-<li><strong>Deletion-readiness</strong>: keep child-linked data in known places (Postgres rows, MinIO
-  blobs, raw generations); do not scatter it through logs and Sentry. A full deletion
+  purge. The retention purge is a scheduled pg_cron job per
+  <a href="../adr/adr-007-raw-output-retention/">ADR-007</a> and
+  <a href="../adr/adr-009-supabase-platform/">ADR-009</a> (Phase 5, not yet built). Moderation
+  reports persist with the story version for audit.</li>
+<li><strong>Deletion-readiness</strong>: keep child-linked data in known places (Postgres rows and inline
+  blobs, plus deferred-future object-storage blobs, raw generations); do not scatter it
+  through logs and Sentry. A full deletion
   subsystem is a later deliverable; the requirement now is that the data model does not make
   deletion impossible.</li>
 <li><strong>Prompt-injection defense</strong>: concept-brief text is untrusted; the generation system
@@ -3974,7 +3997,7 @@ cap.</p>
 <tr>
 <td>401</td>
 <td>Unauthenticated</td>
-<td>Sign in via Authentik</td>
+<td>Sign in via Supabase</td>
 </tr>
 <tr>
 <td>403</td>
@@ -4109,7 +4132,7 @@ cap.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

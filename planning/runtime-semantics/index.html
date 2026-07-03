@@ -1489,7 +1489,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1768,7 +1768,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1803,7 +1803,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1838,7 +1838,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1908,7 +1908,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1943,7 +1943,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2480,7 +2480,7 @@
 
 <h1 id="story-runtime-semantics-v1">Story Runtime Semantics v1<a class="headerlink" href="#story-runtime-semantics-v1" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
+<p><strong>Status</strong>: Accepted (cross-signed) | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-07-03
 <strong>Scope</strong>: Tier-1 and Tier-2 stories
 <strong>Binding on</strong>: Player (TypeScript/XState) and Validator (Python/networkx)</p>
 </blockquote>
@@ -2529,7 +2529,7 @@ defensive measure only. A clamp at runtime is treated as a bug in the story or t
 not as designed behavior. Authors and the generator must not rely on runtime clamping to satisfy
 game logic.</p>
 <p><strong>Verification</strong>: the Layer-1 validator (rule L1-6) checks that no reachable transition exceeds
-declared bounds. A story must not reach <code>approved</code> state if this check fails.</p>
+declared bounds. A story must not reach <code>published</code> state if this check fails.</p>
 <hr />
 <h2 id="4-choice-visibility">4. Choice Visibility<a class="headerlink" href="#4-choice-visibility" title="Permanent link">&para;</a></h2>
 <p><strong>Normative rule</strong>: a choice whose <code>condition</code> evaluates to false is <strong>hidden</strong> from the reader.
@@ -2607,7 +2607,8 @@ must be stable across prose edits and schema-compatible revisions. The "endings 
 records <code>ending.id</code>, not the node id or the ending title, so it survives prose changes that do
 not change the ending identity.</p>
 <p><strong>Structural requirement</strong>: an ending node has <code>is_ending: true</code>, exactly zero <code>choices</code>, and
-a non-empty <code>ending</code> block containing a unique <code>ending.id</code>, <code>type</code>, and <code>title</code>.</p>
+a non-empty <code>ending</code> block containing a unique <code>ending.id</code>, a two-axis <code>valence</code> and <code>kind</code>,
+and a <code>title</code> (two-axis endings per <a href="../adr/adr-001-story-format-json-storybook/">ADR-001</a>).</p>
 <hr />
 <h2 id="8-version-pinning-for-in-progress-reads">8. Version Pinning for In-Progress Reads<a class="headerlink" href="#8-version-pinning-for-in-progress-reads" title="Permanent link">&para;</a></h2>
 <p><strong>Normative rule</strong>: a reader session is pinned to the Storybook <code>version</code> it started on.
@@ -2638,9 +2639,11 @@ and the validator owner before Phase 1 begins:</p>
 <li>Section 4: Hidden (not disabled) choices</li>
 <li>Section 5: Save format fields (particularly <code>visit_set</code>)</li>
 </ul>
-<p><strong>OPEN: owner cross-sign required.</strong> The player owner and the validator owner must both sign off
-on this document before any Phase-1 implementation begins. Record sign-off as a commit to this
-file with message: <code>docs: cross-sign runtime-semantics.md - &lt;owner&gt;</code>.</p>
+<p><strong>RESOLVED: cross-sign satisfied.</strong> The player and validator implementations shipped in Phase 1
+(merged) and are held to this model by the shared conformance corpus; Phase 4a is feature-complete
+as of 2026-07-03. The cross-sign gate that once blocked Phase-1 implementation is closed. Any
+future change to a normative rule above still requires owner sign-off and a version bump to this
+document.</p>
 <hr />
 <h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
 <ul>
@@ -2671,7 +2674,7 @@ file with message: <code>docs: cross-sign runtime-semantics.md - &lt;owner&gt;</
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

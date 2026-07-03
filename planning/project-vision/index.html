@@ -1498,7 +1498,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1729,10 +1729,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#out-of-scope" class="md-nav__link">
+  <a href="#out-of-scope-v1-family-tier" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Out of Scope
+        Out of Scope (v1 / family tier)
       
     </span>
   </a>
@@ -2045,7 +2045,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2080,7 +2080,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2115,7 +2115,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2185,7 +2185,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2220,7 +2220,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2727,10 +2727,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#out-of-scope" class="md-nav__link">
+  <a href="#out-of-scope-v1-family-tier" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Out of Scope
+        Out of Scope (v1 / family tier)
       
     </span>
   </a>
@@ -2836,7 +2836,7 @@
 
 <h1 id="project-vision-scope-cyo-adventure">Project Vision &amp; Scope: CYO Adventure<a class="headerlink" href="#project-vision-scope-cyo-adventure" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-07-03
 <strong>Codename</strong>: Ariadne (the thread that guides a reader through the maze of choices)</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
@@ -2931,31 +2931,47 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.<
 <li>✅ <strong>Parent approval workflow + per-child profiles</strong>: age-band and reading-level
   limits enforced by the publish state machine.</li>
 </ul>
-<h3 id="out-of-scope">Out of Scope<a class="headerlink" href="#out-of-scope" title="Permanent link">&para;</a></h3>
+<h3 id="out-of-scope-v1-family-tier">Out of Scope (v1 / family tier)<a class="headerlink" href="#out-of-scope-v1-family-tier" title="Permanent link">&para;</a></h3>
 <ul>
 <li>❌ <strong>Dice combat and skill/luck checks (Tier 3)</strong>: randomness turns "every path
   reaches an ending" from a guarantee into a probability the deterministic gate
   cannot certify. Revisit only if the kids ask for it.</li>
 <li>❌ <strong>Any social, chat, or user-to-user feature</strong>: a children's app has no reason
   to carry one.</li>
-<li>❌ <strong>Monetization, accounts for outside users, telemetry on minors.</strong></li>
-<li>🔄 <strong>Native iOS/Android apps</strong>: deferred; the JSON format keeps this open.</li>
+<li>❌ <strong>Ads, and any telemetry on minors.</strong> This is a permanent hard exclusion on
+  every rung, not just v1.</li>
 <li>🔄 <strong>Full visual story editor (graph canvas)</strong>: a lightweight node editor lands in
   Phase 4b; the rich canvas is later.</li>
-<li>🔄 <strong>Sharing beyond this family</strong>: changes the privacy and account posture (see
-  Assumptions and the "If shared beyond family" note in the tech spec).</li>
 <li>🔄 <strong>Per-passage illustrations or AI-generated images.</strong></li>
+</ul>
+<p><strong>Now planned for the later rungs (R2/R3), no longer out of scope</strong> (see
+<a href="../adr/adr-008-public-app-store-launch/">ADR-008</a>):</p>
+<ul>
+<li>🔜 <strong>Monetization (tiered IAP subscription)</strong> and <strong>accounts for outside users</strong>:
+  planned for the public rungs (R2/R3), not the v1 family tier.</li>
+<li>🔜 <strong>Native iOS/Android apps</strong>: the R2 limited release adds a Capacitor iOS shell for
+  the App Store; the JSON format kept this open. See
+  <a href="../adr/adr-008-public-app-store-launch/">ADR-008</a>.</li>
+<li>🔜 <strong>Sharing beyond this family</strong>: enabled by the R2/R3 public multi-tenancy; it changes
+  the privacy and account posture (see Assumptions and the "If shared beyond family" note
+  in the tech spec).</li>
 </ul>
 <h2 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h2>
 <h3 id="technical">Technical<a class="headerlink" href="#technical" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Platform</strong>: Progressive Web App (React 19, TypeScript, Vite) reader plus a
-  Python/FastAPI backend. See <a href="../adr/adr-002-client-pwa/">ADR-002</a>.</li>
+  Python/FastAPI backend. See <a href="../adr/adr-002-client-pwa/">ADR-002</a>. This PWA framing is
+  the v1 (R1) target; the later R2 limited release wraps the same PWA in a Capacitor iOS
+  shell for the App Store, per <a href="../adr/adr-008-public-app-store-launch/">ADR-008</a>.</li>
 <li><strong>Language</strong>: Python 3.12 backend (uv, Ruff, BasedPyright), consistent with the
   migration off Poetry; pnpm for the frontend.</li>
 <li><strong>Deployment</strong>: homelab-first behind Pangolin (zero-trust ingress) and Authentik
   (OIDC), with cloud-portable containers so Azure Container Apps is a drop-in
-  alternative. See <a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>.</li>
+  alternative. See <a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>. This homelab-first
+  framing holds for the family tier (v1). The public tier (R2/R3) instead runs on
+  Supabase-managed infrastructure (auth via Supabase OIDC, Postgres, storage), which amends
+  ADR-004's no-third-party-infra stance for that tier; see
+  <a href="../adr/adr-009-supabase-platform/">ADR-009</a>.</li>
 <li><strong>Security baseline from day one</strong>: detect-secrets, Semgrep managed rules, CodeQL,
   Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.</li>
 <li><strong>Performance</strong>: node transition under 50 ms (plays client-side from cache);
@@ -2963,20 +2979,20 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.<
 </ul>
 <h3 id="business">Business<a class="headerlink" href="#business" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Timeline</strong>: roughly 11 to 16 weeks to the first usable release for a 1 to 2
-  developer team (Phases 0-3 plus a minimal library-and-profiles slice). Full v1 with
-  editor, engagement, and hardening is roughly 16 to 25 weeks. Ranges, not promises;
-  the long pole is generation reliability, not the reader.</li>
+<li><strong>Timeline</strong>: roughly 11 to 16 weeks to R1 (the internal release) for a 1 to 2
+  developer team (Phases 0-3 plus the Phase 4a library-and-profiles slice; R1 reached
+  feature-complete on 2026-07-03). Full v1 with editor, engagement, and hardening is
+  roughly 16 to 25 weeks. Ranges, not promises; the long pole is generation reliability,
+  not the reader.</li>
 <li><strong>Resources</strong>: a 1 to 2 developer team. Roles in the planning docs (PO, TL, BE, FE,
   INF) name accountability, not headcount.</li>
 </ul>
 <h3 id="decided-release-cut">Decided release cut<a class="headerlink" href="#decided-release-cut" title="Permanent link">&para;</a></h3>
-<p>Generation ships in the <strong>first usable release</strong>. The kids' first usable version
-already writes its own LLM-generated stories, gated by validation and parent
-approval. This elevates two items to Phase-0 hard blockers, because the first
-external LLM call now ships in the first release: the provider data-handling decision
-and the privacy controls (no real child PII in prompts; admin-only short-lived raw
-outputs).</p>
+<p>Generation ships in <strong>R1 (the internal release)</strong>. The kids' first version already
+writes its own LLM-generated stories, gated by validation and parent approval. This
+elevates two items to Phase-0 hard blockers, because the first external LLM call ships in
+R1: the provider data-handling decision and the privacy controls (no real child PII in
+prompts; guardian-visible, family-scoped, short-lived raw outputs).</p>
 <h2 id="assumptions-to-validate">Assumptions to Validate<a class="headerlink" href="#assumptions-to-validate" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Children read on family-owned devices; a PWA (no app-store install) is the
@@ -3020,7 +3036,7 @@ outputs).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:00:48 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     

@@ -1489,7 +1489,7 @@
     
   
   
-    <span class="md-status md-status--draft"></span>
+    <span class="md-status md-status--active"></span>
   
 
   
@@ -1768,7 +1768,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1803,7 +1803,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1838,7 +1838,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1908,7 +1908,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1943,7 +1943,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2447,9 +2447,9 @@
 
 <h1 id="validation-rule-catalog">Validation Rule Catalog<a class="headerlink" href="#validation-rule-catalog" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Draft | <strong>Version</strong>: 1.0 | <strong>Updated</strong>: 2026-06-20
-<strong>Scope</strong>: All stories (Layer 1); Tier-2 stories only (Layer 2); all stories advisory (RL);
-all stories always-human (SAFE)</p>
+<p><strong>Status</strong>: Accepted | <strong>Version</strong>: 1.1 | <strong>Updated</strong>: 2026-07-03
+<strong>Scope</strong>: All stories (Layer 1, Policy); Tier-2 stories only (Layer 2); all stories
+advisory (RL); all stories always-human (SAFE)</p>
 </blockquote>
 <hr />
 <h2 id="purpose">Purpose<a class="headerlink" href="#purpose" title="Permanent link">&para;</a></h2>
@@ -2474,6 +2474,11 @@ to this document.</p>
 <td>Yes</td>
 </tr>
 <tr>
+<td>Policy (PL)</td>
+<td>Pass/fail (PL-19 story-mean sub-check is advisory)</td>
+<td>Yes</td>
+</tr>
+<tr>
 <td>Layer 2 (L2)</td>
 <td>Pass/fail</td>
 <td>Yes (Tier-2 only)</td>
@@ -2490,10 +2495,13 @@ to this document.</p>
 </tr>
 </tbody>
 </table>
-<p>Layer 1 and Layer 2 are hard gates: any failure blocks the story from advancing past
-<code>auto_check</code>. The reading-level check warns and logs but does not block. A safety hit flags
-the story for mandatory human review; the validator does not auto-reject, but no auto-publish
-path exists when the flag is set.</p>
+<p>Layer 1, Policy, and Layer 2 are hard gates, run in that order (<code>validator/gate.py::run_gate</code>):
+any failure fails the generation job (it lands in <code>failed</code>, not <code>passed</code>), so the story never
+advances to <code>in_review</code>. The Policy layer's PL-19 story-mean words-per-node sub-check is the
+one advisory exception; its per-node word-cap sub-check is still blocking. The reading-level
+check warns and logs but does not block. A safety hit routes the generation job to
+<code>needs_review</code> for mandatory human review; the validator does not auto-reject, but no
+auto-publish path exists when the flag is set.</p>
 <p><strong>Layer 2 applies to Tier-2 stories only.</strong> Running Layer 2 on a Tier-1 story (which carries
 no variables and has deterministic visibility for all choices) is a no-op and must not produce
 false failures.</p>
@@ -2550,7 +2558,7 @@ must be sound before a state-space walk is meaningful.</p>
 <tr>
 <td>L1-7</td>
 <td>1</td>
-<td><strong>Length budget</strong>: node count must be within the tier's defined range; branch depth must be within bounds; <code>metadata.ending_count</code> must equal the count of distinct ending nodes found in <code>nodes</code>.</td>
+<td><strong>Length budget</strong>: node count must be within the (band x length x style) cell budget single-sourced in <code>validator/band_profile.py</code> (band-based per <a href="../adr/adr-011-story-scale-framework/">ADR-011</a>, not tier-based); branch depth must be within bounds; <code>metadata.ending_count</code> must equal the count of distinct ending nodes found in <code>nodes</code>.</td>
 <td><code>L1-7 budget: {budget_type} out of range in story '{story_id}': {actual} (allowed {min}..{max})</code></td>
 </tr>
 </tbody>
@@ -2638,7 +2646,7 @@ the closure of reachable configurations. The default configuration cap is 100,00
 <tr>
 <td>SAFE-14</td>
 <td>Safety</td>
-<td><strong>Safety moderation</strong>: moderation runs over all <code>body</code> and <code>label</code> text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it blocks the <code>auto_check -&gt; in_review</code> transition and requires a guardian to clear or escalate. No auto-publish path exists when a SAFE-14 flag is set.</td>
+<td><strong>Safety moderation</strong>: moderation runs over all <code>body</code> and <code>label</code> text against the age-band policy. Any hit flags the specific nodes and forces mandatory human review. A safety flag does not auto-reject the story; it routes the generation job to <code>needs_review</code> (not <code>passed</code>), so the story cannot reach <code>published</code> until a global admin clears or escalates the flag. No auto-publish path exists when a SAFE-14 flag is set.</td>
 <td><code>SAFE-14 safety: node '{node_id}' flagged by moderation for age band '{age_band}' in story '{story_id}': {flag_detail} (requires human review)</code></td>
 </tr>
 </tbody>
@@ -2700,7 +2708,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
   </span>
 
     
