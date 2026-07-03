@@ -47,11 +47,35 @@ export function makeSyncApi(api: AxiosInstance): SyncApi {
   }
 }
 
+/** Thrown when a story version does not exist (HTTP 404), as opposed to an
+ * offline/transport failure (OfflineError). Lets the reader show an honest
+ * "not found" screen instead of the offline "download again" copy. */
+export class StoryNotFoundError extends Error {
+  constructor(message = 'story not found') {
+    super(message)
+    this.name = 'StoryNotFoundError'
+  }
+}
+
 export function makeFetchStory(
   api: AxiosInstance
 ): (storybookId: string, version: number) => Promise<Storybook> {
   return async (storybookId: string, version: number): Promise<Storybook> => {
-    const res = await api.get<Storybook>(`/v1/storybooks/${storybookId}/versions/${version}`)
-    return res.data
+    try {
+      const res = await api.get<Storybook>(`/v1/storybooks/${storybookId}/versions/${version}`)
+      return res.data
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.status === 404) {
+          throw new StoryNotFoundError()
+        }
+        // No HTTP response means a transport failure (offline/timeout); signal it
+        // distinctly so the reader shows the offline screen, not "not found".
+        if (!error.response) {
+          throw new OfflineError()
+        }
+      }
+      throw error
+    }
   }
 }
