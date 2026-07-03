@@ -138,4 +138,12 @@ describe('statusPill', () => {
       })
     ).toBe('Waiting for review')
   })
+
+  it('maps an archived (published-then-pulled) storybook to Archived', () => {
+    // A terminal state: it must not fall through to the "Waiting for review"
+    // default, which would read as though the story were still pending.
+    expect(
+      statusPill({ status: 'passed', storybook_id: 's1', storybook_status: 'archived' })
+    ).toBe('Archived')
+  })
 })

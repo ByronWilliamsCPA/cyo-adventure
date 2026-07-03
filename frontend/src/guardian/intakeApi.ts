@@ -65,7 +65,12 @@ export interface GenerationJobSummary {
   created_at: string
 }
 
-export type StatusPill = 'Generating' | 'Waiting for review' | 'Approved' | 'Failed'
+export type StatusPill =
+  | 'Generating'
+  | 'Waiting for review'
+  | 'Approved'
+  | 'Archived'
+  | 'Failed'
 
 // Per-band defaults. nodes/endings come from validator/band_profile.py
 // _PROFILES (min_nodes / min_endings); protagonistAge is the band lower bound.
@@ -157,7 +162,9 @@ export function buildBrief(params: BuildBriefParams): ConceptBriefBody {
  * Map a job + its linked storybook to a display pill (see the plan's pill
  * mapping table). A needs_review job WITHOUT a storybook is a gate-failed
  * request and reads "Failed"; needs_review WITH a storybook (future shape)
- * stays "Waiting for review".
+ * stays "Waiting for review". A published-then-pulled storybook is `archived`,
+ * a terminal state, so it reads "Archived" rather than falling through to the
+ * misleading "Waiting for review" default.
  */
 export function statusPill(job: {
   status: JobStatus
@@ -166,6 +173,7 @@ export function statusPill(job: {
 }): StatusPill {
   if (job.status === 'queued' || job.status === 'running') return 'Generating'
   if (job.storybook_status === 'published') return 'Approved'
+  if (job.storybook_status === 'archived') return 'Archived'
   if (job.status === 'failed') return 'Failed'
   if (job.status === 'needs_review' && job.storybook_id === null) return 'Failed'
   return 'Waiting for review'

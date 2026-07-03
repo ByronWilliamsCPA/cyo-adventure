@@ -107,6 +107,73 @@ describe('IntakePage', () => {
     expect(screen.queryByText(/raw-model-output/)).toBeNull()
   })
 
+  it('surfaces a load error with a retry when the initial fetch fails', async () => {
+    // Both mount fetches reject (e.g. session expiry). Without a surfaced
+    // error the page would render a false "no profiles / no requests" state.
+    mockGet.mockReset().mockRejectedValue(new Error('boom'))
+    render(<IntakePage />)
+
+    expect(await screen.findByText(/could not load your requests/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument()
+    // A failed load must NOT masquerade as a submit failure.
+    expect(screen.queryByText(/could not send this request/i)).toBeNull()
+  })
+
+  it('shows a submit error when creating the concept fails', async () => {
+    const user = userEvent.setup()
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.reject(new Error('nope'))
+      throw new Error(`unexpected POST ${url}`)
+    })
+    render(<IntakePage />)
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    expect(await screen.findByText(/could not send this request/i)).toBeInTheDocument()
+    // generate must never be attempted once createConcept fails.
+    expect(mockPost).not.toHaveBeenCalledWith('/v1/concepts/c1/generate')
+  })
+
+  it('does not report a submit failure when only the post-submit refresh fails', async () => {
+    // The concept + job POSTs succeed (durable); only the trailing job-list
+    // refresh rejects. This must surface as a load error, NOT a submit failure,
+    // so the guardian is not prompted to retry an already-succeeded request
+    // (which would create a duplicate concept + generation job).
+    const user = userEvent.setup()
+    let jobsCalls = 0
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles')
+        return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs') {
+        jobsCalls += 1
+        // First call is the initial load (succeeds); the post-submit refresh rejects.
+        return jobsCalls === 1
+          ? Promise.resolve({ data: { jobs: [] } })
+          : Promise.reject(new Error('refresh boom'))
+      }
+      throw new Error(`unexpected GET ${url}`)
+    })
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.resolve({ data: { concept_id: 'c1' } })
+      if (url === '/v1/concepts/c1/generate')
+        return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    render(<IntakePage />)
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+    await user.click(screen.getByRole('button', { name: /Request Story/i }))
+
+    // The refresh failure surfaces as a load error, not a submit failure.
+    expect(await screen.findByText(/could not load your requests/i)).toBeInTheDocument()
+    expect(screen.queryByText(/could not send this request/i)).toBeNull()
+    // The concept was created exactly once (no duplicate from a false retry prompt).
+    expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
+  })
+
   it('polls while a job is active and stops after it settles', async () => {
     // Deviation from the brief: Testing Library's fake-timer detection only
     // fires when a `jest` global exists (jestFakeTimersAreEnabled in

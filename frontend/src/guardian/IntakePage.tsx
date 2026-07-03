@@ -42,42 +42,55 @@ export function IntakePage() {
   const [jobs, setJobs] = useState<GenerationJobSummary[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(false)
+  // Distinct from `error` (a submit failure): a read failure on the initial
+  // load or a poll. Surfacing it prevents an empty/stale list from masquerading
+  // as a genuine "no requests" state after a session expiry or network drop.
+  const [loadError, setLoadError] = useState(false)
 
   const refreshJobs = useCallback(async () => {
     const rows = await intakeApi.listJobs()
     setJobs(rows)
+    setLoadError(false)
   }, [intakeApi])
 
-  useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const [rows, jobRows] = await Promise.all([
-          profilesApi.list(),
-          intakeApi.listJobs(),
-        ])
-        if (!cancelled) {
-          setProfiles(rows)
-          setJobs(jobRows)
-        }
-      } catch (err) {
-        console.error('intake load failed', err)
-      }
-    }
-    void load()
-    return () => {
-      cancelled = true
+  // #ASSUME: external-resources: profiles/jobs fetch can reject (session expiry,
+  // network). A swallowed rejection would render a false "no profiles / no
+  // requests" state, so failures set loadError for a visible retry affordance.
+  // #VERIFY: IntakePage.test.tsx initial-load-failure test.
+  const loadData = useCallback(async () => {
+    try {
+      const [rows, jobRows] = await Promise.all([
+        profilesApi.list(),
+        intakeApi.listJobs(),
+      ])
+      setProfiles(rows)
+      setJobs(jobRows)
+      setLoadError(false)
+    } catch (err) {
+      console.error('intake load failed', err)
+      setLoadError(true)
     }
   }, [profilesApi, intakeApi])
 
+  useEffect(() => {
+    async function run() {
+      await loadData()
+    }
+    void run()
+  }, [loadData])
+
   // #ASSUME: timing-dependencies: poll only while a job is active; clear the
   // interval on unmount and whenever nothing is generating so the page does not
-  // hold a live timer forever.
+  // hold a live timer forever. A failing poll sets loadError (not swallowed to
+  // console) so a job cannot appear frozen on "Generating" without any signal.
   // #VERIFY: IntakePage.test.tsx polling transition test (fake timers).
   useEffect(() => {
     if (!jobs.some(isActive)) return undefined
     const id = setInterval(() => {
-      void refreshJobs().catch((err) => console.error('poll failed', err))
+      void refreshJobs().catch((err) => {
+        console.error('poll failed', err)
+        setLoadError(true)
+      })
     }, POLL_MS)
     return () => clearInterval(id)
   }, [jobs, refreshJobs])
@@ -89,6 +102,14 @@ export function IntakePage() {
     if (selected === null) return
     setSaving(true)
     setError(false)
+    // #CRITICAL: data-integrity: createConcept + generate create durable rows
+    // (and downstream generation cost). The success/failure of the request is
+    // decided by these two POSTs ALONE. The trailing job-list refresh is a
+    // non-critical read; if it were inside this try, a transient refresh
+    // failure would flip `error` on an already-succeeded request and a retry
+    // would create a duplicate concept + generation job (no idempotency key).
+    // #VERIFY: IntakePage.test.tsx submit-then-refresh-fails test.
+    let submitted = false
     try {
       const brief = buildBrief({
         premise: premise.trim(),
@@ -98,19 +119,39 @@ export function IntakePage() {
       })
       const { concept_id } = await intakeApi.createConcept(brief)
       await intakeApi.generate(concept_id)
-      setPremise('')
-      await refreshJobs()
+      submitted = true
     } catch (err) {
       console.error('story request failed', err)
       setError(true)
     } finally {
       setSaving(false)
     }
+    // Only after the durable POSTs succeed: clear the input and refresh the
+    // list. A failed refresh surfaces as loadError, never as a submit failure.
+    if (submitted) {
+      setPremise('')
+      await refreshJobs().catch((err) => {
+        console.error('post-submit refresh failed', err)
+        setLoadError(true)
+      })
+    }
   }
 
   return (
     <section className="intake">
       <h1>Request a story</h1>
+      {loadError ? (
+        <div role="alert" className="intake-form__error">
+          We could not load your requests.{' '}
+          <button
+            type="button"
+            className="intake-retry"
+            onClick={() => void loadData()}
+          >
+            Retry
+          </button>
+        </div>
+      ) : null}
       <form
         className="intake-form"
         onSubmit={(e) => {
@@ -193,7 +234,7 @@ export function IntakePage() {
               >
                 <div className="intake-request__body">
                   <span className="intake-request__title">
-                    {job.title ?? job.premise_snippet}
+                    {job.title ?? (job.premise_snippet || 'Untitled request')}
                   </span>
                   {/* Any Failed row (pipeline failure OR gate-failed
                       needs_review) shows the short error field if present;
