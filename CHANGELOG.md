@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GET /api/v1/generation-jobs`: a guardian-only, family-scoped endpoint that
   lists a family's generation jobs newest-first with the linked storybook
   status, and never returns the raw generation report (ADR-007).
+- Assign-to-profile (C4a-6): a `storybook_assignment` table and a guardian-only
+  assign API (`POST`/`GET /api/v1/storybooks/{id}/assignments`) that becomes the
+  read-gate for a child's library. `list_library` and the direct version fetch
+  now require an assignment row for the child's profile, so a child sees only
+  stories explicitly assigned to them. An Alembic migration backfills one row per
+  (child, published story) per family, preserving prior visibility. Frontend adds
+  a guardian `AssignChildrenDialog` multi-select and `makeAssignApi` adapter.
 
 ### Security
 - Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the
