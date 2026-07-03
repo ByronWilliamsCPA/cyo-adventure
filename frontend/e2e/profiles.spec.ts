@@ -54,6 +54,11 @@ test('picker renders both profile tiles and links to the guardian surface (US: p
   page,
 }) => {
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: TWO_PROFILES }))
+  // Clicking a profile navigates into the real LibraryPage (C4a-3), which
+  // fetches the library on mount. Mock it (empty) so the page renders its
+  // deterministic no-books state instead of falling through to the vite proxy
+  // and rendering the error state.
+  await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
 
   await page.goto('/')
 
@@ -70,7 +75,9 @@ test('picker renders both profile tiles and links to the guardian surface (US: p
 
   await page.getByRole('link', { name: 'Remy' }).click()
   await expect(page).toHaveURL('/library/child-fox')
-  await expect(page.getByRole('heading', { name: 'My Books' })).toBeVisible()
+  // The real LibraryPage rendered its empty-library state, confirming the
+  // picker links a profile into its own library.
+  await expect(page.getByText('No books yet')).toBeVisible()
 })
 
 test('picker shows the empty state and grown-up link when there are no profiles', async ({

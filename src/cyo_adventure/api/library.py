@@ -26,9 +26,9 @@ from cyo_adventure.api.deps import (
     authorize_family,
     authorize_profile,
 )
-from cyo_adventure.api.schemas import LibraryItem, LibraryView
+from cyo_adventure.api.schemas import LibraryItem, LibraryProgress, LibraryView
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -141,8 +141,31 @@ def _reading_level_target(meta: Mapping[str, object], malformed: list[str]) -> f
     return 0.0
 
 
+def _node_count(blob: Mapping[str, object], malformed: list[str]) -> int:
+    """Return the number of story nodes, recording a malformed ``nodes`` field.
+
+    Args:
+        blob: The stored Storybook content blob.
+        malformed: The accumulator of malformed field names (mutated).
+
+    Returns:
+        int: The node count, or 0 if ``nodes`` is missing or not a list.
+    """
+    nodes = blob.get("nodes")
+    if isinstance(nodes, list):
+        return len(nodes)
+    if nodes is not None:
+        malformed.append("nodes")
+    return 0
+
+
 def _library_item(
-    storybook_id: str, blob: Mapping[str, object], version: int
+    storybook_id: str,
+    blob: Mapping[str, object],
+    version: int,
+    *,
+    rating: int | None = None,
+    state: ReadingState | None = None,
 ) -> LibraryItem:
     """Build a library item from a stored Storybook blob.
 
@@ -155,6 +178,8 @@ def _library_item(
         storybook_id: The story id (also the title fallback).
         blob: The stored Storybook content blob.
         version: The published version number.
+        rating: The profile's 1-5 rating of this story, if any.
+        state: The profile's saved reading state for this story, if any.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed fields.
@@ -172,6 +197,7 @@ def _library_item(
     age_band = _str_field(meta.get("age_band"), "", "age_band", malformed)
     tier = _tier_field(meta.get("tier"), malformed)
     target = _reading_level_target(meta, malformed)
+    node_count = _node_count(blob, malformed)
 
     if malformed:
         _logger.warning(
@@ -181,6 +207,19 @@ def _library_item(
             fields=malformed,
         )
 
+    progress: LibraryProgress | None = None
+    if state is not None:
+        # #EDGE: data integrity: the saved state may be pinned to an older
+        # version than the currently published one, so nodes_visited can exceed
+        # node_count after a republish; the frontend clamps percent at 100.
+        # #VERIFY: frontend bookCardUtils.percentComplete clamps at 100.
+        visit_set = state.visit_set if isinstance(state.visit_set, list) else []
+        progress = LibraryProgress(
+            current_node=state.current_node,
+            nodes_visited=len(visit_set),
+            updated_at=state.updated_at,
+        )
+
     return LibraryItem(
         id=storybook_id,
         title=title,
@@ -188,6 +227,9 @@ def _library_item(
         age_band=age_band,
         tier=tier,
         reading_level_target=target,
+        node_count=node_count,
+        rating=rating,
+        progress=progress,
     )
 
 
@@ -246,8 +288,33 @@ async def list_library(
         )
     )
     blobs = {(row.storybook_id, row.version): row.blob for row in version_rows}
+    book_ids = [storybook_id for storybook_id, _ in books]
+    # #ASSUME: external resources: per-profile state and ratings load in one
+    # bulk query each (not per-book) so the listing stays two+2 queries total.
+    # #VERIFY: both filters use IN on the published book ids and the single
+    # authorized profile id.
+    state_rows = await session.scalars(
+        select(ReadingState).where(
+            ReadingState.child_profile_id == parsed,
+            ReadingState.storybook_id.in_(book_ids),
+        )
+    )
+    states = {row.storybook_id: row for row in state_rows}
+    rating_rows = await session.scalars(
+        select(Rating).where(
+            Rating.child_profile_id == parsed,
+            Rating.storybook_id.in_(book_ids),
+        )
+    )
+    ratings = {row.storybook_id: row.value for row in rating_rows}
     items = [
-        _library_item(storybook_id, blobs[(storybook_id, version)], version)
+        _library_item(
+            storybook_id,
+            blobs[(storybook_id, version)],
+            version,
+            rating=ratings.get(storybook_id),
+            state=states.get(storybook_id),
+        )
         for storybook_id, version in books
         if (storybook_id, version) in blobs
     ]

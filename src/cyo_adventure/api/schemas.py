@@ -61,6 +61,20 @@ class ConflictView(BaseModel):
     )
 
 
+class LibraryProgress(BaseModel):
+    """A child's reading progress on one library book (for shelf progress bars).
+
+    ``nodes_visited`` counts distinct visited nodes; percent completion is a
+    frontend concern (``nodes_visited / node_count`` of the containing item).
+    ``updated_at`` is the server-maintained ReadingState timestamp and drives
+    "Continue Reading" (most recently active) selection.
+    """
+
+    current_node: str
+    nodes_visited: int
+    updated_at: datetime
+
+
 class LibraryItem(BaseModel):
     """A published story as seen in a child's library listing."""
 
@@ -70,6 +84,9 @@ class LibraryItem(BaseModel):
     age_band: str
     tier: int
     reading_level_target: float
+    node_count: int = 0
+    rating: int | None = None
+    progress: LibraryProgress | None = None
 
 
 class LibraryView(BaseModel):

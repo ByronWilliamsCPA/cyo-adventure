@@ -143,6 +143,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (`docs/planning/adr/adr-007-raw-output-retention.md`): raw LLM outputs are to be
   purged 30 days after generation. This is a documented plan only; runtime
   enforcement (a scheduled job) is deferred to Phase 5 and is not yet active.
+- Kid library page (C4a-3): "Continue Reading" hero with full-width progress bar,
+  "More to Explore" shelf grid with per-book progress, tap-to-rate stars, and an
+  explicit empty state (wireframe 4.2).
+- Library API enrichment: `LibraryItem` now carries `node_count`, the child's
+  `rating`, and a `progress` summary (visited nodes + last-activity timestamp)
+  via two bulk queries.
 
 ### Changed
 - Approval endpoints now return precise per-action response models
