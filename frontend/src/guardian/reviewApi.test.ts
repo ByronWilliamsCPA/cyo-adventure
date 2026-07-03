@@ -85,9 +85,10 @@ describe('makeReviewApi', () => {
       data: {
         jobs: [
           { id: 'j1', status: 'running', title: null, premise_snippet: 'snippet only' },
-          // A malformed row missing premise_snippet exercises the final generic
-          // fallback under the nullish-coalescing mapping.
-          { id: 'j2', status: 'queued', title: null },
+          // A reachable backend row: title null AND premise_snippet "" (the
+          // backend default is `str = ""`). The `|| 'Untitled request'` fallback
+          // must catch the empty string so the console never renders a blank row.
+          { id: 'j2', status: 'queued', title: null, premise_snippet: '' },
         ],
       },
     })

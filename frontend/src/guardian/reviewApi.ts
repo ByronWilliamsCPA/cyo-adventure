@@ -143,7 +143,11 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
           .filter((job) => job.status === 'queued' || job.status === 'running')
           .map((job) => ({
             job_id: job.id,
-            title: job.title ?? job.premise_snippet ?? 'Untitled request',
+            // Mirror IntakePage: `|| 'Untitled request'` so an empty-string
+            // premise_snippet (a reachable backend row: title null, premise
+            // blank) falls through to the generic label instead of rendering a
+            // blank console row. `??` would let "" pass through.
+            title: job.title ?? (job.premise_snippet || 'Untitled request'),
             status: job.status,
           }))
       } catch {
