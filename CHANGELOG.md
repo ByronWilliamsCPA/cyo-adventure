@@ -77,6 +77,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Guardian console (C4a-4): an admin-only `GET /api/v1/review-queue` endpoint
+  that lists `in_review` storybooks cross-family (mirroring the review-surface
+  authorization) with a screened flag and flagged count, plus the frontend
+  review console (severity-ordered queue) and a flags-first review-detail screen
+  with pinned Approve / Send Back actions. Swipe-to-approve is deliberately
+  excluded per ADR-005. The "Still processing" section is stubbed pending the
+  C4a-5 generation-jobs list endpoint.
+
+### Added
 
 - Profile management (C4a-2): family-scoped profiles API (`GET`/`POST`
   `/api/v1/profiles`, `PATCH /api/v1/profiles/{profile_id}`), the kid-surface
