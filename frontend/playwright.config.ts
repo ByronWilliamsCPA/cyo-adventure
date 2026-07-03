@@ -27,6 +27,15 @@ export default defineConfig({
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // The guardian lazy chunk (supabaseClient.ts) throws at module load unless
+    // these are defined at build time; with dummy values it renders the login
+    // flow (and thus the unauthenticated redirect) instead of the missing-env
+    // errorElement. The kid surface never imports supabaseClient, so the values
+    // are inert there. They are not real credentials.
+    env: {
+      VITE_SUPABASE_URL: 'https://example.supabase.co',
+      VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-e2e-build',
+    },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 })
