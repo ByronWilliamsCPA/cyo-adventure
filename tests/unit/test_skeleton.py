@@ -90,12 +90,27 @@ def test_is_production_eligible_missing_metadata_defaults_true() -> None:
 # Production-eligible (scale-classified) skeletons authored against ADR-011.
 # Each declares ``length`` + ``narrative_style`` + ``production_eligible: true``,
 # which arms the PL-17/19/20/21 story-scale rules, so passing the full gate here
-# pins the seed as launch-ready in CI. Extend this list as new cells are seeded.
-_PRODUCTION_SKELETONS = [
-    "skeletons/5-8/the-lantern-festival.json",
-    "skeletons/8-11/the-cave-of-echoes.json",
-    "skeletons/10-13/the-midnight-museum.json",
-]
+# pins the seed as launch-ready in CI. Discovered by scanning ``skeletons/`` so
+# new cells are picked up automatically (MVP/Test seeds are excluded by their
+# ``production_eligible: false`` flag), and no per-cell list edit is needed.
+def _discover_production_skeletons() -> list[str]:
+    import json
+
+    found: list[str] = []
+    for path in sorted(Path("skeletons").glob("*/*.json")):
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if is_production_eligible(data):
+            found.append(str(path))
+    return found
+
+
+_PRODUCTION_SKELETONS = _discover_production_skeletons()
+
+
+@pytest.mark.unit
+def test_at_least_one_production_skeleton_exists() -> None:
+    """Guard the discovery glob: the launch corpus is never silently empty."""
+    assert _PRODUCTION_SKELETONS, "no production-eligible skeletons discovered"
 
 
 @pytest.mark.unit
