@@ -55,13 +55,16 @@ by narrative role.
 
 <!-- END GENERATED: skeleton-catalog -->
 
-All three catalogued skeletons currently declare `production_eligible: false` and no
-`length` or `narrative_style`: they are ADR-011 section 1a MVP/Test-tier development
-seeds (a band-independent 8-45 node envelope, budgeted with `mvp_node_budget` in
-`validator/band_profile.py`), not examples of a production `(age_band, length,
-narrative_style)` cell. The catalog has no production-eligible skeleton yet. The
-"Length (min)" column above is `estimated_minutes` (a read-time estimate), not the
-ADR-011 `length` scale tier described below; per-cell production node budgets live in
+Three of the six catalogued skeletons (The Clocktower Cipher, The Sunken Signal, The
+Lost Mitten) declare `production_eligible: false` and no `length` or `narrative_style`:
+they are ADR-011 section 1a MVP/Test-tier development seeds (a band-independent 8-45
+node envelope, budgeted with `mvp_node_budget` in `validator/band_profile.py`), not
+examples of a production `(age_band, length, narrative_style)` cell. The other three
+(The Midnight Museum, The Lantern Festival, The Cave of Echoes) are the first
+production-eligible seeds: each declares `length: short`, `narrative_style: prose`,
+and `production_eligible: true` for one ADR-011 launch cell. The "Length (min)" column
+above is `estimated_minutes` (a read-time estimate), not the ADR-011 `length` scale
+tier described below; per-cell production node budgets live in
 `validator/band_profile.py` (`_PRODUCTION_CELLS`), not a single fixed per-band range.
 The "Tier" column is the generation `tier` field (`1` forbids state variables, `2`
 allows them), a separate concept from the MVP/Test tier.
