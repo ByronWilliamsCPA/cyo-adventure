@@ -68,6 +68,7 @@ class _FakeSession:
         states: list[ReadingState] | None = None,
         ratings: list[Rating] | None = None,
         get_map: dict[tuple[type[object], object], object] | None = None,
+        scalar_result: object | None = None,
     ) -> None:
         # scalars() cycles in order: storybooks, versions, reading states, ratings.
         self._scalars_queue: list[list[object]] = [
@@ -77,6 +78,7 @@ class _FakeSession:
             list(ratings or []),
         ]
         self._get_map: dict[tuple[type[object], object], object] = get_map or {}
+        self._scalar_result = scalar_result
         self.scalars_calls: list[object] = []
         self.get_calls: list[tuple[type[object], object]] = []
 
@@ -84,6 +86,11 @@ class _FakeSession:
         """Look up by (model, key) in the seeded map."""
         self.get_calls.append((model, key))
         return self._get_map.get((model, key))
+
+    async def scalar(self, stmt: object) -> object | None:
+        """Return the seeded scalar (the assignment lookup in get_storybook_version)."""
+        self.scalars_calls.append(stmt)
+        return self._scalar_result
 
     async def scalars(self, stmt: object) -> _FakeScalars:
         """Return rows from the queue in order (storybooks then versions)."""
@@ -700,6 +707,43 @@ class TestGetStorybookVersion:
 
         with pytest.raises(AuthorizationError):
             await get_storybook_version("story-1", 1, principal, session)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_child_unassigned_published_version_raises_404(self) -> None:
+        """A child fetching a published+approved but UNASSIGNED book gets 404."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=1)
+        version = _version_row("story-1", 1)
+        version.approved_by = uuid.uuid4()
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): version,
+        }
+        session = _FakeSession(get_map=get_map, scalar_result=None)  # not assigned
+        principal = _child_principal(family_id, profile_id)
+        with pytest.raises(ResourceNotFoundError):
+            await get_storybook_version("story-1", 1, principal, session)
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_child_assigned_version_returns_blob(self) -> None:
+        """A child fetching a book assigned to their profile receives the blob."""
+        family_id = uuid.uuid4()
+        profile_id = uuid.uuid4()
+        book = _published_book("story-1", family_id, version=1)
+        blob: dict[str, object] = {"title": "Test", "nodes": []}
+        version = _version_row("story-1", 1, blob=blob)
+        version.approved_by = uuid.uuid4()
+        get_map: dict[tuple[type[object], object], object] = {
+            (Storybook, "story-1"): book,
+            (StorybookVersion, ("story-1", 1)): version,
+        }
+        session = _FakeSession(get_map=get_map, scalar_result="story-1")  # assigned
+        principal = _child_principal(family_id, profile_id)
+        result = await get_storybook_version("story-1", 1, principal, session)
+        assert result == blob
 
 
 class TestLibraryItemEnrichmentFields:

@@ -23,6 +23,7 @@ from sqlalchemy import and_, exists, select, tuple_
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
     DbSession,
+    Role,
     authorize_family,
     authorize_profile,
 )
@@ -377,4 +378,19 @@ async def get_storybook_version(
     ):
         msg = f"version {version} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: a child may fetch a story blob directly ONLY if it is
+    # assigned to their profile; an unassigned (but published+approved) book is
+    # 404 (existence hidden), matching the library-listing gate. Guardian and
+    # admin reads are unchanged (they skip this branch).
+    # #VERIFY: child + unassigned -> 404; child + assigned -> blob.
+    if principal.role == Role.CHILD:
+        assigned = await session.scalar(
+            select(StorybookAssignment.storybook_id).where(
+                StorybookAssignment.storybook_id == storybook_id,
+                StorybookAssignment.child_profile_id.in_(principal.profile_ids),
+            )
+        )
+        if assigned is None:
+            msg = f"version {version} of storybook '{storybook_id}' not found"
+            raise ResourceNotFoundError(msg)
     return version_row.blob

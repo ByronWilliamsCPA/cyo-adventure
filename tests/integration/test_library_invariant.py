@@ -145,3 +145,37 @@ async def test_child_can_fetch_approved_seed_version(
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 200
+
+
+async def test_child_cannot_fetch_unassigned_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A child fetching an approved+published but UNASSIGNED version gets 404 (Task 7).
+
+    Pins the read-path assignment gate behaviorally: the story clears every other
+    predicate (family, published, approved, current), so the 404 proves the
+    missing storybook_assignment row, not another filter, is what withholds it.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/storybooks/{unassigned_id}/versions/1",
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 404
+
+
+async def test_guardian_can_fetch_unassigned_version(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A guardian fetching an approved+published unassigned version is unaffected.
+
+    The assignment gate is child-only; a guardian reads any approved current
+    version in their family regardless of per-profile assignment.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/storybooks/{unassigned_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["id"] == unassigned_id
