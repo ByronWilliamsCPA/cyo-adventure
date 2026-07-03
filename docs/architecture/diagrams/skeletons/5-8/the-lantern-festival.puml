@@ -1,0 +1,156 @@
+@startuml the-lantern-festival
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 90w
+state n_berry1 #FFF9C4
+n_berry1 : choice · 80w
+state n_berry2 #D1C4E9
+n_berry2 : rising · 80w
+state n_willow1 #FFF9C4
+n_willow1 : choice · 80w
+state n_willow2 #D1C4E9
+n_willow2 : rising · 80w
+state n_reed1 #FFF9C4
+n_reed1 : choice · 80w
+state n_reed2 #D1C4E9
+n_reed2 : rising · 80w
+state n_reed3 #D1C4E9
+n_reed3 : rising · 75w
+state n_honey1 #FFF9C4
+n_honey1 : choice · 80w
+state n_honey2 #D1C4E9
+n_honey2 : rising · 75w
+state n_shed1 #FFF9C4
+n_shed1 : choice · 80w
+state n_shed2 #D1C4E9
+n_shed2 : rising · 75w
+state n_cricket1 #FFF9C4
+n_cricket1 : choice · 80w
+state n_cricket2 #D1C4E9
+n_cricket2 : rising · 75w
+state n_meadow #FFF9C4
+n_meadow : choice · 90w
+state n_setup #FFF9C4
+n_setup : choice · 85w
+state n_hang #FFF9C4
+n_hang : choice · 85w
+state n_light #FFF9C4
+n_light : choice · 85w
+state n_star #D1C4E9
+n_star : rising · 80w
+state n_glow #FFF9C4
+n_glow : choice · 85w
+state n_song #D1C4E9
+n_song : rising · 75w
+state n_wish #D1C4E9
+n_wish : rising · 75w
+state n_picnic #FFF9C4
+n_picnic : choice · 85w
+state n_feast #FFF9C4
+n_feast : choice · 80w
+state n_riddle #D1C4E9
+n_riddle : rising · 75w
+state n_bless #D1C4E9
+n_bless : rising · 80w
+state e_berry_oops #FFCDD2
+e_berry_oops : setback (negative)
+e_berry_oops : "Oops, Bouncing Berries"
+state e_willow_oops #FFCDD2
+e_willow_oops : setback (negative)
+e_willow_oops : "Oops, Too Loud a Bell"
+state e_reed_oops #FFCDD2
+e_reed_oops : setback (negative)
+e_reed_oops : "Oops, Soggy Reeds"
+state e_finale_pond #C8E6C9
+e_finale_pond : completion (positive)
+e_finale_pond : "Lanterns on the Water"
+state e_finale_oak #C8E6C9
+e_finale_oak : success (positive)
+e_finale_oak : "A Tree Full of Stars"
+state e_finale_song #C8E6C9
+e_finale_song : completion (positive)
+e_finale_song : "The Lantern Song"
+state e_finale_wish #C8E6C9
+e_finale_wish : success (positive)
+e_finale_wish : "One Warm Wish"
+state e_finale_feast #C8E6C9
+e_finale_feast : success (positive)
+e_finale_feast : "The Glowing Feast"
+state e_finale_riddle #C8E6C9
+e_finale_riddle : success (positive)
+e_finale_riddle : "The Best Riddle of All"
+state e_finale_story #C8E6C9
+e_finale_story : completion (positive)
+e_finale_story : "Granny's Lantern Story"
+n_start --> n_berry1 : Go pick glowberries by the bramble patch...
+n_start --> n_willow1 : Go invite your friends at the willow.
+n_start --> n_reed1 : Go cut reeds for lantern frames.
+n_start --> n_honey1 : Go ask the bees for honey cakes.
+n_start --> n_shed1 : Go fetch the old paper lanterns.
+n_start --> n_cricket1 : Go ask the cricket band to play.
+n_berry1 --> n_berry2 : Pick the ripe low glowberries.
+n_berry1 --> e_berry_oops : Climb for the high cluster.
+n_berry2 --> n_meadow : Carry the glowberries to the meadow.
+n_berry2 --> n_start : Go back to the clearing for more.
+n_willow1 --> n_willow2 : Knock gently on the willow door.
+n_willow1 --> e_willow_oops : Clang the loud dinner bell.
+n_willow2 --> n_meadow : Lead your friends to the meadow.
+n_willow2 --> n_start : Pop back to the clearing first.
+n_reed1 --> n_reed2 : Cut the tall dry reeds.
+n_reed1 --> e_reed_oops : Cut the fresh green reeds.
+n_reed2 --> n_reed3 : Weave the frames here by the pond.
+n_reed2 --> n_start : Carry the bundle back to the clearing.
+n_reed3 --> n_meadow : Carry the lantern frames to the meadow.
+n_honey1 --> n_honey2 : Wait politely for the honey cakes.
+n_honey1 --> n_start : Head back to the clearing for now.
+n_honey2 --> n_meadow : Carry the honey cakes to the meadow.
+n_shed1 --> n_shed2 : Dust off the old paper lanterns.
+n_shed1 --> n_start : Go back to the clearing for now.
+n_shed2 --> n_meadow : Carry the paper lanterns to the meadow.
+n_cricket1 --> n_cricket2 : Ask the crickets to follow you now.
+n_cricket1 --> n_start : Go back to the clearing first.
+n_cricket2 --> n_meadow : Lead the cricket band to the meadow.
+n_meadow --> n_setup : Start setting up the festival.
+n_meadow --> n_start : Make one last trip to the clearing.
+n_setup --> n_hang : Hang the lanterns in the great oak.
+n_setup --> n_picnic : Spread out the picnic feast.
+n_hang --> n_light : Light the lanterns right now.
+n_hang --> n_star : Wait for the first star.
+n_light --> e_finale_pond : Float lanterns on the pond.
+n_light --> e_finale_oak : Keep the lanterns in the oak.
+n_star --> n_glow : Light the first lantern and begin.
+n_glow --> n_song : Start a lantern song.
+n_glow --> n_wish : Make a wish together.
+n_song --> e_finale_song : Sing the festival into the night.
+n_wish --> e_finale_wish : Make the wish all together.
+n_picnic --> n_feast : Start sharing the honey cakes.
+n_picnic --> n_bless : Wait for Granny Hedgehog.
+n_feast --> e_finale_feast : Let the happy feast roll on.
+n_feast --> n_riddle : Start a round of riddles.
+n_riddle --> e_finale_riddle : Tell the very best riddle.
+n_bless --> e_finale_story : Listen to Granny's lantern story.
+e_berry_oops --> [*]
+e_willow_oops --> [*]
+e_reed_oops --> [*]
+e_finale_pond --> [*]
+e_finale_oak --> [*]
+e_finale_song --> [*]
+e_finale_wish --> [*]
+e_finale_feast --> [*]
+e_finale_riddle --> [*]
+e_finale_story --> [*]
+
+legend right
+  The Lantern Festival
+  Band 5-8 · Tier 1 · ~6 min
+  Topology: loop_and_grow
+  36 nodes · 10 endings (7+ / 0n / 3-)
+endlegend
+@enduml

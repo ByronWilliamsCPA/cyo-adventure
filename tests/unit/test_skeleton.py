@@ -92,6 +92,7 @@ def test_is_production_eligible_missing_metadata_defaults_true() -> None:
 # which arms the PL-17/19/20/21 story-scale rules, so passing the full gate here
 # pins the seed as launch-ready in CI. Extend this list as new cells are seeded.
 _PRODUCTION_SKELETONS = [
+    "skeletons/5-8/the-lantern-festival.json",
     "skeletons/8-11/the-cave-of-echoes.json",
 ]
 
