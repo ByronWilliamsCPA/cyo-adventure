@@ -55,6 +55,24 @@ describe('AssignChildrenDialog', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
+  it('disables Assign and fires no POST when nothing new is selected', async () => {
+    const user = userEvent.setup()
+    // Every shown profile is already assigned, so no NEW id can be picked.
+    mockGet.mockImplementation((url: string) =>
+      url.includes('/assignments')
+        ? Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1', 'p2'] } })
+        : Promise.resolve({ data: PROFILES })
+    )
+    const onClose = vi.fn()
+    render(<AssignChildrenDialog storybookId="s1" onClose={onClose} />)
+    await screen.findByRole('checkbox', { name: /Reader A$/ })
+    const assign = screen.getByRole('button', { name: /Assign/i })
+    expect(assign).toBeDisabled()
+    // A disabled button dispatches no click, so save() never runs.
+    await user.click(assign)
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
   it('surfaces a save failure without closing', async () => {
     const user = userEvent.setup()
     mockPost.mockRejectedValue(new Error('boom'))
