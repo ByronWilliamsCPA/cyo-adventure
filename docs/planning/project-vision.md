@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Project Vision & Scope: CYO Adventure
 
-> **Status**: Active | **Version**: 1.0 | **Updated**: 2026-06-20
+> **Status**: Active | **Version**: 1.1 | **Updated**: 2026-07-03
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 
 ## TL;DR
@@ -119,32 +119,48 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.
 - ✅ **Parent approval workflow + per-child profiles**: age-band and reading-level
   limits enforced by the publish state machine.
 
-### Out of Scope
+### Out of Scope (v1 / family tier)
 
 - ❌ **Dice combat and skill/luck checks (Tier 3)**: randomness turns "every path
   reaches an ending" from a guarantee into a probability the deterministic gate
   cannot certify. Revisit only if the kids ask for it.
 - ❌ **Any social, chat, or user-to-user feature**: a children's app has no reason
   to carry one.
-- ❌ **Monetization, accounts for outside users, telemetry on minors.**
-- 🔄 **Native iOS/Android apps**: deferred; the JSON format keeps this open.
+- ❌ **Ads, and any telemetry on minors.** This is a permanent hard exclusion on
+  every rung, not just v1.
 - 🔄 **Full visual story editor (graph canvas)**: a lightweight node editor lands in
   Phase 4b; the rich canvas is later.
-- 🔄 **Sharing beyond this family**: changes the privacy and account posture (see
-  Assumptions and the "If shared beyond family" note in the tech spec).
 - 🔄 **Per-passage illustrations or AI-generated images.**
+
+**Now planned for the later rungs (R2/R3), no longer out of scope** (see
+[ADR-008](./adr/adr-008-public-app-store-launch.md)):
+
+- 🔜 **Monetization (tiered IAP subscription)** and **accounts for outside users**:
+  planned for the public rungs (R2/R3), not the v1 family tier.
+- 🔜 **Native iOS/Android apps**: the R2 limited release adds a Capacitor iOS shell for
+  the App Store; the JSON format kept this open. See
+  [ADR-008](./adr/adr-008-public-app-store-launch.md).
+- 🔜 **Sharing beyond this family**: enabled by the R2/R3 public multi-tenancy; it changes
+  the privacy and account posture (see Assumptions and the "If shared beyond family" note
+  in the tech spec).
 
 ## Constraints
 
 ### Technical
 
 - **Platform**: Progressive Web App (React 19, TypeScript, Vite) reader plus a
-  Python/FastAPI backend. See [ADR-002](./adr/adr-002-client-pwa.md).
+  Python/FastAPI backend. See [ADR-002](./adr/adr-002-client-pwa.md). This PWA framing is
+  the v1 (R1) target; the later R2 limited release wraps the same PWA in a Capacitor iOS
+  shell for the App Store, per [ADR-008](./adr/adr-008-public-app-store-launch.md).
 - **Language**: Python 3.12 backend (uv, Ruff, BasedPyright), consistent with the
   migration off Poetry; pnpm for the frontend.
 - **Deployment**: homelab-first behind Pangolin (zero-trust ingress) and Authentik
   (OIDC), with cloud-portable containers so Azure Container Apps is a drop-in
-  alternative. See [ADR-004](./adr/adr-004-homelab-first-deployment.md).
+  alternative. See [ADR-004](./adr/adr-004-homelab-first-deployment.md). This homelab-first
+  framing holds for the family tier (v1). The public tier (R2/R3) instead runs on
+  Supabase-managed infrastructure (auth via Supabase OIDC, Postgres, storage), which amends
+  ADR-004's no-third-party-infra stance for that tier; see
+  [ADR-009](./adr/adr-009-supabase-platform.md).
 - **Security baseline from day one**: detect-secrets, Semgrep managed rules, CodeQL,
   Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.
 - **Performance**: node transition under 50 ms (plays client-side from cache);
@@ -152,21 +168,21 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.
 
 ### Business
 
-- **Timeline**: roughly 11 to 16 weeks to the first usable release for a 1 to 2
-  developer team (Phases 0-3 plus a minimal library-and-profiles slice). Full v1 with
-  editor, engagement, and hardening is roughly 16 to 25 weeks. Ranges, not promises;
-  the long pole is generation reliability, not the reader.
+- **Timeline**: roughly 11 to 16 weeks to R1 (the internal release) for a 1 to 2
+  developer team (Phases 0-3 plus the Phase 4a library-and-profiles slice; R1 reached
+  feature-complete on 2026-07-03). Full v1 with editor, engagement, and hardening is
+  roughly 16 to 25 weeks. Ranges, not promises; the long pole is generation reliability,
+  not the reader.
 - **Resources**: a 1 to 2 developer team. Roles in the planning docs (PO, TL, BE, FE,
   INF) name accountability, not headcount.
 
 ### Decided release cut
 
-Generation ships in the **first usable release**. The kids' first usable version
-already writes its own LLM-generated stories, gated by validation and parent
-approval. This elevates two items to Phase-0 hard blockers, because the first
-external LLM call now ships in the first release: the provider data-handling decision
-and the privacy controls (no real child PII in prompts; admin-only short-lived raw
-outputs).
+Generation ships in **R1 (the internal release)**. The kids' first version already
+writes its own LLM-generated stories, gated by validation and parent approval. This
+elevates two items to Phase-0 hard blockers, because the first external LLM call ships in
+R1: the provider data-handling decision and the privacy controls (no real child PII in
+prompts; admin-only short-lived raw outputs).
 
 ## Assumptions to Validate
 

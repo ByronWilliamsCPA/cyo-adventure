@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-06-29
+> **Status**: Active | **Updated**: 2026-07-03
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -21,10 +21,10 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 Build the schema first, then the player and reader, then the two-layer validator, then
 generation, then safety and review, then library/profiles, editor, and hardening, across
 six phases over roughly 16 to 25 weeks for a 1 to 2 developer team. The decided release
-cut puts generation in the first usable release (Phases 0-3 plus a minimal
+cut puts generation in R1 (the internal release: web PWA only, Phases 0-3 plus the Phase 4a
 library-and-profiles slice, roughly 11 to 16 weeks).
 
-## Current Status (2026-07-01)
+## Current Status (2026-07-03)
 
 Phases 0, 1, 2, 2b, and the **Phase 3 backend** are **delivered and merged to `main`**.
 The reader plays hand-authored stories offline with multi-device 409 reconciliation; the
@@ -37,13 +37,14 @@ across three PRs: the staged content-moderation pipeline (#36), the publish stat
 plus guardian approval/send-back endpoints and the published-requires-approval invariant
 (#34), and the review-surface read API plus reading-state save-state integrity (#45).
 
-What remains for the **first usable release** is **Phase 4a** (library, profiles, and the
-guardian app shell). The Phase 3 backend guarantee is enforced and tested, but it is not
-yet reachable through the browser: the frontend is still a single-page reader demo with no
-routing, so the guardian-facing surfaces are greenfield. A Phase 4a mobile-UI wireframe
-concept spec (#47) and a K-12 design system synced to claude.ai/design (#44) are drafted;
-the app-shell build has not started. See [`completion-plan.md`](./completion-plan.md) for
-the path from here to v1.
+**Phase 4a is delivered: R1 (the internal release) is feature-complete as of 2026-07-03.**
+The guardian-facing frontend now exists end to end: the app shell and Supabase auth (#56),
+per-child profile management (#60), the kid library UI (#68), the guardian
+review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75) are all
+merged. The Phase 3 backend guarantee is now reachable through the browser: a guardian can
+generate, review, approve, and assign a story, and a child reads it offline. See
+[`completion-plan.md`](./completion-plan.md) for what remains toward full v1 (Phase 4b and
+Phase 5) and the later release rungs (R2/R3).
 
 | Phase | Status | Evidence |
 |-------|--------|----------|
@@ -52,7 +53,7 @@ the path from here to v1.
 | 2 Gen + Gate | ✅ Delivered | Layer-2 walk, orchestrator, RQ worker, policy gate merged |
 | 2b Live providers + yield | ✅ Delivered | OpenRouter + Ollama adapters; 70% live yield recorded |
 | 3 Safety + Review | ✅ Delivered (backend) | moderation pipeline (#36), publish state machine + approval/send-back + core invariant (#34), review-surface API + save-state integrity (#45); guardian console UI is Phase 4a |
-| 4a Library + Profiles | 🔄 Backend partial | `library`/`ratings` API merged; no frontend, no guardian UI |
+| 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + UX | ⏸️ Not started | post-release |
 | 5 Hardening | ⏸️ Not started | in-memory rate limiter, backups, restore drill outstanding |
 
@@ -63,7 +64,7 @@ Phase 0: Foundations    ████░░░░░░░░░░░░░░�
 Phase 1: Schema+Reader  ░░░░██████░░░░░░░░░░░░░░  (3-5 wks)  - Offline PWA, Layer-1 validator
 Phase 2: Gen + Gate     ░░░░░░░░░░████████░░░░░░  (4-6 wks)  - Layer-2 validator, pipeline
 Phase 3: Safety+Review  ░░░░░░░░░░░░░░██████░░░░  (3-4 wks)  - Moderation + approval (overlaps P2)
-Phase 4a: Library       ░░░░░░░░░░░░░░░░░░████░░  (part of 3-5 wks) - FIRST RELEASE line
+Phase 4a: Library       ░░░░░░░░░░░░░░░░░░████░░  (part of 3-5 wks) - R1 (INTERNAL) line
 Phase 4b: Editor + UX   ░░░░░░░░░░░░░░░░░░░░████  (post-release) - Editor, TTS, tracker
 Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░░░░░██  (2-3 wks)  - Deploy, backups, restore drill
 ```
@@ -75,9 +76,27 @@ Phase 5: Hardening      ░░░░░░░░░░░░░░░░░░�
 | M0: Phase 0 exit gate (decisions locked, CI green) | Wk 1-2 | ✅ Delivered | None |
 | M1: Reader plays hand-authored stories offline | Wk 5-7 (internal demo) | ✅ Delivered | M0 |
 | M2: Concept-to-story pipeline passes the full gate | Wk 9-12 | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) | M1 |
-| M3: Parent approval gate enforced end to end | Wk 11-14 | 🚧 Backend delivered (Phase 3: #34/#36/#45); end-to-end through the UI awaits Phase 4a guardian console (C4a-4) | M2 |
-| M4: First usable release (generation + library) | Wk 11-16 | ⏸️ Not started (needs Phase 3 + 4a) | M3 |
+| M3: Parent approval gate enforced end to end | Wk 11-14 | ✅ Delivered (Phase 3 backend #34/#36/#45; guardian console #76 merged, reachable end to end) | M2 |
+| M4: R1 internal release (generation + library) | Wk 11-16 | ✅ R1 feature-complete 2026-07-03 (Phases 3 + 4a delivered; pending release-readiness) | M3 |
 | M5: Hardened, deployed, restore-tested v1 | Wk 16-25 | ⏸️ Not started | M4 |
+
+## Release ladder (R1/R2/R3) and later phases
+
+This roadmap details Phases 0-5, the family-first build. The product reaches users in three
+rungs, each an overlay on the phases below rather than a new phase:
+
+- **R1, internal release (web only)**: the web PWA for the maintainer's own family. Scope is
+  Phases 0-3 plus the Phase 4a library-and-profiles slice; feature-complete 2026-07-03.
+- **R2, limited release (adds iOS)**: a Capacitor iOS shell plus public guardian
+  authentication, distributed over TestFlight. Scope adds Phases 6 and 8.
+- **R3, public launch**: the full App Store product (Kids Category and COPPA compliance,
+  public catalog, hosted infra, submission). Scope adds Phases 7 and 9.
+
+Phases 6 through 9 and the full rung definitions are not detailed here; they live in
+[`PROJECT-PLAN.md`](./PROJECT-PLAN.md) (Sections 1 and 5) and in
+[ADR-008](./adr/adr-008-public-app-store-launch.md) (public App Store launch) and
+[ADR-009](./adr/adr-009-supabase-platform.md) (Supabase public tier). Phase 4b and Phase 5
+below are post-R1 family-tier quality and hardening work.
 
 ---
 
@@ -114,7 +133,7 @@ through PL-14).
       bare environment reachable through Pangolin.
 - [ ] Drafting guide and stage prompt templates authored (migrate Appendix A from the
       scoping handoff). The 60% generation yield cannot be measured without them, and
-      generation ships in the first release, so this is a Phase-0 precondition, not a
+      generation ships in R1, so this is a Phase-0 precondition, not a
       Phase-2 afterthought.
 - [ ] Configuration-cap worked example: document the practical Tier-2 variable budget
       that stays under the 100,000 ceiling (e.g. compute the reachable-config count for 2
@@ -313,25 +332,24 @@ Make the kids-facing guarantee real.
 
 ## Phase 4: Library, profiles, editor, and engagement (3-5 weeks)
 
-**Status**: 🔄 4a backend partial; 4a frontend and 4b not started. The backend
+**Status**: ✅ 4a delivered (R1 feature-complete 2026-07-03); 4b not started. The
 `library` and `ratings` APIs are merged (the library filters to `published`,
-profile-scoped books). The frontend has **no library, profile, guardian, or concept
-intake UI and no routing** (it is still a single-page reader demo), so the guardian app
-shell is greenfield and is the largest remaining lift for the first release. 4b (editor,
-TTS, ending tracker) is untouched.
+profile-scoped books), and the guardian-facing frontend is now built end to end: app shell
+and Supabase auth (#56), profile management (#60), library UI (#68), guardian
+review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75). 4b
+(editor, TTS, ending tracker) is untouched.
 
 ### Objective
 
-Make authoring and reading pleasant. Split by the release cut: 4a ships in the first
-release, 4b follows.
+Make authoring and reading pleasant. Split by the release cut: 4a ships in R1, 4b follows.
 
-### Deliverables (4a, in the first release)
+### Deliverables (4a, in R1)
 
-- [ ] Library browsing and per-child profiles with age-band and reading-level limits.
-- [ ] The minimal guardian path to view, approve, publish, and assign a generated story to
+- [x] Library browsing and per-child profiles with age-band and reading-level limits.
+- [x] The minimal guardian path to view, approve, publish, and assign a generated story to
       a profile.
 
-### Deliverables (4b, after the first release)
+### Deliverables (4b, after R1)
 
 - [ ] Lightweight node editor (read as a playthrough and a node list, edit a passage,
       re-roll a single branch, re-run validation).
@@ -339,14 +357,14 @@ release, 4b follows.
 
 ### Success Criteria
 
-- ✅ First release: a child sees only stories permitted for their profile; a guardian can
+- ✅ R1: a child sees only stories permitted for their profile; a guardian can
   assign an approved generated story to one or more children.
 - ✅ 4b: concept to published through the UI alone including a small edit, and read-aloud
   works for the youngest band.
 
 ### Dependencies
 
-- 4a requires Phases 2 and 3. 4b can follow the first release.
+- 4a requires Phases 2 and 3. 4b can follow R1.
 
 ---
 
@@ -354,7 +372,9 @@ release, 4b follows.
 
 ### Objective
 
-Production readiness on the homelab (or Azure).
+Production readiness on the homelab (or Azure) for the family tier. The public tier (R2/R3)
+runs on Supabase-managed infrastructure instead of the homelab; see
+[ADR-009](./adr/adr-009-supabase-platform.md).
 
 ### Deliverables
 
@@ -400,7 +420,7 @@ iteration; the reader itself is straightforward.
 | Generation cost and latency | M | L | Infrequent generation; async worker; immutable cached outputs; per-family quota |
 | Condition-evaluator divergence | L | H | Tiny in-house interpreter; property-tested for totality; shared conformance fixtures |
 | Multi-device progress loss | M | M | Revision-based concurrency; explicit conflict resolution; server canonical |
-| Scope creep (dice, combat, sharing) | M | M | Explicitly out of v1; revisit only on demand |
+| Scope creep (dice, combat, sharing) | M | M | Dice and combat out of v1; sharing beyond the family is deferred to the R2/R3 public rungs (ADR-008), not v1; revisit others only on demand |
 | iOS PWA storage eviction | M | M | IndexedDB as cache only; Postgres canonical; sync on every choice |
 
 ## Definition of Done
