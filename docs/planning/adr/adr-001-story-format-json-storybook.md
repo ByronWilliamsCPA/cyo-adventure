@@ -1,7 +1,7 @@
 ---
 title: "ADR-001: Story format is a versioned JSON Storybook graph"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to use a custom versioned JSON Storybook schema as the canonical story format."
 tags:
@@ -12,7 +12,7 @@ tags:
 
 # ADR-001: Story format is a versioned JSON Storybook graph
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-03)
 > **Date**: 2026-06-20
 
 ## TL;DR
@@ -102,10 +102,14 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
 
 ### Technical Debt
 
-- Schema evolution: story blobs stay immutable in object storage; do not batch-migrate
-  the buckets. Handle schema bumps with an in-memory upcaster chain keyed by
-  `schema_version`, applied at read time, with a golden fixture per version so older
-  stories stay regression-tested as the schema moves.
+- Schema versioning: current policy pins to schema version `2.0` and rejects any other
+  version outright (exactly one accepted version); the read-time upcaster chain is not
+  built. If multiple concurrent schema versions ever need to coexist, an in-memory
+  upcaster keyed by `schema_version` with a golden fixture per version is the intended
+  path, but it is deliberately deferred while a single version is enforced.
+- Storage: story blobs are stored inline in Postgres JSONB (`storybook_version.blob`) at
+  launch per [ADR-009](./adr-009-supabase-platform.md); object storage via `blob_ref` is
+  deferred until catalog size warrants externalizing blobs.
 
 ## Implementation
 
@@ -114,12 +118,13 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
 1. **Schema**: defined once in Pydantic, exported to JSON Schema, shared by generator,
    validator, reader, and editor.
 2. **Player**: a deterministic traversal honoring Runtime Semantics v1.
-3. **Backend read path**: the upcaster chain transforms older blobs in memory.
+3. **Backend read path**: the loader validates `schema_version` and rejects any blob not
+   at the single accepted version (`2.0`); no upcaster chain runs.
 
 ### Testing Strategy
 
-- Unit: schema round-trip (Pydantic to JSON Schema to instance validation); each
-  upcaster against its golden fixture.
+- Unit: schema round-trip (Pydantic to JSON Schema to instance validation); rejection of
+  any blob whose `schema_version` is not the single accepted version.
 - Integration: a valid and a known-bad fixture corpus (see the tech spec testing
   strategy).
 
@@ -127,8 +132,8 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
 
 ### Success Criteria
 
-- [ ] A "hello world" Storybook validates against the v1 JSON Schema.
-- [ ] Round-trip and upcaster golden tests pass.
+- [ ] A "hello world" Storybook validates against the `2.0` JSON Schema.
+- [ ] Round-trip validation and version-rejection tests pass.
 
 ### Review Schedule
 
@@ -141,4 +146,6 @@ awkward to generate and lint programmatically. Wrong shape for an automated pipe
   makes validatable.
 - [ADR-006](./adr-006-conditions-inhouse-evaluator.md): the condition logic carried
   inside the format.
+- [ADR-009](./adr-009-supabase-platform.md): story blobs are stored inline in Postgres
+  JSONB at launch; object storage via `blob_ref` is deferred.
 - [Tech Spec: Data Model](../tech-spec.md#data-model)

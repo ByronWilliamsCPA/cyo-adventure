@@ -1,7 +1,7 @@
 ---
 title: "ADR-011: Story-scale framework (reading band x length x style)"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the story-scale framework that governs skeleton and story size: the
   reading-band x length x narrative-style matrix, total-words-primary with derived node
@@ -18,7 +18,7 @@ tags:
 
 # ADR-011: Story-scale framework (reading band x length x style)
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-03)
 > **Date**: 2026-07-02
 > **Relates to**: [ADR-001](./adr-001-story-format-json-storybook.md) (adds `length`,
 > `narrative_style`, and `series` metadata plus two `Topology` enum values),

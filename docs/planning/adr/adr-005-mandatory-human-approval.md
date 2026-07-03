@@ -1,7 +1,7 @@
 ---
 title: "ADR-005: Mandatory human approval before any story reaches a child"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to gate every story behind a guardian approval state, enforced by a state machine."
 tags:
@@ -12,7 +12,7 @@ tags:
 
 # ADR-005: Mandatory human approval before any story reaches a child
 
-> **Status**: Proposed (amended 2026-06-30, see Amendment below)
+> **Status**: Accepted (2026-07-03; amended 2026-06-30, see Amendment below)
 > **Date**: 2026-06-20
 
 ## Amendment (2026-06-30): the approver is a global admin, not the child's parent
@@ -37,9 +37,9 @@ operator)"; the structural guarantee they describe is otherwise as written.
 
 ## TL;DR
 
-A story can enter a child's library only after a parent approves it, encoded as a state
-machine with no path from generation to a child profile that bypasses the `approved`
-state, because automated moderation helps but cannot be the only line for
+A story can enter a child's library only after a human approves it, encoded as a state
+machine with no path from generation to a child profile that bypasses the recorded
+admin-approval step, because automated moderation helps but cannot be the only line for
 machine-generated content read by children.
 
 ## Context
@@ -114,18 +114,25 @@ ever shared beyond the family.
 
 ### Technical Debt
 
-- The transition `in_review -> approved` requires a guardian; auto checks (validator
-  plus moderation) gate `generating -> in_review`, and failures route to
+- Automated checks (validator plus moderation) run on the GenerationJob
+  (`running -> passed | needs_review | failed`) and gate whether a Storybook may enter
+  `in_review`; the approve action then moves the Storybook directly to `published` (there
+  is no separate `approved` resting state), and a rejected review routes to
   `needs_revision`. A story is visible to a child only in `published`.
 
 ## Implementation
 
 ### Components Affected
 
-1. **Publish state machine**: `draft -> generating -> auto_check -> in_review ->
-   approved -> published -> archived`, with `needs_revision` on failures.
-2. **Authorization**: an approver (guardian) role; child tokens cannot approve or
-   publish.
+1. **Two lifecycles, not one pipeline**: a **GenerationJob** state machine
+   (`queued -> running -> passed | needs_review | failed`) drives generation and the
+   automated gate, and a separate **Storybook** state machine
+   (`draft -> in_review -> published | needs_revision | archived`) drives review and
+   publication. There is no single `approved` resting state: `approved` is collapsed into
+   the approve action, which publishes in one step. A story is visible to a child only in
+   the Storybook `published` state.
+2. **Authorization**: the approver is a **global admin** (`principal.is_admin`) who
+   screens cross-family; child and guardian tokens cannot approve or publish.
 3. **Provenance**: model, provider, prompt version, and approver persisted per
    published version.
 

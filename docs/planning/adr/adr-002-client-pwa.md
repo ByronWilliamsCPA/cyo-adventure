@@ -1,7 +1,7 @@
 ---
 title: "ADR-002: Client is a Progressive Web App"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to build the reader and parent tools as a Progressive Web App."
 tags:
@@ -12,8 +12,9 @@ tags:
 
 # ADR-002: Client is a Progressive Web App
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-03; distribution premise amended by ADR-008)
 > **Date**: 2026-06-20
+> **Amended by**: ADR-008 (distribution: adds a Capacitor App Store shell; the web PWA remains the browser channel)
 
 ## TL;DR
 
@@ -127,4 +128,6 @@ remains. More than a reading app needs at v1.
 
 - [ADR-001](./adr-001-story-format-json-storybook.md): the client-agnostic format that
   keeps a native app open.
+- [ADR-008](./adr-008-public-app-store-launch.md): adds a Capacitor App Store shell as a
+  distribution channel; the web PWA remains the browser channel.
 - [Tech Spec: Multi-device sync rules](../tech-spec.md#multi-device-sync-rules)
