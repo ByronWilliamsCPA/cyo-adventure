@@ -20,6 +20,8 @@ from cyo_adventure.validator.layer1 import band_budget
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from cyo_adventure.validator.report import ValidationReport
+
 _FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "storybook"
 _VALID = _FIXTURES / "valid"
 _INVALID = _FIXTURES / "invalid"
@@ -402,3 +404,52 @@ def test_new_bands_have_budgets(band: str, expected: tuple[int, int, int]) -> No
     budget = band_budget(band)
     assert budget is not None, f"No budget entry found for band {band!r}"
     assert budget == expected
+
+
+def _node_count_errors(report: ValidationReport) -> list[str]:
+    """Return L1-7 node_count ERROR messages from a validation report."""
+    return [
+        f.message
+        for f in report.errors
+        if f.rule_id == "L1-7"
+        and f.severity is Severity.ERROR
+        and "node_count" in f.message
+    ]
+
+
+@pytest.mark.unit
+def test_mvp_tier_budget_overrides_band_ceiling() -> None:
+    """A non-production (MVP) story is capped at the MVP envelope, not the band's.
+
+    47 nodes sit within the 16+ production ceiling (60) but exceed the
+    band-independent MVP ceiling (45), so the same graph passes the node-count
+    budget as production and trips L1-7 node_count as MVP.
+    """
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(46)]
+    nodes = [*chain, _ending("n46")]
+    production_meta = _meta(age_band="16+", tier=1)
+    mvp_meta = {**_meta(age_band="16+", tier=1), "production_eligible": False}
+
+    production = validate_layer1(_story(nodes, meta=production_meta, start="n0"))
+    mvp = validate_layer1(_story(nodes, meta=mvp_meta, start="n0"))
+
+    assert _node_count_errors(production) == []
+    assert _node_count_errors(mvp), "MVP story above the 45-node envelope must error"
+
+
+@pytest.mark.unit
+def test_mvp_tier_below_envelope_warns_not_errors() -> None:
+    """An MVP story below the MVP floor warns (not errors), matching the band path."""
+    chain = [_link(f"n{i}", f"n{i + 1}") for i in range(3)]
+    nodes = [*chain, _ending("n3")]
+    mvp_meta = {**_meta(age_band="16+", tier=1), "production_eligible": False}
+
+    report = validate_layer1(_story(nodes, meta=mvp_meta, start="n0"))
+
+    assert _node_count_errors(report) == []
+    assert any(
+        f.rule_id == "L1-7"
+        and f.severity is Severity.WARNING
+        and "node_count" in f.message
+        for f in report.findings
+    )

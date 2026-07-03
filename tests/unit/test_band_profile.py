@@ -1,7 +1,14 @@
 """Unit tests for the per-band policy profile."""
 
 from cyo_adventure.storybook.models import AgeBand, ContentFlagLevel, EndingKind
-from cyo_adventure.validator.band_profile import _PROFILES, BandProfile, profile_for
+from cyo_adventure.validator.band_profile import (
+    _PROFILES,
+    MVP_MAX_NODES,
+    MVP_MIN_NODES,
+    BandProfile,
+    mvp_node_budget,
+    profile_for,
+)
 
 
 def test_every_band_has_a_profile():
@@ -39,3 +46,20 @@ def test_budget_triple_matches_legacy_values():
 
 def test_oldest_band_allows_intense_peril():
     assert profile_for("16+").content_ceiling["peril"] is ContentFlagLevel.INTENSE
+
+
+def test_mvp_node_budget_is_band_independent_with_band_depth():
+    """The MVP node envelope is the same for every band; depth stays band-anchored."""
+    for band in ("3-5", "5-8", "8-11", "10-13", "13-16", "16+"):
+        profile = profile_for(band)
+        assert profile is not None
+        assert mvp_node_budget(band) == (
+            MVP_MIN_NODES,
+            MVP_MAX_NODES,
+            profile.max_depth,
+        )
+
+
+def test_mvp_node_budget_unknown_band_is_none():
+    """An unknown band has no MVP budget (keeps the depth cap band-anchored)."""
+    assert mvp_node_budget("99-100") is None

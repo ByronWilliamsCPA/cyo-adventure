@@ -102,3 +102,34 @@ def profile_for(age_band: str) -> BandProfile | None:
         The band's :class:`BandProfile`, or ``None`` when not configured.
     """
     return _PROFILES.get(age_band)
+
+
+# MVP/Test tier: a band-independent, non-production node envelope for
+# prototyping, pipeline and integration testing, and generator development. A
+# story whose ``metadata.production_eligible`` is ``False`` is budgeted against
+# this envelope instead of its band's production node budget; every other band
+# policy (content ceiling, forbidden endings, floors, branch depth) still
+# applies. See ADR-011 (story-scale framework), the MVP/Test tier.
+MVP_MIN_NODES = 8
+MVP_MAX_NODES = 45
+
+
+def mvp_node_budget(age_band: str) -> tuple[int, int, int] | None:
+    """Return the MVP/Test ``(min_nodes, max_nodes, max_depth)`` for a band.
+
+    The node-count envelope is band-independent (``MVP_MIN_NODES`` ..
+    ``MVP_MAX_NODES``); the branch-depth cap is inherited from the band's
+    production profile so an MVP shell stays within its band's structural
+    depth.
+
+    Args:
+        age_band: The story age band value (for example ``"10-13"``).
+
+    Returns:
+        The ``(min_nodes, max_nodes, max_depth)`` triple, or ``None`` when the
+        band is not configured (which keeps the depth cap band-anchored).
+    """
+    profile = profile_for(age_band)
+    if profile is None:
+        return None
+    return (MVP_MIN_NODES, MVP_MAX_NODES, profile.max_depth)

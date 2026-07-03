@@ -28,7 +28,7 @@ from cyo_adventure.storybook.condition import (
     validate_condition,
 )
 from cyo_adventure.storybook.schema_export import build_schema
-from cyo_adventure.validator.band_profile import profile_for
+from cyo_adventure.validator.band_profile import mvp_node_budget, profile_for
 from cyo_adventure.validator.report import (
     Severity,
     ValidationFinding,
@@ -771,7 +771,16 @@ def _check_budget(
     """L1-7: ending_count match, node-count band, and max branch depth."""
     _check_ending_count(story, report)
     band = story.metadata.get("age_band")
-    budget = band_budget(band, scale) if isinstance(band, str) else None
+    # #ASSUME: data-integrity: production_eligible is read from raw JSON, so an
+    # absent field (``None``) means production; only an explicit ``false`` selects
+    # the MVP/Test envelope. A non-bool value coerces to production, matching the
+    # Pydantic default of True. See ADR-011, the MVP/Test tier.
+    # #VERIFY: test_layer1_validator.py::test_mvp_tier_budget_overrides_band_ceiling.
+    is_mvp = story.metadata.get("production_eligible") is False
+    if isinstance(band, str) and is_mvp:
+        budget = mvp_node_budget(band)
+    else:
+        budget = band_budget(band, scale) if isinstance(band, str) else None
     if budget is None:
         if scale == "compact" and isinstance(band, str):
             report.add(

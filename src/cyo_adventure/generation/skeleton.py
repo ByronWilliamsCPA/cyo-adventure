@@ -46,6 +46,27 @@ def load_skeleton(path: Path) -> dict[str, object]:
     return data
 
 
+def is_production_eligible(story: dict[str, object]) -> bool:
+    """Return whether a skeleton may be selected for a child-facing story.
+
+    A skeleton is production-eligible unless its metadata explicitly sets
+    ``production_eligible`` to ``False`` (the MVP/Test tier; see ADR-011).
+    Production story selection must exclude non-eligible skeletons; the gate
+    still accepts them (against the band-independent MVP node envelope) so they
+    remain usable for prototyping and pipeline testing.
+
+    Args:
+        story: The decoded skeleton dict.
+
+    Returns:
+        ``True`` unless ``metadata.production_eligible`` is explicitly ``False``.
+    """
+    meta = story.get("metadata")
+    if not isinstance(meta, dict):
+        return True
+    return meta.get("production_eligible") is not False
+
+
 def has_unfilled_directives(story: dict[str, object]) -> bool:
     """Return True if any node body still contains a ``<<FILL``-prefixed directive."""
     nodes = story.get("nodes")

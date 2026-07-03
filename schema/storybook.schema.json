@@ -311,6 +311,11 @@
           "title": "Estimated Minutes",
           "type": "integer"
         },
+        "production_eligible": {
+          "default": true,
+          "title": "Production Eligible",
+          "type": "boolean"
+        },
         "reading_level": {
           "$ref": "#/$defs/ReadingLevel"
         },

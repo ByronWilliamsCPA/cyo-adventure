@@ -23,7 +23,8 @@
       "scariness": "none",
       "peril": "none"
     },
-    "topology": "loop_and_grow"
+    "topology": "loop_and_grow",
+    "production_eligible": false
   },
   "variables": [],
   "start_node": "n_start",

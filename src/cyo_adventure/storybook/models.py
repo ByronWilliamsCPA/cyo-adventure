@@ -156,6 +156,14 @@ class StoryMetadata(BaseModel):
     ending_count: int = Field(ge=1)
     content_flags: ContentFlags = Field(default_factory=ContentFlags)
     topology: Topology
+    # A non-production MVP/Test skeleton exists for prototyping, pipeline and
+    # integration testing, and generator development. When ``False`` the L1-7
+    # node-count budget is the band-independent MVP envelope (not the band's
+    # production budget), and production story selection must exclude it. All
+    # other band policy (content ceiling, forbidden endings, floors, depth)
+    # still applies. Defaults to ``True`` so an omitted field means production.
+    # See ADR-011 (story-scale framework), the MVP/Test tier.
+    production_eligible: bool = True
 
 
 class Variable(BaseModel):
