@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../auth/useAuth'
 import './guardian.css'
@@ -39,6 +39,13 @@ export function GuardianShell() {
           </button>
         ) : null}
       </header>
+      <nav className="guardian-shell__nav" aria-label="Guardian">
+        <NavLink to="/guardian" end>
+          Console
+        </NavLink>
+        <NavLink to="/guardian/intake">Request a story</NavLink>
+        <NavLink to="/guardian/profiles">Profiles</NavLink>
+      </nav>
       {signOutError ? (
         <p role="alert" className="guardian-shell__error">
           Sign-out failed. Check your connection and try again.

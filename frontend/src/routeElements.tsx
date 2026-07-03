@@ -59,6 +59,12 @@ export const KidShell = lazy(() => import('./kid/KidShell').then((m) => ({ defau
 export const LibraryPage = lazy(() =>
   import('./kid/LibraryPage').then((m) => ({ default: m.LibraryPage }))
 )
+export const ProfilePickerPage = lazy(() =>
+  import('./kid/ProfilePickerPage').then((m) => ({ default: m.ProfilePickerPage }))
+)
+export const ProfilesPage = lazy(() =>
+  import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
+)
 export const ReaderRoute = lazy(() =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )

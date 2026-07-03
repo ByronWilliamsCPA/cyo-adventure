@@ -89,8 +89,14 @@ beforeEach(() => {
 })
 
 describe('router: kid surface', () => {
-  it('renders the library stub at /', async () => {
+  it('renders the profile picker at /', async () => {
+    mockGet.mockResolvedValue({ data: { profiles: [] } })
     renderAt('/')
+    expect(await screen.findByText(/No profiles yet/i)).toBeInTheDocument()
+  })
+
+  it('renders the library stub at /library/:profileId', async () => {
+    renderAt('/library/p1')
     expect(await screen.findByText(/My Books/)).toBeInTheDocument()
   })
 

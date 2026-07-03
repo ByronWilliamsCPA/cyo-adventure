@@ -16,6 +16,7 @@ Authorization rules (docs/planning/authorization-matrix.md):
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Annotated
@@ -31,11 +32,11 @@ from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
     ConfigurationError,
+    ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, User
 
 if TYPE_CHECKING:
-    import uuid
     from collections.abc import AsyncIterator
 
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -368,6 +369,26 @@ def get_context(principal: CurrentPrincipal, session: DbSession) -> RequestConte
 
 
 Context = Annotated[RequestContext, Depends(get_context)]
+
+
+def parse_uuid(raw: str, field: str) -> uuid.UUID:
+    """Parse a UUID path or body field, raising a 422-mapped error on bad input.
+
+    Args:
+        raw: The raw string supplied by the client.
+        field: The field name to report in the validation error.
+
+    Returns:
+        uuid.UUID: The parsed UUID.
+
+    Raises:
+        ValidationError: If ``raw`` is not a valid UUID.
+    """
+    try:
+        return uuid.UUID(raw)
+    except ValueError as exc:
+        msg = f"{field} must be a UUID"
+        raise ValidationError(msg, field=field, value=raw) from exc
 
 
 def authorize_profile(principal: Principal, profile_id: uuid.UUID) -> None:

@@ -8,26 +8,20 @@ scoped to the principal's own family and profile.
 
 from __future__ import annotations
 
-import uuid
-
 from fastapi import APIRouter
 from sqlalchemy import select
 
-from cyo_adventure.api.deps import Context, authorize_family, authorize_profile
+from cyo_adventure.api.deps import (
+    Context,
+    authorize_family,
+    authorize_profile,
+    parse_uuid,
+)
 from cyo_adventure.api.schemas import RatingBody, RatingListView, RatingView
-from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
+from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Rating, Storybook
 
 router = APIRouter(prefix="/api/v1", tags=["ratings"])
-
-
-def _parse_uuid(raw: str, field: str) -> uuid.UUID:
-    """Parse a UUID field, raising a 422-mapped error on bad input."""
-    try:
-        return uuid.UUID(raw)
-    except ValueError as exc:
-        msg = f"{field} must be a UUID"
-        raise ValidationError(msg, field=field, value=raw) from exc
 
 
 def _rating_view(row: Rating) -> RatingView:
@@ -61,7 +55,7 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     # before any write, so a child cannot rate another profile's or family's
     # book (IDOR).
     # #VERIFY: authorize_profile / authorize_family raise AuthorizationError -> 403.
-    profile_id = _parse_uuid(body.profile_id, "profile_id")
+    profile_id = parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, profile_id)
     # Note: the 404-if-missing check precedes authorize_family, so a caller can
     # tell "exists in another family" (403) from "does not exist" (404). This
@@ -113,7 +107,7 @@ async def list_ratings(profile_id: str, ctx: Context) -> RatingListView:
     """
     # #CRITICAL: security: a caller may only read ratings for a profile it owns.
     # #VERIFY: authorize_profile raises AuthorizationError -> 403.
-    parsed = _parse_uuid(profile_id, "profile_id")
+    parsed = parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     # Order by most-recently-updated so the response is deterministic across
     # calls; an unordered SELECT returns DB-dependent row order, which causes

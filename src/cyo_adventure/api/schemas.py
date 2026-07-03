@@ -8,13 +8,14 @@ the path and validated against the token subject (IDOR defense).
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
+from cyo_adventure.storybook.models import AgeBand
 
 
 class ReadingStateBody(BaseModel):
@@ -182,6 +183,75 @@ class RatingListView(BaseModel):
     """All ratings recorded by a single child profile."""
 
     ratings: list[RatingView]
+
+
+# ---------------------------------------------------------------------------
+# Profile schemas
+# ---------------------------------------------------------------------------
+
+
+DisplayName = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
+
+# #CRITICAL: security: avatars must stay opaque glyph ids, never photos or free
+# text (the child-photo privacy decision is unresolved; see the frontend
+# avatar catalog's module docstring). A closed vocabulary here is what
+# enforces that invariant server-side; the UI radio group alone is bypassable.
+# #VERIFY: tests/integration/test_profiles.py::test_create_rejects_unknown_avatar
+# asserts 422 for an id outside this catalog. Keep in sync with
+# frontend/src/profiles/avatars.ts AVATARS.
+AvatarId = Literal["fox", "owl", "dragon", "cat", "unicorn", "robot", "rocket", "frog"]
+
+
+class ProfileView(BaseModel):
+    """A child profile as seen by its guardian or the child themself."""
+
+    id: str
+    display_name: str
+    age_band: AgeBand
+    reading_level_cap: float
+    avatar: str | None
+    tts_enabled: bool
+    created_at: datetime
+
+
+class ProfileListView(BaseModel):
+    """The profiles the calling principal may act on."""
+
+    profiles: list[ProfileView]
+
+
+class ProfileCreateBody(BaseModel):
+    """A guardian's request to create a child profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    display_name: DisplayName
+    age_band: AgeBand
+    reading_level_cap: float = Field(default=99.0, ge=0.0, le=99.0)
+    avatar: AvatarId | None = None
+    tts_enabled: bool = False
+
+
+class ProfileUpdateBody(BaseModel):
+    """A guardian's partial update to a child profile.
+
+    ``avatar`` distinguishes "omitted" from "explicit null" via
+    ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar.
+    The other four fields have no legitimate "clear" semantics, so an explicit
+    ``null`` on them is a deliberate no-op (the router only applies non-null
+    values); see ``update_profile`` and
+    ``test_update_ignores_explicit_null_on_non_avatar_fields``.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    display_name: DisplayName | None = None
+    age_band: AgeBand | None = None
+    reading_level_cap: float | None = Field(default=None, ge=0.0, le=99.0)
+    avatar: AvatarId | None = None
+    tts_enabled: bool | None = None
 
 
 # ---------------------------------------------------------------------------

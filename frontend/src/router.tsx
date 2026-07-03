@@ -12,6 +12,8 @@ import {
   LibraryPage,
   LoginPage,
   NotFoundPage,
+  ProfilePickerPage,
+  ProfilesPage,
   ReaderRoute,
   RouteError,
   RouteFallback,
@@ -45,7 +47,8 @@ export const routes = [
     element: suspended(<KidShell />),
     errorElement: <RouteError />,
     children: [
-      { index: true, element: suspended(<LibraryPage />) },
+      { index: true, element: suspended(<ProfilePickerPage />) },
+      { path: 'library/:profileId', element: suspended(<LibraryPage />) },
       {
         path: 'read/:profileId/:storybookId/:version',
         element: suspended(<ReaderRoute />),
@@ -73,6 +76,7 @@ export const routes = [
             children: [
               { index: true, element: suspended(<ConsolePage />) },
               { path: 'intake', element: suspended(<IntakePage />) },
+              { path: 'profiles', element: suspended(<ProfilesPage />) },
             ],
           },
         ],

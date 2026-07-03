@@ -314,8 +314,8 @@ known-first-party = ["cyo_adventure"]
 # alias) at runtime; FastAPI resolves the Depends at startup via inspect, so
 # Context must not move into TYPE_CHECKING even when it appears only in
 # annotations. Routers that import Context alongside other runtime-called
-# names (ratings.py, reading.py, generation.py) don't need this: ruff won't
-# suggest moving part of a multi-name import line.
+# names (ratings.py, reading.py, generation.py, profiles.py) don't need
+# this: ruff won't suggest moving part of a multi-name import line.
 "**/api/approval.py" = ["TC001"]
 "**/api/me.py" = ["TC001"]
 
