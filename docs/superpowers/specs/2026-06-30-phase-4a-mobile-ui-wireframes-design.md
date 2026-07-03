@@ -66,11 +66,12 @@ implementation will actually use:
 ### 4.1 Profile Picker (kid surface, entry point)
 
 **Confirmed concept**: 2-column avatar grid (not a carousel or full-width rows), where each
-avatar is a **custom child photo** (not just an initial) inside a bordered circle, with a name
-label and a small colored **status pill** beneath it showing the currently-in-progress book title
-(or a "new story ready!" state when a guardian has just approved something). A dashed-outline
-"Add Child" tile completes the grid. A child with no photo yet falls back to a dashed
-placeholder circle rather than blocking the flow.
+avatar is a **preset illustrated avatar** (not just an initial) inside a bordered circle, with a
+name label and a small colored **status pill** beneath it showing the currently-in-progress book
+title (or a "new story ready!" state when a guardian has just approved something). A dashed-outline
+"Add Child" tile completes the grid. A child with no avatar selected falls back to a dashed
+placeholder circle rather than blocking the flow. (See the RESOLVED note below: avatars are
+preset-only, never custom photos.)
 
 **Why this shape**: the grid reads as a familiar "device lock screen" pattern and scales to more
 children by adding rows; the status pill reuses the same visual language as PR #44's

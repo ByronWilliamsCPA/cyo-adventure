@@ -73,7 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Profile Picker as the app's entry page (selection lands the child in their
   own library route), and a guardian Profiles page for creating and editing
   per-child age-band and reading-level caps with illustrated avatars (no
-  child photos; that privacy decision is still open).
+  child photos; preset-only avatars by decision, see issue #65).
 - Design system: `AvatarCircle` component (preset avatar glyph with dashed
   initial fallback) plus its 8-preset avatar catalog, extracted from the C4a-2
   profile UI into `@cyo/design-system`, with tests and an authored design-sync
