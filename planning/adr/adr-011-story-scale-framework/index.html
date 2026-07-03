@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-011-story-scale-framework/">
       
       
-        <link rel="prev" href="../roadmap/">
-      
-      
-        <link rel="next" href="adr-001-story-format-json-storybook/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Architecture Decision Records - CYO Adventure</title>
+        <title>ADR-011: Story-scale framework (reading band x length x style) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#what-are-adrs" class="md-skip">
+        <a href="#adr-011-story-scale-framework-reading-band-x-length-x-style" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture Decision Records
+              ADR-011: Story-scale framework (reading band x length x style)
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,13 +362,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -825,7 +819,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -876,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -911,7 +905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -946,7 +940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -981,7 +975,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1016,7 +1010,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1122,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1157,7 +1151,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1192,7 +1186,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1227,7 +1221,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1331,7 +1325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1366,7 +1360,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1401,7 +1395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1440,8 +1434,6 @@
       
   
   
-    
-  
   
   
     
@@ -1465,23 +1457,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1506,13 +1497,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1532,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1567,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1602,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1637,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1669,8 +1660,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1698,21 +1687,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1737,13 +1725,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_7_6" id="__nav_7_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1763,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1798,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1833,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1868,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1903,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1938,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2052,7 +2040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2087,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2122,7 +2110,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2157,7 +2145,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2226,7 +2214,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2277,7 +2265,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2329,6 +2317,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2337,10 +2327,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-are-adrs" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Are ADRs?
+        TL;DR
       
     </span>
   </a>
@@ -2348,10 +2338,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Index
+        Context
       
     </span>
   </a>
@@ -2359,22 +2349,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-adrs" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating ADRs
+        Decision
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Creating ADRs">
+    <nav class="md-nav" aria-label="Decision">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#automatic-generation" class="md-nav__link">
+  <a href="#1-three-axes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Generation
+        1. Three axes
       
     </span>
   </a>
@@ -2382,10 +2372,98 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#manual-creation" class="md-nav__link">
+  <a href="#1a-mvptest-tier-below-short-non-production" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Creation
+        1a. MVP/Test tier (below Short, non-production)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-total-words-primary-node-count-derived" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Total words primary, node count derived
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Words per node (advisory story-mean; anchor 100 at the research core)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-the-three-clocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. The three clocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-master-cell-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Master cell table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-constants-research-locked-all-cells" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Constants (research-locked, all cells)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-topologies-6-and-flow-primitives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Topologies (6) and flow primitives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-series-campaign-continuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Series (campaign continuity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#9-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Provenance
       
     </span>
   </a>
@@ -2398,10 +2476,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#naming-convention" class="md-nav__link">
+  <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Naming Convention
+        Consequences
       
     </span>
   </a>
@@ -2409,10 +2487,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-create-an-adr" class="md-nav__link">
+  <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to Create an ADR
+        Validation
       
     </span>
   </a>
@@ -2420,32 +2498,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+  <a href="#related" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Lifecycle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#template-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#more-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        More Information
+        Related
       
     </span>
   </a>
@@ -2472,138 +2528,495 @@
   
 
 
-  <h1>Overview</h1>
-
-<p>This directory contains Architecture Decision Records (ADRs) for CYO Adventure.</p>
-<h2 id="what-are-adrs">What Are ADRs?<a class="headerlink" href="#what-are-adrs" title="Permanent link">&para;</a></h2>
-<p>ADRs document significant architectural decisions along with their context and consequences. They help:</p>
+<h1 id="adr-011-story-scale-framework-reading-band-x-length-x-style">ADR-011: Story-scale framework (reading band x length x style)<a class="headerlink" href="#adr-011-story-scale-framework-reading-band-x-length-x-style" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Proposed
+<strong>Date</strong>: 2026-07-02
+<strong>Relates to</strong>: <a href="../adr-001-story-format-json-storybook/">ADR-001</a> (adds <code>length</code>,
+<code>narrative_style</code>, and <code>series</code> metadata plus two <code>Topology</code> enum values),
+<a href="../adr-006-conditions-inhouse-evaluator/">ADR-006</a> (series state-carry uses declared
+variables/conditions). <strong>Supersedes</strong> the compact per-band budgets in
+<code>validator/band_profile.py</code> (the "compact slice", the only part of the
+reading-level x topology x scale design in
+<code>docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md</code> that landed).</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Story size is a deliberate product axis, not a side effect of generator behaviour. A
+story is placed on a <strong>reading-band x length x narrative-style</strong> matrix. <strong>Length is
+defined by a total-word budget; node count is derived</strong> (<code>nodes = total_words /
+words_per_node</code>). Three "clocks" govern the experience: a <strong>fastest-finish arc floor</strong>
+(shortest path to a satisfying completion must tell a full story), a <strong>total-node
+envelope</strong> (world size, with per-cell variance across skeletons), and a <strong>whole-world
+replay</strong> measure. Decisions-per-path is held constant (~4-8); length adds breadth, not
+depth. Six topologies compose from six flow primitives, gated by per-band safety
+allowances. A <strong>series</strong> chains books, with every successful-completion ending of a
+non-final book converging on the next book's single entry node.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<p>The full model was specified in the modal-generation-tiers design but only a <strong>compact
+slice</strong> shipped: <code>band_profile.py</code> holds one small node range per band (8-11 &lt;= 30, 16+
+&lt;= 60), with no length or style axis, no words-per-node enforcement, and a band-only
+coverage view. Genre-faithful scale is far larger (8-11 ~90-120 nodes, 13-16 ~350-456,
+16+ ~400+), so genre-scale skeletons are rejected by <code>load_skeleton</code> today.</p>
+<p>The empirical basis (recorded in <code>docs/planning/research/</code>):</p>
 <ul>
-<li>Prevent architectural drift during AI-assisted development</li>
-<li>Provide rationale for technical choices</li>
-<li>Enable future developers to understand why decisions were made</li>
-<li>Maintain consistency across coding sessions</li>
+<li><strong>JHM 2019</strong> measured 40 classic CYOA books (ages 9-12): ~90-120 page-nodes, median
+  ~20 endings (11-42), ~5 decisions/playthrough (7-8 longest), essentially a tree (max
+  indegree 1.5). This anchors the 8-11 and 10-13 bands with high confidence.</li>
+<li>The four-source reconciliation adds words/node (~100-150), total words (~8-15k at
+  8-11), the age-gated fail-state policy, and the finding that many endings come from
+  <strong>reconvergent leaves, not depth</strong>.</li>
+<li><strong>5-8</strong> node counts are measured (medium confidence); <strong>13-16</strong> rests on gamebook
+  metadata; <strong>3-5 and 16+ have no research</strong> and are product-defined.</li>
 </ul>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
+<p>The framework must be durable because size decisions drive reading fit, safety policy,
+generation cost, and catalog shape, and because the compact slice already demonstrated
+that an unrecorded model silently collapses (the length axis was lost).</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-three-axes">1. Three axes<a class="headerlink" href="#1-three-axes" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Reading band</strong> (6): <code>3-5</code>, <code>5-8</code>, <code>8-11</code>, <code>10-13</code>, <code>13-16</code>, <code>16+</code>.</li>
+<li><strong>Length</strong> (3 production tiers): <code>short</code>, <code>medium</code>, <code>long</code>, defined by a <strong>total-word
+  budget</strong>. Young bands (<code>3-5</code>, <code>5-8</code>) cap at Medium. Epic scale is a <strong>series</strong>, not a
+  4<sup>th</sup> tier. A non-production <strong>MVP/Test tier</strong> sits below Short (section 1a).</li>
+<li><strong><code>narrative_style</code></strong> (explicit field): <code>prose</code> vs <code>gamebook</code>, meaningful only for
+  <code>13-16</code>/<code>16+</code>; all lower bands are implicitly prose. Style sets words/node, so one
+  length is either fewer/denser nodes (prose) or more/shorter nodes (gamebook).</li>
+</ul>
+<h3 id="1a-mvptest-tier-below-short-non-production">1a. MVP/Test tier (below Short, non-production)<a class="headerlink" href="#1a-mvptest-tier-below-short-non-production" title="Permanent link">&para;</a></h3>
+<p>A single band-independent tier below Short, for prototyping, pipeline/integration
+testing, and generator development. It is <strong>not production-eligible</strong>: skeletons and
+stories in this tier are marked <code>production_eligible = false</code> (a <code>tier = "mvp"</code> marker),
+<code>load_skeleton</code> accepts them, but production story selection excludes them so no
+MVP-scale story ever reaches a child-facing catalog.</p>
+<ul>
+<li><strong>Node envelope</strong>: ~8-45 nodes, band-independent (the point is exercising the plumbing,
+  not reading fit). Words/node still <strong>inherits the band mean</strong> from section 3, so an
+  <code>16+</code> MVP node is denser than a <code>3-5</code> one.</li>
+<li><strong><code>min-to-complete</code></strong>: relaxed to ~4 nodes; the arc-floor substance requirement of the
+  three clocks (section 4) is <strong>waived</strong> here, because MVP shells exist to be short.</li>
+<li><strong>Endings</strong>: ~2-6. <strong>Style</strong>: prose only (gamebook needs scale to be meaningful).</li>
+<li>The three current hand-authored skeletons live here as development seeds: Lost Mitten
+  (<code>3-5</code>, 11 nodes), Clocktower (<code>10-13</code>, 25), Sunken Signal (<code>16+</code>, 32). This is the
+  decision that closes the earlier Pilot-vs-rescale question: <strong>adopt an MVP tier and
+  classify the current skeletons into it</strong>, rather than rescaling them to production floors.</li>
+</ul>
+<h3 id="2-total-words-primary-node-count-derived">2. Total words primary, node count derived<a class="headerlink" href="#2-total-words-primary-node-count-derived" title="Permanent link">&para;</a></h3>
+<p><code>nodes = total_words / words_per_node</code>. The gate enforces the derived node envelope, but
+the design anchor is words. This binds nodes, words, and words/node by one equation so
+the axes cannot silently disagree (the failure mode that lost the length axis before).</p>
+<h3 id="3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core">3. Words per node (advisory story-mean; anchor 100 at the research core)<a class="headerlink" href="#3-words-per-node-advisory-story-mean-anchor-100-at-the-research-core" title="Permanent link">&para;</a></h3>
+<p>Enforced as a story-level <strong>mean</strong> within the advisory band, plus a per-node hard
+<strong>max</strong> (wall guard); <strong>no</strong> hard per-node min (a one-line beat is legitimate).</p>
 <table>
 <thead>
 <tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
+<th>Band</th>
+<th>Style</th>
+<th style="text-align: right;">Mean</th>
+<th>Advisory band</th>
+<th style="text-align: right;">Per-node max</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="adr-001-story-format-json-storybook/">ADR-001</a></td>
-<td>Story format is a versioned JSON Storybook graph</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>3-5</td>
+<td>prose</td>
+<td style="text-align: right;">40</td>
+<td>28-55</td>
+<td style="text-align: right;">90</td>
 </tr>
 <tr>
-<td><a href="adr-002-client-pwa/">ADR-002</a></td>
-<td>Client is a Progressive Web App</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>5-8</td>
+<td>prose</td>
+<td style="text-align: right;">70</td>
+<td>50-95</td>
+<td style="text-align: right;">155</td>
 </tr>
 <tr>
-<td><a href="adr-003-frontier-llm-generation/">ADR-003</a></td>
-<td>Frontier LLM for generation, local model as fallback</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>8-11</td>
+<td>prose</td>
+<td style="text-align: right;">100</td>
+<td>70-135</td>
+<td style="text-align: right;">220</td>
 </tr>
 <tr>
-<td><a href="adr-004-homelab-first-deployment/">ADR-004</a></td>
-<td>Homelab-first deployment, Azure as the scale-out alternative</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>10-13</td>
+<td>prose</td>
+<td style="text-align: right;">100</td>
+<td>70-135</td>
+<td style="text-align: right;">220</td>
 </tr>
 <tr>
-<td><a href="adr-005-mandatory-human-approval/">ADR-005</a></td>
-<td>Mandatory human approval before any story reaches a child</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>13-16</td>
+<td>prose</td>
+<td style="text-align: right;">140</td>
+<td>100-185</td>
+<td style="text-align: right;">310</td>
 </tr>
 <tr>
-<td><a href="adr-006-conditions-inhouse-evaluator/">ADR-006</a></td>
-<td>Conditions use the JSONLogic shape with an in-house whitelisted evaluator</td>
-<td>Proposed</td>
-<td>2026-06-20</td>
+<td>13-16</td>
+<td>gamebook</td>
+<td style="text-align: right;">65</td>
+<td>45-90</td>
+<td style="text-align: right;">145</td>
 </tr>
 <tr>
-<td><a href="adr-007-raw-output-retention/">ADR-007</a></td>
-<td>Raw LLM output retention policy for GenerationJob.report</td>
-<td>Proposed</td>
-<td>2026-06-29</td>
+<td>16+</td>
+<td>prose</td>
+<td style="text-align: right;">175</td>
+<td>125-230</td>
+<td style="text-align: right;">385</td>
 </tr>
 <tr>
-<td><a href="adr-008-public-app-store-launch/">ADR-008</a></td>
-<td>Public App Store launch with tiered subscription monetization</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-009-supabase-platform/">ADR-009</a></td>
-<td>Supabase as the managed platform for auth, database, and storage</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-010-modal-review-and-gated-generation/">ADR-010</a></td>
-<td>Modal for moderation review and an evidence-gated generation leg</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-011-story-scale-framework/">ADR-011</a></td>
-<td>Story-scale framework (reading band x length x style)</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
+<td>16+</td>
+<td>gamebook</td>
+<td style="text-align: right;">80</td>
+<td>55-110</td>
+<td style="text-align: right;">175</td>
 </tr>
 </tbody>
 </table>
-<h2 id="creating-adrs">Creating ADRs<a class="headerlink" href="#creating-adrs" title="Permanent link">&para;</a></h2>
-<h3 id="automatic-generation">Automatic Generation<a class="headerlink" href="#automatic-generation" title="Permanent link">&para;</a></h3>
-<p>Run <code>/plan &lt;project description&gt;</code> to generate initial ADRs alongside other planning documents.</p>
-<h3 id="manual-creation">Manual Creation<a class="headerlink" href="#manual-creation" title="Permanent link">&para;</a></h3>
-<p>When making a new architectural decision:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Create an ADR for [decision topic].
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Use template: .claude/skills/project-planning/templates/adr-template.md
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Save to: docs/planning/adr/adr-NNN-[decision-slug].md
-</span></code></pre></div>
-<h2 id="naming-convention">Naming Convention<a class="headerlink" href="#naming-convention" title="Permanent link">&para;</a></h2>
-<p>ADRs follow this naming pattern:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>adr-NNN-short-description.md
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Examples:
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- adr-001-database-choice.md
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>- adr-002-auth-strategy.md
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>- adr-003-api-design.md
-</span></code></pre></div>
-<h2 id="when-to-create-an-adr">When to Create an ADR<a class="headerlink" href="#when-to-create-an-adr" title="Permanent link">&para;</a></h2>
-<p>Create an ADR when:</p>
+<h3 id="4-the-three-clocks">4. The three clocks<a class="headerlink" href="#4-the-three-clocks" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Choosing technology stack or framework</li>
-<li>Deciding on architectural patterns</li>
-<li>Selecting third-party services or libraries</li>
-<li>Making security or performance trade-offs</li>
-<li>Any decision that would be expensive to reverse</li>
+<li><strong>Fastest finish</strong> = shortest path to a <em>satisfying</em> completion (success/completion
+  valence), a per-cell floor (<code>min-to-complete</code> nodes) that must contain a full arc
+  (setup -&gt; rising -&gt; climax -&gt; resolution). Substance is added with mandatory <strong>linear
+  passages</strong>, not extra decisions. Fail-<em>fast</em> is allowed; a quick, hollow <em>win</em> is not.</li>
+<li><strong>Total-node envelope</strong> = world size, derived; skeletons vary within it by topology.</li>
+<li><strong>Whole-world</strong> = replay to exhaustion (<code>total_words / reading_pace</code>), identical for
+  prose and gamebook; tracks ending count.</li>
 </ul>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Proposed → Accepted → [Deprecated | Superseded]
-</span></code></pre></div>
+<h3 id="5-master-cell-table">5. Master cell table<a class="headerlink" href="#5-master-cell-table" title="Permanent link">&para;</a></h3>
+<p>These are the <strong>production</strong> cells; the below-Short MVP/Test tier (section 1a) is
+deliberately smaller than every row here and is excluded from this table.
+<code>min-&gt;complete</code> = arc-floor shortest success path (nodes). <code>total nodes</code> = derived
+envelope. Gamebook endings are "few wins + many fails" (~25-35% of nodes are terminals).
+<code>dagger</code> = exceeds the ~460-node hand-authoring ceiling; procedural-generator / series
+scale, not a hand-authored seed.</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Length</th>
+<th>Style</th>
+<th style="text-align: right;">min-&gt;complete</th>
+<th style="text-align: right;">fastest finish</th>
+<th>total nodes</th>
+<th>endings</th>
+<th>whole-world</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5</td>
+<td>Short</td>
+<td>prose</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">~2-3 min</td>
+<td>10-23</td>
+<td>2-4</td>
+<td>~5-9 min</td>
+</tr>
+<tr>
+<td>3-5</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">~3 min</td>
+<td>23-45</td>
+<td>4-6</td>
+<td>~9-18 min</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>Short</td>
+<td>prose</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">~5 min</td>
+<td>29-50</td>
+<td>6-10</td>
+<td>~20-40 min</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">~7 min</td>
+<td>50-86</td>
+<td>10-16</td>
+<td>~40-65 min</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>Short</td>
+<td>prose</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">~8 min</td>
+<td>60-100</td>
+<td>12-18</td>
+<td>~50-85 min</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">~10 min</td>
+<td>100-160</td>
+<td>18-28</td>
+<td>~85-135 min</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>Long</td>
+<td>prose</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">~12 min</td>
+<td>160-240</td>
+<td>28-40</td>
+<td>~2.2-3.3 hr</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>Short</td>
+<td>prose</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">~7 min</td>
+<td>90-140</td>
+<td>14-22</td>
+<td>~60-95 min</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">14</td>
+<td style="text-align: right;">~9 min</td>
+<td>140-220</td>
+<td>22-32</td>
+<td>~95-145 min</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>Long</td>
+<td>prose</td>
+<td style="text-align: right;">17</td>
+<td style="text-align: right;">~11 min</td>
+<td>220-340</td>
+<td>32-48</td>
+<td>~2.5-3.8 hr</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">~11 min</td>
+<td>115-170</td>
+<td>20-32</td>
+<td>~85-125 min</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>Medium</td>
+<td>gamebook</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">~8 min</td>
+<td>245-370</td>
+<td>many fails</td>
+<td>~85-125 min</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>Long</td>
+<td>prose</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">~15 min</td>
+<td>170-270</td>
+<td>30-48</td>
+<td>~2.1-3.3 hr</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>Long</td>
+<td>gamebook</td>
+<td style="text-align: right;">32</td>
+<td style="text-align: right;">~11 min</td>
+<td>370-585 dagger</td>
+<td>many fails</td>
+<td>~2.1-3.3 hr</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>Medium</td>
+<td>prose</td>
+<td style="text-align: right;">18</td>
+<td style="text-align: right;">~14 min</td>
+<td>135-215</td>
+<td>24-40</td>
+<td>~110-175 min</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>Medium</td>
+<td>gamebook</td>
+<td style="text-align: right;">29</td>
+<td style="text-align: right;">~11 min</td>
+<td>300-475 dagger</td>
+<td>many fails</td>
+<td>~110-175 min</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>Long</td>
+<td>prose</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: right;">~18 min</td>
+<td>215-345</td>
+<td>36-60</td>
+<td>~2.9-4.6 hr</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>Long</td>
+<td>gamebook</td>
+<td style="text-align: right;">37</td>
+<td style="text-align: right;">~14 min</td>
+<td>475-750 dagger</td>
+<td>many fails</td>
+<td>~2.9-4.6 hr</td>
+</tr>
+</tbody>
+</table>
+<p>Reading-pace anchors (approx, standard fluency norms, not project-measured): 3-5 ~100
+wpm (read aloud), 5-8 ~90, 8-11 ~120, 10-13 ~150, 13-16 ~190, 16+ ~220.</p>
+<h3 id="6-constants-research-locked-all-cells">6. Constants (research-locked, all cells)<a class="headerlink" href="#6-constants-research-locked-all-cells" title="Permanent link">&para;</a></h3>
+<p>Decisions per path <strong>~4-8</strong> (length adds breadth, not depth; do not inflate); choices
+per decision <strong>2-3</strong>; setup before first choice <strong>~2-3 nodes</strong>; endings via reconvergent
+leaves, scaling with node count (prose ~15-22%).</p>
+<h3 id="7-topologies-6-and-flow-primitives">7. Topologies (6) and flow primitives<a class="headerlink" href="#7-topologies-6-and-flow-primitives" title="Permanent link">&para;</a></h3>
+<p>Flow primitives: <strong>linear passage</strong> (1-&gt;1), <strong>branch</strong> (1-&gt;N), <strong>bottleneck</strong> (M-&gt;1),
+<strong>loop</strong> (back-edge; needs state), <strong>terminal</strong> (1-&gt;0), <strong>restart-on-fail</strong> (negative
+ending -&gt; start/checkpoint).</p>
+<table>
+<thead>
+<tr>
+<th>Topology</th>
+<th>Built from</th>
+<th>Fastest-finish</th>
+<th>Reread driver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>time_cave</td>
+<td>branch, terminal</td>
+<td>low</td>
+<td>many divergent endings</td>
+</tr>
+<tr>
+<td>loop_and_grow</td>
+<td>branch, loop, bottleneck, terminal</td>
+<td>low-med</td>
+<td>state growth per loop</td>
+</tr>
+<tr>
+<td>branch_and_bottleneck (incl. <strong>quest</strong> variant)</td>
+<td>branch, bottleneck, terminal</td>
+<td>med</td>
+<td>different routes, same beats</td>
+</tr>
+<tr>
+<td>open_map</td>
+<td>hub, branch, loop/return, bottleneck, terminal</td>
+<td>med</td>
+<td>explore in any order</td>
+</tr>
+<tr>
+<td>sorting_hat</td>
+<td>branch (sort), parallel subtrees, terminal; no cross-track bottleneck</td>
+<td>med</td>
+<td>play each track</td>
+</tr>
+<tr>
+<td>gauntlet</td>
+<td>linear spine, branch-to-fail, terminal (many), restart-on-fail</td>
+<td>high</td>
+<td>master the one path</td>
+</tr>
+</tbody>
+</table>
+<p><code>open_map</code> and <code>sorting_hat</code> are <strong>added</strong> to the enum; <code>quest</code> folds into
+<code>branch_and_bottleneck</code>; <code>floating_modules</code> is documented-but-deferred. Per-band
+allowances gate the dangerous primitives: no <code>death</code>/<code>capture</code> endings for <code>3-5</code>/<code>5-8</code>,
+no <code>death</code> for <code>8-11</code>; loops require state (tier 2); restart-on-fail is lethal only from
+<code>13-16</code> up.</p>
+<h3 id="8-series-campaign-continuity">8. Series (campaign continuity)<a class="headerlink" href="#8-series-campaign-continuity" title="Permanent link">&para;</a></h3>
+<p>A <code>series</code> tag chains multiple books. <strong>Invariant:</strong> in any non-final book, every
+successful-completion ending converges on the next book's single <code>series_entry_node</code>
+(many endings -&gt; one entry), with declared state carried across. Series metadata:
+<code>series_id</code>, <code>book_index</code>, <code>series_entry_node</code>, the continuation flag, and the
+state-export contract. The series is a <strong>meta-skeleton</strong> (books are nodes,
+completion-&gt;entry links are edges); v1 is a linear chain. Each book independently passes
+its own band/length/style/topology gate. Young/tier-1 bands get <strong>episodic</strong> series (no
+state carry). Schema/validator now; series generation is a later phase.</p>
+<h3 id="9-provenance">9. Provenance<a class="headerlink" href="#9-provenance" title="Permanent link">&para;</a></h3>
+<p>Cells are tagged by evidence: <code>8-11</code> measured (high); <code>5-8</code> node counts measured, rest
+estimated; <code>10-13</code> medium; <code>13-16</code> gamebook metadata; <code>3-5</code>/<code>16+</code> product-defined. This
+records which numbers are empirical and which are tunable product choices.</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Proposed</strong>: Under discussion</li>
-<li><strong>Accepted</strong>: Decision made and in use</li>
-<li><strong>Deprecated</strong>: No longer relevant</li>
-<li><strong>Superseded</strong>: Replaced by another ADR</li>
+<li>✅ Size is a recorded, self-consistent contract (nodes derived from words and
+  words/node), so the axes cannot drift apart the way the compact slice did.</li>
+<li>✅ The <code>min-to-complete</code> arc floor gives the validator an anti-cheese gate: a large
+  world cannot be "completed" via a 2-node shortcut to a hollow win.</li>
+<li>✅ Style-as-a-field reconciles prose and gamebook as two chunkings of one word budget,
+  reproducing the measured Fighting Fantasy node counts without inflating reading time.</li>
+<li>✅ Series delivers epic scale as a chain of validatable books rather than an
+  un-authorable mega-story.</li>
+<li>✅ The below-Short <strong>MVP/Test tier</strong> (section 1a) resolves the Pilot-vs-rescale
+  question: the three existing compact skeletons (Lost Mitten <code>3-5</code>/11, Clocktower
+  <code>10-13</code>/25, Sunken Signal <code>16+</code>/32) are classified as non-production MVP seeds rather
+  than rescaled, so prototyping keeps cheap shells while the production floors stay high.</li>
+<li>⚠️ The MVP tier must be firewalled from production: a skeleton tagged <code>tier = "mvp"</code>
+  must never be selectable for a child-facing story. The selection layer, not just the
+  validator, has to enforce the exclusion.</li>
+<li>⚠️ <code>3-5</code> and <code>16+</code> budgets are product-defined without research; treat as tunable and
+  revisit if reader data arrives.</li>
+<li>⚠️ Implementation is non-trivial: a schema change (<code>length</code>, <code>narrative_style</code>,
+  <code>series</code>, two topology enum values), a rewritten <code>band_profile</code>, a topology classifier,
+  and a series meta-validator. It lands on a <strong>separate enabler branch first</strong>; skeleton
+  authoring rebases onto it and stays content-only.</li>
 </ul>
-<h2 id="template-reference">Template Reference<a class="headerlink" href="#template-reference" title="Permanent link">&para;</a></h2>
-<p>For the full ADR template, see the ADR template documentation in the Reference section, or refer to <code>.claude/skills/project-planning/templates/adr-template.md</code> in the project repository.</p>
-<h2 id="more-information">More Information<a class="headerlink" href="#more-information" title="Permanent link">&para;</a></h2>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>band_profile.py</code> encodes per-<code>(band, length, style)</code> budgets; <code>load_skeleton</code>
+      accepts a genre-scale skeleton per the master table and rejects out-of-envelope
+      node counts.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The MVP/Test tier loads (the three current skeletons pass as <code>tier = "mvp"</code>,
+      <code>production_eligible = false</code>) and production story selection excludes it; an
+      MVP-scale skeleton offered for a child-facing story is refused by the selection layer.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Words/node enforced as a story-mean with a per-node max; a one-line node passes,
+      a 600-word wall fails.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>min-to-complete</code> gate: a story with a hollow short win path is rejected;
+      fail-fast endings are allowed.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Topology classifier distinguishes all six patterns; per-band allowance checks
+      reject a <code>death</code> ending at <code>3-5</code>/<code>5-8</code>/<code>8-11</code>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Series meta-validator enforces single-entry convergence and the state-export
+      contract on a two-book fixture.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Coverage view renders the <code>band x length x style</code> grid.</li>
+</ul>
+<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Document Guide: See <code>.claude/skills/project-planning/reference/document-guide.md</code> in the project repository</li>
-<li>Prompting Patterns: See <code>.claude/skills/project-planning/reference/prompting-patterns.md</code> in the project repository</li>
+<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a>: the schema this extends.</li>
+<li><a href="../adr-006-conditions-inhouse-evaluator/">ADR-006</a>: the evaluator series state-carry
+  relies on.</li>
+<li><code>docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md</code>: the original
+  reading-level x topology x scale design and the series concept (section 4.1).</li>
+<li><code>docs/planning/research/</code>: the empirical anchors (JHM 2019 + four-source reconciliation).</li>
+<li><code>docs/planning/skeleton-library-expansion-plan.md</code>: the prioritized authoring backlog
+  that consumes this framework.</li>
 </ul>
 
 
@@ -2637,7 +3050,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 17:15:46 UTC">July 3, 2026</span>
   </span>
 
     
@@ -2714,10 +3127,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
