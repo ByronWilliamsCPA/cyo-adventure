@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios'
 import { describe, expect, it } from 'vitest'
 import { OfflineError } from '../offline/sync'
-import { StoryNotFoundError, makeFetchStory } from './readerApi'
+import { ForbiddenError, StoryNotFoundError, makeFetchStory } from './readerApi'
 
 function axiosLike(reject: unknown): AxiosInstance {
   return { get: () => Promise.reject(reject) } as unknown as AxiosInstance
@@ -11,6 +11,11 @@ describe('makeFetchStory', () => {
   it('maps a 404 response to StoryNotFoundError', async () => {
     const fetchStory = makeFetchStory(axiosLike({ isAxiosError: true, response: { status: 404 } }))
     await expect(fetchStory('missing', 1)).rejects.toBeInstanceOf(StoryNotFoundError)
+  })
+
+  it('maps a 403 response to ForbiddenError', async () => {
+    const fetchStory = makeFetchStory(axiosLike({ isAxiosError: true, response: { status: 403 } }))
+    await expect(fetchStory('locked', 1)).rejects.toBeInstanceOf(ForbiddenError)
   })
 
   it('maps a no-response (transport) failure to OfflineError', async () => {
