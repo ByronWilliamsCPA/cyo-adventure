@@ -30,8 +30,8 @@ export function ReaderRoute() {
   if (!profileId || !storybookId || !version) {
     return (
       <EmptyState
-        title="That story link looks wrong"
-        description="We couldn't tell which story to open. Let's go back to the start."
+        title="We couldn't tell which story to open"
+        description="This link is missing some information. Let's go back to the start."
         actions={
           <Button variant="ghost" onClick={() => navigate('/')}>
             Back to start
