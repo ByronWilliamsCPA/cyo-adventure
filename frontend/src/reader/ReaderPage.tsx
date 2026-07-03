@@ -97,28 +97,37 @@ export function ReaderPage({
     const generation = ++loadGenerationRef.current
     const stale = () => loadGenerationRef.current !== generation
 
+    // IndexedDB is a cache, not a dependency: a read failure here (private
+    // browsing, blocked storage, eviction) degrades to a cache miss so the
+    // network fetch below still gets a chance, instead of blocking the whole
+    // story on local storage being available.
     let cached: Storybook | undefined
     try {
       cached = await getCachedStorybook(storybookId, version)
-    } catch (error) {
-      if (!stale()) setPageState({ phase: loadErrorPhase(error) })
-      return
+    } catch {
+      cached = undefined
     }
     if (!cached) {
       try {
         cached = await fetchStory(storybookId, version)
-        await cacheStorybook(cached)
       } catch (error) {
         if (!stale()) setPageState({ phase: loadErrorPhase(error) })
         return
+      }
+      try {
+        await cacheStorybook(cached)
+      } catch {
+        // Best-effort: the story is already in hand from the network, so a
+        // failure to cache it locally must not block reading it now.
       }
     }
     let saved: ReadingState | undefined
     try {
       saved = await getReadingState(profileId, storybookId)
-    } catch (error) {
-      if (!stale()) setPageState({ phase: loadErrorPhase(error) })
-      return
+    } catch {
+      // Same as above: no local reading state available is not fatal, it
+      // just means this session starts fresh instead of resuming.
+      saved = undefined
     }
     if (stale()) return
     revisionRef.current = saved?.state_revision ?? 0

@@ -104,6 +104,56 @@ describe('ReaderPage', () => {
     expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
   })
 
+  it('falls back to the network fetch when reading the local cache throws', async () => {
+    vi.spyOn(db, 'getCachedStorybook').mockRejectedValueOnce(new Error('DB blocked'))
+    const fetchStory = vi.fn(() => Promise.resolve(lantern))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={fetchStory}
+          profileId="p_dbdown"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchStory).toHaveBeenCalledOnce()
+  })
+
+  it('still reaches reading when caching the fetched story locally fails', async () => {
+    vi.spyOn(db, 'cacheStorybook').mockRejectedValueOnce(new Error('quota exceeded'))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_cachefail"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+  })
+
+  it('starts fresh instead of blocking when reading the local reading-state throws', async () => {
+    vi.spyOn(db, 'getReadingState').mockRejectedValueOnce(new Error('DB blocked'))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_statedown"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+  })
+
   it('shows download-needed when offline with no cached story', async () => {
     const fetchStory = vi.fn(() => Promise.reject(new OfflineError()))
     render(
