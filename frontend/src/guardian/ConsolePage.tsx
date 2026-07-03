@@ -1,12 +1,161 @@
+import { isAxiosError } from 'axios'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+
+import { EmptyState } from '@ds/components/EmptyState'
+import { useApi } from '../hooks/useApi'
+import { FlagBadge } from './FlagBadge'
+import { makeReviewApi, type ReviewQueueItem, type StillProcessingItem } from './reviewApi'
+
+type LoadState =
+  | { kind: 'loading' }
+  | { kind: 'forbidden' }
+  | { kind: 'error' }
+  | { kind: 'ready'; items: ReviewQueueItem[]; processing: StillProcessingItem[] }
+
+/** A story that was never screened, or screened with at least one finding. */
+function isFlagged(item: ReviewQueueItem): boolean {
+  return !item.screened || item.flagged_count > 0
+}
+
+function QueueRow({ item }: { item: ReviewQueueItem }) {
+  return (
+    <li className="console-row">
+      <Link className="console-row__link" to={`/guardian/review/${item.storybook_id}`}>
+        <span className="console-row__title">{item.title}</span>
+        {!item.screened ? (
+          <FlagBadge tone="unscreened" />
+        ) : item.flagged_count > 0 ? (
+          <FlagBadge tone="flag" label={`${item.flagged_count} flagged`} />
+        ) : (
+          <FlagBadge tone="clean" />
+        )}
+      </Link>
+    </li>
+  )
+}
+
 /**
- * Placeholder for the guardian review queue + approve/send-back detail
- * (C4a-4). Wireframe: docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md#44.
+ * Guardian console (C4a-4): the safety operator's severity-ordered review
+ * queue. Flagged stories sort to the top, then ready-to-review, then still
+ * processing. The queue endpoint is admin-only; a plain-guardian token gets a
+ * 403 and sees a notice rather than a broken page (ADR-005: the approver is the
+ * global safety reviewer, not any guardian).
  */
 export function ConsolePage() {
+  const api = useApi()
+  const reviewApi = useMemo(() => makeReviewApi(api), [api])
+  const [state, setState] = useState<LoadState>({ kind: 'loading' })
+
+  useEffect(() => {
+    let cancelled = false
+    async function load() {
+      try {
+        const [items, processing] = await Promise.all([
+          reviewApi.queue(),
+          reviewApi.stillProcessing(),
+        ])
+        if (!cancelled) setState({ kind: 'ready', items, processing })
+      } catch (err) {
+        // #CRITICAL: security: a plain-guardian token is allowed into the
+        // /guardian route tree but not the admin-only queue endpoint; a 403 is
+        // an expected role outcome, not a failure, so surface a clear notice.
+        // #VERIFY: ConsolePage.test.tsx asserts the notice on a 403 and the
+        // generic error on a 500.
+        if (isAxiosError(err) && err.response?.status === 403) {
+          if (!cancelled) setState({ kind: 'forbidden' })
+          return
+        }
+        console.error('review queue load failed', err)
+        if (!cancelled) setState({ kind: 'error' })
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [reviewApi])
+
+  if (state.kind === 'loading') {
+    return (
+      <div role="status" aria-live="polite">
+        Loading review queue…
+      </div>
+    )
+  }
+
+  if (state.kind === 'forbidden') {
+    return (
+      <section className="console">
+        <h1>Review queue</h1>
+        <p className="console__notice">
+          Reviews are handled by your family&apos;s safety reviewer. You do not need to
+          approve stories here.
+        </p>
+      </section>
+    )
+  }
+
+  if (state.kind === 'error') {
+    return (
+      <p role="alert" className="console__error">
+        We could not load the review queue. Please reload.
+      </p>
+    )
+  }
+
+  const flagged = state.items.filter(isFlagged)
+  const ready = state.items.filter((item) => item.screened && item.flagged_count === 0)
+  const nothingPending =
+    state.items.length === 0 && state.processing.length === 0
+
   return (
-    <div className="guardian-stub">
-      <h1>Guardian Console</h1>
-      <p>Review queue and approve/send-back are coming in C4a-4.</p>
-    </div>
+    <section className="console">
+      <h1>Review queue</h1>
+      {nothingPending ? (
+        <EmptyState
+          title="Nothing to review"
+          description="New stories appear here once they finish generating."
+        />
+      ) : (
+        <>
+          {flagged.length > 0 ? (
+            <div className="console-group">
+              <h2 className="console-group__heading">Flagged (review carefully)</h2>
+              <ul className="console-list">
+                {flagged.map((item) => (
+                  <QueueRow key={item.storybook_id} item={item} />
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          {ready.length > 0 ? (
+            <div className="console-group">
+              <h2 className="console-group__heading">Ready to review</h2>
+              <ul className="console-list">
+                {ready.map((item) => (
+                  <QueueRow key={item.storybook_id} item={item} />
+                ))}
+              </ul>
+            </div>
+          ) : null}
+          <div className="console-group">
+            <h2 className="console-group__heading">Still processing</h2>
+            {state.processing.length === 0 ? (
+              <p className="console__muted">No stories are generating right now.</p>
+            ) : (
+              <ul className="console-list">
+                {state.processing.map((job) => (
+                  <li key={job.job_id} className="console-row">
+                    <span className="console-row__title">{job.title}</span>
+                    <FlagBadge tone="processing" />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </>
+      )}
+    </section>
   )
 }
