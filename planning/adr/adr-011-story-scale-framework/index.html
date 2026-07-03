@@ -2952,6 +2952,69 @@ ending -&gt; start/checkpoint).</p>
 allowances gate the dangerous primitives: no <code>death</code>/<code>capture</code> endings for <code>3-5</code>/<code>5-8</code>,
 no <code>death</code> for <code>8-11</code>; loops require state (tier 2); restart-on-fail is lethal only from
 <code>13-16</code> up.</p>
+<p>Per-band topology and flow allowances (which shapes an authored skeleton may use):</p>
+<table>
+<thead>
+<tr>
+<th>Band</th>
+<th>Topologies</th>
+<th>Loops</th>
+<th>Restart-on-fail</th>
+<th>Reconvergence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3-5</td>
+<td>loop_and_grow, time_cave</td>
+<td>gentle try-again</td>
+<td>none (no death/capture)</td>
+<td>minimal</td>
+</tr>
+<tr>
+<td>5-8</td>
+<td>time_cave, loop_and_grow, open_map</td>
+<td>comic</td>
+<td>soft try-again only</td>
+<td>light</td>
+</tr>
+<tr>
+<td>8-11</td>
+<td>branch_and_bottleneck, time_cave, open_map, sorting_hat (Medium/Long only)</td>
+<td>optional (T2)</td>
+<td>failure/entrapment, no death</td>
+<td>light-rising</td>
+</tr>
+<tr>
+<td>10-13</td>
+<td>branch_and_bottleneck, open_map, sorting_hat (Medium/Long only)</td>
+<td>yes (state)</td>
+<td>yes, logical</td>
+<td>moderate</td>
+</tr>
+<tr>
+<td>13-16</td>
+<td>branch_and_bottleneck (prose), gauntlet (gamebook), sorting_hat (Medium/Long only), open_map</td>
+<td>yes</td>
+<td>yes, lethal (gamebook)</td>
+<td>prose moderate / gamebook low</td>
+</tr>
+<tr>
+<td>16+</td>
+<td>branch_and_bottleneck / gauntlet, sorting_hat (Medium/Long only)</td>
+<td>yes</td>
+<td>yes, lethal</td>
+<td>prose moderate / gamebook low</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>3-5</code> and <code>5-8</code> Loops entries ("gentle try-again", "comic") are the non-stateful
+try-again kind, legal at Tier 1; they are distinct from the stateful progress loops
+referenced by "loops require state (tier 2)" above, which first apply at <code>8-11</code>
+("optional (T2)") and are required from <code>10-13</code> up.</p>
+<p><code>sorting_hat</code> costs <code>sort + N x (track arc)</code> nodes, so it buys replay diversity at a node
+premium and lives in Medium/Long cells, not Short; the table above annotates every band
+where it appears accordingly.</p>
 <h3 id="8-series-campaign-continuity">8. Series (campaign continuity)<a class="headerlink" href="#8-series-campaign-continuity" title="Permanent link">&para;</a></h3>
 <p>A <code>series</code> tag chains multiple books. <strong>Invariant:</strong> in any non-final book, every
 successful-completion ending converges on the next book's single <code>series_entry_node</code>
@@ -3015,8 +3078,6 @@ records which numbers are empirical and which are tunable product choices.</p>
 <li><code>docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md</code>: the original
   reading-level x topology x scale design and the series concept (section 4.1).</li>
 <li><code>docs/planning/research/</code>: the empirical anchors (JHM 2019 + four-source reconciliation).</li>
-<li><code>docs/planning/skeleton-library-expansion-plan.md</code>: the prioritized authoring backlog
-  that consumes this framework.</li>
 </ul>
 
 
@@ -3040,7 +3101,7 @@ records which numbers are empirical and which are tunable product choices.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:52:09 UTC">July 3, 2026</span>
   </span>
 
     
