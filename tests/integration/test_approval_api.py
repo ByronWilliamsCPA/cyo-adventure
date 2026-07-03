@@ -373,3 +373,142 @@ async def test_no_publish_without_approver(
             version_row.approved_by is not None
         )  # invariant: never published w/o approver
         assert version_row.published_at is not None
+
+
+def _flagged_report() -> dict[str, object]:
+    """A moderation report with one soft-flag finding on node n1."""
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "message": "too scary",
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+async def _seed_two_family_queue(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Family A: one flagged in_review + one draft. Family B: one clean in_review.
+
+    Also seeds an admin in Family A (global authority) plus a guardian and child
+    in each family for the 403 cases.
+    """
+    async with sessions() as session:
+        fam_a = Family(name="A")
+        fam_b = Family(name="B")
+        session.add_all([fam_a, fam_b])
+        await session.flush()
+        session.add_all(
+            [
+                User(family_id=fam_a.id, role="admin", authn_subject="admin-a"),
+                User(family_id=fam_a.id, role="guardian", authn_subject="guardian-a"),
+                User(family_id=fam_a.id, role="child", authn_subject="child-a"),
+                User(family_id=fam_b.id, role="guardian", authn_subject="guardian-b"),
+            ]
+        )
+        # Family A: a flagged in_review story
+        session.add(Storybook(id="flagged-a", family_id=fam_a.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id="flagged-a",
+                version=1,
+                blob={"title": "Scary A", "nodes": [{"id": "n1", "body": "Boo."}]},
+                moderation_report=_flagged_report(),
+            )
+        )
+        # Family A: a draft story (must NOT appear in the queue)
+        session.add(Storybook(id="draft-a", family_id=fam_a.id, status="draft"))
+        session.add(
+            StorybookVersion(storybook_id="draft-a", version=1, blob={"id": "draft-a"})
+        )
+        # Family B: a clean in_review story (cross-family visibility for the admin)
+        session.add(Storybook(id="clean-b", family_id=fam_b.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id="clean-b",
+                version=1,
+                blob={"title": "Clean B", "nodes": []},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+
+
+async def test_admin_review_queue_lists_both_families(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The admin queue spans families and buckets flagged versus clean."""
+    await _seed_two_family_queue(sessions)
+    resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
+    assert resp.status_code == 200
+    items = {item["storybook_id"]: item for item in resp.json()["items"]}
+    assert set(items) == {"flagged-a", "clean-b"}  # draft-a excluded
+    assert items["flagged-a"]["screened"] is True
+    assert items["flagged-a"]["flagged_count"] == 1
+    assert items["flagged-a"]["title"] == "Scary A"
+    assert items["clean-b"]["screened"] is True
+    assert items["clean-b"]["flagged_count"] == 0
+
+
+async def test_review_queue_excludes_needs_revision_and_published(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Only in_review stories are queued; needs_revision and published are not."""
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(Storybook(id="nr", family_id=fam.id, status="needs_revision"))
+        session.add(StorybookVersion(storybook_id="nr", version=1, blob={"id": "nr"}))
+        session.add(
+            Storybook(
+                id="pub",
+                family_id=fam.id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(StorybookVersion(storybook_id="pub", version=1, blob={"id": "pub"}))
+        await session.commit()
+    resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))
+    assert resp.status_code == 200
+    assert resp.json()["items"] == []
+
+
+async def test_child_cannot_read_review_queue(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A child token gets 403 on the review queue."""
+    await _seed_two_family_queue(sessions)
+    async with sessions() as session:
+        fam = Family(name="C")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="child", authn_subject="child-c"))
+        await session.commit()
+    resp = await client.get("/api/v1/review-queue", headers=auth("child-c"))
+    assert resp.status_code == 403
+
+
+async def test_guardian_cannot_read_review_queue(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian token gets 403; review is admin-only (ADR-005 amendment)."""
+    await _seed_two_family_queue(sessions)
+    resp = await client.get("/api/v1/review-queue", headers=auth("guardian-a"))
+    assert resp.status_code == 403
