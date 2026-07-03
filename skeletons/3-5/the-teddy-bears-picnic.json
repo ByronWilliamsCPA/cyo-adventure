@@ -133,7 +133,7 @@
     },
     {
       "id": "n_berry2",
-      "body": "<<FILL role=rising words=40 beats='Clovers basket fills with sweet red berries that stain her paws pink; the picnic keeps growing; she can carry them back to the blanket or call the bears and start the picnic now'>>",
+      "body": "<<FILL role=rising words=40 beats='Clover’s basket fills with sweet red berries that stain her paws pink; the picnic keeps growing; she can carry them back to the blanket or call the bears and start the picnic now'>>",
       "is_ending": false,
       "choices": [
         {
@@ -211,7 +211,7 @@
       "choices": [
         {
           "id": "c_kite_carry",
-          "label": "Carry the kite gently under your arm.",
+          "label": "Carry the kite gently under her arm.",
           "target": "n_kite2"
         },
         {
@@ -421,7 +421,7 @@
     },
     {
       "id": "e_song",
-      "body": "<<FILL role=completion words=46 beats='everyone joins paws and sings the teddy bears picnic song under the warm sun, swaying together in the meadow; Clovers picnic has come together just perfectly, and her heart is as full as the honey pot'>>",
+      "body": "<<FILL role=completion words=46 beats='everyone joins paws and sings the teddy bears’ picnic song under the warm sun, swaying together in the meadow; Clover’s picnic has come together just perfectly, and her heart is as full as the honey pot'>>",
       "is_ending": true,
       "ending": {
         "id": "end_song",
@@ -432,7 +432,7 @@
     },
     {
       "id": "e_music_finale",
-      "body": "<<FILL role=completion words=44 beats='the little music box tinkles its sweet tune and all the teddy bears sway and hum along on the sunny blanket; Clovers picnic is cozy and complete, and she beams at every one of her happy friends'>>",
+      "body": "<<FILL role=completion words=44 beats='the little music box tinkles its sweet tune and all the teddy bears sway and hum along on the sunny blanket; Clover’s picnic is cozy and complete, and she beams at every one of her happy friends'>>",
       "is_ending": true,
       "ending": {
         "id": "end_music_finale",
@@ -454,7 +454,7 @@
     },
     {
       "id": "e_ball_game",
-      "body": "<<FILL role=completion words=44 beats='the big red ball rolls round and round the giggling ring of teddy bears in the sunny meadow; Clovers picnic is a bouncy, happy success and all the friends cheer for one more roll'>>",
+      "body": "<<FILL role=completion words=44 beats='the big red ball rolls round and round the giggling ring of teddy bears in the sunny meadow; Clover’s picnic is a bouncy, happy success and all the friends cheer for one more roll'>>",
       "is_ending": true,
       "ending": {
         "id": "end_ball_game",
@@ -465,7 +465,7 @@
     },
     {
       "id": "e_kite_game",
-      "body": "<<FILL role=completion words=44 beats='the bright kite dips and soars over the meadow while the teddy bears cheer from the blanket; Clovers picnic has come together beautifully and she flies the kite proudly in the warm breeze'>>",
+      "body": "<<FILL role=completion words=44 beats='the bright kite dips and soars over the meadow while the teddy bears cheer from the blanket; Clover’s picnic has come together beautifully and she flies the kite proudly in the warm breeze'>>",
       "is_ending": true,
       "ending": {
         "id": "end_kite_game",

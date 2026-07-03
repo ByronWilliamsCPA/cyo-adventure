@@ -94,7 +94,7 @@ n_ball1 --> n_ball2 : Follow the little bounce marks.
 n_ball1 --> e_ball_oops : Dive into the tall grass.
 n_ball2 --> n_start : Roll the ball back to the blanket.
 n_ball2 --> n_gather : Ring the bell and start the picnic.
-n_kite1 --> n_kite2 : Carry the kite gently under your arm.
+n_kite1 --> n_kite2 : Carry the kite gently under her arm.
 n_kite1 --> e_kite_oops : Let the kite flap open in the wind.
 n_kite2 --> n_start : Bring the kite back to the blanket.
 n_kite2 --> n_gather : Ring the bell and start the picnic.
@@ -132,5 +132,7 @@ legend right
   Band 3-5 · Tier 1 · ~5 min
   Topology: loop_and_grow
   29 nodes · 11 endings (5+ / 0n / 6-)
+  Production-eligible
+  Scale: medium · prose
 endlegend
 @enduml

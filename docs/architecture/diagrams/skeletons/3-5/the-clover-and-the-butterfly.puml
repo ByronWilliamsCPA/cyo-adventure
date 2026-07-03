@@ -22,7 +22,7 @@ state n_meadow #FFF9C4
 n_meadow : choice · 40w
 state n_nose_end #C8E6C9
 n_nose_end : completion (positive)
-n_nose_end : "On Clovers Nose"
+n_nose_end : "On Clover’s Nose"
 state n_crown_end #C8E6C9
 n_crown_end : success (positive)
 n_crown_end : "The Daisy Crown"
@@ -86,5 +86,7 @@ legend right
   Band 3-5 · Tier 1 · ~3 min
   Topology: time_cave
   20 nodes · 7 endings (4+ / 0n / 3-)
+  Production-eligible
+  Scale: short · prose
 endlegend
 @enduml

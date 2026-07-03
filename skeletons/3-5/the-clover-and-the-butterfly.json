@@ -108,7 +108,7 @@
     },
     {
       "id": "n_meadow",
-      "body": "<<FILL role=choice words=40 beats='in a cozy patch of clover and grass the butterfly slows down and floats gently, right in front of Clovers little nose; nearby sits a tiny ring of flowers; Clover holds very still'>>",
+      "body": "<<FILL role=choice words=40 beats='in a cozy patch of clover and grass the butterfly slows down and floats gently, right in front of Clover’s little nose; nearby sits a tiny ring of flowers; Clover holds very still'>>",
       "is_ending": false,
       "choices": [
         {
@@ -125,13 +125,13 @@
     },
     {
       "id": "n_nose_end",
-      "body": "<<FILL role=completion words=40 beats='the gentle butterfly lands softly right on the tip of Clovers nose; its wings open and close like two tiny blue fans; Clover giggles, still as can be, the happiest kitten in the whole garden'>>",
+      "body": "<<FILL role=completion words=40 beats='the gentle butterfly lands softly right on the tip of Clover’s nose; its wings open and close like two tiny blue fans; Clover giggles, still as can be, the happiest kitten in the whole garden'>>",
       "is_ending": true,
       "ending": {
         "id": "e_nose",
         "valence": "positive",
         "kind": "completion",
-        "title": "On Clovers Nose"
+        "title": "On Clover’s Nose"
       }
     },
     {

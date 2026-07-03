@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Three more production-eligible story skeletons (Batch 2), completing the small-prose
+  corner of the ADR-011 matrix: `3-5 short prose` (Clover and the Butterfly, time_cave,
+  20 nodes), `3-5 medium prose` (The Teddy Bears' Picnic, loop_and_grow, 29 nodes), and
+  `5-8 medium prose` (The Backyard Treasure Map, time_cave, 61 nodes). Each declares
+  `length` + `narrative_style` + `production_eligible: true`, passes the full
+  PL-17/19/20/21 gate (`blocked=False`), and is discovered automatically by the
+  glob-based `test_production_skeletons_*` pin test.
 - First production-eligible story skeletons (P1), one per launch cell of the ADR-011
   matrix: `8-11 short prose` (The Cave of Echoes, time_cave, 64 nodes),
   `5-8 short prose` (The Lantern Festival, loop_and_grow, 36 nodes), and
