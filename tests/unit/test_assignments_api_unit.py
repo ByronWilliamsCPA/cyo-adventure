@@ -203,7 +203,7 @@ class TestAssignStorybook:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_cross_family_existing_storybook_403(self) -> None:
-        """An EXISTING book in another family is 403, per ratings.py:60-68."""
+        """An EXISTING book in another family is 403, per the ratings.py convention."""
         from cyo_adventure.api.assignments import assign_storybook
         from cyo_adventure.core.exceptions import AuthorizationError
 
@@ -292,7 +292,7 @@ class TestListAssignments:
     @pytest.mark.unit
     @pytest.mark.asyncio
     async def test_cross_family_existing_storybook_403(self) -> None:
-        """An EXISTING book in another family is 403, per ratings.py:60-68."""
+        """An EXISTING book in another family is 403, per the ratings.py convention."""
         from cyo_adventure.api.assignments import list_assignments
         from cyo_adventure.core.exceptions import AuthorizationError
 

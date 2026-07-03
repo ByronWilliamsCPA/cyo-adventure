@@ -19,8 +19,6 @@ if TYPE_CHECKING:
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _PREV_HEAD = "c3d4e5f6a7b8"
-_FAMILY_A = "00000000-0000-0000-0000-00000000000a"
-_FAMILY_B = "00000000-0000-0000-0000-00000000000b"
 _CHILD_A = "00000000-0000-0000-0000-0000000000a1"
 _CHILD_B = "00000000-0000-0000-0000-0000000000b1"
 
@@ -88,8 +86,8 @@ def test_assignment_migration_imports_and_chains() -> None:
     spec.loader.exec_module(mod)  # type: ignore[union-attr]
     assert callable(getattr(mod, "upgrade", None))
     assert callable(getattr(mod, "downgrade", None))
-    assert mod.down_revision == "c3d4e5f6a7b8", (
-        f"Expected down_revision 'c3d4e5f6a7b8', got {mod.down_revision!r}"
+    assert mod.down_revision == _PREV_HEAD, (
+        f"Expected down_revision {_PREV_HEAD!r}, got {mod.down_revision!r}"
     )
 
 

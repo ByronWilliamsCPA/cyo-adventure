@@ -84,6 +84,29 @@ async def test_unassigned_story_not_in_library(
     assert unassigned_id not in listed  # the unassigned one does not leak
 
 
+async def test_guardian_library_excludes_unassigned_story(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A guardian listing a child's library also sees only assigned stories.
+
+    Unlike the version-fetch gate (child-only), the ``list_library`` assignment
+    EXISTS gate is bound to the requested ``profile_id``, not the caller's role,
+    so it applies to a guardian too. This pins that contract: a future refactor
+    that exempts guardians from the list gate would leak the unassigned story
+    here and fail this test. The positive control (the assigned seed story shows)
+    isolates the gate as the sole cause of the exclusion.
+    """
+    unassigned_id = await _add_approved_unassigned_story(sessions, seed)
+    resp = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200
+    listed = {item["id"] for item in resp.json()["stories"]}
+    assert seed.storybook_id in listed  # the assigned seed story shows
+    assert unassigned_id not in listed  # unassigned excluded even for a guardian
+
+
 async def test_unapproved_story_not_in_library(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
