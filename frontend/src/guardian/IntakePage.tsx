@@ -4,6 +4,7 @@ import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
+import { AssignChildrenDialog } from './AssignChildrenDialog'
 import {
   TONES,
   buildBrief,
@@ -42,6 +43,9 @@ export function IntakePage() {
   const [jobs, setJobs] = useState<GenerationJobSummary[]>([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState(false)
+  // The storybook id whose "Assign to children" dialog is open, or null when
+  // closed. Approved request rows carry a non-null storybook_id (see statusPill).
+  const [assigning, setAssigning] = useState<string | null>(null)
   // Distinct from `error` (a submit failure): a read failure on the initial
   // load or a poll. Surfacing it prevents an empty/stale list from masquerading
   // as a genuine "no requests" state after a session expiry or network drop.
@@ -250,11 +254,30 @@ export function IntakePage() {
                 >
                   {pill}
                 </span>
+                {/* Only Approved rows carry a published storybook to assign.
+                    Guard on storybook_id so the button never opens the dialog
+                    with a null id even if the pill mapping ever changes. */}
+                {pill === 'Approved' && job.storybook_id !== null ? (
+                  <button
+                    type="button"
+                    className="intake-request__assign"
+                    onClick={() => setAssigning(job.storybook_id)}
+                  >
+                    Assign more
+                  </button>
+                ) : null}
               </li>
             )
           })}
         </ul>
       )}
+      {assigning ? (
+        <AssignChildrenDialog
+          key={assigning}
+          storybookId={assigning}
+          onClose={() => setAssigning(null)}
+        />
+      ) : null}
     </section>
   )
 }

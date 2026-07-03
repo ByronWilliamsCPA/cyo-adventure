@@ -29,6 +29,7 @@ from cyo_adventure.db.models import (
     ChildProfile,
     Family,
     Storybook,
+    StorybookAssignment,
     StorybookVersion,
     User,
 )
@@ -215,6 +216,12 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
                 blob=blob,
                 approved_by=admin_a.id,
                 published_at=datetime.now(UTC),
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=profile_a.id,
+                storybook_id=story_id,
             )
         )
         await session.commit()

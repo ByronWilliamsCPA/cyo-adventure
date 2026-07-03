@@ -18,17 +18,24 @@ import uuid
 from typing import TYPE_CHECKING, TypeGuard
 
 from fastapi import APIRouter
-from sqlalchemy import and_, select, tuple_
+from sqlalchemy import and_, exists, select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
     DbSession,
+    Role,
     authorize_family,
     authorize_profile,
 )
 from cyo_adventure.api.schemas import LibraryItem, LibraryProgress, LibraryView
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
-from cyo_adventure.db.models import Rating, ReadingState, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    Rating,
+    ReadingState,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -250,9 +257,11 @@ async def list_library(
         LibraryView: The published stories in the profile's family.
     """
     # #CRITICAL: security: the library is scoped to the principal's own family,
-    # the requested profile is authorized, and only APPROVED published versions
-    # are listed (read-path leg of the no-unapproved-publish invariant).
-    # #VERIFY: the join requires approved_by IS NOT NULL on the published version.
+    # the requested profile is authorized, only APPROVED published versions are
+    # listed, AND the story must be assigned to this profile (the read-path leg
+    # of the no-unpermitted-story invariant).
+    # #VERIFY: the join requires approved_by IS NOT NULL; the EXISTS requires a
+    # storybook_assignment row for (this story, this profile).
     parsed = _parse_profile_id(profile_id)
     authorize_profile(principal, parsed)
     rows = await session.scalars(
@@ -269,6 +278,10 @@ async def list_library(
             Storybook.status == _PUBLISHED,
             Storybook.current_published_version.is_not(None),
             StorybookVersion.approved_by.is_not(None),
+            exists().where(
+                StorybookAssignment.storybook_id == Storybook.id,
+                StorybookAssignment.child_profile_id == parsed,
+            ),
         )
     )
     books = [
@@ -365,4 +378,19 @@ async def get_storybook_version(
     ):
         msg = f"version {version} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: a child may fetch a story blob directly ONLY if it is
+    # assigned to their profile; an unassigned (but published+approved) book is
+    # 404 (existence hidden), matching the library-listing gate. Guardian and
+    # admin reads are unchanged (they skip this branch).
+    # #VERIFY: child + unassigned -> 404; child + assigned -> blob.
+    if principal.role == Role.CHILD:
+        assigned = await session.scalar(
+            select(StorybookAssignment.storybook_id).where(
+                StorybookAssignment.storybook_id == storybook_id,
+                StorybookAssignment.child_profile_id.in_(principal.profile_ids),
+            )
+        )
+        if assigned is None:
+            msg = f"version {version} of storybook '{storybook_id}' not found"
+            raise ResourceNotFoundError(msg)
     return version_row.blob
