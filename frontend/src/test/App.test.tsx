@@ -147,4 +147,34 @@ describe('router: guardian surface', () => {
     renderAt('/guardian')
     expect(await screen.findByText(/Review queue/)).toBeInTheDocument()
   })
+
+  it('renders the review detail page at /guardian/review/:storybookId', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    // Shared get mock: serve the auth /v1/me lookup and the review surface fetch.
+    // A minimal screened-clean surface is enough to confirm the detail route
+    // mounts (its behavioral matrix lives in ReviewDetailPage.test.tsx).
+    mockGet.mockImplementation((url: string) => {
+      if (url === '/v1/storybooks/s1/review') {
+        return Promise.resolve({
+          data: {
+            storybook_id: 's1',
+            version: 1,
+            status: 'in_review',
+            screened: true,
+            summary: null,
+            blob: { title: 'The Cave', nodes: [] },
+            flagged_passages: [],
+            story_level_findings: [],
+          },
+        })
+      }
+      return Promise.resolve({
+        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+      })
+    })
+    renderAt('/guardian/review/s1')
+    expect(await screen.findByRole('heading', { name: 'The Cave' })).toBeInTheDocument()
+  })
 })
