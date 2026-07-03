@@ -65,6 +65,9 @@ export const ProfilePickerPage = lazy(() =>
 export const ProfilesPage = lazy(() =>
   import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
 )
+export const ReviewDetailPage = lazy(() =>
+  import('./guardian/ReviewDetailPage').then((m) => ({ default: m.ReviewDetailPage }))
+)
 export const ReaderRoute = lazy(() =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )

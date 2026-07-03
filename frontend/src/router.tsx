@@ -15,6 +15,7 @@ import {
   ProfilePickerPage,
   ProfilesPage,
   ReaderRoute,
+  ReviewDetailPage,
   RouteError,
   RouteFallback,
 } from './routeElements'
@@ -77,6 +78,7 @@ export const routes = [
               { index: true, element: suspended(<ConsolePage />) },
               { path: 'intake', element: suspended(<IntakePage />) },
               { path: 'profiles', element: suspended(<ProfilesPage />) },
+              { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
             ],
           },
         ],

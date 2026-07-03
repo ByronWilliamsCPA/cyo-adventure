@@ -21,6 +21,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     ForeignKeyConstraint,
+    Index,
     String,
     Uuid,
     func,
@@ -252,6 +253,39 @@ class Rating(Base):
     updated_at: Mapped[datetime] = mapped_column(
         _TS, server_default=func.now(), onupdate=func.now()
     )
+
+
+class StorybookAssignment(Base):
+    """A guardian's grant of one published story to one child profile.
+
+    Composite-keyed on ``(child_profile_id, storybook_id)`` so a profile is
+    assigned a book at most once. ``assigned_by`` records the granting guardian,
+    or NULL for a system backfill (the migration that preserves pre-assignment
+    visibility). This table is the read-gate: the library listing and the direct
+    version fetch both filter on it, so a child sees only stories explicitly
+    assigned to their profile.
+    """
+
+    __tablename__ = "storybook_assignment"
+    # #CRITICAL: security: this row is the sole authority for whether a child may
+    # see a story; the composite PK indexes the child-side lookup, and the extra
+    # index serves the storybook-side lookup used by the guardian assign list and
+    # the migration backfill. A missing/duplicate row must not silently widen or
+    # narrow visibility.
+    # #VERIFY: composite PK enforces at-most-one; api/library.py gates both read
+    # paths on an EXISTS/IN over this table.
+    __table_args__ = (Index("ix_storybook_assignment_storybook_id", "storybook_id"),)
+
+    child_profile_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), primary_key=True
+    )
+    storybook_id: Mapped[str] = mapped_column(
+        String(120), ForeignKey(_FK_STORYBOOK), primary_key=True
+    )
+    assigned_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
 class Concept(Base):

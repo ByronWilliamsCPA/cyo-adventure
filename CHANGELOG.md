@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Story-scale (P0) enabler implementing the ADR-011 band x length x style framework as
+  additive, opt-in validator and generation changes (no existing fixture or seed declares a
+  `length`, so the corpus is unaffected). A non-production MVP/Test tier
+  (`metadata.production_eligible`) budgets prototyping skeletons against a band-independent
+  node envelope; per-cell production budgets (`band_profile._PRODUCTION_CELLS`) lift the
+  band ceiling for a scale-classified story via a shared `layer1.resolve_node_budget` that
+  both the L1-7 gate and the Stage A prompt read, so the prompt promises exactly what the
+  gate enforces. New policy rules extend the gate to PL-21: PL-19 (per-node word wall guard
+  plus a scale-classified story-mean advisory), PL-20 (fastest-finish arc floor so a hollow
+  quick win blocks), breadth-scaled PL-17 ending/decision floors, and PL-21 (reject an
+  off-matrix `(band, length, style)` such as a 3-5 long instead of silently downgrading).
+  The `Topology` enum gains `open_map` and `sorting_hat` with classifier support; a `Series`
+  model plus a cross-book `validator.series` meta-validator (rules SR-1..SR-7) encode the
+  ADR-011 campaign-continuity invariant; and `band_profile.offered_cells` exposes the
+  coverage grid. `ConceptBrief` gains optional `length` and `narrative_style` so generation
+  can request a scale cell.
 - Guardian concept-intake UI (C4a-5): a "Request a story" form that picks a
   child, captures a premise and tone, builds a full ConceptBrief from
   band-derived defaults, posts the concept, and enqueues generation. A
@@ -16,6 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `GET /api/v1/generation-jobs`: a guardian-only, family-scoped endpoint that
   lists a family's generation jobs newest-first with the linked storybook
   status, and never returns the raw generation report (ADR-007).
+- Assign-to-profile (C4a-6): a `storybook_assignment` table and a guardian-only
+  assign API (`POST`/`GET /api/v1/storybooks/{id}/assignments`) that becomes the
+  read-gate for a child's library. `list_library` and the direct version fetch
+  now require an assignment row for the child's profile, so a child sees only
+  stories explicitly assigned to them. An Alembic migration backfills one row per
+  (child, published story) per family, preserving prior visibility. Frontend adds
+  a guardian `AssignChildrenDialog` multi-select and `makeAssignApi` adapter,
+  wired into the intake page's approved-request rows via an "Assign more" action.
 
 ### Security
 - Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the
@@ -77,6 +101,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `library_item_malformed_metadata` warning instead of degrading silently.
 
 ### Added
+- Guardian console (C4a-4): an admin-only `GET /api/v1/review-queue` endpoint
+  that lists `in_review` storybooks cross-family (mirroring the review-surface
+  authorization) with a screened flag and flagged count, plus the frontend
+  review console (severity-ordered queue) and a flags-first review-detail screen
+  with pinned Approve / Send Back actions. Swipe-to-approve is deliberately
+  excluded per ADR-005. The "Still processing" section reads the C4a-5
+  guardian-only generation-jobs endpoint and self-degrades to an empty list for
+  the admin reviewer (who receives a 403); the cross-family admin
+  generating-jobs view is tracked in #74.
+
 - Profile management (C4a-2): family-scoped profiles API (`GET`/`POST`
   `/api/v1/profiles`, `PATCH /api/v1/profiles/{profile_id}`), the kid-surface
   Profile Picker as the app's entry page (selection lands the child in their
@@ -93,22 +127,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `noEmit: true` gap that previously shipped stub `.d.ts` files), a
   conventions header for the design agent, and a `column` card layout fix
   for the Button preview.
-- Story-scale (P0) enabler implementing the ADR-011 band x length x style framework as
-  additive, opt-in validator and generation changes (no existing fixture or seed declares a
-  `length`, so the corpus is unaffected). A non-production MVP/Test tier
-  (`metadata.production_eligible`) budgets prototyping skeletons against a band-independent
-  node envelope; per-cell production budgets (`band_profile._PRODUCTION_CELLS`) lift the
-  band ceiling for a scale-classified story via a shared `layer1.resolve_node_budget` that
-  both the L1-7 gate and the Stage A prompt read, so the prompt promises exactly what the
-  gate enforces. New policy rules extend the gate to PL-21: PL-19 (per-node word wall guard
-  plus a scale-classified story-mean advisory), PL-20 (fastest-finish arc floor so a hollow
-  quick win blocks), breadth-scaled PL-17 ending/decision floors, and PL-21 (reject an
-  off-matrix `(band, length, style)` such as a 3-5 long instead of silently downgrading).
-  The `Topology` enum gains `open_map` and `sorting_hat` with classifier support; a `Series`
-  model plus a cross-book `validator.series` meta-validator (rules SR-1..SR-7) encode the
-  ADR-011 campaign-continuity invariant; and `band_profile.offered_cells` exposes the
-  coverage grid. `ConceptBrief` gains optional `length` and `narrative_style` so generation
-  can request a scale cell.
 - Adversarial safety evaluation of the generation and moderation pipeline (docs + tooling,
   no runtime paths touched): `docs/planning/safety/adversarial-safety-evaluation.md` records
   the six-class failure taxonomy, the threat model, and five model-independent structural

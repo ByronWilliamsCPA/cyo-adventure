@@ -13,13 +13,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
-from sqlalchemy import func, select
+from sqlalchemy import func, select, tuple_
 
 from cyo_adventure.api.deps import Context
-from cyo_adventure.api.review_surface import build_review_surface
+from cyo_adventure.api.review_surface import (
+    build_review_queue_item,
+    build_review_surface,
+)
 from cyo_adventure.api.schemas import (
     ApprovedView,
     ArchivedView,
+    ReviewQueueItem,
+    ReviewQueueView,
     ReviewSurfaceView,
     SendBackRequest,
     SentBackView,
@@ -33,11 +38,16 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.publishing import service as approval_service
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 router = APIRouter(prefix="/api/v1", tags=["approval"])
+
+_logger = get_logger(__name__)
+
+_IN_REVIEW = "in_review"
 
 # #ASSUME: data integrity: each `cast("Literal[...]", book.status)` call below
 # assumes approval_service's corresponding call (submit/approve/send_back/archive)
@@ -222,3 +232,125 @@ async def get_review_surface(
         blob=version_row.blob,
         moderation_report=version_row.moderation_report,
     )
+
+
+@router.get("/review-queue")
+async def get_review_queue(ctx: Context) -> ReviewQueueView:
+    """Return every storybook awaiting an admin publish decision (admin only).
+
+    Args:
+        ctx: The request context (principal and session).
+
+    Returns:
+        ReviewQueueView: One item per ``in_review`` storybook, across all
+            families, carrying the screened flag and flagged count so the
+            console can bucket Flagged versus Ready to review.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+    """
+    # #CRITICAL: security: admin-only GLOBAL queue. The role is checked before
+    # any row is read (a non-admin never learns which stories are in review),
+    # and authorize_family is intentionally NOT called: the safety operator
+    # screens cross-family, mirroring get_review_surface / _load_admin_story.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_queue_blocks_non_admin
+    # (no DB round trip) and tests/integration/test_approval_api.py cross-family case.
+    if not ctx.principal.is_admin:
+        msg = "admin role required"
+        raise AuthorizationError(msg, required_permission="admin")
+    books = (
+        await ctx.session.scalars(
+            select(Storybook).where(Storybook.status == _IN_REVIEW)
+        )
+    ).all()
+    if not books:
+        return ReviewQueueView(items=[])
+    # #ASSUME: external resources: resolve the latest version per story and load
+    # those version rows in two bulk queries (grouped max, then a composite
+    # (storybook_id, version) IN filter), never one round trip per story.
+    # #VERIFY: tests/unit/test_approval_unit.py::test_review_queue_is_bulk_not_n_plus_one
+    # asserts exactly two scalars() and one execute() for two stories.
+    ids = [book.id for book in books]
+    # #ASSUME: data integrity: the grouped-max query returns untyped SQL Row
+    # objects; cast the result to its known (storybook_id, max_version) shape at
+    # this boundary so the queue's version lookups are concretely typed, not Any.
+    # This mirrors the module's existing cast() use at typing boundaries.
+    # #VERIFY: each group has at least one version row, so max_version is never
+    # None; a story with no versions never appears here and is dropped below.
+    latest_rows = cast(
+        "list[tuple[str, int]]",
+        (
+            await ctx.session.execute(
+                select(
+                    StorybookVersion.storybook_id,
+                    func.max(StorybookVersion.version),
+                )
+                .where(StorybookVersion.storybook_id.in_(ids))
+                .group_by(StorybookVersion.storybook_id)
+            )
+        ).all(),
+    )
+    latest: dict[str, int] = dict(latest_rows)
+    keys = list(latest.items())
+    # #EDGE: data integrity: keys is empty only when every in_review story lacks
+    # a version row (a corrupt-at-rest anomaly). Short-circuit before issuing a
+    # degenerate empty composite-IN query, and log it so the anomaly is visible.
+    # #VERIFY: tests/integration/test_approval_api.py seeds an in_review story
+    # with no version row.
+    if not keys:
+        _logger.warning("review_queue_all_stories_unversioned", story_count=len(books))
+        return ReviewQueueView(items=[])
+    version_rows = (
+        await ctx.session.scalars(
+            select(StorybookVersion).where(
+                tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                    keys
+                )
+            )
+        )
+    ).all()
+    by_key = {(row.storybook_id, row.version): row for row in version_rows}
+    items: list[ReviewQueueItem] = []
+    for book in books:
+        version = latest.get(book.id)
+        # #EDGE: data integrity: an in_review story with no resolvable latest
+        # version is an anomaly; log it (with its id) rather than dropping it
+        # silently, since this queue is the operator's only surface for it.
+        if version is None:
+            _logger.warning(
+                "review_queue_storybook_missing_version", storybook_id=book.id
+            )
+            continue
+        row = by_key.get((book.id, version))
+        if row is None:
+            _logger.warning(
+                "review_queue_storybook_missing_version",
+                storybook_id=book.id,
+                version=version,
+            )
+            continue
+        try:
+            items.append(
+                build_review_queue_item(
+                    storybook_id=book.id,
+                    status=book.status,
+                    version=version,
+                    blob=row.blob,
+                    moderation_report=row.moderation_report,
+                )
+            )
+        except ValidationError as exc:
+            # #EDGE: data integrity: one story's moderation_report is corrupt at
+            # rest. Isolate the bad row (logged with its id) instead of failing
+            # the whole queue with a 422: the queue is the safety operator's only
+            # surface, so one corrupt row must not deny review of every other
+            # pending story. Mirrors library.py's per-row degrade-with-warning.
+            # #VERIFY: tests/integration/test_approval_api.py corrupt-report case.
+            _logger.warning(
+                "review_queue_item_corrupt",
+                storybook_id=book.id,
+                version=version,
+                error=str(exc),
+            )
+            continue
+    return ReviewQueueView(items=items)
