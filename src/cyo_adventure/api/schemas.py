@@ -309,7 +309,15 @@ class SendBackRequest(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    reason: str = Field(min_length=1, max_length=2000)
+    # #ASSUME: security: a whitespace-only reason must not pass server-side.
+    # strip_whitespace runs before the length check so "   " collapses to ""
+    # and fails min_length=1 (422). The frontend already rejects blank reasons;
+    # this closes the direct-API bypass and trims the logged value.
+    # #VERIFY: test_send_back_rejects_whitespace_only_reason (422).
+    # Mirrors the DisplayName constraint above.
+    reason: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=2000)
+    ]
 
 
 class SubmittedView(BaseModel):

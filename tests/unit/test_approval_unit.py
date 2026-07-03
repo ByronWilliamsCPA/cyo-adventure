@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.api import approval
 from cyo_adventure.api.deps import Principal, RequestContext
@@ -379,6 +380,31 @@ async def test_review_surface_rejects_negative_version() -> None:
 
     with pytest.raises(ValidationError):
         await approval.get_review_surface(book.id, ctx, version=-1)
+
+
+# ---------------------------------------------------------------------------
+# SendBackRequest reason validation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+def test_send_back_rejects_whitespace_only_reason() -> None:
+    """A whitespace-only reason is rejected server-side: strip_whitespace
+    collapses "   " to "" which fails min_length=1. Closes the direct-API
+    bypass of the frontend's non-blank guard. Deletion-sensitive: without
+    strip_whitespace, "   " has length 3 and would pass min_length=1.
+    """
+    with pytest.raises(PydanticValidationError):
+        SendBackRequest(reason="   ")
+
+
+@pytest.mark.unit
+def test_send_back_trims_surrounding_whitespace_in_reason() -> None:
+    """A valid reason with surrounding whitespace is accepted and stored
+    trimmed. Same-data positive control for the whitespace rejection above.
+    """
+    body = SendBackRequest(reason="  too scary for 6yo  ")
+    assert body.reason == "too scary for 6yo"
 
 
 # ---------------------------------------------------------------------------
