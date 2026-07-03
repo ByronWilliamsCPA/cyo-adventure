@@ -1,7 +1,7 @@
 ---
 title: "Story Drafting Guide"
 schema_type: planning
-status: draft
+status: active
 owner: core-maintainer
 purpose: "Practical guide for authoring and generating branching stories that conform to the Storybook format and pass the validation gate."
 tags:
@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Authoring Pipeline, Validation Gate
 
 # Story Drafting Guide
 
-> **Status**: Draft | **Version**: 0.1 | **Updated**: 2026-06-20
+> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-03
 
 ## Purpose
 
@@ -27,21 +27,26 @@ first attempt.
 
 ## Node and Depth Budgets
 
-Node count and branch depth are enforced by the Layer-1 graph validator. Stay within these
-ranges:
+Node count and branch depth are enforced by the Layer-1 graph validator. The old fixed
+per-band node-count ranges (for example "8-11 -> 15-30 nodes") are superseded by ADR-011's
+story-scale framework: budgets are now a `band x length x style` matrix where length
+(short / medium / long) is the primary driver and cells are total-words-driven. Do not
+hardcode a node range from memory; the authoritative source is the per-cell envelope in
+`validator/band_profile.py`, single-sourced there and described in
+[ADR-011](./adr/adr-011-story-scale-framework.md).
 
-| Age band | Tier | Target node count | Max branch depth |
-|----------|------|-------------------|------------------|
-| 8-11 | 1 (branching only) | 15-30 nodes | 6 levels |
-| 10-13 | 1 or 2 | 25-50 nodes | 8 levels |
-| 13-16 | 1 or 2 | 30-60 nodes | 10 levels |
+- **Bands**: the six supported bands are "3-5", "5-8", "8-11", "10-13", "13-16", "16+".
+- **Length x style**: each band crosses `length` (short / medium / long) and `style`
+  (prose / gamebook); the resulting cell sets the node-count envelope and depth ceiling.
+- **MVP / Test tier**: there is a non-production MVP/Test tier (`production_eligible =
+  false`) with compact envelopes for pipeline testing; do not ship its output to readers.
 
 "Node count" is the total number of `Node` records in the story, including all endings.
 "Branch depth" is the longest path from `start_node` to any ending node, measured in
 hops.
 
-The validator fails stories that exceed the upper bounds. Stories below the lower bound
-trigger a warning (not a hard failure), but very short stories rarely satisfy the
+The validator fails stories that exceed the cell's upper bound. Stories below the lower
+bound trigger a warning (not a hard failure), but very short stories rarely satisfy the
 `ending_count` minimum of two distinct endings.
 
 **Configuration cap**: for Tier-2 stories, keep the reachable state space below 100,000
@@ -121,13 +126,21 @@ The validator checks against this target with the `tolerance` defined in the sto
 
 | Age band | FK grade target | Guidance |
 |----------|----------------|----------|
+| 3-5 | 0.0 to 1.5 | Very short sentences (5-8 words average). Read-aloud cadence, repetition, and concrete nouns. Minimal abstraction. |
+| 5-8 | 1.5 to 3.0 | Short sentences (8-12 words average). Simple vocabulary with gentle stretch words explained in context. |
 | 8-11 | 3.0 to 4.5 | Short sentences (10-14 words average). Simple vocabulary. One idea per sentence. Concrete imagery. |
 | 10-13 | 5.0 to 7.0 | Moderate sentence length (14-18 words average). Can introduce unfamiliar words if context makes them clear. |
 | 13-16 | 7.0 to 9.5 | Longer sentences acceptable. Figurative language, irony, and ambiguous outcomes are age-appropriate. |
+| 16+ | 9.5 to 12.0 | Adult-YA register. Complex syntax, layered themes, and morally ambiguous outcomes are acceptable. |
 
-Node body length: aim for 80-150 words per node for the 8-11 band, 100-200 words for the
-10-13 band, and 120-250 words for the 13-16 band. Longer bodies push the FK grade up and
-slow the reading experience; shorter bodies leave the story feeling sparse.
+Node body length scales with the band and with the ADR-011 length / style cell. The
+authoritative per-node envelope is the `_WORDS_PER_NODE` table in
+`validator/band_profile.py`; do not hardcode from memory. As a story-mean advisory band
+per that table, aim for roughly 28-55 words per node at 3-5, 50-95 at 5-8, 70-135 at both
+8-11 and 10-13, 100-185 at 13-16, and 125-230 at 16+ (prose; gamebook nodes run shorter).
+Each cell also sets a hard per-node maximum well above these advisory bands. Longer bodies
+push the FK grade up and slow the reading experience; shorter bodies leave the story
+feeling sparse.
 
 ---
 
@@ -223,7 +236,7 @@ generation prompt as `{concept_brief}`. Fields marked with `?` are optional.
 | `premise` | string | One-paragraph description of the situation and stakes |
 | `protagonist` | object | `name` (fictional), `age` (fictional), `role` (description) |
 | `point_of_view` | enum | `"second_person"` (default and required for v1) |
-| `age_band` | enum | `"8-11"`, `"10-13"`, or `"13-16"` |
+| `age_band` | enum | one of `"3-5"`, `"5-8"`, `"8-11"`, `"10-13"`, `"13-16"`, `"16+"` |
 | `reading_level_target` | object | `{ "scheme": "flesch_kincaid_grade", "target": 4.0, "tolerance": 0.5 }` |
 | `tier` | int | `1` (branching only) or `2` (state-tracking) |
 | `tone` | string | e.g. "adventurous", "gentle mystery", "tense survival" |
@@ -265,3 +278,4 @@ the provider.
 - [Stage C Repair Prompt](./stage-prompts/repair.md)
 - [ADR-001: JSON Storybook format](./adr/adr-001-story-format-json-storybook.md)
 - [ADR-006: Conditions in-house evaluator](./adr/adr-006-conditions-inhouse-evaluator.md)
+- [ADR-011: Story-scale framework (band x length x style)](./adr/adr-011-story-scale-framework.md)
