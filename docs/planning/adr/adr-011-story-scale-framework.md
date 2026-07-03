@@ -187,6 +187,20 @@ allowances gate the dangerous primitives: no `death`/`capture` endings for `3-5`
 no `death` for `8-11`; loops require state (tier 2); restart-on-fail is lethal only from
 `13-16` up.
 
+Per-band topology and flow allowances (which shapes an authored skeleton may use):
+
+| Band | Topologies | Loops | Restart-on-fail | Reconvergence |
+| --- | --- | --- | --- | --- |
+| 3-5 | loop_and_grow, time_cave | gentle try-again | none (no death/capture) | minimal |
+| 5-8 | time_cave, loop_and_grow, open_map | comic | soft try-again only | light |
+| 8-11 | branch_and_bottleneck, time_cave, open_map, sorting_hat | optional (T2) | failure/entrapment, no death | light-rising |
+| 10-13 | branch_and_bottleneck, open_map, sorting_hat | yes (state) | yes, logical | moderate |
+| 13-16 | branch_and_bottleneck (prose), gauntlet (gamebook), sorting_hat, open_map | yes | yes, lethal (gamebook) | prose moderate / gamebook low |
+| 16+ | branch_and_bottleneck / gauntlet, sorting_hat | yes | yes, lethal | prose moderate / gamebook low |
+
+`sorting_hat` costs `sort + N x (track arc)` nodes, so it buys replay diversity at a node
+premium and lives in Medium/Long cells, not Short.
+
 ### 8. Series (campaign continuity)
 
 A `series` tag chains multiple books. **Invariant:** in any non-final book, every
@@ -254,5 +268,3 @@ records which numbers are empirical and which are tunable product choices.
 - `docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md`: the original
   reading-level x topology x scale design and the series concept (section 4.1).
 - `docs/planning/research/`: the empirical anchors (JHM 2019 + four-source reconciliation).
-- `docs/planning/skeleton-library-expansion-plan.md`: the prioritized authoring backlog
-  that consumes this framework.
