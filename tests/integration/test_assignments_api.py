@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 import pytest
@@ -324,13 +325,15 @@ async def _seed_published_with_report(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
+        admin = User(family_id=fam.id, role="admin", authn_subject="admin-a")
         session.add_all(
             [
-                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                admin,
                 User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam.id, role="child", authn_subject="child-a"),
             ]
         )
+        await session.flush()
         story_id = "summ-me"
         session.add(
             Storybook(
@@ -346,6 +349,8 @@ async def _seed_published_with_report(
                 version=1,
                 blob={"id": story_id, "nodes": [{"id": "n1", "body": "Prose."}]},
                 moderation_report=_report_with_flags(),
+                approved_by=admin.id,
+                published_at=datetime.now(UTC),
             )
         )
         await session.commit()
