@@ -26,7 +26,11 @@ from cyo_adventure.core.config import Settings
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import MockProvider, build_provider
-from cyo_adventure.generation.providers import FallbackProvider, OllamaProvider
+from cyo_adventure.generation.providers import (
+    FallbackProvider,
+    ModalProvider,
+    OllamaProvider,
+)
 from cyo_adventure.storybook.models import AgeBand
 from scripts.yield_harness import (
     YieldReport,
@@ -354,6 +358,18 @@ class TestLiveHarnessHelpers:
         provider = factory()
         assert isinstance(provider, OllamaProvider)
         assert provider.name == "ollama:llama3"
+
+    def test_live_factory_modal(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """modal builds the Modal leg with the override model."""
+        monkeypatch.setenv(
+            "MODAL_BASE_URL", "https://example--cyo-standard.modal.run/v1"
+        )
+        factory = _build_live_factory(
+            "modal", model="google/gemma-4-26b-a4b-it", fallback=True
+        )
+        provider = factory()
+        assert isinstance(provider, ModalProvider)
+        assert provider.name == "modal:google/gemma-4-26b-a4b-it"
 
     def test_tier_split_counts_by_tier(self) -> None:
         """Tier split groups pass/total counts by each brief's tier."""
