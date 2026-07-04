@@ -176,11 +176,93 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  frontend-e2e-real:
+    name: Frontend e2e (real backend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    services:
+      postgres:
+        image: ghcr.io/byronwilliamscpa/dhi-postgres:16-debian13
+        env:
+          POSTGRES_DB: cyo_adventure
+          POSTGRES_USER: cyo_adventure
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U cyo_adventure"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      # #ASSUME: external resources: the Postgres service container's health-cmd
+      # gate keeps this job from starting before Postgres accepts connections;
+      # the curl retry loop on /health/ready below (backed by a SELECT 1 probe)
+      # covers any remaining settle time on the uvicorn side.
+      # #VERIFY: if this job flakes on database-not-ready errors, raise
+      # --health-retries or the curl --retry count.
+      CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install backend dependencies
+        run: uv sync --all-extras
+
+      - name: Seed database
+        run: uv run python scripts/seed_dev_data.py
+
+      - name: Start backend
+        run: |
+          uv run uvicorn cyo_adventure.app:app --port 8000 &
+          curl --retry 20 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Install Playwright chromium
+        working-directory: ./frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Run real-backend smoke tier
+        # #ASSUME: external resources: this project's webServer (playwright.config.ts)
+        # runs `npm run build && npm run preview`, proxying /api to the uvicorn
+        # backend started above; VITE_API_URL is intentionally left unset so the
+        # build keeps the default '/api' base the preview proxy expects.
+        # #VERIFY: if the proxy target ever changes, keep VITE_API_URL unset here
+        # or update the proxy target in frontend/vite.config.ts together.
+        working-directory: ./frontend
+        run: npm run test:e2e:real
+
   ci-gate:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [ci, frontend, design-system]
+    needs: [ci, frontend, design-system, frontend-e2e-real]
     if: always()
     permissions:
       contents: read
@@ -196,11 +278,13 @@ jobs:
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
+          FRONTEND_E2E_REAL_RESULT: ${{ needs.frontend-e2e-real.result }}
         run: |
           FAILED=false
           [ "$CI_RESULT" != "success" ] && FAILED=true
           [ "$FRONTEND_RESULT" != "success" ] && FAILED=true
           [ "$DESIGN_SYSTEM_RESULT" != "success" ] && FAILED=true
+          [ "$FRONTEND_E2E_REAL_RESULT" != "success" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
             echo "CI Gate failed"
             exit 1
