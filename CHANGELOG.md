@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Guardian console, sign-in, intake, profiles, and reader 409-conflict flows now
+  have Playwright e2e coverage (all seven amber gaps from the journey coverage
+  map), plus a real-backend smoke tier exercising the ADR-005 approve path
+  against FastAPI + Postgres.
 - Experimental `ModalProvider` generation leg (ADR-010 item 2): an HTTP adapter
   mirroring `OpenRouterProvider` for self-hosted generation via Modal Auto
   Endpoints, wired behind `generation_provider=modal` as a bare leg that never
