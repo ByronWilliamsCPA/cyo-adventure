@@ -280,6 +280,52 @@ class TestModerationReviewSettings:
         assert settings.review_provider == "openrouter"
 
 
+class TestModalGenerationSettings:
+    """Tests for the experimental Modal generation-leg settings (ADR-010)."""
+
+    @pytest.mark.unit
+    def test_generation_provider_accepts_modal(self) -> None:
+        """generation_provider accepts the new 'modal' literal value."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(generation_provider="modal")
+        assert settings.generation_provider == "modal"
+
+    @pytest.mark.unit
+    def test_modal_settings_default_to_none(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """modal_base_url, modal_model, and modal_api_key default to None."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("MODAL_BASE_URL", raising=False)
+        monkeypatch.delenv("MODAL_MODEL", raising=False)
+        monkeypatch.delenv("MODAL_API_KEY", raising=False)
+        settings = Settings()
+        assert settings.modal_base_url is None
+        assert settings.modal_model is None
+        assert settings.modal_api_key is None
+
+    @pytest.mark.unit
+    def test_modal_timeout_seconds_default_exceeds_llm_timeout(self) -> None:
+        """modal_timeout_seconds defaults higher than llm_timeout_seconds (cold starts)."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings()
+        assert settings.modal_timeout_seconds > settings.llm_timeout_seconds
+
+    @pytest.mark.unit
+    def test_modal_base_url_reads_unprefixed_env_var(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """MODAL_BASE_URL (unprefixed) populates modal_base_url."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("MODAL_BASE_URL", "https://example--cyo.modal.run/v1")
+        settings = Settings()
+        assert settings.modal_base_url == "https://example--cyo.modal.run/v1"
+
+
 class TestUnprefixedOperatorAliases:
     """log_level, json_logs, and database_url read the unprefixed names that
     docker-compose and docs/guides/configuration.md actually set, while

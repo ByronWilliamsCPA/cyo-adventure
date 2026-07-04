@@ -96,7 +96,9 @@ class Settings(BaseSettings):
     # primary per ADR-003 as amended 2026-06-22). Live adapters are constructed
     # lazily in build_provider(), so an unset live key fails at call time, not
     # startup.
-    generation_provider: Literal["mock", "claude", "ollama", "openrouter"] = "mock"
+    generation_provider: Literal["mock", "claude", "ollama", "openrouter", "modal"] = (
+        "mock"
+    )
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
     # config change. OpenRouter rosters churn weekly, so pin first-party families
@@ -213,6 +215,24 @@ class Settings(BaseSettings):
     ollama_ca_bundle: str | None = Field(
         default=None, validation_alias="OLLAMA_CA_BUNDLE"
     )
+
+    # --- Experimental Modal generation leg (ADR-010 item 2) ---
+    # An offline-only leg: build_provider never wraps this in the production
+    # FallbackProvider cascade. All three fields are None until an operator
+    # deploys a Modal Auto Endpoint and sets them; build_modal_leg raises
+    # ConfigurationError naming the missing setting if either the url or model
+    # is absent at that point.
+    modal_base_url: str | None = Field(default=None, validation_alias="MODAL_BASE_URL")
+    modal_model: str | None = Field(default=None, validation_alias="MODAL_MODEL")
+    # #CRITICAL: security: this is a secret if the endpoint enforces auth; never
+    # log its value or echo it in an error message.
+    # #VERIFY: ModalProvider omits the Authorization header entirely when None,
+    # rather than sending an empty/placeholder Bearer value.
+    modal_api_key: str | None = Field(default=None, validation_alias="MODAL_API_KEY")
+    # Longer than llm_timeout_seconds (120s): Modal Auto Endpoints cold-start a
+    # vLLM server on first request after idle, which the OpenRouter leg never
+    # needs to tolerate.
+    modal_timeout_seconds: int = 180
 
     # --- Slice-2 moderation review pipeline ---
     # Which backend the moderation LLM stages use. "mock" (default) runs no real
