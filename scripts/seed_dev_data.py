@@ -191,6 +191,11 @@ async def seed_dev_data(
                 )
             )
 
+        # #ASSUME: concurrency: the review-story Storybook/Version/Assignment
+        # inserts share the composite-PK / no-rerun assumption tagged on the
+        # published-story loop above; the function-level early return is the
+        # sole guard against a second run duplicating these rows.
+        # #VERIFY: test_seed_dev_data_seeds_admin_and_review_story.
         review_blob = json.loads((_VALID / _REVIEW_STORY).read_text(encoding="utf-8"))
         review_id = str(review_blob["id"])
         review_version = int(review_blob["version"])
