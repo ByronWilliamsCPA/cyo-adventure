@@ -92,3 +92,54 @@ export function makeFetchStory(
     }
   }
 }
+
+/** A request body for POST /v1/completions (mirrors CompletionBody server-side). */
+export interface CompletionRequest {
+  profile_id: string
+  storybook_id: string
+  version: number
+  ending_id: string
+  event_id?: string
+}
+
+/**
+ * Fetch the server's saved reading state for cross-device resume. Returns null
+ * when the server has no state (HTTP 404) so the caller can start fresh; a
+ * transport failure surfaces as OfflineError so the caller can degrade to local
+ * play instead of treating it as "no progress".
+ */
+export function makeFetchServerState(
+  api: AxiosInstance
+): (profileId: string, storybookId: string) => Promise<ReadingState | null> {
+  return async (profileId: string, storybookId: string): Promise<ReadingState | null> => {
+    try {
+      const res = await api.get<ReadingState>(`/v1/reading-state/${profileId}/${storybookId}`)
+      return res.data
+    } catch (error) {
+      if (isAxiosError(error)) {
+        // 404 is the honest "no saved progress on the server" answer, not an error.
+        if (error.response?.status === 404) {
+          return null
+        }
+        // No HTTP response means a transport failure (offline/timeout); signal it
+        // distinctly so the caller degrades to local play, not "start fresh".
+        if (!error.response) {
+          throw new OfflineError()
+        }
+      }
+      throw error
+    }
+  }
+}
+
+/**
+ * Record a story completion. Best-effort: the server dedupes on
+ * (profile, storybook, version, ending), so a repeat post is a no-op row-wise.
+ */
+export function makeRecordCompletion(
+  api: AxiosInstance
+): (body: CompletionRequest) => Promise<void> {
+  return async (body: CompletionRequest): Promise<void> => {
+    await api.post('/v1/completions', body)
+  }
+}
