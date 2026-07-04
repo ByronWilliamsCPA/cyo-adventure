@@ -25,7 +25,7 @@ from cyo_adventure.core.exceptions import ProviderError
 from cyo_adventure.generation.providers._base import (
     DEFAULT_BACKOFF_BASE_SECONDS,
     DEFAULT_MAX_RETRIES,
-    _dig_content,
+    dig_content,
     run_with_retries,
     strip_code_fences,
 )
@@ -278,7 +278,7 @@ class OpenRouterProvider:
                 msg, provider="openrouter", model=self._model, leg_fatal=False
             ) from exc
 
-        content = _dig_content(payload)
+        content = dig_content(payload)
         if not content:
             msg = "openrouter response had no message content"
             raise ProviderError(

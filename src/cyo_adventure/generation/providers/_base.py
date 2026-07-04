@@ -67,7 +67,7 @@ def as_str_map(value: object) -> dict[str, object] | None:
     return cast("dict[str, object]", value) if isinstance(value, dict) else None
 
 
-def _dig_content(payload: object) -> str | None:
+def dig_content(payload: object) -> str | None:
     """Safely extract ``choices[0].message.content`` from a response payload.
 
     Shared by every OpenAI-chat-completions-shaped adapter (OpenRouter, Modal).
