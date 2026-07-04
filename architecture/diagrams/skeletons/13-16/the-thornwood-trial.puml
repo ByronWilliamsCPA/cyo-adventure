@@ -1,0 +1,1394 @@
+@startuml the-thornwood-trial
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 88w
+state ap_1 #D1C4E9
+ap_1 : rising · 58w
+state ap_2 #D1C4E9
+ap_2 : rising · 58w
+state ap_3 #D1C4E9
+ap_3 : rising · 58w
+state ap_4 #D1C4E9
+ap_4 : rising · 58w
+state e_maze_hub0 #FFCDD2
+e_maze_hub0 : setback (negative)
+e_maze_hub0 : "Lost in the Brambles"
+state e_maze_hub1 #FFCDD2
+e_maze_hub1 : setback (negative)
+e_maze_hub1 : "Turned Back at the Brambles"
+state x_mazeh_1_1 #ECEFF1
+x_mazeh_1_1 : branch · 58w
+state x_mazeh_1_2 #ECEFF1
+x_mazeh_1_2 : branch · 62w
+state e_mazeh_1 #FFCDD2
+e_mazeh_1 : setback (negative)
+e_mazeh_1 : "A Wrong Turn in the Brambles"
+state h_maze #ECEFF1
+h_maze : hub · 74w
+state e_maze_1_0 #FFCDD2
+e_maze_1_0 : setback (negative)
+e_maze_1_0 : "Turned Back at the Brambles"
+state x_maze1_2_1 #ECEFF1
+x_maze1_2_1 : branch · 58w
+state x_maze1_2_2 #ECEFF1
+x_maze1_2_2 : branch · 62w
+state x_maze1_2_3 #ECEFF1
+x_maze1_2_3 : branch · 54w
+state e_maze1_2 #FFCDD2
+e_maze1_2 : setback (negative)
+e_maze1_2 : "The Brambles Close In"
+state x_maze1_3_1 #ECEFF1
+x_maze1_3_1 : branch · 58w
+state x_maze1_3_2 #ECEFF1
+x_maze1_3_2 : branch · 62w
+state e_maze1_3 #FFCDD2
+e_maze1_3 : setback (negative)
+e_maze1_3 : "A Wrong Turn in the Brambles"
+state b_maze_1 #ECEFF1
+b_maze_1 : beat · 62w
+state e_maze_2_0 #FFCDD2
+e_maze_2_0 : setback (negative)
+e_maze_2_0 : "The Brambles Close In"
+state x_maze2_4_1 #ECEFF1
+x_maze2_4_1 : branch · 58w
+state x_maze2_4_2 #ECEFF1
+x_maze2_4_2 : branch · 62w
+state e_maze2_4 #FFCDD2
+e_maze2_4 : setback (negative)
+e_maze2_4 : "A Wrong Turn in the Brambles"
+state x_maze2_5_1 #ECEFF1
+x_maze2_5_1 : branch · 58w
+state x_maze2_5_2 #ECEFF1
+x_maze2_5_2 : branch · 62w
+state x_maze2_5_3 #ECEFF1
+x_maze2_5_3 : branch · 54w
+state e_maze2_5 #FFCDD2
+e_maze2_5 : setback (negative)
+e_maze2_5 : "Snared in the Brambles"
+state b_maze_2 #ECEFF1
+b_maze_2 : beat · 62w
+state e_maze_3_0 #FFCDD2
+e_maze_3_0 : setback (negative)
+e_maze_3_0 : "A Wrong Turn in the Brambles"
+state x_maze3_6_1 #ECEFF1
+x_maze3_6_1 : branch · 58w
+state x_maze3_6_2 #ECEFF1
+x_maze3_6_2 : branch · 62w
+state x_maze3_6_3 #ECEFF1
+x_maze3_6_3 : branch · 54w
+state e_maze3_6 #FFCDD2
+e_maze3_6 : setback (negative)
+e_maze3_6 : "Snared in the Brambles"
+state x_maze3_7_1 #ECEFF1
+x_maze3_7_1 : branch · 58w
+state x_maze3_7_2 #ECEFF1
+x_maze3_7_2 : branch · 62w
+state e_maze3_7 #FFCDD2
+e_maze3_7 : setback (negative)
+e_maze3_7 : "The Brambles Defeat Wren"
+state b_maze_3 #ECEFF1
+b_maze_3 : beat · 62w
+state e_maze_4_0 #FFCDD2
+e_maze_4_0 : setback (negative)
+e_maze_4_0 : "Snared in the Brambles"
+state x_maze4_8_1 #ECEFF1
+x_maze4_8_1 : branch · 58w
+state x_maze4_8_2 #ECEFF1
+x_maze4_8_2 : branch · 62w
+state e_maze4_8 #FFCDD2
+e_maze4_8 : setback (negative)
+e_maze4_8 : "The Brambles Defeat Wren"
+state x_maze4_9_1 #ECEFF1
+x_maze4_9_1 : branch · 58w
+state x_maze4_9_2 #ECEFF1
+x_maze4_9_2 : branch · 62w
+state x_maze4_9_3 #ECEFF1
+x_maze4_9_3 : branch · 54w
+state e_maze4_9 #FFCDD2
+e_maze4_9 : setback (negative)
+e_maze4_9 : "Benighted in the Brambles"
+state b_maze_4 #ECEFF1
+b_maze_4 : beat · 62w
+state e_maze_5_0 #FFCDD2
+e_maze_5_0 : setback (negative)
+e_maze_5_0 : "The Brambles Defeat Wren"
+state x_maze5_10_1 #ECEFF1
+x_maze5_10_1 : branch · 58w
+state x_maze5_10_2 #ECEFF1
+x_maze5_10_2 : branch · 62w
+state x_maze5_10_3 #ECEFF1
+x_maze5_10_3 : branch · 54w
+state e_maze5_10 #FFCDD2
+e_maze5_10 : setback (negative)
+e_maze5_10 : "Benighted in the Brambles"
+state x_maze5_11_1 #ECEFF1
+x_maze5_11_1 : branch · 58w
+state x_maze5_11_2 #ECEFF1
+x_maze5_11_2 : branch · 62w
+state e_maze5_11 #FFCDD2
+e_maze5_11 : setback (negative)
+e_maze5_11 : "Driven Off in the Brambles"
+state b_maze_5 #ECEFF1
+b_maze_5 : beat · 62w
+state rc_maze_0_1 #ECEFF1
+rc_maze_0_1 : branch · 60w
+state rc_maze_0_2 #ECEFF1
+rc_maze_0_2 : branch · 56w
+state rc_maze_0_3 #ECEFF1
+rc_maze_0_3 : reconverge · 60w
+state rc_maze_1_1 #ECEFF1
+rc_maze_1_1 : branch · 60w
+state rc_maze_1_2 #ECEFF1
+rc_maze_1_2 : branch · 56w
+state rc_maze_1_3 #ECEFF1
+rc_maze_1_3 : reconverge · 60w
+state rc_maze_2_1 #ECEFF1
+rc_maze_2_1 : branch · 60w
+state rc_maze_2_2 #ECEFF1
+rc_maze_2_2 : branch · 56w
+state rc_maze_2_3 #ECEFF1
+rc_maze_2_3 : reconverge · 60w
+state e_grove_hub0 #FFCDD2
+e_grove_hub0 : setback (negative)
+e_grove_hub0 : "Lost in the Grove"
+state e_grove_hub1 #FFCDD2
+e_grove_hub1 : setback (negative)
+e_grove_hub1 : "Turned Back at the Grove"
+state x_groveh_12_1 #ECEFF1
+x_groveh_12_1 : branch · 58w
+state x_groveh_12_2 #ECEFF1
+x_groveh_12_2 : branch · 62w
+state e_groveh_12 #FFCDD2
+e_groveh_12 : setback (negative)
+e_groveh_12 : "A Wrong Turn in the Grove"
+state h_grove #ECEFF1
+h_grove : hub · 74w
+state e_grove_1_0 #FFCDD2
+e_grove_1_0 : setback (negative)
+e_grove_1_0 : "Turned Back at the Grove"
+state x_grove1_13_1 #ECEFF1
+x_grove1_13_1 : branch · 58w
+state x_grove1_13_2 #ECEFF1
+x_grove1_13_2 : branch · 62w
+state x_grove1_13_3 #ECEFF1
+x_grove1_13_3 : branch · 54w
+state e_grove1_13 #FFCDD2
+e_grove1_13 : setback (negative)
+e_grove1_13 : "The Grove Closes In"
+state x_grove1_14_1 #ECEFF1
+x_grove1_14_1 : branch · 58w
+state x_grove1_14_2 #ECEFF1
+x_grove1_14_2 : branch · 62w
+state e_grove1_14 #FFCDD2
+e_grove1_14 : setback (negative)
+e_grove1_14 : "A Wrong Turn in the Grove"
+state b_grove_1 #ECEFF1
+b_grove_1 : beat · 62w
+state e_grove_2_0 #FFCDD2
+e_grove_2_0 : setback (negative)
+e_grove_2_0 : "The Grove Closes In"
+state x_grove2_15_1 #ECEFF1
+x_grove2_15_1 : branch · 58w
+state x_grove2_15_2 #ECEFF1
+x_grove2_15_2 : branch · 62w
+state e_grove2_15 #FFCDD2
+e_grove2_15 : setback (negative)
+e_grove2_15 : "A Wrong Turn in the Grove"
+state x_grove2_16_1 #ECEFF1
+x_grove2_16_1 : branch · 58w
+state x_grove2_16_2 #ECEFF1
+x_grove2_16_2 : branch · 62w
+state x_grove2_16_3 #ECEFF1
+x_grove2_16_3 : branch · 54w
+state e_grove2_16 #FFCDD2
+e_grove2_16 : setback (negative)
+e_grove2_16 : "Snared in the Grove"
+state b_grove_2 #ECEFF1
+b_grove_2 : beat · 62w
+state e_grove_3_0 #FFCDD2
+e_grove_3_0 : setback (negative)
+e_grove_3_0 : "A Wrong Turn in the Grove"
+state x_grove3_17_1 #ECEFF1
+x_grove3_17_1 : branch · 58w
+state x_grove3_17_2 #ECEFF1
+x_grove3_17_2 : branch · 62w
+state x_grove3_17_3 #ECEFF1
+x_grove3_17_3 : branch · 54w
+state e_grove3_17 #FFCDD2
+e_grove3_17 : setback (negative)
+e_grove3_17 : "Snared in the Grove"
+state x_grove3_18_1 #ECEFF1
+x_grove3_18_1 : branch · 58w
+state x_grove3_18_2 #ECEFF1
+x_grove3_18_2 : branch · 62w
+state e_grove3_18 #FFCDD2
+e_grove3_18 : setback (negative)
+e_grove3_18 : "The Grove Defeats Wren"
+state b_grove_3 #ECEFF1
+b_grove_3 : beat · 62w
+state e_grove_4_0 #FFCDD2
+e_grove_4_0 : setback (negative)
+e_grove_4_0 : "Snared in the Grove"
+state x_grove4_19_1 #ECEFF1
+x_grove4_19_1 : branch · 58w
+state x_grove4_19_2 #ECEFF1
+x_grove4_19_2 : branch · 62w
+state e_grove4_19 #FFCDD2
+e_grove4_19 : setback (negative)
+e_grove4_19 : "The Grove Defeats Wren"
+state x_grove4_20_1 #ECEFF1
+x_grove4_20_1 : branch · 58w
+state x_grove4_20_2 #ECEFF1
+x_grove4_20_2 : branch · 62w
+state x_grove4_20_3 #ECEFF1
+x_grove4_20_3 : branch · 54w
+state e_grove4_20 #FFCDD2
+e_grove4_20 : setback (negative)
+e_grove4_20 : "Benighted in the Grove"
+state b_grove_4 #ECEFF1
+b_grove_4 : beat · 62w
+state e_grove_5_0 #FFCDD2
+e_grove_5_0 : setback (negative)
+e_grove_5_0 : "The Grove Defeats Wren"
+state x_grove5_21_1 #ECEFF1
+x_grove5_21_1 : branch · 58w
+state x_grove5_21_2 #ECEFF1
+x_grove5_21_2 : branch · 62w
+state x_grove5_21_3 #ECEFF1
+x_grove5_21_3 : branch · 54w
+state e_grove5_21 #FFCDD2
+e_grove5_21 : setback (negative)
+e_grove5_21 : "Benighted in the Grove"
+state x_grove5_22_1 #ECEFF1
+x_grove5_22_1 : branch · 58w
+state x_grove5_22_2 #ECEFF1
+x_grove5_22_2 : branch · 62w
+state e_grove5_22 #FFCDD2
+e_grove5_22 : setback (negative)
+e_grove5_22 : "Driven Off in the Grove"
+state b_grove_5 #ECEFF1
+b_grove_5 : beat · 62w
+state rc_grove_0_1 #ECEFF1
+rc_grove_0_1 : branch · 60w
+state rc_grove_0_2 #ECEFF1
+rc_grove_0_2 : branch · 56w
+state rc_grove_0_3 #ECEFF1
+rc_grove_0_3 : reconverge · 60w
+state rc_grove_1_1 #ECEFF1
+rc_grove_1_1 : branch · 60w
+state rc_grove_1_2 #ECEFF1
+rc_grove_1_2 : branch · 56w
+state rc_grove_1_3 #ECEFF1
+rc_grove_1_3 : reconverge · 60w
+state rc_grove_2_1 #ECEFF1
+rc_grove_2_1 : branch · 60w
+state rc_grove_2_2 #ECEFF1
+rc_grove_2_2 : branch · 56w
+state rc_grove_2_3 #ECEFF1
+rc_grove_2_3 : reconverge · 60w
+state e_warren_hub0 #FFCDD2
+e_warren_hub0 : setback (negative)
+e_warren_hub0 : "Lost in the Warren"
+state e_warren_hub1 #FFCDD2
+e_warren_hub1 : setback (negative)
+e_warren_hub1 : "Turned Back at the Warren"
+state x_warrenh_23_1 #ECEFF1
+x_warrenh_23_1 : branch · 58w
+state x_warrenh_23_2 #ECEFF1
+x_warrenh_23_2 : branch · 62w
+state e_warrenh_23 #FFCDD2
+e_warrenh_23 : setback (negative)
+e_warrenh_23 : "A Wrong Turn in the Warren"
+state h_warren #ECEFF1
+h_warren : hub · 74w
+state e_warren_1_0 #FFCDD2
+e_warren_1_0 : setback (negative)
+e_warren_1_0 : "Turned Back at the Warren"
+state x_warren1_24_1 #ECEFF1
+x_warren1_24_1 : branch · 58w
+state x_warren1_24_2 #ECEFF1
+x_warren1_24_2 : branch · 62w
+state x_warren1_24_3 #ECEFF1
+x_warren1_24_3 : branch · 54w
+state e_warren1_24 #FFCDD2
+e_warren1_24 : setback (negative)
+e_warren1_24 : "The Warren Closes In"
+state x_warren1_25_1 #ECEFF1
+x_warren1_25_1 : branch · 58w
+state x_warren1_25_2 #ECEFF1
+x_warren1_25_2 : branch · 62w
+state e_warren1_25 #FFCDD2
+e_warren1_25 : setback (negative)
+e_warren1_25 : "A Wrong Turn in the Warren"
+state b_warren_1 #ECEFF1
+b_warren_1 : beat · 62w
+state e_warren_2_0 #FFCDD2
+e_warren_2_0 : setback (negative)
+e_warren_2_0 : "The Warren Closes In"
+state x_warren2_26_1 #ECEFF1
+x_warren2_26_1 : branch · 58w
+state x_warren2_26_2 #ECEFF1
+x_warren2_26_2 : branch · 62w
+state e_warren2_26 #FFCDD2
+e_warren2_26 : setback (negative)
+e_warren2_26 : "A Wrong Turn in the Warren"
+state x_warren2_27_1 #ECEFF1
+x_warren2_27_1 : branch · 58w
+state x_warren2_27_2 #ECEFF1
+x_warren2_27_2 : branch · 62w
+state x_warren2_27_3 #ECEFF1
+x_warren2_27_3 : branch · 54w
+state e_warren2_27 #FFCDD2
+e_warren2_27 : setback (negative)
+e_warren2_27 : "Snared in the Warren"
+state b_warren_2 #ECEFF1
+b_warren_2 : beat · 62w
+state e_warren_3_0 #FFCDD2
+e_warren_3_0 : setback (negative)
+e_warren_3_0 : "A Wrong Turn in the Warren"
+state x_warren3_28_1 #ECEFF1
+x_warren3_28_1 : branch · 58w
+state x_warren3_28_2 #ECEFF1
+x_warren3_28_2 : branch · 62w
+state x_warren3_28_3 #ECEFF1
+x_warren3_28_3 : branch · 54w
+state e_warren3_28 #FFCDD2
+e_warren3_28 : setback (negative)
+e_warren3_28 : "Snared in the Warren"
+state x_warren3_29_1 #ECEFF1
+x_warren3_29_1 : branch · 58w
+state x_warren3_29_2 #ECEFF1
+x_warren3_29_2 : branch · 62w
+state e_warren3_29 #FFCDD2
+e_warren3_29 : setback (negative)
+e_warren3_29 : "The Warren Defeats Wren"
+state b_warren_3 #ECEFF1
+b_warren_3 : beat · 62w
+state e_warren_4_0 #FFCDD2
+e_warren_4_0 : setback (negative)
+e_warren_4_0 : "Snared in the Warren"
+state x_warren4_30_1 #ECEFF1
+x_warren4_30_1 : branch · 58w
+state x_warren4_30_2 #ECEFF1
+x_warren4_30_2 : branch · 62w
+state e_warren4_30 #FFCDD2
+e_warren4_30 : setback (negative)
+e_warren4_30 : "The Warren Defeats Wren"
+state x_warren4_31_1 #ECEFF1
+x_warren4_31_1 : branch · 58w
+state x_warren4_31_2 #ECEFF1
+x_warren4_31_2 : branch · 62w
+state x_warren4_31_3 #ECEFF1
+x_warren4_31_3 : branch · 54w
+state e_warren4_31 #FFCDD2
+e_warren4_31 : setback (negative)
+e_warren4_31 : "Benighted in the Warren"
+state b_warren_4 #ECEFF1
+b_warren_4 : beat · 62w
+state e_warren_5_0 #FFCDD2
+e_warren_5_0 : setback (negative)
+e_warren_5_0 : "The Warren Defeats Wren"
+state x_warren5_32_1 #ECEFF1
+x_warren5_32_1 : branch · 58w
+state x_warren5_32_2 #ECEFF1
+x_warren5_32_2 : branch · 62w
+state x_warren5_32_3 #ECEFF1
+x_warren5_32_3 : branch · 54w
+state e_warren5_32 #FFCDD2
+e_warren5_32 : setback (negative)
+e_warren5_32 : "Benighted in the Warren"
+state x_warren5_33_1 #ECEFF1
+x_warren5_33_1 : branch · 58w
+state x_warren5_33_2 #ECEFF1
+x_warren5_33_2 : branch · 62w
+state e_warren5_33 #FFCDD2
+e_warren5_33 : setback (negative)
+e_warren5_33 : "Driven Off in the Warren"
+state b_warren_5 #ECEFF1
+b_warren_5 : beat · 62w
+state rc_warren_0_1 #ECEFF1
+rc_warren_0_1 : branch · 60w
+state rc_warren_0_2 #ECEFF1
+rc_warren_0_2 : branch · 56w
+state rc_warren_0_3 #ECEFF1
+rc_warren_0_3 : reconverge · 60w
+state rc_warren_1_1 #ECEFF1
+rc_warren_1_1 : branch · 60w
+state rc_warren_1_2 #ECEFF1
+rc_warren_1_2 : branch · 56w
+state rc_warren_1_3 #ECEFF1
+rc_warren_1_3 : reconverge · 60w
+state rc_warren_2_1 #ECEFF1
+rc_warren_2_1 : branch · 60w
+state rc_warren_2_2 #ECEFF1
+rc_warren_2_2 : branch · 56w
+state rc_warren_2_3 #ECEFF1
+rc_warren_2_3 : reconverge · 60w
+state e_council_hub0 #FFCDD2
+e_council_hub0 : setback (negative)
+e_council_hub0 : "Lost in the Council"
+state e_council_hub1 #FFCDD2
+e_council_hub1 : setback (negative)
+e_council_hub1 : "Turned Back at the Council"
+state x_councilh_34_1 #ECEFF1
+x_councilh_34_1 : branch · 58w
+state x_councilh_34_2 #ECEFF1
+x_councilh_34_2 : branch · 62w
+state e_councilh_34 #FFCDD2
+e_councilh_34 : setback (negative)
+e_councilh_34 : "A Wrong Turn in the Council"
+state h_council #ECEFF1
+h_council : hub · 74w
+state e_council_1_0 #FFCDD2
+e_council_1_0 : setback (negative)
+e_council_1_0 : "Turned Back at the Council"
+state x_council1_35_1 #ECEFF1
+x_council1_35_1 : branch · 58w
+state x_council1_35_2 #ECEFF1
+x_council1_35_2 : branch · 62w
+state x_council1_35_3 #ECEFF1
+x_council1_35_3 : branch · 54w
+state e_council1_35 #FFCDD2
+e_council1_35 : setback (negative)
+e_council1_35 : "The Council Closes In"
+state x_council1_36_1 #ECEFF1
+x_council1_36_1 : branch · 58w
+state x_council1_36_2 #ECEFF1
+x_council1_36_2 : branch · 62w
+state e_council1_36 #FFCDD2
+e_council1_36 : setback (negative)
+e_council1_36 : "A Wrong Turn in the Council"
+state b_council_1 #ECEFF1
+b_council_1 : beat · 62w
+state e_council_2_0 #FFCDD2
+e_council_2_0 : setback (negative)
+e_council_2_0 : "The Council Closes In"
+state x_council2_37_1 #ECEFF1
+x_council2_37_1 : branch · 58w
+state x_council2_37_2 #ECEFF1
+x_council2_37_2 : branch · 62w
+state e_council2_37 #FFCDD2
+e_council2_37 : setback (negative)
+e_council2_37 : "A Wrong Turn in the Council"
+state x_council2_38_1 #ECEFF1
+x_council2_38_1 : branch · 58w
+state x_council2_38_2 #ECEFF1
+x_council2_38_2 : branch · 62w
+state x_council2_38_3 #ECEFF1
+x_council2_38_3 : branch · 54w
+state e_council2_38 #FFCDD2
+e_council2_38 : setback (negative)
+e_council2_38 : "Snared in the Council"
+state b_council_2 #ECEFF1
+b_council_2 : beat · 62w
+state e_council_3_0 #FFCDD2
+e_council_3_0 : setback (negative)
+e_council_3_0 : "A Wrong Turn in the Council"
+state x_council3_39_1 #ECEFF1
+x_council3_39_1 : branch · 58w
+state x_council3_39_2 #ECEFF1
+x_council3_39_2 : branch · 62w
+state x_council3_39_3 #ECEFF1
+x_council3_39_3 : branch · 54w
+state e_council3_39 #FFCDD2
+e_council3_39 : setback (negative)
+e_council3_39 : "Snared in the Council"
+state x_council3_40_1 #ECEFF1
+x_council3_40_1 : branch · 58w
+state x_council3_40_2 #ECEFF1
+x_council3_40_2 : branch · 62w
+state e_council3_40 #FFCDD2
+e_council3_40 : setback (negative)
+e_council3_40 : "The Council Defeats Wren"
+state b_council_3 #ECEFF1
+b_council_3 : beat · 62w
+state e_council_4_0 #FFCDD2
+e_council_4_0 : setback (negative)
+e_council_4_0 : "Snared in the Council"
+state x_council4_41_1 #ECEFF1
+x_council4_41_1 : branch · 58w
+state x_council4_41_2 #ECEFF1
+x_council4_41_2 : branch · 62w
+state e_council4_41 #FFCDD2
+e_council4_41 : setback (negative)
+e_council4_41 : "The Council Defeats Wren"
+state x_council4_42_1 #ECEFF1
+x_council4_42_1 : branch · 58w
+state x_council4_42_2 #ECEFF1
+x_council4_42_2 : branch · 62w
+state x_council4_42_3 #ECEFF1
+x_council4_42_3 : branch · 54w
+state e_council4_42 #FFCDD2
+e_council4_42 : setback (negative)
+e_council4_42 : "Benighted in the Council"
+state b_council_4 #ECEFF1
+b_council_4 : beat · 62w
+state e_council_5_0 #FFCDD2
+e_council_5_0 : setback (negative)
+e_council_5_0 : "The Council Defeats Wren"
+state x_council5_43_1 #ECEFF1
+x_council5_43_1 : branch · 58w
+state x_council5_43_2 #ECEFF1
+x_council5_43_2 : branch · 62w
+state x_council5_43_3 #ECEFF1
+x_council5_43_3 : branch · 54w
+state e_council5_43 #FFCDD2
+e_council5_43 : setback (negative)
+e_council5_43 : "Benighted in the Council"
+state x_council5_44_1 #ECEFF1
+x_council5_44_1 : branch · 58w
+state x_council5_44_2 #ECEFF1
+x_council5_44_2 : branch · 62w
+state e_council5_44 #FFCDD2
+e_council5_44 : setback (negative)
+e_council5_44 : "Driven Off in the Council"
+state b_council_5 #ECEFF1
+b_council_5 : beat · 62w
+state rc_council_0_1 #ECEFF1
+rc_council_0_1 : branch · 60w
+state rc_council_0_2 #ECEFF1
+rc_council_0_2 : branch · 56w
+state rc_council_0_3 #ECEFF1
+rc_council_0_3 : reconverge · 60w
+state rc_council_1_1 #ECEFF1
+rc_council_1_1 : branch · 60w
+state rc_council_1_2 #ECEFF1
+rc_council_1_2 : branch · 56w
+state rc_council_1_3 #ECEFF1
+rc_council_1_3 : reconverge · 60w
+state rc_council_2_1 #ECEFF1
+rc_council_2_1 : branch · 60w
+state rc_council_2_2 #ECEFF1
+rc_council_2_2 : branch · 56w
+state rc_council_2_3 #ECEFF1
+rc_council_2_3 : reconverge · 60w
+state e_ridge_hub0 #FFCDD2
+e_ridge_hub0 : setback (negative)
+e_ridge_hub0 : "Lost in the Ridge"
+state e_ridge_hub1 #FFCDD2
+e_ridge_hub1 : setback (negative)
+e_ridge_hub1 : "Turned Back at the Ridge"
+state x_ridgeh_45_1 #ECEFF1
+x_ridgeh_45_1 : branch · 58w
+state x_ridgeh_45_2 #ECEFF1
+x_ridgeh_45_2 : branch · 62w
+state e_ridgeh_45 #FFCDD2
+e_ridgeh_45 : setback (negative)
+e_ridgeh_45 : "A Wrong Turn in the Ridge"
+state h_ridge #ECEFF1
+h_ridge : hub · 74w
+state e_ridge_1_0 #FFCDD2
+e_ridge_1_0 : setback (negative)
+e_ridge_1_0 : "Turned Back at the Ridge"
+state x_ridge1_46_1 #ECEFF1
+x_ridge1_46_1 : branch · 58w
+state x_ridge1_46_2 #ECEFF1
+x_ridge1_46_2 : branch · 62w
+state x_ridge1_46_3 #ECEFF1
+x_ridge1_46_3 : branch · 54w
+state e_ridge1_46 #FFCDD2
+e_ridge1_46 : setback (negative)
+e_ridge1_46 : "The Ridge Closes In"
+state x_ridge1_47_1 #ECEFF1
+x_ridge1_47_1 : branch · 58w
+state x_ridge1_47_2 #ECEFF1
+x_ridge1_47_2 : branch · 62w
+state e_ridge1_47 #FFCDD2
+e_ridge1_47 : setback (negative)
+e_ridge1_47 : "A Wrong Turn in the Ridge"
+state b_ridge_1 #ECEFF1
+b_ridge_1 : beat · 62w
+state e_ridge_2_0 #FFCDD2
+e_ridge_2_0 : setback (negative)
+e_ridge_2_0 : "The Ridge Closes In"
+state x_ridge2_48_1 #ECEFF1
+x_ridge2_48_1 : branch · 58w
+state x_ridge2_48_2 #ECEFF1
+x_ridge2_48_2 : branch · 62w
+state e_ridge2_48 #FFCDD2
+e_ridge2_48 : setback (negative)
+e_ridge2_48 : "A Wrong Turn in the Ridge"
+state x_ridge2_49_1 #ECEFF1
+x_ridge2_49_1 : branch · 58w
+state x_ridge2_49_2 #ECEFF1
+x_ridge2_49_2 : branch · 62w
+state x_ridge2_49_3 #ECEFF1
+x_ridge2_49_3 : branch · 54w
+state e_ridge2_49 #FFCDD2
+e_ridge2_49 : setback (negative)
+e_ridge2_49 : "Snared in the Ridge"
+state b_ridge_2 #ECEFF1
+b_ridge_2 : beat · 62w
+state e_ridge_3_0 #FFCDD2
+e_ridge_3_0 : setback (negative)
+e_ridge_3_0 : "A Wrong Turn in the Ridge"
+state x_ridge3_50_1 #ECEFF1
+x_ridge3_50_1 : branch · 58w
+state x_ridge3_50_2 #ECEFF1
+x_ridge3_50_2 : branch · 62w
+state x_ridge3_50_3 #ECEFF1
+x_ridge3_50_3 : branch · 54w
+state e_ridge3_50 #FFCDD2
+e_ridge3_50 : setback (negative)
+e_ridge3_50 : "Snared in the Ridge"
+state x_ridge3_51_1 #ECEFF1
+x_ridge3_51_1 : branch · 58w
+state x_ridge3_51_2 #ECEFF1
+x_ridge3_51_2 : branch · 62w
+state e_ridge3_51 #FFCDD2
+e_ridge3_51 : setback (negative)
+e_ridge3_51 : "The Ridge Defeats Wren"
+state b_ridge_3 #ECEFF1
+b_ridge_3 : beat · 62w
+state e_ridge_4_0 #FFCDD2
+e_ridge_4_0 : setback (negative)
+e_ridge_4_0 : "Snared in the Ridge"
+state x_ridge4_52_1 #ECEFF1
+x_ridge4_52_1 : branch · 58w
+state x_ridge4_52_2 #ECEFF1
+x_ridge4_52_2 : branch · 62w
+state e_ridge4_52 #FFCDD2
+e_ridge4_52 : setback (negative)
+e_ridge4_52 : "The Ridge Defeats Wren"
+state x_ridge4_53_1 #ECEFF1
+x_ridge4_53_1 : branch · 58w
+state x_ridge4_53_2 #ECEFF1
+x_ridge4_53_2 : branch · 62w
+state x_ridge4_53_3 #ECEFF1
+x_ridge4_53_3 : branch · 54w
+state e_ridge4_53 #FFCDD2
+e_ridge4_53 : setback (negative)
+e_ridge4_53 : "Benighted in the Ridge"
+state b_ridge_4 #ECEFF1
+b_ridge_4 : beat · 62w
+state e_ridge_5_0 #FFCDD2
+e_ridge_5_0 : setback (negative)
+e_ridge_5_0 : "The Ridge Defeats Wren"
+state x_ridge5_54_1 #ECEFF1
+x_ridge5_54_1 : branch · 58w
+state x_ridge5_54_2 #ECEFF1
+x_ridge5_54_2 : branch · 62w
+state x_ridge5_54_3 #ECEFF1
+x_ridge5_54_3 : branch · 54w
+state e_ridge5_54 #FFCDD2
+e_ridge5_54 : setback (negative)
+e_ridge5_54 : "Benighted in the Ridge"
+state x_ridge5_55_1 #ECEFF1
+x_ridge5_55_1 : branch · 58w
+state x_ridge5_55_2 #ECEFF1
+x_ridge5_55_2 : branch · 62w
+state e_ridge5_55 #FFCDD2
+e_ridge5_55 : setback (negative)
+e_ridge5_55 : "Driven Off in the Ridge"
+state b_ridge_5 #ECEFF1
+b_ridge_5 : beat · 62w
+state rc_ridge_0_1 #ECEFF1
+rc_ridge_0_1 : branch · 60w
+state rc_ridge_0_2 #ECEFF1
+rc_ridge_0_2 : branch · 56w
+state rc_ridge_0_3 #ECEFF1
+rc_ridge_0_3 : reconverge · 60w
+state rc_ridge_1_1 #ECEFF1
+rc_ridge_1_1 : branch · 60w
+state rc_ridge_1_2 #ECEFF1
+rc_ridge_1_2 : branch · 56w
+state rc_ridge_1_3 #ECEFF1
+rc_ridge_1_3 : reconverge · 60w
+state rc_ridge_2_1 #ECEFF1
+rc_ridge_2_1 : branch · 60w
+state rc_ridge_2_2 #ECEFF1
+rc_ridge_2_2 : branch · 56w
+state rc_ridge_2_3 #ECEFF1
+rc_ridge_2_3 : reconverge · 60w
+state e_gate_hub0 #FFCDD2
+e_gate_hub0 : setback (negative)
+e_gate_hub0 : "Lost in the Gate"
+state e_gate_hub1 #FFCDD2
+e_gate_hub1 : setback (negative)
+e_gate_hub1 : "Turned Back at the Gate"
+state x_gateh_56_1 #ECEFF1
+x_gateh_56_1 : branch · 58w
+state x_gateh_56_2 #ECEFF1
+x_gateh_56_2 : branch · 62w
+state e_gateh_56 #FFCDD2
+e_gateh_56 : setback (negative)
+e_gateh_56 : "A Wrong Turn in the Gate"
+state h_gate #ECEFF1
+h_gate : hub · 74w
+state e_gate_1_0 #FFCDD2
+e_gate_1_0 : setback (negative)
+e_gate_1_0 : "Turned Back at the Gate"
+state x_gate1_57_1 #ECEFF1
+x_gate1_57_1 : branch · 58w
+state x_gate1_57_2 #ECEFF1
+x_gate1_57_2 : branch · 62w
+state x_gate1_57_3 #ECEFF1
+x_gate1_57_3 : branch · 54w
+state e_gate1_57 #FFCDD2
+e_gate1_57 : setback (negative)
+e_gate1_57 : "The Gate Closes In"
+state x_gate1_58_1 #ECEFF1
+x_gate1_58_1 : branch · 58w
+state x_gate1_58_2 #ECEFF1
+x_gate1_58_2 : branch · 62w
+state e_gate1_58 #FFCDD2
+e_gate1_58 : setback (negative)
+e_gate1_58 : "A Wrong Turn in the Gate"
+state b_gate_1 #ECEFF1
+b_gate_1 : beat · 62w
+state e_gate_2_0 #FFCDD2
+e_gate_2_0 : setback (negative)
+e_gate_2_0 : "The Gate Closes In"
+state x_gate2_59_1 #ECEFF1
+x_gate2_59_1 : branch · 58w
+state x_gate2_59_2 #ECEFF1
+x_gate2_59_2 : branch · 62w
+state e_gate2_59 #FFCDD2
+e_gate2_59 : setback (negative)
+e_gate2_59 : "A Wrong Turn in the Gate"
+state x_gate2_60_1 #ECEFF1
+x_gate2_60_1 : branch · 58w
+state x_gate2_60_2 #ECEFF1
+x_gate2_60_2 : branch · 62w
+state x_gate2_60_3 #ECEFF1
+x_gate2_60_3 : branch · 54w
+state e_gate2_60 #FFCDD2
+e_gate2_60 : setback (negative)
+e_gate2_60 : "Snared in the Gate"
+state b_gate_2 #ECEFF1
+b_gate_2 : beat · 62w
+state e_gate_3_0 #FFCDD2
+e_gate_3_0 : setback (negative)
+e_gate_3_0 : "A Wrong Turn in the Gate"
+state x_gate3_61_1 #ECEFF1
+x_gate3_61_1 : branch · 58w
+state x_gate3_61_2 #ECEFF1
+x_gate3_61_2 : branch · 62w
+state x_gate3_61_3 #ECEFF1
+x_gate3_61_3 : branch · 54w
+state e_gate3_61 #FFCDD2
+e_gate3_61 : setback (negative)
+e_gate3_61 : "Snared in the Gate"
+state x_gate3_62_1 #ECEFF1
+x_gate3_62_1 : branch · 58w
+state x_gate3_62_2 #ECEFF1
+x_gate3_62_2 : branch · 62w
+state e_gate3_62 #FFCDD2
+e_gate3_62 : setback (negative)
+e_gate3_62 : "The Gate Defeats Wren"
+state b_gate_3 #ECEFF1
+b_gate_3 : beat · 62w
+state e_gate_4_0 #FFCDD2
+e_gate_4_0 : setback (negative)
+e_gate_4_0 : "Snared in the Gate"
+state x_gate4_63_1 #ECEFF1
+x_gate4_63_1 : branch · 58w
+state x_gate4_63_2 #ECEFF1
+x_gate4_63_2 : branch · 62w
+state e_gate4_63 #FFCDD2
+e_gate4_63 : setback (negative)
+e_gate4_63 : "The Gate Defeats Wren"
+state x_gate4_64_1 #ECEFF1
+x_gate4_64_1 : branch · 58w
+state x_gate4_64_2 #ECEFF1
+x_gate4_64_2 : branch · 62w
+state x_gate4_64_3 #ECEFF1
+x_gate4_64_3 : branch · 54w
+state e_gate4_64 #FFCDD2
+e_gate4_64 : setback (negative)
+e_gate4_64 : "Benighted in the Gate"
+state b_gate_4 #ECEFF1
+b_gate_4 : beat · 62w
+state e_gate_5_0 #FFCDD2
+e_gate_5_0 : setback (negative)
+e_gate_5_0 : "The Gate Defeats Wren"
+state x_gate5_65_1 #ECEFF1
+x_gate5_65_1 : branch · 58w
+state x_gate5_65_2 #ECEFF1
+x_gate5_65_2 : branch · 62w
+state x_gate5_65_3 #ECEFF1
+x_gate5_65_3 : branch · 54w
+state e_gate5_65 #FFCDD2
+e_gate5_65 : setback (negative)
+e_gate5_65 : "Benighted in the Gate"
+state x_gate5_66_1 #ECEFF1
+x_gate5_66_1 : branch · 58w
+state x_gate5_66_2 #ECEFF1
+x_gate5_66_2 : branch · 62w
+state e_gate5_66 #FFCDD2
+e_gate5_66 : setback (negative)
+e_gate5_66 : "Driven Off in the Gate"
+state b_gate_5 #ECEFF1
+b_gate_5 : beat · 62w
+state rc_gate_0_1 #ECEFF1
+rc_gate_0_1 : branch · 60w
+state rc_gate_0_2 #ECEFF1
+rc_gate_0_2 : branch · 56w
+state rc_gate_0_3 #ECEFF1
+rc_gate_0_3 : reconverge · 60w
+state rc_gate_1_1 #ECEFF1
+rc_gate_1_1 : branch · 60w
+state rc_gate_1_2 #ECEFF1
+rc_gate_1_2 : branch · 56w
+state rc_gate_1_3 #ECEFF1
+rc_gate_1_3 : reconverge · 60w
+state rc_gate_2_1 #ECEFF1
+rc_gate_2_1 : branch · 60w
+state rc_gate_2_2 #ECEFF1
+rc_gate_2_2 : branch · 56w
+state rc_gate_2_3 #ECEFF1
+rc_gate_2_3 : reconverge · 60w
+state f_dusk #ECEFF1
+f_dusk : hub · 78w
+state f_name #ECEFF1
+f_name : beat · 70w
+state f_wild #ECEFF1
+f_wild : beat · 66w
+state e_win_warden #C8E6C9
+e_win_warden : success (positive)
+e_win_warden : "Named a Warden of the Thornwood"
+state e_win_wild #C8E6C9
+e_win_wild : success (positive)
+e_win_wild : "Warden of the Wild Ways"
+state e_win_honest #C8E6C9
+e_win_honest : success (positive)
+e_win_honest : "Named for a Plain True Answer"
+state e_win_alt #C8E6C9
+e_win_alt : completion (positive)
+e_win_alt : "The Dawn Crossing Won"
+state e_gate_slip #FFCDD2
+e_gate_slip : setback (negative)
+e_gate_slip : "Caught Slipping the Gate"
+state e_gate_late #FFCDD2
+e_gate_late : setback (negative)
+e_gate_late : "Benighted at the Far Gate"
+state e_gate_next #FFCDD2
+e_gate_next : setback (negative)
+e_gate_next : "Turned Back for Next Season"
+n_start --> ap_1 : Follow the old deer track.
+n_start --> ap_2 : Take the dry stream bed.
+n_start --> ap_3 : Walk the charcoal-burners road.
+n_start --> ap_4 : Slip through the broken boundary wall.
+ap_1 --> h_maze : Press on to the maze mouth.
+ap_2 --> h_maze : Press on to the maze mouth.
+ap_3 --> h_maze : Press on to the maze mouth.
+ap_4 --> h_maze : Press on to the maze mouth.
+x_mazeh_1_1 --> x_mazeh_1_2 : Push on and hope it opens.
+x_mazeh_1_2 --> e_mazeh_1 : Push on and hope it opens.
+h_maze --> b_maze_1 : Take the true warden mark deeper into th...
+h_maze --> e_maze_hub0 : Take the wider, gentler way.
+h_maze --> e_maze_hub1 : Turn aside toward the strange light.
+h_maze --> x_mazeh_1_1 : Try the narrow shortcut around the test.
+x_maze1_2_1 --> x_maze1_2_2 : Push on and hope it opens.
+x_maze1_2_2 --> x_maze1_2_3 : Push on and hope it opens.
+x_maze1_2_3 --> e_maze1_2 : Push on and hope it opens.
+x_maze1_3_1 --> x_maze1_3_2 : Push on and hope it opens.
+x_maze1_3_2 --> e_maze1_3 : Push on and hope it opens.
+b_maze_1 --> b_maze_2 : Keep to the hardest, truest line.
+b_maze_1 --> e_maze_1_0 : Turn aside toward the strange light.
+b_maze_1 --> x_maze1_2_1 : Double back and start over.
+b_maze_1 --> x_maze1_3_1 : Trust the easy looking path.
+b_maze_1 --> rc_maze_0_1 : Slip onto the wide warden run.
+x_maze2_4_1 --> x_maze2_4_2 : Push on and hope it opens.
+x_maze2_4_2 --> e_maze2_4 : Push on and hope it opens.
+x_maze2_5_1 --> x_maze2_5_2 : Push on and hope it opens.
+x_maze2_5_2 --> x_maze2_5_3 : Push on and hope it opens.
+x_maze2_5_3 --> e_maze2_5 : Push on and hope it opens.
+b_maze_2 --> b_maze_3 : Read the signs and press ahead.
+b_maze_2 --> e_maze_2_0 : Rush it before the dark comes.
+b_maze_2 --> x_maze2_4_1 : Trust the easy looking path.
+b_maze_2 --> x_maze2_5_1 : Cut straight across the marks.
+b_maze_2 --> rc_maze_1_1 : Slip onto the wide warden run.
+x_maze3_6_1 --> x_maze3_6_2 : Push on and hope it opens.
+x_maze3_6_2 --> x_maze3_6_3 : Push on and hope it opens.
+x_maze3_6_3 --> e_maze3_6 : Push on and hope it opens.
+x_maze3_7_1 --> x_maze3_7_2 : Push on and hope it opens.
+x_maze3_7_2 --> e_maze3_7 : Push on and hope it opens.
+b_maze_3 --> b_maze_4 : Hold the pace and go on.
+b_maze_3 --> e_maze_3_0 : Double back and start over.
+b_maze_3 --> x_maze3_6_1 : Cut straight across the marks.
+b_maze_3 --> x_maze3_7_1 : Chance the quicker line.
+b_maze_3 --> rc_maze_2_1 : Slip onto the wide warden run.
+x_maze4_8_1 --> x_maze4_8_2 : Push on and hope it opens.
+x_maze4_8_2 --> e_maze4_8 : Push on and hope it opens.
+x_maze4_9_1 --> x_maze4_9_2 : Push on and hope it opens.
+x_maze4_9_2 --> x_maze4_9_3 : Push on and hope it opens.
+x_maze4_9_3 --> e_maze4_9 : Push on and hope it opens.
+b_maze_4 --> b_maze_5 : Follow the warden marks onward.
+b_maze_4 --> e_maze_4_0 : Trust the easy looking path.
+b_maze_4 --> x_maze4_8_1 : Chance the quicker line.
+b_maze_4 --> x_maze4_9_1 : Follow the sound instead.
+x_maze5_10_1 --> x_maze5_10_2 : Push on and hope it opens.
+x_maze5_10_2 --> x_maze5_10_3 : Push on and hope it opens.
+x_maze5_10_3 --> e_maze5_10 : Push on and hope it opens.
+x_maze5_11_1 --> x_maze5_11_2 : Push on and hope it opens.
+x_maze5_11_2 --> e_maze5_11 : Push on and hope it opens.
+b_maze_5 --> h_grove : Keep to the hardest, truest line.
+b_maze_5 --> e_maze_5_0 : Cut straight across the marks.
+b_maze_5 --> x_maze5_10_1 : Follow the sound instead.
+b_maze_5 --> x_maze5_11_1 : Take the wider, gentler way.
+rc_maze_0_1 --> rc_maze_0_2 : Follow the warden run onward.
+rc_maze_0_2 --> rc_maze_0_3 : Follow the warden run onward.
+rc_maze_0_3 --> h_grove : Follow the warden run onward.
+rc_maze_1_1 --> rc_maze_1_2 : Follow the warden run onward.
+rc_maze_1_2 --> rc_maze_1_3 : Follow the warden run onward.
+rc_maze_1_3 --> b_maze_3 : Follow the warden run onward.
+rc_maze_2_1 --> rc_maze_2_2 : Follow the warden run onward.
+rc_maze_2_2 --> rc_maze_2_3 : Follow the warden run onward.
+rc_maze_2_3 --> b_maze_4 : Follow the warden run onward.
+x_groveh_12_1 --> x_groveh_12_2 : Push on and hope it opens.
+x_groveh_12_2 --> e_groveh_12 : Push on and hope it opens.
+h_grove --> b_grove_1 : Take the true warden mark deeper into th...
+h_grove --> e_grove_hub0 : Take the wider, gentler way.
+h_grove --> e_grove_hub1 : Turn aside toward the strange light.
+h_grove --> x_groveh_12_1 : Try the narrow shortcut around the test.
+x_grove1_13_1 --> x_grove1_13_2 : Push on and hope it opens.
+x_grove1_13_2 --> x_grove1_13_3 : Push on and hope it opens.
+x_grove1_13_3 --> e_grove1_13 : Push on and hope it opens.
+x_grove1_14_1 --> x_grove1_14_2 : Push on and hope it opens.
+x_grove1_14_2 --> e_grove1_14 : Push on and hope it opens.
+b_grove_1 --> b_grove_2 : Keep to the hardest, truest line.
+b_grove_1 --> e_grove_1_0 : Turn aside toward the strange light.
+b_grove_1 --> x_grove1_13_1 : Double back and start over.
+b_grove_1 --> x_grove1_14_1 : Trust the easy looking path.
+b_grove_1 --> rc_grove_0_1 : Slip onto the wide warden run.
+x_grove2_15_1 --> x_grove2_15_2 : Push on and hope it opens.
+x_grove2_15_2 --> e_grove2_15 : Push on and hope it opens.
+x_grove2_16_1 --> x_grove2_16_2 : Push on and hope it opens.
+x_grove2_16_2 --> x_grove2_16_3 : Push on and hope it opens.
+x_grove2_16_3 --> e_grove2_16 : Push on and hope it opens.
+b_grove_2 --> b_grove_3 : Read the signs and press ahead.
+b_grove_2 --> e_grove_2_0 : Rush it before the dark comes.
+b_grove_2 --> x_grove2_15_1 : Trust the easy looking path.
+b_grove_2 --> x_grove2_16_1 : Cut straight across the marks.
+b_grove_2 --> rc_grove_1_1 : Slip onto the wide warden run.
+x_grove3_17_1 --> x_grove3_17_2 : Push on and hope it opens.
+x_grove3_17_2 --> x_grove3_17_3 : Push on and hope it opens.
+x_grove3_17_3 --> e_grove3_17 : Push on and hope it opens.
+x_grove3_18_1 --> x_grove3_18_2 : Push on and hope it opens.
+x_grove3_18_2 --> e_grove3_18 : Push on and hope it opens.
+b_grove_3 --> b_grove_4 : Hold the pace and go on.
+b_grove_3 --> e_grove_3_0 : Double back and start over.
+b_grove_3 --> x_grove3_17_1 : Cut straight across the marks.
+b_grove_3 --> x_grove3_18_1 : Chance the quicker line.
+b_grove_3 --> rc_grove_2_1 : Slip onto the wide warden run.
+x_grove4_19_1 --> x_grove4_19_2 : Push on and hope it opens.
+x_grove4_19_2 --> e_grove4_19 : Push on and hope it opens.
+x_grove4_20_1 --> x_grove4_20_2 : Push on and hope it opens.
+x_grove4_20_2 --> x_grove4_20_3 : Push on and hope it opens.
+x_grove4_20_3 --> e_grove4_20 : Push on and hope it opens.
+b_grove_4 --> b_grove_5 : Follow the warden marks onward.
+b_grove_4 --> e_grove_4_0 : Trust the easy looking path.
+b_grove_4 --> x_grove4_19_1 : Chance the quicker line.
+b_grove_4 --> x_grove4_20_1 : Follow the sound instead.
+x_grove5_21_1 --> x_grove5_21_2 : Push on and hope it opens.
+x_grove5_21_2 --> x_grove5_21_3 : Push on and hope it opens.
+x_grove5_21_3 --> e_grove5_21 : Push on and hope it opens.
+x_grove5_22_1 --> x_grove5_22_2 : Push on and hope it opens.
+x_grove5_22_2 --> e_grove5_22 : Push on and hope it opens.
+b_grove_5 --> h_warren : Keep to the hardest, truest line.
+b_grove_5 --> e_grove_5_0 : Cut straight across the marks.
+b_grove_5 --> x_grove5_21_1 : Follow the sound instead.
+b_grove_5 --> x_grove5_22_1 : Take the wider, gentler way.
+rc_grove_0_1 --> rc_grove_0_2 : Follow the warden run onward.
+rc_grove_0_2 --> rc_grove_0_3 : Follow the warden run onward.
+rc_grove_0_3 --> h_warren : Follow the warden run onward.
+rc_grove_1_1 --> rc_grove_1_2 : Follow the warden run onward.
+rc_grove_1_2 --> rc_grove_1_3 : Follow the warden run onward.
+rc_grove_1_3 --> b_grove_3 : Follow the warden run onward.
+rc_grove_2_1 --> rc_grove_2_2 : Follow the warden run onward.
+rc_grove_2_2 --> rc_grove_2_3 : Follow the warden run onward.
+rc_grove_2_3 --> b_grove_4 : Follow the warden run onward.
+x_warrenh_23_1 --> x_warrenh_23_2 : Push on and hope it opens.
+x_warrenh_23_2 --> e_warrenh_23 : Push on and hope it opens.
+h_warren --> b_warren_1 : Take the true warden mark deeper into th...
+h_warren --> e_warren_hub0 : Take the wider, gentler way.
+h_warren --> e_warren_hub1 : Turn aside toward the strange light.
+h_warren --> x_warrenh_23_1 : Try the narrow shortcut around the test.
+x_warren1_24_1 --> x_warren1_24_2 : Push on and hope it opens.
+x_warren1_24_2 --> x_warren1_24_3 : Push on and hope it opens.
+x_warren1_24_3 --> e_warren1_24 : Push on and hope it opens.
+x_warren1_25_1 --> x_warren1_25_2 : Push on and hope it opens.
+x_warren1_25_2 --> e_warren1_25 : Push on and hope it opens.
+b_warren_1 --> b_warren_2 : Keep to the hardest, truest line.
+b_warren_1 --> e_warren_1_0 : Turn aside toward the strange light.
+b_warren_1 --> x_warren1_24_1 : Double back and start over.
+b_warren_1 --> x_warren1_25_1 : Trust the easy looking path.
+b_warren_1 --> rc_warren_0_1 : Slip onto the wide warden run.
+x_warren2_26_1 --> x_warren2_26_2 : Push on and hope it opens.
+x_warren2_26_2 --> e_warren2_26 : Push on and hope it opens.
+x_warren2_27_1 --> x_warren2_27_2 : Push on and hope it opens.
+x_warren2_27_2 --> x_warren2_27_3 : Push on and hope it opens.
+x_warren2_27_3 --> e_warren2_27 : Push on and hope it opens.
+b_warren_2 --> b_warren_3 : Read the signs and press ahead.
+b_warren_2 --> e_warren_2_0 : Rush it before the dark comes.
+b_warren_2 --> x_warren2_26_1 : Trust the easy looking path.
+b_warren_2 --> x_warren2_27_1 : Cut straight across the marks.
+b_warren_2 --> rc_warren_1_1 : Slip onto the wide warden run.
+x_warren3_28_1 --> x_warren3_28_2 : Push on and hope it opens.
+x_warren3_28_2 --> x_warren3_28_3 : Push on and hope it opens.
+x_warren3_28_3 --> e_warren3_28 : Push on and hope it opens.
+x_warren3_29_1 --> x_warren3_29_2 : Push on and hope it opens.
+x_warren3_29_2 --> e_warren3_29 : Push on and hope it opens.
+b_warren_3 --> b_warren_4 : Hold the pace and go on.
+b_warren_3 --> e_warren_3_0 : Double back and start over.
+b_warren_3 --> x_warren3_28_1 : Cut straight across the marks.
+b_warren_3 --> x_warren3_29_1 : Chance the quicker line.
+b_warren_3 --> rc_warren_2_1 : Slip onto the wide warden run.
+x_warren4_30_1 --> x_warren4_30_2 : Push on and hope it opens.
+x_warren4_30_2 --> e_warren4_30 : Push on and hope it opens.
+x_warren4_31_1 --> x_warren4_31_2 : Push on and hope it opens.
+x_warren4_31_2 --> x_warren4_31_3 : Push on and hope it opens.
+x_warren4_31_3 --> e_warren4_31 : Push on and hope it opens.
+b_warren_4 --> b_warren_5 : Follow the warden marks onward.
+b_warren_4 --> e_warren_4_0 : Trust the easy looking path.
+b_warren_4 --> x_warren4_30_1 : Chance the quicker line.
+b_warren_4 --> x_warren4_31_1 : Follow the sound instead.
+x_warren5_32_1 --> x_warren5_32_2 : Push on and hope it opens.
+x_warren5_32_2 --> x_warren5_32_3 : Push on and hope it opens.
+x_warren5_32_3 --> e_warren5_32 : Push on and hope it opens.
+x_warren5_33_1 --> x_warren5_33_2 : Push on and hope it opens.
+x_warren5_33_2 --> e_warren5_33 : Push on and hope it opens.
+b_warren_5 --> h_council : Keep to the hardest, truest line.
+b_warren_5 --> e_warren_5_0 : Cut straight across the marks.
+b_warren_5 --> x_warren5_32_1 : Follow the sound instead.
+b_warren_5 --> x_warren5_33_1 : Take the wider, gentler way.
+rc_warren_0_1 --> rc_warren_0_2 : Follow the warden run onward.
+rc_warren_0_2 --> rc_warren_0_3 : Follow the warden run onward.
+rc_warren_0_3 --> h_council : Follow the warden run onward.
+rc_warren_1_1 --> rc_warren_1_2 : Follow the warden run onward.
+rc_warren_1_2 --> rc_warren_1_3 : Follow the warden run onward.
+rc_warren_1_3 --> b_warren_3 : Follow the warden run onward.
+rc_warren_2_1 --> rc_warren_2_2 : Follow the warden run onward.
+rc_warren_2_2 --> rc_warren_2_3 : Follow the warden run onward.
+rc_warren_2_3 --> b_warren_4 : Follow the warden run onward.
+x_councilh_34_1 --> x_councilh_34_2 : Push on and hope it opens.
+x_councilh_34_2 --> e_councilh_34 : Push on and hope it opens.
+h_council --> b_council_1 : Take the true warden mark deeper into th...
+h_council --> e_council_hub0 : Take the wider, gentler way.
+h_council --> e_council_hub1 : Turn aside toward the strange light.
+h_council --> x_councilh_34_1 : Try the narrow shortcut around the test.
+x_council1_35_1 --> x_council1_35_2 : Push on and hope it opens.
+x_council1_35_2 --> x_council1_35_3 : Push on and hope it opens.
+x_council1_35_3 --> e_council1_35 : Push on and hope it opens.
+x_council1_36_1 --> x_council1_36_2 : Push on and hope it opens.
+x_council1_36_2 --> e_council1_36 : Push on and hope it opens.
+b_council_1 --> b_council_2 : Keep to the hardest, truest line.
+b_council_1 --> e_council_1_0 : Turn aside toward the strange light.
+b_council_1 --> x_council1_35_1 : Double back and start over.
+b_council_1 --> x_council1_36_1 : Trust the easy looking path.
+b_council_1 --> rc_council_0_1 : Slip onto the wide warden run.
+x_council2_37_1 --> x_council2_37_2 : Push on and hope it opens.
+x_council2_37_2 --> e_council2_37 : Push on and hope it opens.
+x_council2_38_1 --> x_council2_38_2 : Push on and hope it opens.
+x_council2_38_2 --> x_council2_38_3 : Push on and hope it opens.
+x_council2_38_3 --> e_council2_38 : Push on and hope it opens.
+b_council_2 --> b_council_3 : Read the signs and press ahead.
+b_council_2 --> e_council_2_0 : Rush it before the dark comes.
+b_council_2 --> x_council2_37_1 : Trust the easy looking path.
+b_council_2 --> x_council2_38_1 : Cut straight across the marks.
+b_council_2 --> rc_council_1_1 : Slip onto the wide warden run.
+x_council3_39_1 --> x_council3_39_2 : Push on and hope it opens.
+x_council3_39_2 --> x_council3_39_3 : Push on and hope it opens.
+x_council3_39_3 --> e_council3_39 : Push on and hope it opens.
+x_council3_40_1 --> x_council3_40_2 : Push on and hope it opens.
+x_council3_40_2 --> e_council3_40 : Push on and hope it opens.
+b_council_3 --> b_council_4 : Hold the pace and go on.
+b_council_3 --> e_council_3_0 : Double back and start over.
+b_council_3 --> x_council3_39_1 : Cut straight across the marks.
+b_council_3 --> x_council3_40_1 : Chance the quicker line.
+b_council_3 --> rc_council_2_1 : Slip onto the wide warden run.
+x_council4_41_1 --> x_council4_41_2 : Push on and hope it opens.
+x_council4_41_2 --> e_council4_41 : Push on and hope it opens.
+x_council4_42_1 --> x_council4_42_2 : Push on and hope it opens.
+x_council4_42_2 --> x_council4_42_3 : Push on and hope it opens.
+x_council4_42_3 --> e_council4_42 : Push on and hope it opens.
+b_council_4 --> b_council_5 : Follow the warden marks onward.
+b_council_4 --> e_council_4_0 : Trust the easy looking path.
+b_council_4 --> x_council4_41_1 : Chance the quicker line.
+b_council_4 --> x_council4_42_1 : Follow the sound instead.
+x_council5_43_1 --> x_council5_43_2 : Push on and hope it opens.
+x_council5_43_2 --> x_council5_43_3 : Push on and hope it opens.
+x_council5_43_3 --> e_council5_43 : Push on and hope it opens.
+x_council5_44_1 --> x_council5_44_2 : Push on and hope it opens.
+x_council5_44_2 --> e_council5_44 : Push on and hope it opens.
+b_council_5 --> h_ridge : Keep to the hardest, truest line.
+b_council_5 --> e_council_5_0 : Cut straight across the marks.
+b_council_5 --> x_council5_43_1 : Follow the sound instead.
+b_council_5 --> x_council5_44_1 : Take the wider, gentler way.
+rc_council_0_1 --> rc_council_0_2 : Follow the warden run onward.
+rc_council_0_2 --> rc_council_0_3 : Follow the warden run onward.
+rc_council_0_3 --> h_ridge : Follow the warden run onward.
+rc_council_1_1 --> rc_council_1_2 : Follow the warden run onward.
+rc_council_1_2 --> rc_council_1_3 : Follow the warden run onward.
+rc_council_1_3 --> b_council_3 : Follow the warden run onward.
+rc_council_2_1 --> rc_council_2_2 : Follow the warden run onward.
+rc_council_2_2 --> rc_council_2_3 : Follow the warden run onward.
+rc_council_2_3 --> b_council_4 : Follow the warden run onward.
+x_ridgeh_45_1 --> x_ridgeh_45_2 : Push on and hope it opens.
+x_ridgeh_45_2 --> e_ridgeh_45 : Push on and hope it opens.
+h_ridge --> b_ridge_1 : Take the true warden mark deeper into th...
+h_ridge --> e_ridge_hub0 : Take the wider, gentler way.
+h_ridge --> e_ridge_hub1 : Turn aside toward the strange light.
+h_ridge --> x_ridgeh_45_1 : Try the narrow shortcut around the test.
+x_ridge1_46_1 --> x_ridge1_46_2 : Push on and hope it opens.
+x_ridge1_46_2 --> x_ridge1_46_3 : Push on and hope it opens.
+x_ridge1_46_3 --> e_ridge1_46 : Push on and hope it opens.
+x_ridge1_47_1 --> x_ridge1_47_2 : Push on and hope it opens.
+x_ridge1_47_2 --> e_ridge1_47 : Push on and hope it opens.
+b_ridge_1 --> b_ridge_2 : Keep to the hardest, truest line.
+b_ridge_1 --> e_ridge_1_0 : Turn aside toward the strange light.
+b_ridge_1 --> x_ridge1_46_1 : Double back and start over.
+b_ridge_1 --> x_ridge1_47_1 : Trust the easy looking path.
+b_ridge_1 --> rc_ridge_0_1 : Slip onto the wide warden run.
+x_ridge2_48_1 --> x_ridge2_48_2 : Push on and hope it opens.
+x_ridge2_48_2 --> e_ridge2_48 : Push on and hope it opens.
+x_ridge2_49_1 --> x_ridge2_49_2 : Push on and hope it opens.
+x_ridge2_49_2 --> x_ridge2_49_3 : Push on and hope it opens.
+x_ridge2_49_3 --> e_ridge2_49 : Push on and hope it opens.
+b_ridge_2 --> b_ridge_3 : Read the signs and press ahead.
+b_ridge_2 --> e_ridge_2_0 : Rush it before the dark comes.
+b_ridge_2 --> x_ridge2_48_1 : Trust the easy looking path.
+b_ridge_2 --> x_ridge2_49_1 : Cut straight across the marks.
+b_ridge_2 --> rc_ridge_1_1 : Slip onto the wide warden run.
+x_ridge3_50_1 --> x_ridge3_50_2 : Push on and hope it opens.
+x_ridge3_50_2 --> x_ridge3_50_3 : Push on and hope it opens.
+x_ridge3_50_3 --> e_ridge3_50 : Push on and hope it opens.
+x_ridge3_51_1 --> x_ridge3_51_2 : Push on and hope it opens.
+x_ridge3_51_2 --> e_ridge3_51 : Push on and hope it opens.
+b_ridge_3 --> b_ridge_4 : Hold the pace and go on.
+b_ridge_3 --> e_ridge_3_0 : Double back and start over.
+b_ridge_3 --> x_ridge3_50_1 : Cut straight across the marks.
+b_ridge_3 --> x_ridge3_51_1 : Chance the quicker line.
+b_ridge_3 --> rc_ridge_2_1 : Slip onto the wide warden run.
+x_ridge4_52_1 --> x_ridge4_52_2 : Push on and hope it opens.
+x_ridge4_52_2 --> e_ridge4_52 : Push on and hope it opens.
+x_ridge4_53_1 --> x_ridge4_53_2 : Push on and hope it opens.
+x_ridge4_53_2 --> x_ridge4_53_3 : Push on and hope it opens.
+x_ridge4_53_3 --> e_ridge4_53 : Push on and hope it opens.
+b_ridge_4 --> b_ridge_5 : Follow the warden marks onward.
+b_ridge_4 --> e_ridge_4_0 : Trust the easy looking path.
+b_ridge_4 --> x_ridge4_52_1 : Chance the quicker line.
+b_ridge_4 --> x_ridge4_53_1 : Follow the sound instead.
+x_ridge5_54_1 --> x_ridge5_54_2 : Push on and hope it opens.
+x_ridge5_54_2 --> x_ridge5_54_3 : Push on and hope it opens.
+x_ridge5_54_3 --> e_ridge5_54 : Push on and hope it opens.
+x_ridge5_55_1 --> x_ridge5_55_2 : Push on and hope it opens.
+x_ridge5_55_2 --> e_ridge5_55 : Push on and hope it opens.
+b_ridge_5 --> h_gate : Keep to the hardest, truest line.
+b_ridge_5 --> e_ridge_5_0 : Cut straight across the marks.
+b_ridge_5 --> x_ridge5_54_1 : Follow the sound instead.
+b_ridge_5 --> x_ridge5_55_1 : Take the wider, gentler way.
+rc_ridge_0_1 --> rc_ridge_0_2 : Follow the warden run onward.
+rc_ridge_0_2 --> rc_ridge_0_3 : Follow the warden run onward.
+rc_ridge_0_3 --> h_gate : Follow the warden run onward.
+rc_ridge_1_1 --> rc_ridge_1_2 : Follow the warden run onward.
+rc_ridge_1_2 --> rc_ridge_1_3 : Follow the warden run onward.
+rc_ridge_1_3 --> b_ridge_3 : Follow the warden run onward.
+rc_ridge_2_1 --> rc_ridge_2_2 : Follow the warden run onward.
+rc_ridge_2_2 --> rc_ridge_2_3 : Follow the warden run onward.
+rc_ridge_2_3 --> b_ridge_4 : Follow the warden run onward.
+x_gateh_56_1 --> x_gateh_56_2 : Push on and hope it opens.
+x_gateh_56_2 --> e_gateh_56 : Push on and hope it opens.
+h_gate --> b_gate_1 : Take the true warden mark deeper into th...
+h_gate --> e_gate_hub0 : Take the wider, gentler way.
+h_gate --> e_gate_hub1 : Turn aside toward the strange light.
+h_gate --> x_gateh_56_1 : Try the narrow shortcut around the test.
+x_gate1_57_1 --> x_gate1_57_2 : Push on and hope it opens.
+x_gate1_57_2 --> x_gate1_57_3 : Push on and hope it opens.
+x_gate1_57_3 --> e_gate1_57 : Push on and hope it opens.
+x_gate1_58_1 --> x_gate1_58_2 : Push on and hope it opens.
+x_gate1_58_2 --> e_gate1_58 : Push on and hope it opens.
+b_gate_1 --> b_gate_2 : Keep to the hardest, truest line.
+b_gate_1 --> e_gate_1_0 : Turn aside toward the strange light.
+b_gate_1 --> x_gate1_57_1 : Double back and start over.
+b_gate_1 --> x_gate1_58_1 : Trust the easy looking path.
+b_gate_1 --> rc_gate_0_1 : Slip onto the wide warden run.
+x_gate2_59_1 --> x_gate2_59_2 : Push on and hope it opens.
+x_gate2_59_2 --> e_gate2_59 : Push on and hope it opens.
+x_gate2_60_1 --> x_gate2_60_2 : Push on and hope it opens.
+x_gate2_60_2 --> x_gate2_60_3 : Push on and hope it opens.
+x_gate2_60_3 --> e_gate2_60 : Push on and hope it opens.
+b_gate_2 --> b_gate_3 : Read the signs and press ahead.
+b_gate_2 --> e_gate_2_0 : Rush it before the dark comes.
+b_gate_2 --> x_gate2_59_1 : Trust the easy looking path.
+b_gate_2 --> x_gate2_60_1 : Cut straight across the marks.
+b_gate_2 --> rc_gate_1_1 : Slip onto the wide warden run.
+x_gate3_61_1 --> x_gate3_61_2 : Push on and hope it opens.
+x_gate3_61_2 --> x_gate3_61_3 : Push on and hope it opens.
+x_gate3_61_3 --> e_gate3_61 : Push on and hope it opens.
+x_gate3_62_1 --> x_gate3_62_2 : Push on and hope it opens.
+x_gate3_62_2 --> e_gate3_62 : Push on and hope it opens.
+b_gate_3 --> b_gate_4 : Hold the pace and go on.
+b_gate_3 --> e_gate_3_0 : Double back and start over.
+b_gate_3 --> x_gate3_61_1 : Cut straight across the marks.
+b_gate_3 --> x_gate3_62_1 : Chance the quicker line.
+b_gate_3 --> rc_gate_2_1 : Slip onto the wide warden run.
+x_gate4_63_1 --> x_gate4_63_2 : Push on and hope it opens.
+x_gate4_63_2 --> e_gate4_63 : Push on and hope it opens.
+x_gate4_64_1 --> x_gate4_64_2 : Push on and hope it opens.
+x_gate4_64_2 --> x_gate4_64_3 : Push on and hope it opens.
+x_gate4_64_3 --> e_gate4_64 : Push on and hope it opens.
+b_gate_4 --> b_gate_5 : Follow the warden marks onward.
+b_gate_4 --> e_gate_4_0 : Trust the easy looking path.
+b_gate_4 --> x_gate4_63_1 : Chance the quicker line.
+b_gate_4 --> x_gate4_64_1 : Follow the sound instead.
+x_gate5_65_1 --> x_gate5_65_2 : Push on and hope it opens.
+x_gate5_65_2 --> x_gate5_65_3 : Push on and hope it opens.
+x_gate5_65_3 --> e_gate5_65 : Push on and hope it opens.
+x_gate5_66_1 --> x_gate5_66_2 : Push on and hope it opens.
+x_gate5_66_2 --> e_gate5_66 : Push on and hope it opens.
+b_gate_5 --> f_dusk : Keep to the hardest, truest line.
+b_gate_5 --> e_gate_5_0 : Cut straight across the marks.
+b_gate_5 --> x_gate5_65_1 : Follow the sound instead.
+b_gate_5 --> x_gate5_66_1 : Take the wider, gentler way.
+rc_gate_0_1 --> rc_gate_0_2 : Follow the warden run onward.
+rc_gate_0_2 --> rc_gate_0_3 : Follow the warden run onward.
+rc_gate_0_3 --> f_dusk : Follow the warden run onward.
+rc_gate_1_1 --> rc_gate_1_2 : Follow the warden run onward.
+rc_gate_1_2 --> rc_gate_1_3 : Follow the warden run onward.
+rc_gate_1_3 --> b_gate_3 : Follow the warden run onward.
+rc_gate_2_1 --> rc_gate_2_2 : Follow the warden run onward.
+rc_gate_2_2 --> rc_gate_2_3 : Follow the warden run onward.
+rc_gate_2_3 --> b_gate_4 : Follow the warden run onward.
+f_dusk --> f_name : Present yourself openly and ask to be na...
+f_dusk --> f_wild : Beg to pass by the wild ways instead.
+f_dusk --> e_gate_slip : Try to slip the gate unseen in the dark.
+f_dusk --> e_gate_late : Sink down, spent, and let the horns pass...
+f_name --> e_win_warden : Answer that it was steadiness and the ma...
+f_name --> e_win_wild : Answer that it was mercy shown to the be...
+f_name --> e_win_honest : Answer that it was luck, and say so plai...
+f_wild --> e_win_alt : Walk the wild ways and earn the lesser p...
+f_wild --> e_gate_next : Refuse, and wait for next season instead...
+e_maze_hub0 --> [*]
+e_maze_hub1 --> [*]
+e_mazeh_1 --> [*]
+e_maze_1_0 --> [*]
+e_maze1_2 --> [*]
+e_maze1_3 --> [*]
+e_maze_2_0 --> [*]
+e_maze2_4 --> [*]
+e_maze2_5 --> [*]
+e_maze_3_0 --> [*]
+e_maze3_6 --> [*]
+e_maze3_7 --> [*]
+e_maze_4_0 --> [*]
+e_maze4_8 --> [*]
+e_maze4_9 --> [*]
+e_maze_5_0 --> [*]
+e_maze5_10 --> [*]
+e_maze5_11 --> [*]
+e_grove_hub0 --> [*]
+e_grove_hub1 --> [*]
+e_groveh_12 --> [*]
+e_grove_1_0 --> [*]
+e_grove1_13 --> [*]
+e_grove1_14 --> [*]
+e_grove_2_0 --> [*]
+e_grove2_15 --> [*]
+e_grove2_16 --> [*]
+e_grove_3_0 --> [*]
+e_grove3_17 --> [*]
+e_grove3_18 --> [*]
+e_grove_4_0 --> [*]
+e_grove4_19 --> [*]
+e_grove4_20 --> [*]
+e_grove_5_0 --> [*]
+e_grove5_21 --> [*]
+e_grove5_22 --> [*]
+e_warren_hub0 --> [*]
+e_warren_hub1 --> [*]
+e_warrenh_23 --> [*]
+e_warren_1_0 --> [*]
+e_warren1_24 --> [*]
+e_warren1_25 --> [*]
+e_warren_2_0 --> [*]
+e_warren2_26 --> [*]
+e_warren2_27 --> [*]
+e_warren_3_0 --> [*]
+e_warren3_28 --> [*]
+e_warren3_29 --> [*]
+e_warren_4_0 --> [*]
+e_warren4_30 --> [*]
+e_warren4_31 --> [*]
+e_warren_5_0 --> [*]
+e_warren5_32 --> [*]
+e_warren5_33 --> [*]
+e_council_hub0 --> [*]
+e_council_hub1 --> [*]
+e_councilh_34 --> [*]
+e_council_1_0 --> [*]
+e_council1_35 --> [*]
+e_council1_36 --> [*]
+e_council_2_0 --> [*]
+e_council2_37 --> [*]
+e_council2_38 --> [*]
+e_council_3_0 --> [*]
+e_council3_39 --> [*]
+e_council3_40 --> [*]
+e_council_4_0 --> [*]
+e_council4_41 --> [*]
+e_council4_42 --> [*]
+e_council_5_0 --> [*]
+e_council5_43 --> [*]
+e_council5_44 --> [*]
+e_ridge_hub0 --> [*]
+e_ridge_hub1 --> [*]
+e_ridgeh_45 --> [*]
+e_ridge_1_0 --> [*]
+e_ridge1_46 --> [*]
+e_ridge1_47 --> [*]
+e_ridge_2_0 --> [*]
+e_ridge2_48 --> [*]
+e_ridge2_49 --> [*]
+e_ridge_3_0 --> [*]
+e_ridge3_50 --> [*]
+e_ridge3_51 --> [*]
+e_ridge_4_0 --> [*]
+e_ridge4_52 --> [*]
+e_ridge4_53 --> [*]
+e_ridge_5_0 --> [*]
+e_ridge5_54 --> [*]
+e_ridge5_55 --> [*]
+e_gate_hub0 --> [*]
+e_gate_hub1 --> [*]
+e_gateh_56 --> [*]
+e_gate_1_0 --> [*]
+e_gate1_57 --> [*]
+e_gate1_58 --> [*]
+e_gate_2_0 --> [*]
+e_gate2_59 --> [*]
+e_gate2_60 --> [*]
+e_gate_3_0 --> [*]
+e_gate3_61 --> [*]
+e_gate3_62 --> [*]
+e_gate_4_0 --> [*]
+e_gate4_63 --> [*]
+e_gate4_64 --> [*]
+e_gate_5_0 --> [*]
+e_gate5_65 --> [*]
+e_gate5_66 --> [*]
+e_win_warden --> [*]
+e_win_wild --> [*]
+e_win_honest --> [*]
+e_win_alt --> [*]
+e_gate_slip --> [*]
+e_gate_late --> [*]
+e_gate_next --> [*]
+
+legend right
+  The Thornwood Trial
+  Band 13-16 · Tier 1 · ~24 min
+  Topology: branch_and_bottleneck
+  375 nodes · 115 endings (4+ / 0n / 111-)
+  Production-eligible
+  Scale: long · gamebook
+endlegend
+@enduml
