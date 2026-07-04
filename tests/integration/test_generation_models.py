@@ -43,6 +43,12 @@ if TYPE_CHECKING:
 # with the ORM round-trip fixture which creates schema via Base.metadata.
 # ---------------------------------------------------------------------------
 
+# Pin the round-trip to the concept/generation_job revision explicitly. A
+# relative "head"/"-1" target silently retargets whenever a later migration is
+# added on top, so the round-trip would stop exercising this migration.
+_GEN_HEAD = "78336bfff81e"
+_GEN_PREV = "ddf3f6d1346f"
+
 
 @pytest.fixture(scope="module")
 def _migration_pg_url() -> Iterator[str]:
@@ -265,9 +271,9 @@ def test_migration_upgrade_downgrade_on_clean_db(
     project_root = Path(__file__).resolve().parents[2]
     env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": _migration_pg_url}
 
-    # Apply all migrations to head.
+    # Apply migrations through the concept/generation_job revision.
     up = subprocess.run(
-        ["uv", "run", "alembic", "upgrade", "head"],  # noqa: S607
+        ["uv", "run", "alembic", "upgrade", _GEN_HEAD],  # noqa: S607
         capture_output=True,
         text=True,
         env=env,
@@ -275,15 +281,15 @@ def test_migration_upgrade_downgrade_on_clean_db(
         check=False,
     )
     assert up.returncode == 0, (
-        f"alembic upgrade head failed:\nstdout={up.stdout}\nstderr={up.stderr}"
+        f"alembic upgrade {_GEN_HEAD} failed:\nstdout={up.stdout}\nstderr={up.stderr}"
     )
     assert "Running upgrade" in up.stderr, (
         "Expected 'Running upgrade' in alembic stderr"
     )
 
-    # Roll back the last migration (the concept/generation_job one).
+    # Roll back the concept/generation_job migration to the initial schema.
     down = subprocess.run(
-        ["uv", "run", "alembic", "downgrade", "-1"],  # noqa: S607
+        ["uv", "run", "alembic", "downgrade", _GEN_PREV],  # noqa: S607
         capture_output=True,
         text=True,
         env=env,
@@ -291,7 +297,7 @@ def test_migration_upgrade_downgrade_on_clean_db(
         check=False,
     )
     assert down.returncode == 0, (
-        f"alembic downgrade -1 failed:\nstdout={down.stdout}\nstderr={down.stderr}"
+        f"alembic downgrade {_GEN_PREV} failed:\nstdout={down.stdout}\nstderr={down.stderr}"
     )
     assert "Running downgrade" in down.stderr, (
         "Expected 'Running downgrade' in alembic stderr"

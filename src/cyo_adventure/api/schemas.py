@@ -297,6 +297,87 @@ class GuardianBooksView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Story-request schemas (Task 3.0)
+# ---------------------------------------------------------------------------
+
+
+# The four story-request lifecycle states, shared by the response field and the
+# boundary coercion. The story_request.status column is a plain string guarded at
+# rest by ck_story_request_status; the API coerces read/write values to this alias.
+StoryRequestStatus = Literal["pending", "approved", "declined", "blocked"]
+
+RequestText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)
+]
+
+
+class StoryRequestCreateBody(BaseModel):
+    """A child's free-text story request (kid surface; guardian-scoped in R1)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    request_text: RequestText
+
+
+class StoryRequestFlag(BaseModel):
+    """A redacted screening flag shown to a guardian.
+
+    Mirrors GuardianFinding: category, gating verdict, and message only. Never
+    the classifier score, source, or the child's raw request text.
+    """
+
+    category: str
+    verdict: Verdict
+    message: str
+
+
+class StoryRequestView(BaseModel):
+    """One story request as seen by a guardian, admin, or (via guardian token) child.
+
+    ``request_text`` is ``None`` for a ``blocked`` row: the raw text of a
+    bright-line request is never surfaced. ``moderation_flags`` carries only the
+    redacted StoryRequestFlag list.
+    """
+
+    id: str
+    profile_id: str
+    status: StoryRequestStatus
+    request_text: str | None
+    moderation_flags: list[StoryRequestFlag]
+    created_at: datetime
+
+
+class StoryRequestListView(BaseModel):
+    """The story requests visible to the caller, newest first."""
+
+    requests: list[StoryRequestView]
+
+
+class StoryRequestCreatedView(BaseModel):
+    """The result of submitting a request: its id and post-screening status."""
+
+    id: str
+    status: StoryRequestStatus
+
+
+class StoryRequestApprovedView(BaseModel):
+    """The result of approving a request: the linked concept and generation job."""
+
+    id: str
+    status: Literal["approved"]
+    concept_id: str
+    job_id: str
+
+
+class StoryRequestDeclinedView(BaseModel):
+    """The result of declining a request."""
+
+    id: str
+    status: Literal["declined"]
+
+
+# ---------------------------------------------------------------------------
 # Profile schemas
 # ---------------------------------------------------------------------------
 
