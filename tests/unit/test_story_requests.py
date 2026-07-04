@@ -13,6 +13,7 @@ def test_story_request_defaults_to_pending() -> None:
         family_id=uuid.uuid4(),
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
+        status="pending",
     )
     assert req.status == "pending"
     assert req.moderation_flags is None

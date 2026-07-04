@@ -391,22 +391,6 @@ class StoryRequest(Base):
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
-    def __init__(self, **kwargs: object) -> None:
-        """Construct a StoryRequest, applying the pending-status default eagerly.
-
-        # #ASSUME: data integrity: ``mapped_column(default=...)`` is a
-        # flush-time default in SQLAlchemy's imperative (non-dataclass) mapping;
-        # a freshly constructed, un-flushed instance would otherwise read back
-        # ``None`` for ``status`` instead of ``"pending"``. This override makes
-        # the default visible immediately after construction, matching the
-        # column's CHECK-enforced default and the API boundary's expectation
-        # that a request is ``pending`` the instant it is created in memory.
-        # #VERIFY: test_story_requests.py::test_story_request_defaults_to_pending
-        # asserts ``status == "pending"`` on a bare, un-flushed instance.
-        """
-        kwargs.setdefault("status", "pending")
-        super().__init__(**kwargs)
-
 
 class GenerationJob(Base):
     """Tracks a single staged-generation attempt for a Concept.
