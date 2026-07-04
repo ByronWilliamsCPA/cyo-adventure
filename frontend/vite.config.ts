@@ -73,6 +73,18 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 4173,
+    // The real-backend e2e tier serves the built app via `vite preview` and
+    // relies on this proxy to reach uvicorn; `server.proxy` alone is not
+    // guaranteed to apply to the preview server, so it is duplicated here.
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
+  },
   build: {
     outDir: 'dist',
     sourcemap: true,
