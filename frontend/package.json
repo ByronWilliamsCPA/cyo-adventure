@@ -17,7 +17,7 @@
     "typecheck": "tsc -b",
     "generate-client": "openapi-ts",
     "test:e2e": "playwright test --project=chromium",
-    "test:e2e:real": "playwright test --project=real-backend"
+    "test:e2e:real": "playwright test --project=real-backend --workers=1"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
