@@ -1,0 +1,147 @@
+@startuml journey-end-to-end
+' ============================================================
+' User-Experience Flow: Target-State End-to-End Journey
+'
+' Product/UX-clarity altitude (not an API sequence). Columns are the
+' human/behind-the-scenes roles; node fill marks shipped vs planned so the
+' aspirational loop doubles as a gap map.
+'
+' Primary path is child-initiated (target state). Rose-filled nodes are the
+' parts of that loop not yet built (tracked in the R1 deployment review).
+'
+' Source screens / decisions:
+'   frontend/src/router.tsx                         (kid + guardian route trees)
+'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+'   docs/planning/adr/adr-005-mandatory-human-approval.md  (approval gate)
+'   docs/architecture/diagrams/seq-generation.puml  (behind-the-scenes detail)
+'   docs/architecture/diagrams/seq-offline.puml     (offline read + reconnect)
+'   docs/architecture/diagrams/seq-reading-state.puml (sync reconciliation)
+' ============================================================
+
+title Target-State End-to-End User Journey\n(child-initiated; rose = planned, not yet built)
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 10
+skinparam shadowing false
+skinparam ArrowColor #5a3e28
+skinparam ArrowFontColor #5a3e28
+skinparam ActivityBackgroundColor #FFFDF8
+skinparam ActivityBorderColor #8c6f56
+skinparam ActivityBorderThickness 1
+skinparam ActivityDiamondBackgroundColor #f8f3e8
+skinparam ActivityDiamondBorderColor #8c6f56
+skinparam NoteBackgroundColor #F1E9D8
+skinparam NoteBorderColor #c9b48f
+skinparam swimlaneWidth same
+
+' Swimlane column tints = who is acting (storybook palette, tokens.css)
+|#F0D9B8|Child|
+|#CDDCEC|Guardian|
+|#C5D9CC|Admin|
+|#E4E4E4|System|
+
+' ============ Act 1: Guardian onboarding (once) ============
+|Guardian|
+start
+:Sign in
+(email/password, Google,
+or Apple if enabled);
+note right: /guardian/login  •  shipped
+:Create each child's profile
+(name + preset avatar);
+note right: /guardian/profiles  •  shipped
+
+' ============ The repeating story loop ============
+repeat :a new story is wanted;
+
+' ---- Act 2: Request (child-initiated primary path) ----
+|Child|
+:Open the app, tap my avatar;
+note right: /  (Profile Picker)  •  shipped
+#F3D9D4:Tap "I want a new story"
+and say what it's about;
+note right: planned
+|Guardian|
+#F3D9D4:See my child's request,
+approve or tweak it;
+note right: planned (request-approval)
+
+' ---- Act 3: Behind the scenes ----
+|System|
+:Write the story
+(staged, with fallback);
+note right: generation pipeline  •  shipped\ndetail: seq-generation
+:Safety check
+(flags risky passages);
+note right: validator gate  •  shipped
+|Guardian|
+:"My Requests" shows
+"Generating...";
+note right: /guardian/intake  •  shipped
+
+' ---- Act 4: Human approval gate (ADR-005) ----
+|Admin|
+repeat :take the top item;
+  :Open the review queue
+  (Flagged, then Ready,
+  then Still processing);
+  note right: /guardian  (Console)  •  shipped
+  :Read the flagged passages,
+  then the full story;
+  note right: /guardian/review/:id  •  shipped
+backward:Send back with a note
+-> the story is rewritten;
+repeat while (Safe for a child?) is (no) not (yes -> approve)
+:Approve
+(recorded human gate, ADR-005);
+
+' ---- Act 5: Assign ----
+|Guardian|
+:Assign it to the child
+("Assign more" to add siblings);
+note right: intake / assign  •  shipped
+|Child|
+:My avatar shows
+"new story ready!";
+note right: Profile Picker pill  •  shipped
+
+' ---- Act 6: Read & rate ----
+|Child|
+:Open my Library
+(Continue Reading + shelf);
+note right: /library/:profileId  •  shipped
+:Read passages,
+make choices;
+note right: /read/...  (Reader)  •  shipped
+if (Online?) then (yes)
+  :Progress saves as I go;
+else (offline)
+  :Read from cache,
+  progress waits in a queue;
+  note right: offline-first  •  shipped
+  :On reconnect it syncs
+  (reconcile if it clashes);
+  note right: seq-offline / seq-reading-state
+endif
+:Reach an ending;
+:Rate the story
+(tap stars on the library shelf);
+note right: shipped\n(rating lives on the library BookCard,\nnot the reader ending screen)
+
+repeat while (Want another story?) is (yes) not (no)
+|Child|
+stop
+
+legend bottom
+  == Reading the journey ==
+  Columns = who is acting: <b>Child</b>, <b>Guardian</b>, <b>Admin</b>, <b>System</b> (behind the scenes).
+  |= Node |= Meaning |
+  |<back:#FFFDF8>  white  </back>| Shipped in the app today |
+  |<back:#F3D9D4>  rose   </back>| Planned target-state step, not yet built |
+  The child-initiated request (Act 2) is the target-state entry point; today a
+  guardian starts requests from the Intake page. Approval (ADR-005) is the one
+  mandatory gate before any story reaches a child.
+endlegend
+
+@enduml
