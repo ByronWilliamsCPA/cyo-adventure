@@ -32,7 +32,8 @@ SPDX-FileCopyrightText = "2025 Byron Williams"
 [[annotations]]
 path = [
     "frontend/src/**",
-    "frontend/e2e/**",  # Playwright end-to-end specs
+    "frontend/e2e/**",  # Playwright end-to-end specs (mocked tier)
+    "frontend/e2e-real/**",  # Playwright end-to-end specs (real-backend tier)
     "frontend/*.ts",
     "frontend/*.js",
     "frontend/eslint.config.js",
