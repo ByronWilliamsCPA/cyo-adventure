@@ -150,4 +150,32 @@ describe('BooksPage', () => {
       await screen.findByText(/We could not load your family's books/)
     ).toBeInTheDocument()
   })
+
+  it('surfaces unresolved assigned ids instead of collapsing to "No one yet"', async () => {
+    // s1 is assigned to p1 (known) plus p9 (e.g. a since-deleted profile not in
+    // the profiles list); s2 is assigned only to the unknown p9. A book that IS
+    // assigned must never render "No one yet"; unresolved ids show as a count.
+    routeGet({
+      '/v1/guardian/books': {
+        books: [
+          { ...BOOKS.books[0], assigned_profile_ids: ['p1', 'p9'] },
+          {
+            storybook_id: 's2',
+            title: 'The Compass',
+            version: 1,
+            age_band: '8-11',
+            screened: false,
+            flagged_count: 0,
+            assigned_profile_ids: ['p9'],
+          },
+        ],
+      },
+    })
+    renderPage()
+    expect(
+      await screen.findByText(/Assigned to: Reader A, 1 unknown profile$/)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Assigned to: 1 unknown profile$/)).toBeInTheDocument()
+    expect(screen.queryByText(/Assigned to: No one yet/)).not.toBeInTheDocument()
+  })
 })

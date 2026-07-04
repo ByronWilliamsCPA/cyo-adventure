@@ -16,6 +16,9 @@ type LoadState =
   | { kind: 'error' }
   | { kind: 'ready'; books: GuardianBookItem[]; profiles: ProfileView[] }
 
+/** Stable empty reference so the id->name memo does not churn before load. */
+const EMPTY_PROFILES: ProfileView[] = []
+
 /** The redacted content badge for one book, mirroring the console/dialog. */
 function ContentBadge({ book }: { book: GuardianBookItem }) {
   if (!book.screened) return <FlagBadge tone="unscreened" />
@@ -25,13 +28,29 @@ function ContentBadge({ book }: { book: GuardianBookItem }) {
   return <FlagBadge tone="clean" />
 }
 
-/** Render the display names a book is currently assigned to, or a fallback. */
-function assignedNames(book: GuardianBookItem, profiles: ProfileView[]): string {
-  const byId = new Map(profiles.map((profile) => [profile.id, profile.display_name]))
-  const names = book.assigned_profile_ids
-    .map((id) => byId.get(id))
-    .filter((name): name is string => name !== undefined)
-  return names.length > 0 ? names.join(', ') : 'No one yet'
+/**
+ * Render the display names a book is currently assigned to. An id with no
+ * matching profile (e.g. a since-deleted child) is surfaced as an explicit
+ * "N unknown profile(s)" placeholder rather than silently dropped, so a book
+ * that IS assigned never renders the misleading "No one yet". Only a genuinely
+ * empty assignment set renders "No one yet".
+ */
+function assignedNames(
+  book: GuardianBookItem,
+  nameById: Map<string, string>
+): string {
+  if (book.assigned_profile_ids.length === 0) return 'No one yet'
+  const names: string[] = []
+  let unknown = 0
+  for (const id of book.assigned_profile_ids) {
+    const name = nameById.get(id)
+    if (name !== undefined) names.push(name)
+    else unknown += 1
+  }
+  if (unknown > 0) {
+    names.push(unknown === 1 ? '1 unknown profile' : `${unknown} unknown profiles`)
+  }
+  return names.join(', ')
 }
 
 /**
@@ -48,6 +67,14 @@ export function BooksPage() {
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [assigning, setAssigning] = useState<string | null>(null)
+
+  // Build the id->name lookup once per profiles change (not once per book row).
+  // onAssigned preserves the profiles reference, so this survives an assign.
+  const profiles = state.kind === 'ready' ? state.profiles : EMPTY_PROFILES
+  const nameById = useMemo(
+    () => new Map(profiles.map((profile) => [profile.id, profile.display_name])),
+    [profiles]
+  )
 
   useEffect(() => {
     let cancelled = false
@@ -126,7 +153,7 @@ export function BooksPage() {
     )
   }
 
-  const { books, profiles } = state
+  const { books } = state
 
   return (
     <section className="books">
@@ -145,7 +172,7 @@ export function BooksPage() {
                 <ContentBadge book={book} />
               </div>
               <p className="books__assigned">
-                Assigned to: {assignedNames(book, profiles)}
+                Assigned to: {assignedNames(book, nameById)}
               </p>
               <Button
                 onClick={() => setAssigning(book.storybook_id)}
