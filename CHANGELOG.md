@@ -11,8 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Guardian console, sign-in, intake, profiles, and reader 409-conflict flows now
   have Playwright e2e coverage (all seven amber gaps from the journey coverage
   map), plus a real-backend smoke tier exercising the ADR-005 approve path
-  against FastAPI + Postgres. Both tiers are local-only (run per
-  `frontend/README.md` before opening a PR); neither runs in CI.
+  against FastAPI + Postgres. The mocked tier runs in CI on every PR; the
+  real-backend tier is local-only (run per `frontend/README.md` before opening
+  a PR) because it needs Postgres and a seeded uvicorn.
 - Child story-request endpoints: `POST /api/v1/story-requests` (a kid's free-text
   idea, guardian-scoped in R1, screened for PII and Stage-0 classifier hits before
   landing as `pending` or `blocked`, capped at 5 pending requests per profile),

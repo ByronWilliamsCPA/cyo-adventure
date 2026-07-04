@@ -136,9 +136,10 @@ Two e2e tiers exist: `chromium` (`e2e/`) mocks the API per test and needs no bac
 `real-backend` (`e2e-real/`) makes zero mocks and requires the local stack below. Full design:
 `docs/superpowers/specs/2026-07-04-playwright-e2e-suite-design.md`.
 
-Both tiers are local-only; neither runs in CI. Run the mocked tier (`npm run test:e2e`, no
-backend needed) and, when touching guardian/real-backend flows, the smoke tier below before
-opening a PR.
+The mocked tier (`npm run test:e2e`, no backend needed) runs in CI on every PR. The
+real-backend smoke tier is local-only (it needs Postgres and a seeded uvicorn). Run the
+smoke tier below when touching guardian/real-backend flows before opening a PR; you can run
+the mocked tier locally too for a fast pre-push check.
 
 ```bash
 # 1. Postgres (default port 5432 is often taken; pick a free port, 5442+)
