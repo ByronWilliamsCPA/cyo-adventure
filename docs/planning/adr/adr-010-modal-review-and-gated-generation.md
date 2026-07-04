@@ -87,6 +87,13 @@ model weights for tolerable cold starts. Two facts frame how to use that:
       production config with the OpenRouter reviewer as fallback.
 - [ ] Yield harness re-run recorded under `docs/planning/yield-results/` for any
       promotion decision, with cost per accepted story.
+- [x] Generation leg smoke test: `ModalProvider` deployed against a live Modal Auto
+      Endpoint (Standard tier, `google/gemma-4-26B-A4B-it`) and exercised end to end with
+      one real 8-11-band brief. Result recorded at
+      `docs/planning/yield-results/modal-standard-smoke-test.json` (2026-07-04): 1/1 story
+      passed all gates, 100% pass rate, 25.5s latency. This is one measured data point
+      toward the promotion gate above, not the gate itself; the endpoint was stopped
+      immediately after the test to halt billing.
 
 ## Related
 
