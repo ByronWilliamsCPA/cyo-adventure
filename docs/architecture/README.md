@@ -18,6 +18,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 
 | Page | Description |
 | ---- | ----------- |
+| [User Journeys](user-journeys.md) | UX-flow set: end-to-end, per-surface (kid, guardian), and a developer test-coverage view |
 | [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
@@ -31,6 +32,10 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 
 | Diagram | File | Description |
 | ------- | ---- | ----------- |
+| End-to-End User Journey | [journey-end-to-end.puml](diagrams/journey-end-to-end.puml) / [.svg](diagrams/journey-end-to-end.svg) | Target-state UX flow across Child/Guardian/Admin/System lanes; shipped vs planned |
+| Kid-Surface Journey | [journey-kid.puml](diagrams/journey-kid.puml) / [.svg](diagrams/journey-kid.svg) | Zoomed child-facing flow: picker, library, reader, offline/conflict, error exits |
+| Guardian Surface Journey | [journey-guardian.puml](diagrams/journey-guardian.puml) / [.svg](diagrams/journey-guardian.svg) | Zoomed parent flow: login, intake, review/approve (ADR-005), assign |
+| Journey Test Coverage | [journey-dev-coverage.puml](diagrams/journey-dev-coverage.puml) / [.svg](diagrams/journey-dev-coverage.svg) | Journey recolored by e2e/unit/none coverage; Playwright gap map |
 | C4 Context (L1) | [c4-context.puml](diagrams/c4-context.puml) / [.svg](diagrams/c4-context.svg) | Actors and external systems |
 | C4 Container (L2) | [c4-container.puml](diagrams/c4-container.puml) / [.svg](diagrams/c4-container.svg) | Runtime containers and data stores |
 | Generation Pipeline | [component-generation.puml](diagrams/component-generation.puml) / [.svg](diagrams/component-generation.svg) | Orchestrator, prompts, providers, gate |
