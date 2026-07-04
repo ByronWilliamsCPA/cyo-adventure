@@ -111,14 +111,16 @@ def _modal(
     handler: Callable[[httpx.Request], httpx.Response],
     *,
     model: str = "google/gemma-4-26b-a4b-it",
-    api_key: str | None = "test-modal-key",
+    proxy_key: str | None = "test-key-id",
+    proxy_secret: str | None = "test-key-secret",
     max_retries: int = 3,
 ) -> ModalProvider:
     """Build a ModalProvider wired to a mock client with no backoff sleep."""
     return ModalProvider(
         base_url="https://example--cyo-standard.modal.run/v1",
         model=model,
-        api_key=api_key,
+        proxy_key=proxy_key,
+        proxy_secret=proxy_secret,
         timeout_seconds=30,
         max_retries=max_retries,
         backoff_base_seconds=0,
@@ -961,30 +963,60 @@ class TestModalProvider:
         ]
 
     @pytest.mark.asyncio
-    async def test_api_key_sends_bearer_header(self) -> None:
-        """A configured api_key is sent as a Bearer Authorization header."""
+    async def test_proxy_credentials_send_modal_key_and_secret_headers(self) -> None:
+        """A configured proxy_key/proxy_secret pair sends the Modal-Key/Modal-Secret headers."""
         captured_headers: dict[str, str] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured_headers.update(request.headers)
             return httpx.Response(200, json=_openrouter_ok_body("ok"))
 
-        provider = _modal(handler, api_key="secret-token")
+        provider = _modal(
+            handler, proxy_key="secret-token-id", proxy_secret="secret-token-value"
+        )
         await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert captured_headers["authorization"] == "Bearer secret-token"
+        assert captured_headers["modal-key"] == "secret-token-id"
+        assert captured_headers["modal-secret"] == "secret-token-value"
 
     @pytest.mark.asyncio
-    async def test_no_api_key_omits_authorization_header(self) -> None:
-        """A None api_key sends no Authorization header at all."""
+    async def test_no_proxy_credentials_omits_auth_headers(self) -> None:
+        """A None proxy_key/proxy_secret pair sends neither header at all."""
         captured_headers: dict[str, str] = {}
 
         def handler(request: httpx.Request) -> httpx.Response:
             captured_headers.update(request.headers)
             return httpx.Response(200, json=_openrouter_ok_body("ok"))
 
-        provider = _modal(handler, api_key=None)
+        provider = _modal(handler, proxy_key=None, proxy_secret=None)
         await provider.complete(system="s", prompt="u", max_tokens=100)
-        assert "authorization" not in captured_headers
+        assert "modal-key" not in captured_headers
+        assert "modal-secret" not in captured_headers
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("proxy_key", "proxy_secret"),
+        [
+            pytest.param("only-the-key", None, id="key-only"),
+            pytest.param(None, "only-the-secret", id="secret-only"),
+        ],
+    )
+    async def test_partial_proxy_credentials_omits_auth_headers(
+        self, proxy_key: str | None, proxy_secret: str | None
+    ) -> None:
+        """A half-set proxy credential pair sends neither header (ModalProvider's own
+        fail-safe; the fail-loud ConfigurationError for this case belongs to
+        build_modal_leg and is tested in test_worker.py, not here).
+        """
+        captured_headers: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured_headers.update(request.headers)
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler, proxy_key=proxy_key, proxy_secret=proxy_secret)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert "modal-key" not in captured_headers
+        assert "modal-secret" not in captured_headers
 
     @pytest.mark.asyncio
     async def test_404_is_leg_fatal_without_retry(self) -> None:

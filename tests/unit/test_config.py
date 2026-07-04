@@ -295,16 +295,20 @@ class TestModalGenerationSettings:
     def test_modal_settings_default_to_none(
         self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
-        """modal_base_url, modal_model, and modal_api_key default to None."""
+        """modal_base_url, modal_model, modal_proxy_key, and modal_proxy_secret
+        default to None.
+        """
         from cyo_adventure.core.config import Settings
 
         monkeypatch.delenv("MODAL_BASE_URL", raising=False)
         monkeypatch.delenv("MODAL_MODEL", raising=False)
-        monkeypatch.delenv("MODAL_API_KEY", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_KEY", raising=False)
+        monkeypatch.delenv("MODAL_PROXY_SECRET", raising=False)
         settings = Settings()
         assert settings.modal_base_url is None
         assert settings.modal_model is None
-        assert settings.modal_api_key is None
+        assert settings.modal_proxy_key is None
+        assert settings.modal_proxy_secret is None
 
     @pytest.mark.unit
     def test_modal_timeout_seconds_default_exceeds_llm_timeout(self) -> None:

@@ -227,6 +227,17 @@ class TestBuildProviderLive:
         assert isinstance(provider, ModalProvider)
         assert provider.name == "modal:google/gemma-4-26b-a4b-it"
 
+    def test_modal_partial_proxy_credentials_raises(self) -> None:
+        """Setting only one of MODAL_PROXY_KEY/MODAL_PROXY_SECRET raises by name."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="https://example--cyo-standard.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key="only-the-key",
+        )
+        with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
+            build_provider(settings)
+
 
 class TestSplitBasicAuth:
     """_split_basic_auth turns an OLLAMA_AUTH string into (username, password)."""

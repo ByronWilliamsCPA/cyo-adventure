@@ -74,11 +74,15 @@ config, not maintained Python").
   served model is not Anthropic); a longer default per-attempt timeout to tolerate
   cold starts (config knob, not hardcoded); `name` property returns
   `f"modal:{self._model}"` for worker provider-record logging.
-- Constructor takes `base_url`, `model`, `api_key` (Bearer token if the endpoint
-  requires one; #VERIFY at deploy time whether Modal Auto Endpoints enforce auth by
-  default or need explicit configuration), `timeout_seconds`, `max_retries`,
-  `backoff_base_seconds`, and an optional injected `httpx.AsyncClient` for tests,
-  matching the existing adapters' test seam.
+- Constructor takes `base_url`, `model`, `proxy_key`, `proxy_secret`,
+  `timeout_seconds`, `max_retries`, `backoff_base_seconds`, and an optional
+  injected `httpx.AsyncClient` for tests, matching the existing adapters' test
+  seam. `proxy_key`/`proxy_secret` are sent as the `Modal-Key`/`Modal-Secret`
+  header pair, not a Bearer token: confirmed against Modal's docs (not just
+  assumed) during the 2026-07-04 live deployment attempt, when `modal endpoint
+  create` rejected the original Bearer-token assumption. Both headers are
+  omitted entirely unless both values are set; a half-set pair sends neither,
+  never a partial credential.
 
 ### 3.2 Settings (`core/config.py`)
 
@@ -88,7 +92,10 @@ config, not maintained Python").
   default, required when `generation_provider="modal"`).
 - `modal_model: str` (the served model id, for logging/provider-record purposes;
   distinct from the HF id used at `modal endpoint create` time).
-- `modal_api_key: str | None` (Bearer credential if the endpoint requires one).
+- `modal_proxy_key: str | None` and `modal_proxy_secret: str | None` (the
+  Modal-Key/Modal-Secret proxy-token pair, created via `modal workspace
+  proxy-tokens create`; must be set together or neither, since a half-set pair
+  is a misconfiguration `build_modal_leg` rejects rather than guesses at).
 - `modal_timeout_seconds: int` (separate from `llm_timeout_seconds`; cold starts
   need materially more headroom than a warm OpenRouter call).
 
@@ -139,8 +146,9 @@ are unaffected by this change.
 
 ## 7. Security and data policy
 
-`modal_api_key` (if present) and the endpoint URL are secrets: never logged, and
-`ConfigurationError` messages name the setting, never its value, mirroring the
+`modal_proxy_key` and `modal_proxy_secret` (if present) and the endpoint URL are
+secrets: never logged, and `ConfigurationError` messages name the setting, never
+its value, mirroring the
 existing OpenRouter/Ollama credential handling in `provider.py`. Per ADR-010 and the
 tiered-backends spec, self-hosting on Modal means the served model's creator never
 receives the prompt, which is the same privacy posture already documented for the
@@ -150,8 +158,12 @@ review leg.
 
 - Exact HF model identifier for the Gemma 26B-A4B tier and whether `modal endpoint
   create` needs `--custom-hf-repo` for it.
-- Whether a Modal Auto Endpoint enforces bearer-token auth by default or requires
-  explicit configuration to not be publicly reachable.
+- RESOLVED: Modal Auto Endpoints require an explicit choice at creation time,
+  either `--unauthenticated` or a pre-created proxy token; there is no silent
+  default. Discovered when `modal endpoint create` rejected the original
+  Bearer-token assumption during the 2026-07-04 live deployment attempt, which
+  led to the `proxy_key`/`proxy_secret` (`Modal-Key`/`Modal-Secret` header pair)
+  design described in sections 3.1, 3.2, and 7 above.
 - Actual per-request cold-start latency, to size `modal_timeout_seconds` from
   measurement rather than the spec's estimate.
 

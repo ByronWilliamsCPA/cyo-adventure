@@ -336,7 +336,9 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
 
     Raises:
         ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is not
-            configured.
+            configured, or if exactly one of ``MODAL_PROXY_KEY`` and
+            ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
+            misconfiguration to reject, not a valid no-auth state to guess at.
     """
     # #CRITICAL: security: fail fast (and by name only) when required config is
     # absent, rather than sending a request to an unconfigured/placeholder url.
@@ -349,10 +351,20 @@ def build_modal_leg(settings: Settings) -> GenerationProvider:
         msg = "MODAL_MODEL is not set; required for generation_provider=modal"
         raise ConfigurationError(msg)
 
+    has_key = bool(settings.modal_proxy_key)
+    has_secret = bool(settings.modal_proxy_secret)
+    if has_key != has_secret:
+        msg = (
+            "MODAL_PROXY_KEY and MODAL_PROXY_SECRET must be set together "
+            "(or neither); found only one"
+        )
+        raise ConfigurationError(msg)
+
     return ModalProvider(
         base_url=settings.modal_base_url,
         model=settings.modal_model,
-        api_key=settings.modal_api_key,
+        proxy_key=settings.modal_proxy_key,
+        proxy_secret=settings.modal_proxy_secret,
         timeout_seconds=settings.modal_timeout_seconds,
     )
 

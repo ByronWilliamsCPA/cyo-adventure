@@ -51,9 +51,15 @@ class ModalProvider:
         model: The served model id, used for the ``name`` property, logs, and
             the request body (the endpoint itself is already bound to one
             model, but the OpenAI-compatible API still requires the field).
-        api_key: Optional Bearer credential. Omitted entirely from the request
-            when ``None`` (whether a Modal Auto Endpoint enforces auth by
-            default is unconfirmed as of this adapter; #VERIFY at deploy time).
+        proxy_key: Optional Modal proxy-token id, sent as the ``Modal-Key``
+            header. Modal Auto Endpoints use a ``Modal-Key``/``Modal-Secret``
+            header pair for proxy auth, not a Bearer token; both headers are
+            omitted entirely unless both ``proxy_key`` and ``proxy_secret``
+            are set (a half-set pair sends neither, never a partial
+            credential).
+        proxy_secret: Optional Modal proxy-token secret, sent as the
+            ``Modal-Secret`` header. Required together with ``proxy_key``;
+            see above.
         timeout_seconds: Per-attempt wall-clock timeout. Cold starts need
             materially more headroom than a warm OpenRouter call.
         max_retries: Number of attempts for transient failures (default 3).
@@ -70,7 +76,8 @@ class ModalProvider:
         *,
         base_url: str,
         model: str,
-        api_key: str | None,
+        proxy_key: str | None,
+        proxy_secret: str | None,
         timeout_seconds: int,
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
@@ -78,7 +85,8 @@ class ModalProvider:
     ) -> None:
         self._base_url: Final[str] = base_url.rstrip("/")
         self._model: Final[str] = model
-        self._api_key: Final[str | None] = api_key
+        self._proxy_key: Final[str | None] = proxy_key
+        self._proxy_secret: Final[str | None] = proxy_secret
         self._timeout_seconds: Final[int] = timeout_seconds
         self._max_retries: Final[int] = max_retries
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
@@ -120,8 +128,9 @@ class ModalProvider:
             "max_tokens": max_tokens,
         }
         headers: dict[str, str] = {"Content-Type": "application/json"}
-        if self._api_key:
-            headers["Authorization"] = f"Bearer {self._api_key}"
+        if self._proxy_key and self._proxy_secret:
+            headers["Modal-Key"] = self._proxy_key
+            headers["Modal-Secret"] = self._proxy_secret
         url = f"{self._base_url}/chat/completions"
 
         return await run_with_retries(
