@@ -30,10 +30,25 @@ export interface ContentSummary {
   findings: ContentFinding[]
 }
 
+export interface GuardianBookItem {
+  storybook_id: string
+  title: string
+  version: number
+  age_band: string
+  screened: boolean
+  flagged_count: number
+  assigned_profile_ids: string[]
+}
+
+export interface GuardianBooksView {
+  books: GuardianBookItem[]
+}
+
 export interface AssignApi {
   get(storybookId: string): Promise<string[]>
   add(storybookId: string, profileIds: string[]): Promise<string[]>
   contentSummary(storybookId: string): Promise<ContentSummary>
+  listBooks(): Promise<GuardianBookItem[]>
 }
 
 export function makeAssignApi(api: AxiosInstance): AssignApi {
@@ -56,6 +71,10 @@ export function makeAssignApi(api: AxiosInstance): AssignApi {
         `/v1/storybooks/${storybookId}/content-summary`
       )
       return res.data
+    },
+    async listBooks(): Promise<GuardianBookItem[]> {
+      const res = await api.get<GuardianBooksView>('/v1/guardian/books')
+      return res.data.books
     },
   }
 }

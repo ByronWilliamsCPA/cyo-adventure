@@ -12,6 +12,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   returns a redacted moderation summary (screened flag, gating summary, flagged
   count, story-level findings only), rendered as content tags in the guardian
   assign dialog. Per-node flagged passages remain admin-only.
+- Guardian browse-and-assign books page: `GET /api/v1/guardian/books` lists every
+  published, approved book in the caller's own family (not just their own request
+  history), each with a redacted content badge (screened flag + flagged count,
+  reusing the Task 2.1 projector with per-row corruption isolation) and the set of
+  child profiles it is assigned to. The new `/guardian/books` page (guardian-only
+  nav entry) reuses `AssignChildrenDialog`, which continues to lazy-fetch the full
+  content tags from the content-summary endpoint on open. The list endpoint is
+  guardian-only: a child or an admin receives 403 and the page shows a clear
+  notice.
 - Experimental `ModalProvider` generation leg (ADR-010 item 2): an HTTP adapter
   mirroring `OpenRouterProvider` for self-hosted generation via Modal Auto
   Endpoints, wired behind `generation_provider=modal` as a bare leg that never

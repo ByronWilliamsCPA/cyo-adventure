@@ -254,6 +254,48 @@ class AssignmentListView(BaseModel):
     profile_ids: list[str]
 
 
+class GuardianBookItem(BaseModel):
+    """A published family book as the guardian browses it to assign (Task 2.2).
+
+    Carries a redacted content badge (``screened`` + ``flagged_count``, the same
+    two signals the assign dialog and console rows show) and the set of child
+    profiles the book is currently assigned to. The full story-level findings are
+    deliberately not embedded here: the assign dialog lazy-fetches them from the
+    content-summary endpoint (Task 2.1) when it opens, so the browse list stays
+    lean and the findings projection lives in exactly one place.
+    """
+
+    storybook_id: str
+    title: str
+    version: int
+    age_band: str
+    screened: bool
+    flagged_count: int = Field(ge=0)
+    assigned_profile_ids: list[str]
+
+    @model_validator(mode="after")
+    def _unscreened_has_no_flags(self) -> GuardianBookItem:
+        """Reject an unscreened badge that also reports flagged passages.
+
+        The projector derives ``screened`` and ``flagged_count`` from the same
+        moderation report, so an unscreened book always has zero flags and the
+        corrupt-report degrade sets both to ``(False, 0)`` together. This guard
+        makes that coupling a type invariant: a future caller cannot construct a
+        contradictory "unscreened, N flagged" badge that would misreport a book's
+        safety posture to a guardian.
+        """
+        if not self.screened and self.flagged_count != 0:
+            msg = "an unscreened book cannot report flagged passages"
+            raise ValueError(msg)
+        return self
+
+
+class GuardianBooksView(BaseModel):
+    """The family's published books for the guardian browse-and-assign page."""
+
+    books: list[GuardianBookItem]
+
+
 # ---------------------------------------------------------------------------
 # Profile schemas
 # ---------------------------------------------------------------------------
