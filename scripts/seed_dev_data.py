@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import asyncio
 import json
+from datetime import UTC, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 from sqlalchemy import select
 
@@ -23,9 +25,15 @@ from cyo_adventure.db.models import (
     ChildProfile,
     Family,
     Storybook,
+    StorybookAssignment,
     StorybookVersion,
     User,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 _VALID = (
     Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "storybook" / "valid"
@@ -36,12 +44,28 @@ _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
 
 
-async def _seed() -> None:
-    """Create the schema and insert the demo family, profile, and stories."""
-    async with get_engine().begin() as conn:
+async def seed_dev_data(
+    *,
+    engine: AsyncEngine | None = None,
+    session_factory: Callable[[], AsyncSession] | None = None,
+) -> None:
+    """Create the schema and insert the demo family, profile, and stories.
+
+    Args:
+        engine: Async engine to create the schema on. Defaults to the app's
+            shared engine (``get_engine()``); tests inject a testcontainers
+            engine here.
+        session_factory: Callable returning a new ``AsyncSession``. Defaults
+            to ``get_session``; tests inject a factory bound to the same
+            engine passed above.
+    """
+    active_engine = engine if engine is not None else get_engine()
+    async with active_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    async with get_session() as session:
+    new_session = session_factory if session_factory is not None else get_session
+
+    async with new_session() as session:
         existing = await session.scalar(
             select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
         )
@@ -59,21 +83,29 @@ async def _seed() -> None:
         session.add(profile)
         await session.flush()
 
-        session.add_all(
-            [
-                User(
-                    family_id=family.id,
-                    role="guardian",
-                    authn_subject=_GUARDIAN_SUBJECT,
-                ),
-                User(
-                    family_id=family.id,
-                    role="child",
-                    authn_subject=_CHILD_SUBJECT,
-                    child_profile_id=profile.id,
-                ),
-            ]
+        guardian = User(
+            family_id=family.id,
+            role="guardian",
+            authn_subject=_GUARDIAN_SUBJECT,
         )
+        session.add(guardian)
+        await session.flush()
+
+        session.add(
+            User(
+                family_id=family.id,
+                role="child",
+                authn_subject=_CHILD_SUBJECT,
+                child_profile_id=profile.id,
+            )
+        )
+
+        # #ASSUME: data integrity: published_at must be timezone-aware to match
+        # StorybookVersion.published_at, a TIMESTAMP WITH TIME ZONE column
+        # (_TS = DateTime(timezone=True) in db/models.py). A naive datetime
+        # would be ambiguous about which zone it represents.
+        # #VERIFY: datetime.now(UTC) always returns a tz-aware value.
+        published_at = datetime.now(UTC)
 
         for filename in _STORIES:
             blob = json.loads((_VALID / filename).read_text(encoding="utf-8"))
@@ -88,7 +120,28 @@ async def _seed() -> None:
                 )
             )
             session.add(
-                StorybookVersion(storybook_id=story_id, version=version, blob=blob)
+                StorybookVersion(
+                    storybook_id=story_id,
+                    version=version,
+                    blob=blob,
+                    approved_by=guardian.id,
+                    published_at=published_at,
+                )
+            )
+            # #ASSUME: concurrency: StorybookAssignment has a composite primary
+            # key on (child_profile_id, storybook_id), so inserting one row per
+            # seeded story here relies on this function never re-running for an
+            # already-seeded family (the guardian-existence guard above returns
+            # early before reaching this loop on a re-run).
+            # #VERIFY: the early return at the top of this function is the only
+            # idempotency guard; a caller that seeds without it would violate
+            # the composite primary key on a second run.
+            session.add(
+                StorybookAssignment(
+                    child_profile_id=profile.id,
+                    storybook_id=story_id,
+                    assigned_by=guardian.id,
+                )
             )
 
         await session.commit()
@@ -100,7 +153,7 @@ async def _seed() -> None:
 
 def main() -> None:
     """Entry point for the dev seed script."""
-    asyncio.run(_seed())
+    asyncio.run(seed_dev_data())
 
 
 if __name__ == "__main__":
