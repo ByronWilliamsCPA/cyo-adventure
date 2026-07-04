@@ -36,10 +36,26 @@ export interface ReaderPageProps {
   version: number
   deviceId?: string
   /** Cold-cache cross-device resume. Defaults to "no server state". */
-  fetchServerState?: (profileId: string, storybookId: string) => Promise<ReadingState | null>
+  fetchServerState?: FetchServerState
   /** Records a completion when the reader reaches an ending. Defaults to a no-op. */
-  recordCompletion?: (body: CompletionRequest) => Promise<void>
+  recordCompletion?: RecordCompletion
 }
+
+type FetchServerState = (
+  profileId: string,
+  storybookId: string
+) => Promise<ReadingState | null>
+type RecordCompletion = (body: CompletionRequest) => Promise<void>
+
+// Stable module-level defaults, not inline default-parameter expressions: a
+// default-parameter expression is re-evaluated to a fresh function reference
+// on every render when the prop is omitted, which would change `load`'s
+// identity every render (fetchServerState sits in its useCallback deps),
+// re-firing the mount effect (`useEffect(() => void load(), [load])`) on
+// every render and forming an unbounded reload loop (~650 GETs/500ms
+// observed). A stable reference by identity is what keeps `load` stable.
+const NO_SERVER_STATE: FetchServerState = () => Promise.resolve(null)
+const NO_RECORD_COMPLETION: RecordCompletion = () => Promise.resolve()
 
 type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
 
@@ -78,8 +94,8 @@ export function ReaderPage({
   storybookId,
   version,
   deviceId,
-  fetchServerState = () => Promise.resolve(null),
-  recordCompletion = () => Promise.resolve(),
+  fetchServerState = NO_SERVER_STATE,
+  recordCompletion = NO_RECORD_COMPLETION,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
@@ -149,6 +165,15 @@ export function ReaderPage({
         // #VERIFY: null and any thrown error both leave saved undefined -> fresh
         // start; the offline reading path is unchanged.
         const server = await fetchServerState(profileId, storybookId)
+        // #CRITICAL: concurrency: a superseded load generation can still be
+        // awaiting this fetch when a later generation resolves first and the
+        // user keeps playing; persist() writes IndexedDB before the network,
+        // so a stale generation's mirror write below could clobber a NEWER
+        // local row with older server data.
+        // #VERIFY: re-check stale() immediately after the await, before the
+        // mirror write, and bail out entirely (no state update, no write)
+        // when superseded.
+        if (stale()) return
         if (server) {
           saved = server
           // Mirror into the local cache so the next open is cache-first. Best

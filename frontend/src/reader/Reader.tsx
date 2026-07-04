@@ -53,8 +53,8 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
       return
     }
     const endingId = currentEndingId(story, reading)
-    // #CRITICAL: timing: StrictMode double-invokes this effect, and RESTART can
-    // re-reach the same ending; both must post at most once.
+    // #CRITICAL: timing/data-integrity: StrictMode double-invokes this effect, and
+    // RESTART can re-reach the same ending; both must post at most once.
     // #VERIFY: gate on a per-ending ref so only a NEW ending id fires onComplete.
     if (endingId === null || completedEndingRef.current === endingId) {
       return
