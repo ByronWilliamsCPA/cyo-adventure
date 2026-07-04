@@ -37,6 +37,18 @@ test.beforeEach(async ({ page, context }) => {
     }
     return route.fulfill({ status: 200, json: READING_ROW })
   })
+  await page.route('**/api/v1/completions', (route) =>
+    route.fulfill({
+      status: 200,
+      json: {
+        child_profile_id: 'child-a',
+        storybook_id: 's_lantern_cave',
+        version: 1,
+        ending_id: 'e_treasure_found',
+        found_at: new Date().toISOString(),
+      },
+    })
+  )
 })
 
 test('plays a downloaded story to an ending (US-101)', async ({ page }) => {
@@ -99,4 +111,62 @@ test('choice buttons meet the 44px tap target', async ({ page }) => {
   await expect(page.getByTestId('reader')).toBeVisible()
   const box = await page.getByTestId('choice-c_take_lantern').boundingBox()
   expect(box?.height ?? 0).toBeGreaterThanOrEqual(44)
+})
+
+test('records a completion when the story reaches an ending', async ({ page }) => {
+  const posted: unknown[] = []
+  // Override the beforeEach completions route to capture the body (last wins).
+  await page.route('**/api/v1/completions', (route) => {
+    posted.push(route.request().postDataJSON())
+    return route.fulfill({
+      status: 200,
+      json: {
+        child_profile_id: 'child-a',
+        storybook_id: 's_lantern_cave',
+        version: 1,
+        ending_id: 'e_treasure_found',
+        found_at: new Date().toISOString(),
+      },
+    })
+  })
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  await page.getByTestId('choice-c_take_lantern').click()
+  await page.getByTestId('choice-c_dark_passage').click()
+  await expect(page.getByTestId('ending-screen')).toBeVisible()
+  await expect.poll(() => posted.length).toBe(1)
+  expect(posted[0]).toMatchObject({
+    profile_id: 'child-a',
+    storybook_id: 's_lantern_cave',
+    version: 1,
+    ending_id: 'e_treasure_found',
+  })
+})
+
+test('resumes from server state when the local cache is empty (cross-device)', async ({
+  page,
+}) => {
+  const RESUMED_ROW = {
+    current_node: 'n_cave_fork',
+    var_state: { has_lantern: true },
+    path: ['n_entrance', 'n_cave_fork'],
+    visit_set: ['n_entrance', 'n_cave_fork'],
+    version: 1,
+    state_revision: 4,
+    save_slots: {},
+  }
+  // Override the beforeEach reading-state route: GET returns a saved server row
+  // (a fresh browser context has an empty IndexedDB, so the cold-cache fallback
+  // must consult the server), PUT still succeeds.
+  await page.route('**/api/v1/reading-state/**', (route) => {
+    if (route.request().method() === 'GET') {
+      return route.fulfill({ status: 200, json: RESUMED_ROW })
+    }
+    return route.fulfill({ status: 200, json: READING_ROW })
+  })
+  await page.goto(READER_PATH)
+  await expect(page.getByTestId('reader')).toBeVisible()
+  // Resumed at the cave fork holding the lantern, so the gated dark-passage
+  // choice is offered without first taking the lantern.
+  await expect(page.getByTestId('choice-c_dark_passage')).toBeVisible()
 })
