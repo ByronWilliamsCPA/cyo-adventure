@@ -60,6 +60,10 @@ allowed:
   - integration
   - automation
 
+  # Generation & LLM
+  - generation
+  - modal
+
   # Infrastructure & CI/CD
   - ci_cd
   - github_actions

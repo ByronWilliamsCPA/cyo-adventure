@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
 from cyo_adventure.generation.providers import (
     FallbackProvider,
+    ModalProvider,
     OllamaProvider,
     OpenRouterProvider,
 )
@@ -322,6 +323,52 @@ def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
     )
 
 
+def build_modal_leg(settings: Settings) -> GenerationProvider:
+    """Construct the experimental Modal leg from settings (ADR-010 item 2).
+
+    Args:
+        settings: The application settings instance.
+
+    Returns:
+        A bare Modal ``GenerationProvider`` adapter. Never wrapped in a
+        :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
+        cascade: this leg is an offline experiment, not on the production path.
+
+    Raises:
+        ConfigurationError: If ``MODAL_BASE_URL`` or ``MODAL_MODEL`` is not
+            configured, or if exactly one of ``MODAL_PROXY_KEY`` and
+            ``MODAL_PROXY_SECRET`` is set: a half-set credential pair is a
+            misconfiguration to reject, not a valid no-auth state to guess at.
+    """
+    # #CRITICAL: security: fail fast (and by name only) when required config is
+    # absent, rather than sending a request to an unconfigured/placeholder url.
+    # #VERIFY: test_build_provider asserts ConfigurationError names the missing
+    # setting and never echoes a value.
+    if not settings.modal_base_url:
+        msg = "MODAL_BASE_URL is not set; required for generation_provider=modal"
+        raise ConfigurationError(msg)
+    if not settings.modal_model:
+        msg = "MODAL_MODEL is not set; required for generation_provider=modal"
+        raise ConfigurationError(msg)
+
+    has_key = bool(settings.modal_proxy_key)
+    has_secret = bool(settings.modal_proxy_secret)
+    if has_key != has_secret:
+        msg = (
+            "MODAL_PROXY_KEY and MODAL_PROXY_SECRET must be set together "
+            "(or neither); found only one"
+        )
+        raise ConfigurationError(msg)
+
+    return ModalProvider(
+        base_url=settings.modal_base_url,
+        model=settings.modal_model,
+        proxy_key=settings.modal_proxy_key,
+        proxy_secret=settings.modal_proxy_secret,
+        timeout_seconds=settings.modal_timeout_seconds,
+    )
+
+
 def _split_basic_auth(value: str | None) -> tuple[str | None, str | None]:
     """Split an ``OLLAMA_AUTH`` ``user:password`` string into its two halves.
 
@@ -492,6 +539,9 @@ def build_provider(settings: Settings) -> GenerationProvider:
                 build_ollama_leg(settings),
             ]
         )
+
+    if provider == "modal":
+        return build_modal_leg(settings)
 
     # "claude": a direct Anthropic SDK adapter is deferred (ADR-003); the seam
     # stays so it is a trivial future add. Reach Claude via OpenRouter.

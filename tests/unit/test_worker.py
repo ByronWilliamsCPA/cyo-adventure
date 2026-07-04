@@ -23,6 +23,7 @@ from cyo_adventure.generation.provider import (
 )
 from cyo_adventure.generation.providers import (
     FallbackProvider,
+    ModalProvider,
     OllamaProvider,
     OpenRouterProvider,
 )
@@ -197,6 +198,45 @@ class TestBuildProviderLive:
             ollama_auth="testservice:testcred",
         )
         assert isinstance(build_provider(settings), OllamaProvider)
+
+    def test_modal_without_base_url_raises(self) -> None:
+        """modal without MODAL_BASE_URL raises ConfigurationError by name."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal", modal_model="google/gemma-4-26b-a4b-it"
+        )
+        with pytest.raises(ConfigurationError, match="MODAL_BASE_URL"):
+            build_provider(settings)
+
+    def test_modal_without_model_raises(self) -> None:
+        """modal without MODAL_MODEL raises ConfigurationError by name."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="https://example--cyo-standard.modal.run/v1",
+        )
+        with pytest.raises(ConfigurationError, match="MODAL_MODEL"):
+            build_provider(settings)
+
+    def test_modal_with_config_returns_bare_leg(self) -> None:
+        """modal with both required settings returns a bare ModalProvider (no cascade)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="https://example--cyo-standard.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, ModalProvider)
+        assert provider.name == "modal:google/gemma-4-26b-a4b-it"
+
+    def test_modal_partial_proxy_credentials_raises(self) -> None:
+        """Setting only one of MODAL_PROXY_KEY/MODAL_PROXY_SECRET raises by name."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="modal",
+            modal_base_url="https://example--cyo-standard.modal.run/v1",
+            modal_model="google/gemma-4-26b-a4b-it",
+            modal_proxy_key="only-the-key",
+        )
+        with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
+            build_provider(settings)
 
 
 class TestSplitBasicAuth:

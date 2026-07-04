@@ -1,0 +1,30 @@
+{
+  "provider": "modal",
+  "model": null,
+  "scale": "standard",
+  "fallback_enabled": false,
+  "threshold": 0.6,
+  "tier_split": {
+    "tier1": {
+      "total": 1,
+      "passed": 1
+    },
+    "tier2": {
+      "total": 0,
+      "passed": 0
+    }
+  },
+  "total": 1,
+  "passed": 1,
+  "pass_rate": 1.0,
+  "meets_threshold": true,
+  "per_story": [
+    {
+      "index": 0,
+      "status": "passed",
+      "attempts": 3,
+      "failing_rule_ids": [],
+      "latency_s": 25.5
+    }
+  ]
+}

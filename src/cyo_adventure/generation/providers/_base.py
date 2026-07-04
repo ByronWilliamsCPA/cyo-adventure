@@ -67,6 +67,37 @@ def as_str_map(value: object) -> dict[str, object] | None:
     return cast("dict[str, object]", value) if isinstance(value, dict) else None
 
 
+def dig_content(payload: object) -> str | None:
+    """Safely extract ``choices[0].message.content`` from a response payload.
+
+    Shared by every OpenAI-chat-completions-shaped adapter (OpenRouter, Modal).
+    Narrows the untrusted decoded JSON with ``isinstance`` at each level (the
+    same defensive pattern the validator uses for raw JSON) so an unexpected
+    shape returns ``None`` rather than raising.
+
+    Args:
+        payload: The decoded JSON response (untrusted shape).
+
+    Returns:
+        The content string, or ``None`` when any expected key is missing or has
+        an unexpected type.
+    """
+    top = as_str_map(payload)
+    if top is None:
+        return None
+    choices = top.get("choices")
+    if not isinstance(choices, list) or not choices:
+        return None
+    first = as_str_map(choices[0])
+    if first is None:
+        return None
+    message = as_str_map(first.get("message"))
+    if message is None:
+        return None
+    content = message.get("content")
+    return content if isinstance(content, str) else None
+
+
 async def run_with_retries(
     attempt: Callable[[], Awaitable[str]],
     *,

@@ -96,7 +96,9 @@ class Settings(BaseSettings):
     # primary per ADR-003 as amended 2026-06-22). Live adapters are constructed
     # lazily in build_provider(), so an unset live key fails at call time, not
     # startup.
-    generation_provider: Literal["mock", "claude", "ollama", "openrouter"] = "mock"
+    generation_provider: Literal["mock", "claude", "ollama", "openrouter", "modal"] = (
+        "mock"
+    )
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
     # config change. OpenRouter rosters churn weekly, so pin first-party families
@@ -213,6 +215,33 @@ class Settings(BaseSettings):
     ollama_ca_bundle: str | None = Field(
         default=None, validation_alias="OLLAMA_CA_BUNDLE"
     )
+
+    # --- Experimental Modal generation leg (ADR-010 item 2) ---
+    # An offline-only leg: build_provider never wraps this in the production
+    # FallbackProvider cascade. All three fields are None until an operator
+    # deploys a Modal Auto Endpoint and sets them; build_modal_leg raises
+    # ConfigurationError naming the missing setting if either the url or model
+    # is absent at that point.
+    modal_base_url: str | None = Field(default=None, validation_alias="MODAL_BASE_URL")
+    modal_model: str | None = Field(default=None, validation_alias="MODAL_MODEL")
+    # #CRITICAL: security: these are secrets if the endpoint enforces auth; never
+    # log their values or echo them in an error message. Modal Auto Endpoints use a
+    # Modal-Key/Modal-Secret header pair for proxy auth, not a Bearer token
+    # (confirmed against Modal's docs during the 2026-07-04 live deployment
+    # attempt); both must be set together or neither, since a half-set credential
+    # pair is a misconfiguration build_modal_leg should reject, not guess at.
+    # #VERIFY: ModalProvider omits both headers entirely when either is None,
+    # rather than sending a partial/placeholder credential.
+    modal_proxy_key: str | None = Field(
+        default=None, validation_alias="MODAL_PROXY_KEY"
+    )
+    modal_proxy_secret: str | None = Field(
+        default=None, validation_alias="MODAL_PROXY_SECRET"
+    )
+    # Longer than llm_timeout_seconds (120s): Modal Auto Endpoints cold-start a
+    # vLLM server on first request after idle, which the OpenRouter leg never
+    # needs to tolerate.
+    modal_timeout_seconds: int = 180
 
     # --- Slice-2 moderation review pipeline ---
     # Which backend the moderation LLM stages use. "mock" (default) runs no real

@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 
 # Provider names the CLI accepts. Live providers were deferred in Phase 2; Phase
 # 2b enables them so the >=60% acceptance rate can be measured for real.
-_PROVIDER_CHOICES = ("mock", "openrouter", "ollama")
+_PROVIDER_CHOICES = ("mock", "openrouter", "ollama", "modal")
 
 __all__ = [
     "YieldReport",
@@ -378,7 +378,7 @@ def _build_live_factory(
     """Return a factory that builds a fresh live provider per brief.
 
     Args:
-        provider: ``"openrouter"`` or ``"ollama"``.
+        provider: ``"openrouter"``, ``"ollama"``, or ``"modal"``.
         model: Optional model-id override for the chosen provider; ``None`` keeps
             the configured default.
         fallback: Whether the openrouter cascade may fail over. ``False`` isolates
@@ -393,8 +393,11 @@ def _build_live_factory(
         kwargs["provider_fallback_enabled"] = fallback
         if model is not None:
             kwargs["openrouter_model"] = model
-    elif model is not None:
-        kwargs["ollama_model"] = model
+    elif provider == "ollama":
+        if model is not None:
+            kwargs["ollama_model"] = model
+    elif provider == "modal" and model is not None:
+        kwargs["modal_model"] = model
     settings = Settings(**kwargs)  # type: ignore[arg-type]
 
     def _factory() -> GenerationProvider:
