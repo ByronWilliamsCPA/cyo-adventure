@@ -105,8 +105,10 @@ async def _authorize_content_summary(
     Raises:
         AuthorizationError: If the caller is a child, or a guardian from another
             family (403).
-        ResourceNotFoundError: If the story does not exist, is not published, or
-            its current published version row is missing (404).
+        ResourceNotFoundError: If the story does not exist, is not published,
+            its current published version row is missing, or that row lacks
+            approved_by (defense-in-depth; the sole publish path is expected
+            to stamp it) (404).
     """
     # #CRITICAL: security: guardian-or-admin only; a child token can never read a
     # content summary. A guardian is family-scoped (cross-family -> 403); an admin
@@ -129,6 +131,16 @@ async def _authorize_content_summary(
         raise ResourceNotFoundError(msg)
     version_row = await ctx.session.get(StorybookVersion, (storybook_id, version))
     if version_row is None:
+        msg = f"storybook '{storybook_id}' has no published version"
+        raise ResourceNotFoundError(msg)
+    # #CRITICAL: security: status == "published" is expected to imply
+    # approved_by is set (the sole publish path in publishing/service.py stamps
+    # both atomically). This gate is defense-in-depth per review: a future
+    # publish path that fails to stamp approved_by must not expose an
+    # unapproved version's moderation summary. Mirrors get_storybook_version's
+    # approved_by check in library.py.
+    # #VERIFY: published status + approved_by is None -> 404.
+    if version_row.approved_by is None:
         msg = f"storybook '{storybook_id}' has no published version"
         raise ResourceNotFoundError(msg)
     return version_row, version

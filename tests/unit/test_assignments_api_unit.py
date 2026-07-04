@@ -323,13 +323,14 @@ class TestContentSummary:
         return b
 
     @staticmethod
-    def _version_row(storybook_id: str) -> object:
+    def _version_row(storybook_id: str, *, approved: bool = True) -> object:
         from cyo_adventure.db.models import StorybookVersion
 
         return StorybookVersion(
             storybook_id=storybook_id,
             version=1,
             blob={"id": storybook_id, "nodes": [{"id": "n1", "body": "Prose."}]},
+            approved_by=uuid.uuid4() if approved else None,
             moderation_report={
                 "findings": [
                     {
@@ -422,5 +423,21 @@ class TestContentSummary:
         fam = uuid.uuid4()
         draft = _book("s1", fam, status="in_review")
         session = _FakeSession(book=draft)
+        with pytest.raises(ResourceNotFoundError):
+            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_unapproved_version_is_404(self) -> None:
+        """Defense-in-depth: published status with an unapproved version row
+        (approved_by is None) is 404, not a summary leak, even though the sole
+        publish path is expected to never produce this state."""
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", fam),
+            version=self._version_row("s1", approved=False),
+        )
         with pytest.raises(ResourceNotFoundError):
             await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
