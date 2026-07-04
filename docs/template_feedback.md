@@ -470,3 +470,36 @@ by the generated Settings class without edits.
 
 **Affected Files**: `.standards/env.example.baseline`, template `config.py`, cookiecutter
 `cookiecutter.json` (for a proposed `use_ml_stack` flag)
+
+---
+
+### `frontend`'s `npm run typecheck` silently checks zero files
+
+- **Priority**: High
+- **Category**: Tooling
+- **Discovered**: 2026-07-03
+
+**Issue**: `frontend/package.json`'s `"typecheck": "tsc --noEmit"` runs against the root
+`frontend/tsconfig.json`, which is a references-only "solution" config (`"files": []`,
+`"references": [tsconfig.app.json, tsconfig.node.json]`). Plain `tsc --noEmit` (no `-b`
+flag) does not follow project references, so it type-checks zero files and always exits 0
+regardless of real errors in `src/`. The only command that actually type-checks the app is
+`npm run build` (`tsc -b && vite build`), which CI's "Frontend (Node 22)" job runs but
+which is easy to forget is the real gate, since its name and output suggest a bundling
+step, not a type-checking one.
+
+**Context**: Discovered during a `/pr-fix` pass on PR #90: `npm run typecheck` reported
+clean locally after a refactor, but the pushed commits failed CI's "Frontend (Node 22)"
+job with two genuine `tsc -b` errors (an ES2022-only `Error` constructor form used against
+an ES2020 build target, and a TypeScript union-narrowing gap) that `--noEmit` alone never
+surfaced. Reproducing locally required running `npm run build`, not `npm run typecheck`.
+
+**Suggested Fix**: Either point `typecheck` at `tsc --noEmit -p tsconfig.app.json` (and a
+second invocation for `tsconfig.node.json`) so it actually checks files without emitting a
+build, or change the script to `tsc -b --noEmit` if `-b` supports it project-wide, so the
+command's name matches what it does. Whichever is chosen, add a one-line comment in the
+generated `package.json` noting that the root `tsconfig.json` is references-only and
+`--noEmit` alone will not check anything through it.
+
+**Affected Files**: template `frontend/package.json` (`typecheck` script), template
+`frontend/tsconfig.json` scaffold comment

@@ -33,6 +33,31 @@ export class OfflineError extends Error {
   }
 }
 
+/**
+ * Raised when a local IndexedDB write inside saveProgress fails somewhere
+ * that leaves this step stored nowhere at all: the initial cache write
+ * (before the server is even tried) or the offline-queue enqueue (the server
+ * was unreachable and the fallback write also failed). Distinct from
+ * OfflineError/HTTP failures so the caller can surface it immediately
+ * instead of treating it as a routine retry-later network blip.
+ *
+ * Deliberately NOT raised when only the post-save local cache refresh fails
+ * (the server already has this step; see saveProgress): that failure means
+ * the local mirror is stale, not that the step is lost, and must not stop
+ * the caller from adopting the server's new revision.
+ */
+export class LocalWriteError extends Error {
+  // Manually assigned, not via the ES2022 Error(message, {cause}) constructor
+  // signature: this project's build target is ES2020.
+  readonly cause?: unknown
+
+  constructor(message = 'local write failed', cause?: unknown) {
+    super(message)
+    this.name = 'LocalWriteError'
+    this.cause = cause
+  }
+}
+
 /** The network port the sync layer depends on (the generated client adapts to this). */
 export interface SyncApi {
   putReadingState(profileId: string, storybookId: string, body: SaveBody): Promise<PutResponse>
@@ -66,7 +91,9 @@ function makeId(opts: SaveOptions): string {
 // another device advanced the revision; the caller must reconcile, not retry.
 // #VERIFY: only OfflineError is queued; HTTP 4xx/5xx must propagate to the
 // caller so a real failure (auth, validation, server error) is not misclassified
-// as offline and queued indefinitely.
+// as offline and queued indefinitely. A failed local write (LocalWriteError)
+// always propagates too, even during the offline branch: it means this step is
+// not cached anywhere, so the caller must treat it as lost, not as queued.
 
 // #ASSUME: concurrency: event_id uniqueness relies on crypto.randomUUID().
 // Two concurrent saveProgress calls in the same millisecond will receive
@@ -81,7 +108,11 @@ export async function saveProgress(
   opts: SaveOptions = {}
 ): Promise<SaveResult> {
   const eventId = makeId(opts)
-  await putReadingState(profileId, storybookId, state)
+  try {
+    await putReadingState(profileId, storybookId, state)
+  } catch (cause) {
+    throw new LocalWriteError('failed to write reading state to the local cache', cause)
+  }
   const body: SaveBody = {
     ...state,
     device_id: opts.deviceId,
@@ -92,9 +123,21 @@ export async function saveProgress(
     if (res.status === 409) {
       return { kind: 'conflict', currentRow: res.currentRow }
     }
-    await putReadingState(profileId, storybookId, res.row)
+    try {
+      await putReadingState(profileId, storybookId, res.row)
+    } catch (cause) {
+      // The server already accepted this step: res.row is now authoritative
+      // and this save is not lost, only its local mirror is stale. Log and
+      // keep going rather than throw LocalWriteError, which would make the
+      // caller skip adopting res.row's revision and desync it from the
+      // server on the very next save.
+      console.error('[reader] failed to refresh the local cache after saving', { cause })
+    }
     return { kind: 'saved', row: res.row }
   } catch (error) {
+    if (error instanceof LocalWriteError) {
+      throw error
+    }
     // Only queue when the device is genuinely offline. An HTTP error response
     // (auth, validation, server error) is a real failure and must propagate, not
     // be misclassified as offline and poison the queue.
@@ -110,7 +153,11 @@ export async function saveProgress(
       device_id: opts.deviceId,
       queued_at: Date.now(),
     }
-    await enqueueWrite(queued)
+    try {
+      await enqueueWrite(queued)
+    } catch (cause) {
+      throw new LocalWriteError('failed to enqueue the offline write', cause)
+    }
     return { kind: 'queued', eventId }
   }
 }

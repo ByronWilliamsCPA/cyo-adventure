@@ -54,6 +54,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `blocked=False` by `test_production_skeletons_*` and rendered into the catalog. ADR-011
   section 7 gains a per-band topology and flow-allowance table (folded from the retired
   expansion-plan doc).
+- Reader storybook styling and error-state redesign: the reader (the last kid surface without
+  the design system) now composes from the shared PR #44 components (`PassageText`,
+  `ChoiceButton`, `StatusBadge`, `ProgressBar`, `EmptyState`, `Button`) with a centered
+  parchment reading column and a slim persistent status/progress top bar. The reader's single
+  catch-all error path becomes a typed phase machine (`loading`/`reading`/`not-found`/
+  `offline`/`error`): a missing story (`404`) shows an honest "We couldn't find that story"
+  screen instead of the offline "save space" copy, a genuinely offline device shows the
+  download screen, and every non-reading screen (not-found, offline, error, both `ReaderRoute`
+  bad-URL guards, and the ending) now has a working "Back to my books" exit rather than a dead
+  end. `makeFetchStory` gains typed failures (`StoryNotFoundError`/`OfflineError`), and a
+  non-conflict save rejection in `persist()` is caught and logged instead of becoming an
+  unhandled promise rejection. Adds Playwright coverage for the exits, the not-found screen,
+  no horizontal scroll at 390px, and 44px choice tap targets.
 - Story-scale (P0) enabler implementing the ADR-011 band x length x style framework as
   additive, opt-in validator and generation changes (no existing fixture or seed declares a
   `length`, so the corpus is unaffected). A non-production MVP/Test tier

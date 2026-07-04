@@ -109,7 +109,8 @@ describe('router: kid surface', () => {
 
   it('shows an error for a non-numeric version segment', async () => {
     renderAt('/read/p1/s_demo/not-a-number')
-    expect(await screen.findByRole('alert')).toHaveTextContent(/invalid/i)
+    expect(await screen.findByText('That story link looks wrong')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Back to my books' })).toBeInTheDocument()
   })
 })
 
