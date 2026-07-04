@@ -6,7 +6,12 @@
 # =============================================================================
 # Hardened Node image from the org GHCR mirror of Docker Hardened Images (DHI).
 # Replaces node:22-alpine; Debian-based so apt-get applies, not apk.
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS deps
+# #CRITICAL external-resource: the plain dhi-node:22-debian13 runtime tag has
+# no /bin/sh, so `RUN npm ci` fails at container init. The -dev tag mirrors
+# Docker's actual builder variant (shell + npm); only this build-only stage
+# needs it, the shipped image below still comes from dhi-nginx.
+# #VERIFY the production stage never FROMs the -dev tag.
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS deps
 
 WORKDIR /app
 
@@ -22,7 +27,8 @@ RUN npm ci --only=production=false
 # =============================================================================
 # Stage 2: Builder
 # =============================================================================
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS builder
+# Same -dev rationale as the deps stage above: `npm run build` needs a shell.
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS builder
 
 WORKDIR /app
 
@@ -39,6 +45,11 @@ ENV VITE_API_URL=${VITE_API_URL}
 # Build the application
 RUN npm run build
 
+# An empty, shell-creatable directory used below to (re)establish ownership
+# in the shell-less production stage via COPY --chown, since dhi-nginx has no
+# RUN-capable shell to chown existing directories in place.
+RUN mkdir -p /empty-owned
+
 # =============================================================================
 # Stage 3: Production (nginx)
 # =============================================================================
@@ -50,41 +61,54 @@ LABEL org.opencontainers.image.title="CYO Adventure Frontend"
 LABEL org.opencontainers.image.description="A choose-your-own-adventure reading app for kids"
 LABEL org.opencontainers.image.authors="Byron Williams <byronawilliams@gmail.com>"
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# #CRITICAL external-resource: dhi-nginx ships no shell and no package manager
+# (verified: no /bin/sh, no curl/wget/busybox), so RUN-based user/package setup
+# is impossible here, unlike the deps/builder stages above. The image already
+# has a built-in non-root "nginx" user at uid/gid 65532; reuse it instead of
+# groupadd/useradd, and set ownership via COPY --chown (a buildkit builtin
+# that needs no shell) rather than a RUN chown.
+# #VERIFY uid/gid 65532 stays stable across dhi-nginx version bumps; check
+# with `docker run --entrypoint cat <image> /etc/passwd` before bumping the tag.
+
+# Copy built assets from builder stage, owned by the built-in nginx user
+COPY --from=builder --chown=65532:65532 /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --chown=65532:65532 nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create non-root user for nginx and install curl for the HEALTHCHECK below.
-# addgroup/adduser are Alpine (BusyBox) commands; this image is Debian-based,
-# so groupadd/useradd (shadow-utils) must be used instead.
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/* \
-    && groupadd --gid 1001 --system appgroup \
-    && useradd --uid 1001 --system --gid appgroup appuser \
-    && chown -R appuser:appgroup /var/cache/nginx \
-    && chown -R appuser:appgroup /var/log/nginx \
-    && chown -R appuser:appgroup /etc/nginx/conf.d \
-    && touch /var/run/nginx.pid \
-    && chown -R appuser:appgroup /var/run/nginx.pid
+# Replace the cache/log/run directories with empty ones owned by uid 65532;
+# there is no shell available here to chown the existing ones in place.
+COPY --from=builder --chown=65532:65532 /empty-owned /var/cache/nginx
+COPY --from=builder --chown=65532:65532 /empty-owned /var/log/nginx
+COPY --from=builder --chown=65532:65532 /empty-owned /var/run
 
 # Expose port 80
 EXPOSE 80
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -fsS http://localhost/health || exit 1
+# No in-container HEALTHCHECK: dhi-nginx ships no HTTP client and no shell, so
+# a self-reported check isn't possible without reintroducing a shell into the
+# shipped image, which would undo the point of using a hardened base here.
+# Health is checked externally (curl against the published port from
+# docker-host or Portainer).
 
-# Run as non-root user
-USER appuser
+# Run as the image's built-in non-root user (also the base image's own
+# default, kept explicit here for clarity).
+USER 65532:65532
 
-CMD ["nginx", "-g", "daemon off;"]
+# #ASSUME dhi-nginx's own ENTRYPOINT is already ["nginx"]; CMD supplies
+# arguments only. A CMD repeating the binary name (e.g. ["nginx", "-g", ...])
+# runs as `nginx nginx -g ...` and fails with "invalid option: nginx".
+# #VERIFY `docker inspect <image> --format '{{json .Config.Entrypoint}}'`
+# before changing this if the dhi-nginx tag is ever bumped.
+CMD ["-g", "daemon off;"]
 
 # =============================================================================
 # Stage 4: Development (optional - for docker-compose dev)
 # =============================================================================
-FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13@sha256:da4f55ca1ab186a5ccecccc8b718b1bcd653208ab668d1f7519870803e3c24cc AS development
+# Same -dev rationale as the deps stage above: `npm ci` / `npm run dev` need a
+# shell, and this stage runs interactively in docker-compose dev, not just at
+# build time, so the shell also has to be there at container runtime.
+FROM ghcr.io/byronwilliamscpa/dhi-node:22-debian13-dev@sha256:4253663c9342a83ec8d24e4218ad3cade3acbc45627aa9b19b126b752595d492 AS development
 
 WORKDIR /app
 
