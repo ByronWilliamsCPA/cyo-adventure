@@ -136,6 +136,8 @@ export function makeFetchServerState(
  * Record a story completion. Best-effort: the server dedupes on
  * (profile, storybook, version, ending), so a repeat post is a no-op row-wise.
  */
+// #ASSUME: data-integrity: the server dedupes completions on the (profile, storybook, version, ending) primary key, so a client retry after a dropped response cannot double-count.
+// #VERIFY: backend api/reading.py record_completion PK-dedupe; if the dedup key or window changes, revisit this fire-and-forget call.
 export function makeRecordCompletion(
   api: AxiosInstance
 ): (body: CompletionRequest) => Promise<void> {

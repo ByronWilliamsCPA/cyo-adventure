@@ -164,6 +164,8 @@ export function ReaderPage({
         path: reading.path,
         visit_set: reading.visit_set,
       })
+      // #EDGE: data-integrity: save_slots is excluded from the signature because the engine never mutates it today; if save slots become live, add them here or a slot-only change would be skipped as a duplicate.
+      // #VERIFY: player/engine.ts save_slots handling before enabling slots.
       // #EDGE: data-integrity: JSON.stringify key order follows insertion order; two
       // distinct-but-equal states rebuilt with different key order would miss the dedup
       // (a harmless extra save), never falsely skip a real content change.
