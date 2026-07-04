@@ -21,7 +21,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   code path. A guardian review UI at `/guardian/requests` (nav-linked as
   "Story requests") lists the pending queue with redacted moderation flags,
   offering per-row Approve/Decline actions guarded against duplicate clicks
-  and surfacing a visible notice on failure.
+  and surfacing a visible notice on failure. A kid-facing "Request a story"
+  affordance on the library page (`/library/:profileId`) lets a child open a
+  short idea box, send it, and see their own requests in friendly,
+  age-appropriate language ("Waiting for a grown-up to say yes", and a
+  distinct "Let's try a different idea!" message when the pending cap is
+  hit); no moderation detail, family scoping, or other guardian-facing field
+  ever reaches the kid surface.
 - Guardian and admin content review summary: `GET /api/v1/storybooks/{id}/content-summary`
   returns a redacted moderation summary (screened flag, gating summary, flagged
   count, story-level findings only), rendered as content tags in the guardian
