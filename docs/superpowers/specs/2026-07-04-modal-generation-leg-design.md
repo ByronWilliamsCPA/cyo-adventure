@@ -98,7 +98,7 @@ config, not maintained Python").
   `ConfigurationError` naming the missing setting (`MODAL_BASE_URL`), never a value,
   when required config is absent.
 - `build_provider` gains a `provider == "modal"` branch returning the **bare**
-  `ModalProvider` — no `FallbackProvider` wrapping. This leg never enters the
+  `ModalProvider`: no `FallbackProvider` wrapping. This leg never enters the
   production cascade (`openrouter -> ollama`); selecting it is a deliberate,
   explicit, offline-only choice, matching ADR-010's "not on the public path."
 
@@ -116,7 +116,7 @@ config, not maintained Python").
    into `.env` as `MODAL_BASE_URL` (never committed).
 4. Every command in this section that provisions or runs billed GPU time gets a
    separate, explicit go-ahead at execution time, independent of this design's
-   approval — this is real infrastructure and real money, not a reversible local
+   approval: this is real infrastructure and real money, not a reversible local
    edit.
 
 ## 5. Live smoke test
