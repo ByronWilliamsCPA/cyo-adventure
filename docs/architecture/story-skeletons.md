@@ -37,9 +37,12 @@ by narrative role.
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | The Clocktower Cipher | 10-13 | 18 | 1 | branch_and_bottleneck | 25 | 3/1/4 | [svg](diagrams/skeletons/10-13/the-clocktower-cipher.svg) |
 | The Hollow Lighthouse | 10-13 | 13 | 1 | branch_and_bottleneck | 148 | 10/5/16 | [svg](diagrams/skeletons/10-13/the-hollow-lighthouse.svg) |
+| The Mapmaker's Island | 10-13 | 22 | 1 | branch_and_bottleneck | 224 | 11/32/29 | [svg](diagrams/skeletons/10-13/the-mapmakers-island.svg) |
 | The Midnight Museum | 10-13 | 9 | 1 | branch_and_bottleneck | 94 | 7/3/9 | [svg](diagrams/skeletons/10-13/the-midnight-museum.svg) |
 | The Signal in the Static | 13-16 | 11 | 1 | branch_and_bottleneck | 123 | 11/0/21 | [svg](diagrams/skeletons/13-16/the-signal-in-the-static.svg) |
+| The Vanishing Orchard | 13-16 | 18 | 1 | branch_and_bottleneck | 177 | 5/5/23 | [svg](diagrams/skeletons/13-16/the-vanishing-orchard.svg) |
 | The Last Train North | 16+ | 14 | 1 | branch_and_bottleneck | 143 | 5/9/11 | [svg](diagrams/skeletons/16+/the-last-train-north.svg) |
+| The Salt Archive | 16+ | 24 | 1 | branch_and_bottleneck | 225 | 15/21/18 | [svg](diagrams/skeletons/16+/the-salt-archive.svg) |
 | The Sunken Signal | 16+ | 30 | 2 | branch_and_bottleneck | 32 | 1/1/12 | [svg](diagrams/skeletons/16+/the-sunken-signal.svg) |
 | Clover and the Butterfly | 3-5 | 3 | 1 | time_cave | 20 | 4/0/3 | [svg](diagrams/skeletons/3-5/the-clover-and-the-butterfly.svg) |
 | The Lost Mitten | 3-5 | 5 | 1 | loop_and_grow | 11 | 3/0/0 | [svg](diagrams/skeletons/3-5/the-lost-mitten.svg) |
@@ -47,6 +50,7 @@ by narrative role.
 | The Backyard Treasure Map | 5-8 | 7 | 1 | time_cave | 61 | 6/0/6 | [svg](diagrams/skeletons/5-8/the-backyard-treasure-map.svg) |
 | The Lantern Festival | 5-8 | 6 | 1 | loop_and_grow | 36 | 7/0/3 | [svg](diagrams/skeletons/5-8/the-lantern-festival.svg) |
 | The Cave of Echoes | 8-11 | 8 | 1 | time_cave | 64 | 10/0/6 | [svg](diagrams/skeletons/8-11/the-cave-of-echoes.svg) |
+| The Clockwork Menagerie | 8-11 | 18 | 1 | branch_and_bottleneck | 166 | 14/3/10 | [svg](diagrams/skeletons/8-11/the-clockwork-menagerie.svg) |
 | The Sky-Ship Stowaway | 8-11 | 11 | 1 | branch_and_bottleneck | 111 | 8/1/11 | [svg](diagrams/skeletons/8-11/the-sky-ship-stowaway.svg) |
 
 ### Band coverage
