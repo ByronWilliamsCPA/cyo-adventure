@@ -52,6 +52,11 @@ export function makeGuardianSession(accessToken: string) {
 }
 
 /** Seed both the GoTrue session and the API bearer token before any page loads. */
+// #ASSUME: data-integrity: accessToken deliberately backs both the GoTrue
+// session's access_token and the 'auth_token' bearer key below; the app never
+// compares the two values (AuthContext re-derives 'auth_token' from the
+// session, and /v1/me is the sole principal source), so a single shared value
+// is safe here and does not mask a real divergence.
 export async function seedGuardianSession(
   context: BrowserContext,
   accessToken = 'e2e-guardian-token'
