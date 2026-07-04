@@ -14,7 +14,7 @@ import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 
 import { ForbiddenError, StoryNotFoundError, type CompletionRequest } from '../api/readerApi'
-import { cacheStorybook, getCachedStorybook, getReadingState } from '../offline/db'
+import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
 import {
   LocalWriteError,
   OfflineError,
@@ -35,6 +35,8 @@ export interface ReaderPageProps {
   storybookId: string
   version: number
   deviceId?: string
+  /** Cold-cache cross-device resume. Defaults to "no server state". */
+  fetchServerState?: (profileId: string, storybookId: string) => Promise<ReadingState | null>
   /** Records a completion when the reader reaches an ending. Defaults to a no-op. */
   recordCompletion?: (body: CompletionRequest) => Promise<void>
 }
@@ -76,6 +78,7 @@ export function ReaderPage({
   storybookId,
   version,
   deviceId,
+  fetchServerState = () => Promise.resolve(null),
   recordCompletion = () => Promise.resolve(),
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
@@ -135,10 +138,36 @@ export function ReaderPage({
       // just means this session starts fresh instead of resuming.
       saved = undefined
     }
+    // Cold cache: fall back to the server's saved state for cross-device resume.
+    // Local wins when present (it is the freshest); the server is consulted only
+    // when local is absent.
+    if (saved === undefined) {
+      try {
+        // #ASSUME: external-resources: the server may have no state (returns null)
+        // or be unreachable (OfflineError); both mean "resume nothing", they must
+        // not block a story the reader already holds.
+        // #VERIFY: null and any thrown error both leave saved undefined -> fresh
+        // start; the offline reading path is unchanged.
+        const server = await fetchServerState(profileId, storybookId)
+        if (server) {
+          saved = server
+          // Mirror into the local cache so the next open is cache-first. Best
+          // effort: a mirror failure must not block resuming from the server row.
+          try {
+            await putReadingState(profileId, storybookId, server)
+          } catch {
+            // ignore: the in-memory `saved` still drives this session
+          }
+        }
+      } catch {
+        // offline or server error: start fresh; do not surface an error page.
+        saved = undefined
+      }
+    }
     if (stale()) return
     revisionRef.current = saved?.state_revision ?? 0
     setPageState({ phase: 'reading', story: cached, initialReading: saved })
-  }, [fetchStory, profileId, storybookId, version])
+  }, [fetchStory, fetchServerState, profileId, storybookId, version])
 
   // Load on mount and whenever the load inputs change.
   useEffect(() => {

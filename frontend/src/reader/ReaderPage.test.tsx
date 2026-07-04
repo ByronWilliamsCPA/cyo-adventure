@@ -324,7 +324,7 @@ describe('ReaderPage', () => {
           api={okApi()}
           fetchStory={() => Promise.resolve(lantern)}
           recordCompletion={recordCompletion}
-          profileId="p1"
+          profileId="p_complete"
           storybookId="s_lantern_cave"
           version={1}
         />
@@ -334,13 +334,18 @@ describe('ReaderPage', () => {
     fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
     await waitFor(() => expect(recordCompletion).toHaveBeenCalledTimes(1))
     expect(recordCompletion).toHaveBeenCalledWith({
-      profile_id: 'p1',
+      profile_id: 'p_complete',
       storybook_id: 's_lantern_cave',
       version: 1,
       ending_id: 'e_treasure_found',
     })
   })
 
+  // A distinct profileId from the test above: that test's ended-state persist()
+  // fires fire-and-forget (handleProgress does not await it) and can still be
+  // in flight when the test returns; a shared profileId risks its IndexedDB
+  // write landing after this test's beforeEach resets the db handle, resuming
+  // this test straight into the ended state instead of the start passage.
   it('still shows the ending screen when the completion post fails', async () => {
     const recordCompletion = vi.fn(() => Promise.reject(new Error('boom')))
     render(
@@ -349,7 +354,7 @@ describe('ReaderPage', () => {
           api={okApi()}
           fetchStory={() => Promise.resolve(lantern)}
           recordCompletion={recordCompletion}
-          profileId="p1"
+          profileId="p_complete_fail"
           storybookId="s_lantern_cave"
           version={1}
         />
@@ -358,5 +363,101 @@ describe('ReaderPage', () => {
     fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
     fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
     expect(await screen.findByTestId('ending-screen')).toBeTruthy()
+  })
+
+  const SERVER_RESUME: ReadingState = {
+    current_node: 'n_cave_fork',
+    var_state: { has_lantern: true },
+    path: ['n_entrance', 'n_cave_fork'],
+    visit_set: ['n_entrance', 'n_cave_fork'],
+    version: 1,
+    state_revision: 4,
+    save_slots: {},
+  }
+
+  it('resumes from server state when the local cache is cold', async () => {
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(SERVER_RESUME))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_cold"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchServerState).toHaveBeenCalledOnce()
+    // Resumed at the cave fork with the lantern, so the gated choice is visible.
+    expect(screen.getByTestId('passage-body').textContent).toContain('splits')
+    expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
+  })
+
+  it('prefers the local cache over server state when both exist', async () => {
+    const local: ReadingState = {
+      current_node: 'n_cave_fork',
+      var_state: { has_lantern: true },
+      path: ['n_entrance', 'n_cave_fork'],
+      visit_set: ['n_entrance', 'n_cave_fork'],
+      version: 1,
+      state_revision: 3,
+      save_slots: {},
+    }
+    await putReadingState('p_both', 's_lantern_cave', local)
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(SERVER_RESUME))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_both"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchServerState).not.toHaveBeenCalled()
+  })
+
+  it('starts fresh when cold cache and the server has no state (null)', async () => {
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_none"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Fresh start renders the start passage (the lantern intro).
+    expect(screen.getByTestId('passage-body').textContent).toContain('lantern')
+  })
+
+  it('starts fresh (no offline screen) when the server fallback is offline', async () => {
+    const fetchServerState = vi.fn(() => Promise.reject(new OfflineError()))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_off"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // The story is already in hand, so a failed resume fetch must not block reading.
+    await screen.findByTestId('reader')
   })
 })
