@@ -6,8 +6,9 @@ import uuid
 from typing import TYPE_CHECKING
 
 import pytest
+from sqlalchemy import func, select
 
-from cyo_adventure.db.models import Concept, StoryRequest
+from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -156,14 +157,21 @@ async def test_admin_approve_creates_job(client: AsyncClient, seed: Seed) -> Non
 
 
 async def test_admin_approve_is_global_across_families(
-    client: AsyncClient, seed: Seed
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """An admin (family A) can approve a request from family B (global scope)."""
+    """An admin (family A) can approve a request from family B (global scope).
+
+    The created Concept (and its GenerationJob) must be stamped with the
+    REQUEST's own family (family B), not the approving admin's family
+    (family A). Stamping from the principal instead of the request would
+    silently misfile family B's story into family A.
+    """
+    request_text = "a kind whale"
     created = await client.post(
         _CREATE,
         json={
             "profile_id": str(seed.other_child_profile_id),
-            "request_text": "a kind whale",
+            "request_text": request_text,
         },
         headers=auth(seed.other_guardian_token),
     )
@@ -173,7 +181,29 @@ async def test_admin_approve_is_global_across_families(
         f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
     )
     assert res.status_code == 200, res.text
-    assert res.json()["status"] == "approved"
+    body = res.json()
+    assert body["status"] == "approved"
+    concept_id = body["concept_id"]
+
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        request_family_id = profile_b.family_id
+        # The admin's own family must differ from the request's family, or
+        # this test cannot distinguish "stamped from request" from "stamped
+        # from principal".
+        assert request_family_id != seed.family_id
+
+        concept = await session.get(Concept, uuid.UUID(concept_id))
+        assert concept is not None
+        assert concept.family_id == request_family_id
+        assert concept.family_id != seed.family_id
+        assert concept.brief["premise"] == request_text
+
+        job = await session.scalar(
+            select(GenerationJob).where(GenerationJob.concept_id == concept.id)
+        )
+        assert job is not None
 
 
 async def test_approve_stamps_reviewer_and_builds_brief_from_stored_text(
@@ -269,7 +299,9 @@ async def test_decline_then_reapprove_conflicts(
     assert again.status_code == 409
 
 
-async def test_approve_twice_conflicts(client: AsyncClient, seed: Seed) -> None:
+async def test_approve_twice_conflicts(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
     """A second approval of an already-approved request is a 409, not a second
     Concept/GenerationJob (locks the sequential double-approval path)."""
     created = await client.post(
@@ -282,10 +314,26 @@ async def test_approve_twice_conflicts(client: AsyncClient, seed: Seed) -> None:
         f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
     )
     assert first.status_code == 200
+    concept_id = first.json()["concept_id"]
     second = await client.post(
         f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
     )
     assert second.status_code == 409
+
+    async with sessions() as session:
+        concept_count = await session.scalar(
+            select(func.count())
+            .select_from(Concept)
+            .where(Concept.id == uuid.UUID(concept_id))
+        )
+        assert concept_count == 1
+
+        job_count = await session.scalar(
+            select(func.count())
+            .select_from(GenerationJob)
+            .where(GenerationJob.concept_id == uuid.UUID(concept_id))
+        )
+        assert job_count == 1
 
 
 async def test_blocked_request_hides_raw_text(client: AsyncClient, seed: Seed) -> None:
