@@ -66,6 +66,52 @@
   font-size: var(--text-sm, 0.9375rem);
 }
 
+.guardian-login__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0 0.5rem;
+  color: var(--color-ink-muted, #8c6f56);
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+.guardian-login__divider::before,
+.guardian-login__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-amber-light, #f0e4cc);
+}
+
+.guardian-login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.guardian-login__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: var(--weight-semibold, 600);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.guardian-login__field input {
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--color-amber, #c17b2a);
+  background: rgb(255 255 255 / 70%);
+  font: inherit;
+  color: var(--color-ink, #2c1a0e);
+}
+
+.guardian-login__provider:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
 .guardian-stub {
   border: 1px dashed var(--color-ink-muted, #8c6f56);
   border-radius: 12px;

@@ -18,6 +18,7 @@ vi.mock('../hooks/useApi', () => ({
 const mockGetSession = vi.fn()
 const mockOnAuthStateChange = vi.fn()
 const mockSignInWithOAuth = vi.fn()
+const mockSignInWithPassword = vi.fn()
 const mockSignOut = vi.fn()
 vi.mock('./supabaseClient', () => ({
   supabase: {
@@ -25,27 +26,32 @@ vi.mock('./supabaseClient', () => ({
       getSession: (...args: unknown[]) => mockGetSession(...args),
       onAuthStateChange: (...args: unknown[]) => mockOnAuthStateChange(...args),
       signInWithOAuth: (...args: unknown[]) => mockSignInWithOAuth(...args),
+      signInWithPassword: (...args: unknown[]) => mockSignInWithPassword(...args),
       signOut: (...args: unknown[]) => mockSignOut(...args),
     },
   },
 }))
 
 function Probe() {
-  const { status, principal } = useAuth()
+  const { status, principal, authError } = useAuth()
   return (
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="role">{principal?.role ?? 'none'}</span>
+      <span data-testid="authError">{authError ?? 'none'}</span>
     </div>
   )
 }
 
 function ActionsProbe() {
-  const { signInWithOAuth, signOut } = useAuth()
+  const { signInWithOAuth, signInWithPassword, signOut } = useAuth()
   return (
     <div>
       <button type="button" onClick={() => void signInWithOAuth('google')}>
         sign in
+      </button>
+      <button type="button" onClick={() => void signInWithPassword({ email: 'a@b.com', password: 'pw' })}>
+        sign in password
       </button>
       <button type="button" onClick={() => void signOut()}>
         sign out
@@ -56,7 +62,7 @@ function ActionsProbe() {
 
 /** Mirrors how real call sites consume the rejections these actions now throw. */
 function CatchingActionsProbe() {
-  const { signInWithOAuth, signOut } = useAuth()
+  const { signInWithOAuth, signInWithPassword, signOut } = useAuth()
   const [caught, setCaught] = useState('none')
   return (
     <div>
@@ -66,6 +72,14 @@ function CatchingActionsProbe() {
         onClick={() => void signInWithOAuth('google').catch((e: Error) => setCaught(e.message))}
       >
         sign in
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          void signInWithPassword({ email: 'a@b.com', password: 'pw' }).catch((e: Error) => setCaught(e.message))
+        }
+      >
+        sign in password
       </button>
       <button
         type="button"
@@ -85,6 +99,7 @@ beforeEach(() => {
     .mockReset()
     .mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
   mockSignInWithOAuth.mockReset()
+  mockSignInWithPassword.mockReset()
   mockSignOut.mockReset()
 })
 
@@ -98,6 +113,7 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
     expect(mockGet).not.toHaveBeenCalled()
+    expect(screen.getByTestId('authError')).toHaveTextContent('none')
     expect(localStorage.getItem('auth_token')).toBeNull()
   })
 
@@ -120,11 +136,15 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
     expect(screen.getByTestId('role')).toHaveTextContent('guardian')
+    expect(screen.getByTestId('authError')).toHaveTextContent('none')
     expect(mockGet).toHaveBeenCalledWith('/v1/me')
     expect(localStorage.getItem('auth_token')).toBe('tok-1')
   })
 
-  it('fails closed to signed-out when /me rejects a session', async () => {
+  it('fails closed and sets authError when /me rejects a session', async () => {
+    // A session that establishes but cannot resolve a Principal must fail closed
+    // AND record authError, so LoginPage can tell the user their account could
+    // not be loaded instead of stranding them on an idle form.
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
@@ -136,6 +156,7 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
     expect(screen.getByTestId('role')).toHaveTextContent('none')
+    expect(screen.getByTestId('authError')).toHaveTextContent('principal-unresolved')
     expect(localStorage.getItem('auth_token')).toBeNull()
   })
 
@@ -240,6 +261,59 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
     fireEvent.click(screen.getByText('sign in'))
     await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith({ provider: 'google' }))
+  })
+
+  it('delegates signInWithPassword to supabase', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignInWithPassword.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign in password'))
+    await waitFor(() =>
+      expect(mockSignInWithPassword).toHaveBeenCalledWith({ email: 'a@b.com', password: 'pw' })
+    )
+  })
+
+  it('rejects signInWithPassword when supabase reports an error', async () => {
+    // Bad credentials resolve with { error } rather than throwing; the context
+    // must rethrow so LoginPage can show a failure message instead of no-op'ing.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignInWithPassword.mockResolvedValue({ data: {}, error: new Error('invalid login') })
+    render(
+      <AuthProvider>
+        <CatchingActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('sign in password'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('invalid login'))
+  })
+
+  it('clears a stale authError when a new password sign-in starts', async () => {
+    // Regression: a session that could not resolve a Principal leaves authError
+    // set. A retry must clear it up front, or LoginPage's
+    // `busy = submitting && !authError` goes false on the new attempt's first
+    // render, re-enabling the button and keeping the old alert visible.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockRejectedValue(new Error('401 from backend'))
+    mockSignInWithPassword.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <Probe />
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('authError')).toHaveTextContent('principal-unresolved')
+    )
+    fireEvent.click(screen.getByText('sign in password'))
+    await waitFor(() => expect(screen.getByTestId('authError')).toHaveTextContent('none'))
   })
 
   it('delegates signOut to supabase', async () => {
