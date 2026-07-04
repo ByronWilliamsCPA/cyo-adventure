@@ -144,7 +144,7 @@ export function RequestStory({ profileId }: { profileId: string }) {
             <Button disabled={saving || text.trim().length === 0} onClick={() => void send()}>
               {saving ? 'Sending…' : 'Send'}
             </Button>
-            <Button variant="ghost" onClick={cancel}>
+            <Button variant="ghost" disabled={saving} onClick={cancel}>
               Cancel
             </Button>
           </div>
