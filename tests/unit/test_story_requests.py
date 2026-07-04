@@ -7,9 +7,11 @@ import uuid
 import httpx
 import pytest
 
+from cyo_adventure.core.exceptions import StateTransitionError
 from cyo_adventure.db.models import ChildProfile, StoryRequest
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.storybook.models import AgeBand
@@ -147,3 +149,15 @@ async def test_screen_fails_open_on_classifier_network_error(
     )
     assert result.blocked is False
     assert result.flags == []
+
+
+def test_ensure_pending_rejects_non_pending() -> None:
+    """The pending guard raises a 409-mapped error for a decided request."""
+    req = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="x",
+        status="approved",
+    )
+    with pytest.raises(StateTransitionError):
+        service.ensure_pending(req)
