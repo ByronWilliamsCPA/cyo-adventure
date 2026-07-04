@@ -18,7 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   generation API's cross-family 403). Approval builds a `ConceptBrief` from the
   stored request text and enqueues generation the same way as a guardian-authored
   concept, reusing the generation pipeline without a separate approval-specific
-  code path.
+  code path. A guardian review UI at `/guardian/requests` (nav-linked as
+  "Story requests") lists the pending queue with redacted moderation flags,
+  offering per-row Approve/Decline actions guarded against duplicate clicks
+  and surfacing a visible notice on failure.
 - Guardian and admin content review summary: `GET /api/v1/storybooks/{id}/content-summary`
   returns a redacted moderation summary (screened flag, gating summary, flagged
   count, story-level findings only), rendered as content tags in the guardian
