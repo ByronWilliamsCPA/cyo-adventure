@@ -39,6 +39,12 @@ All family device traffic enters through **Pangolin**, which terminates TLS and
 forwards plain HTTP to the backend container on port 8000. Pangolin runs as its own
 container in the stack and handles the zero-trust tunnel to the homelab.
 
+The R1 internal-web deploy (`services/cyo-adventure/` in the separate
+`ByronWilliamsCPA/homelab-infra` repo) is a distinct rung from this ADR-004 topology:
+there, nginx is the ingress point on `docker-host`, reverse-proxying `/api` to the
+FastAPI container internally rather than Pangolin forwarding to it directly. See the
+`frontend/nginx.conf` `location /api/` block.
+
 Internal container-to-container communication uses Docker's bridge network:
 
 - `cyo-backend` -> `cyo-postgres` (async SQLAlchemy, port 5432)
@@ -51,9 +57,11 @@ Internal container-to-container communication uses Docker's bridge network:
 ## PWA Delivery
 
 The React 19 PWA is built as static assets and served by the backend container (or
-a co-located nginx). A Workbox service worker (via `vite-plugin-pwa`) caches assets
-for offline use. IndexedDB (`offline/db.ts`) caches reading state locally so children
-can continue reading without a network connection.
+a co-located nginx, which can also reverse-proxy `/api` when nginx is the deploy's
+ingress point; see the Network Architecture note above). A Workbox service worker
+(via `vite-plugin-pwa`) caches assets for offline use. IndexedDB (`offline/db.ts`)
+caches reading state locally so children can continue reading without a network
+connection.
 
 ## Phase 1 vs Phase 5 Storage
 

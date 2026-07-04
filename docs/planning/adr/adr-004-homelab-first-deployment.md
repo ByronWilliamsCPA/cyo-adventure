@@ -95,6 +95,11 @@ always-on uptime and managed backups if the need arises.
 
 - No provider-specific services in the core. Object storage goes through the S3 API so
   MinIO and Azure Blob are interchangeable.
+- The R1 internal-web deploy (`services/cyo-adventure/` in the separate
+  `ByronWilliamsCPA/homelab-infra` repo) uses nginx as the ingress point, reverse-proxying
+  `/api` to the backend container internally, rather than Pangolin forwarding to it
+  directly. This is a distinct rung from the Pangolin-and-Authentik ingress described
+  above, not yet reconciled into a single documented topology.
 
 ## Implementation
 
