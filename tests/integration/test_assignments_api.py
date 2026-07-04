@@ -11,8 +11,10 @@ from cyo_adventure.db.models import (
     Family,
     Storybook,
     StorybookAssignment,
+    StorybookVersion,
     User,
 )
+from tests.conftest import make_clean_moderation_report
 
 from .conftest import Seed, auth
 
@@ -21,6 +23,41 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
+
+
+async def _seed_in_review(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed Family A (admin + guardian + child) and an in-review single-version story.
+
+    Adapted from ``test_approval_api.py::_seed_in_review`` (drift note: the plan
+    for this slice assumed this helper already lived in this file; it lives in
+    ``test_approval_api.py`` instead, so it is reproduced here rather than
+    imported, matching this file's existing pattern of local seed helpers).
+    """
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add_all(
+            [
+                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
+                User(family_id=fam.id, role="child", authn_subject="child-a"),
+            ]
+        )
+        story_id = "review-me"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+        return story_id
 
 
 async def test_storybook_assignment_roundtrip(
@@ -239,3 +276,154 @@ async def test_non_published_story_400(
         json={"profile_ids": [str(seed.child_profile_id)]},
     )
     assert resp.status_code == 400, resp.text
+
+
+# ---------------------------------------------------------------------------
+# Guardian content-summary endpoint (Task 2.1)
+# ---------------------------------------------------------------------------
+
+
+def _report_with_flags() -> dict[str, object]:
+    """A screened report with one node-scoped flag and one story-level advisory."""
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "violence",
+                "node_id": "n1",
+                "verdict": "flag",
+                "score": None,
+                "message": "mild peril",
+            },
+            {
+                "stage": 3,
+                "source": "llm_coherence",
+                "category": "coherence",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": None,
+                "message": "slightly disjoint",
+            },
+        ],
+        "summary": {
+            "count": 2,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+
+
+async def _seed_published_with_report(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed Family A (admin + guardian + child) and a published, screened story."""
+    async with sessions() as session:
+        fam = Family(name="A")
+        session.add(fam)
+        await session.flush()
+        session.add_all(
+            [
+                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
+                User(family_id=fam.id, role="child", authn_subject="child-a"),
+            ]
+        )
+        story_id = "summ-me"
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=fam.id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id, "nodes": [{"id": "n1", "body": "Prose."}]},
+                moderation_report=_report_with_flags(),
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_guardian_sees_content_summary(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian reads the redacted summary for a published book -> 200."""
+    story_id = await _seed_published_with_report(sessions)
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("guardian-a")
+    )
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["screened"] is True
+    # per-node flag + story-level advisory both counted.
+    assert body["flagged_count"] == 2
+    # Only the story-level finding is enumerated; no flagged_passages key exists.
+    assert "flagged_passages" not in body
+    assert [f["category"] for f in body["findings"]] == ["coherence"]
+    assert body["findings"][0]["verdict"] == "advisory"
+
+
+async def test_child_cannot_get_content_summary(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A child token is forbidden from the content summary -> 403."""
+    story_id = await _seed_published_with_report(sessions)
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("child-a")
+    )
+    assert resp.status_code == 403
+
+
+async def test_content_summary_unpublished_returns_404(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian cannot read a summary for an unpublished (in_review) book -> 404."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("guardian-a")
+    )
+    assert resp.status_code == 404
+
+
+async def test_cross_family_guardian_content_summary_403(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A guardian from another family gets 403 on a published book."""
+    story_id = await _seed_published_with_report(sessions)
+    async with sessions() as session:
+        fam_b = Family(name="B")
+        session.add(fam_b)
+        await session.flush()
+        session.add(
+            User(family_id=fam_b.id, role="guardian", authn_subject="guardian-b")
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("guardian-b")
+    )
+    assert resp.status_code == 403
+
+
+async def test_admin_reads_content_summary_cross_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A global admin from another family can read the summary -> 200."""
+    story_id = await _seed_published_with_report(sessions)
+    async with sessions() as session:
+        fam_b = Family(name="B")
+        session.add(fam_b)
+        await session.flush()
+        session.add(User(family_id=fam_b.id, role="admin", authn_subject="admin-b"))
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("admin-b")
+    )
+    assert resp.status_code == 200
