@@ -293,6 +293,29 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('invalid login'))
   })
 
+  it('clears a stale authError when a new password sign-in starts', async () => {
+    // Regression: a session that could not resolve a Principal leaves authError
+    // set. A retry must clear it up front, or LoginPage's
+    // `busy = submitting && !authError` goes false on the new attempt's first
+    // render, re-enabling the button and keeping the old alert visible.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockRejectedValue(new Error('401 from backend'))
+    mockSignInWithPassword.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <Probe />
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('authError')).toHaveTextContent('principal-unresolved')
+    )
+    fireEvent.click(screen.getByText('sign in password'))
+    await waitFor(() => expect(screen.getByTestId('authError')).toHaveTextContent('none'))
+  })
+
   it('delegates signOut to supabase', async () => {
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: null })

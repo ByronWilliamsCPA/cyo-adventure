@@ -122,6 +122,11 @@ describe('LoginPage password form', () => {
   it('shows the Apple button when VITE_ENABLE_APPLE_OAUTH is true', () => {
     vi.stubEnv('VITE_ENABLE_APPLE_OAUTH', 'true')
     try {
+      // Guard: the component reads import.meta.env (see test/setup.ts), so
+      // confirm the stub actually landed there and not only on process.env.
+      // Without this, a future Vitest change could make the assertion below
+      // pass or fail for the wrong reason.
+      expect(import.meta.env.VITE_ENABLE_APPLE_OAUTH).toBe('true')
       renderLogin()
       expect(screen.getByRole('button', { name: /Continue with Apple/ })).toBeInTheDocument()
     } finally {

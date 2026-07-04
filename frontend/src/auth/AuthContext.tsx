@@ -162,6 +162,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // treat resolution as sign-in.
       // #VERIFY: AuthContext.test.tsx signInWithPassword delegation + rejection.
       signInWithPassword: async ({ email, password }) => {
+        // Clear any stale authError from a prior attempt BEFORE this request
+        // goes out. LoginPage derives `busy = submitting && !authError`; a
+        // lingering 'principal-unresolved' would make busy false on the first
+        // render of the new attempt, re-enabling the button and keeping the old
+        // "couldn't load your account" alert visible while the request is in
+        // flight. The next /me resolution sets authError afresh.
+        setAuthError(null)
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
       },

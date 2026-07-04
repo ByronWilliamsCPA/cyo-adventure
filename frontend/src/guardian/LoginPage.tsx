@@ -1,4 +1,4 @@
-import { AuthApiError } from '@supabase/supabase-js'
+import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
@@ -7,14 +7,16 @@ import { flagEnabled } from '../env'
 import './guardian.css'
 
 /**
- * Distinguishes a genuine bad-credentials failure (Supabase returns HTTP 400
- * `invalid_credentials` for BOTH a wrong password and an unknown email, so this
- * leaks nothing about whether the email exists) from an operational failure
- * (network down, rate-limited, 5xx). We must not tell a parent on flaky wifi
- * that their password is wrong.
+ * Distinguishes a genuine bad-credentials failure from an operational one
+ * (network down, rate-limited, 5xx). Supabase returns the SAME
+ * `invalid_credentials` code for both a wrong password and an unknown email, so
+ * keying on it leaks nothing about whether the email exists. We match on the
+ * stable error `code` (Supabase's recommended discriminator) via
+ * `isAuthApiError`, not the HTTP status or `instanceof`, per their docs. We must
+ * not tell a parent on flaky wifi that their password is wrong.
  */
 function isInvalidCredentials(err: unknown): boolean {
-  return err instanceof AuthApiError && err.status === 400
+  return isAuthApiError(err) && err.code === 'invalid_credentials'
 }
 
 /**
@@ -73,11 +75,11 @@ export function LoginPage() {
   }
 
   // #ASSUME: security: signInWithPassword rejects on failure (the context
-  // rethrows Supabase's { error }). We split the outcome: a 400 is
-  // wrong-password OR unknown-email (Supabase returns the same code for both),
-  // shown as one generic message so the form never reveals whether an email is
-  // registered; anything else (network, 429, 5xx) is an operational failure and
-  // says so. On RESOLUTION the user is not yet signed in, only a session
+  // rethrows Supabase's { error }). We split the outcome: the
+  // `invalid_credentials` code is wrong-password OR unknown-email (Supabase
+  // returns the same code for both), shown as one generic message so the form
+  // never reveals whether an email is registered; anything else (network, 429,
+  // 5xx) is an operational failure and says so. On RESOLUTION the user is not yet signed in, only a session
   // exists; the redirect fires when AuthProvider resolves the Principal (status
   // -> signed-in), and the derived `busy` above un-busies the form if it cannot.
   // The password lives only in component state; we never persist it.
