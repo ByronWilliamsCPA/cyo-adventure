@@ -100,6 +100,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a guardian `AssignChildrenDialog` multi-select and `makeAssignApi` adapter,
   wired into the intake page's approved-request rows via an "Assign more" action.
 
+### Fixed
+- Enabled the `/api` reverse-proxy block in `frontend/nginx.conf`, needed for the
+  homelab R1 internal-web deploy where nginx is the ingress point in front of the
+  FastAPI container. Also added a `backend` network alias on this repo's own `app`
+  compose service, deferred the proxy's upstream DNS resolution to request time
+  (so nginx no longer fails to start if the backend container isn't already up),
+  tightened the location match to `/api/`, and set explicit proxy timeouts and a
+  request body size limit.
+
 ### Security
 - Closed the moderation-bypass seams recorded as C3-SAFETY Findings 1-3 in the
   adversarial safety evaluation: `generation/import_story.py::import_filled_story`

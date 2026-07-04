@@ -62,8 +62,13 @@ services:
     # Security: Run as non-root user
     user: "1000:1000"
 
+    # `backend` alias lets frontend/nginx.conf's /api proxy resolve this
+    # service consistently with the homelab R1 deploy stack (services/
+    # cyo-adventure/ in homelab-infra), which names it `backend`.
     networks:
-      - cyo_adventure-network
+      cyo_adventure-network:
+        aliases:
+          - backend
 
 # =============================================================================
   # Frontend Service (React + Vite)

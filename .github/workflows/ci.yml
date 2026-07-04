@@ -88,6 +88,19 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Validate nginx.conf syntax
+        # Uses the same hardened image pinned in frontend/Dockerfile's production
+        # stage so this check exercises the actual runtime image, not a stand-in.
+        # That image's ENTRYPOINT is already `nginx`, so the container command is
+        # just `-t` (passing `nginx -t` fails with "invalid option: nginx").
+        # proxy_pass targets are resolved via a variable + resolver in nginx.conf,
+        # so this passes without a live network; no compose stack is started here.
+        run: |
+          docker run --rm \
+            -v "$(pwd)/nginx.conf:/etc/nginx/conf.d/default.conf:ro" \
+            ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 \
+            -t
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
