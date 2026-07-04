@@ -26,13 +26,18 @@ from cyo_adventure.api.deps import (
     authorize_profile,
     parse_uuid,
 )
-from cyo_adventure.api.schemas import AssignmentCreateBody, AssignmentListView
+from cyo_adventure.api.review_surface import build_content_summary
+from cyo_adventure.api.schemas import (
+    AssignmentCreateBody,
+    AssignmentListView,
+    ContentSummaryView,
+)
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
     ResourceNotFoundError,
 )
-from cyo_adventure.db.models import Storybook, StorybookAssignment
+from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -82,6 +87,82 @@ async def _require_guardian_family_book(ctx: Context, storybook_id: str) -> Stor
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, book.family_id)
     return book
+
+
+async def _authorize_content_summary(
+    ctx: Context, storybook_id: str
+) -> tuple[StorybookVersion, int]:
+    """Return the current published version for a guardian/admin content summary.
+
+    Args:
+        ctx: The request context (principal + session).
+        storybook_id: The story id from the path.
+
+    Returns:
+        tuple[StorybookVersion, int]: The current published version row and its
+            version number.
+
+    Raises:
+        AuthorizationError: If the caller is a child, or a guardian from another
+            family (403).
+        ResourceNotFoundError: If the story does not exist, is not published, or
+            its current published version row is missing (404).
+    """
+    # #CRITICAL: security: guardian-or-admin only; a child token can never read a
+    # content summary. A guardian is family-scoped (cross-family -> 403); an admin
+    # is global and skips the family check (mirrors library.py's is_admin bypass).
+    # Missing OR unpublished -> 404 (not 403) so an unpublished story's existence
+    # is not revealed, matching get_storybook_version's information-hiding rule.
+    # #VERIFY: child -> 403; cross-family guardian -> 403; missing/unpublished -> 404.
+    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
+        msg = "only a guardian or admin may read a content summary"
+        raise AuthorizationError(msg)
+    book = await ctx.session.get(Storybook, storybook_id)
+    if book is None or book.status != _PUBLISHED:
+        msg = f"storybook '{storybook_id}' not found"
+        raise ResourceNotFoundError(msg)
+    if not ctx.principal.is_admin:
+        authorize_family(ctx.principal, book.family_id)
+    version = book.current_published_version
+    if version is None:
+        msg = f"storybook '{storybook_id}' has no published version"
+        raise ResourceNotFoundError(msg)
+    version_row = await ctx.session.get(StorybookVersion, (storybook_id, version))
+    if version_row is None:
+        msg = f"storybook '{storybook_id}' has no published version"
+        raise ResourceNotFoundError(msg)
+    return version_row, version
+
+
+@router.get("/storybooks/{storybook_id}/content-summary")
+async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummaryView:
+    """Return the redacted content review summary for a published story.
+
+    Guardians see this in the assign flow so they know what a book was flagged
+    for before granting it to a child. It carries the gating summary, the total
+    flagged count, and story-level findings only; per-node flagged passages are
+    withheld (the admin review surface owns those).
+
+    Args:
+        storybook_id: The published story to summarize.
+        ctx: The request context (principal + session).
+
+    Returns:
+        ContentSummaryView: The redacted guardian content summary.
+
+    Raises:
+        AuthorizationError: Child caller or cross-family guardian (403).
+        ResourceNotFoundError: Unknown or unpublished story, or a missing
+            published version row (404).
+        ValidationError: If the stored moderation report is corrupt at rest.
+    """
+    version_row, version = await _authorize_content_summary(ctx, storybook_id)
+    return build_content_summary(
+        storybook_id=storybook_id,
+        version=version,
+        blob=version_row.blob,
+        moderation_report=version_row.moderation_report,
+    )
 
 
 @router.post("/storybooks/{storybook_id}/assignments")
