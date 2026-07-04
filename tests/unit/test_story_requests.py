@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 
+import httpx
 import pytest
 
 from cyo_adventure.db.models import ChildProfile, StoryRequest
@@ -113,3 +114,36 @@ async def test_screen_blocks_on_bright_line_classifier(monkeypatch) -> None:
     flag = next(f for f in result.flags if f.verdict is Verdict.BLOCK)
     assert flag.category == "sexual/minors"
     assert "flagged" in flag.message
+
+
+@pytest.mark.asyncio
+async def test_screen_fails_open_on_classifier_network_error(
+    monkeypatch,
+) -> None:
+    """When a classifier network call fails, the request proceeds (fail-open).
+
+    The guardian remains the human gate; this test proves that network failures
+    in classifier APIs do not hard-block story requests. The fail-open behavior
+    is a property of run_classifiers' internal per-call except (httpx.HTTPError,
+    ValueError) contract.
+    """
+
+    class _FakeRequest:
+        """Minimal request object for ConnectError."""
+
+    async def _fake_post(self, *args, **kwargs):  # type: ignore[no-untyped-def]
+        raise httpx.ConnectError(
+            "Network unreachable",
+            request=_FakeRequest(),  # type: ignore[arg-type]
+        )
+
+    monkeypatch.setattr(httpx.AsyncClient, "post", _fake_post)
+
+    result = await screen_request_text(
+        "some idea",
+        child_names=frozenset(),
+        openai_key="k",
+        perspective_key=None,
+    )
+    assert result.blocked is False
+    assert result.flags == []

@@ -93,7 +93,11 @@ async def screen_request_text(
     # #CRITICAL: external-resource: classifier APIs are network calls; a failure
     # (or both keys unset) yields [] and the request proceeds to pending review
     # (the guardian is the human gate; the PII guard already ran). It never 5xxs.
-    # #VERIFY: test_screen_clean_when_no_keys_and_no_pii.
+    # #VERIFY: test_screen_clean_when_no_keys_and_no_pii and
+    # test_screen_fails_open_on_classifier_network_error. Fail-open is a property
+    # of run_classifiers' internal per-call except (httpx.HTTPError, ValueError)
+    # contract; if that contract changes, screening turns 500 (fail-closed), the
+    # safe direction, but revisit this call site.
     async with httpx.AsyncClient(timeout=_CLIENT_TIMEOUT) as client:
         findings = await run_classifiers(
             nodes=[("request", request_text)],
