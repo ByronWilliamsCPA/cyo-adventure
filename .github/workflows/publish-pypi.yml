@@ -17,7 +17,7 @@ on:
 jobs:
   publish:
     name: Publish Package
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-publish-pypi.yml@ca897f91b8294d53e98668af81c8446ebd42f155  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-publish-pypi.yml@f246f10085dd6d4e6eaa72e088bf3e40d0080002  # main
     with:
       python-version: '3.12'
       package-name: 'cyo-adventure'

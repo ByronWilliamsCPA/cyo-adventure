@@ -32,7 +32,7 @@ jobs:
     name: Mutation Testing
     # Skip on forks (no PR comment permissions)
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml@ca897f91b8294d53e98668af81c8446ebd42f155  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-mutation.yml@f246f10085dd6d4e6eaa72e088bf3e40d0080002  # main
     with:
       python-version: '3.12'
       source-directory: 'src'
