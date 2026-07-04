@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Experimental `ModalProvider` generation leg (ADR-010 item 2): an HTTP adapter
+  mirroring `OpenRouterProvider` for self-hosted generation via Modal Auto
+  Endpoints, wired behind `generation_provider=modal` as a bare leg that never
+  enters the production `FallbackProvider` cascade. Includes a `--provider
+  modal` choice for `scripts/yield_harness.py` and an operator runbook
+  (`docs/guides/modal-endpoint-deployment.md`). Proxy-token auth uses the
+  `Modal-Key`/`Modal-Secret` header pair (confirmed against Modal's actual
+  Auto Endpoint auth mechanism during a live deployment, correcting an
+  initial Bearer-token assumption). Verified end to end against one live
+  Modal Auto Endpoint (Standard tier, `google/gemma-4-26B-A4B-it`): 1/1
+  story passed all gates, 100% pass rate, 25.5s latency (result recorded at
+  `docs/planning/yield-results/modal-standard-smoke-test.json`); the
+  endpoint was stopped immediately after to halt billing. This is one
+  measured data point toward the ADR-010 promotion gate, not the gate
+  itself; OpenRouter (Claude) remains the generation primary.
 - Gamebook production skeletons (Batch 5), one per gamebook cell of the ADR-011 matrix, all
   `branch_and_bottleneck`: `13-16 medium` (The Sunspire Ascent, 252 nodes, 74 endings),
   `16+ medium` (The Drowned Court, 314 nodes, 105 endings), `13-16 long` (The Thornwood Trial,
