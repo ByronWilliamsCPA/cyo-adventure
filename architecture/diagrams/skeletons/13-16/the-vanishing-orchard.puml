@@ -1,0 +1,628 @@
+@startuml the-vanishing-orchard
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 170w
+state rec_entry #D1C4E9
+rec_entry : rising · 150w
+state rec_a_p1 #D1C4E9
+rec_a_p1 : rising · 135w
+state rec_a_p2 #D1C4E9
+rec_a_p2 : rising · 135w
+state rec_a_p3 #D1C4E9
+rec_a_p3 : rising · 135w
+state rec_a_p4 #D1C4E9
+rec_a_p4 : rising · 135w
+state rec_adec #FFF9C4
+rec_adec : choice · 150w
+state e_rec_a #FFCDD2
+e_rec_a : setback (negative)
+e_rec_a : "The Bolted Hall"
+state rec_b_p1 #D1C4E9
+rec_b_p1 : rising · 135w
+state rec_b_p2 #D1C4E9
+rec_b_p2 : rising · 135w
+state rec_b_p3 #D1C4E9
+rec_b_p3 : rising · 135w
+state rec_b_p4 #D1C4E9
+rec_b_p4 : rising · 135w
+state rec_bdec #FFF9C4
+rec_bdec : choice · 150w
+state e_rec_b #FFCDD2
+e_rec_b : setback (negative)
+e_rec_b : "The Blank Page"
+state rec_conv #FFF9C4
+rec_conv : choice · 150w
+state rec_t_p1 #D1C4E9
+rec_t_p1 : rising · 135w
+state rec_t_p2 #D1C4E9
+rec_t_p2 : rising · 135w
+state rec_t_p3 #D1C4E9
+rec_t_p3 : rising · 135w
+state rec_t_p4 #D1C4E9
+rec_t_p4 : rising · 135w
+state rec_clue #D1C4E9
+rec_clue : rising · 150w
+state kee_entry #D1C4E9
+kee_entry : rising · 150w
+state kee_a_p1 #D1C4E9
+kee_a_p1 : rising · 135w
+state kee_a_p2 #D1C4E9
+kee_a_p2 : rising · 135w
+state kee_a_p3 #D1C4E9
+kee_a_p3 : rising · 135w
+state kee_a_p4 #D1C4E9
+kee_a_p4 : rising · 135w
+state kee_adec #FFF9C4
+kee_adec : choice · 150w
+state e_kee_a #FFCDD2
+e_kee_a : setback (negative)
+e_kee_a : "Sent Down the Hill"
+state kee_b_p1 #D1C4E9
+kee_b_p1 : rising · 135w
+state kee_b_p2 #D1C4E9
+kee_b_p2 : rising · 135w
+state kee_b_p3 #D1C4E9
+kee_b_p3 : rising · 135w
+state kee_b_p4 #D1C4E9
+kee_b_p4 : rising · 135w
+state kee_bdec #FFF9C4
+kee_bdec : choice · 150w
+state e_kee_b #FFCDD2
+e_kee_b : setback (negative)
+e_kee_b : "The Severed Cord"
+state kee_conv #FFF9C4
+kee_conv : choice · 150w
+state kee_t_p1 #D1C4E9
+kee_t_p1 : rising · 135w
+state kee_t_p2 #D1C4E9
+kee_t_p2 : rising · 135w
+state kee_t_p3 #D1C4E9
+kee_t_p3 : rising · 135w
+state kee_t_p4 #D1C4E9
+kee_t_p4 : rising · 135w
+state kee_clue #D1C4E9
+kee_clue : rising · 150w
+state pho_entry #D1C4E9
+pho_entry : rising · 150w
+state pho_a_p1 #D1C4E9
+pho_a_p1 : rising · 135w
+state pho_a_p2 #D1C4E9
+pho_a_p2 : rising · 135w
+state pho_a_p3 #D1C4E9
+pho_a_p3 : rising · 135w
+state pho_a_p4 #D1C4E9
+pho_a_p4 : rising · 135w
+state pho_adec #FFF9C4
+pho_adec : choice · 150w
+state e_pho_a #FFCDD2
+e_pho_a : setback (negative)
+e_pho_a : "Ash of the Forgotten"
+state pho_b_p1 #D1C4E9
+pho_b_p1 : rising · 135w
+state pho_b_p2 #D1C4E9
+pho_b_p2 : rising · 135w
+state pho_b_p3 #D1C4E9
+pho_b_p3 : rising · 135w
+state pho_b_p4 #D1C4E9
+pho_b_p4 : rising · 135w
+state pho_bdec #FFF9C4
+pho_bdec : choice · 150w
+state e_pho_b #FFCDD2
+e_pho_b : setback (negative)
+e_pho_b : "The Sealed Album"
+state pho_conv #FFF9C4
+pho_conv : choice · 150w
+state pho_t_p1 #D1C4E9
+pho_t_p1 : rising · 135w
+state pho_t_p2 #D1C4E9
+pho_t_p2 : rising · 135w
+state pho_t_p3 #D1C4E9
+pho_t_p3 : rising · 135w
+state pho_t_p4 #D1C4E9
+pho_t_p4 : rising · 135w
+state pho_clue #D1C4E9
+pho_clue : rising · 150w
+state cel_entry #D1C4E9
+cel_entry : rising · 150w
+state cel_a_p1 #D1C4E9
+cel_a_p1 : rising · 135w
+state cel_a_p2 #D1C4E9
+cel_a_p2 : rising · 135w
+state cel_a_p3 #D1C4E9
+cel_a_p3 : rising · 135w
+state cel_a_p4 #D1C4E9
+cel_a_p4 : rising · 135w
+state cel_adec #FFF9C4
+cel_adec : choice · 150w
+state e_cel_a #FFCDD2
+e_cel_a : setback (negative)
+e_cel_a : "The Door Rebarred"
+state cel_b_p1 #D1C4E9
+cel_b_p1 : rising · 135w
+state cel_b_p2 #D1C4E9
+cel_b_p2 : rising · 135w
+state cel_b_p3 #D1C4E9
+cel_b_p3 : rising · 135w
+state cel_b_p4 #D1C4E9
+cel_b_p4 : rising · 135w
+state cel_bdec #FFF9C4
+cel_bdec : choice · 150w
+state e_cel_b #FFCDD2
+e_cel_b : setback (negative)
+e_cel_b : "Drained on the Stair"
+state cel_conv #FFF9C4
+cel_conv : choice · 150w
+state cel_t_p1 #D1C4E9
+cel_t_p1 : rising · 135w
+state cel_t_p2 #D1C4E9
+cel_t_p2 : rising · 135w
+state cel_t_p3 #D1C4E9
+cel_t_p3 : rising · 135w
+state cel_t_p4 #D1C4E9
+cel_t_p4 : rising · 135w
+state cel_clue #D1C4E9
+cel_clue : rising · 150w
+state n_b1 #FFE0B2
+n_b1 : climax · 175w
+state b1a_p1 #D1C4E9
+b1a_p1 : rising · 135w
+state b1a_p2 #D1C4E9
+b1a_p2 : rising · 135w
+state b1a_p3 #D1C4E9
+b1a_p3 : rising · 135w
+state b1a_dec #FFF9C4
+b1a_dec : choice · 150w
+state e_b1a #FFCDD2
+e_b1a : setback (negative)
+e_b1a : "Too Long in the Water"
+state b1at_p1 #D1C4E9
+b1at_p1 : rising · 135w
+state b1at_p2 #D1C4E9
+b1at_p2 : rising · 135w
+state b1at_p3 #D1C4E9
+b1at_p3 : rising · 135w
+state b1b_p1 #D1C4E9
+b1b_p1 : rising · 135w
+state b1b_p2 #D1C4E9
+b1b_p2 : rising · 135w
+state b1b_p3 #D1C4E9
+b1b_p3 : rising · 135w
+state b1b_dec #FFF9C4
+b1b_dec : choice · 150w
+state e_b1b #FFCDD2
+e_b1b : setback (negative)
+e_b1b : "The Wall That Failed"
+state b1bt_p1 #D1C4E9
+b1bt_p1 : rising · 135w
+state b1bt_p2 #D1C4E9
+b1bt_p2 : rising · 135w
+state b1bt_p3 #D1C4E9
+b1bt_p3 : rising · 135w
+state b1c_p1 #D1C4E9
+b1c_p1 : rising · 135w
+state b1c_p2 #D1C4E9
+b1c_p2 : rising · 135w
+state b1c_p3 #D1C4E9
+b1c_p3 : rising · 135w
+state b1c_dec #FFF9C4
+b1c_dec : choice · 150w
+state e_b1c #FFCDD2
+e_b1c : setback (negative)
+e_b1c : "Shouting to No One"
+state b1ct_p1 #D1C4E9
+b1ct_p1 : rising · 135w
+state b1ct_p2 #D1C4E9
+b1ct_p2 : rising · 135w
+state b1ct_p3 #D1C4E9
+b1ct_p3 : rising · 135w
+state n_b2 #FFE0B2
+n_b2 : climax · 175w
+state b2t_p1 #D1C4E9
+b2t_p1 : rising · 135w
+state b2t_p2 #D1C4E9
+b2t_p2 : rising · 135w
+state b2t_p3 #D1C4E9
+b2t_p3 : rising · 135w
+state b2t_d1 #FFF9C4
+b2t_d1 : choice · 150w
+state e_b2ta #FFCDD2
+e_b2ta : setback (negative)
+e_b2ta : "Keeping It All"
+state b2t_m #D1C4E9
+b2t_m : rising · 145w
+state e_b2tb #FFCDD2
+e_b2tb : setback (negative)
+e_b2tb : "A Trade Too Deep"
+state b2tt_p1 #D1C4E9
+b2tt_p1 : rising · 135w
+state b2tt_p2 #D1C4E9
+b2tt_p2 : rising · 135w
+state b2tt_p3 #D1C4E9
+b2tt_p3 : rising · 135w
+state b2k_p1 #D1C4E9
+b2k_p1 : rising · 135w
+state b2k_p2 #D1C4E9
+b2k_p2 : rising · 135w
+state b2k_p3 #D1C4E9
+b2k_p3 : rising · 135w
+state b2k_d1 #FFF9C4
+b2k_d1 : choice · 150w
+state e_b2ka #FFCDD2
+e_b2ka : setback (negative)
+e_b2ka : "No One to Anchor"
+state b2k_m #D1C4E9
+b2k_m : rising · 145w
+state e_b2kb #FFCDD2
+e_b2kb : setback (negative)
+e_b2kb : "The Knot Tied Early"
+state b2kt_p1 #D1C4E9
+b2kt_p1 : rising · 135w
+state b2kt_p2 #D1C4E9
+b2kt_p2 : rising · 135w
+state b2kt_p3 #D1C4E9
+b2kt_p3 : rising · 135w
+state n_b3 #FFE0B2
+n_b3 : climax · 180w
+state b3u_p1 #D1C4E9
+b3u_p1 : rising · 135w
+state b3u_p2 #D1C4E9
+b3u_p2 : rising · 135w
+state b3u_p3 #D1C4E9
+b3u_p3 : rising · 135w
+state b3u_d1 #FFF9C4
+b3u_d1 : choice · 150w
+state e_b3un #E0E0E0
+e_b3un : discovery (neutral)
+e_b3un : "Peace With the Quiet"
+state b3u_m #D1C4E9
+b3u_m : rising · 145w
+state e_b3us #FFCDD2
+e_b3us : setback (negative)
+e_b3us : "The Chain Snapped Early"
+state b3ut_p1 #D1C4E9
+b3ut_p1 : rising · 135w
+state b3ut_p2 #D1C4E9
+b3ut_p2 : rising · 135w
+state b3ut_p3 #D1C4E9
+b3ut_p3 : rising · 135w
+state b3v_p1 #D1C4E9
+b3v_p1 : rising · 135w
+state b3v_p2 #D1C4E9
+b3v_p2 : rising · 135w
+state b3v_p3 #D1C4E9
+b3v_p3 : rising · 135w
+state b3v_d1 #FFF9C4
+b3v_d1 : choice · 150w
+state e_b3vn #E0E0E0
+e_b3vn : discovery (neutral)
+e_b3vn : "The Name She Learned"
+state b3v_m #D1C4E9
+b3v_m : rising · 145w
+state e_b3vs #FFCDD2
+e_b3vs : setback (negative)
+e_b3vs : "The Bargain Refused Her"
+state b3vt_p1 #D1C4E9
+b3vt_p1 : rising · 135w
+state b3vt_p2 #D1C4E9
+b3vt_p2 : rising · 135w
+state b3vt_p3 #D1C4E9
+b3vt_p3 : rising · 135w
+state b3w_p1 #D1C4E9
+b3w_p1 : rising · 135w
+state b3w_p2 #D1C4E9
+b3w_p2 : rising · 135w
+state b3w_p3 #D1C4E9
+b3w_p3 : rising · 135w
+state b3w_d1 #FFF9C4
+b3w_d1 : choice · 150w
+state e_b3wn #E0E0E0
+e_b3wn : discovery (neutral)
+e_b3wn : "An Even Trade"
+state b3w_m #D1C4E9
+b3w_m : rising · 145w
+state e_b3ws #FFCDD2
+e_b3ws : setback (negative)
+e_b3ws : "A Truth Too Heavy"
+state b3wt_p1 #D1C4E9
+b3wt_p1 : rising · 135w
+state b3wt_p2 #D1C4E9
+b3wt_p2 : rising · 135w
+state b3wt_p3 #D1C4E9
+b3wt_p3 : rising · 135w
+state n_b4 #FFE0B2
+n_b4 : climax · 180w
+state fin_all_1 #D1C4E9
+fin_all_1 : rising · 155w
+state e_all_flood #FFCDD2
+e_all_flood : setback (negative)
+e_all_flood : "The Flood Unsteered"
+state fin_all_2 #FFE0B2
+fin_all_2 : climax · 160w
+state fin_share_1 #D1C4E9
+fin_share_1 : rising · 155w
+state e_share_lost #FFCDD2
+e_share_lost : setback (negative)
+e_share_lost : "The Vow Unspoken"
+state fin_share_2 #FFE0B2
+fin_share_2 : climax · 160w
+state n_b5 #FFE0B2
+n_b5 : climax · 170w
+state e_all_restore #C8E6C9
+e_all_restore : completion (positive)
+e_all_restore : "The Town Made Whole"
+state n_b5_2 #D1C4E9
+n_b5_2 : rising · 150w
+state e_all_grandmother #C8E6C9
+e_all_grandmother : success (positive)
+e_all_grandmother : "Her Grandmother Returned"
+state e_all_rest #C8E6C9
+e_all_rest : completion (positive)
+e_all_rest : "One Kept, All Restored"
+state fin_one_1 #D1C4E9
+fin_one_1 : rising · 155w
+state e_one_hesitate #FFCDD2
+e_one_hesitate : setback (negative)
+e_one_hesitate : "The Frost Came First"
+state fin_one_2 #FFE0B2
+fin_one_2 : climax · 160w
+state e_one_saved #C8E6C9
+e_one_saved : success (positive)
+e_one_saved : "One Soul Lifted"
+state e_one_content #C8E6C9
+e_one_content : success (positive)
+e_one_content : "Enough to Save One"
+state fin_trade_1 #D1C4E9
+fin_trade_1 : rising · 155w
+state e_trade_greed #FFCDD2
+e_trade_greed : setback (negative)
+e_trade_greed : "Grasping for More"
+state fin_trade_2 #FFE0B2
+fin_trade_2 : climax · 160w
+state e_trade_even #E0E0E0
+e_trade_even : discovery (neutral)
+e_trade_even : "A Fair Exchange"
+state e_trade_keeper_light #E0E0E0
+e_trade_keeper_light : discovery (neutral)
+e_trade_keeper_light : "The Yearly Keeper"
+state e_trade_photo #FFCDD2
+e_trade_photo : setback (negative)
+e_trade_photo : "One Photograph Kept"
+n_start --> rec_entry : Search the deed hall for the missing yea...
+n_start --> kee_entry : Climb Mabb Hill to the last orchard-keep...
+n_start --> pho_entry : Lay out the family photographs that keep...
+n_start --> cel_entry : Force the sealed cellar under the cider ...
+rec_entry --> rec_a_p1 : Question the frightened clerk.
+rec_entry --> rec_b_p1 : Read the oldest orchard leases.
+rec_a_p1 --> rec_a_p2 : Go on.
+rec_a_p2 --> rec_a_p3 : Go on.
+rec_a_p3 --> rec_a_p4 : Go on.
+rec_a_p4 --> rec_adec : Go on.
+rec_adec --> rec_conv : Steady him and read on together.
+rec_adec --> e_rec_a : Press him until he breaks.
+rec_b_p1 --> rec_b_p2 : Go on.
+rec_b_p2 --> rec_b_p3 : Go on.
+rec_b_p3 --> rec_b_p4 : Go on.
+rec_b_p4 --> rec_bdec : Go on.
+rec_bdec --> rec_conv : Trace the clause forward in the ledger.
+rec_bdec --> e_rec_b : Rip the founding lease free and run.
+rec_conv --> rec_t_p1 : Follow it down toward the root.
+rec_t_p1 --> rec_t_p2 : Go on.
+rec_t_p2 --> rec_t_p3 : Go on.
+rec_t_p3 --> rec_t_p4 : Go on.
+rec_t_p4 --> rec_clue : Go on.
+rec_clue --> n_b1 : Carry what you found to the cider house.
+kee_entry --> kee_a_p1 : Ask Odile what is eating the town.
+kee_entry --> kee_b_p1 : Examine the keepers knotted cord.
+kee_a_p1 --> kee_a_p2 : Go on.
+kee_a_p2 --> kee_a_p3 : Go on.
+kee_a_p3 --> kee_a_p4 : Go on.
+kee_a_p4 --> kee_adec : Go on.
+kee_adec --> kee_conv : Ask what feeding it a name would truly c...
+kee_adec --> e_kee_a : Swear to starve it and feed it nothing.
+kee_b_p1 --> kee_b_p2 : Go on.
+kee_b_p2 --> kee_b_p3 : Go on.
+kee_b_p3 --> kee_b_p4 : Go on.
+kee_b_p4 --> kee_bdec : Go on.
+kee_bdec --> kee_conv : Let Odile guide your fingers along the k...
+kee_bdec --> e_kee_b : Cut the cord to break the line.
+kee_conv --> kee_t_p1 : Follow it down toward the root.
+kee_t_p1 --> kee_t_p2 : Go on.
+kee_t_p2 --> kee_t_p3 : Go on.
+kee_t_p3 --> kee_t_p4 : Go on.
+kee_t_p4 --> kee_clue : Go on.
+kee_clue --> n_b1 : Carry what you found to the cider house.
+pho_entry --> pho_a_p1 : Try to catch the change in the act.
+pho_entry --> pho_b_p1 : Search for a photo that will not change.
+pho_a_p1 --> pho_a_p2 : Go on.
+pho_a_p2 --> pho_a_p3 : Go on.
+pho_a_p3 --> pho_a_p4 : Go on.
+pho_a_p4 --> pho_adec : Go on.
+pho_adec --> pho_conv : Photograph them and study who vanishes f...
+pho_adec --> e_pho_a : Burn the fading prints in a panic.
+pho_b_p1 --> pho_b_p2 : Go on.
+pho_b_p2 --> pho_b_p3 : Go on.
+pho_b_p3 --> pho_b_p4 : Go on.
+pho_b_p4 --> pho_bdec : Go on.
+pho_bdec --> pho_conv : Compare the orchard photos year by year.
+pho_bdec --> e_pho_b : Seal the album and walk away.
+pho_conv --> pho_t_p1 : Follow it down toward the root.
+pho_t_p1 --> pho_t_p2 : Go on.
+pho_t_p2 --> pho_t_p3 : Go on.
+pho_t_p3 --> pho_t_p4 : Go on.
+pho_t_p4 --> pho_clue : Go on.
+pho_clue --> n_b1 : Carry what you found to the cider house.
+cel_entry --> cel_a_p1 : Pry the barklocked door open.
+cel_entry --> cel_b_p1 : Test how deep the cold air goes.
+cel_a_p1 --> cel_a_p2 : Go on.
+cel_a_p2 --> cel_a_p3 : Go on.
+cel_a_p3 --> cel_a_p4 : Go on.
+cel_a_p4 --> cel_adec : Go on.
+cel_adec --> cel_conv : Descend toward the pulsing light below.
+cel_adec --> e_cel_a : Reseal the door and pretend you never ca...
+cel_b_p1 --> cel_b_p2 : Go on.
+cel_b_p2 --> cel_b_p3 : Go on.
+cel_b_p3 --> cel_b_p4 : Go on.
+cel_b_p4 --> cel_bdec : Go on.
+cel_bdec --> cel_conv : Mark the steps and go down slowly.
+cel_bdec --> e_cel_b : Retreat up the stair while you still can...
+cel_conv --> cel_t_p1 : Follow it down toward the root.
+cel_t_p1 --> cel_t_p2 : Go on.
+cel_t_p2 --> cel_t_p3 : Go on.
+cel_t_p3 --> cel_t_p4 : Go on.
+cel_t_p4 --> cel_clue : Go on.
+cel_clue --> n_b1 : Carry what you found to the cider house.
+n_b1 --> b1a_p1 : Reach into the spring to understand it.
+n_b1 --> b1b_p1 : Refuse it and try to wall the root off.
+n_b1 --> b1c_p1 : Run and call the town to witness this.
+b1a_p1 --> b1a_p2 : Go on.
+b1a_p2 --> b1a_p3 : Go on.
+b1a_p3 --> b1a_dec : Go on.
+b1a_dec --> b1at_p1 : Follow the answer down.
+b1a_dec --> e_b1a : Pull back from it.
+b1at_p1 --> b1at_p2 : Go on.
+b1at_p2 --> b1at_p3 : Go on.
+b1at_p3 --> n_b2 : Go on.
+b1b_p1 --> b1b_p2 : Go on.
+b1b_p2 --> b1b_p3 : Go on.
+b1b_p3 --> b1b_dec : Go on.
+b1b_dec --> b1bt_p1 : Follow the answer down.
+b1b_dec --> e_b1b : Pull back from it.
+b1bt_p1 --> b1bt_p2 : Go on.
+b1bt_p2 --> b1bt_p3 : Go on.
+b1bt_p3 --> n_b2 : Go on.
+b1c_p1 --> b1c_p2 : Go on.
+b1c_p2 --> b1c_p3 : Go on.
+b1c_p3 --> b1c_dec : Go on.
+b1c_dec --> b1ct_p1 : Follow the answer down.
+b1c_dec --> e_b1c : Pull back from it.
+b1ct_p1 --> b1ct_p2 : Go on.
+b1ct_p2 --> b1ct_p3 : Go on.
+b1ct_p3 --> n_b2 : Go on.
+n_b2 --> b2t_p1 : Weigh giving the root a memory of your o...
+n_b2 --> b2k_p1 : Weigh taking the empty keepers place you...
+b2t_p1 --> b2t_p2 : Go on.
+b2t_p2 --> b2t_p3 : Go on.
+b2t_p3 --> b2t_d1 : Go on.
+b2t_d1 --> b2t_m : Test the price further.
+b2t_d1 --> e_b2ta : Snatch your hand back and keep everythin...
+b2t_m --> b2tt_p1 : Follow the cost to its end.
+b2t_m --> e_b2tb : Let it take a memory you cannot spare.
+b2tt_p1 --> b2tt_p2 : Go on.
+b2tt_p2 --> b2tt_p3 : Go on.
+b2tt_p3 --> n_b3 : Go on.
+b2k_p1 --> b2k_p2 : Go on.
+b2k_p2 --> b2k_p3 : Go on.
+b2k_p3 --> b2k_d1 : Go on.
+b2k_d1 --> b2k_m : Test the price further.
+b2k_d1 --> e_b2ka : Decide that no one should have to vanish...
+b2k_m --> b2kt_p1 : Follow the cost to its end.
+b2k_m --> e_b2kb : Tie yourself to the keeper knot right no...
+b2kt_p1 --> b2kt_p2 : Go on.
+b2kt_p2 --> b2kt_p3 : Go on.
+b2kt_p3 --> n_b3 : Go on.
+n_b3 --> b3u_p1 : Ask the whole town to share the weight.
+n_b3 --> b3v_p1 : Offer the root one thing to save one sou...
+n_b3 --> b3w_p1 : Bargain only to understand, not to win.
+b3u_p1 --> b3u_p2 : Go on.
+b3u_p2 --> b3u_p3 : Go on.
+b3u_p3 --> b3u_d1 : Go on.
+b3u_d1 --> b3u_m : Take the harder path.
+b3u_d1 --> e_b3un : Let the town forgive the orchard and go ...
+b3u_m --> b3ut_p1 : Hold to the plan.
+b3u_m --> e_b3us : Begin before all the town has arrived.
+b3ut_p1 --> b3ut_p2 : Go on.
+b3ut_p2 --> b3ut_p3 : Go on.
+b3ut_p3 --> n_b4 : Go on.
+b3v_p1 --> b3v_p2 : Go on.
+b3v_p2 --> b3v_p3 : Go on.
+b3v_p3 --> b3v_d1 : Go on.
+b3v_d1 --> b3v_m : Take the harder path.
+b3v_d1 --> e_b3vn : Only ask the root to show you her face.
+b3v_m --> b3vt_p1 : Hold to the plan.
+b3v_m --> e_b3vs : Demand the root give without taking anyt...
+b3vt_p1 --> b3vt_p2 : Go on.
+b3vt_p2 --> b3vt_p3 : Go on.
+b3vt_p3 --> n_b4 : Go on.
+b3w_p1 --> b3w_p2 : Go on.
+b3w_p2 --> b3w_p3 : Go on.
+b3w_p3 --> b3w_d1 : Go on.
+b3w_d1 --> b3w_m : Take the harder path.
+b3w_d1 --> e_b3wn : Take back one year on the roots own term...
+b3w_m --> b3wt_p1 : Hold to the plan.
+b3w_m --> e_b3ws : Force the whole truth into every mind at...
+b3wt_p1 --> b3wt_p2 : Go on.
+b3wt_p2 --> b3wt_p3 : Go on.
+b3wt_p3 --> n_b4 : Go on.
+n_b4 --> fin_all_1 : Anchor the whole towns memory at once.
+n_b4 --> fin_share_1 : Bind the shared vow of the living into t...
+n_b4 --> fin_one_1 : Save the one soul you came to lift.
+n_b4 --> fin_trade_1 : Accept the bittersweet trade and let go.
+fin_all_1 --> fin_all_2 : Steer the flood of memory together.
+fin_all_1 --> e_all_flood : Falter as the current grows too strong.
+fin_all_2 --> n_b5 : Seal the new keeping into the root.
+fin_share_1 --> fin_share_2 : Bind the vow into the root.
+fin_share_1 --> e_share_lost : Lose the crowds nerve at the last moment...
+fin_share_2 --> n_b5 : Seal the shared keeping for good.
+n_b5 --> e_all_restore : Watch Alderwick wake into its whole self...
+n_b5 --> n_b5_2 : Notice the one gap the flood did not rea...
+n_b5_2 --> e_all_grandmother : Reach for your grandmother too.
+n_b5_2 --> e_all_rest : Let her rest and keep the rest whole.
+fin_one_1 --> fin_one_2 : Give the memory freely for the one.
+fin_one_1 --> e_one_hesitate : Hesitate over which memory to lose.
+fin_one_2 --> e_one_saved : Bring the one you saved up into the ligh...
+fin_one_2 --> e_one_content : Ask if you might save one more.
+fin_trade_1 --> fin_trade_2 : Accept the even trade and let go.
+fin_trade_1 --> e_trade_greed : Grasp for more than the root will give.
+fin_trade_2 --> e_trade_even : Carry the one restored year home.
+fin_trade_2 --> e_trade_keeper_light : Promise the root a visit every frost.
+fin_trade_2 --> e_trade_photo : Hold back one thing you will never give.
+e_rec_a --> [*]
+e_rec_b --> [*]
+e_kee_a --> [*]
+e_kee_b --> [*]
+e_pho_a --> [*]
+e_pho_b --> [*]
+e_cel_a --> [*]
+e_cel_b --> [*]
+e_b1a --> [*]
+e_b1b --> [*]
+e_b1c --> [*]
+e_b2ta --> [*]
+e_b2tb --> [*]
+e_b2ka --> [*]
+e_b2kb --> [*]
+e_b3un --> [*]
+e_b3us --> [*]
+e_b3vn --> [*]
+e_b3vs --> [*]
+e_b3wn --> [*]
+e_b3ws --> [*]
+e_all_flood --> [*]
+e_share_lost --> [*]
+e_all_restore --> [*]
+e_all_grandmother --> [*]
+e_all_rest --> [*]
+e_one_hesitate --> [*]
+e_one_saved --> [*]
+e_one_content --> [*]
+e_trade_greed --> [*]
+e_trade_even --> [*]
+e_trade_keeper_light --> [*]
+e_trade_photo --> [*]
+
+legend right
+  The Vanishing Orchard
+  Band 13-16 · Tier 1 · ~18 min
+  Topology: branch_and_bottleneck
+  177 nodes · 33 endings (5+ / 5n / 23-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml

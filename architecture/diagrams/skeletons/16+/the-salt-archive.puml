@@ -1,0 +1,817 @@
+@startuml the-salt-archive
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 210w
+state a0_1 #D1C4E9
+a0_1 : rising · 172w
+state a0_2 #FFF9C4
+a0_2 : choice · 186w
+state a0_3a #D1C4E9
+a0_3a : rising · 176w
+state a0_3b #FFF9C4
+a0_3b : choice · 181w
+state a0_4 #D1C4E9
+a0_4 : rising · 169w
+state a0_desc_s1 #D1C4E9
+a0_desc_s1 : rising · 168w
+state a0_desc_s2 #D1C4E9
+a0_desc_s2 : rising · 168w
+state a0_desc_s3 #D1C4E9
+a0_desc_s3 : rising · 168w
+state a0_5 #FFF9C4
+a0_5 : choice · 179w
+state a0_6 #D1C4E9
+a0_6 : rising · 173w
+state a0_e1 #FFCDD2
+a0_e1 : setback (negative)
+a0_e1 : "Lost the Thread at The Flooding Vaults"
+state a0_e2 #E0E0E0
+a0_e2 : discovery (neutral)
+a0_e2 : "A Note on The Flooding Vaults"
+state a1_1 #D1C4E9
+a1_1 : rising · 172w
+state a1_2 #FFF9C4
+a1_2 : choice · 186w
+state a1_3a #D1C4E9
+a1_3a : rising · 176w
+state a1_3b #FFF9C4
+a1_3b : choice · 181w
+state a1_4 #D1C4E9
+a1_4 : rising · 169w
+state a1_desc_s1 #D1C4E9
+a1_desc_s1 : rising · 168w
+state a1_desc_s2 #D1C4E9
+a1_desc_s2 : rising · 168w
+state a1_desc_s3 #D1C4E9
+a1_desc_s3 : rising · 168w
+state a1_5 #FFF9C4
+a1_5 : choice · 179w
+state a1_6 #D1C4E9
+a1_6 : rising · 173w
+state a1_e1 #FFCDD2
+a1_e1 : setback (negative)
+a1_e1 : "Lost the Thread at The Last Contributor"
+state a1_e2 #E0E0E0
+a1_e2 : discovery (neutral)
+a1_e2 : "A Note on The Last Contributor"
+state a2_1 #D1C4E9
+a2_1 : rising · 172w
+state a2_2 #FFF9C4
+a2_2 : choice · 186w
+state a2_3a #D1C4E9
+a2_3a : rising · 176w
+state a2_3b #FFF9C4
+a2_3b : choice · 181w
+state a2_4 #D1C4E9
+a2_4 : rising · 169w
+state a2_desc_s1 #D1C4E9
+a2_desc_s1 : rising · 168w
+state a2_desc_s2 #D1C4E9
+a2_desc_s2 : rising · 168w
+state a2_desc_s3 #D1C4E9
+a2_desc_s3 : rising · 168w
+state a2_5 #FFF9C4
+a2_5 : choice · 179w
+state a2_6 #D1C4E9
+a2_6 : rising · 173w
+state a2_e1 #FFCDD2
+a2_e1 : setback (negative)
+a2_e1 : "Lost the Thread at The Sealed Ledger"
+state a2_e2 #E0E0E0
+a2_e2 : discovery (neutral)
+a2_e2 : "A Note on The Sealed Ledger"
+state a3_1 #D1C4E9
+a3_1 : rising · 172w
+state a3_2 #FFF9C4
+a3_2 : choice · 186w
+state a3_3a #D1C4E9
+a3_3a : rising · 176w
+state a3_3b #FFF9C4
+a3_3b : choice · 181w
+state a3_4 #D1C4E9
+a3_4 : rising · 169w
+state a3_desc_s1 #D1C4E9
+a3_desc_s1 : rising · 168w
+state a3_desc_s2 #D1C4E9
+a3_desc_s2 : rising · 168w
+state a3_desc_s3 #D1C4E9
+a3_desc_s3 : rising · 168w
+state a3_5 #FFF9C4
+a3_5 : choice · 179w
+state a3_6 #D1C4E9
+a3_6 : rising · 173w
+state a3_e1 #FFCDD2
+a3_e1 : setback (negative)
+a3_e1 : "Lost the Thread at The Reclaiming Tide"
+state a3_e2 #E0E0E0
+a3_e2 : discovery (neutral)
+a3_e2 : "A Note on The Reclaiming Tide"
+state p1 #ECEFF1
+p1 : revelation · 196w
+state p1_reveal #D1C4E9
+p1_reveal : rising · 187w
+state p1_gate #FFF9C4
+p1_gate : choice · 182w
+state mA_1 #D1C4E9
+mA_1 : rising · 177w
+state mA_pad_s1 #D1C4E9
+mA_pad_s1 : rising · 170w
+state mA_pad_s2 #D1C4E9
+mA_pad_s2 : rising · 170w
+state mA_2 #FFF9C4
+mA_2 : choice · 183w
+state mA_3 #D1C4E9
+mA_3 : rising · 175w
+state mA_4 #FFF9C4
+mA_4 : choice · 180w
+state mA_5 #D1C4E9
+mA_5 : rising · 172w
+state mA_e1 #FFCDD2
+mA_e1 : setback (negative)
+mA_e1 : "Forced Back: The Vows the Town Forgot"
+state mA_e2 #E0E0E0
+mA_e2 : discovery (neutral)
+mA_e2 : "Sealed Around The Vows The Tow"
+state mB_1 #D1C4E9
+mB_1 : rising · 177w
+state mB_pad_s1 #D1C4E9
+mB_pad_s1 : rising · 170w
+state mB_pad_s2 #D1C4E9
+mB_pad_s2 : rising · 170w
+state mB_2 #FFF9C4
+mB_2 : choice · 183w
+state mB_3 #D1C4E9
+mB_3 : rising · 175w
+state mB_4 #FFF9C4
+mB_4 : choice · 180w
+state mB_5 #D1C4E9
+mB_5 : rising · 172w
+state mB_e1 #FFCDD2
+mB_e1 : setback (negative)
+mB_e1 : "Forced Back: The Pages She Never Shared"
+state mB_e2 #E0E0E0
+mB_e2 : discovery (neutral)
+mB_e2 : "Sealed Around The Pages She Ne"
+state mC_1 #D1C4E9
+mC_1 : rising · 177w
+state mC_pad_s1 #D1C4E9
+mC_pad_s1 : rising · 170w
+state mC_pad_s2 #D1C4E9
+mC_pad_s2 : rising · 170w
+state mC_2 #FFF9C4
+mC_2 : choice · 183w
+state mC_3 #D1C4E9
+mC_3 : rising · 175w
+state mC_4 #FFF9C4
+mC_4 : choice · 180w
+state mC_5 #D1C4E9
+mC_5 : rising · 172w
+state mC_e1 #FFCDD2
+mC_e1 : setback (negative)
+mC_e1 : "Forced Back: The Names Saltmere Erased"
+state mC_e2 #E0E0E0
+mC_e2 : discovery (neutral)
+mC_e2 : "Sealed Around The Names Saltme"
+state mD_1 #D1C4E9
+mD_1 : rising · 177w
+state mD_pad_s1 #D1C4E9
+mD_pad_s1 : rising · 170w
+state mD_pad_s2 #D1C4E9
+mD_pad_s2 : rising · 170w
+state mD_2 #FFF9C4
+mD_2 : choice · 183w
+state mD_3 #D1C4E9
+mD_3 : rising · 175w
+state mD_4 #FFF9C4
+mD_4 : choice · 180w
+state mD_5 #D1C4E9
+mD_5 : rising · 172w
+state mD_e1 #FFCDD2
+mD_e1 : setback (negative)
+mD_e1 : "Forced Back: The Births the Town Denied"
+state mD_e2 #E0E0E0
+mD_e2 : discovery (neutral)
+mD_e2 : "Sealed Around The Births The T"
+state p2 #ECEFF1
+p2 : revelation · 200w
+state p2_reveal #D1C4E9
+p2_reveal : rising · 188w
+state p2_gate #FFF9C4
+p2_gate : choice · 179w
+state nA_1 #D1C4E9
+nA_1 : rising · 178w
+state nA_pad_s1 #D1C4E9
+nA_pad_s1 : rising · 171w
+state nA_pad_s2 #D1C4E9
+nA_pad_s2 : rising · 171w
+state nA_pad_s3 #D1C4E9
+nA_pad_s3 : rising · 171w
+state nA_2 #FFF9C4
+nA_2 : choice · 182w
+state nA_3 #D1C4E9
+nA_3 : rising · 176w
+state nA_4 #FFF9C4
+nA_4 : choice · 177w
+state nA_5 #D1C4E9
+nA_5 : rising · 171w
+state nA_e1 #FFCDD2
+nA_e1 : setback (negative)
+nA_e1 : "Kept Distance: What Elias Verri"
+state nA_e2 #E0E0E0
+nA_e2 : discovery (neutral)
+nA_e2 : "Refused the Page: What Elias Ver"
+state nB_1 #D1C4E9
+nB_1 : rising · 178w
+state nB_pad_s1 #D1C4E9
+nB_pad_s1 : rising · 171w
+state nB_pad_s2 #D1C4E9
+nB_pad_s2 : rising · 171w
+state nB_pad_s3 #D1C4E9
+nB_pad_s3 : rising · 171w
+state nB_2 #FFF9C4
+nB_2 : choice · 182w
+state nB_3 #D1C4E9
+nB_3 : rising · 176w
+state nB_4 #FFF9C4
+nB_4 : choice · 177w
+state nB_5 #D1C4E9
+nB_5 : rising · 171w
+state nB_e1 #FFCDD2
+nB_e1 : setback (negative)
+nB_e1 : "Kept Distance: The Last Voice T"
+state nB_e2 #E0E0E0
+nB_e2 : discovery (neutral)
+nB_e2 : "Refused the Page: The Last Voice"
+state nC_1 #D1C4E9
+nC_1 : rising · 178w
+state nC_pad_s1 #D1C4E9
+nC_pad_s1 : rising · 171w
+state nC_pad_s2 #D1C4E9
+nC_pad_s2 : rising · 171w
+state nC_pad_s3 #D1C4E9
+nC_pad_s3 : rising · 171w
+state nC_2 #FFF9C4
+nC_2 : choice · 182w
+state nC_3 #D1C4E9
+nC_3 : rising · 176w
+state nC_4 #FFF9C4
+nC_4 : choice · 177w
+state nC_5 #D1C4E9
+nC_5 : rising · 171w
+state nC_e1 #FFCDD2
+nC_e1 : setback (negative)
+nC_e1 : "Kept Distance: What the Tide Had Written"
+state nC_e2 #E0E0E0
+nC_e2 : discovery (neutral)
+nC_e2 : "Refused the Page: What the Tide Wrote"
+state p3 #ECEFF1
+p3 : revelation · 202w
+state p3_reveal #D1C4E9
+p3_reveal : rising · 189w
+state p3_name #D1C4E9
+p3_name : rising · 185w
+state p3_gate #FFF9C4
+p3_gate : choice · 192w
+state r1_dsc_s1 #D1C4E9
+r1_dsc_s1 : rising · 174w
+state r1_dsc_s2 #D1C4E9
+r1_dsc_s2 : rising · 174w
+state r1_dsc_s3 #D1C4E9
+r1_dsc_s3 : rising · 174w
+state r1_dsc_s4 #D1C4E9
+r1_dsc_s4 : rising · 174w
+state r1_1 #D1C4E9
+r1_1 : rising · 181w
+state r1_2 #FFF9C4
+r1_2 : choice · 184w
+state r1_3a #FFF9C4
+r1_3a : choice · 178w
+state r1_3b #FFF9C4
+r1_3b : choice · 179w
+state r1_aft_s1 #D1C4E9
+r1_aft_s1 : rising · 173w
+state r1_aft_s2 #D1C4E9
+r1_aft_s2 : rising · 173w
+state r1_aft_s3 #D1C4E9
+r1_aft_s3 : rising · 173w
+state r1_4 #D1C4E9
+r1_4 : rising · 176w
+state r1_5 #FFF9C4
+r1_5 : choice · 182w
+state r1_6 #FFF9C4
+r1_6 : choice · 177w
+state r1_7 #FFF9C4
+r1_7 : choice · 181w
+state r1_8 #FFF9C4
+r1_8 : choice · 178w
+state r1_9 #FFF9C4
+r1_9 : choice · 176w
+state r1_ea #C8E6C9
+r1_ea : success (positive)
+r1_ea : "Bore It Alone and the Town Held"
+state r1_eb #C8E6C9
+r1_eb : completion (positive)
+r1_eb : "Broke From the Founder and Made It New"
+state r1_ec #C8E6C9
+r1_ec : success (positive)
+r1_ec : "The Town Remembers and Is Not Broken"
+state r1_ed #C8E6C9
+r1_ed : completion (positive)
+r1_ed : "Held the Line and Kept the Vault"
+state r1_ee #C8E6C9
+r1_ee : success (positive)
+r1_ee : "Carried the Truth Into the Storm"
+state r1_ef #E0E0E0
+r1_ef : discovery (neutral)
+r1_ef : "Sealed the Truth for a Kinder Year"
+state r1_eg #C8E6C9
+r1_eg : completion (positive)
+r1_eg : "Signed It True and the Water Fell"
+state r1_eh #C8E6C9
+r1_eh : success (positive)
+r1_eh : "Left It Unclaimed and the Town Chose"
+state r2_dsc_s1 #D1C4E9
+r2_dsc_s1 : rising · 174w
+state r2_dsc_s2 #D1C4E9
+r2_dsc_s2 : rising · 174w
+state r2_dsc_s3 #D1C4E9
+r2_dsc_s3 : rising · 174w
+state r2_dsc_s4 #D1C4E9
+r2_dsc_s4 : rising · 174w
+state r2_1 #D1C4E9
+r2_1 : rising · 181w
+state r2_2 #FFF9C4
+r2_2 : choice · 184w
+state r2_3a #FFF9C4
+r2_3a : choice · 178w
+state r2_3b #FFF9C4
+r2_3b : choice · 179w
+state r2_aft_s1 #D1C4E9
+r2_aft_s1 : rising · 173w
+state r2_aft_s2 #D1C4E9
+r2_aft_s2 : rising · 173w
+state r2_aft_s3 #D1C4E9
+r2_aft_s3 : rising · 173w
+state r2_4 #D1C4E9
+r2_4 : rising · 176w
+state r2_5 #FFF9C4
+r2_5 : choice · 182w
+state r2_6 #FFF9C4
+r2_6 : choice · 177w
+state r2_7 #FFF9C4
+r2_7 : choice · 181w
+state r2_8 #FFF9C4
+r2_8 : choice · 178w
+state r2_9 #FFF9C4
+r2_9 : choice · 176w
+state r2_ea #C8E6C9
+r2_ea : completion (positive)
+r2_ea : "Saved the Ledger Alone"
+state r2_eb #C8E6C9
+r2_eb : success (positive)
+r2_eb : "Broke the Seal and Carried It Out"
+state r2_ec #C8E6C9
+r2_ec : completion (positive)
+r2_ec : "Spoke It and Saved the Page"
+state r2_ed #E0E0E0
+r2_ed : discovery (neutral)
+r2_ed : "Held the Line and Kept the One Book"
+state r2_ee #C8E6C9
+r2_ee : completion (positive)
+r2_ee : "Ran the Ledger Through the Storm"
+state r2_ef #FFCDD2
+r2_ef : setback (negative)
+r2_ef : "Sealed It and Lost the Rest to Salt"
+state r2_eg #C8E6C9
+r2_eg : completion (positive)
+r2_eg : "Signed and Saved the Founder Hand"
+state r2_eh #E0E0E0
+r2_eh : discovery (neutral)
+r2_eh : "Left It Unsigned but Safe and Dry"
+state r3_dsc_s1 #D1C4E9
+r3_dsc_s1 : rising · 174w
+state r3_dsc_s2 #D1C4E9
+r3_dsc_s2 : rising · 174w
+state r3_dsc_s3 #D1C4E9
+r3_dsc_s3 : rising · 174w
+state r3_dsc_s4 #D1C4E9
+r3_dsc_s4 : rising · 174w
+state r3_1 #D1C4E9
+r3_1 : rising · 181w
+state r3_2 #FFF9C4
+r3_2 : choice · 184w
+state r3_3a #FFF9C4
+r3_3a : choice · 178w
+state r3_3b #FFF9C4
+r3_3b : choice · 179w
+state r3_aft_s1 #D1C4E9
+r3_aft_s1 : rising · 173w
+state r3_aft_s2 #D1C4E9
+r3_aft_s2 : rising · 173w
+state r3_aft_s3 #D1C4E9
+r3_aft_s3 : rising · 173w
+state r3_4 #D1C4E9
+r3_4 : rising · 176w
+state r3_5 #FFF9C4
+r3_5 : choice · 182w
+state r3_6 #FFF9C4
+r3_6 : choice · 177w
+state r3_7 #FFF9C4
+r3_7 : choice · 181w
+state r3_8 #FFF9C4
+r3_8 : choice · 178w
+state r3_9 #FFF9C4
+r3_9 : choice · 176w
+state r3_ea #C8E6C9
+r3_ea : completion (positive)
+r3_ea : "Let the Low Vaults Go in Peace"
+state r3_eb #E0E0E0
+r3_eb : discovery (neutral)
+r3_eb : "Broke From the Founder’s Fear of Loss"
+state r3_ec #E0E0E0
+r3_ec : discovery (neutral)
+r3_ec : "Told the Town and Let It Grieve"
+state r3_ed #C8E6C9
+r3_ed : completion (positive)
+r3_ed : "Held Vigil While the Water Rose"
+state r3_ee #E0E0E0
+r3_ee : discovery (neutral)
+r3_ee : "Walked It Out Into the Weather"
+state r3_ef #FFCDD2
+r3_ef : setback (negative)
+r3_ef : "Sealed It and Felt the Old Dread"
+state r3_eg #C8E6C9
+r3_eg : completion (positive)
+r3_eg : "Named the Loss and Made It Bearable"
+state r3_eh #E0E0E0
+r3_eh : discovery (neutral)
+r3_eh : "Left No Name on the Empty Shelf"
+state r4_dsc_s1 #D1C4E9
+r4_dsc_s1 : rising · 174w
+state r4_dsc_s2 #D1C4E9
+r4_dsc_s2 : rising · 174w
+state r4_dsc_s3 #D1C4E9
+r4_dsc_s3 : rising · 174w
+state r4_dsc_s4 #D1C4E9
+r4_dsc_s4 : rising · 174w
+state r4_1 #D1C4E9
+r4_1 : rising · 181w
+state r4_2 #FFF9C4
+r4_2 : choice · 184w
+state r4_3a #FFF9C4
+r4_3a : choice · 178w
+state r4_3b #FFF9C4
+r4_3b : choice · 179w
+state r4_aft_s1 #D1C4E9
+r4_aft_s1 : rising · 173w
+state r4_aft_s2 #D1C4E9
+r4_aft_s2 : rising · 173w
+state r4_aft_s3 #D1C4E9
+r4_aft_s3 : rising · 173w
+state r4_4 #D1C4E9
+r4_4 : rising · 176w
+state r4_5 #FFF9C4
+r4_5 : choice · 182w
+state r4_6 #FFF9C4
+r4_6 : choice · 177w
+state r4_7 #FFF9C4
+r4_7 : choice · 181w
+state r4_8 #FFF9C4
+r4_8 : choice · 178w
+state r4_9 #FFF9C4
+r4_9 : choice · 176w
+state r4_ea #FFCDD2
+r4_ea : setback (negative)
+r4_ea : "Alone in the Dark, One Page Saved"
+state r4_eb #E0E0E0
+r4_eb : discovery (neutral)
+r4_eb : "Went Off the Founder’s Map and Kept a Scrap"
+state r4_ec #FFCDD2
+r4_ec : setback (negative)
+r4_ec : "Spoke to No One and Saved the Corner"
+state r4_ed #FFCDD2
+r4_ed : setback (negative)
+r4_ed : "Held the Line Till the Line Gave"
+state r4_ee #E0E0E0
+r4_ee : discovery (neutral)
+r4_ee : "Carried One Page Into the Rain"
+state r4_ef #FFCDD2
+r4_ef : setback (negative)
+r4_ef : "Sealed a Vault That Was Already Full"
+state r4_eg #FFCDD2
+r4_eg : setback (negative)
+r4_eg : "Signed for a Page and the Rest Was Sea"
+state r4_eh #E0E0E0
+r4_eh : discovery (neutral)
+r4_eh : "Unsigned, Unsettled, but Safe by Dawn"
+n_start --> a0_1 : Catalogue the flooding vaults.
+n_start --> a1_1 : Find the last living contributor.
+n_start --> a2_1 : Open the founder sealed ledger.
+n_start --> a3_1 : Go out and read the sea.
+a0_1 --> a0_2 : Go on.
+a0_2 --> a0_3a : Press in directly.
+a0_2 --> a0_3b : Hang back and watch.
+a0_3a --> a0_4 : Go on.
+a0_3b --> a0_4 : Hold the thread and go on.
+a0_3b --> a0_e1 : Let the cold take you.
+a0_4 --> a0_5 : Go on.
+a0_desc_s1 --> a0_desc_s2 : Go on.
+a0_desc_s2 --> a0_desc_s3 : Go on.
+a0_desc_s3 --> a0_6 : Go on.
+a0_5 --> a0_desc_s1 : Descend toward the pivot.
+a0_5 --> a0_e2 : Record only the loss.
+a0_6 --> p1 : Go on.
+a1_1 --> a1_2 : Go on.
+a1_2 --> a1_3a : Press in directly.
+a1_2 --> a1_3b : Hang back and watch.
+a1_3a --> a1_4 : Go on.
+a1_3b --> a1_4 : Hold the thread and go on.
+a1_3b --> a1_e1 : Let the cold take you.
+a1_4 --> a1_5 : Go on.
+a1_desc_s1 --> a1_desc_s2 : Go on.
+a1_desc_s2 --> a1_desc_s3 : Go on.
+a1_desc_s3 --> a1_6 : Go on.
+a1_5 --> a1_desc_s1 : Descend toward the pivot.
+a1_5 --> a1_e2 : Record only the loss.
+a1_6 --> p1 : Go on.
+a2_1 --> a2_2 : Go on.
+a2_2 --> a2_3a : Press in directly.
+a2_2 --> a2_3b : Hang back and watch.
+a2_3a --> a2_4 : Go on.
+a2_3b --> a2_4 : Hold the thread and go on.
+a2_3b --> a2_e1 : Let the cold take you.
+a2_4 --> a2_5 : Go on.
+a2_desc_s1 --> a2_desc_s2 : Go on.
+a2_desc_s2 --> a2_desc_s3 : Go on.
+a2_desc_s3 --> a2_6 : Go on.
+a2_5 --> a2_desc_s1 : Descend toward the pivot.
+a2_5 --> a2_e2 : Record only the loss.
+a2_6 --> p1 : Go on.
+a3_1 --> a3_2 : Go on.
+a3_2 --> a3_3a : Press in directly.
+a3_2 --> a3_3b : Hang back and watch.
+a3_3a --> a3_4 : Go on.
+a3_3b --> a3_4 : Hold the thread and go on.
+a3_3b --> a3_e1 : Let the cold take you.
+a3_4 --> a3_5 : Go on.
+a3_desc_s1 --> a3_desc_s2 : Go on.
+a3_desc_s2 --> a3_desc_s3 : Go on.
+a3_desc_s3 --> a3_6 : Go on.
+a3_5 --> a3_desc_s1 : Descend toward the pivot.
+a3_5 --> a3_e2 : Record only the loss.
+a3_6 --> p1 : Go on.
+p1 --> p1_reveal : Go on.
+p1_reveal --> p1_gate : Go on.
+p1_gate --> mA_1 : Follow the drowned marriage records.
+p1_gate --> mB_1 : Follow the withheld pages.
+p1_gate --> mC_1 : Follow the struck muster rolls.
+p1_gate --> mD_1 : Follow the erased baptismal register.
+mA_1 --> mA_2 : Go on.
+mA_pad_s1 --> mA_pad_s2 : Go on.
+mA_pad_s2 --> mA_3 : Go on.
+mA_2 --> mA_pad_s1 : Read what the water wrote.
+mA_2 --> mA_e1 : Dry it and force it back.
+mA_3 --> mA_4 : Go on.
+mA_4 --> mA_5 : Carry the contradiction on.
+mA_4 --> mA_e2 : Seal the vault and stop.
+mA_5 --> p2 : Go on.
+mB_1 --> mB_2 : Go on.
+mB_pad_s1 --> mB_pad_s2 : Go on.
+mB_pad_s2 --> mB_3 : Go on.
+mB_2 --> mB_pad_s1 : Read what the water wrote.
+mB_2 --> mB_e1 : Dry it and force it back.
+mB_3 --> mB_4 : Go on.
+mB_4 --> mB_5 : Carry the contradiction on.
+mB_4 --> mB_e2 : Seal the vault and stop.
+mB_5 --> p2 : Go on.
+mC_1 --> mC_2 : Go on.
+mC_pad_s1 --> mC_pad_s2 : Go on.
+mC_pad_s2 --> mC_3 : Go on.
+mC_2 --> mC_pad_s1 : Read what the water wrote.
+mC_2 --> mC_e1 : Dry it and force it back.
+mC_3 --> mC_4 : Go on.
+mC_4 --> mC_5 : Carry the contradiction on.
+mC_4 --> mC_e2 : Seal the vault and stop.
+mC_5 --> p2 : Go on.
+mD_1 --> mD_2 : Go on.
+mD_pad_s1 --> mD_pad_s2 : Go on.
+mD_pad_s2 --> mD_3 : Go on.
+mD_2 --> mD_pad_s1 : Read what the water wrote.
+mD_2 --> mD_e1 : Dry it and force it back.
+mD_3 --> mD_4 : Go on.
+mD_4 --> mD_5 : Carry the contradiction on.
+mD_4 --> mD_e2 : Seal the vault and stop.
+mD_5 --> p2 : Go on.
+p2 --> p2_reveal : Go on.
+p2_reveal --> p2_gate : Go on.
+p2_gate --> nA_1 : Read the founder confession.
+p2_gate --> nB_1 : Sit with the last contributor.
+p2_gate --> nC_1 : Read what the sea writes back.
+nA_1 --> nA_2 : Go on.
+nA_pad_s1 --> nA_pad_s2 : Go on.
+nA_pad_s2 --> nA_pad_s3 : Go on.
+nA_pad_s3 --> nA_3 : Go on.
+nA_2 --> nA_pad_s1 : Offer something true in return.
+nA_2 --> nA_e1 : Keep your distance.
+nA_3 --> nA_4 : Go on.
+nA_4 --> nA_5 : Carry the page to the pivot.
+nA_4 --> nA_e2 : Refuse the page.
+nA_5 --> p3 : Go on.
+nB_1 --> nB_2 : Go on.
+nB_pad_s1 --> nB_pad_s2 : Go on.
+nB_pad_s2 --> nB_pad_s3 : Go on.
+nB_pad_s3 --> nB_3 : Go on.
+nB_2 --> nB_pad_s1 : Offer something true in return.
+nB_2 --> nB_e1 : Keep your distance.
+nB_3 --> nB_4 : Go on.
+nB_4 --> nB_5 : Carry the page to the pivot.
+nB_4 --> nB_e2 : Refuse the page.
+nB_5 --> p3 : Go on.
+nC_1 --> nC_2 : Go on.
+nC_pad_s1 --> nC_pad_s2 : Go on.
+nC_pad_s2 --> nC_pad_s3 : Go on.
+nC_pad_s3 --> nC_3 : Go on.
+nC_2 --> nC_pad_s1 : Offer something true in return.
+nC_2 --> nC_e1 : Keep your distance.
+nC_3 --> nC_4 : Go on.
+nC_4 --> nC_5 : Carry the page to the pivot.
+nC_4 --> nC_e2 : Refuse the page.
+nC_5 --> p3 : Go on.
+p3 --> p3_reveal : Go on.
+p3_reveal --> p3_name : Go on.
+p3_name --> p3_gate : Go on.
+p3_gate --> r1_1 : Reconcile the town with what it forgot.
+p3_gate --> r2_1 : Save the one irreplaceable thing.
+p3_gate --> r3_1 : Make peace with impermanence.
+p3_gate --> r4_1 : Salvage what you can and let the rest go...
+r1_dsc_s1 --> r1_dsc_s2 : Go on.
+r1_dsc_s2 --> r1_dsc_s3 : Go on.
+r1_dsc_s3 --> r1_dsc_s4 : Go on.
+r1_dsc_s4 --> r1_2 : Go on.
+r1_1 --> r1_dsc_s1 : Go on.
+r1_2 --> r1_3a : Work gently, fragile first.
+r1_2 --> r1_3b : Take the whole weight at once.
+r1_3a --> r1_4 : Trust Nan with half.
+r1_3a --> r1_ea : Bear it alone.
+r1_3b --> r1_4 : Follow the founder method.
+r1_3b --> r1_eb : Break from the founder.
+r1_aft_s1 --> r1_aft_s2 : Go on.
+r1_aft_s2 --> r1_aft_s3 : Go on.
+r1_aft_s3 --> r1_5 : Go on.
+r1_4 --> r1_aft_s1 : Go on.
+r1_5 --> r1_6 : Put the town first.
+r1_5 --> r1_7 : Put the one thing first.
+r1_6 --> r1_ec : Speak the forgotten thing aloud.
+r1_6 --> r1_ed : Keep it and hold the line.
+r1_7 --> r1_ee : Carry it out into the storm.
+r1_7 --> r1_8 : Seal it high for the morning.
+r1_8 --> r1_ef : Leave it for the salvage crew.
+r1_8 --> r1_9 : Settle the record yourself.
+r1_9 --> r1_eg : Sign it in your name.
+r1_9 --> r1_eh : Leave it unclaimed.
+r2_dsc_s1 --> r2_dsc_s2 : Go on.
+r2_dsc_s2 --> r2_dsc_s3 : Go on.
+r2_dsc_s3 --> r2_dsc_s4 : Go on.
+r2_dsc_s4 --> r2_2 : Go on.
+r2_1 --> r2_dsc_s1 : Go on.
+r2_2 --> r2_3a : Work gently, fragile first.
+r2_2 --> r2_3b : Take the whole weight at once.
+r2_3a --> r2_4 : Trust Nan with half.
+r2_3a --> r2_ea : Bear it alone.
+r2_3b --> r2_4 : Follow the founder method.
+r2_3b --> r2_eb : Break from the founder.
+r2_aft_s1 --> r2_aft_s2 : Go on.
+r2_aft_s2 --> r2_aft_s3 : Go on.
+r2_aft_s3 --> r2_5 : Go on.
+r2_4 --> r2_aft_s1 : Go on.
+r2_5 --> r2_6 : Put the town first.
+r2_5 --> r2_7 : Put the one thing first.
+r2_6 --> r2_ec : Speak the forgotten thing aloud.
+r2_6 --> r2_ed : Keep it and hold the line.
+r2_7 --> r2_ee : Carry it out into the storm.
+r2_7 --> r2_8 : Seal it high for the morning.
+r2_8 --> r2_ef : Leave it for the salvage crew.
+r2_8 --> r2_9 : Settle the record yourself.
+r2_9 --> r2_eg : Sign it in your name.
+r2_9 --> r2_eh : Leave it unclaimed.
+r3_dsc_s1 --> r3_dsc_s2 : Go on.
+r3_dsc_s2 --> r3_dsc_s3 : Go on.
+r3_dsc_s3 --> r3_dsc_s4 : Go on.
+r3_dsc_s4 --> r3_2 : Go on.
+r3_1 --> r3_dsc_s1 : Go on.
+r3_2 --> r3_3a : Work gently, fragile first.
+r3_2 --> r3_3b : Take the whole weight at once.
+r3_3a --> r3_4 : Trust Nan with half.
+r3_3a --> r3_ea : Bear it alone.
+r3_3b --> r3_4 : Follow the founder method.
+r3_3b --> r3_eb : Break from the founder.
+r3_aft_s1 --> r3_aft_s2 : Go on.
+r3_aft_s2 --> r3_aft_s3 : Go on.
+r3_aft_s3 --> r3_5 : Go on.
+r3_4 --> r3_aft_s1 : Go on.
+r3_5 --> r3_6 : Put the town first.
+r3_5 --> r3_7 : Put the one thing first.
+r3_6 --> r3_ec : Speak the forgotten thing aloud.
+r3_6 --> r3_ed : Keep it and hold the line.
+r3_7 --> r3_ee : Carry it out into the storm.
+r3_7 --> r3_8 : Seal it high for the morning.
+r3_8 --> r3_ef : Leave it for the salvage crew.
+r3_8 --> r3_9 : Settle the record yourself.
+r3_9 --> r3_eg : Sign it in your name.
+r3_9 --> r3_eh : Leave it unclaimed.
+r4_dsc_s1 --> r4_dsc_s2 : Go on.
+r4_dsc_s2 --> r4_dsc_s3 : Go on.
+r4_dsc_s3 --> r4_dsc_s4 : Go on.
+r4_dsc_s4 --> r4_2 : Go on.
+r4_1 --> r4_dsc_s1 : Go on.
+r4_2 --> r4_3a : Work gently, fragile first.
+r4_2 --> r4_3b : Take the whole weight at once.
+r4_3a --> r4_4 : Trust Nan with half.
+r4_3a --> r4_ea : Bear it alone.
+r4_3b --> r4_4 : Follow the founder method.
+r4_3b --> r4_eb : Break from the founder.
+r4_aft_s1 --> r4_aft_s2 : Go on.
+r4_aft_s2 --> r4_aft_s3 : Go on.
+r4_aft_s3 --> r4_5 : Go on.
+r4_4 --> r4_aft_s1 : Go on.
+r4_5 --> r4_6 : Put the town first.
+r4_5 --> r4_7 : Put the one thing first.
+r4_6 --> r4_ec : Speak the forgotten thing aloud.
+r4_6 --> r4_ed : Keep it and hold the line.
+r4_7 --> r4_ee : Carry it out into the storm.
+r4_7 --> r4_8 : Seal it high for the morning.
+r4_8 --> r4_ef : Leave it for the salvage crew.
+r4_8 --> r4_9 : Settle the record yourself.
+r4_9 --> r4_eg : Sign it in your name.
+r4_9 --> r4_eh : Leave it unclaimed.
+a0_e1 --> [*]
+a0_e2 --> [*]
+a1_e1 --> [*]
+a1_e2 --> [*]
+a2_e1 --> [*]
+a2_e2 --> [*]
+a3_e1 --> [*]
+a3_e2 --> [*]
+mA_e1 --> [*]
+mA_e2 --> [*]
+mB_e1 --> [*]
+mB_e2 --> [*]
+mC_e1 --> [*]
+mC_e2 --> [*]
+mD_e1 --> [*]
+mD_e2 --> [*]
+nA_e1 --> [*]
+nA_e2 --> [*]
+nB_e1 --> [*]
+nB_e2 --> [*]
+nC_e1 --> [*]
+nC_e2 --> [*]
+r1_ea --> [*]
+r1_eb --> [*]
+r1_ec --> [*]
+r1_ed --> [*]
+r1_ee --> [*]
+r1_ef --> [*]
+r1_eg --> [*]
+r1_eh --> [*]
+r2_ea --> [*]
+r2_eb --> [*]
+r2_ec --> [*]
+r2_ed --> [*]
+r2_ee --> [*]
+r2_ef --> [*]
+r2_eg --> [*]
+r2_eh --> [*]
+r3_ea --> [*]
+r3_eb --> [*]
+r3_ec --> [*]
+r3_ed --> [*]
+r3_ee --> [*]
+r3_ef --> [*]
+r3_eg --> [*]
+r3_eh --> [*]
+r4_ea --> [*]
+r4_eb --> [*]
+r4_ec --> [*]
+r4_ed --> [*]
+r4_ee --> [*]
+r4_ef --> [*]
+r4_eg --> [*]
+r4_eh --> [*]
+
+legend right
+  The Salt Archive
+  Band 16+ · Tier 1 · ~24 min
+  Topology: branch_and_bottleneck
+  225 nodes · 54 endings (15+ / 21n / 18-)
+  Production-eligible
+  Scale: long · prose
+endlegend
+@enduml
