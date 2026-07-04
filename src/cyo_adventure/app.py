@@ -23,6 +23,7 @@ from cyo_adventure.api import (
     profiles,
     ratings,
     reading,
+    story_requests,
 )
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
@@ -137,6 +138,7 @@ def create_app() -> FastAPI:
     app.include_router(assignments.router)
     app.include_router(approval.router)
     app.include_router(me.router)
+    app.include_router(story_requests.router)
     return app
 
 

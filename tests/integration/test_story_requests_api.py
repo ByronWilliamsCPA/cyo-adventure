@@ -1,8 +1,307 @@
-"""Integration tests for the child story-request endpoints.
-
-Scaffolded in Task B6 so the backend gate command can reference this path;
-the guardian/admin approve, decline, create, and list endpoints (and their
-tests) land in Task B7, which populates this file.
-"""
+"""Integration tests for the child story-request endpoints."""
 
 from __future__ import annotations
+
+import uuid
+from typing import TYPE_CHECKING
+
+import pytest
+
+from cyo_adventure.db.models import Concept, StoryRequest
+from tests.integration.conftest import Seed, auth
+
+if TYPE_CHECKING:
+    from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+pytestmark = pytest.mark.asyncio
+
+_CREATE = "/api/v1/story-requests"
+
+
+async def test_guardian_creates_pending_request(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian submits a request for a family profile; it is pending."""
+    res = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a brave fox"},
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 201, res.text
+    body = res.json()
+    assert body["status"] == "pending"
+
+
+async def test_child_creates_own_profile_request(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A child token may submit a request for its own profile (own-profile-only)."""
+    res = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a curious cat",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert res.status_code == 201, res.text
+    assert res.json()["status"] == "pending"
+
+
+async def test_create_rejects_cross_family_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian cannot submit for another family's profile (403)."""
+    res = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "a brave fox",
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 403
+
+
+async def test_admin_cannot_create_request(client: AsyncClient, seed: Seed) -> None:
+    """An admin has no profiles of its own, so it cannot submit a request (403)."""
+    res = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a brave fox"},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 403
+
+
+async def test_create_blocks_pii(client: AsyncClient, seed: Seed) -> None:
+    """A request naming the real child (Reader A) is blocked, not pending."""
+    res = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a story about Reader A",
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 201
+    assert res.json()["status"] == "blocked"
+
+
+async def test_pending_cap_returns_409(client: AsyncClient, seed: Seed) -> None:
+    """The sixth pending request for a profile is refused with 409."""
+    for _ in range(5):
+        ok = await client.post(
+            _CREATE,
+            json={"profile_id": str(seed.child_profile_id), "request_text": "idea"},
+            headers=auth(seed.guardian_token),
+        )
+        assert ok.status_code == 201
+    over = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "one more"},
+        headers=auth(seed.guardian_token),
+    )
+    assert over.status_code == 409
+
+
+async def test_guardian_lists_family_requests(client: AsyncClient, seed: Seed) -> None:
+    """The guardian sees its family's pending requests, filterable by profile."""
+    await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    res = await client.get(
+        f"{_CREATE}?status=pending&profile_id={seed.child_profile_id}",
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 200
+    assert len(res.json()["requests"]) == 1
+
+
+async def test_list_rejects_inaccessible_profile_filter(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian filtering by another family's profile id gets 403."""
+    res = await client.get(
+        f"{_CREATE}?profile_id={seed.other_child_profile_id}",
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 403
+
+
+async def test_list_rejects_invalid_status(client: AsyncClient, seed: Seed) -> None:
+    """An unrecognized status filter value is a 422, not a silent empty list."""
+    res = await client.get(f"{_CREATE}?status=nope", headers=auth(seed.guardian_token))
+    assert res.status_code == 422
+
+
+async def test_admin_approve_creates_job(client: AsyncClient, seed: Seed) -> None:
+    """An admin approves a pending request; a concept + job are created."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+    )
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["status"] == "approved"
+    assert body["concept_id"]
+    assert body["job_id"]
+
+
+async def test_admin_approve_is_global_across_families(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin (family A) can approve a request from family B (global scope)."""
+    created = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "a kind whale",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert created.status_code == 201, created.text
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["status"] == "approved"
+
+
+async def test_approve_stamps_reviewer_and_builds_brief_from_stored_text(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Approval stamps status/reviewed_by/reviewed_at and the brief premise is
+    the request's own stored text (not some other source)."""
+    request_text = "a story about a lighthouse keeper and a curious seal"
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": request_text},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+    )
+    assert res.status_code == 200, res.text
+    concept_id = res.json()["concept_id"]
+
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(req_id))
+        assert row is not None
+        assert row.status == "approved"
+        assert row.reviewed_by == seed.admin_user_id
+        assert row.reviewed_at is not None
+        assert str(row.concept_id) == concept_id
+
+        concept = await session.get(Concept, uuid.UUID(concept_id))
+        assert concept is not None
+        assert concept.brief["premise"] == request_text
+
+
+async def test_approve_cross_family_is_404(client: AsyncClient, seed: Seed) -> None:
+    """A guardian approving another family's request gets 404 (existence hiding)."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.other_guardian_token)
+    )
+    assert res.status_code == 404
+
+
+async def test_child_cannot_approve(client: AsyncClient, seed: Seed) -> None:
+    """A child token is denied at the approve endpoint (403), never a 404."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.child_token)
+    )
+    assert res.status_code == 403
+
+
+async def test_child_cannot_decline(client: AsyncClient, seed: Seed) -> None:
+    """A child token is denied at the decline endpoint (403)."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    res = await client.post(
+        f"{_CREATE}/{req_id}/decline", headers=auth(seed.child_token)
+    )
+    assert res.status_code == 403
+
+
+async def test_decline_then_reapprove_conflicts(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A declined request cannot then be approved (409)."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    dec = await client.post(
+        f"{_CREATE}/{req_id}/decline", headers=auth(seed.guardian_token)
+    )
+    assert dec.status_code == 200
+    again = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+    )
+    assert again.status_code == 409
+
+
+async def test_approve_twice_conflicts(client: AsyncClient, seed: Seed) -> None:
+    """A second approval of an already-approved request is a 409, not a second
+    Concept/GenerationJob (locks the sequential double-approval path)."""
+    created = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
+        headers=auth(seed.guardian_token),
+    )
+    req_id = created.json()["id"]
+    first = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+    )
+    assert first.status_code == 200
+    second = await client.post(
+        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+    )
+    assert second.status_code == 409
+
+
+async def test_blocked_request_hides_raw_text(client: AsyncClient, seed: Seed) -> None:
+    """A blocked request never returns its raw text to the guardian list."""
+    await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a story about Reader A",
+        },
+        headers=auth(seed.guardian_token),
+    )
+    res = await client.get(
+        f"{_CREATE}?status=blocked", headers=auth(seed.guardian_token)
+    )
+    assert res.status_code == 200
+    row = res.json()["requests"][0]
+    assert row["request_text"] is None
+    assert row["moderation_flags"][0]["category"] == "personal_information"

@@ -85,6 +85,16 @@ async def approve_story_request(
         ResourceNotFoundError: If the requesting profile is missing (-> 404).
         ValidationError: If the built brief still trips the PII guard (-> 422).
     """
+    # #CRITICAL: concurrency: ensure_pending's guard is an in-memory read of the
+    # ``request`` object passed in by the caller; it is not itself a lock. Two
+    # concurrent approvals of the same request could both read status="pending"
+    # and both create a Concept + GenerationJob (a double paid generation)
+    # unless the caller holds a row lock across the read-check-write.
+    # #VERIFY: the API endpoint (api/story_requests.py::_load_scoped_request)
+    # loads the row with ``.with_for_update()`` before calling this function, so
+    # a second concurrent approval blocks on the row lock until the first
+    # transaction commits (making its ensure_pending see the now-"approved"
+    # status). Any other caller of this function must hold an equivalent lock.
     ensure_pending(request)
     profile = await session.get(ChildProfile, request.profile_id)
     if profile is None:

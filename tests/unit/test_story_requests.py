@@ -7,8 +7,13 @@ import uuid
 import httpx
 import pytest
 
-from cyo_adventure.core.exceptions import StateTransitionError
-from cyo_adventure.db.models import ChildProfile, StoryRequest
+from cyo_adventure.api.deps import Principal
+from cyo_adventure.core.exceptions import (
+    ResourceNotFoundError,
+    StateTransitionError,
+    ValidationError,
+)
+from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.story_requests import service
@@ -161,3 +166,134 @@ def test_ensure_pending_rejects_non_pending() -> None:
     )
     with pytest.raises(StateTransitionError):
         service.ensure_pending(req)
+
+
+class _FakeScalars:
+    """Stand-in for the iterable returned by ``session.scalars``."""
+
+    def __init__(self, values: list[str]) -> None:
+        self._values = values
+
+    def all(self) -> list[str]:
+        """Return the seeded scalar values."""
+        return self._values
+
+
+class _FakeSession:
+    """Minimal async session double for ``service.approve_story_request``.
+
+    Mirrors the ``_FakeSession`` pattern in test_generation_api_unit.py so this
+    module's service-level tests stay DB-free (no testcontainers). ``flush``
+    assigns a UUID to any added object still missing one, mimicking the ORM's
+    Python-side ``default=uuid.uuid4`` column default that a real flush applies.
+    """
+
+    def __init__(
+        self, *, get_result: object | None = None, child_names: list[str] | None = None
+    ) -> None:
+        self._get_result = get_result
+        self._child_names = child_names or []
+        self.added: list[object] = []
+
+    async def get(self, model: type[object], key: object) -> object | None:
+        """Return the seeded profile row (or None), ignoring the key."""
+        _ = (model, key)
+        return self._get_result
+
+    async def scalars(self, statement: object) -> _FakeScalars:
+        """Return the seeded family child display names."""
+        _ = statement
+        return _FakeScalars(self._child_names)
+
+    def add(self, obj: object) -> None:
+        """Record an added ORM instance."""
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        """Assign a UUID to any tracked object still missing an id."""
+        for obj in self.added:
+            if getattr(obj, "id", None) is None:
+                obj.id = uuid.uuid4()  # pyright: ignore[reportAttributeAccessIssue]
+
+
+def _guardian(family_id: uuid.UUID) -> Principal:
+    """Build a guardian Principal for the given family."""
+    return Principal(
+        subject="guardian-sub",
+        user_id=uuid.uuid4(),
+        role="guardian",  # pyright: ignore[reportArgumentType]
+        family_id=family_id,
+        profile_ids=frozenset(),
+    )
+
+
+@pytest.mark.asyncio
+async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
+    """Approval stamps status/reviewer/timestamp/concept_id, and the concept's
+    brief premise is the request's own stored text, not any other source."""
+    family_id = uuid.uuid4()
+    profile = _profile("8-11")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    stored_text = "a story about a lighthouse keeper and a curious seal"
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=profile.id,
+        request_text=stored_text,
+        status="pending",
+    )
+    session = _FakeSession(get_result=profile, child_names=[])
+
+    concept_id, job_id = await service.approve_story_request(
+        session, principal, request
+    )
+
+    assert request.status == "approved"
+    assert request.reviewed_by == principal.user_id
+    assert request.reviewed_at is not None
+    assert request.concept_id is not None
+    assert concept_id == str(request.concept_id)
+
+    concept = next(o for o in session.added if isinstance(o, Concept))
+    assert concept.brief["premise"] == stored_text
+    job = next(o for o in session.added if isinstance(o, GenerationJob))
+    assert job.concept_id == concept.id
+    assert job_id == str(job.id)
+
+
+@pytest.mark.asyncio
+async def test_approve_story_request_pii_backstop_trips() -> None:
+    """A request that names a real family child trips the belt-and-suspenders
+    PII backstop at approval time, even though submission-time screening
+    should already have blocked it (defense against a screening defect)."""
+    family_id = uuid.uuid4()
+    profile = _profile("8-11")
+    profile.id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=profile.id,
+        request_text="a story about Amelia and a dragon",
+        status="pending",
+    )
+    session = _FakeSession(get_result=profile, child_names=["Amelia"])
+
+    with pytest.raises(ValidationError):
+        await service.approve_story_request(session, principal, request)
+
+
+@pytest.mark.asyncio
+async def test_approve_story_request_missing_profile_is_not_found() -> None:
+    """Approving a request whose profile no longer exists raises 404."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=uuid.uuid4(),
+        request_text="a fox",
+        status="pending",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    with pytest.raises(ResourceNotFoundError):
+        await service.approve_story_request(session, principal, request)

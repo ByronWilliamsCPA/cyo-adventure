@@ -8,6 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Child story-request endpoints: `POST /api/v1/story-requests` (a kid's free-text
+  idea, guardian-scoped in R1, screened for PII and Stage-0 classifier hits before
+  landing as `pending` or `blocked`, capped at 5 pending requests per profile),
+  `GET /api/v1/story-requests` (family-scoped list for a guardian, global for an
+  admin, filterable by status/profile), and `POST /{id}/approve` /
+  `POST /{id}/decline` (guardian own-family or admin global; a request outside the
+  caller's scope returns 404, existence hiding, diverging by design from the
+  generation API's cross-family 403). Approval builds a `ConceptBrief` from the
+  stored request text and enqueues generation the same way as a guardian-authored
+  concept, reusing the generation pipeline without a separate approval-specific
+  code path.
 - Guardian and admin content review summary: `GET /api/v1/storybooks/{id}/content-summary`
   returns a redacted moderation summary (screened flag, gating summary, flagged
   count, story-level findings only), rendered as content tags in the guardian
