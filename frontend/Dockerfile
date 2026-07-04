@@ -48,6 +48,13 @@ ENV VITE_API_URL=${VITE_API_URL}
 # the Supabase client, so a build without these args must still succeed, and
 # a guardian-facing build without them should fail loudly at runtime rather
 # than silently pointing at a placeholder project.
+# #ASSUME external-resource: the guardian production build always receives
+# non-empty VITE_SUPABASE_URL/ANON_KEY args (homelab-infra bakes them in at
+# frontend image republish); an argless prod build ships an image whose
+# guardian route throws on first load. No CI job builds this Dockerfile, so
+# the republish is the first real exercise of these args.
+# #VERIFY after each frontend image republish, the published /guardian route
+# reaches Supabase sign-in rather than the "Missing VITE_SUPABASE_*" error.
 ARG VITE_SUPABASE_URL=
 ARG VITE_SUPABASE_ANON_KEY=
 ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
