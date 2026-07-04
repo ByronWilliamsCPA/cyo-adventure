@@ -201,6 +201,42 @@ class of out-of-the-box breakage is caught in the template repo.
 **Affected Files**: `docs/ADRs/adr-template.md`; the front-matter validation
 script and its allowed-tags list.
 
+### `no-em-dash` pre-commit hook's byte pattern never matches, so it silently never fires
+
+- **Priority**: Critical
+- **Category**: Tooling
+- **Discovered**: 2026-07-04
+
+**Issue**: `.pre-commit-config.yaml`'s `no-em-dash` hook runs
+`git grep --cached -nP "\xe2\x80\x94" -- .`. Under PCRE `grep -P` in a UTF-8
+locale, `\xe2\x80\x94` is parsed as three separate single-byte character
+matches against decoded Unicode codepoints, not as the three raw UTF-8 bytes
+that encode U+2014 (em-dash). Since no single codepoint in ordinary text
+equals `0xE2`, `0x80`, or `0x94` in sequence as decoded characters, the
+pattern never matches a real em-dash. The hook has reported "Passed" on every
+commit since it was added, including commits that actually contained em-dash
+characters, so the no-em-dash policy has been unenforced from the start.
+
+**Context**: Discovered during a final whole-branch code review on a feature
+branch, which found two literal U+2014 characters in a committed markdown
+file despite that commit's own pre-commit run reporting the `no-em-dash`
+hook as passed. Verified directly: `printf 'test\xe2\x80\x94dash\n' | grep
+-nP "\xe2\x80\x94"` exits 1 (no match) against a string that visibly
+contains an em-dash, while `grep -nP '\x{2014}'` against the same input
+correctly matches. The config's own comment ("Pre-scan confirmed no existing
+em-dashes in the repository") reflects that the check's false-negative
+behavior was never caught because the pre-scan itself likely used the same
+broken pattern.
+
+**Suggested Fix**: Replace the byte-escape pattern with PCRE's codepoint
+escape: `git grep --cached -nP "\x{2014}" -- .` (note: `grep -P` requires
+`\x{...}` with braces for codepoints above `\x7f`; add a smoke test in the
+template repo itself that stages a file containing a real em-dash and
+asserts the hook fails, so this class of silently-inert security/style hook
+cannot regress unnoticed again).
+
+**Affected Files**: `.pre-commit-config.yaml`
+
 ### Template ships `utils/financial.py` scaffolding irrelevant to non-financial projects
 
 - **Priority**: Medium
