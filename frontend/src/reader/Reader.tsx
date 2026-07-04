@@ -44,22 +44,26 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
     onProgress?.(reading)
   }, [reading, onProgress])
 
-  // Report the reached ending exactly once. A per-ending ref makes this idempotent
-  // across two hazards: the <StrictMode> double-invoke of this effect, and RESTART
-  // re-entering the same ending later in the session.
-  const completedEndingRef = useRef<string | null>(null)
+  // Report each reached ending at most once per session. A set of completed ending
+  // ids (not a single last-seen ref) makes this idempotent across three hazards: the
+  // <StrictMode> double-invoke of this effect, RESTART re-entering the same ending,
+  // and reaching an ending again after visiting a different one first. A single-slot
+  // ref would miss that last case and re-fire onComplete for an earlier ending.
+  const completedEndingsRef = useRef<Set<string>>(new Set())
   useEffect(() => {
     if (!snapshot.matches('ended')) {
       return
     }
     const endingId = currentEndingId(story, reading)
     // #CRITICAL: timing/data-integrity: StrictMode double-invokes this effect, and
-    // RESTART can re-reach the same ending; both must post at most once.
-    // #VERIFY: gate on a per-ending ref so only a NEW ending id fires onComplete.
-    if (endingId === null || completedEndingRef.current === endingId) {
+    // RESTART can re-reach an ending (the same one, or one visited earlier); each
+    // distinct ending must post at most once.
+    // #VERIFY: gate on a set of completed ending ids so only a not-yet-seen ending
+    // fires onComplete (aligned with the server's per-ending completion dedup key).
+    if (endingId === null || completedEndingsRef.current.has(endingId)) {
       return
     }
-    completedEndingRef.current = endingId
+    completedEndingsRef.current.add(endingId)
     onComplete?.(endingId)
   }, [snapshot, story, reading, onComplete])
 
