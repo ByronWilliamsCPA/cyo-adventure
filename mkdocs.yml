@@ -166,6 +166,7 @@ nav:
 
   - Architecture:
       - Overview: architecture/README.md
+      - User Journeys: architecture/user-journeys.md
       - System Overview: architecture/system-overview.md
       - Generation Pipeline: architecture/generation-pipeline.md
       - Validation and Player: architecture/validation-and-player.md

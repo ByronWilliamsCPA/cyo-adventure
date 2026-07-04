@@ -36,7 +36,7 @@ language, so they read as one family.
 - **Columns are who is acting.** The journey deliberately crosses four lanes:
   the **Child** and **Guardian** each drive their own disjoint surface (the kid
   app and the guardian console share no navigation; see
-  [router.tsx](../../frontend/src/router.tsx)), the **Admin** holds the mandatory
+  `frontend/src/router.tsx`), the **Admin** holds the mandatory
   approval gate, and **System** collapses the behind-the-scenes generation and
   safety work into user-facing waits.
 - **Node fill marks maturity.** White nodes are shipped in the app today.
@@ -197,7 +197,7 @@ when deciding what e2e tests to write next.
 
 | e2e gap (amber, no Playwright) | Covering unit test today | Risk if it regresses |
 | ------------------------------ | ------------------------ | -------------------- |
-| Guardian successful sign-in | `LoginPage.test`, `AuthContext.test` | Guardians locked out of the console |
+| Guardian successful sign-in | `AuthContext.test`, `ProtectedRoute.test` | Guardians locked out of the console |
 | Console review queue + ordering | `ConsolePage.test`, `FlagBadge.test` | Flagged stories not surfaced first |
 | Review detail + **Approve (ADR-005)** | `ReviewDetailPage.test`, `reviewApi.test` | Unsafe story reaches a child, or approval silently fails |
 | Send-back / revision loop | `ReviewDetailPage.test` | Rejected story cannot be corrected |

@@ -40,7 +40,7 @@ skinparam swimlaneWidth same
 |Guardian|
 start
 #F6E1B0:Guardian signs in;
-note right: AMBER  •  unit: LoginPage.test, AuthContext.test\ne2e covers ONLY the redirect, never a successful login
+note right: AMBER  •  unit: AuthContext.test, ProtectedRoute.test\ne2e covers ONLY the redirect, never a successful login
 #F6E1B0:Create child profiles;
 note right: AMBER  •  unit: ProfilesPage.test, profilesApi.test\nno e2e
 
