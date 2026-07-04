@@ -478,6 +478,43 @@ class ReviewQueueView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Guardian content-summary schemas (Task 2.1)
+# ---------------------------------------------------------------------------
+
+
+class GuardianFinding(BaseModel):
+    """A redacted, story-level moderation finding shown to a guardian.
+
+    Deliberately narrower than FindingView: it drops source, stage, score, and
+    node_id so the guardian assign flow never leaks generation internals or a
+    per-node passage locator. Only the category, gating verdict, and the
+    human-readable message reach the guardian.
+    """
+
+    category: str
+    verdict: Verdict
+    message: str
+
+
+class ContentSummaryView(BaseModel):
+    """The guardian-facing content review summary for a published story.
+
+    A redacted projection of the admin review surface: it carries the gating
+    summary and story-level findings, plus a total flagged count, but never the
+    per-node flagged passages (which can spoil content and leak generation
+    internals). ``findings`` holds only whole-story findings; per-node findings
+    are counted in ``flagged_count`` but not enumerated.
+    """
+
+    storybook_id: str
+    version: int
+    screened: bool
+    summary: ReviewSummary | None
+    flagged_count: int = Field(ge=0)
+    findings: list[GuardianFinding]
+
+
+# ---------------------------------------------------------------------------
 # Principal introspection
 # ---------------------------------------------------------------------------
 
