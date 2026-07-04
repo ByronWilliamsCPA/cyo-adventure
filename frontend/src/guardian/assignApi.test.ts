@@ -26,3 +26,51 @@ describe('makeAssignApi', () => {
     expect(result).toEqual(['p1', 'p2'])
   })
 })
+
+describe('makeAssignApi contentSummary', () => {
+  it('gets the content summary for a storybook', async () => {
+    const data = {
+      storybook_id: 's1',
+      version: 1,
+      screened: true,
+      summary: {
+        count: 1,
+        hard_block: false,
+        soft_flag: true,
+        repaired: false,
+        reviewer_independent: true,
+      },
+      flagged_count: 2,
+      findings: [{ category: 'coherence', verdict: 'advisory', message: 'disjoint' }],
+    }
+    const { api, get } = fakeAxios(data)
+    const result = await makeAssignApi(api).contentSummary('s1')
+    expect(get).toHaveBeenCalledWith('/v1/storybooks/s1/content-summary')
+    expect(result.flagged_count).toBe(2)
+    expect(result.findings[0].category).toBe('coherence')
+  })
+})
+
+describe('makeAssignApi listBooks', () => {
+  it('gets the family published books', async () => {
+    const data = {
+      books: [
+        {
+          storybook_id: 's1',
+          title: 'The Lantern',
+          version: 2,
+          age_band: '8-11',
+          screened: true,
+          flagged_count: 0,
+          assigned_profile_ids: ['p1'],
+        },
+      ],
+    }
+    const { api, get } = fakeAxios(data)
+    const result = await makeAssignApi(api).listBooks()
+    expect(get).toHaveBeenCalledWith('/v1/guardian/books')
+    expect(result).toHaveLength(1)
+    expect(result[0].storybook_id).toBe('s1')
+    expect(result[0].assigned_profile_ids).toEqual(['p1'])
+  })
+})

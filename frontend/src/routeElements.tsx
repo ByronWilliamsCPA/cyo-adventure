@@ -55,6 +55,9 @@ export const ConsolePage = lazy(() =>
 export const IntakePage = lazy(() =>
   import('./guardian/IntakePage').then((m) => ({ default: m.IntakePage }))
 )
+export const BooksPage = lazy(() =>
+  import('./guardian/BooksPage').then((m) => ({ default: m.BooksPage }))
+)
 export const KidShell = lazy(() => import('./kid/KidShell').then((m) => ({ default: m.KidShell })))
 export const LibraryPage = lazy(() =>
   import('./library/LibraryPage').then((m) => ({ default: m.LibraryPage }))

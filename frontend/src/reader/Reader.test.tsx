@@ -76,4 +76,55 @@ describe('Reader', () => {
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     expect(seen).toContain('n_cave_fork')
   })
+
+  it('reports the reached ending to onComplete exactly once', () => {
+    const completed: string[] = []
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onComplete={(id) => completed.push(id)} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    expect(completed).toEqual(['e_treasure_found'])
+  })
+
+  it('does not re-post the same ending after Read again', () => {
+    const completed: string[] = []
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onComplete={(id) => completed.push(id)} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    fireEvent.click(screen.getByTestId('restart'))
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    expect(completed).toEqual(['e_treasure_found'])
+  })
+
+  it('does not re-post an earlier ending after a different one is reached (interleaved)', () => {
+    // A -> B -> A must report [A, B], not [A, B, A]. A single-slot "last ending"
+    // ref would forget A once B is reached and re-fire it; the completed-endings
+    // set reports each distinct ending at most once per session.
+    const completed: string[] = []
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onComplete={(id) => completed.push(id)} profileId="p1" />
+      </MemoryRouter>
+    )
+    // A: e_treasure_found (dark passage, gated on the lantern).
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    fireEvent.click(screen.getByTestId('restart'))
+    // B: e_safe_exit (bright tunnel).
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_bright_tunnel'))
+    fireEvent.click(screen.getByTestId('restart'))
+    // A again: already reported, so it must not fire a second time.
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    expect(completed).toEqual(['e_treasure_found', 'e_safe_exit'])
+  })
 })

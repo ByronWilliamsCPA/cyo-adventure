@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 from cyo_adventure.api.review_surface import (
+    build_content_summary,
     build_review_queue_item,
     build_review_surface,
 )
@@ -361,3 +362,60 @@ def test_queue_item_unscreened_has_no_summary() -> None:
     assert item.screened is False
     assert item.summary is None
     assert item.flagged_count == 0
+
+
+@pytest.mark.unit
+def test_content_summary_redacts_passages_and_counts_flags() -> None:
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=_report(),
+    )
+    # flagged_count is per-node flags plus story-level findings, pass excluded:
+    # one n_start flag + one story-level advisory = 2 (the n_end pass is dropped).
+    assert summary.flagged_count == 2
+    # Only the story-level finding is enumerated; no per-node passage leaks.
+    assert len(summary.findings) == 1
+    assert summary.findings[0].category == "coherence"
+    assert summary.findings[0].verdict.value == "advisory"
+    assert summary.findings[0].message == "slightly disjoint"
+    assert summary.screened is True
+    assert summary.summary is not None
+    assert summary.summary.soft_flag is True
+
+
+@pytest.mark.unit
+def test_content_summary_null_report_is_unscreened() -> None:
+    summary = build_content_summary(
+        storybook_id="s1",
+        version=1,
+        blob=_blob(),
+        moderation_report=None,
+    )
+    assert summary.screened is False
+    assert summary.summary is None
+    assert summary.flagged_count == 0
+    assert summary.findings == []
+
+
+@pytest.mark.unit
+def test_content_summary_rejects_corrupt_report() -> None:
+    corrupt = {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "not-a-real-source",
+                "category": "safety",
+                "node_id": None,
+                "verdict": "flag",
+                "score": None,
+                "message": "m",
+            }
+        ],
+        "summary": {},
+    }
+    with pytest.raises(ValidationError):
+        build_content_summary(
+            storybook_id="s1", version=1, blob=_blob(), moderation_report=corrupt
+        )

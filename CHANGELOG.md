@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   map), plus a real-backend smoke tier exercising the ADR-005 approve path
   against FastAPI + Postgres. Both tiers are local-only (run per
   `frontend/README.md` before opening a PR); neither runs in CI.
+- Child story-request endpoints: `POST /api/v1/story-requests` (a kid's free-text
+  idea, guardian-scoped in R1, screened for PII and Stage-0 classifier hits before
+  landing as `pending` or `blocked`, capped at 5 pending requests per profile),
+  `GET /api/v1/story-requests` (family-scoped list for a guardian, global for an
+  admin, filterable by status/profile), and `POST /{id}/approve` /
+  `POST /{id}/decline` (guardian own-family or admin global; a request outside the
+  caller's scope returns 404, existence hiding, diverging by design from the
+  generation API's cross-family 403). Approval builds a `ConceptBrief` from the
+  stored request text and enqueues generation the same way as a guardian-authored
+  concept, reusing the generation pipeline without a separate approval-specific
+  code path.
+- Guardian and admin content review summary: `GET /api/v1/storybooks/{id}/content-summary`
+  returns a redacted moderation summary (screened flag, gating summary, flagged
+  count, story-level findings only), rendered as content tags in the guardian
+  assign dialog. Per-node flagged passages remain admin-only.
+- Guardian browse-and-assign books page: `GET /api/v1/guardian/books` lists every
+  published, approved book in the caller's own family (not just their own request
+  history), each with a redacted content badge (screened flag + flagged count,
+  reusing the Task 2.1 projector with per-row corruption isolation) and the set of
+  child profiles it is assigned to. The new `/guardian/books` page (guardian-only
+  nav entry) reuses `AssignChildrenDialog`, which continues to lazy-fetch the full
+  content tags from the content-summary endpoint on open. The list endpoint is
+  guardian-only: a child or an admin receives 403 and the page shows a clear
+  notice.
 - Experimental `ModalProvider` generation leg (ADR-010 item 2): an HTTP adapter
   mirroring `OpenRouterProvider` for self-hosted generation via Modal Auto
   Endpoints, wired behind `generation_provider=modal` as a bare leg that never
@@ -131,6 +155,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wired into the intake page's approved-request rows via an "Assign more" action.
 
 ### Fixed
+- Reader progress correctness (three findings, one slice): the reader now posts
+  `POST /api/v1/completions` once when a story reaches an ending (idempotent via a
+  per-ending client guard plus the server's primary-key dedup); a cleared-cache or
+  new device resumes from `GET /api/v1/reading-state/{profile}/{storybook}` when
+  the local IndexedDB cache is cold, with local state still winning when present;
+  and the React StrictMode double-invoke of the initial save is deduped by a
+  content signature so opening a story no longer issues a duplicate write or
+  surfaces a false "reading on another device" 409 (issue #86).
 - Fixed `frontend/Dockerfile` failing to build against the hardened
   `dhi-node`/`dhi-nginx` GHCR mirror images used for the homelab R1 deploy.
   Both runtime tags ship no shell, which broke every shell-form `RUN` (`npm

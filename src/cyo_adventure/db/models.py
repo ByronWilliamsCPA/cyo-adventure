@@ -52,6 +52,9 @@ _GENERATION_JOB_STATUS_VALUES = (
     "'queued', 'running', 'passed', 'needs_review', 'failed'"
 )
 
+# The four story-request lifecycle states, named once for the CHECK constraint.
+_STORY_REQUEST_STATUS_VALUES = "'pending', 'approved', 'declined', 'blocked'"
+
 
 class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
@@ -317,6 +320,74 @@ class Concept(Base):
     brief: Mapped[dict[str, object]] = mapped_column(JSONB)
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
+    )
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class StoryRequest(Base):
+    """A child's free-text story idea awaiting a guardian or admin decision.
+
+    Submitted by a child (running under the guardian token in R1). The request
+    text is screened at submission (PII guard + Stage-0 classifiers); a
+    bright-line hit lands the row in the ``blocked`` state before any guardian
+    reads the raw text. A guardian or admin then approves it (which builds a
+    ``ConceptBrief`` and enters the generation pipeline, linking ``concept_id``)
+    or declines it.
+
+    ``family_id`` is denormalized (stored, not derived from ``profile_id``) so
+    the guardian list and the family-scope authz check stay single-table; a
+    profile never changes family, so the value cannot drift.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: Owning family; all guardian access is scoped to this.
+        profile_id: The requesting child profile.
+        request_text: The child's short free-text idea (<= 500 chars).
+        status: Lifecycle state (pending, approved, declined, blocked).
+        moderation_flags: Redacted screening findings (category/verdict/message
+            plus a blocked flag), or ``None`` before screening. Never raw
+            classifier score/source.
+        reviewed_by: The guardian/admin who approved or declined, or ``None``.
+        reviewed_at: When the decision was recorded, or ``None``.
+        concept_id: The concept created on approval, or ``None``.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "story_request"
+    # #CRITICAL: data integrity: ``status`` is a closed lifecycle; this CHECK is
+    # the at-rest backstop (mirroring ck_generation_job_status) so no write path
+    # persists a status outside the four values.
+    # #VERIFY: StoryRequestStatus(...) coercion at the API boundary rejects any
+    # other value; see api/schemas.py::StoryRequestStatus.
+    __table_args__ = (
+        CheckConstraint(
+            f"status IN ({_STORY_REQUEST_STATUS_VALUES})",
+            name="ck_story_request_status",
+        ),
+        Index("ix_story_request_family_status", "family_id", "status"),
+        Index("ix_story_request_profile_status", "profile_id", "status"),
+        Index("ix_story_request_status", "status"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY))
+    profile_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_CHILD_PROFILE))
+    request_text: Mapped[str] = mapped_column(String(500))
+    status: Mapped[str] = mapped_column(String(16), default="pending")
+    # #CRITICAL: security: redacted findings only (category/verdict/message +
+    # blocked flag); raw classifier score/source and the child's raw text of a
+    # blocked request are NEVER stored here or surfaced to a guardian.
+    # #VERIFY: story_requests/screening.py builds this via the GuardianFinding
+    # projection; test_story_requests covers the redaction shape.
+    moderation_flags: Mapped[dict[str, object] | None] = mapped_column(
+        JSONB, default=None
+    )
+    reviewed_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    reviewed_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
+    concept_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_CONCEPT), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 

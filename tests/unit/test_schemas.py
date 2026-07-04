@@ -10,9 +10,10 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import get_args
 
-from cyo_adventure.api.schemas import JobStatusLiteral
+from cyo_adventure.api.schemas import JobStatusLiteral, StoryRequestStatus
 from cyo_adventure.db.models import (
     _GENERATION_JOB_STATUS_VALUES,  # pyright: ignore[reportPrivateUsage]
+    _STORY_REQUEST_STATUS_VALUES,  # pyright: ignore[reportPrivateUsage]
 )
 
 
@@ -29,6 +30,23 @@ def test_job_status_literal_matches_db_constraint() -> None:
     literal_values = set(get_args(JobStatusLiteral))
     assert literal_values == db_values, (
         "JobStatusLiteral has drifted from the ck_generation_job_status CHECK "
+        f"constraint: literal={literal_values!r} db={db_values!r}"
+    )
+
+
+def test_story_request_status_literal_matches_db_constraint() -> None:
+    """StoryRequestStatus's values must match the ck_story_request_status CHECK.
+
+    ``_STORY_REQUEST_STATUS_VALUES`` is a single-quoted, comma-separated SQL
+    fragment (e.g. ``"'pending', 'approved', ..."``); parse it back into bare
+    strings rather than duplicating the list a second time in this test.
+    """
+    db_values = {
+        value.strip().strip("'") for value in _STORY_REQUEST_STATUS_VALUES.split(",")
+    }
+    literal_values = set(get_args(StoryRequestStatus))
+    assert literal_values == db_values, (
+        "StoryRequestStatus has drifted from the ck_story_request_status CHECK "
         f"constraint: literal={literal_values!r} db={db_values!r}"
     )
 

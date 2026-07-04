@@ -5,12 +5,13 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
 import * as db from '../offline/db'
-import { _resetDbHandle, putReadingState } from '../offline/db'
+import { _resetDbHandle, getReadingState, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
 import { OfflineError } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
@@ -277,5 +278,300 @@ describe('ReaderPage', () => {
     await screen.findByTestId('conflict-dialog')
     fireEvent.click(screen.getByTestId('conflict-keep'))
     await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+  })
+
+  it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {
+    let calls = 0
+    const api: SyncApi = {
+      putReadingState: (_p, _s, body) => {
+        calls += 1
+        // The server would 409 a second identical save at the same base revision;
+        // if the client dedupes the StrictMode double-fire, calls stays at 1.
+        if (calls === 1) {
+          return Promise.resolve<PutResponse>({ status: 200, row: { ...body, state_revision: 1 } })
+        }
+        return Promise.resolve<PutResponse>({
+          status: 409,
+          currentRow: { ...body, state_revision: 1 },
+        })
+      },
+    }
+    render(
+      <StrictMode>
+        <MemoryRouter>
+          <ReaderPage
+            api={api}
+            fetchStory={() => Promise.resolve(lantern)}
+            profileId="p_strict"
+            storybookId="s_lantern_cave"
+            version={1}
+          />
+        </MemoryRouter>
+      </StrictMode>
+    )
+    await screen.findByTestId('reader')
+    // Let any second effect-fire flush.
+    await waitFor(() => expect(calls).toBeGreaterThanOrEqual(1))
+    expect(calls).toBe(1)
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
+  })
+
+  it('posts a completion when the story reaches an ending', async () => {
+    const recordCompletion = vi.fn(() => Promise.resolve())
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          profileId="p_complete"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    await waitFor(() => expect(recordCompletion).toHaveBeenCalledTimes(1))
+    expect(recordCompletion).toHaveBeenCalledWith({
+      profile_id: 'p_complete',
+      storybook_id: 's_lantern_cave',
+      version: 1,
+      ending_id: 'e_treasure_found',
+    })
+  })
+
+  // A distinct profileId from the test above: that test's ended-state persist()
+  // fires fire-and-forget (handleProgress does not await it) and can still be
+  // in flight when the test returns; a shared profileId risks its IndexedDB
+  // write landing after this test's beforeEach resets the db handle, resuming
+  // this test straight into the ended state instead of the start passage.
+  it('still shows the ending screen when the completion post fails', async () => {
+    const recordCompletion = vi.fn(() => Promise.reject(new Error('boom')))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          profileId="p_complete_fail"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    expect(await screen.findByTestId('ending-screen')).toBeTruthy()
+  })
+
+  const SERVER_RESUME: ReadingState = {
+    current_node: 'n_cave_fork',
+    var_state: { has_lantern: true },
+    path: ['n_entrance', 'n_cave_fork'],
+    visit_set: ['n_entrance', 'n_cave_fork'],
+    version: 1,
+    state_revision: 4,
+    save_slots: {},
+  }
+
+  it('resumes from server state when the local cache is cold', async () => {
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(SERVER_RESUME))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_cold"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchServerState).toHaveBeenCalledOnce()
+    // Resumed at the cave fork with the lantern, so the gated choice is visible.
+    expect(screen.getByTestId('passage-body').textContent).toContain('splits')
+    expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
+  })
+
+  it('prefers the local cache over server state when both exist', async () => {
+    const local: ReadingState = {
+      current_node: 'n_cave_fork',
+      var_state: { has_lantern: true },
+      path: ['n_entrance', 'n_cave_fork'],
+      visit_set: ['n_entrance', 'n_cave_fork'],
+      version: 1,
+      state_revision: 3,
+      save_slots: {},
+    }
+    await putReadingState('p_both', 's_lantern_cave', local)
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(SERVER_RESUME))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_both"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(fetchServerState).not.toHaveBeenCalled()
+  })
+
+  it('starts fresh when cold cache and the server has no state (null)', async () => {
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_none"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Fresh start renders the start passage (the lantern intro).
+    expect(screen.getByTestId('passage-body').textContent).toContain('lantern')
+  })
+
+  it('starts fresh (no offline screen) when the server fallback is offline', async () => {
+    const fetchServerState = vi.fn(() => Promise.reject(new OfflineError()))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_off"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // The story is already in hand, so a failed resume fetch must not block reading.
+    await screen.findByTestId('reader')
+  })
+
+  it('does not reload in a loop when fetchServerState/recordCompletion are omitted', async () => {
+    // Regression for an unbounded reload loop: default-parameter EXPRESSIONS
+    // (`fetchServerState = () => ...`) mint a fresh function reference every
+    // render, which used to change `load`'s useCallback identity every
+    // render, re-firing the mount effect and forcing another render
+    // (~650 GET calls observed in 500ms). Omitting both optional props here
+    // exercises the module-level default constants (NO_SERVER_STATE,
+    // NO_RECORD_COMPLETION); the read-state port must settle to a small,
+    // bounded call count, not grow unbounded while this test waits.
+    const getReadingStateSpy = vi.spyOn(db, 'getReadingState')
+    const fetchStory = vi.fn(() => Promise.resolve(lantern))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={fetchStory}
+          profileId="p_no_loop"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Let the app settle; a reload loop would keep firing calls during this
+    // window instead of going quiet after the initial load.
+    await new Promise((resolve) => setTimeout(resolve, 400))
+    expect(getReadingStateSpy.mock.calls.length).toBeLessThanOrEqual(2)
+  })
+
+  it('does not mirror a stale server payload over newer local state (overlapping generations)', async () => {
+    // Regression: the mirror write (putReadingState after a server hit) used
+    // to run unconditionally once fetchServerState resolved, gated only by a
+    // stale() check on the LATER setPageState call. A superseded load
+    // generation whose fetchServerState hangs can resolve after a newer
+    // generation has already written fresher local state (persist() writes
+    // IndexedDB before the network); the old server payload must not
+    // clobber it.
+    const oldServerState: ReadingState = {
+      current_node: 'n_entrance',
+      var_state: {},
+      path: ['n_entrance'],
+      visit_set: ['n_entrance'],
+      version: 1,
+      state_revision: 1,
+      save_slots: {},
+    }
+    const newerLocalState: ReadingState = {
+      current_node: 'n_cave_fork',
+      var_state: { has_lantern: true },
+      path: ['n_entrance', 'n_cave_fork'],
+      visit_set: ['n_entrance', 'n_cave_fork'],
+      version: 1,
+      state_revision: 7,
+      save_slots: {},
+    }
+    let resolveHangingFetch: ((value: ReadingState | null) => void) | undefined
+    const fetchServerState = vi.fn(
+      () =>
+        new Promise<ReadingState | null>((resolve) => {
+          resolveHangingFetch = resolve
+        })
+    )
+    const { rerender } = render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerState}
+          profileId="p_overlap"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // Wait for the first generation's fetchServerState call to be in flight.
+    await waitFor(() => expect(fetchServerState).toHaveBeenCalledTimes(1))
+    // A newer generation (e.g. a remount/retry) writes fresher local state,
+    // simulating ongoing play that has since progressed past the cold-cache
+    // moment the first generation observed.
+    await putReadingState('p_overlap', 's_lantern_cave', newerLocalState)
+    // Force a second load generation with a resolvable server fetch so the
+    // page actually reaches 'reading' (mirroring a remount/retry after the
+    // newer local write landed).
+    const fetchServerStateSecond = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    rerender(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          fetchServerState={fetchServerStateSecond}
+          profileId="p_overlap"
+          storybookId="s_lantern_cave"
+          version={1}
+          deviceId="device-2"
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Now let the first (stale) generation's hanging fetch resolve with the
+    // old server payload; it must not be mirrored over the newer local row.
+    resolveHangingFetch?.(oldServerState)
+    await waitFor(() => expect(fetchServerState).toHaveResolved())
+    // Give a would-be (buggy) mirror write a chance to land before asserting.
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    const rowAfter = await getReadingState('p_overlap', 's_lantern_cave')
+    // Compare current_node/var_state, not state_revision: the reader's own
+    // mount-time persist() legitimately re-stamps the revision from the save
+    // API response, which is an unrelated concern from the mirror-write bug
+    // under test here. What must never happen is the stale generation's old
+    // server node/vars overwriting the newer local ones.
+    expect(rowAfter?.current_node).not.toBe(oldServerState.current_node)
+    expect(rowAfter?.current_node).toBe(newerLocalState.current_node)
   })
 })

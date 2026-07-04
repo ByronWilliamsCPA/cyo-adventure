@@ -254,6 +254,129 @@ class AssignmentListView(BaseModel):
     profile_ids: list[str]
 
 
+class GuardianBookItem(BaseModel):
+    """A published family book as the guardian browses it to assign (Task 2.2).
+
+    Carries a redacted content badge (``screened`` + ``flagged_count``, the same
+    two signals the assign dialog and console rows show) and the set of child
+    profiles the book is currently assigned to. The full story-level findings are
+    deliberately not embedded here: the assign dialog lazy-fetches them from the
+    content-summary endpoint (Task 2.1) when it opens, so the browse list stays
+    lean and the findings projection lives in exactly one place.
+    """
+
+    storybook_id: str
+    title: str
+    version: int
+    age_band: str
+    screened: bool
+    flagged_count: int = Field(ge=0)
+    assigned_profile_ids: list[str]
+
+    @model_validator(mode="after")
+    def _unscreened_has_no_flags(self) -> GuardianBookItem:
+        """Reject an unscreened badge that also reports flagged passages.
+
+        The projector derives ``screened`` and ``flagged_count`` from the same
+        moderation report, so an unscreened book always has zero flags and the
+        corrupt-report degrade sets both to ``(False, 0)`` together. This guard
+        makes that coupling a type invariant: a future caller cannot construct a
+        contradictory "unscreened, N flagged" badge that would misreport a book's
+        safety posture to a guardian.
+        """
+        if not self.screened and self.flagged_count != 0:
+            msg = "an unscreened book cannot report flagged passages"
+            raise ValueError(msg)
+        return self
+
+
+class GuardianBooksView(BaseModel):
+    """The family's published books for the guardian browse-and-assign page."""
+
+    books: list[GuardianBookItem]
+
+
+# ---------------------------------------------------------------------------
+# Story-request schemas (Task 3.0)
+# ---------------------------------------------------------------------------
+
+
+# The four story-request lifecycle states, shared by the response field and the
+# boundary coercion. The story_request.status column is a plain string guarded at
+# rest by ck_story_request_status; the API coerces read/write values to this alias.
+StoryRequestStatus = Literal["pending", "approved", "declined", "blocked"]
+
+RequestText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)
+]
+
+
+class StoryRequestCreateBody(BaseModel):
+    """A child's free-text story request (kid surface; guardian-scoped in R1)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+    request_text: RequestText
+
+
+class StoryRequestFlag(BaseModel):
+    """A redacted screening flag shown to a guardian.
+
+    Mirrors GuardianFinding: category, gating verdict, and message only. Never
+    the classifier score, source, or the child's raw request text.
+    """
+
+    category: str
+    verdict: Verdict
+    message: str
+
+
+class StoryRequestView(BaseModel):
+    """One story request as seen by a guardian, admin, or (via guardian token) child.
+
+    ``request_text`` is ``None`` for a ``blocked`` row: the raw text of a
+    bright-line request is never surfaced. ``moderation_flags`` carries only the
+    redacted StoryRequestFlag list.
+    """
+
+    id: str
+    profile_id: str
+    status: StoryRequestStatus
+    request_text: str | None
+    moderation_flags: list[StoryRequestFlag]
+    created_at: datetime
+
+
+class StoryRequestListView(BaseModel):
+    """The story requests visible to the caller, newest first."""
+
+    requests: list[StoryRequestView]
+
+
+class StoryRequestCreatedView(BaseModel):
+    """The result of submitting a request: its id and post-screening status."""
+
+    id: str
+    status: StoryRequestStatus
+
+
+class StoryRequestApprovedView(BaseModel):
+    """The result of approving a request: the linked concept and generation job."""
+
+    id: str
+    status: Literal["approved"]
+    concept_id: str
+    job_id: str
+
+
+class StoryRequestDeclinedView(BaseModel):
+    """The result of declining a request."""
+
+    id: str
+    status: Literal["declined"]
+
+
 # ---------------------------------------------------------------------------
 # Profile schemas
 # ---------------------------------------------------------------------------
@@ -475,6 +598,43 @@ class ReviewQueueView(BaseModel):
     """The admin review queue: storybooks awaiting a publish decision."""
 
     items: list[ReviewQueueItem]
+
+
+# ---------------------------------------------------------------------------
+# Guardian content-summary schemas (Task 2.1)
+# ---------------------------------------------------------------------------
+
+
+class GuardianFinding(BaseModel):
+    """A redacted, story-level moderation finding shown to a guardian.
+
+    Deliberately narrower than FindingView: it drops source, stage, score, and
+    node_id so the guardian assign flow never leaks generation internals or a
+    per-node passage locator. Only the category, gating verdict, and the
+    human-readable message reach the guardian.
+    """
+
+    category: str
+    verdict: Verdict
+    message: str
+
+
+class ContentSummaryView(BaseModel):
+    """The guardian-facing content review summary for a published story.
+
+    A redacted projection of the admin review surface: it carries the gating
+    summary and story-level findings, plus a total flagged count, but never the
+    per-node flagged passages (which can spoil content and leak generation
+    internals). ``findings`` holds only whole-story findings; per-node findings
+    are counted in ``flagged_count`` but not enumerated.
+    """
+
+    storybook_id: str
+    version: int
+    screened: bool
+    summary: ReviewSummary | None
+    flagged_count: int = Field(ge=0)
+    findings: list[GuardianFinding]
 
 
 # ---------------------------------------------------------------------------
