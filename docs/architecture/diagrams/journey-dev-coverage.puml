@@ -1,0 +1,121 @@
+@startuml journey-dev-coverage
+' ============================================================
+' Developer View: End-to-End Journey x Automated Test Coverage
+'
+' Same journey backbone as journey-end-to-end, recolored by test coverage so
+' the diagram doubles as a Playwright/e2e gap map.
+'
+'   GREEN  = exercised end-to-end by a Playwright spec (frontend/e2e/*.spec.ts)
+'   AMBER  = built, but only unit/component tested (frontend/src/**/*.test.tsx)
+'            -> this is the e2e backlog
+'   RED    = no automated test (mostly planned / not-yet-built steps)
+'   GREY   = backend work, covered by pytest, out of frontend-e2e scope
+'
+' Coverage sources:
+'   frontend/e2e/{reader,library,intake,guardian-console,assignments,profiles}.spec.ts
+'   frontend/src/**/*.test.ts(x)  (Vitest component + unit)
+' ============================================================
+
+title Developer View: Journey x Test Coverage\n(green = e2e, amber = unit-only [e2e backlog], red = none, grey = backend/pytest)
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 10
+skinparam shadowing false
+skinparam ArrowColor #5a3e28
+skinparam ArrowFontColor #5a3e28
+skinparam ActivityBackgroundColor #FFFDF8
+skinparam ActivityBorderColor #6b6b56
+skinparam ActivityDiamondBackgroundColor #f8f3e8
+skinparam ActivityDiamondBorderColor #8c6f56
+skinparam NoteBackgroundColor #F1E9D8
+skinparam NoteBorderColor #c9b48f
+skinparam swimlaneWidth same
+
+|#F0D9B8|Child|
+|#CDDCEC|Guardian|
+|#C5D9CC|Admin|
+|#E4E4E4|System|
+
+|Guardian|
+start
+#F6E1B0:Guardian signs in;
+note right: AMBER  •  unit: LoginPage.test, AuthContext.test\ne2e covers ONLY the redirect, never a successful login
+#F6E1B0:Create child profiles;
+note right: AMBER  •  unit: ProfilesPage.test, profilesApi.test\nno e2e
+
+repeat :a new story is wanted;
+
+|Child|
+#BFE3C6:Open app, pick avatar;
+note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\nunit: ProfilePickerPage.test
+#F3C9C4:Tap "I want a new story";
+note right: RED  •  planned, not built -> no test
+|Guardian|
+#F3C9C4:Approve the child's request;
+note right: RED  •  planned, not built -> no test
+
+|System|
+#E4E4E4:Generate the story;
+note right: GREY  •  backend pytest (generation)\noutside frontend e2e scope
+#E4E4E4:Safety validation;
+note right: GREY  •  backend pytest (validator gate)
+|Guardian|
+#F6E1B0:"My Requests" -> Generating...;
+note right: AMBER  •  unit: IntakePage.test, intakeApi.test\nno e2e
+
+|Admin|
+repeat :take the top item;
+  #F6E1B0:Open the review queue
+  (Flagged / Ready / Processing);
+  note right: AMBER  •  unit: ConsolePage.test, FlagBadge.test\ne2e covers ONLY the login redirect (guardian-console.spec)
+  #F6E1B0:Review a story
+  (flags first, then full text);
+  note right: AMBER  •  unit: ReviewDetailPage.test, reviewApi.test\nno e2e
+backward:Send back (unit-only, no e2e);
+repeat while (Safe for a child?) is (no) not (yes -> approve)
+#F6E1B0:Approve  (ADR-005 gate);
+note right: AMBER  •  the mandatory safety gate has NO e2e test\nunit only: reviewApi.test, ReviewDetailPage.test
+
+|Guardian|
+#BFE3C6:Assign / "Assign more";
+note right: GREEN  •  e2e: assignments.spec (sibling add)\nunit: AssignChildrenDialog.test, assignApi.test
+|Child|
+#F6E1B0:Avatar shows "new story ready!";
+note right: AMBER  •  unit: ProfilePickerPage.test\npill state not asserted in e2e
+
+#BFE3C6:Open Library (hero + shelf);
+note right: GREEN  •  e2e: library.spec (hero+shelf, tap->reader, empty, mobile)\nunit: LibraryPage.test, pickHero.test
+#BFE3C6:Read passages, make choices;
+note right: GREEN  •  e2e: reader.spec (play-to-ending US-101,\nstate-gated US-102, malformed->exit, missing->not-found, a11y)
+if (Online?) then (yes)
+  #BFE3C6:Progress saves;
+  note right: GREEN  •  covered within reader.spec happy path
+else (offline)
+  #BFE3C6:Read from cache, queue progress;
+  note right: GREEN  •  e2e: reader.spec (plays to ending, network disabled)\nunit: offline/db.test, offline/sync.test
+  #F6E1B0:Reconnect + reconcile a clash;
+  note right: AMBER  •  the 409 conflict path has NO e2e\nunit only: reader/dialogs.test, offline/sync.test
+endif
+#BFE3C6:Reach an ending;
+note right: GREEN  •  reader.spec asserts the ending screen
+#BFE3C6:Rate a book (library shelf);
+note right: GREEN  •  e2e: library.spec (rating posts upsert, fills stars)\nunit: StarRating.test
+
+repeat while (Want another story?) is (yes) not (no)
+|Child|
+stop
+
+legend bottom
+  == Automated test coverage ==
+  |= Node |= Meaning |= Where |
+  |<back:#BFE3C6> green </back>| End-to-end (Playwright) | frontend/e2e/*.spec.ts |
+  |<back:#F6E1B0> amber </back>| Built, unit/component only -> <b>e2e backlog</b> | frontend/src/**/*.test.tsx |
+  |<back:#F3C9C4> red </back>| No automated test (mostly not-yet-built) | -- |
+  |<back:#E4E4E4> grey </back>| Backend, pytest-covered, out of frontend-e2e scope | tests/ (pytest) |
+  <b>Headline gaps:</b> the entire guardian console (sign-in, queue, review, and the
+  ADR-005 <b>Approve</b> gate) is amber, plus the reader 409-conflict reconciliation.
+  These are shipped features with unit tests but no Playwright coverage.
+endlegend
+
+@enduml

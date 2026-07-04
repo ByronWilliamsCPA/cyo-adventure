@@ -1,0 +1,110 @@
+@startuml journey-guardian
+' ============================================================
+' Zoomed User-Experience Flow: Guardian + Admin Surface
+'
+' Product/UX-clarity altitude for the parent-facing console (route tree
+' "/guardian"). Node fill: white = shipped, rose = planned (not yet built).
+' The approve action is admin-only (ADR-005); guardians can monitor but a
+' guardian cannot self-approve (API returns 403).
+'
+' Source screens:
+'   frontend/src/router.tsx  (guardian route tree: /guardian/*)
+'   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx, ReviewDetailPage.tsx
+'   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
+'   docs/planning/adr/adr-005-mandatory-human-approval.md
+'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+' ============================================================
+
+title Guardian + Admin Surface Journey\n("/guardian"; rose = planned. Approve is admin-only, ADR-005)
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 10
+skinparam shadowing false
+skinparam ArrowColor #5a3e28
+skinparam ArrowFontColor #5a3e28
+skinparam ActivityBackgroundColor #FFFDF8
+skinparam ActivityBorderColor #8c6f56
+skinparam ActivityDiamondBackgroundColor #f8f3e8
+skinparam ActivityDiamondBorderColor #8c6f56
+skinparam NoteBackgroundColor #F1E9D8
+skinparam NoteBorderColor #c9b48f
+skinparam swimlaneWidth same
+
+|#CDDCEC|Guardian|
+|#C5D9CC|Admin|
+|#E4E4E4|System|
+
+|Guardian|
+start
+:Sign in
+(email/password or Google,
+Apple if the flag is on);
+note right: /guardian/login  •  shipped
+:Land on the Console;
+
+' --- Setup: profiles ---
+:Add or edit a child's profile
+(name + preset avatar);
+note right: /guardian/profiles  •  shipped
+
+' --- Request a story ---
+#F3D9D4:Approve a story my child asked for;
+note right: planned (inbound child request-approval)
+
+:Request a story from Intake
+("Who's it for?", topic, tone);
+note right: /guardian/intake  •  shipped
+:Watch "My Requests"
+show "Generating...";
+note right: intake job status  •  shipped
+
+|System|
+:Write the story, then
+run the safety check;
+note right: generation + validator gate  •  shipped\ndetail: seq-generation
+
+' --- Approval gate (admin-only, ADR-005) ---
+|Admin|
+repeat :pick the top of the queue;
+  :Open the review queue
+  (Flagged, then Ready,
+  then Still processing);
+  note right: /guardian  (Console)  •  shipped
+  :Open a story: flagged passages
+  first, then the full text
+  with flags highlighted inline;
+  note right: /guardian/review/:id  •  shipped
+backward:Send back with a note
+-> the story is rewritten;
+repeat while (Safe for a child?) is (no) not (yes -> approve)
+:Approve
+(recorded human gate, ADR-005.
+Guardians get 403 here);
+
+' --- Assign ---
+|Guardian|
+:Assign the approved story
+to the child it was for;
+note right: assign  •  shipped
+if (Give it to siblings too?) then (yes)
+  :"Assign more" -> pick more
+  children (adds only the new ones);
+  note right: AssignChildrenDialog  •  shipped
+else (no)
+endif
+:The child's avatar now shows
+"new story ready!";
+note right: crosses to the kid surface
+stop
+
+legend bottom
+  |= Node |= Meaning |
+  |<back:#FFFDF8>  white  </back>| Shipped in the guardian console today |
+  |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
+  Columns: <b>Guardian</b> (request + assign + monitor), <b>Admin</b> (the ADR-005
+  approval gate), <b>System</b> (generation + safety, behind the scenes). See
+  journey-kid for the child side and journey-dev-coverage for test coverage.
+endlegend
+
+@enduml

@@ -1,0 +1,112 @@
+@startuml journey-kid
+' ============================================================
+' Zoomed User-Experience Flow: Kid Surface
+'
+' Product/UX-clarity altitude for the child-facing app only (route tree "/").
+' Node fill: white = shipped today, rose = planned (not yet built).
+'
+' Source screens:
+'   frontend/src/router.tsx  (kid route tree: /, /library/:profileId, /read/...)
+'   frontend/src/kid/ProfilePickerPage.tsx
+'   frontend/src/library/LibraryPage.tsx, BookCard.tsx, StarRating.tsx
+'   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ConflictDialog.tsx
+'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+' ============================================================
+
+title Kid-Surface Journey\n(child-facing app "/"; rose = planned, not yet built)
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 10
+skinparam shadowing false
+skinparam ArrowColor #5a3e28
+skinparam ArrowFontColor #5a3e28
+skinparam ActivityBackgroundColor #FFFDF8
+skinparam ActivityBorderColor #8c6f56
+skinparam ActivityDiamondBackgroundColor #f8f3e8
+skinparam ActivityDiamondBorderColor #8c6f56
+skinparam NoteBackgroundColor #F1E9D8
+skinparam NoteBorderColor #c9b48f
+
+|#F0D9B8|Child|
+start
+:Open the app;
+:Tap my avatar
+(2-column picker,
+dashed circle if none);
+note right: /  (Profile Picker)  •  shipped
+
+#F3D9D4:Tap "I want a new story"
+and say what it's about;
+note right: planned (child-initiated request)\nsurfaces to a guardian to approve
+
+:See "new story ready!"
+on my avatar;
+note right: status pill  •  shipped
+
+:Open my Library
+(Continue Reading hero
++ "More to Explore" shelf);
+note right: /library/:profileId  •  shipped
+:Pick a book;
+
+' error exits are real, tested paths
+if (Is the story available?) then (yes)
+  :Reader opens the story;
+  note right: /read/:profileId/:storybookId/:version  •  shipped
+elseif (link is malformed) then
+  :See a friendly exit,
+  not a dead end;
+  note right: shipped (reader.spec: malformed link)
+  stop
+else (story is missing)
+  :See "not found",
+  not the offline copy;
+  note right: shipped (reader.spec: missing story)
+  stop
+endif
+
+repeat :read a passage;
+  :Read the passage
+  (serif, generous spacing);
+  :Make a choice
+  (some choices stay hidden
+  until the story-state allows);
+  note right: state-gated visibility  •  shipped
+  if (Am I online?) then (yes)
+    :My progress saves as I go;
+  else (offline)
+    :Keep reading from the
+    downloaded copy, progress
+    waits in a queue;
+    note right: offline-first  •  shipped
+    :On reconnect it syncs;
+    if (Did another device
+    change it too?) then (yes, clash)
+      :Choose which progress to keep
+      (mine / the newer one);
+      note right: ConflictDialog  •  shipped
+    else (no)
+    endif
+  endif
+repeat while (More story to read?) is (yes) not (reached an ending)
+
+:See the ending screen
+(restart, or "back to my books");
+note right: ending screen  •  shipped\n(restart + back to library, no rating here)
+:Go back to my Library;
+:Rate a book by tapping its stars
+on the shelf;
+note right: StarRating on BookCard  •  shipped\n(rating lives in the library, not the reader)
+stop
+
+legend bottom
+  |= Node |= Meaning |
+  |<back:#FFFDF8>  white  </back>| Shipped in the kid app today |
+  |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
+  The kid surface is a separate route tree from the guardian console and shares
+  no navigation. See journey-guardian for the parent side, journey-end-to-end
+  for the whole loop, and journey-dev-coverage for test coverage.
+endlegend
+
+@enduml

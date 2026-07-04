@@ -125,8 +125,9 @@ else (offline)
   note right: seq-offline / seq-reading-state
 endif
 :Reach an ending;
-#F3D9D4:Rate the story;
-note right: planned\n(completion + rating not\nyet recorded by the UI)
+:Rate the story
+(tap stars on the library shelf);
+note right: shipped\n(rating lives on the library BookCard,\nnot the reader ending screen)
 
 repeat while (Want another story?) is (yes) not (no)
 |Child|
