@@ -375,12 +375,35 @@
   font-weight: 600;
 }
 
+.console-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+}
+
+.console-row__flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.console-row__actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 1rem 0.75rem;
+}
+
 .console__notice,
 .console__muted {
   color: var(--color-ink-muted, #8c6f56);
 }
 
 .console__error {
+  color: var(--color-error, #b3261e);
+}
+
+.console-row__error {
   color: var(--color-error, #b3261e);
 }
 

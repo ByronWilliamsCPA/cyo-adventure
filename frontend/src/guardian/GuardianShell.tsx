@@ -47,6 +47,7 @@ export function GuardianShell() {
         {principal?.role === 'guardian' ? (
           <NavLink to="/guardian/books">Books</NavLink>
         ) : null}
+        <NavLink to="/guardian/requests">Story requests</NavLink>
         <NavLink to="/guardian/profiles">Profiles</NavLink>
       </nav>
       {signOutError ? (
