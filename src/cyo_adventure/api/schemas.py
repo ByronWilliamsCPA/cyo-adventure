@@ -273,6 +273,22 @@ class GuardianBookItem(BaseModel):
     flagged_count: int = Field(ge=0)
     assigned_profile_ids: list[str]
 
+    @model_validator(mode="after")
+    def _unscreened_has_no_flags(self) -> GuardianBookItem:
+        """Reject an unscreened badge that also reports flagged passages.
+
+        The projector derives ``screened`` and ``flagged_count`` from the same
+        moderation report, so an unscreened book always has zero flags and the
+        corrupt-report degrade sets both to ``(False, 0)`` together. This guard
+        makes that coupling a type invariant: a future caller cannot construct a
+        contradictory "unscreened, N flagged" badge that would misreport a book's
+        safety posture to a guardian.
+        """
+        if not self.screened and self.flagged_count != 0:
+            msg = "an unscreened book cannot report flagged passages"
+            raise ValueError(msg)
+        return self
+
 
 class GuardianBooksView(BaseModel):
     """The family's published books for the guardian browse-and-assign page."""
