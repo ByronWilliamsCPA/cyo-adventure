@@ -83,7 +83,7 @@ describe('RequestsPage', () => {
   })
 
   it('decline calls the adapter and removes the row', async () => {
-    mockPost.mockResolvedValue({ data: null })
+    mockPost.mockResolvedValue({ data: { id: 'req-1', status: 'declined' } })
     render(<RequestsPage />)
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.click(screen.getByRole('button', { name: 'Decline' }))

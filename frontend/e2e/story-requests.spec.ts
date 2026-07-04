@@ -90,7 +90,7 @@ test('approve removes the approved row, then decline empties the list', async ({
   })
   await page.route('**/api/v1/story-requests/req-2/decline', (route) => {
     requests = requests.filter((r) => r.id !== 'req-2')
-    return route.fulfill({ json: null })
+    return route.fulfill({ json: { id: 'req-2', status: 'declined' } })
   })
 
   await page.goto('/guardian/requests')

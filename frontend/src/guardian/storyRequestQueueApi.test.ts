@@ -42,9 +42,11 @@ describe('makeStoryRequestQueueApi', () => {
     expect(result).toEqual(approveData)
   })
 
-  it('decline posts to the decline endpoint', async () => {
-    const { api, post } = fakeAxios(null)
-    await makeStoryRequestQueueApi(api).decline('req1')
+  it('decline posts to the decline endpoint and returns the body', async () => {
+    const declineData = { id: 'req1', status: 'declined' }
+    const { api, post } = fakeAxios(declineData)
+    const result = await makeStoryRequestQueueApi(api).decline('req1')
     expect(post).toHaveBeenCalledWith('/v1/story-requests/req1/decline')
+    expect(result).toEqual(declineData)
   })
 })

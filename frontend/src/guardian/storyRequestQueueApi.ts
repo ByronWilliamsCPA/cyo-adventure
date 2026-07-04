@@ -33,10 +33,15 @@ export interface StoryRequestApproved {
   job_id: string
 }
 
+export interface StoryRequestDeclined {
+  id: string
+  status: 'declined'
+}
+
 export interface StoryRequestQueueApi {
   listPending(): Promise<StoryRequestView[]>
   approve(id: string): Promise<StoryRequestApproved>
-  decline(id: string): Promise<void>
+  decline(id: string): Promise<StoryRequestDeclined>
 }
 
 export function makeStoryRequestQueueApi(api: AxiosInstance): StoryRequestQueueApi {
@@ -53,8 +58,11 @@ export function makeStoryRequestQueueApi(api: AxiosInstance): StoryRequestQueueA
       )
       return res.data
     },
-    async decline(id: string): Promise<void> {
-      await api.post(`/v1/story-requests/${id}/decline`)
+    async decline(id: string): Promise<StoryRequestDeclined> {
+      const res = await api.post<StoryRequestDeclined>(
+        `/v1/story-requests/${id}/decline`
+      )
+      return res.data
     },
   }
 }

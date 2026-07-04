@@ -165,10 +165,19 @@ export function RequestsPage() {
       <h1>Story requests</h1>
       <ul className="console-list">
         {state.requests.map((req) => {
-          const isPending = pendingIds.has(req.id)
+          const isInFlight = pendingIds.has(req.id)
+          // Approve/Decline only transition a pending request; the backend
+          // rejects the action for any other status. The queue is fetched with
+          // ?status=pending so non-pending rows do not occur here in practice,
+          // but gate the actions on status anyway so the state machine holds if
+          // the fetch ever widens.
+          const isActionable = req.status === 'pending'
           return (
             <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
               <div className="console-row__body">
+                {/* request_text is nulled server-side only for blocked rows,
+                    which the pending queue never returns; the fallback is
+                    defensive so a null still renders a safe placeholder. */}
                 <p className="console-row__title">
                   {req.request_text ?? 'Idea hidden by content check'}
                 </p>
@@ -190,12 +199,15 @@ export function RequestsPage() {
                 ) : null}
               </div>
               <div className="console-row__actions">
-                <Button disabled={isPending} onClick={() => void approve(req.id)}>
+                <Button
+                  disabled={isInFlight || !isActionable}
+                  onClick={() => void approve(req.id)}
+                >
                   Approve
                 </Button>
                 <Button
                   variant="danger"
-                  disabled={isPending}
+                  disabled={isInFlight || !isActionable}
                   onClick={() => void decline(req.id)}
                 >
                   Decline
