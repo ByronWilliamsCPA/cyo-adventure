@@ -4,6 +4,7 @@ import { createBrowserRouter } from 'react-router-dom'
 
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
+  BooksPage,
   ConsolePage,
   GuardianAuthLayout,
   GuardianShell,
@@ -77,6 +78,7 @@ export const routes = [
             children: [
               { index: true, element: suspended(<ConsolePage />) },
               { path: 'intake', element: suspended(<IntakePage />) },
+              { path: 'books', element: suspended(<BooksPage />) },
               { path: 'profiles', element: suspended(<ProfilesPage />) },
               { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
             ],
