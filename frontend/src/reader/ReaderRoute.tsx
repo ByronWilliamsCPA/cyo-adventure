@@ -3,7 +3,12 @@ import { useNavigate, useParams } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
-import { makeFetchStory, makeSyncApi } from '../api/readerApi'
+import {
+  makeFetchServerState,
+  makeFetchStory,
+  makeRecordCompletion,
+  makeSyncApi,
+} from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
 import { BackToLibrary } from './BackToLibrary'
 import { ReaderPage } from './ReaderPage'
@@ -25,6 +30,14 @@ export function ReaderRoute() {
   const api = useApi()
   const syncApi = useMemo(() => makeSyncApi(api), [api])
   const fetchStory = useMemo(() => makeFetchStory(api), [api])
+  // Memoized like syncApi/fetchStory above, keyed on the same stable `api`
+  // instance: ReaderPage's load() useCallback depends on fetchServerState by
+  // identity, so a non-memoized factory call here would mint a fresh function
+  // every render and re-fire the mount effect in an unbounded loop (see the
+  // NO_SERVER_STATE/NO_RECORD_COMPLETION comment in ReaderPage.tsx for the
+  // regression this pattern guards against).
+  const fetchServerState = useMemo(() => makeFetchServerState(api), [api])
+  const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
   const navigate = useNavigate()
 
   if (!profileId || !storybookId || !version) {
@@ -60,6 +73,8 @@ export function ReaderRoute() {
       key={`${profileId}:${storybookId}:${parsedVersion}`}
       api={syncApi}
       fetchStory={fetchStory}
+      fetchServerState={fetchServerState}
+      recordCompletion={recordCompletion}
       profileId={profileId}
       storybookId={storybookId}
       version={parsedVersion}

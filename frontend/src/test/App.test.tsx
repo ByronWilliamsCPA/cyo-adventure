@@ -45,6 +45,11 @@ vi.mock('../api/readerApi', () => ({
         },
       ],
     }),
+  // Cold-cache server resume and completion posting are exercised by their own
+  // suites (readerApi.test.ts, ReaderPage.test.tsx, ReaderRoute.test.tsx); here
+  // they just need to resolve so the wired route mounts without a backend.
+  makeFetchServerState: () => () => Promise.resolve(null),
+  makeRecordCompletion: () => () => Promise.resolve(),
 }))
 
 const mockGet = vi.fn()
