@@ -2,11 +2,13 @@
 
 Exercises the actual `scripts.seed_dev_data.seed_dev_data` function against a
 testcontainers Postgres (the same pattern `tests/integration/conftest.py`
-uses for the app's own fixtures), then asserts on the two invariants the
-library API enforces: `StorybookVersion.approved_by`/`published_at` must be
-set, and a `StorybookAssignment` row must exist for the seeded profile. Both
-were the root cause of every seeded story 404ing in a fresh local dev
-database.
+uses for the app's own fixtures), then asserts the seeded rows clear the
+library read gate: `StorybookVersion.approved_by` must be set and a
+`StorybookAssignment` row must exist for the seeded profile (alongside a
+published status and a current version). The missing `approved_by` and the
+missing assignment were the root cause of every seeded story 404ing in a fresh
+local dev database. `published_at` is stamped for data hygiene; the read gate
+in `api/library.py` does not itself check it.
 """
 
 from __future__ import annotations
@@ -40,11 +42,14 @@ _CHILD_SUBJECT = "dev-child"
 async def _library_storybook_ids(
     sessions: async_sessionmaker[AsyncSession], profile_id: object
 ) -> list[str]:
-    """Run the library-listing query's read-gate directly against the schema.
+    """Run the library-listing read-gate predicates directly against the schema.
 
-    Mirrors `api/library.py`'s filter set (published, approved, assigned)
-    without going through HTTP auth, since the test only needs to verify the
-    seeded rows satisfy the same predicates the real endpoint applies.
+    Reproduces the published/approved/assigned predicates `api/library.py`'s
+    listing gate applies, scoped to the profile via the assignment EXISTS
+    clause. It intentionally omits the endpoint's family scoping and HTTP auth:
+    the test only needs to confirm the seeded rows clear the read-gate
+    predicates, and the single seeded profile makes assignment scoping
+    sufficient here.
     """
     async with sessions() as session:
         rows = await session.scalars(
@@ -112,7 +117,8 @@ async def test_seed_dev_data_is_idempotent(
     engine: AsyncEngine,
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """A second run does not raise (composite-key/unique-constraint safe) and no-ops."""
+    """A second run is a no-op: the guardian-existence guard returns early before
+    re-inserting, so no composite-key/unique constraint is ever exercised twice."""
     await seed_dev_data(engine=engine, session_factory=sessions)
     await seed_dev_data(engine=engine, session_factory=sessions)
 

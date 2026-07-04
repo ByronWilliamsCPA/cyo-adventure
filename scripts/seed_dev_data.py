@@ -19,6 +19,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from cyo_adventure.core.database import Base, get_engine, get_session
 from cyo_adventure.db.models import (
@@ -55,15 +56,26 @@ async def seed_dev_data(
         engine: Async engine to create the schema on. Defaults to the app's
             shared engine (``get_engine()``); tests inject a testcontainers
             engine here.
-        session_factory: Callable returning a new ``AsyncSession``. Defaults
-            to ``get_session``; tests inject a factory bound to the same
-            engine passed above.
+        session_factory: Callable returning a new ``AsyncSession``. When
+            omitted it is derived from ``engine`` so schema creation and row
+            inserts always target the same database; if ``engine`` is omitted
+            too, it defaults to the app's ``get_session``.
     """
     active_engine = engine if engine is not None else get_engine()
     async with active_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-    new_session = session_factory if session_factory is not None else get_session
+    # #ASSUME: data integrity: schema creation and row inserts must hit the same
+    # database. When only ``engine`` is injected, bind the session factory to it
+    # so a caller cannot create the schema on one engine while inserting through
+    # the app's default ``get_session`` (a silent split-database footgun).
+    # #VERIFY: seed_dev_data(engine=X) with no session_factory writes to X.
+    if session_factory is not None:
+        new_session = session_factory
+    elif engine is not None:
+        new_session = async_sessionmaker(active_engine, expire_on_commit=False)
+    else:
+        new_session = get_session
 
     async with new_session() as session:
         existing = await session.scalar(
