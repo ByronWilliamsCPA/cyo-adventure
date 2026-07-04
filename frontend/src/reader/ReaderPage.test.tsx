@@ -5,6 +5,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { StrictMode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -277,5 +278,41 @@ describe('ReaderPage', () => {
     await screen.findByTestId('conflict-dialog')
     fireEvent.click(screen.getByTestId('conflict-keep'))
     await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+  })
+
+  it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {
+    let calls = 0
+    const api: SyncApi = {
+      putReadingState: (_p, _s, body) => {
+        calls += 1
+        // The server would 409 a second identical save at the same base revision;
+        // if the client dedupes the StrictMode double-fire, calls stays at 1.
+        if (calls === 1) {
+          return Promise.resolve<PutResponse>({ status: 200, row: { ...body, state_revision: 1 } })
+        }
+        return Promise.resolve<PutResponse>({
+          status: 409,
+          currentRow: { ...body, state_revision: 1 },
+        })
+      },
+    }
+    render(
+      <StrictMode>
+        <MemoryRouter>
+          <ReaderPage
+            api={api}
+            fetchStory={() => Promise.resolve(lantern)}
+            profileId="p_strict"
+            storybookId="s_lantern_cave"
+            version={1}
+          />
+        </MemoryRouter>
+      </StrictMode>
+    )
+    await screen.findByTestId('reader')
+    // Let any second effect-fire flush.
+    await waitFor(() => expect(calls).toBeGreaterThanOrEqual(1))
+    expect(calls).toBe(1)
+    expect(screen.queryByTestId('conflict-dialog')).toBeNull()
   })
 })

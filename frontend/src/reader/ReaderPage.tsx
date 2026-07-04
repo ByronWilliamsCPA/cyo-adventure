@@ -86,6 +86,9 @@ export function ReaderPage({
   const [readerKey, setReaderKey] = useState(0)
   const revisionRef = useRef(0)
   const failedSaveCountRef = useRef(0)
+  // Content signature of the last save this instance issued. Guards against the
+  // React StrictMode double-invoke firing two identical saves for the same state.
+  const lastSaveSignatureRef = useRef<string | null>(null)
   // Guards a load() call against a later, fresher load() resolving first (e.g.
   // a double-clicked "Try again"). ReaderRoute also keys ReaderPage by story
   // identity so navigating to a different story remounts instead of reusing
@@ -146,6 +149,28 @@ export function ReaderPage({
 
   const persist = useCallback(
     async (reading: ReadingState) => {
+      // #CRITICAL: timing: the app runs under <StrictMode> (main.tsx), so mount effects
+      // double-invoke in dev and Reader's progress effect reports the initial state
+      // twice. Each save mints a fresh event_id, so the server's event-id dedup misses
+      // and its revision check 409s the second write, surfacing a false cross-device
+      // conflict (issue #86).
+      // #VERIFY: skip a save whose CONTENT matches the last one issued, computed and
+      // stored synchronously before any await, so the second fire is a no-op and no
+      // duplicate PUT (hence no 409) is sent. Content-only (not revision) so it also
+      // dedupes when the first save has already advanced revisionRef.
+      const signature = JSON.stringify({
+        current_node: reading.current_node,
+        var_state: reading.var_state,
+        path: reading.path,
+        visit_set: reading.visit_set,
+      })
+      // #EDGE: data-integrity: JSON.stringify key order follows insertion order; two
+      // distinct-but-equal states rebuilt with different key order would miss the dedup
+      // (a harmless extra save), never falsely skip a real content change.
+      if (lastSaveSignatureRef.current === signature) {
+        return
+      }
+      lastSaveSignatureRef.current = signature
       const stamped: ReadingState = {
         ...reading,
         state_revision: revisionRef.current,
