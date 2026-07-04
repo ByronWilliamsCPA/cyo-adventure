@@ -175,11 +175,17 @@ project sets `fullyParallel: false` for `e2e-real/`.
 
 ### 5.4 CI
 
-New `frontend-e2e-real` job in `ci.yml`: Postgres service container, `uv sync`,
-seed, start uvicorn in the background, wait for the readiness probe, then
-`npm run test:e2e:real`. One retry like the existing e2e job. The job is a
+**As-built deviation (recorded post-implementation):** the Playwright suite is
+local-only and does not run in CI. Both tiers, the mocked `test:e2e` step in
+the `frontend` job and the dedicated real-backend job, were removed from
+`ci.yml`; the runbooks in `frontend/README.md` are the way to run them before
+opening a PR. The original design below is kept for context.
+
+~~New `frontend-e2e-real` job in `ci.yml`: Postgres service container,
+`uv sync`, seed, start uvicorn in the background, wait for the readiness probe,
+then `npm run test:e2e:real`. One retry like the existing e2e job. The job is a
 normal PR check (the merge queue's required-check list is a repo setting and
-is not changed by this work).
+is not changed by this work).~~
 
 ## 6. Error handling and flake policy
 
