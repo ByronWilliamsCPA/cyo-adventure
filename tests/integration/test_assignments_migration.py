@@ -19,6 +19,10 @@ if TYPE_CHECKING:
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 _PREV_HEAD = "c3d4e5f6a7b8"
+# Pin the round-trip to the storybook_assignment revision explicitly rather than
+# to "head"/"-1"; a relative target silently retargets whenever a later migration
+# is added on top, which is what broke this test when add_story_request landed.
+_ASSIGNMENT_HEAD = "d4e5f6a7b8c9"
 _CHILD_A = "00000000-0000-0000-0000-0000000000a1"
 _CHILD_B = "00000000-0000-0000-0000-0000000000b1"
 
@@ -95,11 +99,11 @@ def test_assignment_migration_imports_and_chains() -> None:
 def test_assignment_migration_upgrade_downgrade(
     _migration_pg_url: str,  # noqa: PT019
 ) -> None:
-    """alembic upgrade head then downgrade -1 succeed on a clean DB."""
+    """alembic upgrade then downgrade of the storybook_assignment revision succeed."""
     project_root = Path(__file__).resolve().parents[2]
     env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": _migration_pg_url}
     up = subprocess.run(
-        ["uv", "run", "alembic", "upgrade", "head"],  # noqa: S607
+        ["uv", "run", "alembic", "upgrade", _ASSIGNMENT_HEAD],  # noqa: S607
         capture_output=True,
         text=True,
         env=env,
@@ -109,7 +113,7 @@ def test_assignment_migration_upgrade_downgrade(
     assert up.returncode == 0, f"upgrade failed:\n{up.stdout}\n{up.stderr}"
     assert "Running upgrade" in up.stderr
     down = subprocess.run(
-        ["uv", "run", "alembic", "downgrade", "-1"],  # noqa: S607
+        ["uv", "run", "alembic", "downgrade", _PREV_HEAD],  # noqa: S607
         capture_output=True,
         text=True,
         env=env,
@@ -148,7 +152,7 @@ async def test_assignment_backfill_data_integrity(
             for stmt in _SEED_SQL:
                 await conn.execute(sa.text(stmt))
 
-        up = _run_alembic(project_root, env, "upgrade", "head")
+        up = _run_alembic(project_root, env, "upgrade", _ASSIGNMENT_HEAD)
         assert up.returncode == 0, f"upgrade failed:\n{up.stdout}\n{up.stderr}"
 
         async with engine.connect() as conn:
@@ -168,7 +172,7 @@ async def test_assignment_backfill_data_integrity(
         # that no cross-family pair was backfilled.
         assert actual == expected, f"backfill rows wrong: {actual!r}"
 
-        down = _run_alembic(project_root, env, "downgrade", "-1")
+        down = _run_alembic(project_root, env, "downgrade", _PREV_HEAD)
         assert down.returncode == 0, f"downgrade failed:\n{down.stdout}\n{down.stderr}"
 
         async with engine.connect() as conn:
