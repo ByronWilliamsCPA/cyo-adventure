@@ -8,14 +8,32 @@
 
 import type { AxiosInstance } from 'axios'
 
+import type { FindingVerdict, ReviewSummary } from './reviewApi'
+
 export interface AssignmentList {
   storybook_id: string
   profile_ids: string[]
 }
 
+export interface ContentFinding {
+  category: string
+  verdict: FindingVerdict
+  message: string
+}
+
+export interface ContentSummary {
+  storybook_id: string
+  version: number
+  screened: boolean
+  summary: ReviewSummary | null
+  flagged_count: number
+  findings: ContentFinding[]
+}
+
 export interface AssignApi {
   get(storybookId: string): Promise<string[]>
   add(storybookId: string, profileIds: string[]): Promise<string[]>
+  contentSummary(storybookId: string): Promise<ContentSummary>
 }
 
 export function makeAssignApi(api: AxiosInstance): AssignApi {
@@ -32,6 +50,12 @@ export function makeAssignApi(api: AxiosInstance): AssignApi {
         { profile_ids: profileIds }
       )
       return res.data.profile_ids
+    },
+    async contentSummary(storybookId: string): Promise<ContentSummary> {
+      const res = await api.get<ContentSummary>(
+        `/v1/storybooks/${storybookId}/content-summary`
+      )
+      return res.data
     },
   }
 }

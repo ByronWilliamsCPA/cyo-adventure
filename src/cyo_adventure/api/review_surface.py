@@ -12,8 +12,10 @@ from typing import cast
 from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.api.schemas import (
+    ContentSummaryView,
     FindingView,
     FlaggedPassage,
+    GuardianFinding,
     ReviewQueueItem,
     ReviewSummary,
     ReviewSurfaceView,
@@ -277,3 +279,62 @@ def _queue_title(blob: dict[str, object], storybook_id: str) -> str:
     """Return the story title from the blob, or the id as a fallback."""
     title = blob.get("title")
     return title if isinstance(title, str) and title else storybook_id
+
+
+def build_content_summary(
+    *,
+    storybook_id: str,
+    version: int,
+    blob: dict[str, object],
+    moderation_report: dict[str, object] | None,
+) -> ContentSummaryView:
+    """Build the redacted guardian content summary for a published story version.
+
+    Reuses build_review_surface so Verdict.PASS filtering, the screened-versus-
+    unscreened rule, and corrupt-report rejection are defined in exactly one
+    place. It then projects the admin surface down to a guardian-safe view: the
+    gating summary, the total flagged count (per-node plus story-level), and the
+    story-level findings only. Per-node flagged passages are intentionally
+    dropped: a guardian is the assigner, not the safety reviewer, and passage
+    prose can spoil content and leak generation internals.
+
+    Args:
+        storybook_id: The story id.
+        version: The published version being summarized.
+        blob: The stored story blob (source of node prose for the surface).
+        moderation_report: The stored report, or ``None`` if unmoderated.
+
+    Returns:
+        ContentSummaryView: Screened flag, gating summary, flagged count, and
+            story-level findings (category, verdict, message).
+
+    Raises:
+        ValidationError: If the stored moderation report is corrupt at rest
+            (propagated from build_review_surface).
+    """
+    surface = build_review_surface(
+        status="published",
+        storybook_id=storybook_id,
+        version=version,
+        blob=blob,
+        moderation_report=moderation_report,
+    )
+    flagged_count = sum(
+        len(passage.findings) for passage in surface.flagged_passages
+    ) + len(surface.story_level_findings)
+    findings = [
+        GuardianFinding(
+            category=finding.category,
+            verdict=finding.verdict,
+            message=finding.message,
+        )
+        for finding in surface.story_level_findings
+    ]
+    return ContentSummaryView(
+        storybook_id=storybook_id,
+        version=version,
+        screened=surface.screened,
+        summary=surface.summary,
+        flagged_count=flagged_count,
+        findings=findings,
+    )

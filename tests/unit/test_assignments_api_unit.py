@@ -9,6 +9,10 @@ import pytest
 
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.schemas import AssignmentCreateBody, AssignmentListView
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,13 +58,19 @@ class _FakeSession:
         *,
         book: object | None = None,
         assigned: list[object] | None = None,
+        version: object | None = None,
     ) -> None:
         self._book = book
         self._assigned = list(assigned or [])
+        self._version = version
         self.added: list[object] = []
         self.flushed = False
 
     async def get(self, model: type[object], key: object) -> object | None:
+        from cyo_adventure.db.models import StorybookVersion
+
+        if model is StorybookVersion:
+            return self._version
         return self._book
 
     async def scalars(self, stmt: object) -> _FakeScalars:
@@ -300,3 +310,134 @@ class TestListAssignments:
         session = _FakeSession(book=_book("s1", other))
         with pytest.raises(AuthorizationError):
             await list_assignments("s1", _ctx(_guardian(fam, set()), session))
+
+
+class TestContentSummary:
+    @staticmethod
+    def _pub_book(storybook_id: str, family_id: uuid.UUID) -> object:
+        from cyo_adventure.db.models import Storybook
+
+        b = Storybook(id=storybook_id, family_id=family_id)
+        b.status = "published"
+        b.current_published_version = 1
+        return b
+
+    @staticmethod
+    def _version_row(storybook_id: str, *, approved: bool = True) -> object:
+        from cyo_adventure.db.models import StorybookVersion
+
+        return StorybookVersion(
+            storybook_id=storybook_id,
+            version=1,
+            blob={"id": storybook_id, "nodes": [{"id": "n1", "body": "Prose."}]},
+            approved_by=uuid.uuid4() if approved else None,
+            moderation_report={
+                "findings": [
+                    {
+                        "stage": 3,
+                        "source": "llm_coherence",
+                        "category": "coherence",
+                        "node_id": None,
+                        "verdict": "advisory",
+                        "score": None,
+                        "message": "slightly disjoint",
+                    }
+                ],
+                "summary": {
+                    "count": 1,
+                    "hard_block": False,
+                    "soft_flag": False,
+                    "repaired": False,
+                    "reviewer_independent": True,
+                },
+            },
+        )
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_guardian_gets_summary(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", fam), version=self._version_row("s1")
+        )
+        view = await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+        assert view.storybook_id == "s1"
+        assert view.screened is True
+        assert view.findings[0].category == "coherence"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_child_is_forbidden(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", fam), version=self._version_row("s1")
+        )
+        with pytest.raises(AuthorizationError):
+            await get_content_summary("s1", _ctx(_child(fam, uuid.uuid4()), session))
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_cross_family_guardian_is_forbidden(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        owner_fam = uuid.uuid4()
+        other_fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", owner_fam), version=self._version_row("s1")
+        )
+        with pytest.raises(AuthorizationError):
+            await get_content_summary("s1", _ctx(_guardian(other_fam, set()), session))
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_admin_reads_cross_family(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        owner_fam = uuid.uuid4()
+        admin_fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", owner_fam), version=self._version_row("s1")
+        )
+        view = await get_content_summary("s1", _ctx(_admin(admin_fam, set()), session))
+        assert view.storybook_id == "s1"
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_missing_story_is_404(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        session = _FakeSession(book=None)
+        with pytest.raises(ResourceNotFoundError):
+            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_unpublished_story_is_404(self) -> None:
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        draft = _book("s1", fam, status="in_review")
+        session = _FakeSession(book=draft)
+        with pytest.raises(ResourceNotFoundError):
+            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_unapproved_version_is_404(self) -> None:
+        """Defense-in-depth: published status with an unapproved version row
+        (approved_by is None) is 404, not a summary leak, even though the sole
+        publish path is expected to never produce this state."""
+        from cyo_adventure.api.assignments import get_content_summary
+
+        fam = uuid.uuid4()
+        session = _FakeSession(
+            book=self._pub_book("s1", fam),
+            version=self._version_row("s1", approved=False),
+        )
+        with pytest.raises(ResourceNotFoundError):
+            await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
