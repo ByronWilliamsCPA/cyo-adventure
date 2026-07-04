@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Guardian and admin content review summary: `GET /api/v1/storybooks/{id}/content-summary`
+  returns a redacted moderation summary (screened flag, gating summary, flagged
+  count, story-level findings only), rendered as content tags in the guardian
+  assign dialog. Per-node flagged passages remain admin-only.
 - Experimental `ModalProvider` generation leg (ADR-010 item 2): an HTTP adapter
   mirroring `OpenRouterProvider` for self-hosted generation via Modal Auto
   Endpoints, wired behind `generation_provider=modal` as a bare leg that never
