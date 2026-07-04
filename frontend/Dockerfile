@@ -76,11 +76,16 @@ COPY --from=builder --chown=65532:65532 /app/dist /usr/share/nginx/html
 # Copy nginx configuration
 COPY --chown=65532:65532 nginx.conf /etc/nginx/conf.d/default.conf
 
-# Replace the cache/log/run directories with empty ones owned by uid 65532;
-# there is no shell available here to chown the existing ones in place.
+# Replace nginx's writable runtime directories with empty ones owned by uid
+# 65532; there is no shell available here to chown the existing ones in
+# place. Paths per `nginx -V`'s compiled-in --*-path options for this image:
+# pid under /run, lock under /var/lock, client-body/fastcgi/proxy/scgi/uwsgi
+# temp dirs under /var/lib/nginx, plus the conventional cache and log dirs.
 COPY --from=builder --chown=65532:65532 /empty-owned /var/cache/nginx
 COPY --from=builder --chown=65532:65532 /empty-owned /var/log/nginx
 COPY --from=builder --chown=65532:65532 /empty-owned /var/run
+COPY --from=builder --chown=65532:65532 /empty-owned /var/lock
+COPY --from=builder --chown=65532:65532 /empty-owned /var/lib/nginx
 
 # Expose port 80
 EXPOSE 80
