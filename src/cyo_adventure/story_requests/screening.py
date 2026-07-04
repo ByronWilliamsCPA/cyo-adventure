@@ -1,4 +1,8 @@
-"""Synchronous screening of a child's story-request text at submission.
+"""Submission-time screening of a child's story-request text.
+
+The public entrypoint (``screen_request_text``) is async: the deterministic PII
+egress guard is synchronous, but the Stage-0 classifier pass makes async HTTP
+calls.
 
 Two guards run in order: the deterministic PII egress guard (local, always runs)
 then the Stage-0 classifiers over the single request "node". A bright-line PII
