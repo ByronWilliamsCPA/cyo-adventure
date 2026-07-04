@@ -13,7 +13,7 @@ service layer, so it never touches the guardian-only POST /concepts gate.
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal, cast, get_args
 
 from fastapi import APIRouter, BackgroundTasks
 from sqlalchemy import select
@@ -49,9 +49,7 @@ router = APIRouter(prefix="/api/v1", tags=["story-requests"])
 
 _log = logging.getLogger(__name__)
 
-_VALID_STATUSES: frozenset[str] = frozenset(
-    {"pending", "approved", "declined", "blocked"}
-)
+_VALID_STATUSES: frozenset[str] = frozenset(get_args(StoryRequestStatus))
 
 
 def _enqueue_safely(job_id: str) -> None:
@@ -64,7 +62,9 @@ def _enqueue_safely(job_id: str) -> None:
         job_id: The UUID string of the GenerationJob row to enqueue.
     """
     # #ASSUME: external-resources: Redis may be unreachable; the row is durable,
-    # so a failed enqueue is logged and a later sweep/retry can process it.
+    # so a failed enqueue is logged, not raised. No automatic reconciler
+    # re-enqueues stale queued rows yet, so recovery from a lost enqueue is
+    # currently manual.
     # #VERIFY: test coverage in test_generation_api::test_enqueue_returns_202.
     try:
         enqueue_generation(job_id, settings)
@@ -110,18 +110,32 @@ def _to_view(request: StoryRequest) -> StoryRequestView:
             verdict = item.get("verdict")
             category = item.get("category")
             message = item.get("message")
-            if (
+            if not (
                 isinstance(verdict, str)
                 and isinstance(category, str)
                 and isinstance(message, str)
             ):
-                flags.append(
-                    StoryRequestFlag(
-                        category=category,
-                        verdict=Verdict(verdict),
-                        message=message,
-                    )
+                continue
+            # #ASSUME: data-integrity: moderation_flags is unconstrained JSONB, so
+            # a stored verdict outside the Verdict enum (legacy row or manual edit)
+            # must not 500 the whole list; skip the malformed flag and log.
+            # #VERIFY: test_to_view_skips_malformed_verdict.
+            try:
+                parsed_verdict = Verdict(verdict)
+            except ValueError:
+                _log.warning(
+                    "story_request %s has out-of-enum verdict %r; skipping flag",
+                    request.id,
+                    verdict,
                 )
+                continue
+            flags.append(
+                StoryRequestFlag(
+                    category=category,
+                    verdict=parsed_verdict,
+                    message=message,
+                )
+            )
     return StoryRequestView(
         id=str(request.id),
         profile_id=str(request.profile_id),

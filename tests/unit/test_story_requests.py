@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 
 import httpx
 import pytest
 
 from cyo_adventure.api.deps import Principal
+from cyo_adventure.api.story_requests import _to_view
 from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     StateTransitionError,
@@ -297,3 +299,41 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
 
     with pytest.raises(ResourceNotFoundError):
         await service.approve_story_request(session, principal, request)
+
+
+def test_to_view_skips_malformed_verdict() -> None:
+    """An out-of-enum stored verdict is skipped, not raised, so the view survives.
+
+    moderation_flags is unconstrained JSONB, so a legacy or manually-edited row
+    can hold a verdict string outside the Verdict enum. _to_view must drop that
+    single flag rather than let Verdict(verdict) raise and 500 the whole list.
+    """
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        moderation_flags={
+            "blocked": False,
+            "flags": [
+                {
+                    "category": "toxicity",
+                    "verdict": "not-a-real-verdict",
+                    "message": "x",
+                },
+                {
+                    "category": "toxicity",
+                    "verdict": "advisory",
+                    "message": "borderline",
+                },
+            ],
+        },
+        created_at=datetime(2026, 7, 4, tzinfo=UTC),
+    )
+
+    view = _to_view(request)
+
+    assert len(view.moderation_flags) == 1
+    assert view.moderation_flags[0].verdict is Verdict.ADVISORY
+    assert view.moderation_flags[0].message == "borderline"
