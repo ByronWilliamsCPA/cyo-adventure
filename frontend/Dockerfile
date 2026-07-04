@@ -42,6 +42,17 @@ COPY . .
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=${VITE_API_URL}
 
+# Guardian login requires these at build time (Vite inlines VITE_* env vars
+# into the bundle during `npm run build`; supabaseClient.ts throws at runtime
+# if they are unset). No fake defaults: the kid reading surface never imports
+# the Supabase client, so a build without these args must still succeed, and
+# a guardian-facing build without them should fail loudly at runtime rather
+# than silently pointing at a placeholder project.
+ARG VITE_SUPABASE_URL=
+ARG VITE_SUPABASE_ANON_KEY=
+ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+
 # Build the application
 RUN npm run build
 
