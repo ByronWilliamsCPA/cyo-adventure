@@ -114,7 +114,7 @@ describe('AssignChildrenDialog', () => {
     expect(screen.getByText('slightly disjoint')).toBeInTheDocument()
   })
 
-  it('still renders the assign list when the content summary fails', async () => {
+  it('still renders the assign list and a review-unavailable notice when the content summary fails', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url.includes('/content-summary')) return Promise.reject(new Error('down'))
       if (url.includes('/assignments'))
@@ -125,5 +125,22 @@ describe('AssignChildrenDialog', () => {
     expect(
       await screen.findByRole('checkbox', { name: /Reader A$/ })
     ).toBeInTheDocument()
+    expect(screen.getByText(/content review unavailable/i)).toBeInTheDocument()
+  })
+
+  it('renders the content-review-unavailable notice on a rejected contentSummary()', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/content-summary')) return Promise.reject(new Error('down'))
+      if (url.includes('/assignments'))
+        return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+      return Promise.resolve({ data: PROFILES })
+    })
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    expect(
+      await screen.findByText(/content review unavailable right now/i)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/you can still assign/i)).toBeInTheDocument()
+    // Never both: a load failure must never look identical to "no flags".
+    expect(screen.queryByText('Clean')).not.toBeInTheDocument()
   })
 })

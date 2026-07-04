@@ -73,6 +73,7 @@ export function AssignChildrenDialog({
   const [saveError, setSaveError] = useState(false)
   const [saving, setSaving] = useState(false)
   const [summary, setSummary] = useState<ContentSummary | null>(null)
+  const [summaryError, setSummaryError] = useState(false)
 
   useEffect(() => {
     let cancelled = false
@@ -100,17 +101,27 @@ export function AssignChildrenDialog({
   useEffect(() => {
     let cancelled = false
     async function loadSummary() {
+      // Reset stale results from a previous storybookId before the new fetch
+      // resolves; without this a guardian could briefly (or, if the fetch
+      // never settles, indefinitely) see the prior story's flags. This runs
+      // in the nested async function, not the effect body itself, per the
+      // set-state-in-effect rule (see LibraryPage.tsx for the same pattern).
+      if (cancelled) return
+      setSummary(null)
+      setSummaryError(false)
       try {
         const result = await assignApi.contentSummary(storybookId)
         if (!cancelled) setSummary(result)
       } catch (err) {
         // Content tags are supplementary: a failure here must not block
         // assignment. Log the message (not the axios error, whose config
-        // headers carry the bearer token) and leave the section unrendered.
+        // headers carry the bearer token) and surface a visible notice so
+        // the failure is never mistaken for "nothing was flagged".
         console.error(
           'content summary load failed:',
           err instanceof Error ? err.message : err
         )
+        if (!cancelled) setSummaryError(true)
       }
     }
     void loadSummary()
@@ -182,7 +193,14 @@ export function AssignChildrenDialog({
           {saveError ? (
             <p role="alert">We could not assign this story. Please try again.</p>
           ) : null}
-          {summary ? <ContentSummarySection summary={summary} /> : null}
+          {summaryError ? (
+            <p className="assign__content-summary console__notice">
+              Content review unavailable right now. You can still assign, but
+              flags could not be loaded.
+            </p>
+          ) : summary ? (
+            <ContentSummarySection summary={summary} />
+          ) : null}
           <ul className="assign__list">
             {profiles.map((profile) => {
               const already = assigned.has(profile.id)
