@@ -24,6 +24,7 @@ import pytest
 from cyo_adventure.core.exceptions import ProviderError, ValidationError
 from cyo_adventure.generation.providers import (
     FallbackProvider,
+    ModalProvider,
     OllamaProvider,
     OpenRouterProvider,
 )
@@ -100,6 +101,25 @@ def _ollama(
         timeout_seconds=30,
         username=username,
         password=password,
+        max_retries=max_retries,
+        backoff_base_seconds=0,
+        client=_client(handler),
+    )
+
+
+def _modal(
+    handler: Callable[[httpx.Request], httpx.Response],
+    *,
+    model: str = "google/gemma-4-26b-a4b-it",
+    api_key: str | None = "test-modal-key",
+    max_retries: int = 3,
+) -> ModalProvider:
+    """Build a ModalProvider wired to a mock client with no backoff sleep."""
+    return ModalProvider(
+        base_url="https://example--cyo-standard.modal.run/v1",
+        model=model,
+        api_key=api_key,
+        timeout_seconds=30,
         max_retries=max_retries,
         backoff_base_seconds=0,
         client=_client(handler),
@@ -900,3 +920,168 @@ class TestOpenRouterProviderBranches:
         with pytest.raises(ProviderError) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
+
+
+# ---------------------------------------------------------------------------
+# ModalProvider
+# ---------------------------------------------------------------------------
+
+
+class TestModalProvider:
+    """Modal adapter: success, error mapping, retry, optional bearer auth."""
+
+    @pytest.mark.asyncio
+    async def test_success_returns_content_verbatim(self) -> None:
+        """A 200 response returns the model content with no fence stripping."""
+        raw = '{"id": "s_x", "title": "T"}'
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body(raw))
+
+        provider = _modal(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == raw
+
+    @pytest.mark.asyncio
+    async def test_request_sends_model_and_max_tokens(self) -> None:
+        """The request body carries model and max_tokens, plain system/user messages."""
+        captured: dict[str, object] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured.update(json.loads(request.content))
+            return httpx.Response(200, json=_openrouter_ok_body("{}"))
+
+        provider = _modal(handler)
+        await provider.complete(system="SYS", prompt="USR", max_tokens=4096)
+        assert captured["model"] == "google/gemma-4-26b-a4b-it"
+        assert captured["max_tokens"] == 4096
+        assert captured["messages"] == [
+            {"role": "system", "content": "SYS"},
+            {"role": "user", "content": "USR"},
+        ]
+
+    @pytest.mark.asyncio
+    async def test_api_key_sends_bearer_header(self) -> None:
+        """A configured api_key is sent as a Bearer Authorization header."""
+        captured_headers: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured_headers.update(request.headers)
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler, api_key="secret-token")
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert captured_headers["authorization"] == "Bearer secret-token"
+
+    @pytest.mark.asyncio
+    async def test_no_api_key_omits_authorization_header(self) -> None:
+        """A None api_key sends no Authorization header at all."""
+        captured_headers: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured_headers.update(request.headers)
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler, api_key=None)
+        await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert "authorization" not in captured_headers
+
+    @pytest.mark.asyncio
+    async def test_404_is_leg_fatal_without_retry(self) -> None:
+        """An invalid/unavailable model (404) raises leg-fatal and does not retry."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(404, json={"error": "no such model"})
+
+        provider = _modal(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+        assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_401_is_leg_fatal(self) -> None:
+        """An auth failure (401) raises leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(401, json={"error": "bad key"})
+
+        provider = _modal(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
+    async def test_429_retries_then_succeeds(self) -> None:
+        """A rate-limit (429) is transient: retry then succeed."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                return httpx.Response(429, json={"error": "slow down"})
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_persistent_5xx_exhausts_to_transient_error(self) -> None:
+        """A persistent 500 exhausts retries and raises a non-leg-fatal error."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            return httpx.Response(500, json={"error": "boom"})
+
+        provider = _modal(handler, max_retries=3)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+        assert calls == 3
+
+    @pytest.mark.asyncio
+    async def test_connect_error_is_transient_and_retried(self) -> None:
+        """A transport error (connect/timeout) is transient and retried."""
+        calls = 0
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            nonlocal calls
+            calls += 1
+            if calls < 2:
+                raise httpx.ConnectError("refused")
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+        assert calls == 2
+
+    @pytest.mark.asyncio
+    async def test_strips_markdown_code_fence(self) -> None:
+        """A model that wraps JSON in a fence is normalized to raw JSON."""
+        fenced = '```json\n{"schema_version": "1.0"}\n```'
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body(fenced))
+
+        provider = _modal(handler)
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == '{"schema_version": "1.0"}'
+        assert json.loads(result) == {"schema_version": "1.0"}
+
+    def test_name_includes_model(self) -> None:
+        """The leg name combines provider and model id."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        provider = _modal(handler, model="openai/gpt-oss-120b")
+        assert provider.name == "modal:openai/gpt-oss-120b"
