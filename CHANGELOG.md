@@ -45,6 +45,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `length` + `narrative_style` + `production_eligible: true`, passes the full
   PL-17/19/20/21 gate (`blocked=False`), and is discovered automatically by the
   glob-based `test_production_skeletons_*` pin test.
+- Guardian email/password sign-in on the login page, alongside the Google OAuth button
+  (ADR-009). The form calls `supabase.auth.signInWithPassword`, which
+  establishes the same Supabase session the OAuth path produces, so the `AuthProvider`
+  resolves the backend `Principal` via `/me` unchanged, no new auth machinery. A new
+  `signInWithPassword` context method rethrows Supabase's `{ error }` (matching
+  `signInWithOAuth`), and the form surfaces one generic "email and password didn't match"
+  message that never reveals whether an email is registered. This unblocks the R1 family
+  logins provisioned directly in Supabase, which previously had no browser entry point
+  (the page was OAuth-only). Covered by `LoginPage.test.tsx` (submit, failure message,
+  signed-in redirect) and new `AuthContext` delegation/rejection tests.
 - First production-eligible story skeletons (P1), one per launch cell of the ADR-011
   matrix: `8-11 short prose` (The Cave of Echoes, time_cave, 64 nodes),
   `5-8 short prose` (The Lantern Festival, loop_and_grow, 36 nodes), and

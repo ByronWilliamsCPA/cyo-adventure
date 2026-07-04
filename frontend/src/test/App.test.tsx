@@ -63,6 +63,7 @@ vi.mock('../auth/supabaseClient', () => ({
       getSession: (...args: unknown[]) => mockGetSession(...args),
       onAuthStateChange: (...args: unknown[]) => mockOnAuthStateChange(...args),
       signInWithOAuth: vi.fn(),
+      signInWithPassword: vi.fn(),
       signOut: vi.fn(),
     },
   },
