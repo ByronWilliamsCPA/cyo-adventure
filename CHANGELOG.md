@@ -101,6 +101,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wired into the intake page's approved-request rows via an "Assign more" action.
 
 ### Fixed
+- Fixed `frontend/Dockerfile` failing to build against the hardened
+  `dhi-node`/`dhi-nginx` GHCR mirror images used for the homelab R1 deploy.
+  Both runtime tags ship no shell, which broke every shell-form `RUN` (`npm
+  ci`, `npm run build`, `apt-get`/`groupadd`/`useradd`). The `deps`/`builder`/
+  `development` stages now build from the new `dhi-node:22-debian13-dev`
+  builder variant; the `production` stage reuses `dhi-nginx`'s own built-in
+  non-root user (uid/gid 65532) instead of creating one, sets ownership via
+  `COPY --chown`, drops the `curl`-based `HEALTHCHECK` (no HTTP client
+  available to run one with), and fixes `CMD` duplicating the binary name
+  against the base image's own `ENTRYPOINT ["nginx"]`.
 - Enabled the `/api` reverse-proxy block in `frontend/nginx.conf`, needed for the
   homelab R1 internal-web deploy where nginx is the ingress point in front of the
   FastAPI container. Also added a `backend` network alias on this repo's own `app`
