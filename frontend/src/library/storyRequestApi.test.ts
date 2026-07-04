@@ -66,4 +66,38 @@ describe('makeKidStoryRequestApi', () => {
       'blocked',
     ])
   })
+
+  it('listForProfile strips guardian-facing fields from full wire response', async () => {
+    // Realistic full wire fixture with all backend fields
+    const { api } = fakeAxios({
+      requests: [
+        {
+          id: 'req1',
+          status: 'pending',
+          profile_id: 'p1',
+          request_text: 'Please write a dragon story',
+          created_at: '2026-07-04T12:00:00Z',
+          moderation_flags: [
+            { category: 'language', verdict: 'clean', message: '' },
+          ],
+        },
+        {
+          id: 'req2',
+          status: 'approved',
+          profile_id: 'p1',
+          request_text: 'Can you make a wizard adventure',
+          created_at: '2026-07-04T12:15:00Z',
+          moderation_flags: [],
+        },
+      ],
+    })
+    const result = await makeKidStoryRequestApi(api).listForProfile('p1')
+    // Verify returned objects contain ONLY id and status keys
+    expect(result).toHaveLength(2)
+    expect(Object.keys(result[0]).sort()).toEqual(['id', 'status'])
+    expect(Object.keys(result[1]).sort()).toEqual(['id', 'status'])
+    // Verify the safe fields are present
+    expect(result[0]).toEqual({ id: 'req1', status: 'pending' })
+    expect(result[1]).toEqual({ id: 'req2', status: 'approved' })
+  })
 })
