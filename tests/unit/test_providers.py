@@ -930,11 +930,11 @@ class TestOpenRouterProviderBranches:
 
 
 class TestModalProvider:
-    """Modal adapter: success, error mapping, retry, optional bearer auth."""
+    """Modal adapter: success, error mapping, retry, optional proxy-key auth."""
 
     @pytest.mark.asyncio
     async def test_success_returns_content_verbatim(self) -> None:
-        """A 200 response returns the model content with no fence stripping."""
+        """A 200 response returns the model content verbatim (no fences to strip)."""
         raw = '{"id": "s_x", "title": "T"}'
 
         def handler(_request: httpx.Request) -> httpx.Response:

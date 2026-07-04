@@ -202,7 +202,7 @@ class ModalProvider:
         if status in {400, 404}:
             reason = "invalid or unavailable model"
         elif status in _LEG_FATAL_STATUS:
-            reason = "authentication failure"
+            reason = "authentication or credit failure"
         else:
             reason = "non-retryable client error"
         msg = f"modal returned leg-fatal HTTP {status} ({reason})"
