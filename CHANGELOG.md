@@ -130,6 +130,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   wired into the intake page's approved-request rows via an "Assign more" action.
 
 ### Fixed
+- Reader progress correctness (three findings, one slice): the reader now posts
+  `POST /api/v1/completions` once when a story reaches an ending (idempotent via a
+  per-ending client guard plus the server's primary-key dedup); a cleared-cache or
+  new device resumes from `GET /api/v1/reading-state/{profile}/{storybook}` when
+  the local IndexedDB cache is cold, with local state still winning when present;
+  and the React StrictMode double-invoke of the initial save is deduped by a
+  content signature so opening a story no longer issues a duplicate write or
+  surfaces a false "reading on another device" 409 (issue #86).
 - Fixed `frontend/Dockerfile` failing to build against the hardened
   `dhi-node`/`dhi-nginx` GHCR mirror images used for the homelab R1 deploy.
   Both runtime tags ship no shell, which broke every shell-form `RUN` (`npm
