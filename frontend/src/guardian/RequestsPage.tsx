@@ -25,6 +25,8 @@ export function RequestsPage() {
   const api = useApi()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
+  const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
+  const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     let cancelled = false
@@ -70,22 +72,57 @@ export function RequestsPage() {
     )
   }
 
-  async function approve(id: string) {
+  // #CRITICAL: concurrency: a double-click (or a slow response the reviewer
+  // clicks again while waiting) must not fire a second approve/decline for the
+  // same row; approve enqueues a paid generation job server-side, so a
+  // duplicate call risks a duplicate job. Track in-flight ids per row (not a
+  // single page-level flag) so independent rows stay actionable while one is
+  // pending, and disable both of a row's buttons while either of its actions
+  // is in flight.
+  // #VERIFY: RequestsPage.test.tsx double-click test asserts exactly one
+  // adapter call and that both buttons are disabled while the promise is
+  // unresolved.
+  async function runRowAction(id: string, action: () => Promise<unknown>) {
+    if (pendingIds.has(id)) return
+    setPendingIds((prev) => new Set(prev).add(id))
+    setRowErrors((prev) => {
+      if (!(id in prev)) return prev
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
     try {
-      await queueApi.approve(id)
+      await action()
       removeRow(id)
     } catch (err) {
-      console.error('approve failed', err instanceof Error ? err.message : err)
+      // #ASSUME: external-resources: approve/decline call the backend, which
+      // can fail (network, session expiry, server error, a race with another
+      // reviewer). Log the message, not the axios error object (its
+      // config.headers carries the caller's bearer token), and keep the row
+      // visible with a clear, actionable notice rather than silently
+      // discarding the guardian's action.
+      // #VERIFY: RequestsPage.test.tsx rejected-approve test asserts the
+      // visible alert and that the row remains in the list.
+      console.error(
+        'story-request action failed:',
+        err instanceof Error ? err.message : err
+      )
+      setRowErrors((prev) => ({ ...prev, [id]: true }))
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
     }
   }
 
+  async function approve(id: string) {
+    await runRowAction(id, () => queueApi.approve(id))
+  }
+
   async function decline(id: string) {
-    try {
-      await queueApi.decline(id)
-      removeRow(id)
-    } catch (err) {
-      console.error('decline failed', err instanceof Error ? err.message : err)
-    }
+    await runRowAction(id, () => queueApi.decline(id))
   }
 
   if (state.kind === 'loading') {
@@ -127,32 +164,46 @@ export function RequestsPage() {
     <section className="console">
       <h1>Story requests</h1>
       <ul className="console-list">
-        {state.requests.map((req) => (
-          <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
-            <div className="console-row__body">
-              <p className="console-row__title">
-                {req.request_text ?? 'Idea hidden by content check'}
-              </p>
-              {req.moderation_flags.length > 0 ? (
-                <div className="console-row__flags">
-                  {req.moderation_flags.map((flag, i) => (
-                    <FlagBadge
-                      key={`${req.id}-${i}`}
-                      tone={verdictTone(flag.verdict)}
-                      label={flag.category}
-                    />
-                  ))}
-                </div>
-              ) : null}
-            </div>
-            <div className="console-row__actions">
-              <Button onClick={() => void approve(req.id)}>Approve</Button>
-              <Button variant="danger" onClick={() => void decline(req.id)}>
-                Decline
-              </Button>
-            </div>
-          </li>
-        ))}
+        {state.requests.map((req) => {
+          const isPending = pendingIds.has(req.id)
+          return (
+            <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
+              <div className="console-row__body">
+                <p className="console-row__title">
+                  {req.request_text ?? 'Idea hidden by content check'}
+                </p>
+                {req.moderation_flags.length > 0 ? (
+                  <div className="console-row__flags">
+                    {req.moderation_flags.map((flag, i) => (
+                      <FlagBadge
+                        key={`${req.id}-${i}`}
+                        tone={verdictTone(flag.verdict)}
+                        label={flag.category}
+                      />
+                    ))}
+                  </div>
+                ) : null}
+                {rowErrors[req.id] ? (
+                  <p role="alert" className="console-row__error">
+                    Could not update the request. Try again.
+                  </p>
+                ) : null}
+              </div>
+              <div className="console-row__actions">
+                <Button disabled={isPending} onClick={() => void approve(req.id)}>
+                  Approve
+                </Button>
+                <Button
+                  variant="danger"
+                  disabled={isPending}
+                  onClick={() => void decline(req.id)}
+                >
+                  Decline
+                </Button>
+              </div>
+            </li>
+          )
+        })}
       </ul>
     </section>
   )

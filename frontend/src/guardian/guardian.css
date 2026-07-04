@@ -403,6 +403,10 @@
   color: var(--color-error, #b3261e);
 }
 
+.console-row__error {
+  color: var(--color-error, #b3261e);
+}
+
 .review-detail {
   padding-bottom: 5rem; /* room for the pinned action bar */
 }

@@ -110,4 +110,56 @@ describe('RequestsPage', () => {
     render(<RequestsPage />)
     expect(await screen.findByText(/No requests to review/i)).toBeInTheDocument()
   })
+
+  it('double-clicking Approve results in exactly one adapter call', async () => {
+    let resolvePost: (value: { data: unknown }) => void = () => {}
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePost = resolve
+        })
+    )
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    const approveButton = screen.getByRole('button', { name: 'Approve' })
+    fireEvent.click(approveButton)
+    fireEvent.click(approveButton)
+    expect(mockPost).toHaveBeenCalledTimes(1)
+    resolvePost({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+    })
+    await waitFor(() => expect(approveButton).not.toBeInTheDocument())
+  })
+
+  it('both buttons in a row are disabled while an action is in flight', async () => {
+    let resolvePost: (value: { data: unknown }) => void = () => {}
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolvePost = resolve
+        })
+    )
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    const approveButton = screen.getByRole('button', { name: 'Approve' })
+    const declineButton = screen.getByRole('button', { name: 'Decline' })
+    fireEvent.click(approveButton)
+    await waitFor(() => expect(approveButton).toBeDisabled())
+    expect(declineButton).toBeDisabled()
+    resolvePost({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+    })
+    await waitFor(() => expect(approveButton).not.toBeInTheDocument())
+  })
+
+  it('shows a visible alert and keeps the row when approve is rejected', async () => {
+    mockPost.mockRejectedValueOnce(new Error('boom'))
+    render(<RequestsPage />)
+    const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not update/i)
+    expect(title).toBeInTheDocument()
+    const approveButton = screen.getByRole('button', { name: 'Approve' })
+    expect(approveButton).not.toBeDisabled()
+  })
 })
