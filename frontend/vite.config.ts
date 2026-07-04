@@ -52,6 +52,12 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
       '@ds': path.resolve(__dirname, './design-system/src'),
     },
+    // The @ds alias pulls design-system component source into this app, and
+    // those components import React. Vite 8 no longer dedupes these by
+    // default, so tests would load a second React copy (from the
+    // design-system workspace) and fail with "Invalid hook call". Force a
+    // single React instance across the app and the aliased design-system src.
+    dedupe: ['react', 'react-dom'],
   },
   server: {
     port: 3000,
