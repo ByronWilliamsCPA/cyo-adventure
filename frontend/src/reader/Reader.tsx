@@ -7,7 +7,7 @@
  * design-system components (PassageText, ChoiceButton) and a persistent top bar.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { ChoiceButton } from '@ds/components/ChoiceButton'
@@ -26,11 +26,13 @@ export interface ReaderProps {
   story: Storybook
   initialReading?: ReadingState
   onProgress?: (reading: ReadingState) => void
+  /** Called once with the ending id when the reader reaches an ending. */
+  onComplete?: (endingId: string) => void
   /** Profile whose library the ending screen's "Back to my books" returns to. */
   profileId: string
 }
 
-export function Reader({ story, initialReading, onProgress, profileId }: ReaderProps) {
+export function Reader({ story, initialReading, onProgress, onComplete, profileId }: ReaderProps) {
   const [snapshot, send] = useMachine(readerMachine, {
     input: { story, reading: initialReading },
   })
@@ -41,6 +43,25 @@ export function Reader({ story, initialReading, onProgress, profileId }: ReaderP
   useEffect(() => {
     onProgress?.(reading)
   }, [reading, onProgress])
+
+  // Report the reached ending exactly once. A per-ending ref makes this idempotent
+  // across two hazards: the <StrictMode> double-invoke of this effect, and RESTART
+  // re-entering the same ending later in the session.
+  const completedEndingRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!snapshot.matches('ended')) {
+      return
+    }
+    const endingId = currentEndingId(story, reading)
+    // #CRITICAL: timing: StrictMode double-invokes this effect, and RESTART can
+    // re-reach the same ending; both must post at most once.
+    // #VERIFY: gate on a per-ending ref so only a NEW ending id fires onComplete.
+    if (endingId === null || completedEndingRef.current === endingId) {
+      return
+    }
+    completedEndingRef.current = endingId
+    onComplete?.(endingId)
+  }, [snapshot, story, reading, onComplete])
 
   const choose = (choiceId: string): void => {
     send({ type: 'CHOOSE', choiceId })

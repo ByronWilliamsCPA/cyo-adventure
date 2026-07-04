@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 
-import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
+import { ForbiddenError, StoryNotFoundError, type CompletionRequest } from '../api/readerApi'
 import { cacheStorybook, getCachedStorybook, getReadingState } from '../offline/db'
 import {
   LocalWriteError,
@@ -35,6 +35,8 @@ export interface ReaderPageProps {
   storybookId: string
   version: number
   deviceId?: string
+  /** Records a completion when the reader reaches an ending. Defaults to a no-op. */
+  recordCompletion?: (body: CompletionRequest) => Promise<void>
 }
 
 type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
@@ -74,6 +76,7 @@ export function ReaderPage({
   storybookId,
   version,
   deviceId,
+  recordCompletion = () => Promise.resolve(),
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
@@ -227,6 +230,29 @@ export function ReaderPage({
   // unchanged state) on every ReaderPage re-render.
   const handleProgress = useCallback((reading: ReadingState) => void persist(reading), [persist])
 
+  const handleComplete = useCallback(
+    (endingId: string) => {
+      // #EDGE: external-resources: completion recording is best-effort. A failed
+      // post must never surface a raw error on the kid ending screen.
+      // #VERIFY: swallow to console.error; the child still sees "The End".
+      void recordCompletion({
+        profile_id: profileId,
+        storybook_id: storybookId,
+        version,
+        ending_id: endingId,
+      }).catch((error: unknown) => {
+        console.error('[reader] completion post failed', {
+          profileId,
+          storybookId,
+          version,
+          endingId,
+          error,
+        })
+      })
+    },
+    [recordCompletion, profileId, storybookId, version]
+  )
+
   const keepThisDevice = useCallback(async () => {
     if (!conflict) return
     const result = await resolveConflict(
@@ -325,6 +351,7 @@ export function ReaderPage({
         story={story}
         initialReading={initialReading}
         onProgress={handleProgress}
+        onComplete={handleComplete}
         profileId={profileId}
       />
       {conflict ? (

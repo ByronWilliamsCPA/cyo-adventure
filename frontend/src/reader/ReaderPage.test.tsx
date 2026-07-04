@@ -315,4 +315,48 @@ describe('ReaderPage', () => {
     expect(calls).toBe(1)
     expect(screen.queryByTestId('conflict-dialog')).toBeNull()
   })
+
+  it('posts a completion when the story reaches an ending', async () => {
+    const recordCompletion = vi.fn(() => Promise.resolve())
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          profileId="p1"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    await waitFor(() => expect(recordCompletion).toHaveBeenCalledTimes(1))
+    expect(recordCompletion).toHaveBeenCalledWith({
+      profile_id: 'p1',
+      storybook_id: 's_lantern_cave',
+      version: 1,
+      ending_id: 'e_treasure_found',
+    })
+  })
+
+  it('still shows the ending screen when the completion post fails', async () => {
+    const recordCompletion = vi.fn(() => Promise.reject(new Error('boom')))
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(lantern)}
+          recordCompletion={recordCompletion}
+          profileId="p1"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    expect(await screen.findByTestId('ending-screen')).toBeTruthy()
+  })
 })

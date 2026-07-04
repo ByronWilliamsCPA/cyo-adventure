@@ -76,4 +76,31 @@ describe('Reader', () => {
     fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
     expect(seen).toContain('n_cave_fork')
   })
+
+  it('reports the reached ending to onComplete exactly once', () => {
+    const completed: string[] = []
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onComplete={(id) => completed.push(id)} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    expect(completed).toEqual(['e_treasure_found'])
+  })
+
+  it('does not re-post the same ending after Read again', () => {
+    const completed: string[] = []
+    render(
+      <MemoryRouter>
+        <Reader story={lantern} onComplete={(id) => completed.push(id)} profileId="p1" />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    fireEvent.click(screen.getByTestId('restart'))
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+    expect(completed).toEqual(['e_treasure_found'])
+  })
 })
