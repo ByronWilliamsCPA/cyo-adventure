@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-010-modal-review-and-gated-generation/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-04-modal-generation-leg-design/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>ADR-010: Modal for moderation review and an evidence-gated generation leg - CYO Adventure</title>
+        <title>Modal Generation Leg: ModalProvider Adapter and Live Endpoint Smoke Test (Design) - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg" class="md-skip">
+        <a href="#1-problem-and-goal" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-010: Modal for moderation review and an evidence-gated generation leg
+              Modal Generation Leg: ModalProvider Adapter and Live Endpoint Smoke Test (Design)
             
           </span>
         </div>
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../" class="md-tabs__link">
+        <a href="../../../planning/" class="md-tabs__link">
           
   
   
@@ -1472,7 +1472,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../../planning/" class="md-nav__link ">
               
   
   
@@ -1523,7 +1523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1558,7 +1558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1593,7 +1593,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1628,7 +1628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1700,7 +1700,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1751,7 +1751,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1786,7 +1786,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1821,7 +1821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1856,7 +1856,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1891,7 +1891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1926,7 +1926,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2317,8 +2317,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2327,10 +2325,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#1-problem-and-goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        1. Problem and goal
       
     </span>
   </a>
@@ -2338,10 +2336,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
+  <a href="#2-integration-shape" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Context
+        2. Integration shape
       
     </span>
   </a>
@@ -2349,10 +2347,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#3-components" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision
+        3. Components
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-generationprovidersmodalpy-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 generation/providers/modal.py (new)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-settings-coreconfigpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Settings (core/config.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-build_modal_leg-build_provider-branch-providerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 build_modal_leg + build_provider branch (provider.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-deployment-plan-spends-real-credits-confirm-before-each-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Deployment plan (spends real credits; confirm before each command)
       
     </span>
   </a>
@@ -2360,10 +2408,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#5-live-smoke-test" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
+        5. Live smoke test
       
     </span>
   </a>
@@ -2371,10 +2419,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
+  <a href="#6-testing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Validation
+        6. Testing
       
     </span>
   </a>
@@ -2382,10 +2430,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
+  <a href="#7-security-and-data-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related
+        7. Security and data policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-open-items-to-verify-during-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Open items to verify during implementation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
       
     </span>
   </a>
@@ -2412,90 +2482,160 @@
   
 
 
-<h1 id="adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg">ADR-010: Modal for moderation review and an evidence-gated generation leg<a class="headerlink" href="#adr-010-modal-for-moderation-review-and-an-evidence-gated-generation-leg" title="Permanent link">&para;</a></h1>
+  <h1>Modal Generation Leg: ModalProvider Adapter and Live Endpoint Smoke Test (Design)</h1>
+
 <blockquote>
-<p><strong>Status</strong>: Proposed
-<strong>Date</strong>: 2026-07-02
-<strong>Amends</strong>: <a href="../adr-003-frontier-llm-generation/">ADR-003</a> (provider strategy: adds a
-self-hosted review backend and an experimental generation leg; the frontier-primary
-decision stands until the promotion gate below is cleared)</p>
+<p>Branch: <code>feat/modal-generation-leg</code> (worktree <code>.worktrees/modal-generation-leg</code>) |
+Date: 2026-07-04 | Author: Byron Williams (with Claude)
+Implements ADR-010's item 2 (experimental generation leg) and executes step 4 of
+the tiered-backends spec's phased rollout
+(<code>docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md#12-phased-rollout</code>).</p>
 </blockquote>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>Build the moderation review backend (already reserved as <code>review_provider = "modal"</code>,
-deferred at slice 2b) on Modal-served open-weight models, and add a <code>ModalProvider</code>
-generation leg behind the existing <code>GenerationProvider</code> seam to test vLLM
-guided/constrained decoding against the known Tier-2 structural failures. OpenRouter
-(Claude) remains the generation primary; the Modal leg is promoted to primary only if it
-clears the existing 20-brief, &gt;=60% yield gate at an acceptable measured cost per story.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<p>Modal offers arbitrary code at the inference endpoint (any open-weight model, vLLM
-guided decoding that can force schema-valid JSON at the decoder level) and volume-cached
-model weights for tolerable cold starts. Two facts frame how to use that:</p>
+<h2 id="1-problem-and-goal">1. Problem and goal<a class="headerlink" href="#1-problem-and-goal" title="Permanent link">&para;</a></h2>
+<p>The project holds ~$30/month of unused Modal credits (noted in the tiered-backends
+spec) and an existing, but unimplemented, seam for a Modal generation leg: ADR-010
+proposes it, the tiered-backends spec designs it in detail (adapter shape, model
+tiers, cost model, phased rollout), and <code>Settings.review_provider</code> already reserves
+the literal <code>"modal"</code> for the sibling moderation-review backend. Nobody has written
+the adapter or spent a single credit. This design closes that gap for the
+<strong>generation</strong> leg only: implement <code>ModalProvider</code>, wire it behind
+<code>generation_provider=modal</code>, and deploy one live endpoint to prove the whole path
+end-to-end with a real story.</p>
+<p><strong>Non-goals</strong> (tracked separately, not touched here):</p>
 <ul>
-<li><strong>The generation primary is measured, not assumed.</strong> Phase 2b recorded 70% yield
-  (14/20) on <code>anthropic/claude-haiku-4.5</code> via OpenRouter at cents per story, with
-  Tier-2 the residual weakness (3/7, structural failures). Replacing a measured
-  primary with self-hosted open weights re-opens the yield question and makes a solo
-  operator the inference owner on the revenue path, against ADR-009's
-  minimize-operations thesis. Self-hosted GPU-seconds per story also plausibly cost
-  10-50x Haiku's token bill, and generation is metered revenue (credit packs), so cost
-  per story is margin.</li>
-<li><strong>The review leg is where self-hosting is a design win.</strong> The reviewer should be a
-  different model family than the generator (independent blind spots); review is
-  bursty, suiting scale-to-zero serverless GPU; quality demands are lower than
-  generation; and self-hosting means no additional third-party model vendor ever sees
-  children's content in review, strengthening the privacy-model posture. The config
-  seam for this already exists and currently raises as deferred.</li>
+<li>The moderation-review Modal backend (ADR-010 item 1; <code>review_provider="modal"</code>
+  stays deferred).</li>
+<li>Skeleton-fill wiring into the worker/orchestrator (tiered-backends spec section 5;
+  a later phased-rollout step). The current orchestrator is brief-driven (Stage A
+  structure, Stage B prose), and this design tests the Modal leg against that
+  existing pipeline unchanged, which is exactly what ADR-010 asks for: evidence on
+  whether decoder-level structure enforcement helps the known Tier-2 structural
+  failure mode.</li>
+<li>The ADR-010 promotion gate (20-brief yield harness re-run, cost-per-story
+  acceptance against credit-pack pricing). This design produces one measured data
+  point, not the full gate.</li>
+<li>A circuit breaker or device-orchestration layer. ADR-010 specifies "same Layer-1
+  retry/backoff" as the existing OpenRouter adapter; no new resilience pattern is
+  introduced.</li>
 </ul>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h2 id="2-integration-shape">2. Integration shape<a class="headerlink" href="#2-integration-shape" title="Permanent link">&para;</a></h2>
+<p>Modal Auto Endpoints (confirmed current via Modal's own docs, not the two-week-old
+edge case it first appeared to be) deploy a vLLM-backed model behind a
+production OpenAI-compatible Chat Completions API, found via <code>modal endpoint list</code>.
+This makes <code>ModalProvider</code> an HTTP client adapter structurally close to
+<code>OpenRouterProvider</code>, not a Modal-Python-SDK client (<code>modal.Cls.lookup(...).remote()</code>)
+as the unrelated <code>image_detection</code> repo's device-orchestrator pattern uses for its
+own, different, arbitrary-Python-function use case. No <code>modal</code> package dependency is
+added to the FastAPI app; the Modal CLI is an operator tool run out-of-band, exactly
+as the tiered-backends spec states ("Modal endpoints are deployed out-of-band as
+config, not maintained Python").</p>
+<h2 id="3-components">3. Components<a class="headerlink" href="#3-components" title="Permanent link">&para;</a></h2>
+<h3 id="31-generationprovidersmodalpy-new">3.1 <code>generation/providers/modal.py</code> (new)<a class="headerlink" href="#31-generationprovidersmodalpy-new" title="Permanent link">&para;</a></h3>
+<p><code>ModalProvider</code>, cloned in structure from <code>OpenRouterProvider</code>
+(<code>src/cyo_adventure/generation/providers/openrouter.py</code>):</p>
+<ul>
+<li>Same <code>run_with_retries</code> Layer-1 retry/backoff (<code>_base.py</code>), same transient-vs-leg-fatal
+  HTTP status split (429/5xx transient; 400/401/402/403/404 leg-fatal), same
+  <code>strip_code_fences</code> output normalization.</li>
+<li><strong>Differences from OpenRouterProvider</strong>: no <code>reasoning</code>/<code>effort</code> request field (the
+  served model is not Anthropic); a longer default per-attempt timeout to tolerate
+  cold starts (config knob, not hardcoded); <code>name</code> property returns
+  <code>f"modal:{self._model}"</code> for worker provider-record logging.</li>
+<li>Constructor takes <code>base_url</code>, <code>model</code>, <code>proxy_key</code>, <code>proxy_secret</code>,
+  <code>timeout_seconds</code>, <code>max_retries</code>, <code>backoff_base_seconds</code>, and an optional
+  injected <code>httpx.AsyncClient</code> for tests, matching the existing adapters' test
+  seam. <code>proxy_key</code>/<code>proxy_secret</code> are sent as the <code>Modal-Key</code>/<code>Modal-Secret</code>
+  header pair, not a Bearer token: confirmed against Modal's docs (not just
+  assumed) during the 2026-07-04 live deployment attempt, when <code>modal endpoint
+  create</code> rejected the original Bearer-token assumption. Both headers are
+  omitted entirely unless both values are set; a half-set pair sends neither,
+  never a partial credential.</li>
+</ul>
+<h3 id="32-settings-coreconfigpy">3.2 Settings (<code>core/config.py</code>)<a class="headerlink" href="#32-settings-coreconfigpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>generation_provider: Literal["mock", "claude", "ollama", "openrouter", "modal"]</code>
+  (adds <code>"modal"</code> to the existing literal).</li>
+<li><code>modal_base_url: str</code> (the live endpoint URL from <code>modal endpoint list</code>; no
+  default, required when <code>generation_provider="modal"</code>).</li>
+<li><code>modal_model: str</code> (the served model id, for logging/provider-record purposes;
+  distinct from the HF id used at <code>modal endpoint create</code> time).</li>
+<li><code>modal_proxy_key: str | None</code> and <code>modal_proxy_secret: str | None</code> (the
+  Modal-Key/Modal-Secret proxy-token pair, created via <code>modal workspace
+  proxy-tokens create</code>; must be set together or neither, since a half-set pair
+  is a misconfiguration <code>build_modal_leg</code> rejects rather than guesses at).</li>
+<li><code>modal_timeout_seconds: int</code> (separate from <code>llm_timeout_seconds</code>; cold starts
+  need materially more headroom than a warm OpenRouter call).</li>
+</ul>
+<h3 id="33-build_modal_leg-build_provider-branch-providerpy">3.3 <code>build_modal_leg</code> + <code>build_provider</code> branch (<code>provider.py</code>)<a class="headerlink" href="#33-build_modal_leg-build_provider-branch-providerpy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>build_modal_leg(settings)</code> mirrors <code>build_openrouter_leg</code>: raises
+  <code>ConfigurationError</code> naming the missing setting (<code>MODAL_BASE_URL</code>), never a value,
+  when required config is absent.</li>
+<li><code>build_provider</code> gains a <code>provider == "modal"</code> branch returning the <strong>bare</strong>
+  <code>ModalProvider</code>: no <code>FallbackProvider</code> wrapping. This leg never enters the
+  production cascade (<code>openrouter -&gt; ollama</code>); selecting it is a deliberate,
+  explicit, offline-only choice, matching ADR-010's "not on the public path."</li>
+</ul>
+<h2 id="4-deployment-plan-spends-real-credits-confirm-before-each-command">4. Deployment plan (spends real credits; confirm before each command)<a class="headerlink" href="#4-deployment-plan-spends-real-credits-confirm-before-each-command" title="Permanent link">&para;</a></h2>
 <ol>
-<li><strong>Moderation review backend on Modal (executes the deferred slice 2b).</strong> Implement
-   the <code>review_provider = "modal"</code> backend in <code>moderation/review_provider.py</code> against a
-   Modal-served open-weight reviewer; weights prestaged on a Modal volume. The
-   OpenRouter reviewer remains the configured fallback. Stage-0 deterministic
-   classifiers stay mandatory (existing config invariant).</li>
-<li><strong>Experimental <code>ModalProvider</code> generation leg, not on the public path.</strong> A new
-   adapter behind <code>GenerationProvider</code>, using vLLM guided decoding targeted at the
-   Tier-2 structural failure modes. It runs offline experiments only.</li>
-<li><strong>Promotion gate.</strong> The Modal leg may become generation primary only after: (a) the
-   20-brief yield harness re-run clears &gt;=60% overall with Tier-2 no worse than the
-   incumbent, and (b) measured cost per accepted story is recorded and accepted against
-   credit-pack pricing. Promotion itself is a config change (<code>generation_provider</code>),
-   per ADR-003's config-pinned model policy.</li>
-<li><strong>Worker hosting</strong>: Modal is a candidate, alongside the container host, in the
-   time-boxed P9-03 evaluation. No commitment now.</li>
+<li><strong>Auth</strong> (interactive, operator-run): <code>modal token new</code> opens a browser OAuth
+   flow. This is not something a non-interactive session can drive; either it is
+   already done, or the user runs it themselves before the next step.</li>
+<li><strong>Deploy</strong>: <code>modal endpoint create --name cyo-standard --model &lt;HF id for
+   Gemma 26B-A4B&gt;</code>. The exact HF identifier and whether Modal's curated catalog
+   covers it directly or needs <code>--custom-hf-repo</code> is <strong>unverified</strong> as of this
+   design; confirmed against Modal's current supported-model list immediately
+   before running the command, not guessed here.</li>
+<li><strong>Capture the endpoint</strong>: <code>modal endpoint list</code> returns the live URL; it goes
+   into <code>.env</code> as <code>MODAL_BASE_URL</code> (never committed).</li>
+<li>Every command in this section that provisions or runs billed GPU time gets a
+   separate, explicit go-ahead at execution time, independent of this design's
+   approval: this is real infrastructure and real money, not a reversible local
+   edit.</li>
 </ol>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h2 id="5-live-smoke-test">5. Live smoke test<a class="headerlink" href="#5-live-smoke-test" title="Permanent link">&para;</a></h2>
+<p>With <code>generation_provider=modal</code> pointed at the deployed endpoint, run the existing
+generation worker against a real brief for the 8-11 reading band (the band
+<code>skeletons/8-11/the-cave-of-echoes.json</code> already targets, though this test exercises
+the freeform brief-driven pipeline, not that skeleton). Record: whether Stage A/B
+complete without a leg-fatal error, whether the resulting story clears the existing
+gates, and the measured cost (GPU-seconds x $/hr) for one story. This single data
+point feeds, but does not by itself satisfy, the ADR-010 promotion gate.</p>
+<h2 id="6-testing">6. Testing<a class="headerlink" href="#6-testing" title="Permanent link">&para;</a></h2>
+<p>Unit tests for <code>ModalProvider</code> mirror the existing OpenRouter adapter test suite
+(transient failure -&gt; retry, leg-fatal status -&gt; immediate <code>ProviderError</code>,
+markdown-fence stripping) against an injected <code>httpx.AsyncClient</code>, so CI makes no
+real network call. <code>generation_provider</code> default remains <code>"mock"</code>; CI and local dev
+are unaffected by this change.</p>
+<h2 id="7-security-and-data-policy">7. Security and data policy<a class="headerlink" href="#7-security-and-data-policy" title="Permanent link">&para;</a></h2>
+<p><code>modal_proxy_key</code> and <code>modal_proxy_secret</code> (if present) and the endpoint URL are
+secrets: never logged, and <code>ConfigurationError</code> messages name the setting, never
+its value, mirroring the
+existing OpenRouter/Ollama credential handling in <code>provider.py</code>. Per ADR-010 and the
+tiered-backends spec, self-hosting on Modal means the served model's creator never
+receives the prompt, which is the same privacy posture already documented for the
+review leg.</p>
+<h2 id="8-open-items-to-verify-during-implementation">8. Open items to verify during implementation<a class="headerlink" href="#8-open-items-to-verify-during-implementation" title="Permanent link">&para;</a></h2>
 <ul>
-<li>✅ Reviewer independence and child-content privacy improve; the Tier-2 yield lever
-  gets a real experiment with decoder-level structure enforcement.</li>
-<li>✅ The revenue path keeps its measured 70% provider until evidence says otherwise.</li>
-<li>⚠️ Modal is a second serverless vendor. Mitigation: review usage is bursty (near-zero
-  idle cost), and the OpenRouter reviewer fallback covers Modal outages.</li>
-<li>⚠️ The experiment can stall without a deadline. Mitigation: it is explicitly
-  non-blocking for launch; it lives in the post-launch backlog with the gate attached.</li>
+<li>Exact HF model identifier for the Gemma 26B-A4B tier and whether <code>modal endpoint
+  create</code> needs <code>--custom-hf-repo</code> for it.</li>
+<li>RESOLVED: Modal Auto Endpoints require an explicit choice at creation time,
+  either <code>--unauthenticated</code> or a pre-created proxy token; there is no silent
+  default. Discovered when <code>modal endpoint create</code> rejected the original
+  Bearer-token assumption during the 2026-07-04 live deployment attempt, which
+  led to the <code>proxy_key</code>/<code>proxy_secret</code> (<code>Modal-Key</code>/<code>Modal-Secret</code> header pair)
+  design described in sections 3.1, 3.2, and 7 above.</li>
+<li>Actual per-request cold-start latency, to size <code>modal_timeout_seconds</code> from
+  measurement rather than the spec's estimate.</li>
 </ul>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Modal review backend passes the moderation pipeline integration tests and runs in
-      production config with the OpenRouter reviewer as fallback.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Yield harness re-run recorded under <code>docs/planning/yield-results/</code> for any
-      promotion decision, with cost per accepted story.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Generation leg smoke test: <code>ModalProvider</code> deployed against a live Modal Auto
-      Endpoint (Standard tier, <code>google/gemma-4-26B-A4B-it</code>) and exercised end to end with
-      one real 8-11-band brief. Result recorded at
-      <code>docs/planning/yield-results/modal-standard-smoke-test.json</code> (2026-07-04): 1/1 story
-      passed all gates, 100% pass rate, 25.5s latency. This is one measured data point
-      toward the promotion gate above, not the gate itself; the endpoint was stopped
-      immediately after the test to halt billing.</li>
-</ul>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../adr-003-frontier-llm-generation/">ADR-003</a>: the provider strategy this amends.</li>
-<li><a href="../adr-009-supabase-platform/">ADR-009</a>: the vendor-minimization thesis the
-  promotion gate protects.</li>
-<li><a href="../../phase-2b-live-provider/">Phase 2b results</a>: the incumbent yield measurement and
-  the Tier-2 residual lever.</li>
+<li><a href="../../../planning/adr/adr-010-modal-review-and-gated-generation/">ADR-010</a></li>
+<li><a href="../2026-06-23-modal-generation-tiers-design/">Tiered-backends design</a></li>
+<li>Provider protocol / factory: <code>src/cyo_adventure/generation/provider.py</code></li>
+<li>Adapter to mirror: <code>src/cyo_adventure/generation/providers/openrouter.py</code></li>
+<li>Modal Auto Endpoints: <a href="https://modal.com/blog/introducing-auto-endpoints">https://modal.com/blog/introducing-auto-endpoints</a>,
+  <a href="https://modal.com/docs/guide/endpoints">https://modal.com/docs/guide/endpoints</a></li>
 </ul>
 
 
@@ -2529,7 +2669,7 @@ model weights for tolerable cold starts. Two facts frame how to use that:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 04:22:00 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:08:53 UTC">July 4, 2026</span>
   </span>
 
     

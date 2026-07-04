@@ -2313,6 +2313,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#no-em-dash-pre-commit-hooks-byte-pattern-never-matches-so-it-silently-never-fires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        no-em-dash pre-commit hook's byte pattern never matches, so it silently never fires
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#template-ships-utilsfinancialpy-scaffolding-irrelevant-to-non-financial-projects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2716,6 +2727,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#no-em-dash-pre-commit-hooks-byte-pattern-never-matches-so-it-silently-never-fires" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        no-em-dash pre-commit hook's byte pattern never matches, so it silently never fires
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#template-ships-utilsfinancialpy-scaffolding-irrelevant-to-non-financial-projects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3051,6 +3073,38 @@ test that runs <code>pre-commit run --all-files</code> on a freshly rendered pro
 class of out-of-the-box breakage is caught in the template repo.</p>
 <p><strong>Affected Files</strong>: <code>docs/ADRs/adr-template.md</code>; the front-matter validation
 script and its allowed-tags list.</p>
+<h3 id="no-em-dash-pre-commit-hooks-byte-pattern-never-matches-so-it-silently-never-fires"><code>no-em-dash</code> pre-commit hook's byte pattern never matches, so it silently never fires<a class="headerlink" href="#no-em-dash-pre-commit-hooks-byte-pattern-never-matches-so-it-silently-never-fires" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Critical</li>
+<li><strong>Category</strong>: Tooling</li>
+<li><strong>Discovered</strong>: 2026-07-04</li>
+</ul>
+<p><strong>Issue</strong>: <code>.pre-commit-config.yaml</code>'s <code>no-em-dash</code> hook runs
+<code>git grep --cached -nP "\xe2\x80\x94" -- .</code>. Under PCRE <code>grep -P</code> in a UTF-8
+locale, <code>\xe2\x80\x94</code> is parsed as three separate single-byte character
+matches against decoded Unicode codepoints, not as the three raw UTF-8 bytes
+that encode U+2014 (em-dash). Since no single codepoint in ordinary text
+equals <code>0xE2</code>, <code>0x80</code>, or <code>0x94</code> in sequence as decoded characters, the
+pattern never matches a real em-dash. The hook has reported "Passed" on every
+commit since it was added, including commits that actually contained em-dash
+characters, so the no-em-dash policy has been unenforced from the start.</p>
+<p><strong>Context</strong>: Discovered during a final whole-branch code review on a feature
+branch, which found two literal U+2014 characters in a committed markdown
+file despite that commit's own pre-commit run reporting the <code>no-em-dash</code>
+hook as passed. Verified directly: <code>printf 'test\xe2\x80\x94dash\n' | grep
+-nP "\xe2\x80\x94"</code> exits 1 (no match) against a string that visibly
+contains an em-dash, while <code>grep -nP '\x{2014}'</code> against the same input
+correctly matches. The config's own comment ("Pre-scan confirmed no existing
+em-dashes in the repository") reflects that the check's false-negative
+behavior was never caught because the pre-scan itself likely used the same
+broken pattern.</p>
+<p><strong>Suggested Fix</strong>: Replace the byte-escape pattern with PCRE's codepoint
+escape: <code>git grep --cached -nP "\x{2014}" -- .</code> (note: <code>grep -P</code> requires
+<code>\x{...}</code> with braces for codepoints above <code>\x7f</code>; add a smoke test in the
+template repo itself that stages a file containing a real em-dash and
+asserts the hook fails, so this class of silently-inert security/style hook
+cannot regress unnoticed again).</p>
+<p><strong>Affected Files</strong>: <code>.pre-commit-config.yaml</code></p>
 <h3 id="template-ships-utilsfinancialpy-scaffolding-irrelevant-to-non-financial-projects">Template ships <code>utils/financial.py</code> scaffolding irrelevant to non-financial projects<a class="headerlink" href="#template-ships-utilsfinancialpy-scaffolding-irrelevant-to-non-financial-projects" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Priority</strong>: Medium</li>
@@ -3323,7 +3377,7 @@ generated <code>package.json</code> noting that the root <code>tsconfig.json</co
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 00:27:42 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:08:53 UTC">July 4, 2026</span>
   </span>
 
     

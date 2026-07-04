@@ -101,6 +101,10 @@
          <lastmod>2026-07-04</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/guides/modal-endpoint-deployment/</loc>
+         <lastmod>2026-07-04</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/guides/overview/</loc>
          <lastmod>2026-07-04</lastmod>
     </url>
@@ -282,6 +286,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-03-reader-storybook-styling-design/</loc>
+         <lastmod>2026-07-04</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-04-modal-generation-leg-design/</loc>
          <lastmod>2026-07-04</lastmod>
     </url>
 </urlset>
