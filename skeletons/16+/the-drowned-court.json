@@ -1,0 +1,4284 @@
+{
+  "schema_version": "2.0",
+  "id": "sk_drowned_court",
+  "version": 1,
+  "title": "The Drowned Court",
+  "metadata": {
+    "age_band": "16+",
+    "reading_level": {
+      "scheme": "flesch_kincaid",
+      "target": 9.0,
+      "tolerance": 1.5
+    },
+    "tier": 1,
+    "themes": [
+      "adventure",
+      "mystery",
+      "tension",
+      "perseverance"
+    ],
+    "estimated_minutes": 18,
+    "ending_count": 105,
+    "content_flags": {
+      "violence": "mild",
+      "scariness": "moderate",
+      "peril": "moderate"
+    },
+    "topology": "branch_and_bottleneck",
+    "length": "medium",
+    "narrative_style": "gamebook",
+    "production_eligible": true
+  },
+  "variables": [],
+  "start_node": "n_start",
+  "nodes": [
+    {
+      "id": "n_ap_moat",
+      "body": "<<FILL role=rising words=70 beats='Sable swims the drowned moat, current dragging at her rebreather, and the tide-gate arch looms'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ap_moat_1",
+          "label": "Press on.",
+          "target": "n_tidegate_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_ap_sluice",
+      "body": "<<FILL role=rising words=68 beats='Sable forces the old sluice channel, silt clouding her lamp, and comes up under the tide-gate arch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ap_sluice_1",
+          "label": "Press on.",
+          "target": "n_tidegate_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_ap_scaff",
+      "body": "<<FILL role=rising words=66 beats='Sable climbs the rival expedition rotted scaffold and drops down beside the tide-gate arch'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ap_scaff_1",
+          "label": "Press on.",
+          "target": "n_tidegate_hub"
+        }
+      ]
+    },
+    {
+      "id": "n_ap_undertow",
+      "body": "<<FILL role=failure words=62 beats='the seaward culvert pulls Sable into a dead cistern with no air pocket, and she must surface, the dive aborted before it begins'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_ap_undertow",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Taken by the Undertow"
+      }
+    },
+    {
+      "id": "n_start",
+      "body": "<<FILL role=setup words=92 beats='codename Sable reaches the black water over the sunken royal court at slack tide, the rival expedition lights already burning on the far reef; three ways lead down to the tide-gate, the drowned moat, the old sluice, and the rival rotted scaffold, and one seaward culvert that looks quick and wrong'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_start_1",
+          "label": "Swim the drowned moat.",
+          "target": "n_ap_moat"
+        },
+        {
+          "id": "c_n_start_2",
+          "label": "Force the old sluice channel.",
+          "target": "n_ap_sluice"
+        },
+        {
+          "id": "c_n_start_3",
+          "label": "Climb the rival scaffold.",
+          "target": "n_ap_scaff"
+        },
+        {
+          "id": "c_n_start_4",
+          "label": "Chance the seaward culvert.",
+          "target": "n_ap_undertow"
+        }
+      ]
+    },
+    {
+      "id": "fan_tg_s0",
+      "body": "<<FILL role=failure words=62 beats='the counterweight shears and the gate slams, pinning Sable gear until she cuts free and retreats to open water, empty-handed'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_tg_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Pinned at the Gate"
+      }
+    },
+    {
+      "id": "fan_tg_s1",
+      "body": "<<FILL role=failure words=62 beats='the air burst collapses the soft arch and a slow ceiling-fall seals the passage behind her; Sable is forced back out to the sea'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_tg_s1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Arch Comes Down"
+      }
+    },
+    {
+      "id": "n_tidegate_hub",
+      "body": "<<FILL role=choice words=84 beats='the tide-gate hangs half-shut, its old wards humming faint in the dark water; the winch chain, a flooded gallery mouth, and a maintenance crawl all lead inward'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_tidegate_hub_1",
+          "label": "Wrench the rusted counterweight.",
+          "target": "fan_tg_s0"
+        },
+        {
+          "id": "c_n_tidegate_hub_2",
+          "label": "Blast the silt with a burst of air.",
+          "target": "fan_tg_s1"
+        },
+        {
+          "id": "c_n_tidegate_hub_3",
+          "label": "Ease through the flooded gallery mouth.",
+          "target": "n_tg_gallery"
+        },
+        {
+          "id": "c_n_tidegate_hub_x4",
+          "label": "Explore a side passage first.",
+          "target": "xf_tg_dec"
+        },
+        {
+          "id": "c_n_tidegate_hub_x5",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad1_b2"
+        },
+        {
+          "id": "c_n_tidegate_hub_x6",
+          "label": "Follow the warded march.",
+          "target": "pad22_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_tg_gallery",
+      "body": "<<FILL role=rising words=78 beats='beyond the gate a submerged gallery opens, statues of drowned kings staring up through the green; two archways and a stair descend toward the throne level'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_tg_gallery_1",
+          "label": "Take the left archway.",
+          "target": "n_tg_left"
+        },
+        {
+          "id": "c_n_tg_gallery_2",
+          "label": "Take the right archway.",
+          "target": "n_tg_right"
+        },
+        {
+          "id": "c_n_tg_gallery_3",
+          "label": "Descend the grand stair.",
+          "target": "n_tg_stair"
+        },
+        {
+          "id": "c_n_tg_gallery_x4",
+          "label": "Explore a side passage first.",
+          "target": "xf_tgg_dec"
+        },
+        {
+          "id": "c_n_tg_gallery_x5",
+          "label": "Chase the trailing bubbles.",
+          "target": "pad2_b3"
+        },
+        {
+          "id": "c_n_tg_gallery_x6",
+          "label": "Ride the surge sideways.",
+          "target": "pad23_b3"
+        }
+      ]
+    },
+    {
+      "id": "n_tg_left",
+      "body": "<<FILL role=rising words=60 beats='the left archway threads past a toppled colonnade, and the throne gallery glimmers ahead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_tg_left_1",
+          "label": "Press on.",
+          "target": "n_throne_hub"
+        }
+      ]
+    },
+    {
+      "id": "fan_tgr_s0",
+      "body": "<<FILL role=failure words=62 beats='the side door gives onto a flooded stair that drops without end into cold black; Sable loses her line and must claw back to the gallery, shaken and turned around, the dive lost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_tgr_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost the Line"
+      }
+    },
+    {
+      "id": "n_tg_right",
+      "body": "<<FILL role=choice words=70 beats='the right archway bends past a caved refectory, a shortcut sign in old court script pointing down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_tg_right_1",
+          "label": "Pry the barnacled reliquary door here.",
+          "target": "fan_tgr_s0"
+        },
+        {
+          "id": "c_n_tg_right_2",
+          "label": "Follow the court script downward.",
+          "target": "n_throne_hub"
+        },
+        {
+          "id": "c_n_tg_right_x3",
+          "label": "Detour through the caved vault.",
+          "target": "pad3_b1"
+        },
+        {
+          "id": "c_n_tg_right_x4",
+          "label": "Probe the drowned gallery.",
+          "target": "pad24_b2"
+        }
+      ]
+    },
+    {
+      "id": "n_tg_stair",
+      "body": "<<FILL role=rising words=58 beats='the grand stair spirals down through silt into the throne level, and the great gallery opens below'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_tg_stair_1",
+          "label": "Press on.",
+          "target": "n_throne_hub"
+        }
+      ]
+    },
+    {
+      "id": "fan_throne_s0",
+      "body": "<<FILL role=failure words=62 beats='the mosaic floor gives way over a void and Sable barely kicks clear, but her lamp and spare line are gone; blind, she retreats to the gallery mouth'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_throne_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Floor Gives"
+      }
+    },
+    {
+      "id": "fan_throne_s1",
+      "body": "<<FILL role=failure words=62 beats='the sarcophagus lids are trapped with old counterweights that drop a portcullis; Sable is walled off from the circlet and must turn back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_throne_s1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Walled from the Crown"
+      }
+    },
+    {
+      "id": "n_throne_hub",
+      "body": "<<FILL role=choice words=86 beats='the throne gallery yawns wide, the great chair drowned to its arms, and above it the circlet of the last queen catches Sable lamp; a rival glow-stick already burns near the throne dais'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_throne_hub_1",
+          "label": "Cross the cracked mosaic floor.",
+          "target": "fan_throne_s0"
+        },
+        {
+          "id": "c_n_throne_hub_2",
+          "label": "Loot the sunken sarcophagi.",
+          "target": "fan_throne_s1"
+        },
+        {
+          "id": "c_n_throne_hub_3",
+          "label": "Work toward the throne dais.",
+          "target": "n_throne_dais"
+        },
+        {
+          "id": "c_n_throne_hub_x4",
+          "label": "Explore a side passage first.",
+          "target": "xf_th_dec"
+        },
+        {
+          "id": "c_n_throne_hub_x5",
+          "label": "Test the deeper stair.",
+          "target": "pad4_b4"
+        },
+        {
+          "id": "c_n_throne_hub_x6",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad25_b4"
+        }
+      ]
+    },
+    {
+      "id": "n_throne_dais",
+      "body": "<<FILL role=climax words=88 beats='at the dais the rival diver reaches for the circlet too; Sable can race, feint, or cut the rival tether and force a standoff'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_throne_dais_1",
+          "label": "Race the rival for the circlet.",
+          "target": "n_throne_race"
+        },
+        {
+          "id": "c_n_throne_dais_2",
+          "label": "Feint low and take the high approach.",
+          "target": "n_throne_feint"
+        },
+        {
+          "id": "c_n_throne_dais_3",
+          "label": "Cut the rival tether.",
+          "target": "n_throne_cut"
+        },
+        {
+          "id": "c_n_throne_dais_x4",
+          "label": "The rival calls a false truce at the dais.",
+          "target": "ds_td_b0"
+        }
+      ]
+    },
+    {
+      "id": "n_throne_race",
+      "body": "<<FILL role=failure words=62 beats='the rival is faster and snatches the circlet; Sable is outpaced at the first prize and forced to fall back to the gallery with nothing'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_throne_race",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Outraced at the Throne"
+      }
+    },
+    {
+      "id": "n_throne_feint",
+      "body": "<<FILL role=rising words=64 beats='the feint works, the rival lunges wide, and Sable slips onto the dais with the circlet in reach'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_throne_feint_1",
+          "label": "Press on.",
+          "target": "n_circlet_taken"
+        }
+      ]
+    },
+    {
+      "id": "n_throne_cut",
+      "body": "<<FILL role=choice words=72 beats='the cut tether sends the rival tumbling in the current; Sable can grab the circlet now or secure the rival gear first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_throne_cut_1",
+          "label": "Grab the circlet and go.",
+          "target": "n_circlet_taken"
+        },
+        {
+          "id": "c_n_throne_cut_2",
+          "label": "Strip the rival gear first.",
+          "target": "n_throne_greed"
+        },
+        {
+          "id": "c_n_throne_cut_x3",
+          "label": "Follow the warded march.",
+          "target": "pad6_b3"
+        },
+        {
+          "id": "c_n_throne_cut_x4",
+          "label": "Detour through the caved vault.",
+          "target": "pad27_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_throne_greed",
+      "body": "<<FILL role=failure words=62 beats='stripping the rival costs seconds; a surge slams the gallery and the circlet slides into a flooded fissure, gone beyond reach, and Sable retreats'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_throne_greed",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Greed in the Green Dark"
+      }
+    },
+    {
+      "id": "n_circlet_taken",
+      "body": "<<FILL role=rising words=66 beats='the drowned circlet is Sable first regalia piece, cold and heavier than it looks; the gallery exit leads on toward the reliquary halls'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_circlet_taken_1",
+          "label": "Press on.",
+          "target": "n_throne_exit"
+        }
+      ]
+    },
+    {
+      "id": "fan_thex_s0",
+      "body": "<<FILL role=failure words=62 beats='Sable pauses too long and the rising tide floods the only exit; she is cut off and must blow her reserve to surface, the run over with a single piece'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_thex_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cut Off with One Piece"
+      }
+    },
+    {
+      "id": "n_throne_exit",
+      "body": "<<FILL role=choice words=70 beats='past the throne the water darkens; a colonnade march and a servant crawl both bend toward the reliquary'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_throne_exit_1",
+          "label": "Rest in the flooded alcove.",
+          "target": "fan_thex_s0"
+        },
+        {
+          "id": "c_n_throne_exit_2",
+          "label": "Take the colonnade march.",
+          "target": "n_reliquary_hub"
+        },
+        {
+          "id": "c_n_throne_exit_x3",
+          "label": "Explore a side passage first.",
+          "target": "xf_thx_dec"
+        },
+        {
+          "id": "c_n_throne_exit_x4",
+          "label": "Squeeze the silt crawl.",
+          "target": "pad5_b2"
+        },
+        {
+          "id": "c_n_throne_exit_x5",
+          "label": "Chase the trailing bubbles.",
+          "target": "pad26_b2"
+        }
+      ]
+    },
+    {
+      "id": "fan_reliq_s0",
+      "body": "<<FILL role=failure words=62 beats='the ward-lattice flares and a boom of pressure ruptures Sable ears; disoriented, she loses the reliquary and gropes back the way she came'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_reliq_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wards Wake"
+      }
+    },
+    {
+      "id": "fan_reliq_s1",
+      "body": "<<FILL role=failure words=62 beats='the oubliette narrows to nothing and Sable wedges, freeing herself only by shedding her sample bag and the circlet lead; she surfaces to regroup'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_reliq_s1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Wedged in the Oubliette"
+      }
+    },
+    {
+      "id": "n_reliquary_hub",
+      "body": "<<FILL role=choice words=88 beats='the reliquary is a drowned vault of niches, the tide-scepter floating tethered in a bubble of trapped air behind a lattice of old wards; a rival marker buoy bobs at the ceiling'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliquary_hub_1",
+          "label": "Trip the ward-lattice by hand.",
+          "target": "fan_reliq_s0"
+        },
+        {
+          "id": "c_n_reliquary_hub_2",
+          "label": "Squeeze the flooded oubliette.",
+          "target": "fan_reliq_s1"
+        },
+        {
+          "id": "c_n_reliquary_hub_3",
+          "label": "Study the ward-lattice pattern.",
+          "target": "n_reliq_study"
+        },
+        {
+          "id": "c_n_reliquary_hub_x4",
+          "label": "Explore a side passage first.",
+          "target": "xf_rl_dec"
+        },
+        {
+          "id": "c_n_reliquary_hub_x5",
+          "label": "Ride the surge sideways.",
+          "target": "pad7_b5"
+        },
+        {
+          "id": "c_n_reliquary_hub_x6",
+          "label": "Test the deeper stair.",
+          "target": "pad28_b3"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_study",
+      "body": "<<FILL role=rising words=84 beats='the wards answer to the old court cadence; Sable can time the lattice gaps, force it with a pry-bar, or flood the air bubble to drop the scepter'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliq_study_1",
+          "label": "Time the lattice gaps.",
+          "target": "n_reliq_time"
+        },
+        {
+          "id": "c_n_reliq_study_2",
+          "label": "Force it with the pry-bar.",
+          "target": "n_reliq_force"
+        },
+        {
+          "id": "c_n_reliq_study_3",
+          "label": "Flood the trapped air bubble.",
+          "target": "n_reliq_flood"
+        },
+        {
+          "id": "c_n_reliq_study_x4",
+          "label": "Probe the drowned gallery.",
+          "target": "pad8_b1"
+        },
+        {
+          "id": "c_n_reliq_study_x5",
+          "label": "Squeeze the silt crawl.",
+          "target": "pad29_b2"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_time",
+      "body": "<<FILL role=rising words=62 beats='Sable slides through a ward-gap between pulses and closes on the scepter tether'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliq_time_1",
+          "label": "Press on.",
+          "target": "n_scepter_taken"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_force",
+      "body": "<<FILL role=failure words=62 beats='the pry-bar snaps the lattice and the wards discharge, boiling the bubble away; the scepter sinks into a sealed niche and Sable is driven back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_reliq_force",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bar Snaps"
+      }
+    },
+    {
+      "id": "n_reliq_flood",
+      "body": "<<FILL role=choice words=70 beats='flooding the bubble drops the scepter into her hands but the inrush destabilizes the vault; take the scepter and run, or shore the ceiling first'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliq_flood_1",
+          "label": "Take the scepter and run.",
+          "target": "n_scepter_taken"
+        },
+        {
+          "id": "c_n_reliq_flood_2",
+          "label": "Shore the ceiling first.",
+          "target": "n_reliq_shore"
+        },
+        {
+          "id": "c_n_reliq_flood_x3",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad9_b3"
+        },
+        {
+          "id": "c_n_reliq_flood_x4",
+          "label": "Follow the warded march.",
+          "target": "pad30_b3"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_shore",
+      "body": "<<FILL role=failure words=62 beats='shoring wastes the margin; the vault sloughs silt and pins Sable line, and she abandons the scepter to cut loose and retreat'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_reliq_shore",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Vault Sloughs"
+      }
+    },
+    {
+      "id": "n_scepter_taken",
+      "body": "<<FILL role=rising words=64 beats='the tide-scepter is the second piece, its head crusted with pale coral; the way on drops toward the cistern vaults'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_scepter_taken_1",
+          "label": "Press on.",
+          "target": "n_reliq_exit"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_exit",
+      "body": "<<FILL role=choice words=74 beats='two ways lead down from the reliquary: a spillway shaft running fast with current, and a slow silted stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliq_exit_1",
+          "label": "Ride the spillway shaft.",
+          "target": "n_reliq_spill"
+        },
+        {
+          "id": "c_n_reliq_exit_2",
+          "label": "Take the silted stair.",
+          "target": "n_cistern_hub"
+        },
+        {
+          "id": "c_n_reliq_exit_x3",
+          "label": "Explore a side passage first.",
+          "target": "xf_rlx_dec"
+        },
+        {
+          "id": "c_n_reliq_exit_x4",
+          "label": "Chase the trailing bubbles.",
+          "target": "pad10_b2"
+        },
+        {
+          "id": "c_n_reliq_exit_x5",
+          "label": "Ride the surge sideways.",
+          "target": "pad31_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_spill",
+      "body": "<<FILL role=choice words=66 beats='the spillway is quick but wild; Sable can brace and ride it or grab a rung and slow down'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_reliq_spill_1",
+          "label": "Ride it out.",
+          "target": "n_reliq_ride_fail"
+        },
+        {
+          "id": "c_n_reliq_spill_2",
+          "label": "Grab a rung and slow.",
+          "target": "n_cistern_hub"
+        },
+        {
+          "id": "c_n_reliq_spill_x3",
+          "label": "Detour through the caved vault.",
+          "target": "pad11_b4"
+        },
+        {
+          "id": "c_n_reliq_spill_x4",
+          "label": "Probe the drowned gallery.",
+          "target": "pad32_b4"
+        }
+      ]
+    },
+    {
+      "id": "n_reliq_ride_fail",
+      "body": "<<FILL role=failure words=62 beats='the spillway spits Sable into a debris grille and holds her against the flow until she cuts her fin harness free and blows to the surface, two pieces still below'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_reliq_ride_fail",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Caught on the Grille"
+      }
+    },
+    {
+      "id": "fan_cist_s0",
+      "body": "<<FILL role=failure words=62 beats='the sump silt is bottomless and Sable sinks past her line length; she drops weights and rockets up, aborting the vault run'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_cist_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Bottomless Sump"
+      }
+    },
+    {
+      "id": "fan_cist_s1",
+      "body": "<<FILL role=failure words=62 beats='the chisel cracks the wrong stone and a cold flood-tunnel opens; the current takes Sable tools and patience, and she withdraws'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_cist_s1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wrong Seam"
+      }
+    },
+    {
+      "id": "n_cistern_hub",
+      "body": "<<FILL role=choice words=88 beats='the cistern vaults are a cathedral of black water, pillars marching into dark, the queen seal-ring set in a drowned font at the far end; rival bubbles trail up from somewhere near the font'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_hub_1",
+          "label": "Wade the deep sump for the shortcut.",
+          "target": "fan_cist_s0"
+        },
+        {
+          "id": "c_n_cistern_hub_2",
+          "label": "Chisel the crusted vault seam.",
+          "target": "fan_cist_s1"
+        },
+        {
+          "id": "c_n_cistern_hub_3",
+          "label": "Move pillar to pillar toward the font.",
+          "target": "n_cistern_font"
+        },
+        {
+          "id": "c_n_cistern_hub_x4",
+          "label": "Explore a side passage first.",
+          "target": "xf_ci_dec"
+        },
+        {
+          "id": "c_n_cistern_hub_x5",
+          "label": "Test the deeper stair.",
+          "target": "pad12_b2"
+        },
+        {
+          "id": "c_n_cistern_hub_x6",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad33_b2"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_font",
+      "body": "<<FILL role=climax words=86 beats='at the font the rival is already prying the seal-ring loose; Sable can confront, wait and shadow, or collapse the font arch to trap the ring in reach of only one of them'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_font_1",
+          "label": "Confront the rival at the font.",
+          "target": "n_cistern_confront"
+        },
+        {
+          "id": "c_n_cistern_font_2",
+          "label": "Shadow the rival and wait.",
+          "target": "n_cistern_shadow"
+        },
+        {
+          "id": "c_n_cistern_font_3",
+          "label": "Collapse the font arch.",
+          "target": "n_cistern_collapse"
+        },
+        {
+          "id": "c_n_cistern_font_x4",
+          "label": "The font silt hides a second, deeper drop.",
+          "target": "ds_cf_b0"
+        },
+        {
+          "id": "c_n_cistern_font_x5",
+          "label": "Squeeze the silt crawl.",
+          "target": "pad13_b1"
+        },
+        {
+          "id": "c_n_cistern_font_x6",
+          "label": "Chase the trailing bubbles.",
+          "target": "pad34_b3"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_confront",
+      "body": "<<FILL role=choice words=74 beats='the confrontation is all silt and slow blows in the cold; Sable can wrestle for the ring or knock loose the rival lamp and take it in the dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_confront_1",
+          "label": "Wrestle for the ring.",
+          "target": "n_cistern_wrestle"
+        },
+        {
+          "id": "c_n_cistern_confront_2",
+          "label": "Kill the lamp and take it in the dark.",
+          "target": "n_ring_taken"
+        },
+        {
+          "id": "c_n_cistern_confront_x3",
+          "label": "Follow the warded march.",
+          "target": "pad14_b3"
+        },
+        {
+          "id": "c_n_cistern_confront_x4",
+          "label": "Detour through the caved vault.",
+          "target": "pad35_b5"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_wrestle",
+      "body": "<<FILL role=failure words=62 beats='the wrestle wastes both their air; the rival breaks off with the ring and Sable, gauge in the red, must surface with only two pieces'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_cistern_wrestle",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Draw in the Cold"
+      }
+    },
+    {
+      "id": "n_cistern_shadow",
+      "body": "<<FILL role=rising words=60 beats='shadowing pays off; the rival fumbles the ring into the silt and Sable sweeps it up before the cloud settles'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_shadow_1",
+          "label": "Press on.",
+          "target": "n_ring_taken"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_collapse",
+      "body": "<<FILL role=choice words=70 beats='the arch comes down between them, sealing the rival out; the ring is Sable to take, but the collapse has stirred the whole vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_collapse_1",
+          "label": "Snatch the ring and move.",
+          "target": "n_ring_taken"
+        },
+        {
+          "id": "c_n_cistern_collapse_2",
+          "label": "Search the rival dropped cache too.",
+          "target": "n_cistern_cache"
+        },
+        {
+          "id": "c_n_cistern_collapse_x3",
+          "label": "Ride the surge sideways.",
+          "target": "pad15_b2"
+        },
+        {
+          "id": "c_n_cistern_collapse_x4",
+          "label": "Test the deeper stair.",
+          "target": "pad36_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_cache",
+      "body": "<<FILL role=failure words=62 beats='the cache is a decoy; while Sable digs, the vault ceiling settles and floods the exit, and she barely surfaces with two pieces and a lesson'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_cistern_cache",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Decoy Cache"
+      }
+    },
+    {
+      "id": "n_ring_taken",
+      "body": "<<FILL role=rising words=66 beats='the queen seal-ring is the third and last piece; all three regalia are Sable now, but the court is waking and the water is rising toward the observatory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ring_taken_1",
+          "label": "Press on.",
+          "target": "n_cistern_exit"
+        }
+      ]
+    },
+    {
+      "id": "n_cistern_exit",
+      "body": "<<FILL role=choice words=76 beats='with the full regalia the way up runs through the drowned observatory; a flooded orrery hall and a collapsed dome gallery both lead there'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cistern_exit_1",
+          "label": "Cross the flooded orrery hall.",
+          "target": "n_cist_orrery"
+        },
+        {
+          "id": "c_n_cistern_exit_2",
+          "label": "Climb the collapsed dome gallery.",
+          "target": "n_cist_dome"
+        },
+        {
+          "id": "c_n_cistern_exit_x3",
+          "label": "Explore a side passage first.",
+          "target": "xf_cix_dec"
+        },
+        {
+          "id": "c_n_cistern_exit_x4",
+          "label": "Probe the drowned gallery.",
+          "target": "pad16_b3"
+        },
+        {
+          "id": "c_n_cistern_exit_x5",
+          "label": "Squeeze the silt crawl.",
+          "target": "pad37_b3"
+        }
+      ]
+    },
+    {
+      "id": "n_cist_orrery",
+      "body": "<<FILL role=rising words=62 beats='the orrery hall wheels of drowned brass turn slow in the current, and the observatory hub opens beyond'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cist_orrery_1",
+          "label": "Press on.",
+          "target": "n_observatory_hub"
+        }
+      ]
+    },
+    {
+      "id": "fan_dome_s0",
+      "body": "<<FILL role=failure words=62 beats='a dome rib fails under Sable and a slab pins her against the gallery floor; she cuts free but the regalia bag tears and the ring is lost to the dark, and she surfaces with two'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_dome_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Dome Rib Fails"
+      }
+    },
+    {
+      "id": "n_cist_dome",
+      "body": "<<FILL role=choice words=66 beats='the collapsed dome gallery is a maze of leaning slabs; a low crawl and a high ledge both angle toward the observatory'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_cist_dome_1",
+          "label": "Trust the cracked dome ribs.",
+          "target": "fan_dome_s0"
+        },
+        {
+          "id": "c_n_cist_dome_2",
+          "label": "Take the low crawl.",
+          "target": "n_observatory_hub"
+        },
+        {
+          "id": "c_n_cist_dome_x3",
+          "label": "Squeeze the silt crawl.",
+          "target": "pad21_b5"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_deep_d",
+      "body": "<<FILL role=rising words=60 beats='the observatory antechamber is a drowned clock of brass rings, the ascent shaft light a distant coin overhead'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_deep_d_1",
+          "label": "Press on.",
+          "target": "n_obs_control"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_deep_c",
+      "body": "<<FILL role=rising words=58 beats='Sable threads the brass rings, the rival lamp swinging somewhere ahead in the murk'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_deep_c_1",
+          "label": "Press on.",
+          "target": "n_obs_deep_d"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_deep_b",
+      "body": "<<FILL role=rising words=58 beats='a drowned catwalk crosses the antechamber, groaning under the tide'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_deep_b_1",
+          "label": "Press on.",
+          "target": "n_obs_deep_c"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_deep_a",
+      "body": "<<FILL role=rising words=58 beats='past the observatory threshold the water thins to a cold breath of trapped air'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_deep_a_1",
+          "label": "Press on.",
+          "target": "n_obs_deep_b"
+        }
+      ]
+    },
+    {
+      "id": "fan_obs_s0",
+      "body": "<<FILL role=failure words=62 beats='the shutter mechanism fights back and a counterweight drops across the only stair; Sable is sealed below the observatory and must ration back to the surface with the regalia but no way to seal the court'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_fan_obs_s0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Sealed Below"
+      }
+    },
+    {
+      "id": "n_observatory_hub",
+      "body": "<<FILL role=choice words=90 beats='the drowned observatory crowns the court, its shattered dome open to a shaft of surface light far above; here the old tide-mechanism could reseal the whole court, but the rival has beaten Sable to the control ring and the water is still rising'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_observatory_hub_1",
+          "label": "Force the seized shutter mechanism.",
+          "target": "fan_obs_s0"
+        },
+        {
+          "id": "c_n_observatory_hub_2",
+          "label": "Move on the rival at the control ring.",
+          "target": "n_obs_deep_a"
+        },
+        {
+          "id": "c_n_observatory_hub_x3",
+          "label": "Explore a side passage first.",
+          "target": "xf_ob_dec"
+        },
+        {
+          "id": "c_n_observatory_hub_x4",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad17_b1"
+        },
+        {
+          "id": "c_n_observatory_hub_x5",
+          "label": "Follow the warded march.",
+          "target": "pad38_b2"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_control",
+      "body": "<<FILL role=climax words=90 beats='the rival holds the observatory control ring, the last obstacle between Sable and a clean ascent with the full regalia; she can bargain, out-climb, or race the rising water to the ascent shaft'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_control_1",
+          "label": "Bargain a shared surfacing.",
+          "target": "n_obs_bargain"
+        },
+        {
+          "id": "c_n_obs_control_2",
+          "label": "Out-climb the rival to the shaft.",
+          "target": "n_obs_climb"
+        },
+        {
+          "id": "c_n_obs_control_3",
+          "label": "Race the rising water straight up.",
+          "target": "n_obs_race"
+        },
+        {
+          "id": "c_n_obs_control_x4",
+          "label": "The rival feints toward the ascent shaft.",
+          "target": "ds_obs_b0"
+        },
+        {
+          "id": "c_n_obs_control_x5",
+          "label": "A wing of the dome peels loose above the control ring.",
+          "target": "ds_obs_b1"
+        },
+        {
+          "id": "c_n_obs_control_x6",
+          "label": "Chase the trailing bubbles.",
+          "target": "pad18_b4"
+        },
+        {
+          "id": "c_n_obs_control_x7",
+          "label": "Ride the surge sideways.",
+          "target": "pad39_b4"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_bargain",
+      "body": "<<FILL role=choice words=78 beats='the rival will trade a clear ascent for one regalia piece; Sable can give up the circlet, give up the ring, or refuse and gamble'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_bargain_1",
+          "label": "Trade away the circlet.",
+          "target": "n_obs_trade_circlet"
+        },
+        {
+          "id": "c_n_obs_bargain_2",
+          "label": "Trade away the seal-ring.",
+          "target": "n_obs_trade_ring"
+        },
+        {
+          "id": "c_n_obs_bargain_3",
+          "label": "Refuse and gamble on the water.",
+          "target": "n_obs_refuse"
+        },
+        {
+          "id": "c_n_obs_bargain_x4",
+          "label": "Detour through the caved vault.",
+          "target": "pad19_b2"
+        },
+        {
+          "id": "c_n_obs_bargain_x5",
+          "label": "Probe the drowned gallery.",
+          "target": "pad40_b2"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_refuse",
+      "body": "<<FILL role=failure words=62 beats='the gamble fails; the water beats them both to the shaft and the rival, lighter, escapes first while Sable claws up last, empty-handed and outpaced to the surface'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_obs_refuse",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Outpaced at the Last"
+      }
+    },
+    {
+      "id": "n_obs_climb",
+      "body": "<<FILL role=rising words=64 beats='Sable out-climbs the rival up the observatory ribs and reaches the control ring with the full regalia still slung'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_climb_1",
+          "label": "Press on.",
+          "target": "n_obs_seal_choice"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_race",
+      "body": "<<FILL role=choice words=72 beats='racing the water, Sable reaches the shaft foot ahead of the rival but the tide-mechanism is behind her; seal now and lose seconds, or climb now and leave the court open'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_race_1",
+          "label": "Turn back to seal the court.",
+          "target": "n_obs_seal_choice"
+        },
+        {
+          "id": "c_n_obs_race_2",
+          "label": "Climb now, leave the court open.",
+          "target": "n_obs_open_ascent"
+        },
+        {
+          "id": "c_n_obs_race_x3",
+          "label": "Test the deeper stair.",
+          "target": "pad20_b3"
+        },
+        {
+          "id": "c_n_obs_race_x4",
+          "label": "Try the flooded side-corridor.",
+          "target": "pad41_b1"
+        }
+      ]
+    },
+    {
+      "id": "n_obs_seal_choice",
+      "body": "<<FILL role=climax words=88 beats='at the control ring, with all three regalia, Sable can work the old tide-mechanism to reseal the drowned court behind her; she can seal fast and rough, seal slow and true, or skip the seal to guarantee her own ascent'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_seal_choice_1",
+          "label": "Seal fast and rough.",
+          "target": "n_seal_fast"
+        },
+        {
+          "id": "c_n_obs_seal_choice_2",
+          "label": "Seal slow and true.",
+          "target": "n_seal_true"
+        },
+        {
+          "id": "c_n_obs_seal_choice_3",
+          "label": "Skip the seal, secure your ascent.",
+          "target": "n_obs_open_ascent"
+        }
+      ]
+    },
+    {
+      "id": "n_seal_fast",
+      "body": "<<FILL role=choice words=74 beats='the fast seal catches but the mechanism groans, half-set; Sable can force it home and lose air, or accept the partial seal and climb'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_seal_fast_1",
+          "label": "Force it fully home.",
+          "target": "n_seal_force"
+        },
+        {
+          "id": "c_n_seal_fast_2",
+          "label": "Accept the partial seal and climb.",
+          "target": "n_ascent_partial"
+        }
+      ]
+    },
+    {
+      "id": "n_seal_force",
+      "body": "<<FILL role=rising words=60 beats='Sable forces the mechanism home; the court groans shut, wards flaring one last time, and the ascent shaft is clear above'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_seal_force_1",
+          "label": "Press on.",
+          "target": "n_ascent_full"
+        }
+      ]
+    },
+    {
+      "id": "n_seal_true",
+      "body": "<<FILL role=rising words=62 beats='the slow true seal takes patience Sable barely has, but the court locks clean behind her, regalia and wards accounted for, and the shaft waits'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_seal_true_1",
+          "label": "Press on.",
+          "target": "n_ascent_full"
+        }
+      ]
+    },
+    {
+      "id": "n_ascent_full",
+      "body": "<<FILL role=resolution words=78 beats='the shaft climbs through cold decompression stops toward the far coin of surface light; Sable can hold the stops properly or push the ascent to beat the rival up'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ascent_full_1",
+          "label": "Hold the decompression stops.",
+          "target": "n_end_full_best"
+        },
+        {
+          "id": "c_n_ascent_full_2",
+          "label": "Push the ascent to beat the rival.",
+          "target": "n_ascent_push"
+        }
+      ]
+    },
+    {
+      "id": "n_ascent_push",
+      "body": "<<FILL role=resolution words=70 beats='pushing the stops is a gamble against her own blood; Sable can ease off at the last stop or commit to the fast surface'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ascent_push_1",
+          "label": "Ease off at the last stop.",
+          "target": "n_end_full_second"
+        },
+        {
+          "id": "c_n_ascent_push_2",
+          "label": "Commit to the fast surface.",
+          "target": "n_end_full_rough"
+        }
+      ]
+    },
+    {
+      "id": "n_end_full_best",
+      "body": "<<FILL role=resolution words=96 beats='Sable breaks the surface with the full regalia and the drowned court sealed clean behind her, the rival left below to surface empty; the recovery is complete and the court will keep its dead in peace'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_full_best",
+        "valence": "positive",
+        "kind": "success",
+        "title": "The Court Sealed, The Regalia Home"
+      }
+    },
+    {
+      "id": "n_end_full_second",
+      "body": "<<FILL role=resolution words=88 beats='Sable surfaces with the full regalia and a good seal, a stop skipped and a headache to show for it, but the court is closed and the three pieces are recovered'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_full_second",
+        "valence": "positive",
+        "kind": "success",
+        "title": "All Three, and the Court Closed"
+      }
+    },
+    {
+      "id": "n_end_full_rough",
+      "body": "<<FILL role=resolution words=84 beats='Sable makes the surface fast and rough, regalia intact and court sealed, but the fast ascent costs her a hard week ashore; a win, paid for'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_full_rough",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "A Hard-Won Surfacing"
+      }
+    },
+    {
+      "id": "n_ascent_partial",
+      "body": "<<FILL role=resolution words=64 beats='with the court only half-sealed Sable climbs the shaft, regalia whole but the wards still murmuring below, a job mostly done'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_ascent_partial_1",
+          "label": "Press on.",
+          "target": "n_end_partial_seal"
+        }
+      ]
+    },
+    {
+      "id": "n_end_partial_seal",
+      "body": "<<FILL role=resolution words=86 beats='Sable surfaces with all three regalia pieces but the court only half-sealed; the recovery stands, the sealing will need a second dive, a clever partial win'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_partial_seal",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "The Regalia Up, The Court Ajar"
+      }
+    },
+    {
+      "id": "n_obs_open_ascent",
+      "body": "<<FILL role=resolution words=74 beats='leaving the court open, Sable makes for the shaft with the full regalia; she can take the rival trailing line up or climb her own'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_open_ascent_1",
+          "label": "Climb your own line.",
+          "target": "n_end_open_full"
+        },
+        {
+          "id": "c_n_obs_open_ascent_2",
+          "label": "Take the rival trailing line.",
+          "target": "n_open_rivalrope"
+        }
+      ]
+    },
+    {
+      "id": "n_open_rivalrope",
+      "body": "<<FILL role=failure words=62 beats='the rival line is a trap, weighted to foul; Sable cuts free but loses the regalia bag in the tangle and surfaces with nothing but the story'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_open_rivalrope",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Fouled on the Rival Line"
+      }
+    },
+    {
+      "id": "n_end_open_full",
+      "body": "<<FILL role=resolution words=84 beats='Sable surfaces with the full regalia, the court left open behind her for the tide to keep; the pieces are recovered, the sealing refused, a complete but colder victory'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_open_full",
+        "valence": "positive",
+        "kind": "completion",
+        "title": "Regalia Recovered, Court Left to the Sea"
+      }
+    },
+    {
+      "id": "n_obs_trade_circlet",
+      "body": "<<FILL role=resolution words=62 beats='Sable hands the circlet to the rival and both climb the shaft under an uneasy truce, two pieces still hers'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_trade_circlet_1",
+          "label": "Press on.",
+          "target": "n_end_trade_circlet"
+        }
+      ]
+    },
+    {
+      "id": "n_end_trade_circlet",
+      "body": "<<FILL role=resolution words=82 beats='Sable surfaces with the scepter and the seal-ring, the circlet gone to the rival; two of three regalia recovered and a rival owed a favor, a clever partial haul'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_trade_circlet",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "Two of Three, a Truce Kept"
+      }
+    },
+    {
+      "id": "n_obs_trade_ring",
+      "body": "<<FILL role=resolution words=62 beats='Sable gives up the seal-ring and takes the clear ascent, circlet and scepter secure against her chest'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_n_obs_trade_ring_1",
+          "label": "Press on.",
+          "target": "n_end_trade_ring"
+        }
+      ]
+    },
+    {
+      "id": "n_end_trade_ring",
+      "body": "<<FILL role=resolution words=82 beats='Sable surfaces with the circlet and the scepter, the seal-ring traded away; two regalia pieces home and the court still guarding its last, a measured partial win'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_n_end_trade_ring",
+        "valence": "neutral",
+        "kind": "completion",
+        "title": "The Ring Given, Two Brought Home"
+      }
+    },
+    {
+      "id": "xf_tg_e0",
+      "body": "<<FILL role=failure words=62 beats='the probe the winch chain gallery ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tg_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Winch Gallery"
+      }
+    },
+    {
+      "id": "xf_tg_e1",
+      "body": "<<FILL role=failure words=62 beats='the follow the eel-run drain ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tg_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Eel-Run Drain"
+      }
+    },
+    {
+      "id": "xf_tg_e2",
+      "body": "<<FILL role=failure words=62 beats='the test the maintenance crawl ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tg_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Crawl Dead-Ends"
+      }
+    },
+    {
+      "id": "xf_tg_e3",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tg_e3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_tg_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_tg_dec_1",
+          "label": "Probe the winch chain gallery.",
+          "target": "xf_tg_e0"
+        },
+        {
+          "id": "c_xf_tg_dec_2",
+          "label": "Follow the eel-run drain.",
+          "target": "xf_tg_e1"
+        },
+        {
+          "id": "c_xf_tg_dec_3",
+          "label": "Test the maintenance crawl.",
+          "target": "xf_tg_e2"
+        },
+        {
+          "id": "c_xf_tg_dec_4",
+          "label": "Push the passage to its end.",
+          "target": "xf_tg_e3"
+        }
+      ]
+    },
+    {
+      "id": "xf_tgg_e0",
+      "body": "<<FILL role=failure words=62 beats='the read the drowned king inscriptions ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tgg_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Kings Say Nothing"
+      }
+    },
+    {
+      "id": "xf_tgg_e1",
+      "body": "<<FILL role=failure words=62 beats='the pocket a loose gilt tessera ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tgg_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Fool Trinket"
+      }
+    },
+    {
+      "id": "xf_tgg_e2",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_tgg_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_tgg_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_tgg_dec_1",
+          "label": "Read the drowned king inscriptions.",
+          "target": "xf_tgg_e0"
+        },
+        {
+          "id": "c_xf_tgg_dec_2",
+          "label": "Pocket a loose gilt tessera.",
+          "target": "xf_tgg_e1"
+        },
+        {
+          "id": "c_xf_tgg_dec_3",
+          "label": "Push the passage to its end.",
+          "target": "xf_tgg_e2"
+        }
+      ]
+    },
+    {
+      "id": "xf_th_e0",
+      "body": "<<FILL role=failure words=62 beats='the search the courtier galleries ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_th_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Empty Courtier Galleries"
+      }
+    },
+    {
+      "id": "xf_th_e1",
+      "body": "<<FILL role=failure words=62 beats='the dredge the offering pool ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_th_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Offering Pool"
+      }
+    },
+    {
+      "id": "xf_th_e2",
+      "body": "<<FILL role=failure words=62 beats='the force the choir-screen ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_th_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Behind the Choir-Screen"
+      }
+    },
+    {
+      "id": "xf_th_e3",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_th_e3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_th_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_th_dec_1",
+          "label": "Search the courtier galleries.",
+          "target": "xf_th_e0"
+        },
+        {
+          "id": "c_xf_th_dec_2",
+          "label": "Dredge the offering pool.",
+          "target": "xf_th_e1"
+        },
+        {
+          "id": "c_xf_th_dec_3",
+          "label": "Force the choir-screen.",
+          "target": "xf_th_e2"
+        },
+        {
+          "id": "c_xf_th_dec_4",
+          "label": "Push the passage to its end.",
+          "target": "xf_th_e3"
+        }
+      ]
+    },
+    {
+      "id": "xf_thx_e0",
+      "body": "<<FILL role=failure words=62 beats='the detour through the drowned kitchens ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_thx_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Drowned Kitchens"
+      }
+    },
+    {
+      "id": "xf_thx_e1",
+      "body": "<<FILL role=failure words=62 beats='the climb the minstrel gallery ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_thx_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Minstrel Gallery"
+      }
+    },
+    {
+      "id": "xf_thx_e2",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_thx_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_thx_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_thx_dec_1",
+          "label": "Detour through the drowned kitchens.",
+          "target": "xf_thx_e0"
+        },
+        {
+          "id": "c_xf_thx_dec_2",
+          "label": "Climb the minstrel gallery.",
+          "target": "xf_thx_e1"
+        },
+        {
+          "id": "c_xf_thx_dec_3",
+          "label": "Push the passage to its end.",
+          "target": "xf_thx_e2"
+        }
+      ]
+    },
+    {
+      "id": "xf_rl_e0",
+      "body": "<<FILL role=failure words=62 beats='the rifle the lesser niches ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rl_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Lesser Niches"
+      }
+    },
+    {
+      "id": "xf_rl_e1",
+      "body": "<<FILL role=failure words=62 beats='the chase the rival marker buoy ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rl_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Rival Buoy"
+      }
+    },
+    {
+      "id": "xf_rl_e2",
+      "body": "<<FILL role=failure words=62 beats='the pry the sealed ambry ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rl_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Sealed Ambry"
+      }
+    },
+    {
+      "id": "xf_rl_e3",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rl_e3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_rl_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_rl_dec_1",
+          "label": "Rifle the lesser niches.",
+          "target": "xf_rl_e0"
+        },
+        {
+          "id": "c_xf_rl_dec_2",
+          "label": "Chase the rival marker buoy.",
+          "target": "xf_rl_e1"
+        },
+        {
+          "id": "c_xf_rl_dec_3",
+          "label": "Pry the sealed ambry.",
+          "target": "xf_rl_e2"
+        },
+        {
+          "id": "c_xf_rl_dec_4",
+          "label": "Push the passage to its end.",
+          "target": "xf_rl_e3"
+        }
+      ]
+    },
+    {
+      "id": "xf_rlx_e0",
+      "body": "<<FILL role=failure words=62 beats='the take the flooded scriptorium turn ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rlx_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Scriptorium Turn"
+      }
+    },
+    {
+      "id": "xf_rlx_e1",
+      "body": "<<FILL role=failure words=62 beats='the follow the rope of bubbles up ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rlx_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A False Ascent"
+      }
+    },
+    {
+      "id": "xf_rlx_e2",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_rlx_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_rlx_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_rlx_dec_1",
+          "label": "Take the flooded scriptorium turn.",
+          "target": "xf_rlx_e0"
+        },
+        {
+          "id": "c_xf_rlx_dec_2",
+          "label": "Follow the rope of bubbles up.",
+          "target": "xf_rlx_e1"
+        },
+        {
+          "id": "c_xf_rlx_dec_3",
+          "label": "Push the passage to its end.",
+          "target": "xf_rlx_e2"
+        }
+      ]
+    },
+    {
+      "id": "xf_ci_e0",
+      "body": "<<FILL role=failure words=62 beats='the sound the pillar-forest for a shortcut ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ci_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Pillar-Forest"
+      }
+    },
+    {
+      "id": "xf_ci_e1",
+      "body": "<<FILL role=failure words=62 beats='the drain-dive the overflow weir ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ci_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Overflow Weir"
+      }
+    },
+    {
+      "id": "xf_ci_e2",
+      "body": "<<FILL role=failure words=62 beats='the search the drowned wellhouse ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ci_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Wellhouse"
+      }
+    },
+    {
+      "id": "xf_ci_e3",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ci_e3",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_ci_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_ci_dec_1",
+          "label": "Sound the pillar-forest for a shortcut.",
+          "target": "xf_ci_e0"
+        },
+        {
+          "id": "c_xf_ci_dec_2",
+          "label": "Drain-dive the overflow weir.",
+          "target": "xf_ci_e1"
+        },
+        {
+          "id": "c_xf_ci_dec_3",
+          "label": "Search the drowned wellhouse.",
+          "target": "xf_ci_e2"
+        },
+        {
+          "id": "c_xf_ci_dec_4",
+          "label": "Push the passage to its end.",
+          "target": "xf_ci_e3"
+        }
+      ]
+    },
+    {
+      "id": "xf_cix_e0",
+      "body": "<<FILL role=failure words=62 beats='the cut through the sunken observatory stores ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_cix_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Stores"
+      }
+    },
+    {
+      "id": "xf_cix_e1",
+      "body": "<<FILL role=failure words=62 beats='the try the astronomer stair ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_cix_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Astronomer Stair"
+      }
+    },
+    {
+      "id": "xf_cix_e2",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_cix_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_cix_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_cix_dec_1",
+          "label": "Cut through the sunken observatory stores.",
+          "target": "xf_cix_e0"
+        },
+        {
+          "id": "c_xf_cix_dec_2",
+          "label": "Try the astronomer stair.",
+          "target": "xf_cix_e1"
+        },
+        {
+          "id": "c_xf_cix_dec_3",
+          "label": "Push the passage to its end.",
+          "target": "xf_cix_e2"
+        }
+      ]
+    },
+    {
+      "id": "xf_ob_e0",
+      "body": "<<FILL role=failure words=62 beats='the salvage the shattered dome instruments ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ob_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Broken Orrery"
+      }
+    },
+    {
+      "id": "xf_ob_e1",
+      "body": "<<FILL role=failure words=62 beats='the signal the surface too early ends badly and Sable is turned back into the cold, the run set back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ob_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Premature Signal"
+      }
+    },
+    {
+      "id": "xf_ob_e2",
+      "body": "<<FILL role=failure words=62 beats='the side passage pinches shut in the silt and Sable loses her bearings, forced to give up the branch and fall back'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_xf_ob_e2",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Branch Pinches Out"
+      }
+    },
+    {
+      "id": "xf_ob_dec",
+      "body": "<<FILL role=choice words=68 beats='a side passage forks off the main route into the drowned dark'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_xf_ob_dec_1",
+          "label": "Salvage the shattered dome instruments.",
+          "target": "xf_ob_e0"
+        },
+        {
+          "id": "c_xf_ob_dec_2",
+          "label": "Signal the surface too early.",
+          "target": "xf_ob_e1"
+        },
+        {
+          "id": "c_xf_ob_dec_3",
+          "label": "Push the passage to its end.",
+          "target": "xf_ob_e2"
+        }
+      ]
+    },
+    {
+      "id": "ds_obs_e0",
+      "body": "<<FILL role=failure words=62 beats='Sable follows the feint into a dead gallery and the rising water seals it; she surfaces late and empty'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ds_obs_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Feint at the Shaft"
+      }
+    },
+    {
+      "id": "ds_obs_b0",
+      "body": "<<FILL role=rising words=58 beats='Sable commits: the rival feints toward the ascent shaft, and the dark closes in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_obs_b0_1",
+          "label": "Press on.",
+          "target": "ds_obs_e0"
+        }
+      ]
+    },
+    {
+      "id": "ds_obs_e1",
+      "body": "<<FILL role=failure words=62 beats='the loose dome drives Sable off the control ring and she loses the seal window, forced up with the regalia but the court open'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ds_obs_e1",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Under the Peeling Dome"
+      }
+    },
+    {
+      "id": "ds_obs_b1",
+      "body": "<<FILL role=rising words=58 beats='Sable commits: a wing of the dome peels loose above the control ring, and the dark closes in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_obs_b1_1",
+          "label": "Press on.",
+          "target": "ds_obs_e1"
+        }
+      ]
+    },
+    {
+      "id": "ds_cf_e0",
+      "body": "<<FILL role=failure words=62 beats='the deeper drop swallows Sable line and she hauls out with nothing, the ring still below'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ds_cf_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Deeper Drop"
+      }
+    },
+    {
+      "id": "ds_cf_b0",
+      "body": "<<FILL role=rising words=58 beats='Sable commits: the font silt hides a second, deeper drop, and the dark closes in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_cf_b0_1",
+          "label": "Press on.",
+          "target": "ds_cf_e0"
+        }
+      ]
+    },
+    {
+      "id": "ds_td_e0",
+      "body": "<<FILL role=failure words=62 beats='the truce is a stall; the rival slips the circlet away while Sable waits, and the first piece is lost'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_ds_td_e0",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The False Truce"
+      }
+    },
+    {
+      "id": "ds_td_b0",
+      "body": "<<FILL role=rising words=58 beats='Sable commits: the rival calls a false truce at the dais, and the dark closes in'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_ds_td_b0_1",
+          "label": "Press on.",
+          "target": "ds_td_e0"
+        }
+      ]
+    },
+    {
+      "id": "pad1_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad1_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cut Off in the Flood"
+      }
+    },
+    {
+      "id": "pad1_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad1_b0_1",
+          "label": "Press on.",
+          "target": "pad1_end"
+        }
+      ]
+    },
+    {
+      "id": "pad1_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad1_b1_1",
+          "label": "Press on.",
+          "target": "pad1_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad1_b2",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad1_b2_1",
+          "label": "Press on.",
+          "target": "pad1_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad2_end",
+      "body": "<<FILL role=failure words=62 beats='a submerged gallery opens, statues watching from the green murk, and Sable is turned back from a drowned gallery, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad2_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Tide"
+      }
+    },
+    {
+      "id": "pad2_b0",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad2_b0_1",
+          "label": "Press on.",
+          "target": "pad2_end"
+        }
+      ]
+    },
+    {
+      "id": "pad2_b1",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad2_b1_1",
+          "label": "Press on.",
+          "target": "pad2_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad2_b2",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad2_b2_1",
+          "label": "Press on.",
+          "target": "pad2_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad2_b3",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad2_b3_1",
+          "label": "Press on.",
+          "target": "pad2_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad3_end",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a silt-choked crawl, and Sable is turned back from a choked crawl, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad3_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Galleries"
+      }
+    },
+    {
+      "id": "pad3_b0",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad3_b0_1",
+          "label": "Press on.",
+          "target": "pad3_end"
+        }
+      ]
+    },
+    {
+      "id": "pad3_b1",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad3_b1_1",
+          "label": "Press on.",
+          "target": "pad3_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad4_end",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Sable is turned back from a warded march, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad4_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off the Ward"
+      }
+    },
+    {
+      "id": "pad4_b0",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad4_b0_1",
+          "label": "Press on.",
+          "target": "pad4_end"
+        }
+      ]
+    },
+    {
+      "id": "pad4_b1",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad4_b1_1",
+          "label": "Press on.",
+          "target": "pad4_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad4_b2",
+      "body": "<<FILL role=rising words=68 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad4_b2_1",
+          "label": "Press on.",
+          "target": "pad4_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad4_b3",
+      "body": "<<FILL role=rising words=74 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad4_b3_1",
+          "label": "Press on.",
+          "target": "pad4_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad4_b4",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad4_b4_1",
+          "label": "Press on.",
+          "target": "pad4_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad5_end",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Sable line paying out, and Sable is turned back from a downward stair, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad5_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out of Line in the Deep"
+      }
+    },
+    {
+      "id": "pad5_b0",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad5_b0_1",
+          "label": "Press on.",
+          "target": "pad5_end"
+        }
+      ]
+    },
+    {
+      "id": "pad5_b1",
+      "body": "<<FILL role=rising words=62 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad5_b1_1",
+          "label": "Press on.",
+          "target": "pad5_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad5_b2",
+      "body": "<<FILL role=rising words=68 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad5_b2_1",
+          "label": "Press on.",
+          "target": "pad5_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad6_end",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the rival somewhere near, and Sable is turned back from a rival crossing, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad6_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Beaten to It Again"
+      }
+    },
+    {
+      "id": "pad6_b0",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad6_b0_1",
+          "label": "Press on.",
+          "target": "pad6_end"
+        }
+      ]
+    },
+    {
+      "id": "pad6_b1",
+      "body": "<<FILL role=rising words=62 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad6_b1_1",
+          "label": "Press on.",
+          "target": "pad6_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad6_b2",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad6_b2_1",
+          "label": "Press on.",
+          "target": "pad6_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad6_b3",
+      "body": "<<FILL role=rising words=74 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad6_b3_1",
+          "label": "Press on.",
+          "target": "pad6_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad7_end",
+      "body": "<<FILL role=failure words=62 beats='a caved vault forces a long detour through the dark, and Sable is turned back from a caved vault, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad7_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Walled in the Vault"
+      }
+    },
+    {
+      "id": "pad7_b0",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b0_1",
+          "label": "Press on.",
+          "target": "pad7_end"
+        }
+      ]
+    },
+    {
+      "id": "pad7_b1",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b1_1",
+          "label": "Press on.",
+          "target": "pad7_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad7_b2",
+      "body": "<<FILL role=rising words=68 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b2_1",
+          "label": "Press on.",
+          "target": "pad7_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad7_b3",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b3_1",
+          "label": "Press on.",
+          "target": "pad7_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad7_b4",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b4_1",
+          "label": "Press on.",
+          "target": "pad7_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad7_b5",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad7_b5_1",
+          "label": "Press on.",
+          "target": "pad7_b4"
+        }
+      ]
+    },
+    {
+      "id": "pad8_end",
+      "body": "<<FILL role=failure words=62 beats='the tide surges, shoving Sable off her handholds, and Sable is turned back from a tide surge, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad8_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Swept from the Route"
+      }
+    },
+    {
+      "id": "pad8_b0",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad8_b0_1",
+          "label": "Press on.",
+          "target": "pad8_end"
+        }
+      ]
+    },
+    {
+      "id": "pad8_b1",
+      "body": "<<FILL role=rising words=62 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad8_b1_1",
+          "label": "Press on.",
+          "target": "pad8_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad9_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad9_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Empty-Handed and Cold"
+      }
+    },
+    {
+      "id": "pad9_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad9_b0_1",
+          "label": "Press on.",
+          "target": "pad9_end"
+        }
+      ]
+    },
+    {
+      "id": "pad9_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad9_b1_1",
+          "label": "Press on.",
+          "target": "pad9_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad9_b2",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad9_b2_1",
+          "label": "Press on.",
+          "target": "pad9_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad9_b3",
+      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad9_b3_1",
+          "label": "Press on.",
+          "target": "pad9_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad10_end",
+      "body": "<<FILL role=failure words=62 beats='a submerged gallery opens, statues watching from the green murk, and Sable is turned back from a drowned gallery, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad10_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Passage Closes"
+      }
+    },
+    {
+      "id": "pad10_b0",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad10_b0_1",
+          "label": "Press on.",
+          "target": "pad10_end"
+        }
+      ]
+    },
+    {
+      "id": "pad10_b1",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad10_b1_1",
+          "label": "Press on.",
+          "target": "pad10_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad10_b2",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad10_b2_1",
+          "label": "Press on.",
+          "target": "pad10_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad11_end",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a silt-choked crawl, and Sable is turned back from a choked crawl, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad11_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No Way Through"
+      }
+    },
+    {
+      "id": "pad11_b0",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad11_b0_1",
+          "label": "Press on.",
+          "target": "pad11_end"
+        }
+      ]
+    },
+    {
+      "id": "pad11_b1",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad11_b1_1",
+          "label": "Press on.",
+          "target": "pad11_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad11_b2",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad11_b2_1",
+          "label": "Press on.",
+          "target": "pad11_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad11_b3",
+      "body": "<<FILL role=rising words=74 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad11_b3_1",
+          "label": "Press on.",
+          "target": "pad11_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad11_b4",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad11_b4_1",
+          "label": "Press on.",
+          "target": "pad11_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad12_end",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Sable is turned back from a warded march, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad12_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced to Surface"
+      }
+    },
+    {
+      "id": "pad12_b0",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad12_b0_1",
+          "label": "Press on.",
+          "target": "pad12_end"
+        }
+      ]
+    },
+    {
+      "id": "pad12_b1",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad12_b1_1",
+          "label": "Press on.",
+          "target": "pad12_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad12_b2",
+      "body": "<<FILL role=rising words=68 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad12_b2_1",
+          "label": "Press on.",
+          "target": "pad12_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad13_end",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Sable line paying out, and Sable is turned back from a downward stair, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad13_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Adrift in the Dark"
+      }
+    },
+    {
+      "id": "pad13_b0",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad13_b0_1",
+          "label": "Press on.",
+          "target": "pad13_end"
+        }
+      ]
+    },
+    {
+      "id": "pad13_b1",
+      "body": "<<FILL role=rising words=62 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad13_b1_1",
+          "label": "Press on.",
+          "target": "pad13_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad14_end",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the rival somewhere near, and Sable is turned back from a rival crossing, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad14_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Current Wins"
+      }
+    },
+    {
+      "id": "pad14_b0",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad14_b0_1",
+          "label": "Press on.",
+          "target": "pad14_end"
+        }
+      ]
+    },
+    {
+      "id": "pad14_b1",
+      "body": "<<FILL role=rising words=62 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad14_b1_1",
+          "label": "Press on.",
+          "target": "pad14_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad14_b2",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad14_b2_1",
+          "label": "Press on.",
+          "target": "pad14_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad14_b3",
+      "body": "<<FILL role=rising words=74 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad14_b3_1",
+          "label": "Press on.",
+          "target": "pad14_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad15_end",
+      "body": "<<FILL role=failure words=62 beats='a caved vault forces a long detour through the dark, and Sable is turned back from a caved vault, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad15_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Dead Reckoning"
+      }
+    },
+    {
+      "id": "pad15_b0",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad15_b0_1",
+          "label": "Press on.",
+          "target": "pad15_end"
+        }
+      ]
+    },
+    {
+      "id": "pad15_b1",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad15_b1_1",
+          "label": "Press on.",
+          "target": "pad15_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad15_b2",
+      "body": "<<FILL role=rising words=68 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad15_b2_1",
+          "label": "Press on.",
+          "target": "pad15_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad16_end",
+      "body": "<<FILL role=failure words=62 beats='the tide surges, shoving Sable off her handholds, and Sable is turned back from a tide surge, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad16_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back to Open Water"
+      }
+    },
+    {
+      "id": "pad16_b0",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad16_b0_1",
+          "label": "Press on.",
+          "target": "pad16_end"
+        }
+      ]
+    },
+    {
+      "id": "pad16_b1",
+      "body": "<<FILL role=rising words=62 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad16_b1_1",
+          "label": "Press on.",
+          "target": "pad16_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad16_b2",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad16_b2_1",
+          "label": "Press on.",
+          "target": "pad16_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad16_b3",
+      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad16_b3_1",
+          "label": "Press on.",
+          "target": "pad16_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad17_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad17_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silt Swallows It"
+      }
+    },
+    {
+      "id": "pad17_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad17_b0_1",
+          "label": "Press on.",
+          "target": "pad17_end"
+        }
+      ]
+    },
+    {
+      "id": "pad17_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad17_b1_1",
+          "label": "Press on.",
+          "target": "pad17_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad18_end",
+      "body": "<<FILL role=failure words=62 beats='a submerged gallery opens, statues watching from the green murk, and Sable is turned back from a drowned gallery, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad18_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Slow by a Breath"
+      }
+    },
+    {
+      "id": "pad18_b0",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad18_b0_1",
+          "label": "Press on.",
+          "target": "pad18_end"
+        }
+      ]
+    },
+    {
+      "id": "pad18_b1",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad18_b1_1",
+          "label": "Press on.",
+          "target": "pad18_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad18_b2",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad18_b2_1",
+          "label": "Press on.",
+          "target": "pad18_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad18_b3",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad18_b3_1",
+          "label": "Press on.",
+          "target": "pad18_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad18_b4",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad18_b4_1",
+          "label": "Press on.",
+          "target": "pad18_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad19_end",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a silt-choked crawl, and Sable is turned back from a choked crawl, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad19_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cut Off in the Flood"
+      }
+    },
+    {
+      "id": "pad19_b0",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad19_b0_1",
+          "label": "Press on.",
+          "target": "pad19_end"
+        }
+      ]
+    },
+    {
+      "id": "pad19_b1",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad19_b1_1",
+          "label": "Press on.",
+          "target": "pad19_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad19_b2",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad19_b2_1",
+          "label": "Press on.",
+          "target": "pad19_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad20_end",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Sable is turned back from a warded march, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad20_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Tide"
+      }
+    },
+    {
+      "id": "pad20_b0",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad20_b0_1",
+          "label": "Press on.",
+          "target": "pad20_end"
+        }
+      ]
+    },
+    {
+      "id": "pad20_b1",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad20_b1_1",
+          "label": "Press on.",
+          "target": "pad20_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad20_b2",
+      "body": "<<FILL role=rising words=68 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad20_b2_1",
+          "label": "Press on.",
+          "target": "pad20_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad20_b3",
+      "body": "<<FILL role=rising words=74 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad20_b3_1",
+          "label": "Press on.",
+          "target": "pad20_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad21_end",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Sable line paying out, and Sable is turned back from a downward stair, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad21_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Galleries"
+      }
+    },
+    {
+      "id": "pad21_b0",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b0_1",
+          "label": "Press on.",
+          "target": "pad21_end"
+        }
+      ]
+    },
+    {
+      "id": "pad21_b1",
+      "body": "<<FILL role=rising words=62 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b1_1",
+          "label": "Press on.",
+          "target": "pad21_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad21_b2",
+      "body": "<<FILL role=rising words=68 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b2_1",
+          "label": "Press on.",
+          "target": "pad21_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad21_b3",
+      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b3_1",
+          "label": "Press on.",
+          "target": "pad21_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad21_b4",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b4_1",
+          "label": "Press on.",
+          "target": "pad21_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad21_b5",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad21_b5_1",
+          "label": "Press on.",
+          "target": "pad21_b4"
+        }
+      ]
+    },
+    {
+      "id": "pad22_end",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the rival somewhere near, and Sable is turned back from a rival crossing, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad22_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off the Ward"
+      }
+    },
+    {
+      "id": "pad22_b0",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad22_b0_1",
+          "label": "Press on.",
+          "target": "pad22_end"
+        }
+      ]
+    },
+    {
+      "id": "pad22_b1",
+      "body": "<<FILL role=rising words=62 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad22_b1_1",
+          "label": "Press on.",
+          "target": "pad22_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad23_end",
+      "body": "<<FILL role=failure words=62 beats='a caved vault forces a long detour through the dark, and Sable is turned back from a caved vault, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad23_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out of Line in the Deep"
+      }
+    },
+    {
+      "id": "pad23_b0",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad23_b0_1",
+          "label": "Press on.",
+          "target": "pad23_end"
+        }
+      ]
+    },
+    {
+      "id": "pad23_b1",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad23_b1_1",
+          "label": "Press on.",
+          "target": "pad23_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad23_b2",
+      "body": "<<FILL role=rising words=68 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad23_b2_1",
+          "label": "Press on.",
+          "target": "pad23_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad23_b3",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad23_b3_1",
+          "label": "Press on.",
+          "target": "pad23_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad24_end",
+      "body": "<<FILL role=failure words=62 beats='the tide surges, shoving Sable off her handholds, and Sable is turned back from a tide surge, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad24_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Beaten to It Again"
+      }
+    },
+    {
+      "id": "pad24_b0",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad24_b0_1",
+          "label": "Press on.",
+          "target": "pad24_end"
+        }
+      ]
+    },
+    {
+      "id": "pad24_b1",
+      "body": "<<FILL role=rising words=62 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad24_b1_1",
+          "label": "Press on.",
+          "target": "pad24_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad24_b2",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad24_b2_1",
+          "label": "Press on.",
+          "target": "pad24_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad25_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad25_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Walled in the Vault"
+      }
+    },
+    {
+      "id": "pad25_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad25_b0_1",
+          "label": "Press on.",
+          "target": "pad25_end"
+        }
+      ]
+    },
+    {
+      "id": "pad25_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad25_b1_1",
+          "label": "Press on.",
+          "target": "pad25_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad25_b2",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad25_b2_1",
+          "label": "Press on.",
+          "target": "pad25_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad25_b3",
+      "body": "<<FILL role=rising words=74 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad25_b3_1",
+          "label": "Press on.",
+          "target": "pad25_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad25_b4",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad25_b4_1",
+          "label": "Press on.",
+          "target": "pad25_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad26_end",
+      "body": "<<FILL role=failure words=62 beats='a submerged gallery opens, statues watching from the green murk, and Sable is turned back from a drowned gallery, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad26_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Swept from the Route"
+      }
+    },
+    {
+      "id": "pad26_b0",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad26_b0_1",
+          "label": "Press on.",
+          "target": "pad26_end"
+        }
+      ]
+    },
+    {
+      "id": "pad26_b1",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad26_b1_1",
+          "label": "Press on.",
+          "target": "pad26_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad26_b2",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad26_b2_1",
+          "label": "Press on.",
+          "target": "pad26_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad27_end",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a silt-choked crawl, and Sable is turned back from a choked crawl, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad27_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Empty-Handed and Cold"
+      }
+    },
+    {
+      "id": "pad27_b0",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad27_b0_1",
+          "label": "Press on.",
+          "target": "pad27_end"
+        }
+      ]
+    },
+    {
+      "id": "pad27_b1",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad27_b1_1",
+          "label": "Press on.",
+          "target": "pad27_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad28_end",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Sable is turned back from a warded march, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad28_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Passage Closes"
+      }
+    },
+    {
+      "id": "pad28_b0",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad28_b0_1",
+          "label": "Press on.",
+          "target": "pad28_end"
+        }
+      ]
+    },
+    {
+      "id": "pad28_b1",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad28_b1_1",
+          "label": "Press on.",
+          "target": "pad28_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad28_b2",
+      "body": "<<FILL role=rising words=68 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad28_b2_1",
+          "label": "Press on.",
+          "target": "pad28_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad28_b3",
+      "body": "<<FILL role=rising words=74 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad28_b3_1",
+          "label": "Press on.",
+          "target": "pad28_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad29_end",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Sable line paying out, and Sable is turned back from a downward stair, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad29_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "No Way Through"
+      }
+    },
+    {
+      "id": "pad29_b0",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad29_b0_1",
+          "label": "Press on.",
+          "target": "pad29_end"
+        }
+      ]
+    },
+    {
+      "id": "pad29_b1",
+      "body": "<<FILL role=rising words=62 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad29_b1_1",
+          "label": "Press on.",
+          "target": "pad29_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad29_b2",
+      "body": "<<FILL role=rising words=68 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad29_b2_1",
+          "label": "Press on.",
+          "target": "pad29_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad30_end",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the rival somewhere near, and Sable is turned back from a rival crossing, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad30_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Forced to Surface"
+      }
+    },
+    {
+      "id": "pad30_b0",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad30_b0_1",
+          "label": "Press on.",
+          "target": "pad30_end"
+        }
+      ]
+    },
+    {
+      "id": "pad30_b1",
+      "body": "<<FILL role=rising words=62 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad30_b1_1",
+          "label": "Press on.",
+          "target": "pad30_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad30_b2",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad30_b2_1",
+          "label": "Press on.",
+          "target": "pad30_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad30_b3",
+      "body": "<<FILL role=rising words=74 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad30_b3_1",
+          "label": "Press on.",
+          "target": "pad30_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad31_end",
+      "body": "<<FILL role=failure words=62 beats='a caved vault forces a long detour through the dark, and Sable is turned back from a caved vault, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad31_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Adrift in the Dark"
+      }
+    },
+    {
+      "id": "pad31_b0",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad31_b0_1",
+          "label": "Press on.",
+          "target": "pad31_end"
+        }
+      ]
+    },
+    {
+      "id": "pad31_b1",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad31_b1_1",
+          "label": "Press on.",
+          "target": "pad31_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad32_end",
+      "body": "<<FILL role=failure words=62 beats='the tide surges, shoving Sable off her handholds, and Sable is turned back from a tide surge, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad32_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Current Wins"
+      }
+    },
+    {
+      "id": "pad32_b0",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad32_b0_1",
+          "label": "Press on.",
+          "target": "pad32_end"
+        }
+      ]
+    },
+    {
+      "id": "pad32_b1",
+      "body": "<<FILL role=rising words=62 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad32_b1_1",
+          "label": "Press on.",
+          "target": "pad32_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad32_b2",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad32_b2_1",
+          "label": "Press on.",
+          "target": "pad32_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad32_b3",
+      "body": "<<FILL role=rising words=74 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad32_b3_1",
+          "label": "Press on.",
+          "target": "pad32_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad32_b4",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad32_b4_1",
+          "label": "Press on.",
+          "target": "pad32_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad33_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad33_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "A Dead Reckoning"
+      }
+    },
+    {
+      "id": "pad33_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad33_b0_1",
+          "label": "Press on.",
+          "target": "pad33_end"
+        }
+      ]
+    },
+    {
+      "id": "pad33_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad33_b1_1",
+          "label": "Press on.",
+          "target": "pad33_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad33_b2",
+      "body": "<<FILL role=rising words=68 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad33_b2_1",
+          "label": "Press on.",
+          "target": "pad33_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad34_end",
+      "body": "<<FILL role=failure words=62 beats='a submerged gallery opens, statues watching from the green murk, and Sable is turned back from a drowned gallery, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad34_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Back to Open Water"
+      }
+    },
+    {
+      "id": "pad34_b0",
+      "body": "<<FILL role=rising words=56 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad34_b0_1",
+          "label": "Press on.",
+          "target": "pad34_end"
+        }
+      ]
+    },
+    {
+      "id": "pad34_b1",
+      "body": "<<FILL role=rising words=62 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad34_b1_1",
+          "label": "Press on.",
+          "target": "pad34_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad34_b2",
+      "body": "<<FILL role=rising words=68 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad34_b2_1",
+          "label": "Press on.",
+          "target": "pad34_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad34_b3",
+      "body": "<<FILL role=rising words=74 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad34_b3_1",
+          "label": "Press on.",
+          "target": "pad34_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad35_end",
+      "body": "<<FILL role=failure words=62 beats='the passage narrows to a silt-choked crawl, and Sable is turned back from a choked crawl, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad35_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "The Silt Swallows It"
+      }
+    },
+    {
+      "id": "pad35_b0",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b0_1",
+          "label": "Press on.",
+          "target": "pad35_end"
+        }
+      ]
+    },
+    {
+      "id": "pad35_b1",
+      "body": "<<FILL role=rising words=62 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b1_1",
+          "label": "Press on.",
+          "target": "pad35_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad35_b2",
+      "body": "<<FILL role=rising words=68 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b2_1",
+          "label": "Press on.",
+          "target": "pad35_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad35_b3",
+      "body": "<<FILL role=rising words=74 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b3_1",
+          "label": "Press on.",
+          "target": "pad35_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad35_b4",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b4_1",
+          "label": "Press on.",
+          "target": "pad35_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad35_b5",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad35_b5_1",
+          "label": "Press on.",
+          "target": "pad35_b4"
+        }
+      ]
+    },
+    {
+      "id": "pad36_end",
+      "body": "<<FILL role=failure words=62 beats='old wards hum louder here, the water tasting of iron, and Sable is turned back from a warded march, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad36_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Too Slow by a Breath"
+      }
+    },
+    {
+      "id": "pad36_b0",
+      "body": "<<FILL role=rising words=56 beats='a stair drops into deeper cold, Sable line paying out; Sable presses deeper along a downward stair'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad36_b0_1",
+          "label": "Press on.",
+          "target": "pad36_end"
+        }
+      ]
+    },
+    {
+      "id": "pad36_b1",
+      "body": "<<FILL role=rising words=62 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad36_b1_1",
+          "label": "Press on.",
+          "target": "pad36_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad37_end",
+      "body": "<<FILL role=failure words=62 beats='a stair drops into deeper cold, Sable line paying out, and Sable is turned back from a downward stair, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad37_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Cut Off in the Flood"
+      }
+    },
+    {
+      "id": "pad37_b0",
+      "body": "<<FILL role=rising words=56 beats='bubbles trail up from a fissure, the rival somewhere near; Sable presses deeper along a rival crossing'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad37_b0_1",
+          "label": "Press on.",
+          "target": "pad37_end"
+        }
+      ]
+    },
+    {
+      "id": "pad37_b1",
+      "body": "<<FILL role=rising words=62 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad37_b1_1",
+          "label": "Press on.",
+          "target": "pad37_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad37_b2",
+      "body": "<<FILL role=rising words=68 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad37_b2_1",
+          "label": "Press on.",
+          "target": "pad37_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad37_b3",
+      "body": "<<FILL role=rising words=74 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad37_b3_1",
+          "label": "Press on.",
+          "target": "pad37_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad38_end",
+      "body": "<<FILL role=failure words=62 beats='bubbles trail up from a fissure, the rival somewhere near, and Sable is turned back from a rival crossing, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad38_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Turned Back by the Tide"
+      }
+    },
+    {
+      "id": "pad38_b0",
+      "body": "<<FILL role=rising words=56 beats='a caved vault forces a long detour through the dark; Sable presses deeper along a caved vault'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad38_b0_1",
+          "label": "Press on.",
+          "target": "pad38_end"
+        }
+      ]
+    },
+    {
+      "id": "pad38_b1",
+      "body": "<<FILL role=rising words=62 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad38_b1_1",
+          "label": "Press on.",
+          "target": "pad38_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad38_b2",
+      "body": "<<FILL role=rising words=68 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad38_b2_1",
+          "label": "Press on.",
+          "target": "pad38_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad39_end",
+      "body": "<<FILL role=failure words=62 beats='a caved vault forces a long detour through the dark, and Sable is turned back from a caved vault, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad39_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Lost in the Galleries"
+      }
+    },
+    {
+      "id": "pad39_b0",
+      "body": "<<FILL role=rising words=56 beats='the tide surges, shoving Sable off her handholds; Sable presses deeper along a tide surge'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad39_b0_1",
+          "label": "Press on.",
+          "target": "pad39_end"
+        }
+      ]
+    },
+    {
+      "id": "pad39_b1",
+      "body": "<<FILL role=rising words=62 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad39_b1_1",
+          "label": "Press on.",
+          "target": "pad39_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad39_b2",
+      "body": "<<FILL role=rising words=68 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad39_b2_1",
+          "label": "Press on.",
+          "target": "pad39_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad39_b3",
+      "body": "<<FILL role=rising words=74 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad39_b3_1",
+          "label": "Press on.",
+          "target": "pad39_b2"
+        }
+      ]
+    },
+    {
+      "id": "pad39_b4",
+      "body": "<<FILL role=rising words=56 beats='old wards hum louder here, the water tasting of iron; Sable presses deeper along a warded march'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad39_b4_1",
+          "label": "Press on.",
+          "target": "pad39_b3"
+        }
+      ]
+    },
+    {
+      "id": "pad40_end",
+      "body": "<<FILL role=failure words=62 beats='the tide surges, shoving Sable off her handholds, and Sable is turned back from a tide surge, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad40_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Driven Off the Ward"
+      }
+    },
+    {
+      "id": "pad40_b0",
+      "body": "<<FILL role=rising words=56 beats='the corridor floods to the ceiling and the current fights back; Sable presses deeper along a collapsing hall'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad40_b0_1",
+          "label": "Press on.",
+          "target": "pad40_end"
+        }
+      ]
+    },
+    {
+      "id": "pad40_b1",
+      "body": "<<FILL role=rising words=62 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad40_b1_1",
+          "label": "Press on.",
+          "target": "pad40_b0"
+        }
+      ]
+    },
+    {
+      "id": "pad40_b2",
+      "body": "<<FILL role=rising words=68 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad40_b2_1",
+          "label": "Press on.",
+          "target": "pad40_b1"
+        }
+      ]
+    },
+    {
+      "id": "pad41_end",
+      "body": "<<FILL role=failure words=62 beats='the corridor floods to the ceiling and the current fights back, and Sable is turned back from a collapsing hall, the recovery set back to another dive'>>",
+      "is_ending": true,
+      "ending": {
+        "id": "e_pad41_end",
+        "valence": "negative",
+        "kind": "setback",
+        "title": "Out of Line in the Deep"
+      }
+    },
+    {
+      "id": "pad41_b0",
+      "body": "<<FILL role=rising words=56 beats='a submerged gallery opens, statues watching from the green murk; Sable presses deeper along a drowned gallery'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad41_b0_1",
+          "label": "Press on.",
+          "target": "pad41_end"
+        }
+      ]
+    },
+    {
+      "id": "pad41_b1",
+      "body": "<<FILL role=rising words=62 beats='the passage narrows to a silt-choked crawl; Sable presses deeper along a choked crawl'>>",
+      "is_ending": false,
+      "choices": [
+        {
+          "id": "c_pad41_b1_1",
+          "label": "Press on.",
+          "target": "pad41_b0"
+        }
+      ]
+    }
+  ]
+}

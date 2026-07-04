@@ -1,0 +1,944 @@
+@startuml the-sunspire-ascent
+' Generated from skeleton JSON by scripts/render_skeleton_diagrams.py.
+' Do not edit by hand; re-run the generator.
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+hide empty description
+
+[*] --> n_start
+state n_start #BBDEFB
+n_start : setup · 88w
+state a_ap1 #D1C4E9
+a_ap1 : rising · 60w
+state a_ap2 #D1C4E9
+a_ap2 : rising · 64w
+state a_ap3 #FFF9C4
+a_ap3 : choice · 70w
+state a_ap3_bad #FFCDD2
+a_ap3_bad : setback (negative)
+a_ap3_bad : "The Flooded Dead End"
+state a_ap4 #FFCDD2
+a_ap4 : setback (negative)
+a_ap4 : "The Hinged Stair"
+state b_towergate #FFF9C4
+b_towergate : choice · 78w
+state b_gate_pod #D1C4E9
+b_gate_pod : rising · 66w
+state c_descent #D1C4E9
+c_descent : rising · 60w
+state h_u #ECEFF1
+h_u : hub · 82w
+state s_u1 #D1C4E9
+s_u1 : rising · 58w
+state g_u #ECEFF1
+g_u : bottleneck · 84w
+state s_u2 #D1C4E9
+s_u2 : rising · 66w
+state u_pa1 #D1C4E9
+u_pa1 : rising · 72w
+state u_pb1 #D1C4E9
+u_pb1 : rising · 61w
+state u_pb2 #FFF9C4
+u_pb2 : choice · 72w
+state u_pb_bad #FFCDD2
+u_pb_bad : setback (negative)
+u_pb_bad : "Sealed Under the Undercroft"
+state u_pc1 #D1C4E9
+u_pc1 : rising · 69w
+state u_pc2 #FFF9C4
+u_pc2 : choice · 74w
+state u_pc_bad1 #FFCDD2
+u_pc_bad1 : setback (negative)
+u_pc_bad1 : "The Floorless Shaft"
+state u_pc_bad2 #FFCDD2
+u_pc_bad2 : setback (negative)
+u_pc_bad2 : "The Warm Nest"
+state u_pd_p1 #D1C4E9
+u_pd_p1 : rising · 55w
+state u_pd_p2 #D1C4E9
+u_pd_p2 : rising · 63w
+state u_pd_p3 #D1C4E9
+u_pd_p3 : rising · 74w
+state u_pd_end #FFCDD2
+u_pd_end : setback (negative)
+u_pd_end : "Lost in the Undercroft"
+state u_pe1 #D1C4E9
+u_pe1 : rising · 60w
+state u_pe_rest #E0E0E0
+u_pe_rest : discovery (neutral)
+u_pe_rest : "The Climber Cache"
+state u_pe2 #D1C4E9
+u_pe2 : rising · 67w
+state u_ga1 #D1C4E9
+u_ga1 : rising · 58w
+state u_ga2 #FFCDD2
+u_ga2 : setback (negative)
+u_ga2 : "The Sheared Ledge"
+state u_gb1 #FFF9C4
+u_gb1 : choice · 76w
+state u_gb_bad #FFCDD2
+u_gb_bad : setback (negative)
+u_gb_bad : "The Locked Barrier"
+state u_gc_p1 #D1C4E9
+u_gc_p1 : rising · 66w
+state u_gc_p2 #D1C4E9
+u_gc_p2 : rising · 72w
+state u_gc_end #FFCDD2
+u_gc_end : setback (negative)
+u_gc_end : "Turned Back at the Undercroft Barrier"
+state u_gal #ECEFF1
+u_gal : hub · 80w
+state u_gal_c1_p1 #D1C4E9
+u_gal_c1_p1 : rising · 61w
+state u_gal_c1_p2 #D1C4E9
+u_gal_c1_p2 : rising · 69w
+state u_gal_c1_p3 #D1C4E9
+u_gal_c1_p3 : rising · 55w
+state u_gal_c1_end #FFCDD2
+u_gal_c1_end : setback (negative)
+u_gal_c1_end : "The Blind Turning"
+state u_gal_c2_p1 #D1C4E9
+u_gal_c2_p1 : rising · 63w
+state u_gal_c2_p2 #D1C4E9
+u_gal_c2_p2 : rising · 74w
+state u_gal_c2_p3 #D1C4E9
+u_gal_c2_p3 : rising · 60w
+state u_gal_c2_end #FFCDD2
+u_gal_c2_end : setback (negative)
+u_gal_c2_end : "The Choked Vent"
+state u_gal_c3_p1 #D1C4E9
+u_gal_c3_p1 : rising · 67w
+state u_gal_c3_p2 #D1C4E9
+u_gal_c3_p2 : rising · 58w
+state u_gal_c3_end #FFCDD2
+u_gal_c3_end : setback (negative)
+u_gal_c3_end : "The Drowned Cell"
+state u_gal_c4_p1 #D1C4E9
+u_gal_c4_p1 : rising · 66w
+state u_gal_c4_p2 #D1C4E9
+u_gal_c4_p2 : rising · 72w
+state u_gal_c4_p3 #D1C4E9
+u_gal_c4_p3 : rising · 61w
+state u_gal_c4_end #FFCDD2
+u_gal_c4_end : setback (negative)
+u_gal_c4_end : "The Broken Winch"
+state u_gal_c5_p1 #D1C4E9
+u_gal_c5_p1 : rising · 69w
+state u_gal_c5_p2 #D1C4E9
+u_gal_c5_p2 : rising · 55w
+state u_gal_c5_p3 #D1C4E9
+u_gal_c5_p3 : rising · 63w
+state u_gal_c5_end #FFCDD2
+u_gal_c5_end : setback (negative)
+u_gal_c5_end : "The Cold Larder"
+state u_gal_c6_p1 #D1C4E9
+u_gal_c6_p1 : rising · 74w
+state u_gal_c6_p2 #D1C4E9
+u_gal_c6_p2 : rising · 60w
+state u_gal_c6_end #FFCDD2
+u_gal_c6_end : setback (negative)
+u_gal_c6_end : "The Fallen Arch"
+state u_gal_c7_p1 #D1C4E9
+u_gal_c7_p1 : rising · 67w
+state u_gal_c7_p2 #D1C4E9
+u_gal_c7_p2 : rising · 58w
+state u_gal_c7_p3 #D1C4E9
+u_gal_c7_p3 : rising · 66w
+state u_gal_c7_end #FFCDD2
+u_gal_c7_end : setback (negative)
+u_gal_c7_end : "The Silent Well"
+state u_gal_c8_p1 #D1C4E9
+u_gal_c8_p1 : rising · 72w
+state u_gal_c8_p2 #D1C4E9
+u_gal_c8_p2 : rising · 61w
+state u_gal_c8_end #FFCDD2
+u_gal_c8_end : setback (negative)
+u_gal_c8_end : "The Locked Grate"
+state h_c #ECEFF1
+h_c : hub · 82w
+state s_c1 #D1C4E9
+s_c1 : rising · 69w
+state g_c #ECEFF1
+g_c : bottleneck · 84w
+state s_c2 #D1C4E9
+s_c2 : rising · 55w
+state c_pa1 #D1C4E9
+c_pa1 : rising · 63w
+state c_pb1 #D1C4E9
+c_pb1 : rising · 74w
+state c_pb2 #FFF9C4
+c_pb2 : choice · 72w
+state c_pb_bad #FFCDD2
+c_pb_bad : setback (negative)
+c_pb_bad : "Sealed Under the Clockwork Galleries"
+state c_pc1 #D1C4E9
+c_pc1 : rising · 60w
+state c_pc2 #FFF9C4
+c_pc2 : choice · 74w
+state c_pc_bad1 #FFCDD2
+c_pc_bad1 : setback (negative)
+c_pc_bad1 : "The Floorless Shaft"
+state c_pc_bad2 #FFCDD2
+c_pc_bad2 : setback (negative)
+c_pc_bad2 : "The Warm Nest"
+state c_pd_p1 #D1C4E9
+c_pd_p1 : rising · 67w
+state c_pd_p2 #D1C4E9
+c_pd_p2 : rising · 58w
+state c_pd_p3 #D1C4E9
+c_pd_p3 : rising · 66w
+state c_pd_end #FFCDD2
+c_pd_end : setback (negative)
+c_pd_end : "Lost in the Clockwork Galleries"
+state c_pe1 #D1C4E9
+c_pe1 : rising · 72w
+state c_pe_rest #E0E0E0
+c_pe_rest : discovery (neutral)
+c_pe_rest : "The Climber Cache"
+state c_pe2 #D1C4E9
+c_pe2 : rising · 61w
+state c_ga1 #D1C4E9
+c_ga1 : rising · 69w
+state c_ga2 #FFCDD2
+c_ga2 : setback (negative)
+c_ga2 : "The Sheared Ledge"
+state c_gb1 #FFF9C4
+c_gb1 : choice · 76w
+state c_gb_bad #FFCDD2
+c_gb_bad : setback (negative)
+c_gb_bad : "The Locked Barrier"
+state c_gc_p1 #D1C4E9
+c_gc_p1 : rising · 55w
+state c_gc_p2 #D1C4E9
+c_gc_p2 : rising · 63w
+state c_gc_end #FFCDD2
+c_gc_end : setback (negative)
+c_gc_end : "Turned Back at the Clockwork Galleries Barrier"
+state c_gal #ECEFF1
+c_gal : hub · 80w
+state c_gal_c1_p1 #D1C4E9
+c_gal_c1_p1 : rising · 74w
+state c_gal_c1_p2 #D1C4E9
+c_gal_c1_p2 : rising · 60w
+state c_gal_c1_p3 #D1C4E9
+c_gal_c1_p3 : rising · 67w
+state c_gal_c1_end #FFCDD2
+c_gal_c1_end : setback (negative)
+c_gal_c1_end : "The Blind Turning"
+state c_gal_c2_p1 #D1C4E9
+c_gal_c2_p1 : rising · 58w
+state c_gal_c2_p2 #D1C4E9
+c_gal_c2_p2 : rising · 66w
+state c_gal_c2_p3 #D1C4E9
+c_gal_c2_p3 : rising · 72w
+state c_gal_c2_end #FFCDD2
+c_gal_c2_end : setback (negative)
+c_gal_c2_end : "The Choked Vent"
+state c_gal_c3_p1 #D1C4E9
+c_gal_c3_p1 : rising · 61w
+state c_gal_c3_p2 #D1C4E9
+c_gal_c3_p2 : rising · 69w
+state c_gal_c3_end #FFCDD2
+c_gal_c3_end : setback (negative)
+c_gal_c3_end : "The Drowned Cell"
+state c_gal_c4_p1 #D1C4E9
+c_gal_c4_p1 : rising · 55w
+state c_gal_c4_p2 #D1C4E9
+c_gal_c4_p2 : rising · 63w
+state c_gal_c4_p3 #D1C4E9
+c_gal_c4_p3 : rising · 74w
+state c_gal_c4_end #FFCDD2
+c_gal_c4_end : setback (negative)
+c_gal_c4_end : "The Broken Winch"
+state c_gal_c5_p1 #D1C4E9
+c_gal_c5_p1 : rising · 60w
+state c_gal_c5_p2 #D1C4E9
+c_gal_c5_p2 : rising · 67w
+state c_gal_c5_p3 #D1C4E9
+c_gal_c5_p3 : rising · 58w
+state c_gal_c5_end #FFCDD2
+c_gal_c5_end : setback (negative)
+c_gal_c5_end : "The Cold Larder"
+state c_gal_c6_p1 #D1C4E9
+c_gal_c6_p1 : rising · 66w
+state c_gal_c6_p2 #D1C4E9
+c_gal_c6_p2 : rising · 72w
+state c_gal_c6_end #FFCDD2
+c_gal_c6_end : setback (negative)
+c_gal_c6_end : "The Fallen Arch"
+state c_gal_c7_p1 #D1C4E9
+c_gal_c7_p1 : rising · 61w
+state c_gal_c7_p2 #D1C4E9
+c_gal_c7_p2 : rising · 69w
+state c_gal_c7_p3 #D1C4E9
+c_gal_c7_p3 : rising · 55w
+state c_gal_c7_end #FFCDD2
+c_gal_c7_end : setback (negative)
+c_gal_c7_end : "The Silent Well"
+state c_gal_c8_p1 #D1C4E9
+c_gal_c8_p1 : rising · 63w
+state c_gal_c8_p2 #D1C4E9
+c_gal_c8_p2 : rising · 74w
+state c_gal_c8_end #FFCDD2
+c_gal_c8_end : setback (negative)
+c_gal_c8_end : "The Locked Grate"
+state h_l #ECEFF1
+h_l : hub · 82w
+state s_l1 #D1C4E9
+s_l1 : rising · 60w
+state g_l #ECEFF1
+g_l : bottleneck · 84w
+state s_l2 #D1C4E9
+s_l2 : rising · 67w
+state l_pa1 #D1C4E9
+l_pa1 : rising · 58w
+state l_pb1 #D1C4E9
+l_pb1 : rising · 66w
+state l_pb2 #FFF9C4
+l_pb2 : choice · 72w
+state l_pb_bad #FFCDD2
+l_pb_bad : setback (negative)
+l_pb_bad : "Sealed Under the Whispering Library"
+state l_pc1 #D1C4E9
+l_pc1 : rising · 72w
+state l_pc2 #FFF9C4
+l_pc2 : choice · 74w
+state l_pc_bad1 #FFCDD2
+l_pc_bad1 : setback (negative)
+l_pc_bad1 : "The Floorless Shaft"
+state l_pc_bad2 #FFCDD2
+l_pc_bad2 : setback (negative)
+l_pc_bad2 : "The Warm Nest"
+state l_pd_p1 #D1C4E9
+l_pd_p1 : rising · 61w
+state l_pd_p2 #D1C4E9
+l_pd_p2 : rising · 69w
+state l_pd_p3 #D1C4E9
+l_pd_p3 : rising · 55w
+state l_pd_end #FFCDD2
+l_pd_end : setback (negative)
+l_pd_end : "Lost in the Whispering Library"
+state l_pe1 #D1C4E9
+l_pe1 : rising · 63w
+state l_pe_rest #E0E0E0
+l_pe_rest : discovery (neutral)
+l_pe_rest : "The Climber Cache"
+state l_pe2 #D1C4E9
+l_pe2 : rising · 74w
+state l_ga1 #D1C4E9
+l_ga1 : rising · 60w
+state l_ga2 #FFCDD2
+l_ga2 : setback (negative)
+l_ga2 : "The Sheared Ledge"
+state l_gb1 #FFF9C4
+l_gb1 : choice · 76w
+state l_gb_bad #FFCDD2
+l_gb_bad : setback (negative)
+l_gb_bad : "The Locked Barrier"
+state l_gc_p1 #D1C4E9
+l_gc_p1 : rising · 67w
+state l_gc_p2 #D1C4E9
+l_gc_p2 : rising · 58w
+state l_gc_end #FFCDD2
+l_gc_end : setback (negative)
+l_gc_end : "Turned Back at the Whispering Library Barrier"
+state l_gal #ECEFF1
+l_gal : hub · 80w
+state l_gal_c1_p1 #D1C4E9
+l_gal_c1_p1 : rising · 66w
+state l_gal_c1_p2 #D1C4E9
+l_gal_c1_p2 : rising · 72w
+state l_gal_c1_p3 #D1C4E9
+l_gal_c1_p3 : rising · 61w
+state l_gal_c1_end #FFCDD2
+l_gal_c1_end : setback (negative)
+l_gal_c1_end : "The Blind Turning"
+state l_gal_c2_p1 #D1C4E9
+l_gal_c2_p1 : rising · 69w
+state l_gal_c2_p2 #D1C4E9
+l_gal_c2_p2 : rising · 55w
+state l_gal_c2_p3 #D1C4E9
+l_gal_c2_p3 : rising · 63w
+state l_gal_c2_end #FFCDD2
+l_gal_c2_end : setback (negative)
+l_gal_c2_end : "The Choked Vent"
+state l_gal_c3_p1 #D1C4E9
+l_gal_c3_p1 : rising · 74w
+state l_gal_c3_p2 #D1C4E9
+l_gal_c3_p2 : rising · 60w
+state l_gal_c3_end #FFCDD2
+l_gal_c3_end : setback (negative)
+l_gal_c3_end : "The Drowned Cell"
+state l_gal_c4_p1 #D1C4E9
+l_gal_c4_p1 : rising · 67w
+state l_gal_c4_p2 #D1C4E9
+l_gal_c4_p2 : rising · 58w
+state l_gal_c4_p3 #D1C4E9
+l_gal_c4_p3 : rising · 66w
+state l_gal_c4_end #FFCDD2
+l_gal_c4_end : setback (negative)
+l_gal_c4_end : "The Broken Winch"
+state l_gal_c5_p1 #D1C4E9
+l_gal_c5_p1 : rising · 72w
+state l_gal_c5_p2 #D1C4E9
+l_gal_c5_p2 : rising · 61w
+state l_gal_c5_p3 #D1C4E9
+l_gal_c5_p3 : rising · 69w
+state l_gal_c5_end #FFCDD2
+l_gal_c5_end : setback (negative)
+l_gal_c5_end : "The Cold Larder"
+state l_gal_c6_p1 #D1C4E9
+l_gal_c6_p1 : rising · 55w
+state l_gal_c6_p2 #D1C4E9
+l_gal_c6_p2 : rising · 63w
+state l_gal_c6_end #FFCDD2
+l_gal_c6_end : setback (negative)
+l_gal_c6_end : "The Fallen Arch"
+state l_gal_c7_p1 #D1C4E9
+l_gal_c7_p1 : rising · 74w
+state l_gal_c7_p2 #D1C4E9
+l_gal_c7_p2 : rising · 60w
+state l_gal_c7_p3 #D1C4E9
+l_gal_c7_p3 : rising · 67w
+state l_gal_c7_end #FFCDD2
+l_gal_c7_end : setback (negative)
+l_gal_c7_end : "The Silent Well"
+state l_gal_c8_p1 #D1C4E9
+l_gal_c8_p1 : rising · 58w
+state l_gal_c8_p2 #D1C4E9
+l_gal_c8_p2 : rising · 66w
+state l_gal_c8_end #FFCDD2
+l_gal_c8_end : setback (negative)
+l_gal_c8_end : "The Locked Grate"
+state h_r #ECEFF1
+h_r : hub · 82w
+state s_r1 #D1C4E9
+s_r1 : rising · 72w
+state g_r #ECEFF1
+g_r : bottleneck · 84w
+state s_r2 #D1C4E9
+s_r2 : rising · 61w
+state r_pa1 #D1C4E9
+r_pa1 : rising · 69w
+state r_pb1 #D1C4E9
+r_pb1 : rising · 55w
+state r_pb2 #FFF9C4
+r_pb2 : choice · 72w
+state r_pb_bad #FFCDD2
+r_pb_bad : setback (negative)
+r_pb_bad : "Sealed Under the Wind-Scoured Ramparts"
+state r_pc1 #D1C4E9
+r_pc1 : rising · 63w
+state r_pc2 #FFF9C4
+r_pc2 : choice · 74w
+state r_pc_bad1 #FFCDD2
+r_pc_bad1 : setback (negative)
+r_pc_bad1 : "The Floorless Shaft"
+state r_pc_bad2 #FFCDD2
+r_pc_bad2 : setback (negative)
+r_pc_bad2 : "The Warm Nest"
+state r_pd_p1 #D1C4E9
+r_pd_p1 : rising · 74w
+state r_pd_p2 #D1C4E9
+r_pd_p2 : rising · 60w
+state r_pd_p3 #D1C4E9
+r_pd_p3 : rising · 67w
+state r_pd_end #FFCDD2
+r_pd_end : setback (negative)
+r_pd_end : "Lost in the Wind-Scoured Ramparts"
+state r_pe1 #D1C4E9
+r_pe1 : rising · 58w
+state r_pe_rest #E0E0E0
+r_pe_rest : discovery (neutral)
+r_pe_rest : "The Climber Cache"
+state r_pe2 #D1C4E9
+r_pe2 : rising · 66w
+state r_ga1 #D1C4E9
+r_ga1 : rising · 72w
+state r_ga2 #FFCDD2
+r_ga2 : setback (negative)
+r_ga2 : "The Sheared Ledge"
+state r_gb1 #FFF9C4
+r_gb1 : choice · 76w
+state r_gb_bad #FFCDD2
+r_gb_bad : setback (negative)
+r_gb_bad : "The Locked Barrier"
+state r_gc_p1 #D1C4E9
+r_gc_p1 : rising · 61w
+state r_gc_p2 #D1C4E9
+r_gc_p2 : rising · 69w
+state r_gc_end #FFCDD2
+r_gc_end : setback (negative)
+r_gc_end : "Turned Back at the Wind-Scoured Ramparts Barrier"
+state r_gal #ECEFF1
+r_gal : hub · 80w
+state r_gal_c1_p1 #D1C4E9
+r_gal_c1_p1 : rising · 55w
+state r_gal_c1_p2 #D1C4E9
+r_gal_c1_p2 : rising · 63w
+state r_gal_c1_p3 #D1C4E9
+r_gal_c1_p3 : rising · 74w
+state r_gal_c1_end #FFCDD2
+r_gal_c1_end : setback (negative)
+r_gal_c1_end : "The Blind Turning"
+state r_gal_c2_p1 #D1C4E9
+r_gal_c2_p1 : rising · 60w
+state r_gal_c2_p2 #D1C4E9
+r_gal_c2_p2 : rising · 67w
+state r_gal_c2_p3 #D1C4E9
+r_gal_c2_p3 : rising · 58w
+state r_gal_c2_end #FFCDD2
+r_gal_c2_end : setback (negative)
+r_gal_c2_end : "The Choked Vent"
+state r_gal_c3_p1 #D1C4E9
+r_gal_c3_p1 : rising · 66w
+state r_gal_c3_p2 #D1C4E9
+r_gal_c3_p2 : rising · 72w
+state r_gal_c3_end #FFCDD2
+r_gal_c3_end : setback (negative)
+r_gal_c3_end : "The Drowned Cell"
+state r_gal_c4_p1 #D1C4E9
+r_gal_c4_p1 : rising · 61w
+state r_gal_c4_p2 #D1C4E9
+r_gal_c4_p2 : rising · 69w
+state r_gal_c4_p3 #D1C4E9
+r_gal_c4_p3 : rising · 55w
+state r_gal_c4_end #FFCDD2
+r_gal_c4_end : setback (negative)
+r_gal_c4_end : "The Broken Winch"
+state r_gal_c5_p1 #D1C4E9
+r_gal_c5_p1 : rising · 63w
+state r_gal_c5_p2 #D1C4E9
+r_gal_c5_p2 : rising · 74w
+state r_gal_c5_p3 #D1C4E9
+r_gal_c5_p3 : rising · 60w
+state r_gal_c5_end #FFCDD2
+r_gal_c5_end : setback (negative)
+r_gal_c5_end : "The Cold Larder"
+state r_gal_c6_p1 #D1C4E9
+r_gal_c6_p1 : rising · 67w
+state r_gal_c6_p2 #D1C4E9
+r_gal_c6_p2 : rising · 58w
+state r_gal_c6_end #FFCDD2
+r_gal_c6_end : setback (negative)
+r_gal_c6_end : "The Fallen Arch"
+state r_gal_c7_p1 #D1C4E9
+r_gal_c7_p1 : rising · 66w
+state r_gal_c7_p2 #D1C4E9
+r_gal_c7_p2 : rising · 72w
+state r_gal_c7_p3 #D1C4E9
+r_gal_c7_p3 : rising · 61w
+state r_gal_c7_end #FFCDD2
+r_gal_c7_end : setback (negative)
+r_gal_c7_end : "The Silent Well"
+state r_gal_c8_p1 #D1C4E9
+r_gal_c8_p1 : rising · 69w
+state r_gal_c8_p2 #D1C4E9
+r_gal_c8_p2 : rising · 55w
+state r_gal_c8_end #FFCDD2
+r_gal_c8_end : setback (negative)
+r_gal_c8_end : "The Locked Grate"
+state h_b #ECEFF1
+h_b : hub · 86w
+state s_b1 #D1C4E9
+s_b1 : rising · 70w
+state g_b #ECEFF1
+g_b : bottleneck · 88w
+state s_b2 #FFE0B2
+s_b2 : climax · 84w
+state s_b3 #FFE0B2
+s_b3 : climax · 80w
+state e_relight #C8E6C9
+e_relight : completion (positive)
+e_relight : "The Beacon Relit"
+state b_widder #FFCDD2
+b_widder : setback (negative)
+b_widder : "The Last Turn Wrong"
+state b_force #FFCDD2
+b_force : setback (negative)
+b_force : "The Wild Spark"
+state b_pa1 #D1C4E9
+b_pa1 : rising · 64w
+state b_pb1 #FFF9C4
+b_pb1 : choice · 72w
+state b_pb_bad #FFCDD2
+b_pb_bad : setback (negative)
+b_pb_bad : "Held by the Shadow"
+state b_pc1 #D1C4E9
+b_pc1 : rising · 60w
+state b_pd1 #E0E0E0
+b_pd1 : discovery (neutral)
+b_pd1 : "The Braced Doors"
+state b_ga1 #FFF9C4
+b_ga1 : choice · 74w
+state b_ga_bad #FFCDD2
+b_ga_bad : setback (negative)
+b_ga_bad : "The Bargained Shard"
+state b_gb1 #D1C4E9
+b_gb1 : rising · 62w
+state b_gb2 #FFCDD2
+b_gb2 : setback (negative)
+b_gb2 : "The Jammed Housing"
+state s_b2b #FFE0B2
+s_b2b : climax · 78w
+state e_clever #C8E6C9
+e_clever : success (positive)
+e_clever : "The Clever Summit"
+n_start --> a_ap1 : Cross the crumbled moat causeway.
+n_start --> a_ap2 : Climb the ivy on the north face.
+n_start --> a_ap3 : Slip into the servants tunnel.
+n_start --> a_ap4 : Take the wide front stair.
+a_ap1 --> b_towergate : Reach the tower gate.
+a_ap2 --> b_towergate : Drop down to the tower gate.
+a_ap3 --> b_towergate : Climb toward the gate hall.
+a_ap3 --> a_ap3_bad : Follow the downward branch.
+b_towergate --> c_descent : Descend toward the water.
+b_towergate --> b_gate_pod : Follow the warm draught aside.
+b_gate_pod --> c_descent : Take the ladder down.
+c_descent --> h_u : Enter the undercroft.
+h_u --> s_u1 : Take the direct route.
+h_u --> u_pa1 : Try the flanking passage.
+h_u --> u_pb1 : Search the side chamber.
+h_u --> u_pc1 : Force the near door.
+h_u --> u_pd_p1 : Follow the low path.
+h_u --> u_pe1 : Chance the far gallery.
+h_u --> u_gal : Explore the outer galleries.
+s_u1 --> g_u : Push toward the barrier.
+g_u --> s_u2 : Win through the barrier.
+g_u --> u_ga1 : Attempt the risky bypass.
+g_u --> u_gb1 : Probe the mechanism.
+g_u --> u_gc_p1 : Look for another handhold.
+s_u2 --> h_c : Climb to the next tier.
+u_pa1 --> g_u : Rejoin the barrier.
+u_pb1 --> u_pb2 : Dig deeper in.
+u_pb2 --> g_u : Crawl back to the barrier.
+u_pb2 --> u_pb_bad : Cross the sagging floor.
+u_pc1 --> u_pc2 : Feel along the wall.
+u_pc2 --> u_pc_bad1 : Take the cold arch.
+u_pc2 --> u_pc_bad2 : Take the warm arch.
+u_pd_p1 --> u_pd_p2 : Press on.
+u_pd_p2 --> u_pd_p3 : Press on.
+u_pd_p3 --> u_pd_end : Press on.
+u_pe1 --> u_pe2 : Take the cache and press on.
+u_pe1 --> u_pe_rest : Rest a moment in the alcove.
+u_pe2 --> g_u : Follow the fault back.
+u_ga1 --> u_ga2 : Edge along the ledge.
+u_gb1 --> s_u2 : Trip the release lever.
+u_gb1 --> u_gb_bad : Cut the counterweights.
+u_gc_p1 --> u_gc_p2 : Press on.
+u_gc_p2 --> u_gc_end : Press on.
+u_gal --> u_gal_c1_p1 : Try passage 1.
+u_gal --> u_gal_c2_p1 : Try passage 2.
+u_gal --> u_gal_c3_p1 : Try passage 3.
+u_gal --> u_gal_c4_p1 : Try passage 4.
+u_gal --> u_gal_c5_p1 : Try passage 5.
+u_gal --> u_gal_c6_p1 : Try passage 6.
+u_gal --> u_gal_c7_p1 : Try passage 7.
+u_gal --> u_gal_c8_p1 : Try passage 8.
+u_gal_c1_p1 --> u_gal_c1_p2 : Press on.
+u_gal_c1_p2 --> u_gal_c1_p3 : Press on.
+u_gal_c1_p3 --> u_gal_c1_end : Press on.
+u_gal_c2_p1 --> u_gal_c2_p2 : Press on.
+u_gal_c2_p2 --> u_gal_c2_p3 : Press on.
+u_gal_c2_p3 --> u_gal_c2_end : Press on.
+u_gal_c3_p1 --> u_gal_c3_p2 : Press on.
+u_gal_c3_p2 --> u_gal_c3_end : Press on.
+u_gal_c4_p1 --> u_gal_c4_p2 : Press on.
+u_gal_c4_p2 --> u_gal_c4_p3 : Press on.
+u_gal_c4_p3 --> u_gal_c4_end : Press on.
+u_gal_c5_p1 --> u_gal_c5_p2 : Press on.
+u_gal_c5_p2 --> u_gal_c5_p3 : Press on.
+u_gal_c5_p3 --> u_gal_c5_end : Press on.
+u_gal_c6_p1 --> u_gal_c6_p2 : Press on.
+u_gal_c6_p2 --> u_gal_c6_end : Press on.
+u_gal_c7_p1 --> u_gal_c7_p2 : Press on.
+u_gal_c7_p2 --> u_gal_c7_p3 : Press on.
+u_gal_c7_p3 --> u_gal_c7_end : Press on.
+u_gal_c8_p1 --> u_gal_c8_p2 : Press on.
+u_gal_c8_p2 --> u_gal_c8_end : Press on.
+h_c --> s_c1 : Take the direct route.
+h_c --> c_pa1 : Try the flanking passage.
+h_c --> c_pb1 : Search the side chamber.
+h_c --> c_pc1 : Force the near door.
+h_c --> c_pd_p1 : Follow the low path.
+h_c --> c_pe1 : Chance the far gallery.
+h_c --> c_gal : Explore the outer galleries.
+s_c1 --> g_c : Push toward the barrier.
+g_c --> s_c2 : Win through the barrier.
+g_c --> c_ga1 : Attempt the risky bypass.
+g_c --> c_gb1 : Probe the mechanism.
+g_c --> c_gc_p1 : Look for another handhold.
+s_c2 --> h_l : Climb to the next tier.
+c_pa1 --> g_c : Rejoin the barrier.
+c_pb1 --> c_pb2 : Dig deeper in.
+c_pb2 --> g_c : Crawl back to the barrier.
+c_pb2 --> c_pb_bad : Cross the sagging floor.
+c_pc1 --> c_pc2 : Feel along the wall.
+c_pc2 --> c_pc_bad1 : Take the cold arch.
+c_pc2 --> c_pc_bad2 : Take the warm arch.
+c_pd_p1 --> c_pd_p2 : Press on.
+c_pd_p2 --> c_pd_p3 : Press on.
+c_pd_p3 --> c_pd_end : Press on.
+c_pe1 --> c_pe2 : Take the cache and press on.
+c_pe1 --> c_pe_rest : Rest a moment in the alcove.
+c_pe2 --> g_c : Follow the fault back.
+c_ga1 --> c_ga2 : Edge along the ledge.
+c_gb1 --> s_c2 : Trip the release lever.
+c_gb1 --> c_gb_bad : Cut the counterweights.
+c_gc_p1 --> c_gc_p2 : Press on.
+c_gc_p2 --> c_gc_end : Press on.
+c_gal --> c_gal_c1_p1 : Try passage 1.
+c_gal --> c_gal_c2_p1 : Try passage 2.
+c_gal --> c_gal_c3_p1 : Try passage 3.
+c_gal --> c_gal_c4_p1 : Try passage 4.
+c_gal --> c_gal_c5_p1 : Try passage 5.
+c_gal --> c_gal_c6_p1 : Try passage 6.
+c_gal --> c_gal_c7_p1 : Try passage 7.
+c_gal --> c_gal_c8_p1 : Try passage 8.
+c_gal_c1_p1 --> c_gal_c1_p2 : Press on.
+c_gal_c1_p2 --> c_gal_c1_p3 : Press on.
+c_gal_c1_p3 --> c_gal_c1_end : Press on.
+c_gal_c2_p1 --> c_gal_c2_p2 : Press on.
+c_gal_c2_p2 --> c_gal_c2_p3 : Press on.
+c_gal_c2_p3 --> c_gal_c2_end : Press on.
+c_gal_c3_p1 --> c_gal_c3_p2 : Press on.
+c_gal_c3_p2 --> c_gal_c3_end : Press on.
+c_gal_c4_p1 --> c_gal_c4_p2 : Press on.
+c_gal_c4_p2 --> c_gal_c4_p3 : Press on.
+c_gal_c4_p3 --> c_gal_c4_end : Press on.
+c_gal_c5_p1 --> c_gal_c5_p2 : Press on.
+c_gal_c5_p2 --> c_gal_c5_p3 : Press on.
+c_gal_c5_p3 --> c_gal_c5_end : Press on.
+c_gal_c6_p1 --> c_gal_c6_p2 : Press on.
+c_gal_c6_p2 --> c_gal_c6_end : Press on.
+c_gal_c7_p1 --> c_gal_c7_p2 : Press on.
+c_gal_c7_p2 --> c_gal_c7_p3 : Press on.
+c_gal_c7_p3 --> c_gal_c7_end : Press on.
+c_gal_c8_p1 --> c_gal_c8_p2 : Press on.
+c_gal_c8_p2 --> c_gal_c8_end : Press on.
+h_l --> s_l1 : Take the direct route.
+h_l --> l_pa1 : Try the flanking passage.
+h_l --> l_pb1 : Search the side chamber.
+h_l --> l_pc1 : Force the near door.
+h_l --> l_pd_p1 : Follow the low path.
+h_l --> l_pe1 : Chance the far gallery.
+h_l --> l_gal : Explore the outer galleries.
+s_l1 --> g_l : Push toward the barrier.
+g_l --> s_l2 : Win through the barrier.
+g_l --> l_ga1 : Attempt the risky bypass.
+g_l --> l_gb1 : Probe the mechanism.
+g_l --> l_gc_p1 : Look for another handhold.
+s_l2 --> h_r : Climb to the next tier.
+l_pa1 --> g_l : Rejoin the barrier.
+l_pb1 --> l_pb2 : Dig deeper in.
+l_pb2 --> g_l : Crawl back to the barrier.
+l_pb2 --> l_pb_bad : Cross the sagging floor.
+l_pc1 --> l_pc2 : Feel along the wall.
+l_pc2 --> l_pc_bad1 : Take the cold arch.
+l_pc2 --> l_pc_bad2 : Take the warm arch.
+l_pd_p1 --> l_pd_p2 : Press on.
+l_pd_p2 --> l_pd_p3 : Press on.
+l_pd_p3 --> l_pd_end : Press on.
+l_pe1 --> l_pe2 : Take the cache and press on.
+l_pe1 --> l_pe_rest : Rest a moment in the alcove.
+l_pe2 --> g_l : Follow the fault back.
+l_ga1 --> l_ga2 : Edge along the ledge.
+l_gb1 --> s_l2 : Trip the release lever.
+l_gb1 --> l_gb_bad : Cut the counterweights.
+l_gc_p1 --> l_gc_p2 : Press on.
+l_gc_p2 --> l_gc_end : Press on.
+l_gal --> l_gal_c1_p1 : Try passage 1.
+l_gal --> l_gal_c2_p1 : Try passage 2.
+l_gal --> l_gal_c3_p1 : Try passage 3.
+l_gal --> l_gal_c4_p1 : Try passage 4.
+l_gal --> l_gal_c5_p1 : Try passage 5.
+l_gal --> l_gal_c6_p1 : Try passage 6.
+l_gal --> l_gal_c7_p1 : Try passage 7.
+l_gal --> l_gal_c8_p1 : Try passage 8.
+l_gal_c1_p1 --> l_gal_c1_p2 : Press on.
+l_gal_c1_p2 --> l_gal_c1_p3 : Press on.
+l_gal_c1_p3 --> l_gal_c1_end : Press on.
+l_gal_c2_p1 --> l_gal_c2_p2 : Press on.
+l_gal_c2_p2 --> l_gal_c2_p3 : Press on.
+l_gal_c2_p3 --> l_gal_c2_end : Press on.
+l_gal_c3_p1 --> l_gal_c3_p2 : Press on.
+l_gal_c3_p2 --> l_gal_c3_end : Press on.
+l_gal_c4_p1 --> l_gal_c4_p2 : Press on.
+l_gal_c4_p2 --> l_gal_c4_p3 : Press on.
+l_gal_c4_p3 --> l_gal_c4_end : Press on.
+l_gal_c5_p1 --> l_gal_c5_p2 : Press on.
+l_gal_c5_p2 --> l_gal_c5_p3 : Press on.
+l_gal_c5_p3 --> l_gal_c5_end : Press on.
+l_gal_c6_p1 --> l_gal_c6_p2 : Press on.
+l_gal_c6_p2 --> l_gal_c6_end : Press on.
+l_gal_c7_p1 --> l_gal_c7_p2 : Press on.
+l_gal_c7_p2 --> l_gal_c7_p3 : Press on.
+l_gal_c7_p3 --> l_gal_c7_end : Press on.
+l_gal_c8_p1 --> l_gal_c8_p2 : Press on.
+l_gal_c8_p2 --> l_gal_c8_end : Press on.
+h_r --> s_r1 : Take the direct route.
+h_r --> r_pa1 : Try the flanking passage.
+h_r --> r_pb1 : Search the side chamber.
+h_r --> r_pc1 : Force the near door.
+h_r --> r_pd_p1 : Follow the low path.
+h_r --> r_pe1 : Chance the far gallery.
+h_r --> r_gal : Explore the outer galleries.
+s_r1 --> g_r : Push toward the barrier.
+g_r --> s_r2 : Win through the barrier.
+g_r --> r_ga1 : Attempt the risky bypass.
+g_r --> r_gb1 : Probe the mechanism.
+g_r --> r_gc_p1 : Look for another handhold.
+s_r2 --> h_b : Climb to the next tier.
+r_pa1 --> g_r : Rejoin the barrier.
+r_pb1 --> r_pb2 : Dig deeper in.
+r_pb2 --> g_r : Crawl back to the barrier.
+r_pb2 --> r_pb_bad : Cross the sagging floor.
+r_pc1 --> r_pc2 : Feel along the wall.
+r_pc2 --> r_pc_bad1 : Take the cold arch.
+r_pc2 --> r_pc_bad2 : Take the warm arch.
+r_pd_p1 --> r_pd_p2 : Press on.
+r_pd_p2 --> r_pd_p3 : Press on.
+r_pd_p3 --> r_pd_end : Press on.
+r_pe1 --> r_pe2 : Take the cache and press on.
+r_pe1 --> r_pe_rest : Rest a moment in the alcove.
+r_pe2 --> g_r : Follow the fault back.
+r_ga1 --> r_ga2 : Edge along the ledge.
+r_gb1 --> s_r2 : Trip the release lever.
+r_gb1 --> r_gb_bad : Cut the counterweights.
+r_gc_p1 --> r_gc_p2 : Press on.
+r_gc_p2 --> r_gc_end : Press on.
+r_gal --> r_gal_c1_p1 : Try passage 1.
+r_gal --> r_gal_c2_p1 : Try passage 2.
+r_gal --> r_gal_c3_p1 : Try passage 3.
+r_gal --> r_gal_c4_p1 : Try passage 4.
+r_gal --> r_gal_c5_p1 : Try passage 5.
+r_gal --> r_gal_c6_p1 : Try passage 6.
+r_gal --> r_gal_c7_p1 : Try passage 7.
+r_gal --> r_gal_c8_p1 : Try passage 8.
+r_gal_c1_p1 --> r_gal_c1_p2 : Press on.
+r_gal_c1_p2 --> r_gal_c1_p3 : Press on.
+r_gal_c1_p3 --> r_gal_c1_end : Press on.
+r_gal_c2_p1 --> r_gal_c2_p2 : Press on.
+r_gal_c2_p2 --> r_gal_c2_p3 : Press on.
+r_gal_c2_p3 --> r_gal_c2_end : Press on.
+r_gal_c3_p1 --> r_gal_c3_p2 : Press on.
+r_gal_c3_p2 --> r_gal_c3_end : Press on.
+r_gal_c4_p1 --> r_gal_c4_p2 : Press on.
+r_gal_c4_p2 --> r_gal_c4_p3 : Press on.
+r_gal_c4_p3 --> r_gal_c4_end : Press on.
+r_gal_c5_p1 --> r_gal_c5_p2 : Press on.
+r_gal_c5_p2 --> r_gal_c5_p3 : Press on.
+r_gal_c5_p3 --> r_gal_c5_end : Press on.
+r_gal_c6_p1 --> r_gal_c6_p2 : Press on.
+r_gal_c6_p2 --> r_gal_c6_end : Press on.
+r_gal_c7_p1 --> r_gal_c7_p2 : Press on.
+r_gal_c7_p2 --> r_gal_c7_p3 : Press on.
+r_gal_c7_p3 --> r_gal_c7_end : Press on.
+r_gal_c8_p1 --> r_gal_c8_p2 : Press on.
+r_gal_c8_p2 --> r_gal_c8_end : Press on.
+h_b --> s_b1 : Approach the lantern crown.
+h_b --> b_pa1 : Circle the chamber first.
+h_b --> b_pb1 : Study the curse-shadow.
+h_b --> b_pc1 : Search for the keeper remains.
+h_b --> b_pd1 : Brace the doors against the night.
+s_b1 --> g_b : Read the crown order.
+g_b --> s_b2 : Refuse the shadow and set the shards.
+g_b --> b_ga1 : Bargain with the shadow.
+g_b --> b_gb1 : Try to set the shards blind.
+s_b2 --> s_b3 : Speak the old keeper words.
+s_b2 --> b_force : Force the spark at once.
+s_b3 --> e_relight : Turn the crown sunwise, as the log said.
+s_b3 --> b_widder : Turn the crown widdershins, to spite the...
+b_pa1 --> s_b1 : Read on, then approach the crown.
+b_pb1 --> s_b1 : Slip past to the crown.
+b_pb1 --> b_pb_bad : Keep watching, transfixed.
+b_pc1 --> s_b1 : Take the key to the crown.
+b_ga1 --> s_b2b : Snatch the shard back and run for the cr...
+b_ga1 --> b_ga_bad : Let the shadow take the shard.
+b_gb1 --> b_gb2 : Force the third by feel.
+s_b2b --> e_clever : Set the shards from the far side.
+a_ap3_bad --> [*]
+a_ap4 --> [*]
+u_pb_bad --> [*]
+u_pc_bad1 --> [*]
+u_pc_bad2 --> [*]
+u_pd_end --> [*]
+u_pe_rest --> [*]
+u_ga2 --> [*]
+u_gb_bad --> [*]
+u_gc_end --> [*]
+u_gal_c1_end --> [*]
+u_gal_c2_end --> [*]
+u_gal_c3_end --> [*]
+u_gal_c4_end --> [*]
+u_gal_c5_end --> [*]
+u_gal_c6_end --> [*]
+u_gal_c7_end --> [*]
+u_gal_c8_end --> [*]
+c_pb_bad --> [*]
+c_pc_bad1 --> [*]
+c_pc_bad2 --> [*]
+c_pd_end --> [*]
+c_pe_rest --> [*]
+c_ga2 --> [*]
+c_gb_bad --> [*]
+c_gc_end --> [*]
+c_gal_c1_end --> [*]
+c_gal_c2_end --> [*]
+c_gal_c3_end --> [*]
+c_gal_c4_end --> [*]
+c_gal_c5_end --> [*]
+c_gal_c6_end --> [*]
+c_gal_c7_end --> [*]
+c_gal_c8_end --> [*]
+l_pb_bad --> [*]
+l_pc_bad1 --> [*]
+l_pc_bad2 --> [*]
+l_pd_end --> [*]
+l_pe_rest --> [*]
+l_ga2 --> [*]
+l_gb_bad --> [*]
+l_gc_end --> [*]
+l_gal_c1_end --> [*]
+l_gal_c2_end --> [*]
+l_gal_c3_end --> [*]
+l_gal_c4_end --> [*]
+l_gal_c5_end --> [*]
+l_gal_c6_end --> [*]
+l_gal_c7_end --> [*]
+l_gal_c8_end --> [*]
+r_pb_bad --> [*]
+r_pc_bad1 --> [*]
+r_pc_bad2 --> [*]
+r_pd_end --> [*]
+r_pe_rest --> [*]
+r_ga2 --> [*]
+r_gb_bad --> [*]
+r_gc_end --> [*]
+r_gal_c1_end --> [*]
+r_gal_c2_end --> [*]
+r_gal_c3_end --> [*]
+r_gal_c4_end --> [*]
+r_gal_c5_end --> [*]
+r_gal_c6_end --> [*]
+r_gal_c7_end --> [*]
+r_gal_c8_end --> [*]
+e_relight --> [*]
+b_widder --> [*]
+b_force --> [*]
+b_pb_bad --> [*]
+b_pd1 --> [*]
+b_ga_bad --> [*]
+b_gb2 --> [*]
+e_clever --> [*]
+
+legend right
+  The Sunspire Ascent
+  Band 13-16 · Tier 1 · ~15 min
+  Topology: branch_and_bottleneck
+  252 nodes · 74 endings (2+ / 5n / 67-)
+  Production-eligible
+  Scale: medium · gamebook
+endlegend
+@enduml
