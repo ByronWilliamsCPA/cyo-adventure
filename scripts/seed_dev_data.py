@@ -50,13 +50,11 @@ _ADMIN_SUBJECT = "dev-admin"
 
 
 def _flagged_moderation_report(node_id: str) -> dict[str, object]:
-    """A minimal soft-flag report so the review surface shows a flagged passage.
-
+    """A minimal soft-flag report so the review surface shows a flagged passage."""
     # #ASSUME: data-integrity: this dict must match ModerationReport.to_dict()
     # (src/cyo_adventure/moderation/report.py); approve() only checks non-null,
     # but the review surface reads findings[].node_id/verdict/message.
     # #VERIFY: test_seed_dev_data_seeds_admin_and_review_story.
-    """
     return {
         "findings": [
             {

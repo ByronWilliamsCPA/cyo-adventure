@@ -68,6 +68,6 @@ test('avatar choices are presets only; no photo upload exists', async ({ page })
   await page.getByRole('button', { name: 'Add child' }).click()
 
   // None + the 8 preset animals/objects (fox, owl, dragon, cat, unicorn, robot, rocket, frog).
-  await expect(page.getByRole('radio')).toHaveCount(9)
+  await expect(page.getByRole('group', { name: 'Avatar' }).getByRole('radio')).toHaveCount(9)
   await expect(page.locator('input[type="file"]')).toHaveCount(0)
 })

@@ -204,6 +204,9 @@ jobs:
       # #VERIFY: if this job flakes on database-not-ready errors, raise
       # --health-retries or the curl --retry count.
       CYO_ADVENTURE_DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+      # The trust-the-bearer-token auth seam (api/deps.py) requires
+      # environment=local; pin it rather than relying on the config default.
+      CYO_ADVENTURE_ENVIRONMENT: local
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18

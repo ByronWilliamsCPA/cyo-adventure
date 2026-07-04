@@ -78,6 +78,18 @@ persisted session; no storage shape is forged, so library upgrades do not
 break the helper. Sign-out and 401-expiry behavior continue to exercise the
 real AuthContext fail-closed paths.
 
+**As-built deviation (recorded at final review):** the shipped helper module
+exports two patterns. The form-driven, token-endpoint-mocked flow described
+above is exercised once, in `guardian-auth.spec.ts`, which owns sign-in
+behavior. Every other guardian spec uses `seedGuardianSession`, which writes a
+canned supabase-js session directly into localStorage before page load. This
+trades back some storage-shape coupling (the key and session schema are
+supabase-js v2 specifics, documented in `e2e/support/auth.ts`) for much faster
+per-test setup, and the real `getSession()` to `/v1/me` to `ProtectedRoute`
+chain still runs untouched. A supabase-js upgrade that changes the storage
+shape fails loudly (signed-out redirects across the guardian suite), and
+`guardian-auth.spec.ts` keeps the upgrade-proof network-seam coverage.
+
 The stale header comments in `guardian-console.spec.ts`, `intake.spec.ts`, and
 `profiles.spec.ts` (which document the old "cannot establish a session"
 decision) are updated to point at the helper.

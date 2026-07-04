@@ -90,10 +90,11 @@ test.describe('signed-in intake', () => {
 
     await expect(page.getByTestId('request-status-j1')).toHaveText('Generating')
 
-    // Next poll (POLL_MS = 8000 in IntakePage.tsx) flips the pill.
+    // Next poll (POLL_MS = 8000 in IntakePage.tsx) flips the pill. 12s leaves
+    // the poll interval a full render's worth of slack on a loaded CI runner.
     jobsPhase = 2
     await expect(page.getByTestId('request-status-j1')).toHaveText('Waiting for review', {
-      timeout: 10_000,
+      timeout: 12_000,
     })
   })
 })

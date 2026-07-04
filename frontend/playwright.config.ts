@@ -51,6 +51,11 @@ export default defineConfig({
       name: 'real-backend',
       testDir: './e2e-real',
       fullyParallel: false,
+      // #EDGE: data-integrity: the approve test mutates the database, so a CI
+      // retry after a post-mutation failure re-enters an already-approved
+      // state and fails with a different symptom; read the FIRST attempt's
+      // error when diagnosing.
+      // #VERIFY: approval-flow.spec.ts asserts persisted state after reload.
       retries: process.env.CI ? 1 : 0,
       use: { ...devices['Desktop Chrome'] },
     },
