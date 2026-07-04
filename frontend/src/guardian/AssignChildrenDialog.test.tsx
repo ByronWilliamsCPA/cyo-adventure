@@ -18,15 +18,32 @@ const PROFILES = {
   ],
 }
 
+const CONTENT_SUMMARY = {
+  storybook_id: 's1',
+  version: 1,
+  screened: true,
+  summary: {
+    count: 1,
+    hard_block: false,
+    soft_flag: true,
+    repaired: false,
+    reviewer_independent: true,
+  },
+  flagged_count: 2,
+  findings: [{ category: 'coherence', verdict: 'advisory', message: 'slightly disjoint' }],
+}
+
 beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
-  // First GET -> profiles; second GET -> current assignments.
-  mockGet.mockImplementation((url: string) =>
-    url.includes('/assignments')
-      ? Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
-      : Promise.resolve({ data: PROFILES })
-  )
+  // /content-summary -> tags; /assignments -> current assignments; else profiles.
+  mockGet.mockImplementation((url: string) => {
+    if (url.includes('/content-summary'))
+      return Promise.resolve({ data: CONTENT_SUMMARY })
+    if (url.includes('/assignments'))
+      return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+    return Promise.resolve({ data: PROFILES })
+  })
 })
 
 describe('AssignChildrenDialog', () => {
@@ -88,5 +105,25 @@ describe('AssignChildrenDialog', () => {
     mockGet.mockRejectedValue(new Error('down'))
     render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not load/i)
+  })
+
+  it('shows content review tags for the story', async () => {
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    expect(await screen.findByText('2 flagged')).toBeInTheDocument()
+    expect(screen.getByText('coherence')).toBeInTheDocument()
+    expect(screen.getByText('slightly disjoint')).toBeInTheDocument()
+  })
+
+  it('still renders the assign list when the content summary fails', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/content-summary')) return Promise.reject(new Error('down'))
+      if (url.includes('/assignments'))
+        return Promise.resolve({ data: { storybook_id: 's1', profile_ids: ['p1'] } })
+      return Promise.resolve({ data: PROFILES })
+    })
+    render(<AssignChildrenDialog storybookId="s1" onClose={vi.fn()} />)
+    expect(
+      await screen.findByRole('checkbox', { name: /Reader A$/ })
+    ).toBeInTheDocument()
   })
 })

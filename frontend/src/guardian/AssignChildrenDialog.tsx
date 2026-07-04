@@ -5,13 +5,52 @@ import { Dialog } from '@ds/components/Dialog'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
-import { makeAssignApi } from './assignApi'
+import { makeAssignApi, type ContentSummary } from './assignApi'
+import { FlagBadge, verdictTone } from './FlagBadge'
 import './guardian.css'
 
 interface AssignChildrenDialogProps {
   storybookId: string
   onClose: () => void
   onAssigned?: (profileIds: string[]) => void
+}
+
+/**
+ * Redacted content review tags for the guardian assign flow: the screened
+ * state, a flagged-count pill, and story-level findings only. Reuses FlagBadge
+ * and verdictTone; per-node passages are intentionally never fetched here.
+ */
+function ContentSummarySection({ summary }: { summary: ContentSummary }) {
+  if (!summary.screened) {
+    return (
+      <div className="assign__content-summary">
+        <h3>Content review</h3>
+        <FlagBadge tone="unscreened" />
+      </div>
+    )
+  }
+  return (
+    <div className="assign__content-summary">
+      <h3>Content review</h3>
+      {summary.flagged_count > 0 ? (
+        <FlagBadge tone="flag" label={`${summary.flagged_count} flagged`} />
+      ) : (
+        <FlagBadge tone="clean" />
+      )}
+      {summary.findings.length > 0 ? (
+        <ul className="assign__findings">
+          {summary.findings.map((finding, index) => (
+            // Findings are static per render; index key is stable here.
+            <li key={index} className="review-finding">
+              <FlagBadge tone={verdictTone(finding.verdict)} />
+              <span className="review-finding__category">{finding.category}</span>
+              <span className="review-finding__message">{finding.message}</span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  )
 }
 
 /**
@@ -33,6 +72,7 @@ export function AssignChildrenDialog({
   const [loadError, setLoadError] = useState(false)
   const [saveError, setSaveError] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [summary, setSummary] = useState<ContentSummary | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -56,6 +96,28 @@ export function AssignChildrenDialog({
       cancelled = true
     }
   }, [profilesApi, assignApi, storybookId])
+
+  useEffect(() => {
+    let cancelled = false
+    async function loadSummary() {
+      try {
+        const result = await assignApi.contentSummary(storybookId)
+        if (!cancelled) setSummary(result)
+      } catch (err) {
+        // Content tags are supplementary: a failure here must not block
+        // assignment. Log the message (not the axios error, whose config
+        // headers carry the bearer token) and leave the section unrendered.
+        console.error(
+          'content summary load failed:',
+          err instanceof Error ? err.message : err
+        )
+      }
+    }
+    void loadSummary()
+    return () => {
+      cancelled = true
+    }
+  }, [assignApi, storybookId])
 
   function toggle(id: string) {
     setPicked((prev) => {
@@ -120,6 +182,7 @@ export function AssignChildrenDialog({
           {saveError ? (
             <p role="alert">We could not assign this story. Please try again.</p>
           ) : null}
+          {summary ? <ContentSummarySection summary={summary} /> : null}
           <ul className="assign__list">
             {profiles.map((profile) => {
               const already = assigned.has(profile.id)
