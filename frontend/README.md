@@ -159,6 +159,10 @@ building for this tier: Vite bakes it into the client bundle at build time, so t
 calls the backend directly and bypasses the same-origin preview proxy. For a non-default
 backend port, build with `VITE_API_URL` unset, then run `vite preview` separately with
 `VITE_API_URL` set only for that process; Playwright reuses the already-running preview server.
+When building manually like this, also set the dummy Supabase vars the Playwright webServer
+normally provides (`VITE_SUPABASE_URL=https://example.supabase.co`
+`VITE_SUPABASE_ANON_KEY=dummy-anon-key-for-e2e-build`); without them the guardian chunk throws
+its missing-env guard at load and every guardian smoke test fails on the app error boundary.
 
 Reset between runs (the approve test mutates the database), then repeat steps 2 to 4:
 
