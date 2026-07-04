@@ -39,9 +39,14 @@ function ContentSummarySection({ summary }: { summary: ContentSummary }) {
       )}
       {summary.findings.length > 0 ? (
         <ul className="assign__findings">
-          {summary.findings.map((finding, index) => (
-            // Findings are static per render; index key is stable here.
-            <li key={index} className="review-finding">
+          {summary.findings.map((finding) => (
+            // Content-derived key: story-level findings are distinct by
+            // (category, verdict, message), so this stays stable if the list
+            // is ever reordered or spliced, unlike an array index.
+            <li
+              key={`${finding.category}-${finding.verdict}-${finding.message}`}
+              className="review-finding"
+            >
               <FlagBadge tone={verdictTone(finding.verdict)} />
               <span className="review-finding__category">{finding.category}</span>
               <span className="review-finding__message">{finding.message}</span>
