@@ -2450,6 +2450,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#frontends-npm-run-typecheck-silently-checks-zero-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        frontend's npm run typecheck silently checks zero files
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2836,6 +2847,17 @@
     <span class="md-ellipsis">
       
         .env.example.baseline ships generic ML/data scaffolding as default runtime vars
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontends-npm-run-typecheck-silently-checks-zero-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        frontend's npm run typecheck silently checks zero files
       
     </span>
   </a>
@@ -3251,6 +3273,34 @@ the <code>env_prefix</code> the template's <code>config.py</code> actually uses,
 by the generated Settings class without edits.</p>
 <p><strong>Affected Files</strong>: <code>.standards/env.example.baseline</code>, template <code>config.py</code>, cookiecutter
 <code>cookiecutter.json</code> (for a proposed <code>use_ml_stack</code> flag)</p>
+<hr />
+<h3 id="frontends-npm-run-typecheck-silently-checks-zero-files"><code>frontend</code>'s <code>npm run typecheck</code> silently checks zero files<a class="headerlink" href="#frontends-npm-run-typecheck-silently-checks-zero-files" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: High</li>
+<li><strong>Category</strong>: Tooling</li>
+<li><strong>Discovered</strong>: 2026-07-03</li>
+</ul>
+<p><strong>Issue</strong>: <code>frontend/package.json</code>'s <code>"typecheck": "tsc --noEmit"</code> runs against the root
+<code>frontend/tsconfig.json</code>, which is a references-only "solution" config (<code>"files": []</code>,
+<code>"references": [tsconfig.app.json, tsconfig.node.json]</code>). Plain <code>tsc --noEmit</code> (no <code>-b</code>
+flag) does not follow project references, so it type-checks zero files and always exits 0
+regardless of real errors in <code>src/</code>. The only command that actually type-checks the app is
+<code>npm run build</code> (<code>tsc -b &amp;&amp; vite build</code>), which CI's "Frontend (Node 22)" job runs but
+which is easy to forget is the real gate, since its name and output suggest a bundling
+step, not a type-checking one.</p>
+<p><strong>Context</strong>: Discovered during a <code>/pr-fix</code> pass on PR #90: <code>npm run typecheck</code> reported
+clean locally after a refactor, but the pushed commits failed CI's "Frontend (Node 22)"
+job with two genuine <code>tsc -b</code> errors (an ES2022-only <code>Error</code> constructor form used against
+an ES2020 build target, and a TypeScript union-narrowing gap) that <code>--noEmit</code> alone never
+surfaced. Reproducing locally required running <code>npm run build</code>, not <code>npm run typecheck</code>.</p>
+<p><strong>Suggested Fix</strong>: Either point <code>typecheck</code> at <code>tsc --noEmit -p tsconfig.app.json</code> (and a
+second invocation for <code>tsconfig.node.json</code>) so it actually checks files without emitting a
+build, or change the script to <code>tsc -b --noEmit</code> if <code>-b</code> supports it project-wide, so the
+command's name matches what it does. Whichever is chosen, add a one-line comment in the
+generated <code>package.json</code> noting that the root <code>tsconfig.json</code> is references-only and
+<code>--noEmit</code> alone will not check anything through it.</p>
+<p><strong>Affected Files</strong>: template <code>frontend/package.json</code> (<code>typecheck</code> script), template
+<code>frontend/tsconfig.json</code> scaffold comment</p>
 
 
 
@@ -3273,7 +3323,7 @@ by the generated Settings class without edits.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 2, 2026 17:28:23 UTC">July 2, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 00:27:42 UTC">July 4, 2026</span>
   </span>
 
     
