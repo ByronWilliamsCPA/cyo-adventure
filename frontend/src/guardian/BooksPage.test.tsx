@@ -108,7 +108,7 @@ describe('BooksPage', () => {
     const user = userEvent.setup()
     routeGet()
     renderPage()
-    await user.click(await screen.findByRole('button', { name: /^Assign$/ }))
+    await user.click(await screen.findByRole('button', { name: /^Assign The Lantern$/ }))
     const dialog = await screen.findByRole('dialog')
     await user.click(within(dialog).getByRole('checkbox', { name: /Reader A2/ }))
     await user.click(within(dialog).getByRole('button', { name: /^Assign$/ }))

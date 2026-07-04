@@ -147,7 +147,10 @@ export function BooksPage() {
               <p className="books__assigned">
                 Assigned to: {assignedNames(book, profiles)}
               </p>
-              <Button onClick={() => setAssigning(book.storybook_id)}>
+              <Button
+                onClick={() => setAssigning(book.storybook_id)}
+                aria-label={`Assign ${book.title}`}
+              >
                 Assign
               </Button>
             </li>

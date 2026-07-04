@@ -120,7 +120,7 @@ test('guardian browses published books and assigns a sibling', async ({ page }) 
   await expect(page.getByText('The Brave Little Fox')).toBeVisible()
   await expect(page.getByText(/Assigned to: Reader A$/)).toBeVisible()
 
-  await page.getByRole('button', { name: /^Assign$/ }).click()
+  await page.getByRole('button', { name: /^Assign The Brave Little Fox$/ }).click()
   const dialog = page.getByRole('dialog')
   await dialog.getByRole('checkbox', { name: /Reader A2/ }).click()
   await dialog.getByRole('button', { name: /^Assign$/ }).click()

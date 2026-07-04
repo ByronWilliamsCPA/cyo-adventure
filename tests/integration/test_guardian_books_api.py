@@ -190,8 +190,10 @@ async def test_corrupt_report_row_degrades_not_500(
     """A book with a corrupt moderation_report degrades its badge, not the list.
 
     build_content_summary raises on an unrecognized verdict at rest; the endpoint
-    must isolate that row (screened True since a report exists, flagged_count 0)
-    and still return the whole list at 200.
+    must isolate that row (screened False since the flags could not be read,
+    flagged_count 0) and still return the whole list at 200. Degrading to
+    screened=False, not screened=True, matters: a corrupt report must render as
+    the honest "unscreened" badge, not a falsely reassuring "Clean" one.
     """
     async with sessions() as session:
         session.add(
@@ -227,5 +229,5 @@ async def test_corrupt_report_row_degrades_not_500(
     resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
     assert resp.status_code == 200, resp.text
     row = next(b for b in resp.json()["books"] if b["storybook_id"] == "corrupt-books")
-    assert row["screened"] is True
+    assert row["screened"] is False
     assert row["flagged_count"] == 0

@@ -310,8 +310,10 @@ def _guardian_book_item(
     # #EDGE: data integrity: build_content_summary raises ValidationError on a
     # moderation_report that no longer conforms at rest (e.g. an unrecognized
     # verdict). One corrupt row must not 500 the whole browse list, so isolate
-    # it: log the bad row and degrade its badge to screened=(report present),
-    # flagged_count=0, mirroring get_review_queue's per-row isolation.
+    # it: log the bad row and degrade its badge to screened=False, flagged_count=0.
+    # A corrupt report is an unscreened badge, not a clean one; we cannot vouch
+    # for flags we cannot read, so failing open to "Clean" would be a falsely
+    # reassuring safety signal. Mirrors get_review_queue's per-row isolation.
     # #VERIFY: tests/integration/test_guardian_books_api.py::
     # test_corrupt_report_row_degrades_not_500.
     version = version_row.version
@@ -330,7 +332,7 @@ def _guardian_book_item(
             storybook_id=book.id,
             version=version,
         )
-        screened = version_row.moderation_report is not None
+        screened = False
         flagged_count = 0
     title = version_row.blob.get("title")
     return GuardianBookItem(
@@ -351,7 +353,9 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
     A guardian browses every published, approved book in their OWN family (not
     just their own request history), each carrying a redacted content badge
     (screened flag + flagged count) and the set of child profiles it is
-    currently assigned to, so they can decide what to grant.
+    currently assigned to, so they can decide what to grant. Books are ordered
+    newest-first by creation time (ties broken by id) so the list has a stable,
+    guardian-friendly order across requests.
 
     Args:
         ctx: The request context (principal + session).
@@ -402,6 +406,7 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
                 Storybook.current_published_version.is_not(None),
                 StorybookVersion.approved_by.is_not(None),
             )
+            .order_by(Storybook.created_at.desc(), Storybook.id)
         )
     ).all()
     if not rows:
