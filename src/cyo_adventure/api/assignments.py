@@ -18,7 +18,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
-from sqlalchemy import select
+from sqlalchemy import and_, select
 
 from cyo_adventure.api.deps import (
     Context,
@@ -31,13 +31,17 @@ from cyo_adventure.api.schemas import (
     AssignmentCreateBody,
     AssignmentListView,
     ContentSummaryView,
+    GuardianBookItem,
+    GuardianBooksView,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     BusinessLogicError,
     ResourceNotFoundError,
+    ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -45,6 +49,7 @@ if TYPE_CHECKING:
 router = APIRouter(prefix="/api/v1", tags=["assignments"])
 
 _PUBLISHED = "published"
+_logger = get_logger(__name__)
 
 
 def _assignment_list(
@@ -262,3 +267,158 @@ async def list_assignments(storybook_id: str, ctx: Context) -> AssignmentListVie
         )
     )
     return _assignment_list(storybook_id, rows)
+
+
+def _book_age_band(blob: dict[str, object]) -> str:
+    """Return the story's age band from blob metadata, or empty string.
+
+    Args:
+        blob: The stored Storybook content blob.
+
+    Returns:
+        str: ``metadata.age_band`` when present and a string, else ``""``.
+    """
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        age_band = metadata.get("age_band")
+        if isinstance(age_band, str):
+            return age_band
+    return ""
+
+
+def _guardian_book_item(
+    book: Storybook,
+    version_row: StorybookVersion,
+    assigned_profile_ids: list[str],
+) -> GuardianBookItem:
+    """Project one published version into a guardian browse row.
+
+    Reuses ``build_content_summary`` for the redacted content badge (the
+    screened flag and total flagged count) so the browse surface never
+    re-derives moderation gating. A ``moderation_report`` that is corrupt at rest
+    degrades this one row's badge rather than failing the whole listing.
+
+    Args:
+        book: The published storybook row.
+        version_row: Its current published version (blob + moderation report).
+        assigned_profile_ids: The child profiles this book is assigned to.
+
+    Returns:
+        GuardianBookItem: The browse row with title, content badge, and the
+            sorted assignment set.
+    """
+    # #EDGE: data integrity: build_content_summary raises ValidationError on a
+    # moderation_report that no longer conforms at rest (e.g. an unrecognized
+    # verdict). One corrupt row must not 500 the whole browse list, so isolate
+    # it: log the bad row and degrade its badge to screened=(report present),
+    # flagged_count=0, mirroring get_review_queue's per-row isolation.
+    # #VERIFY: tests/integration/test_guardian_books_api.py::
+    # test_corrupt_report_row_degrades_not_500.
+    version = version_row.version
+    try:
+        summary = build_content_summary(
+            storybook_id=book.id,
+            version=version,
+            blob=version_row.blob,
+            moderation_report=version_row.moderation_report,
+        )
+        screened = summary.screened
+        flagged_count = summary.flagged_count
+    except ValidationError:
+        _logger.warning(
+            "guardian_book_content_summary_corrupt",
+            storybook_id=book.id,
+            version=version,
+        )
+        screened = version_row.moderation_report is not None
+        flagged_count = 0
+    title = version_row.blob.get("title")
+    return GuardianBookItem(
+        storybook_id=book.id,
+        title=title if isinstance(title, str) and title else book.id,
+        version=version,
+        age_band=_book_age_band(version_row.blob),
+        screened=screened,
+        flagged_count=flagged_count,
+        assigned_profile_ids=sorted(assigned_profile_ids),
+    )
+
+
+@router.get("/guardian/books")
+async def list_guardian_books(ctx: Context) -> GuardianBooksView:
+    """List the family's published books with content tags and assignments.
+
+    A guardian browses every published, approved book in their OWN family (not
+    just their own request history), each carrying a redacted content badge
+    (screened flag + flagged count) and the set of child profiles it is
+    currently assigned to, so they can decide what to grant.
+
+    Args:
+        ctx: The request context (principal + session).
+
+    Returns:
+        GuardianBooksView: The family's published books, each with a content
+            badge and its current assignment set.
+
+    Raises:
+        AuthorizationError: If the caller is not a guardian; a child cannot
+            enumerate the family's books and an admin has no assign authority on
+            this family surface (403).
+    """
+    # #CRITICAL: security: guardian-only browse-to-assign surface. A child token
+    # cannot enumerate the family's books, and an admin (the cross-family safety
+    # reviewer, not a family assigner) is rejected too, matching
+    # assign_storybook's guardian-only authority. There is no cross-family id in
+    # the path, so 404-over-403 information-hiding does not apply; family
+    # isolation is enforced by the WHERE family_id clause below.
+    # #VERIFY: child -> 403; admin -> 403; a guardian sees only own-family rows
+    # (tests/integration/test_guardian_books_api.py).
+    if not ctx.principal.is_guardian:
+        msg = "only a guardian may browse the family library"
+        raise AuthorizationError(msg)
+    # #CRITICAL: security: match library.py's visibility gate exactly: same
+    # family, status published, a current published version, and approved_by IS
+    # NOT NULL. An unapproved or unpublished version must never surface here.
+    # #VERIFY: the join pins version == current_published_version and the WHERE
+    # requires approved_by IS NOT NULL (test_unapproved_published_book_is_excluded,
+    # test_unpublished_book_is_excluded).
+    # #ASSUME: external-resources: load every published version's blob and report
+    # in ONE join query and all assignments in ONE IN query, so the listing stays
+    # two queries total regardless of how large the family library grows.
+    # #VERIFY: no per-row DB round-trip; the content badge is a pure projection.
+    rows = (
+        await ctx.session.execute(
+            select(Storybook, StorybookVersion)
+            .join(
+                StorybookVersion,
+                and_(
+                    StorybookVersion.storybook_id == Storybook.id,
+                    StorybookVersion.version == Storybook.current_published_version,
+                ),
+            )
+            .where(
+                Storybook.family_id == ctx.principal.family_id,
+                Storybook.status == _PUBLISHED,
+                Storybook.current_published_version.is_not(None),
+                StorybookVersion.approved_by.is_not(None),
+            )
+        )
+    ).all()
+    if not rows:
+        return GuardianBooksView(books=[])
+    book_ids = [book.id for book, _ in rows]
+    assign_rows = await ctx.session.scalars(
+        select(StorybookAssignment).where(
+            StorybookAssignment.storybook_id.in_(book_ids)
+        )
+    )
+    assigned: dict[str, list[str]] = {}
+    for assignment in assign_rows:
+        assigned.setdefault(assignment.storybook_id, []).append(
+            str(assignment.child_profile_id)
+        )
+    books = [
+        _guardian_book_item(book, version_row, assigned.get(book.id, []))
+        for book, version_row in rows
+    ]
+    return GuardianBooksView(books=books)
