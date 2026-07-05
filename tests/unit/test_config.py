@@ -15,6 +15,11 @@ import pytest
 # The dev-default DSN that the validator guards against leaking.
 _DEV_DB_URL = "postgresql+asyncpg://localhost/cyo_adventure"
 _PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventure"
+# RFC 2606 reserved example.com domain (not a real Supabase hostname), so a
+# secrets scanner does not mistake this test fixture for a live credential.
+_POOLER_DB_URL = (
+    "postgresql+asyncpg://appuser:testpass@pooler.example.com:6543/postgres"
+)
 
 
 class TestSettingsDefaults:
@@ -191,6 +196,55 @@ class TestValidatorRejectDevUrlOutsideLocal:
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
         )
+
+
+class TestValidatorRequirePreparedCacheForPoolerDsn:
+    """Tests for the _require_prepared_cache_disabled_for_pooler_dsn model_validator."""
+
+    @pytest.mark.unit
+    def test_pooler_dsn_with_flag_false_raises_configuration_error(self) -> None:
+        """Port 6543 with the cache-disabling flag off must fail fast."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(database_url=_POOLER_DB_URL, database_disable_prepared_cache=False)
+
+    @pytest.mark.unit
+    def test_pooler_dsn_with_flag_true_is_valid(self) -> None:
+        """Port 6543 with the cache-disabling flag on must not raise."""
+        from cyo_adventure.core.config import Settings
+
+        # Must not raise
+        settings = Settings(
+            database_url=_POOLER_DB_URL, database_disable_prepared_cache=True
+        )
+        assert settings.database_disable_prepared_cache is True
+
+    @pytest.mark.unit
+    def test_non_pooler_dsn_with_flag_false_is_valid(self) -> None:
+        """A direct connection (no port 6543) with the flag off must not raise."""
+        from cyo_adventure.core.config import Settings
+
+        # Must not raise
+        settings = Settings(
+            database_url=_PROD_DB_URL, database_disable_prepared_cache=False
+        )
+        assert settings.database_disable_prepared_cache is False
+
+    @pytest.mark.unit
+    def test_error_message_mentions_port_and_env_var_names(self) -> None:
+        """ConfigurationError message names the port and both relevant env vars."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError) as exc_info:
+            Settings(database_url=_POOLER_DB_URL, database_disable_prepared_cache=False)
+
+        message = str(exc_info.value)
+        assert "6543" in message
+        assert "CYO_ADVENTURE_DATABASE_URL" in message
+        assert "CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE" in message
 
 
 class TestEnvironmentAlias:
