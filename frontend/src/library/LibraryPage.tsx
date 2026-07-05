@@ -6,6 +6,7 @@ import { useApi } from '../hooks/useApi'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView } from './libraryApi'
 import { pickHero } from './pickHero'
+import { RequestStory } from './RequestStory'
 import './library.css'
 
 type LibraryState =
@@ -118,6 +119,7 @@ export function LibraryPage() {
     return (
       <div className="library">
         <EmptyState title="No books yet" description="Ask a grown-up to add one!" />
+        <RequestStory profileId={profileId} />
       </div>
     )
   }
@@ -128,6 +130,7 @@ export function LibraryPage() {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
+      <RequestStory profileId={profileId} />
       {hero ? (
         <section aria-label="Continue Reading">
           <BookCard item={hero} profileId={profileId} hero onRate={rate} />
