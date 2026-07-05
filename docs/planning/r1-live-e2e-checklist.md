@@ -25,26 +25,22 @@ smoke tier (`frontend/e2e-real/`, `npm run test:e2e:real`, local-only, `--worker
 pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.
 
 **Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod).
-Source the real email + Supabase `sub` for each role from the private deployment
-runbook (kept out of the repo); current known values as of 2026-07-05:
+Both accounts below are real Supabase email/password logins. `User.role` is an
+exclusive enum, so one account cannot be both roles: author with the guardian
+account, then switch to the admin account to approve. Values current as of
+2026-07-05:
 
-| Role | Email | Supabase sub |
-| --- | --- | --- |
-| Guardian | `byronawilliams@gmail.com` | `21985c35` |
-| Guardian | `byron.a.williams@gmail.com` | `c1f33430` |
-| Admin | (unprovisioned, see blocker below) | `<ADMIN_SUB>` |
+| Role | Email | Supabase sub | Sign-in |
+| --- | --- | --- | --- |
+| Guardian (author, assign) | `byron.a.williams@gmail.com` | `c1f33430` | email/password |
+| Admin (content approver) | `byronawilliams@gmail.com` | `21985c35` | email/password |
 
 The real read gate is `approved_by` + an assignment, not `published_at` alone.
+Approval is admin-only per ADR-005 (`storybook_version.approved_by`); the guardian
+account will correctly get a 403 on approve.
 
 ### Known blockers (resolve before running this checklist end to end)
 
-- **No working admin login.** The seeded admin row (`sub 2727d2d9`) maps to a
-  Supabase user that does not exist; the only real Supabase accounts today
-  (both guardian rows above) are guardians, not admins. Since ADR-005 makes
-  approval admin-only, any step that requires an admin session (Section 1a,
-  Section 2's approve step, Section 4's admin-approve step) is BLOCKED until a
-  real Supabase account is granted the admin role. Resolve this first; every
-  other blocker below is downstream of having a working admin session.
 - **API keys must be funded before Sections 2 and 4.** Both OpenRouter
   (generation) and the OpenAI classifier (Stage-0 moderation) need funded
   quota before the generation-touching sections run. A 429 quota exhaustion on
@@ -61,7 +57,9 @@ The real read gate is `approved_by` + an assignment, not `published_at` alone.
 - [ ] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
       `generation`)
 - [ ] Alembic migrations current (migrate profile ran; `alembic current` matches head)
-- [ ] Backup sidecar is healthy (`.last_success` timestamp is fresh)
+- [ ] Supabase backups confirmed (DB is on the Supabase session pooler post-cutover; Supabase owns
+      backups/PITR. The old local `db-backup` sidecar is retired via homelab-infra #577, so do NOT
+      expect a local backup container.)
 - [ ] Worker survives a restart (`docker compose restart worker`; queued/in-flight jobs resume or
       re-queue rather than being lost)
 
@@ -74,11 +72,10 @@ The real read gate is `approved_by` + an assignment, not `published_at` alone.
 
 ## 1a. Admin sign-in and review queue access
 
-BLOCKED: see the admin-login blocker above; skip until a real account has the admin role.
+Admin account: `byronawilliams@gmail.com` (role `admin`, sub `21985c35`).
 
 - [ ] Admin email/password sign-in succeeds
-- [ ] Admin Google sign-in succeeds
-- [ ] Either sign-in path lands on a review queue that loads (not the guardian console)
+- [ ] Sign-in lands on a review queue that loads (not the guardian console)
 
 ## 2. Guardian authoring path (intake to published book)
 
@@ -86,9 +83,9 @@ BLOCKED: see the admin-login blocker above; skip until a real account has the ad
 - [ ] RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)
 - [ ] Story lands in the review queue; queue orders Flagged, then Ready, then processing
 - [ ] Review detail shows the story and any moderation flags
-- [ ] Guardian account attempting approve gets the 403 "safety reviewer" notice (ADR-005: approve is
-      admin-only)
-- [ ] BLOCKED (see admin-login blocker above): Approve as ADMIN succeeds
+- [ ] Guardian account (`byron.a.williams`) attempting approve gets the 403 "safety reviewer" notice
+      (ADR-005: approve is admin-only)
+- [ ] Approve as ADMIN (`byronawilliams`) succeeds
 - [ ] Send-back / revision loop works on a second story
 
 ## 3. Assignment surfaces
@@ -109,7 +106,7 @@ BLOCKED: see the admin-login blocker above; skip until a real account has the ad
 - [ ] Guardian Requests queue shows the pending request with redacted screening flags
 - [ ] Guardian approves the request; a Concept + GenerationJob is created, generation runs, and the book
       reaches the admin review queue with content tags
-- [ ] BLOCKED (see admin-login blocker above): Admin approves; guardian then assigns from the browse
+- [ ] Admin (`byronawilliams`) approves; guardian then assigns from the browse
       page, seeing the same content tags, and the book appears in the kid's library
 
 ## 5. Kid reading loop
