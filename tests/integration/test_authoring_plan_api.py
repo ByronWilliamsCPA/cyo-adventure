@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 import pytest
@@ -11,6 +12,8 @@ from cyo_adventure.db.models import GenerationJob
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncIterator
+
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -31,6 +34,33 @@ async def _approved_request_id(client: AsyncClient, seed: Seed, text: str) -> st
     )
     assert approved.status_code == 200, approved.text
     return req_id
+
+
+@asynccontextmanager
+async def _session_ctx(
+    sessions: async_sessionmaker[AsyncSession],
+) -> AsyncIterator[AsyncSession]:
+    """Wrap a session from the factory in a context manager."""
+    session = sessions()
+    try:
+        yield session
+        await session.commit()
+    except Exception:
+        await session.rollback()
+        raise
+    finally:
+        await session.close()
+
+
+def _make_session_factory(
+    sessions: async_sessionmaker[AsyncSession],
+):  # type: ignore[return]
+    """Return a callable session factory compatible with worker's session_factory."""
+
+    def factory():  # type: ignore[return-value]
+        return _session_ctx(sessions)
+
+    return factory
 
 
 async def test_fresh_generation_automated_provider_enqueues(
@@ -227,3 +257,47 @@ async def test_unknown_request_is_404(client: AsyncClient, seed: Seed) -> None:
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 404, res.text
+
+
+async def test_skeleton_fill_automated_provider_runs_end_to_end(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The full automated skeleton_fill path: authoring-plan -> worker -> storybook.
+
+    Runs the worker function directly (as api/generation.py's own tests do
+    for the fresh_generation path) rather than through RQ, since RQ/Redis are
+    not part of the integration test harness.
+    """
+    req_id = await _approved_request_id(client, seed, "a curious fox and a lantern")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={
+            "method": "skeleton_fill",
+            "mechanism": "automated_provider",
+            "prep_model": "mock",
+        },
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 201, res.text
+    job_id = res.json()["job_id"]
+
+    # #ASSUME: external-resources: this test relies on settings.generation_provider
+    # defaulting to "mock" in the test environment (see core/config.py), the
+    # same default every other worker-path integration test in this project
+    # relies on; a mock provider cannot produce a schema-valid filled skeleton
+    # from a real prompt, so this test only asserts the job REACHES a terminal
+    # status (passed/needs_review/failed), not that it passes cleanly.
+    # #VERIFY: if this assumption ever breaks, this test starts hanging or
+    # erroring on a real network call instead of reaching a terminal status.
+    from cyo_adventure.generation.worker import run_generation_job
+
+    await run_generation_job(
+        uuid.UUID(job_id),
+        session_factory=_make_session_factory(sessions),
+    )
+
+    res = await client.get(
+        f"/api/v1/generation-jobs/{job_id}", headers=auth(seed.guardian_token)
+    )
+    assert res.status_code == 200, res.text
+    assert res.json()["status"] in {"passed", "needs_review", "failed"}
