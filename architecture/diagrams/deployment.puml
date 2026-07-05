@@ -5,7 +5,10 @@
 '
 ' Source files:
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
-'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik as app IdP)
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik as
+'     app IdP; decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/r1-gap-closure-plan.md (Task 1.7: cut over the operational database
+'     to Supabase Postgres, session pooler, homelab-infra #576/#577)
 '   docs/planning/tech-spec.md  (Infrastructure section)
 '   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
 '
@@ -14,6 +17,13 @@
 ' (ADR-009) but is no longer the app's OIDC identity provider. All app
 ' principals, guardians and the global admin approver alike, authenticate
 ' via Supabase OIDC (the admin is a Supabase identity with is_admin), shown below.
+' Note: the operational database moved from the local cyo-postgres container to
+' Supabase Postgres (ADR-009 decision 2; R1 Task 1.7, deployed 2026-07-05 via
+' homelab-infra #576), reached through the session pooler (session mode: each
+' connection gets a dedicated backend; no transaction-mode/PgBouncer
+' prepared-statement workaround). cyo-postgres is retained for one redeploy
+' only as a rollback fallback, is off the data path, and is tracked for
+' removal in homelab-infra #577.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -26,6 +36,7 @@ node "Family Devices\n[browsers, tablets]" as devices #E3F2FD {
 
 cloud "OpenRouter API\nhttps://openrouter.ai" as openrouter_cloud #F3E5F5
 cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_cloud #E0F7FA
+cloud "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler:\naws-0-us-east-1.pooler.supabase.com:5432\n(session mode; dedicated backend\nper connection, R1 Task 1.7)" as supabase_pg_cloud #E0F7FA
 
 node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 
@@ -42,8 +53,8 @@ node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
     component "RQ Worker\ngeneration/worker.py\nasync, long-running\nno inbound HTTP" as rq_worker #FFF3E0
   }
 
-  node "cyo-postgres\n[Docker container\npostgres:16-alpine]" as postgres_container #FFF8E1 {
-    database "PostgreSQL 16\nport 5432\n9 tables\nAlembic migrations" as pg_db #FFF8E1
+  node "cyo-postgres [retained for rollback]\n[Docker container\npostgres:16-alpine]\nOff the data path; being retired\n(homelab-infra #577)" as postgres_container #ECEFF1 {
+    database "PostgreSQL 16 (idle)\nport 5432\nRetained one redeploy only\nas a rollback fallback" as pg_db #ECEFF1
   }
 
   node "cyo-redis\n[Docker container\nredis:7-alpine]" as redis_container #E0E0E0 {
@@ -63,16 +74,23 @@ node "Homelab Server\n[Docker + Dockge]\n(ADR-004)" as homelab #E8F5E9 {
 ' --- Network flows ---
 pwa_client --> tls : "HTTPS (443)"
 tls --> fastapi_app : "HTTP (8000)"
-fastapi_app --> pg_db : "async SQLAlchemy\n5432"
+fastapi_app --> supabase_pg_cloud : "async SQLAlchemy 2\nsession pooler :5432"
 fastapi_app --> redis_db : "rq.Queue\n6379"
 fastapi_app --> ollama_svc : "HTTP\n11434"
 rq_worker --> redis_db : "dequeue\n6379"
-rq_worker --> pg_db : "update job\n5432"
+rq_worker --> supabase_pg_cloud : "update job\nsession pooler :5432"
 rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
 rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
 pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
 fastapi_app --> supabase_cloud : "OIDC token validation\n[non-local; local uses token-as-subject]"
+
+note right of postgres_container
+  Retained for one redeploy only as a
+  rollback fallback (R1 Task 1.7); carries
+  no live traffic since 2026-07-05. Tracked
+  for removal in homelab-infra #577.
+end note
 
 note right of worker_container
   The worker runs in a separate container

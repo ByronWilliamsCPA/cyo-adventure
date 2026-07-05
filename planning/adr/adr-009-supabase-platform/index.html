@@ -2674,7 +2674,7 @@
 
 <h1 id="adr-009-supabase-as-the-managed-platform-for-auth-database-and-storage">ADR-009: Supabase as the managed platform for auth, database, and storage<a class="headerlink" href="#adr-009-supabase-as-the-managed-platform-for-auth-database-and-storage" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03; auth decision ratified and implemented, while the P6/P7/P9 items (native Apple sign-in, Supabase Storage, and the pgmq queue) remain outstanding)
+<p><strong>Status</strong>: Accepted (2026-07-03; auth decision ratified and implemented. Decision 2 (Supabase Postgres) was implemented for the R1 family instance on 2026-07-05 via session-mode pooling, pulled forward from Phase 9 for durability (r1-gap-closure-plan Task 1.7, homelab-infra #576); explicit pool sizing (P9-03) and the P6/P7/P9 items (native Apple sign-in, Supabase Storage, pgmq queue) remain outstanding)
 <strong>Date</strong>: 2026-07-02
 <strong>Amends</strong>: <a href="../adr-008-public-app-store-launch/">ADR-008</a> (auth broker and public-tier
 hosting; the distribution, monetization, and compliance decisions in ADR-008 stand)</p>
@@ -2913,7 +2913,10 @@ client-secret plumbing in the native path).</p>
    already requires this before production; Supabase session-mode connections are a
    bounded resource, so defaults are not acceptable there). Does not apply to the
    Task 1.7 transaction-pooler branch, which uses <code>NullPool</code> and has no pool size of
-   its own.</li>
+   its own. ⚠️ <strong>Now live and unsized</strong>: the R1 cutover (2026-07-05) runs the
+   session-mode branch on SQLAlchemy pool defaults (<code>pool_size=5</code>, <code>max_overflow=10</code>)
+   plus <code>pool_pre_ping</code>, so this item is no longer hypothetical; set explicit sizes
+   before the TestFlight/production upgrade.</li>
 <li><strong>Retention</strong> (ADR-007): purge job moves to pg_cron.</li>
 </ol>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
@@ -2977,7 +2980,7 @@ client-secret plumbing in the native path).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 20:38:44 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 22:31:37 UTC">July 5, 2026</span>
   </span>
 
     

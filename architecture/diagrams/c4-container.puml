@@ -13,7 +13,9 @@
 '   docs/planning/tech-spec.md
 '   docs/planning/adr/adr-002-client-pwa.md
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
-'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
+'     decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/r1-gap-closure-plan.md (Task 1.7: Supabase Postgres cutover)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -53,7 +55,7 @@ rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventu
 rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
 
 ' --- Data stores ---
-database "PostgreSQL 16\n[Operational DB]\n9 ORM tables:\nFamily, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion,\nConcept, GenerationJob" as postgres #FFF8E1
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n9 ORM tables:\nFamily, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion,\nConcept, GenerationJob" as postgres #E0F7FA
 
 database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
 
@@ -62,7 +64,7 @@ rectangle "MinIO\n[Object storage, deferred Phase 5]\nStorybook blobs via S3 API
 ' --- External LLMs ---
 rectangle "OpenRouter\n[Primary LLM]" as openrouter #F3E5F5
 rectangle "Ollama\n[Local fallback]" as ollama #FFEBEE
-rectangle "Supabase\n[OIDC, ADR-009]" as supabase_auth #E0F7FA
+rectangle "Supabase Auth\n[OIDC, ADR-009]" as supabase_auth #E0F7FA
 
 ' --- Relationships ---
 child --> reader
@@ -77,13 +79,13 @@ routers --> orchestrator
 routers --> validator
 routers --> storybook_dom
 routers --> player_eng
-backend --> postgres : "async SQLAlchemy 2"
+backend --> postgres : "async SQLAlchemy 2\nsession pooler :5432"
 backend --> redis : "enqueue job\n(BackgroundTask)"
 worker --> redis : "dequeue job"
 worker --> orchestrator : "generate_story()"
 worker --> openrouter : "provider.complete()"
 worker ..> ollama : "fallback"
-worker --> postgres : "update GenerationJob"
+worker --> postgres : "update GenerationJob\nsession pooler :5432"
 worker ..> minio : "[planned Phase 5]\nblob_ref store"
 backend --> supabase_auth : "OIDC validation\n[local: token-as-subject seam;\nnon-local: verified Supabase JWT]"
 

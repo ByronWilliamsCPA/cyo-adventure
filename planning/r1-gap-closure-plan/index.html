@@ -2952,27 +2952,38 @@ unchanged, authorization stays server-side (Supabase JWT verification + family
 scoping in <code>api/deps.py</code>), and the browser never queries Supabase Postgres
 directly. Rejected Path B (frontend reads Supabase via PostgREST + RLS) as a
 larger surface that exposes child-profile rows to a client-side path.</p>
-<p>Not required for R1 login (working as of 2026-07-05); schedule when convenient.
-Depends on Task 1.4 (durable migrate step) and Task 1.5 (seed script) existing
-as real artifacts first, since the cutover reuses both.</p>
-<p>Steps:</p>
+<p><strong>Status: DONE (deployed 2026-07-05)</strong> via homelab-infra #576 (compose repoints
+<code>backend</code>/<code>worker</code>/<code>migrate</code> at the Supabase DSN), after <code>alembic upgrade head</code>
+plus the guardian/admin seed were run against Supabase out-of-band. Verified:
+site 200, backend clean startup on Supabase, 3 seeded users present, browser
+login works, and data now survives redeploys.</p>
+<p><strong>Correction to the DSN plan (what was actually done vs sketched below):</strong> the
+app AND Alembic both use the Supabase <strong>session pooler</strong>
+(<code>aws-0-us-east-1.pooler.supabase.com:5432</code>, session mode) as a SINGLE DSN, not
+the app-pooler/Alembic-direct split originally sketched. Reasons found during
+execution: (a) <code>migrations/env.py</code> reads the same <code>settings.database_url</code> as the
+app, so one DSN necessarily covers both; (b) a persistent FastAPI + SQLAlchemy
+connection pool is the session-mode use case (transaction mode / port 6543 is
+for serverless), which is exactly ADR-009's "direct or session-mode" constraint;
+&copy; the <strong>direct</strong> connection (<code>db.&lt;ref&gt;.supabase.co:5432</code>) is IPv6-only and
+unreachable from the IPv4 docker-host, so the session pooler is the IPv4-safe
+substitute. Session mode gives each connection a dedicated backend, so prepared
+statements work and no <code>prepared_statement_cache_size=0</code> workaround is needed;
+PR #122's transaction-mode connect-args flag is present but <strong>unused</strong> here
+(default off), reserved for a future serverless move.</p>
+<p>Completed steps:</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> DSNs: app uses the Supabase <strong>session pooler</strong> (Supavisor, port 6543,
-  transaction mode); Alembic uses the <strong>direct</strong> connection (port 5432).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> asyncpg + transaction-mode pooler: disable prepared-statement caching
-  (<code>prepared_statement_cache_size=0</code> connect arg / DSN option) or reused
-  prepared statements error. Verify on a staging login before flipping prod.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run <code>alembic upgrade head</code> against the Supabase direct DSN (Task 1.4).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run <code>scripts/seed_prod_users.py</code> against Supabase (Task 1.5).</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Data migration: R1 prod holds no real content yet, so no row copy is
-  needed; if that changes by cutover, <code>pg_dump --data-only</code> from
-  <code>cyo-adventure-db</code> and restore into Supabase.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Portainer: set <code>CYO_ADVENTURE_DATABASE_URL</code> to the Supabase pooler DSN;
-  redeploy backend + worker.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Retire <code>cyo-adventure-db</code> and the (currently crash-looping)
-  <code>cyo-adventure-db-backup</code> once verified; Supabase manages backups.</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify: guardian <code>/api/v1/me</code> 200; profiles/stories persist across a
-  redeploy; worker still reaches the DB.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> <code>alembic upgrade head</code> against the Supabase session-pooler DSN (7 revs to
+  <code>e5f6a7b8c9d0</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Seed family + two guardians + admin into Supabase (idempotent insert).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Portainer: <code>SUPABASE_PASSWORD</code> secret set; compose repoints
+  <code>backend</code>/<code>worker</code>/<code>migrate</code> to the Supabase DSN (#576); stack redeployed.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Verify: <code>/api/v1/me</code> path healthy, browser login works, data persists
+  across a redeploy.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No row copy needed (R1 prod held no real content at cutover).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Retire <code>cyo-adventure-db</code> and the crash-looping <code>cyo-adventure-db-backup</code>
+  after a Supabase soak: tracked in <strong>homelab-infra #577</strong> (kept temporarily,
+  off the data path, for one-redeploy rollback; Supabase manages backups).</li>
 </ul>
 <p>Privacy note (COPPA): this places child-profile PII on a third-party managed
 platform (already contemplated by ADR-009). Path A keeps that data behind our
@@ -3134,7 +3145,7 @@ UI (DB-edit only today), GHCR image flip (external workstream), Apple OAuth,
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 16:15:10 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 22:31:37 UTC">July 5, 2026</span>
   </span>
 
     
