@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- Guardian Google sign-in now completes in the browser: `signInWithOAuth` passes
+  `redirectTo=<origin>/guardian/login` so the OAuth callback returns to the
+  guardian subtree. Previously it returned to Supabase's Site URL (`/`, the kid
+  surface), which never imports `@supabase/supabase-js`; the callback hash was
+  never processed, the session was never persisted, and the token bridge that
+  writes `auth_token` never ran, so the guardian landed unauthenticated and
+  every API call went out tokenless ("We could not load your profiles"). Requires
+  `<origin>/guardian/login` in the Supabase Auth redirect allowlist.
 - The production frontend image now ships with Supabase auth configured: the
   frontend Dockerfile declares `ARG VITE_SUPABASE_URL` and
   `ARG VITE_SUPABASE_ANON_KEY` so the build args passed by the homelab build

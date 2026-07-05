@@ -260,7 +260,12 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
     fireEvent.click(screen.getByText('sign in'))
-    await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith({ provider: 'google' }))
+    await waitFor(() =>
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}/guardian/login` },
+      })
+    )
   })
 
   it('delegates signInWithPassword to supabase', async () => {
