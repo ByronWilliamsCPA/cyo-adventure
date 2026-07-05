@@ -20,6 +20,23 @@ describe('makeKidStoryRequestApi', () => {
     expect(result).toEqual({ id: 'req1', status: 'pending' })
   })
 
+  it('create strips guardian-facing fields from the full wire response', async () => {
+    // The create endpoint returns the same full row shape as the list endpoint;
+    // the adapter must strip it at runtime, not just hide it behind a type cast.
+    const { api } = fakeAxios({
+      id: 'req1',
+      status: 'pending',
+      profile_id: 'p1',
+      request_text: 'Please write a dragon story',
+      created_at: '2026-07-04T12:00:00Z',
+      moderation_flags: [{ category: 'language', verdict: 'clean', message: '' }],
+    })
+    const result = await makeKidStoryRequestApi(api).create('p1', 'Please write a dragon story')
+    // Returned object must carry ONLY the kid-safe keys.
+    expect(Object.keys(result).sort()).toEqual(['id', 'status'])
+    expect(result).toEqual({ id: 'req1', status: 'pending' })
+  })
+
   it('listForProfile gets the requests for a profile and returns the list', async () => {
     const { api, get } = fakeAxios({
       requests: [

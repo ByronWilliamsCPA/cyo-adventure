@@ -37,15 +37,18 @@ export interface KidStoryRequestApi {
 export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
   return {
     async create(profileId: string, requestText: string): Promise<KidStoryRequest> {
-      const res = await api.post<{ id: string; status: StoryRequestStatus }>(
-        '/v1/story-requests',
-        { profile_id: profileId, request_text: requestText }
-      )
-      return res.data
+      const res = await api.post<WireStoryRequest>('/v1/story-requests', {
+        profile_id: profileId,
+        request_text: requestText,
+      })
+      // Explicitly map to the kid-safe subset at runtime (same boundary as
+      // listForProfile) so a guardian-facing field on the create response can
+      // never leak into kid-surface code; a compile-time cast would not strip it.
+      return { id: res.data.id, status: res.data.status }
     },
     async listForProfile(profileId: string): Promise<KidStoryRequest[]> {
       const res = await api.get<{ requests: WireStoryRequest[] }>(
-        `/v1/story-requests?profile_id=${profileId}`
+        `/v1/story-requests?profile_id=${encodeURIComponent(profileId)}`
       )
       // Explicitly map to kid-safe subset to prevent guardian-facing fields from leaking
       return res.data.requests.map((r) => ({
