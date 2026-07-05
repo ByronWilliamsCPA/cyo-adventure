@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/architecture/user-journeys/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-04-playwright-e2e-suite-design/">
       
       
-        <link rel="prev" href="../">
-      
-      
-        <link rel="next" href="../system-overview/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>User Journeys - CYO Adventure</title>
+        <title>Two-Tier Playwright E2E Suite: Guardian Console Coverage and Real-Backend Smoke (Design) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#target-state-end-to-end-journey" class="md-skip">
+        <a href="#1-problem" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              User Journeys
+              Two-Tier Playwright E2E Suite: Guardian Console Coverage and Real-Backend Smoke (Design)
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,13 +296,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -328,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -350,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -372,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../planning/" class="md-tabs__link">
+        <a href="../../../planning/" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -578,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -787,8 +781,6 @@
       
   
   
-    
-  
   
   
     
@@ -814,23 +806,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -855,13 +846,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -878,42 +869,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    User Journeys
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -936,235 +895,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#target-state-end-to-end-journey" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Target-state end-to-end journey
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Target-state end-to-end journey">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-to-read-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to read it
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-journey-act-by-act" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The journey, act by act
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="The journey, act by act">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#act-1-guardian-onboarding-once" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 1: Guardian onboarding (once)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-2-requesting-a-story" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 2: Requesting a story
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-3-behind-the-scenes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 3: Behind the scenes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-4-the-approval-gate-adr-005" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 4: The approval gate (ADR-005)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-5-assignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 5: Assignment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-6-reading-and-rating" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 6: Reading and rating
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#loop" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Loop
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shipped-vs-planned-at-a-glance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Shipped vs planned at a glance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#zoomed-journeys-per-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Zoomed journeys (per surface)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Zoomed journeys (per surface)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kid-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kid surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#guardian-and-admin-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Guardian and admin surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#developer-view-test-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Developer view: test coverage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Developer view: test coverage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-the-coverage-view-surfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the coverage view surfaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related pages
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1177,7 +907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1212,7 +942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1247,7 +977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1282,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1317,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1423,7 +1153,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1458,7 +1188,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1493,7 +1223,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1528,7 +1258,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1632,7 +1362,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1667,7 +1397,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1702,7 +1432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1779,7 +1509,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/" class="md-nav__link ">
+            <a href="../../../planning/" class="md-nav__link ">
               
   
   
@@ -1830,7 +1560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/project-vision/" class="md-nav__link">
+      <a href="../../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1865,7 +1595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/tech-spec/" class="md-nav__link">
+      <a href="../../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1900,7 +1630,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1935,7 +1665,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/roadmap/" class="md-nav__link">
+      <a href="../../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -2007,7 +1737,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/adr/" class="md-nav__link ">
+            <a href="../../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -2058,7 +1788,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2093,7 +1823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2128,7 +1858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2163,7 +1893,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2198,7 +1928,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2233,7 +1963,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2347,7 +2077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2382,7 +2112,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2417,7 +2147,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2452,7 +2182,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2521,7 +2251,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2572,7 +2302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2632,22 +2362,77 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#target-state-end-to-end-journey" class="md-nav__link">
+  <a href="#1-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Target-state end-to-end journey
+        1. Problem
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Target-state end-to-end journey">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-tier-1-mocked-network-guardian-and-conflict-specs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Tier 1: mocked-network guardian and conflict specs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Tier 1: mocked-network guardian and conflict specs">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-to-read-it" class="md-nav__link">
+  <a href="#41-auth-helper" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to read it
+        4.1 Auth helper
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-spec-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Spec matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-what-tier-1-does-not-prove" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 What tier 1 does not prove
       
     </span>
   </a>
@@ -2660,22 +2445,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-journey-act-by-act" class="md-nav__link">
+  <a href="#5-tier-2-real-backend-smoke-suite" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The journey, act by act
+        5. Tier 2: real-backend smoke suite
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The journey, act by act">
+    <nav class="md-nav" aria-label="5. Tier 2: real-backend smoke suite">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#act-1-guardian-onboarding-once" class="md-nav__link">
+  <a href="#51-architecture" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 1: Guardian onboarding (once)
+        5.1 Architecture
       
     </span>
   </a>
@@ -2683,10 +2468,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-2-requesting-a-story" class="md-nav__link">
+  <a href="#52-seed-extensions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 2: Requesting a story
+        5.2 Seed extensions
       
     </span>
   </a>
@@ -2694,10 +2479,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-3-behind-the-scenes" class="md-nav__link">
+  <a href="#53-smoke-scenarios-four-high-value-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 3: Behind the scenes
+        5.3 Smoke scenarios (four, high-value only)
       
     </span>
   </a>
@@ -2705,43 +2490,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-4-the-approval-gate-adr-005" class="md-nav__link">
+  <a href="#54-ci" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 4: The approval gate (ADR-005)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-5-assignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 5: Assignment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-6-reading-and-rating" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 6: Reading and rating
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#loop" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Loop
+        5.4 CI
       
     </span>
   </a>
@@ -2754,10 +2506,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shipped-vs-planned-at-a-glance" class="md-nav__link">
+  <a href="#6-error-handling-and-flake-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shipped vs planned at a glance
+        6. Error handling and flake policy
       
     </span>
   </a>
@@ -2765,77 +2517,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#zoomed-journeys-per-surface" class="md-nav__link">
+  <a href="#7-documentation-follow-through" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Zoomed journeys (per surface)
+        7. Documentation follow-through
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Zoomed journeys (per surface)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kid-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kid surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#guardian-and-admin-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Guardian and admin surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#developer-view-test-coverage" class="md-nav__link">
+  <a href="#8-delivery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Developer view: test coverage
+        8. Delivery
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Developer view: test coverage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-the-coverage-view-surfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the coverage view surfaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#related-pages" class="md-nav__link">
+  <a href="#9-risks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related pages
+        9. Risks
       
     </span>
   </a>
@@ -2862,287 +2569,251 @@
   
 
 
-  <h1>User Journeys</h1>
+  <h1>Two-Tier Playwright E2E Suite: Guardian Console Coverage and Real-Backend Smoke (Design)</h1>
 
-<p>The other architecture diagrams describe how the system is built: containers,
-components, data model, and API sequences. This page describes what a <em>person</em>
-does, screen by screen, to get value from the app. It is a product/UX-clarity
-view, not an API sequence, so the boxes are user actions and user-facing waits
-rather than endpoints and database locks.</p>
-<p>This page holds a set of four journey diagrams that work together:</p>
+<blockquote>
+<p>Date: 2026-07-04 | Author: Byron Williams (with Claude)</p>
+</blockquote>
+<h2 id="1-problem">1. Problem<a class="headerlink" href="#1-problem" title="Permanent link">&para;</a></h2>
+<p>The developer coverage view in
+<a href="../../../architecture/user-journeys/#developer-view-test-coverage">user-journeys.md</a>
+shows the kid surface is well covered end-to-end, but the entire guardian
+console is amber: shipped behavior with Vitest coverage and no browser-level
+test. The highest-risk gap is the ADR-005 Approve gate, the mandatory
+human-in-the-loop safety checkpoint before any story reaches a child. Two more
+amber gaps sit outside the console: guardian sign-in success (only the
+unauthenticated redirect is e2e-tested today) and the reader's 409-conflict
+reconciliation (offline read is tested, conflict resolution is not).</p>
+<p>The existing e2e suite deliberately skipped the signed-in guardian surface
+because forging a persisted supabase-js GoTrue session was version-pinned
+brittleness (documented in <code>frontend/e2e/guardian-console.spec.ts</code>). PR #101
+(email/password sign-in) removed that blocker: <code>signInWithPassword</code> makes a
+plain network call to <code>/auth/v1/token?grant_type=password</code>, which Playwright
+can mock at the network seam. supabase-js then persists its own session in
+whatever storage shape it owns, and the real <code>SIGNED_IN</code> event, <code>/v1/me</code>
+resolution, and <code>ProtectedRoute</code> logic all run untouched.</p>
+<p>Additionally, the whole existing suite is network-mocked, so nothing verifies
+that the mocked response shapes still match what the backend actually sends.</p>
+<h2 id="2-goals">2. Goals<a class="headerlink" href="#2-goals" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Close all seven amber gaps with deterministic, network-mocked Playwright
+   specs that run in the existing CI e2e job.</li>
+<li>Add a small real-backend smoke tier (separate Playwright project) where only
+   Supabase auth is mocked and every <code>/api</code> call hits a real FastAPI + Postgres
+   stack, to catch mock/contract drift.</li>
+<li>Update the journey coverage diagram so amber nodes covered by this work turn
+   green, keeping the gap map truthful.</li>
+</ol>
+<h2 id="3-non-goals">3. Non-goals<a class="headerlink" href="#3-non-goals" title="Permanent link">&para;</a></h2>
+<ul>
+<li>No coverage of planned-but-unbuilt steps (child story request, guardian
+  request approval); those stay red in the coverage map until built.</li>
+<li>No real Supabase project in any tier; Supabase auth is always mocked at the
+  token endpoint.</li>
+<li>No duplication of the full mocked matrix in the smoke tier; tier 2 stays
+  small (about four scenarios) by design.</li>
+<li>No Firefox/WebKit projects; the suite stays chromium-only like today.</li>
+</ul>
+<h2 id="4-tier-1-mocked-network-guardian-and-conflict-specs">4. Tier 1: mocked-network guardian and conflict specs<a class="headerlink" href="#4-tier-1-mocked-network-guardian-and-conflict-specs" title="Permanent link">&para;</a></h2>
+<h3 id="41-auth-helper">4.1 Auth helper<a class="headerlink" href="#41-auth-helper" title="Permanent link">&para;</a></h3>
+<p>New file <code>frontend/e2e/support/auth.ts</code> exporting
+<code>signInAsGuardian(page, { role: 'guardian' | 'admin' })</code>:</p>
+<ol>
+<li>Route <code>**/auth/v1/token?grant_type=password**</code> to fulfill a canned GoTrue
+   session JSON (<code>access_token: 'e2e-&lt;role&gt;-token'</code>, <code>expires_in</code> long enough
+   that no refresh fires mid-test, minimal <code>user</code> object).</li>
+<li>Route <code>**/api/v1/me</code> to fulfill a principal body whose <code>role</code> matches the
+   requested role, with a stable <code>family_id</code> and <code>profile_ids</code>.</li>
+<li>Navigate to <code>/guardian/login</code>, fill the real email/password form, click
+   sign-in, and wait for the redirect away from the login page.</li>
+</ol>
+<p>The helper mocks the network seam only. supabase-js writes and owns its
+persisted session; no storage shape is forged, so library upgrades do not
+break the helper. Sign-out and 401-expiry behavior continue to exercise the
+real AuthContext fail-closed paths.</p>
+<p><strong>As-built deviation (recorded at final review):</strong> the shipped helper module
+exports two patterns. The form-driven, token-endpoint-mocked flow described
+above is exercised once, in <code>guardian-auth.spec.ts</code>, which owns sign-in
+behavior. Every other guardian spec uses <code>seedGuardianSession</code>, which writes a
+canned supabase-js session directly into localStorage before page load. This
+trades back some storage-shape coupling (the key and session schema are
+supabase-js v2 specifics, documented in <code>e2e/support/auth.ts</code>) for much faster
+per-test setup, and the real <code>getSession()</code> to <code>/v1/me</code> to <code>ProtectedRoute</code>
+chain still runs untouched. A supabase-js upgrade that changes the storage
+shape fails loudly (signed-out redirects across the guardian suite), and
+<code>guardian-auth.spec.ts</code> keeps the upgrade-proof network-seam coverage.</p>
+<p>The stale header comments in <code>guardian-console.spec.ts</code>, <code>intake.spec.ts</code>, and
+<code>profiles.spec.ts</code> (which document the old "cannot establish a session"
+decision) are updated to point at the helper.</p>
+<h3 id="42-spec-matrix">4.2 Spec matrix<a class="headerlink" href="#42-spec-matrix" title="Permanent link">&para;</a></h3>
+<p>One spec area per amber gap. All API responses are mocked per-test with
+<code>page.route</code>, matching the suite's existing style (route mocks registered
+before <code>page.goto</code>, user-visible assertions, request-body assertions where the
+write payload matters).</p>
 <table>
 <thead>
 <tr>
-<th>Diagram</th>
-<th>Use it for</th>
+<th>Spec file</th>
+<th>Gap closed</th>
+<th>Key cases</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="#target-state-end-to-end-journey">End-to-end journey</a></td>
-<td>The whole loop across all roles; onboarding a new contributor to the product</td>
+<td><code>guardian-auth.spec.ts</code> (new)</td>
+<td>Guardian sign-in success</td>
+<td>Successful sign-in lands on the console; wrong password (token endpoint returns 400) shows the error and stays on login; sign-out returns to login and a subsequent <code>/guardian</code> visit redirects</td>
 </tr>
 <tr>
-<td><a href="#zoomed-journeys-per-surface">Kid-surface journey</a></td>
-<td>Detailed child-facing flow; frontend work on the reader, library, and picker</td>
+<td><code>guardian-console.spec.ts</code> (extend)</td>
+<td>Console review queue</td>
+<td>Mixed mocked list renders ordered Flagged, then Ready to review, then Still processing; clicking a row navigates to <code>/guardian/review/:id</code></td>
 </tr>
 <tr>
-<td><a href="#zoomed-journeys-per-surface">Guardian + admin journey</a></td>
-<td>Detailed parent-facing flow; request, approval gate, and assignment work</td>
+<td><code>guardian-review.spec.ts</code> (new)</td>
+<td>Review detail, ADR-005 approve, send-back</td>
+<td>Flagged passages render before full text; Approve as admin POSTs and the UI reflects the approved state; Approve as guardian surfaces the 403 without a false success (fail-closed); send-back with a note POSTs the note and returns the story to the queue state</td>
 </tr>
 <tr>
-<td><a href="#developer-view-test-coverage">Developer test-coverage view</a></td>
-<td>Evaluating e2e/Playwright sufficiency; finding test gaps</td>
-</tr>
-</tbody>
-</table>
-<p>All four use the same swimlane convention and the same shipped/planned color
-language, so they read as one family.</p>
-<h2 id="target-state-end-to-end-journey">Target-state end-to-end journey<a class="headerlink" href="#target-state-end-to-end-journey" title="Permanent link">&para;</a></h2>
-<p><img alt="Target-state end-to-end user journey" src="../diagrams/journey-end-to-end.svg" /></p>
-<h3 id="how-to-read-it">How to read it<a class="headerlink" href="#how-to-read-it" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Columns are who is acting.</strong> The journey deliberately crosses four lanes:
-  the <strong>Child</strong> and <strong>Guardian</strong> each drive their own disjoint surface (the kid
-  app and the guardian console share no navigation; see
-  <code>frontend/src/router.tsx</code>), the <strong>Admin</strong> holds the mandatory
-  approval gate, and <strong>System</strong> collapses the behind-the-scenes generation and
-  safety work into user-facing waits.</li>
-<li><strong>Node fill marks maturity.</strong> White nodes are shipped in the app today.
-  Rose nodes are planned target-state steps that are not yet built, so the
-  diagram doubles as a gap map. The unbuilt steps line up with the gaps tracked
-  in the R1 deployment review.</li>
-<li><strong>Primary path is child-initiated.</strong> The diagram shows the intended future
-  where a child asks for a story and the guardian approves the request. Today
-  the entry point is reversed: a guardian starts requests from the Intake page.
-  See the note under Act 2.</li>
-</ul>
-<h2 id="the-journey-act-by-act">The journey, act by act<a class="headerlink" href="#the-journey-act-by-act" title="Permanent link">&para;</a></h2>
-<p>Each act below names the real screen or route it maps to and whether it is
-shipped or planned.</p>
-<h3 id="act-1-guardian-onboarding-once">Act 1: Guardian onboarding (once)<a class="headerlink" href="#act-1-guardian-onboarding-once" title="Permanent link">&para;</a></h3>
-<p>A guardian signs in at <code>/guardian/login</code> (email/password or Google today; Apple
-sign-in is gated behind a config flag) and creates a profile for each child at
-<code>/guardian/profiles</code>. Profiles use preset illustrated avatars only, never
-uploaded photos. This act runs once and sits outside the repeating story loop.</p>
-<h3 id="act-2-requesting-a-story">Act 2: Requesting a story<a class="headerlink" href="#act-2-requesting-a-story" title="Permanent link">&para;</a></h3>
-<p><strong>Target state (primary path, planned):</strong> a child opens the kid app, taps their
-avatar on the Profile Picker (<code>/</code>), taps "I want a new story," and says what it
-is about. That request surfaces to the guardian, who approves or tweaks it.</p>
-<p><strong>Shipped today:</strong> the request is guardian-initiated. A guardian uses the Intake
-page (<code>/guardian/intake</code>) with "Who's it for?" first, then a topic and tone,
-then "Request Story." The child-tap entry point and the guardian
-request-approval step (the two rose nodes in Act 2) are the not-yet-built delta
-between these two flows.</p>
-<h3 id="act-3-behind-the-scenes">Act 3: Behind the scenes<a class="headerlink" href="#act-3-behind-the-scenes" title="Permanent link">&para;</a></h3>
-<p>The system writes the story through a staged pipeline with a provider fallback
-cascade, then runs a deterministic safety check that flags risky passages. To
-the guardian this is just a "Generating..." status in their "My Requests" list.
-For the engineering detail behind this lane, see the
-<a href="../diagrams/seq-generation.svg">generation sequence</a> and the
-<a href="../generation-pipeline/">generation pipeline</a> page.</p>
-<h3 id="act-4-the-approval-gate-adr-005">Act 4: The approval gate (ADR-005)<a class="headerlink" href="#act-4-the-approval-gate-adr-005" title="Permanent link">&para;</a></h3>
-<p>This is the single mandatory checkpoint before any story reaches a child. In the
-Guardian Console (<code>/guardian</code>), the review queue is ordered Flagged, then Ready
-to review, then Still processing. Opening a story (<code>/guardian/review/:id</code>)
-surfaces its flagged passages first, then the full text. The reviewer either
-<strong>approves</strong> or <strong>sends it back</strong> with a note; a sent-back story is rewritten and
-re-enters the queue (the inner loop in the diagram).</p>
-<p>The approve action is the recorded human gate required by
-<a href="../../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a> and is
-admin-only: a guardian can monitor the queue but cannot self-approve (the API
-returns 403). The diagram places the whole review-and-approve sequence in the
-Admin lane to keep that gate visually unambiguous.</p>
-<h3 id="act-5-assignment">Act 5: Assignment<a class="headerlink" href="#act-5-assignment" title="Permanent link">&para;</a></h3>
-<p>An approved story is assigned to the child it was written for; "Assign more"
-widens it to siblings without re-requesting. On the kid surface, the child's
-avatar on the Profile Picker flips to a "new story ready!" status pill.</p>
-<h3 id="act-6-reading-and-rating">Act 6: Reading and rating<a class="headerlink" href="#act-6-reading-and-rating" title="Permanent link">&para;</a></h3>
-<p>The child opens their Library (<code>/library/:profileId</code>), which leads with a
-"Continue Reading" hero card and a shelf grid, then opens the Reader
-(<code>/read/:profileId/:storybookId/:version</code>). They read passages and make
-branching choices until they reach an ending. Reading is offline-first: if the
-device is offline, the child reads from cache and progress waits in a queue,
-syncing on reconnect and reconciling if it clashes (see
-<a href="../diagrams/seq-offline.svg">offline and reconnect</a> and
-<a href="../diagrams/seq-reading-state.svg">reading-state sync</a> for the mechanics). The
-ending screen itself offers only restart and "back to my books"; <strong>rating lives
-on the library shelf</strong>, where tapping a <code>BookCard</code>'s stars upserts the rating.
-Rating is shipped, not planned (an earlier draft of this page had it wrong).</p>
-<h3 id="loop">Loop<a class="headerlink" href="#loop" title="Permanent link">&para;</a></h3>
-<p>Wanting another story returns to the top of the loop (Act 2). Guardian
-onboarding in Act 1 is not repeated.</p>
-<h2 id="shipped-vs-planned-at-a-glance">Shipped vs planned at a glance<a class="headerlink" href="#shipped-vs-planned-at-a-glance" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Journey step</th>
-<th>Screen / route</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Guardian sign-in</td>
-<td><code>/guardian/login</code></td>
-<td>Shipped</td>
+<td><code>intake.spec.ts</code> (extend)</td>
+<td>Intake request and job status</td>
+<td>Signed-in submit POSTs the expected body (who, topic, tone), the request appears with a Generating status, and a mocked poll transition flips it to Ready</td>
 </tr>
 <tr>
-<td>Create child profiles</td>
-<td><code>/guardian/profiles</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Child taps "I want a new story"</td>
-<td>Profile Picker (<code>/</code>)</td>
-<td>Planned</td>
-</tr>
-<tr>
-<td>Guardian approves the child's request</td>
-<td>(new)</td>
-<td>Planned</td>
-</tr>
-<tr>
-<td>Generation + safety validation</td>
-<td>generation pipeline</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Guardian-initiated request</td>
-<td><code>/guardian/intake</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Admin review + approve/send-back</td>
-<td><code>/guardian</code>, <code>/guardian/review/:id</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Assign / assign more</td>
-<td>Intake / assign</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>"New story ready!" pill</td>
-<td>Profile Picker (<code>/</code>)</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Library and Reader</td>
-<td><code>/library/...</code>, <code>/read/...</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Offline read + reconnect sync</td>
-<td>Reader</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Rate a book</td>
-<td>Library shelf (<code>BookCard</code>)</td>
-<td>Shipped</td>
-</tr>
-</tbody>
-</table>
-<h2 id="zoomed-journeys-per-surface">Zoomed journeys (per surface)<a class="headerlink" href="#zoomed-journeys-per-surface" title="Permanent link">&para;</a></h2>
-<p>The end-to-end diagram spans every role at one altitude. When working on a
-single surface, the zoomed diagrams carry more screen-level detail (error exits,
-the offline branch, the assignment sub-flow) without the cross-role noise.</p>
-<h3 id="kid-surface">Kid surface<a class="headerlink" href="#kid-surface" title="Permanent link">&para;</a></h3>
-<p><img alt="Kid-surface journey" src="../diagrams/journey-kid.svg" /></p>
-<p>The child-facing route tree (<code>/</code>). It adds detail the master view omits: the
-three-way "is the story available?" branch (a malformed link shows a friendly
-exit, a missing story shows not-found rather than the offline copy), the
-read-loop with its online/offline and 409-conflict branches, and rating as a
-library-shelf action reached after the ending returns the child to their books.</p>
-<h3 id="guardian-and-admin-surface">Guardian and admin surface<a class="headerlink" href="#guardian-and-admin-surface" title="Permanent link">&para;</a></h3>
-<p><img alt="Guardian and admin surface journey" src="../diagrams/journey-guardian.svg" /></p>
-<p>The parent-facing console (<code>/guardian</code>). It details the request-and-approval
-pipeline: sign-in, profile management, the Intake request with its
-"Generating..." status, the review queue ordered Flagged then Ready then
-processing, the approve/send-back revision loop, and the assign / "Assign more"
-sub-flow. Approve is the admin-only ADR-005 gate.</p>
-<h2 id="developer-view-test-coverage">Developer view: test coverage<a class="headerlink" href="#developer-view-test-coverage" title="Permanent link">&para;</a></h2>
-<p><img alt="Developer view of the journey overlaid with test coverage" src="../diagrams/journey-dev-coverage.svg" /></p>
-<p>This is the same end-to-end backbone recolored by automated test coverage, so
-the journey doubles as a Playwright/e2e gap map. It is the diagram to consult
-when deciding what e2e tests to write next.</p>
-<ul>
-<li><strong>Green</strong> steps are exercised end-to-end by a Playwright spec under
-  <code>frontend/e2e/</code>.</li>
-<li><strong>Amber</strong> steps are built but only unit/component-tested (<code>frontend/src/**/*.test.tsx</code>).
-  Amber is the <strong>e2e backlog</strong>: shipped behavior with no browser-level test.</li>
-<li><strong>Red</strong> steps have no automated test at all; here they line up with the
-  not-yet-built steps.</li>
-<li><strong>Grey</strong> steps are backend work covered by pytest, out of frontend-e2e scope.</li>
-</ul>
-<h3 id="what-the-coverage-view-surfaces">What the coverage view surfaces<a class="headerlink" href="#what-the-coverage-view-surfaces" title="Permanent link">&para;</a></h3>
-<ul>
-<li>The <strong>kid surface is well covered end-to-end</strong>: reader (play-to-ending,
-  offline read, state-gated choices, malformed/missing error states, tap-target
-  and no-scroll a11y), library (hero, shelf, rating, empty, mobile), and sibling
-  assignment all have Playwright specs.</li>
-<li>The <strong>guardian console is now e2e-covered too</strong>: sign-in, profile management,
-  intake, the review queue, review detail, the send-back revision loop, and the
-  <strong>ADR-005 Approve gate</strong> all have Playwright specs alongside their existing
-  Vitest coverage. Approve carries two layers: a mocked e2e test
-  (<code>guardian-review.spec.ts</code>, including the guardian-403 fail-closed case) and a
-  real-backend smoke test (<code>e2e-real/approval-flow.spec.ts</code>) that exercises the
-  gate with zero mocks against a real FastAPI and Postgres stack. Run it with
-  <code>npm run test:e2e:real</code> (runbook: <code>frontend/README.md</code>).</li>
-<li>The reader <strong>409-conflict reconciliation</strong> path, once amber, now has a
-  dedicated spec covering both reconciliation outcomes.</li>
-<li>One residual gap: the offline-queue <strong>reconnect flush</strong> is untested because
-  it is unimplemented, <code>replayQueue</code> is never invoked by app code. See
-  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/110">issue #110</a>.</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Former e2e gap</th>
-<th>Covered by</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Guardian successful sign-in</td>
-<td><code>frontend/e2e/guardian-auth.spec.ts</code></td>
-</tr>
-<tr>
-<td>Console review queue + ordering</td>
-<td><code>frontend/e2e/guardian-console.spec.ts</code></td>
-</tr>
-<tr>
-<td>Review detail + <strong>Approve (ADR-005)</strong></td>
-<td><code>frontend/e2e/guardian-review.spec.ts</code> (+ <code>e2e-real/approval-flow.spec.ts</code>)</td>
-</tr>
-<tr>
-<td>Send-back / revision loop</td>
-<td><code>frontend/e2e/guardian-review.spec.ts</code></td>
-</tr>
-<tr>
-<td>Intake request + job status</td>
-<td><code>frontend/e2e/intake.spec.ts</code></td>
-</tr>
-<tr>
+<td><code>guardian-profiles.spec.ts</code> (new)</td>
 <td>Guardian profile management</td>
-<td><code>frontend/e2e/guardian-profiles.spec.ts</code></td>
+<td>Create a child profile (POST body asserted, list refreshes), edit a display name, and the avatar picker offers presets only (no upload input)</td>
 </tr>
 <tr>
-<td>Reader 409-conflict reconciliation</td>
-<td><code>frontend/e2e/reader-conflict.spec.ts</code></td>
+<td><code>reader-conflict.spec.ts</code> (new)</td>
+<td>Reader 409 reconciliation</td>
+<td>Queued offline progress meets a 409 on reconnect; the reconciliation UI appears and resolving it does not silently lose progress (exact assertions follow <code>frontend/src/offline/sync.ts</code> and its dialogs)</td>
 </tr>
 </tbody>
 </table>
-<h2 id="related-pages">Related pages<a class="headerlink" href="#related-pages" title="Permanent link">&para;</a></h2>
+<p>ADR-005 rationale for the two-role approve cases: the gate is admin-only, and
+the guardian-403 case is the security regression that matters most (a guardian
+must never be able to self-approve, and a failed approve must never look like
+success).</p>
+<h3 id="43-what-tier-1-does-not-prove">4.3 What tier 1 does not prove<a class="headerlink" href="#43-what-tier-1-does-not-prove" title="Permanent link">&para;</a></h3>
+<p>Mocked specs assume response shapes. If the backend renames a field, tier 1
+stays green while the app breaks. That residual risk is exactly what tier 2
+exists for.</p>
+<h2 id="5-tier-2-real-backend-smoke-suite">5. Tier 2: real-backend smoke suite<a class="headerlink" href="#5-tier-2-real-backend-smoke-suite" title="Permanent link">&para;</a></h2>
+<h3 id="51-architecture">5.1 Architecture<a class="headerlink" href="#51-architecture" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../system-overview/">System Overview</a>: the same three actors as C4 boxes
-  rather than journey lanes.</li>
-<li><a href="../validation-and-player/">Validation and Player</a>: the reader engine and
-  offline sync that Act 6 rides on.</li>
-<li><a href="../generation-pipeline/">Generation Pipeline</a>: the System lane of Act 3 in
-  full.</li>
+<li>New Playwright project <code>real-backend</code> in <code>playwright.config.ts</code> with
+  <code>testMatch: 'e2e-real/**'</code>; the default <code>chromium</code> project excludes
+  <code>e2e-real/</code> so <code>npm run test:e2e</code> keeps its current meaning. A new script
+  <code>test:e2e:real</code> runs only the smoke project.</li>
+<li>Stack: dockerized Postgres (CI: service container on 5432; local: port 5442
+  per the documented local-run recipe), uvicorn with
+  <code>CYO_ADVENTURE_ENVIRONMENT=local</code>, seeded via <code>scripts/seed_dev_data.py</code>,
+  and the built frontend served by <code>vite preview</code>.</li>
+<li><code>vite.config.ts</code> gains a <code>preview.proxy</code> block mirroring the existing
+  <code>server.proxy</code> (<code>/api</code> and <code>/openapi.json</code> to <code>http://localhost:8000</code>),
+  because <code>vite preview</code> does not inherit <code>server.proxy</code>. Tier 1 is
+  unaffected: its route mocks intercept before the network.</li>
+<li>Auth: only the Supabase token endpoint is mocked, returning an
+  <code>access_token</code> equal to a seeded user's <code>authn_subject</code> (<code>dev-guardian</code> or
+  <code>dev-admin</code>). The backend's <code>local</code> auth seam
+  (<code>api/deps.py::_resolve_subject</code>) trusts the bearer token as the subject, so
+  <code>/v1/me</code>, role authorization, and every domain endpoint run for real against
+  seeded rows. This exercises the <code>require_principal</code> chain that <code>page.route</code>
+  mocks can never see.</li>
 </ul>
+<h3 id="52-seed-extensions">5.2 Seed extensions<a class="headerlink" href="#52-seed-extensions" title="Permanent link">&para;</a></h3>
+<p><code>scripts/seed_dev_data.py</code> (already fixed by PR #104 to publish and assign)
+gains, idempotently:</p>
+<ul>
+<li>an admin <code>User</code> (<code>authn_subject='dev-admin'</code>) so the ADR-005 approve
+  scenario has a real admin principal;</li>
+<li>one storybook in the submitted/needs-review state, with at least one
+  moderation flag, so the review queue and approve path have real input.</li>
+</ul>
+<p>Seed changes carry RAD tags per the package rules and keep the script
+re-runnable.</p>
+<h3 id="53-smoke-scenarios-four-high-value-only">5.3 Smoke scenarios (four, high-value only)<a class="headerlink" href="#53-smoke-scenarios-four-high-value-only" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Kid reads for real</strong>: library for the seeded profile loads from the real
+   API; open the seeded story; play to an ending.</li>
+<li><strong>Guardian sees the real queue</strong>: sign in as <code>dev-guardian</code>; the console
+   lists the seeded submitted story from the real review endpoints.</li>
+<li><strong>Admin approves for real (ADR-005 write path)</strong>: sign in as <code>dev-admin</code>;
+   open the seeded submitted story; approve; the queue reflects the approved
+   state on reload (persisted, not optimistic).</li>
+<li><strong>Approved story reaches the child</strong>: after scenario 3, the story is
+   assigned and appears in the child's library from the real API.</li>
+</ol>
+<p>Scenarios 3 and 4 run serially in one spec file (they share DB state); the
+project sets <code>fullyParallel: false</code> for <code>e2e-real/</code>.</p>
+<h3 id="54-ci">5.4 CI<a class="headerlink" href="#54-ci" title="Permanent link">&para;</a></h3>
+<p><strong>As-built deviation (recorded post-implementation):</strong> the Playwright suite is
+local-only and does not run in CI. Both tiers, the mocked <code>test:e2e</code> step in
+the <code>frontend</code> job and the dedicated real-backend job, were removed from
+<code>ci.yml</code>; the runbooks in <code>frontend/README.md</code> are the way to run them before
+opening a PR. The original design below is kept for context.</p>
+<p><del>New <code>frontend-e2e-real</code> job in <code>ci.yml</code>: Postgres service container,
+<code>uv sync</code>, seed, start uvicorn in the background, wait for the readiness probe,
+then <code>npm run test:e2e:real</code>. One retry like the existing e2e job. The job is a
+normal PR check (the merge queue's required-check list is a repo setting and
+is not changed by this work).</del></p>
+<h2 id="6-error-handling-and-flake-policy">6. Error handling and flake policy<a class="headerlink" href="#6-error-handling-and-flake-policy" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Tier 1 stays <code>fullyParallel</code> with per-test route mocks; no shared state.</li>
+<li>Tier 2 is serial, seeds once per run, and asserts on persisted state
+  (reload before asserting approve took effect) rather than on transient
+  toasts, which is the main anti-flake measure for real-stack tests.</li>
+<li>Any smoke-tier failure mode that turns out to be environmental (port
+  collisions, container startup) belongs in the job setup, not in test
+  retries; retries stay at 1.</li>
+</ul>
+<h2 id="7-documentation-follow-through">7. Documentation follow-through<a class="headerlink" href="#7-documentation-follow-through" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Recolor the nodes this work covers in
+  <code>docs/architecture/diagrams/journey-dev-coverage.*</code> from amber to green and
+  update the amber-gap table in <code>user-journeys.md</code>.</li>
+<li>Update the stale header comments named in 4.1.</li>
+<li>CHANGELOG entry per the repo's changelog gate.</li>
+</ul>
+<h2 id="8-delivery">8. Delivery<a class="headerlink" href="#8-delivery" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Branch: <code>test/playwright-e2e-guardian-and-real-smoke</code> in worktree
+  <code>.worktrees/playwright-e2e</code>, based on <code>origin/main</code> at PR #104.</li>
+<li>Suggested implementation order: auth helper first (everything guardian
+  depends on it), then the six tier-1 spec areas, then the seed extension,
+  then the tier-2 project and CI job, then the docs recolor.</li>
+<li>Each step lands with the full frontend gate green: <code>npm run lint</code>,
+  <code>npm run typecheck</code>, <code>npm run test:run</code>, <code>npm run test:e2e</code> (and
+  <code>test:e2e:real</code> once it exists); backend gates for the seed change.</li>
+</ul>
+<h2 id="9-risks">9. Risks<a class="headerlink" href="#9-risks" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GoTrue rejects the canned token-endpoint JSON after a supabase-js upgrade</td>
+<td>The canned body uses only documented session fields; if it ever breaks, the failure is loud (sign-in never completes) and confined to the helper</td>
+</tr>
+<tr>
+<td>Review/approve UI state names drift from mocked assumptions</td>
+<td>Tier 2 scenario 3 approves against the real API, so drift fails the smoke job</td>
+</tr>
+<tr>
+<td>Smoke tier flakes in CI</td>
+<td>Serial execution, persisted-state assertions, readiness-probe gating before tests start</td>
+</tr>
+<tr>
+<td>409 reconciliation UI is more complex than assumed</td>
+<td>The spec case is written from <code>offline/sync.ts</code> and its dialog tests during implementation; if the UI turns out to be headless (auto-reconcile), the e2e asserts the reconciled outcome instead of a dialog</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -3175,7 +2846,7 @@ when deciding what e2e tests to write next.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:31:56 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 00:40:08 UTC">July 5, 2026</span>
   </span>
 
     
@@ -3252,10 +2923,10 @@ when deciding what e2e tests to write next.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
