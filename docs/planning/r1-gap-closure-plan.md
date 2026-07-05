@@ -206,6 +206,53 @@ The backend image CMD runs uvicorn only; nothing applies Alembic migrations.
 
 ---
 
+### Task 1.7: Cut over the operational database to Supabase Postgres (ADR-009, Path A) [ops, supervisor + user]
+
+Decision (owner-confirmed 2026-07-05): move the app's operational database from
+the self-hosted `cyo-adventure-db` Postgres to the **Supabase project's
+Postgres**, so user profiles and stories are stored and fetched from Supabase.
+This is not a new decision: [ADR-009](adr/adr-009-supabase-platform.md) already
+ratifies "Supabase Postgres as the database (async SQLAlchemy and Alembic
+unchanged)"; R1 shipped on an interim local Postgres per the homelab-first
+[ADR-004](adr/adr-004-homelab-first-deployment.md), and this task executes the
+deferred cutover.
+
+**Path A (chosen): backend stays the only database client.** The FastAPI API is
+unchanged, authorization stays server-side (Supabase JWT verification + family
+scoping in `api/deps.py`), and the browser never queries Supabase Postgres
+directly. Rejected Path B (frontend reads Supabase via PostgREST + RLS) as a
+larger surface that exposes child-profile rows to a client-side path.
+
+Not required for R1 login (working as of 2026-07-05); schedule when convenient.
+Depends on Task 1.4 (durable migrate step) and Task 1.5 (seed script) existing
+as real artifacts first, since the cutover reuses both.
+
+Steps:
+
+- [ ] DSNs: app uses the Supabase **session pooler** (Supavisor, port 6543,
+  transaction mode); Alembic uses the **direct** connection (port 5432).
+- [ ] asyncpg + transaction-mode pooler: disable prepared-statement caching
+  (`prepared_statement_cache_size=0` connect arg / DSN option) or reused
+  prepared statements error. Verify on a staging login before flipping prod.
+- [ ] Run `alembic upgrade head` against the Supabase direct DSN (Task 1.4).
+- [ ] Run `scripts/seed_prod_users.py` against Supabase (Task 1.5).
+- [ ] Data migration: R1 prod holds no real content yet, so no row copy is
+  needed; if that changes by cutover, `pg_dump --data-only` from
+  `cyo-adventure-db` and restore into Supabase.
+- [ ] Portainer: set `CYO_ADVENTURE_DATABASE_URL` to the Supabase pooler DSN;
+  redeploy backend + worker.
+- [ ] Retire `cyo-adventure-db` and the (currently crash-looping)
+  `cyo-adventure-db-backup` once verified; Supabase manages backups.
+- [ ] Verify: guardian `/api/v1/me` 200; profiles/stories persist across a
+  redeploy; worker still reaches the DB.
+
+Privacy note (COPPA): this places child-profile PII on a third-party managed
+platform (already contemplated by ADR-009). Path A keeps that data behind our
+API rather than client-exposed, the smaller exposure surface; record in the R2
+compliance review.
+
+---
+
 ## Phase 2: Guardian gaps and reader fixes (CYO repo)
 
 Each task below is a slice: an opus Plan agent writes the detailed TDD plan
