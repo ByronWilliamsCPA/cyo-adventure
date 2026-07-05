@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { AuthProvider } from './AuthContext'
 import { useAuth } from './useAuth'
 
@@ -260,7 +261,12 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
     fireEvent.click(screen.getByText('sign in'))
-    await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith({ provider: 'google' }))
+    await waitFor(() =>
+      expect(mockSignInWithOAuth).toHaveBeenCalledWith({
+        provider: 'google',
+        options: { redirectTo: `${window.location.origin}${GUARDIAN_LOGIN_PATH}` },
+      })
+    )
   })
 
   it('delegates signInWithPassword to supabase', async () => {

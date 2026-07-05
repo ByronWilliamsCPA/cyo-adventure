@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { useApi } from '../hooks/useApi'
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 import {
   AuthContext,
   type AuthContextValue,
@@ -149,8 +150,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // swallows a failed OAuth redirect or sign-out. Rethrow so callers
       // (LoginPage, GuardianShell) can surface the failure.
       // #VERIFY: AuthContext.test.tsx signInWithOAuth/signOut rejection cases.
+      // #CRITICAL: security: redirectTo MUST return to a page that loads
+      // @supabase/supabase-js so detectSessionInUrl processes the callback hash
+      // and this provider's onAuthStateChange bridges the token. That code is
+      // scoped to the guardian subtree (router.tsx), so returning to the kid
+      // surface ('/', Supabase's default Site URL) would drop the session on the
+      // floor and strand the user on an unauthenticated page.
+      // #VERIFY: add https://<host>/guardian/login to Supabase Auth redirect URLs.
       signInWithOAuth: async (provider) => {
-        const { error } = await supabase.auth.signInWithOAuth({ provider })
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider,
+          options: { redirectTo: `${window.location.origin}${GUARDIAN_LOGIN_PATH}` },
+        })
         if (error) throw error
       },
       // #ASSUME: security: signInWithPassword resolves with { error } on bad
