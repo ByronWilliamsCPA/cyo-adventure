@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- The production backend image now actually starts: the venv is created against
+  the hardened runtime image's `/opt/python` interpreter path (previously every
+  console script exec-failed on a dangling symlink), the `api` extra
+  (fastapi/uvicorn/alembic/sqlalchemy/asyncpg) is installed into the image
+  (previously the web framework and migration runner were missing entirely),
+  the CMD targets the real application module `cyo_adventure.app:app` (there is
+  no `main.py`), and `jsonschema` is declared as a main dependency instead of
+  arriving transitively via dev tooling. Found on the first live docker-host
+  deploy: the worker crash-looped with `exec /app/.venv/bin/rq: no such file
+  or directory`.
+
 ### Added
 - Guardian console, sign-in, intake, profiles, and reader 409-conflict flows now
   have Playwright e2e coverage (all seven amber gaps from the journey coverage

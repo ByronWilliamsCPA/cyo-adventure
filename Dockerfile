@@ -31,6 +31,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Renovate manages digest bumps via the ghcr.io/astral-sh/uv repository.
 COPY --from=ghcr.io/astral-sh/uv:0.8.17@sha256:db99140470350437166de1fc646323ecb59e4d99d7857d0baf429a7b4a9523f3 /uv /usr/local/bin/uv
 
+# #CRITICAL: external resources: the DHI runtime stage keeps its interpreter at
+# /opt/python/bin and ships NO /usr/local/bin, so a venv created against this
+# builder's /usr/local/bin/python3.12 arrives with a dangling python symlink
+# and a stale pyvenv.cfg home; every console script (uvicorn, rq, alembic)
+# then exec-fails at runtime with a misleading "no such file or directory"
+# (first observed as the cyo-adventure-worker crash-loop on docker-host).
+# Mirror the builder's interpreter at the runtime path and pin uv to it so the
+# venv's symlink chain and pyvenv.cfg resolve identically in BOTH stages.
+# #VERIFY: `docker run --rm <image> rq --version` (plus uvicorn/alembic
+# --version) must succeed on the built image before publishing.
+RUN mkdir -p /opt/python/bin && ln -s /usr/local/bin/python3.12 /opt/python/bin/python3.12
+ENV UV_PYTHON=/opt/python/bin/python3.12
+
 # Copy dependency files
 # README.md is referenced by pyproject.toml via [project] readme; uv reads project
 # metadata even on --no-install-project, so it must be present for both syncs.
@@ -40,14 +53,17 @@ COPY pyproject.toml uv.lock ./
 COPY README.md ./
 
 # Install dependencies to a virtual environment
-# This creates .venv/ which we'll copy to the final stage
-RUN uv sync --frozen --no-dev --no-install-project
+# This creates .venv/ which we'll copy to the final stage.
+# --extra api is REQUIRED: fastapi/uvicorn/alembic/sqlalchemy/asyncpg live in
+# the [project.optional-dependencies] api extra, not main dependencies, so a
+# plain --no-dev sync ships an image that cannot serve HTTP or run migrations.
+RUN uv sync --frozen --no-dev --no-install-project --extra api
 
 # Copy application code
 COPY . .
 
 # Install the project itself
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --extra api
 
 # =============================================================================
 # Stage 2: Runtime - Minimal hardened production image
@@ -91,8 +107,9 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
     CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/live', timeout=2).status == 200 else 1)"]
 
-# Default command - run web server
-CMD ["uvicorn", "cyo_adventure.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Default command - run web server. The application module is
+# cyo_adventure.app (create_app() at import time); there is no main.py.
+CMD ["uvicorn", "cyo_adventure.app:app", "--host", "0.0.0.0", "--port", "8000"]
 # =============================================================================
 # Build Arguments (optional, for build-time configuration)
 # =============================================================================

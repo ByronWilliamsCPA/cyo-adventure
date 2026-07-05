@@ -74,6 +74,7 @@ dependencies = [
     "rq>=2.10.0",
     "redis>=8.0.0",
     "pyjwt[crypto]>=2.13.0",
+    "jsonschema>=4.23",
 ]
 
 # Optional dependency groups

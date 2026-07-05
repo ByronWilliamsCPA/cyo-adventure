@@ -754,6 +754,7 @@ name = "cyo-adventure"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "jsonschema" },
     { name = "networkx" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
@@ -834,6 +835,7 @@ requires-dist = [
     { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.82.0" },
     { name = "interrogate", marker = "extra == 'dev'", specifier = ">=1.7.0" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.25.0" },
+    { name = "jsonschema", specifier = ">=4.23" },
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0.0" },
     { name = "keyrings-google-artifactregistry-auth", marker = "extra == 'supply-chain'", specifier = ">=1.1.0" },
     { name = "mkdocs", marker = "extra == 'dev'", specifier = ">=1.6.0" },
