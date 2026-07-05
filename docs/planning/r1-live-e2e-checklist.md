@@ -24,12 +24,14 @@ Run top to bottom against `https://cyo.williamshome.family` after every deploy. 
 smoke tier (`frontend/e2e-real/`, `npm run test:e2e:real`, local-only, `--workers=1`) is the automated
 pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.
 
-**Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod):
+**Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod).
+Source the real email + Supabase `sub` for each role from the private deployment
+runbook (kept out of the repo); the placeholders below stand in for them:
 
 | Role | Email | Supabase sub |
 | --- | --- | --- |
-| Guardian | byronawilliams@gmail.com | 21985c35-e770-4869-8f75-2225e478df66 |
-| Admin | byron.williams@gmail.com | 2727d2d9-5f93-4000-b20b-58bd4dacbd59 |
+| Guardian | `<GUARDIAN_EMAIL>` | `<GUARDIAN_SUB>` |
+| Admin | `<ADMIN_EMAIL>` | `<ADMIN_SUB>` |
 
 The real read gate is `approved_by` + an assignment, not `published_at` alone.
 

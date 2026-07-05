@@ -8,7 +8,7 @@ tags:
   - planning
   - project_management
 component: Strategy
-source: "2026-07-04 comprehensive R1 deployment review (session findings; memory: r1-deployment-review-2026-07-04)"
+source: "2026-07-04 comprehensive R1 deployment review (session findings; external session notes, not tracked in-repo)"
 ---
 
 > **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development.
@@ -181,8 +181,8 @@ The backend image CMD runs uvicorn only; nothing applies Alembic migrations.
   Expected: backend healthy (its `/health/live` healthcheck), worker running,
   frontend attached to `traefik_proxy`.
 - [ ] Seed production users: insert guardian + admin `User` rows whose
-  `authn_subject` values are the two Supabase user subs (guardian
-  `byronawilliams@gmail.com`, admin `byron.williams@gmail.com`), plus family and
+  `authn_subject` values are the two Supabase user subs (the real email + sub per
+  role come from the private deployment runbook, not this repo), plus family and
   child profiles. Script this as `scripts/seed_prod_users.py` variant or
   documented SQL; do NOT reuse `seed_dev_data.py` (Task 2.4 fixes it, but
   prod gets real profiles, not "Dev Reader").
@@ -220,8 +220,8 @@ The moderation report (Source/Verdict/category findings,
 
 **Expected files:** new guardian endpoint in `src/cyo_adventure/api/`
 (e.g. extend `assignments.py` GET or a `GET /storybooks/{id}/content-summary`),
-serializer reuse from `publishing/review_surface.py` (`FindingView`,
-summary flags); frontend `frontend/src/guardian/AssignChildrenDialog.tsx`,
+serializer reuse from `api/review_surface.py` (`FindingView` lives in
+`api/schemas.py`, summary flags); frontend `frontend/src/guardian/AssignChildrenDialog.tsx`,
 `frontend/src/guardian/assignApi.ts`, shared `FlagBadge` reuse; colocated
 vitest files; backend tests `tests/unit/` + `tests/integration/`.
 
