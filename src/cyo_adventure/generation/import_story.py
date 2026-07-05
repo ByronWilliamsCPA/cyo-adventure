@@ -8,6 +8,7 @@ cyo-author Claude Code authoring skill.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -19,9 +20,11 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob
+from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.validator.gate import run_gate
 
@@ -211,6 +214,37 @@ async def resume_manual_fill(
         job.error = str(exc)[:512]
         await session.commit()
         raise
+
+    skeleton_slug = (
+        job.authoring_metadata.get("skeleton_slug")
+        if isinstance(job.authoring_metadata, dict)
+        else None
+    )
+    if isinstance(skeleton_slug, str):
+        band = (
+            concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
+        )
+        band = band if isinstance(band, str) else ""
+        # #ASSUME: external-resources: re-reads the same skeleton file the
+        # authoring-plan endpoint matched (see generation/skeleton_match.py);
+        # a moved or renamed file since matching would raise FileNotFoundError.
+        # #VERIFY: test_stage1_violations_are_recorded_on_the_job.
+        original_skeleton = load_skeleton(
+            Path("skeletons") / band / f"{skeleton_slug}.json"
+        )
+        pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+        violations = await run_stage1_gate(
+            original_skeleton,
+            blob,
+            review_stage1_model=None,
+            settings=_default_settings,
+            pii=pii,
+        )
+        if violations:
+            job.status = "needs_review"
+            job.error = "; ".join(violations)[:512]
+            await session.commit()
+            return story_id
 
     job.status = "passed"
     job.storybook_id = story_id
