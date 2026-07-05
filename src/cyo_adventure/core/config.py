@@ -12,6 +12,7 @@ validation.
 from __future__ import annotations
 
 from typing import Literal
+from urllib.parse import urlsplit
 
 from pydantic import AliasChoices, Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -23,6 +24,12 @@ from cyo_adventure.core.exceptions import ConfigurationError
 # when it leaks into a non-local environment. Developers using password auth must
 # set CYO_ADVENTURE_DATABASE_URL explicitly (see .env.example).
 _DEV_DATABASE_URL = "postgresql+asyncpg://localhost/cyo_adventure"
+
+# Supabase Supavisor's transaction-mode pooler port (ADR-009 Task 1.7). Used by
+# the fail-fast validator below to catch a database_url/database_disable_prepared_cache
+# mismatch; PgBouncer transaction mode has no fixed port and cannot be
+# detected this way, so this only covers the documented Supavisor case.
+_SUPAVISOR_TRANSACTION_POOLER_PORT = 6543
 
 
 class Settings(BaseSettings):
@@ -97,13 +104,13 @@ class Settings(BaseSettings):
     # fix. Leave False for a direct PostgreSQL connection (local dev, or
     # Supabase's :5432 session/direct DSN that Alembic uses), where server-side
     # prepared statements are safe and faster.
-    # #CRITICAL: external-resources: with a transaction pooler and this flag
-    # unset, the first reused/renamed prepared statement raises asyncpg
+    # #CRITICAL: concurrency: with a transaction pooler and this flag unset,
+    # the first reused/renamed prepared statement raises asyncpg
     # DuplicatePreparedStatementError / InvalidSQLStatementNameError and the
     # request 500s intermittently under concurrency, not at startup.
-    # #VERIFY: set CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE=true whenever
-    # CYO_ADVENTURE_DATABASE_URL points at a :6543 transaction pooler; consumed
-    # by core/database.py::_build_connect_args.
+    # #VERIFY: enforced for the known Supavisor case by
+    # _require_prepared_cache_disabled_for_pooler_dsn below; consumed by
+    # core/database.py::_build_connect_args and _build_engine_kwargs.
     database_disable_prepared_cache: bool = False
     # Development default for local Redis; safe to leave unset in non-production
     # environments where no queue is configured. Production must override via
@@ -305,6 +312,38 @@ class Settings(BaseSettings):
                 "be set in non-local environments; refusing to start in "
                 f"'{self.environment}' with the development default localhost "
                 "database URL."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_prepared_cache_disabled_for_pooler_dsn(self) -> Settings:
+        """Fail fast when database_url is Supavisor's pooler port but the flag is off.
+
+        Only catches the documented Supabase Supavisor case (port 6543); a
+        PgBouncer transaction-mode DSN has no distinguishing port and cannot
+        be detected from the URL alone, so this is a defense against the one
+        foreseeable, greppable mistake, not a complete guarantee.
+
+        Raises:
+            ConfigurationError: when database_url's port is the Supavisor
+                transaction-pooler port and database_disable_prepared_cache
+                is False, since asyncpg then collides on cached/fixed-name
+                prepared statements once the pooler reassigns a backend
+                mid-session (see the #CRITICAL note on database_disable_prepared_cache).
+        """
+        port = urlsplit(self.database_url).port
+        if (
+            port == _SUPAVISOR_TRANSACTION_POOLER_PORT
+            and not self.database_disable_prepared_cache
+        ):
+            msg = (
+                "CYO_ADVENTURE_DATABASE_URL uses port 6543 (Supabase Supavisor's "
+                "transaction-mode pooler) but "
+                "CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE is not set; refusing "
+                "to start, since asyncpg will intermittently raise "
+                "DuplicatePreparedStatementError / InvalidSQLStatementNameError "
+                "under concurrency once the pooler reassigns a backend mid-session."
             )
             raise ConfigurationError(msg)
         return self
