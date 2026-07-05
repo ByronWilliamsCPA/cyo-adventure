@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -221,6 +222,24 @@ async def seed_dev_data(
                 child_profile_id=profile.id,
                 storybook_id=review_id,
                 assigned_by=guardian.id,
+            )
+        )
+
+        # #ASSUME: security: a second, wholly unrelated family exists solely so
+        # naive-kid-misuse-real.spec.ts can prove authorize_profile rejects a
+        # cross-family profile id, not just a cross-profile-same-family id.
+        # No guardian/admin User rows are seeded for this family: the test only
+        # needs the child profile to exist, not a full principal set.
+        # #VERIFY: test_seed_dev_data_seeds_unrelated_family_profile.
+        unrelated_family = Family(name="Unrelated Family")
+        session.add(unrelated_family)
+        await session.flush()
+        session.add(
+            ChildProfile(
+                id=uuid.UUID("22222222-2222-2222-2222-222222222222"),
+                family_id=unrelated_family.id,
+                display_name="Unrelated Reader",
+                age_band="8-11",
             )
         )
 
