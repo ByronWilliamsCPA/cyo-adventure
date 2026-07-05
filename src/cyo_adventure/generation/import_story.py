@@ -13,8 +13,12 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 
 from cyo_adventure.core.config import settings as _default_settings
-from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.db.models import ChildProfile
+from cyo_adventure.core.exceptions import (
+    ResourceNotFoundError,
+    StateTransitionError,
+    ValidationError,
+)
+from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
@@ -25,6 +29,10 @@ if TYPE_CHECKING:
     import uuid
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+# Every job resumed by resume_manual_fill produces a fresh Storybook, so its
+# sole version is 1, mirroring generation/worker.py's _FIRST_VERSION.
+_FIRST_VERSION = 1
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,4 +136,84 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         pii=pii,
     )
 
+    return story_id
+
+
+async def resume_manual_fill(
+    session: AsyncSession,
+    job_id: uuid.UUID,
+    blob: dict[str, object],
+    *,
+    model: str | None = None,
+) -> str:
+    """Resume a skill-authored skeleton fill parked at "awaiting_manual_fill".
+
+    Loads the job's concept for its family_id, then delegates to
+    :func:`import_filled_story` for the same gate + persist + moderation
+    pipeline every other import uses. On success the job is marked "passed"
+    and linked to the new storybook. On a validation-gate block the job is
+    marked "failed" and the error is recorded before the exception
+    propagates, mirroring generation/worker.py's failure-commit-then-reraise
+    pattern. Unlike import_filled_story (which deliberately does not own the
+    transaction -- see its own docstring), this function DOES commit the job
+    row's status itself, in both branches, so a caller-side rollback can
+    never silently discard it.
+
+    Args:
+        session: Open async session; the story/version write still follows
+            import_filled_story's own transaction contract, but this
+            function's job-row updates are committed here directly.
+        job_id: The GenerationJob row to resume.
+        blob: The filled Storybook JSON, already loaded from disk.
+        model: Optional model identifier to record (the fill model).
+
+    Returns:
+        The persisted story id.
+
+    Raises:
+        ResourceNotFoundError: If the job or its concept does not exist.
+        StateTransitionError: If the job is not "awaiting_manual_fill".
+        ValidationError: Propagated from import_filled_story if the gate
+            blocks the filled story; the job is marked "failed" first.
+        ProjectBaseError: Propagated from the moderation pipeline on failure,
+            same as import_filled_story (not intercepted here).
+    """
+    job = await session.get(GenerationJob, job_id)
+    if job is None:
+        msg = f"GenerationJob {job_id} not found"
+        raise ResourceNotFoundError(
+            msg, resource_type="GenerationJob", resource_id=str(job_id)
+        )
+    if job.status != "awaiting_manual_fill":
+        msg = f"job is '{job.status}', not awaiting_manual_fill"
+        raise StateTransitionError(msg)
+
+    concept = await session.get(Concept, job.concept_id)
+    if concept is None:
+        msg = f"Concept {job.concept_id} not found"
+        raise ResourceNotFoundError(
+            msg, resource_type="Concept", resource_id=str(job.concept_id)
+        )
+
+    request = ImportRequest(blob=blob, family_id=concept.family_id, model=model)
+    try:
+        story_id = await import_filled_story(session, request)
+    except ValidationError as exc:
+        # #CRITICAL: data-integrity: record the gate-block on the job row
+        # before re-raising, mirroring worker.py's failure-commit-then-reraise
+        # pattern, so import_cli's get_session context manager (which rolls
+        # back on an exception exiting the `async with` block) cannot
+        # silently discard this job's failure state.
+        # #VERIFY: covered at the integration level (tests/integration/
+        # test_resume_manual_fill.py::test_resume_gate_block_marks_job_failed);
+        # this unit test file's fake session cannot exercise the real gate.
+        job.status = "failed"
+        job.error = str(exc)[:512]
+        await session.commit()
+        raise
+
+    job.status = "passed"
+    job.storybook_id = story_id
+    job.version = _FIRST_VERSION
+    await session.commit()
     return story_id
