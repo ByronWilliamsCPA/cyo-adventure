@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- The production frontend image now ships with Supabase auth configured: the
+  frontend Dockerfile declares `ARG VITE_SUPABASE_URL` and
+  `ARG VITE_SUPABASE_ANON_KEY` so the build args passed by the homelab build
+  workflow reach Vite. Previously Docker silently ignored the undeclared args,
+  the bundle contained no Supabase config, and the deployed app sent every API
+  request without a bearer token ("We could not load your profiles" on the
+  first live sign-in attempt).
 - The production backend image now actually starts: the venv is created against
   the hardened runtime image's `/opt/python` interpreter path (previously every
   console script exec-failed on a dangling symlink), the `api` extra
