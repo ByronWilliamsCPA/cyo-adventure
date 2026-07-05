@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Naive-user UX test suite: Playwright misuse regressions for kid, guardian,
+  and admin personas (`frontend/e2e/naive-user/`, `frontend/e2e-real/`), a
+  Claude-for-Chrome comprehension prompt set, and the `/naive-ux-check` skill.
+
 ### Fixed
 - Guardian Google sign-in now completes in the browser: `signInWithOAuth` passes
   `redirectTo=<origin>/guardian/login` so the OAuth callback returns to the
