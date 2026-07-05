@@ -22,7 +22,11 @@ from cyo_adventure.generation.skeleton_match import select_skeleton_for_band
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
-    from cyo_adventure.api.schemas import AuthoringMechanism, AuthoringMethod
+    from cyo_adventure.api.schemas import (
+        AuthoringMechanism,
+        AuthoringMethod,
+        AuthoringPlanRequest,
+    )
     from cyo_adventure.db.models import Concept, StoryRequest
 
 # The only Claude Code session models valid for mechanism="skill" (the
@@ -122,10 +126,7 @@ async def build_authoring_plan(
     session: AsyncSession,
     request: StoryRequest,
     concept: Concept,
-    *,
-    method: AuthoringMethod,
-    mechanism: AuthoringMechanism,
-    prep_model: str,
+    plan: AuthoringPlanRequest,
 ) -> AuthoringPlanResult:
     """Validate an authoring-plan choice and create the GenerationJob row.
 
@@ -133,9 +134,7 @@ async def build_authoring_plan(
         session: The request session (caller owns the transaction).
         request: The approved story request (status already checked by the caller).
         concept: The request's linked concept.
-        method: "skeleton_fill" or "fresh_generation".
-        mechanism: "skill" or "automated_provider".
-        prep_model: The admin-chosen prep model identifier.
+        plan: The admin's method/mechanism/prep_model choice.
 
     Returns:
         AuthoringPlanResult: The created job, matched skeleton slug (if any),
@@ -149,6 +148,7 @@ async def build_authoring_plan(
             concept (-> 409, idempotency guard).
     """
     _ = request  # reserved for future request-level checks; status is caller-verified
+    method, mechanism, prep_model = plan.method, plan.mechanism, plan.prep_model
     if method == "fresh_generation" and mechanism == "skill":
         msg = "mechanism='skill' requires method='skeleton_fill'"
         raise ValidationError(msg, field="mechanism", value=mechanism)

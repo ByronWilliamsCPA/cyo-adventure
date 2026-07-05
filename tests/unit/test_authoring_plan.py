@@ -6,6 +6,7 @@ import uuid
 
 import pytest
 
+from cyo_adventure.api.schemas import AuthoringPlanRequest
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob, StoryRequest
 from cyo_adventure.story_requests.authoring_plan import (
@@ -68,9 +69,11 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
         session,
         _request(),
         concept,
-        method="fresh_generation",
-        mechanism="automated_provider",
-        prep_model="openrouter/some-model",
+        AuthoringPlanRequest(
+            method="fresh_generation",
+            mechanism="automated_provider",
+            prep_model="openrouter/some-model",
+        ),
     )
     assert result.job.status == "queued"
     assert result.job.concept_id == concept.id
@@ -86,9 +89,9 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
         session,
         _request(),
         concept,
-        method="skeleton_fill",
-        mechanism="skill",
-        prep_model="sonnet",
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
     )
     assert result.job.status == "awaiting_manual_fill"
     assert result.skeleton_slug == "the-cave-of-echoes"
@@ -106,9 +109,9 @@ async def test_fresh_generation_with_skill_mechanism_is_rejected() -> None:
             session,
             _request(),
             _concept(),
-            method="fresh_generation",
-            mechanism="skill",
-            prep_model="sonnet",
+            AuthoringPlanRequest(
+                method="fresh_generation", mechanism="skill", prep_model="sonnet"
+            ),
         )
 
 
@@ -120,9 +123,11 @@ async def test_skeleton_fill_automated_provider_not_yet_supported() -> None:
             session,
             _request(),
             _concept(),
-            method="skeleton_fill",
-            mechanism="automated_provider",
-            prep_model="openrouter/some-model",
+            AuthoringPlanRequest(
+                method="skeleton_fill",
+                mechanism="automated_provider",
+                prep_model="openrouter/some-model",
+            ),
         )
 
 
@@ -134,9 +139,9 @@ async def test_unrecognized_skill_model_is_rejected() -> None:
             session,
             _request(),
             _concept(),
-            method="skeleton_fill",
-            mechanism="skill",
-            prep_model="gpt-4o",
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="gpt-4o"
+            ),
         )
 
 
@@ -150,9 +155,11 @@ async def test_existing_job_for_concept_is_conflict() -> None:
             session,
             _request(),
             concept,
-            method="fresh_generation",
-            mechanism="automated_provider",
-            prep_model="openrouter/some-model",
+            AuthoringPlanRequest(
+                method="fresh_generation",
+                mechanism="automated_provider",
+                prep_model="openrouter/some-model",
+            ),
         )
 
 
@@ -164,9 +171,9 @@ async def test_no_matching_skeleton_for_band_is_rejected() -> None:
             session,
             _request(),
             _concept("99-100"),
-            method="skeleton_fill",
-            mechanism="skill",
-            prep_model="sonnet",
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
         )
 
 
