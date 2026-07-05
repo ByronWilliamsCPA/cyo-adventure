@@ -2,6 +2,7 @@
 
 Usage:
     uv run python -m cyo_adventure.generation.import_cli <path> --family <family-uuid> [--model <model-id>]
+    uv run python -m cyo_adventure.generation.import_cli <path> --job <job-uuid> [--model <model-id>]
 """
 
 from __future__ import annotations
@@ -15,7 +16,11 @@ from pathlib import Path
 
 from cyo_adventure.core.database import get_session
 from cyo_adventure.core.exceptions import ProjectBaseError
-from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
+from cyo_adventure.generation.import_story import (
+    ImportRequest,
+    import_filled_story,
+    resume_manual_fill,
+)
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -28,51 +33,59 @@ def build_arg_parser() -> argparse.ArgumentParser:
         description="Import a filled story into the store."
     )
     parser.add_argument("path", help="Path to the filled story JSON.")
-    parser.add_argument("--family", required=True, help="Owning family UUID.")
+    parser.add_argument(
+        "--family", default=None, help="Owning family UUID (ignored with --job)."
+    )
     parser.add_argument("--model", default=None, help="Model id to record.")
+    parser.add_argument(
+        "--job", default=None, help="Resume this awaiting_manual_fill job by id."
+    )
     return parser
 
 
-async def _run(blob: dict[str, object], family_id: uuid.UUID, model: str | None) -> str:
-    """Validate and persist a filled story blob.
+async def _run(
+    blob: dict[str, object],
+    family_id: uuid.UUID | None,
+    model: str | None,
+    job_id: uuid.UUID | None,
+) -> str:
+    """Validate and persist a filled story blob, or resume a parked job.
 
     Args:
         blob: The filled Storybook JSON already loaded from disk.
-        family_id: Owning family UUID (parsed by the caller).
+        family_id: Owning family UUID (parsed by the caller). Ignored when
+            job_id is given, since the job's concept already carries it.
         model: Optional model identifier to record.
+        job_id: When given, resume this "awaiting_manual_fill" job instead of
+            a standalone import (see import_story.py::resume_manual_fill).
 
     Returns:
         The persisted story id.
 
     Raises:
-        ProjectBaseError: Propagated from the validation gate if it blocks the
-            story (or the blob has no string id), or from the moderation
-            pipeline the gate hands off to (e.g. a review-backend failure).
-            UUID parsing is handled by the caller, so this no longer raises on
-            an invalid family id.
+        ProjectBaseError: Propagated from the validation gate, the moderation
+            pipeline, or (job_id path only) job-state validation.
     """
-    request = ImportRequest(blob=blob, family_id=family_id, model=model)
     async with get_session() as session:
+        if job_id is not None:
+            return await resume_manual_fill(session, job_id, blob, model=model)
+        assert family_id is not None  # guaranteed by main()'s argument check
+        request = ImportRequest(blob=blob, family_id=family_id, model=model)
         story_id = await import_filled_story(session, request)
         await session.commit()
-    return story_id
+        return story_id
 
 
-def main(argv: list[str] | None = None) -> int:
-    """Parse args, import the story, and print the resulting story id.
+def _load_blob(path: str) -> dict[str, object] | None:
+    """Read and parse the filled story JSON at path, guarding path traversal.
 
     Args:
-        argv: Optional argument list (defaults to sys.argv).
+        path: The raw path argument from the CLI.
 
     Returns:
-        Exit code: 0 on success, 1 on any handled failure.
+        The parsed JSON object, or None if any step failed (an error message
+        has already been written to stderr in that case).
     """
-    args = build_arg_parser().parse_args(argv)
-    # Bind argparse Namespace attributes (typed Any) to explicit locals so the
-    # rest of main stays strictly typed.
-    path: str = args.path
-    family: str = args.family
-    model: str | None = args.model
     # Resolve to canonical path and reject traversal outside the working
     # directory. Required because this CLI can be invoked by an LLM agent
     # (OWASP LLM07): a faulty or adversarial path like ../../etc/passwd must
@@ -88,22 +101,71 @@ def main(argv: list[str] | None = None) -> int:
             if isinstance(exc, ValueError)
             else f"error: cannot read {path}: {exc}\n"
         )
-        return 1
+        return None
     try:
         raw_blob = json.loads(raw)
     except json.JSONDecodeError as exc:
         sys.stderr.write(f"error: invalid JSON in {path}: {exc}\n")
-        return 1
+        return None
     if not isinstance(raw_blob, dict):
         sys.stderr.write(
             f"error: expected a JSON object in {path}, got {type(raw_blob).__name__}\n"
         )
-        return 1
-    blob: dict[str, object] = raw_blob
+        return None
+    return raw_blob
+
+
+def _parse_optional_uuid(label: str, value: str | None) -> uuid.UUID | None:
+    """Parse an optional UUID CLI argument.
+
+    Args:
+        label: Human-readable argument name for the error message (e.g.
+            "job" or "family").
+        value: The raw string value from argparse, or None if not given.
+
+    Returns:
+        The parsed UUID, or None if value was None.
+
+    Raises:
+        ValueError: If value is given but is not a valid UUID. The message is
+            ready to write to stderr as-is.
+    """
+    if value is None:
+        return None
     try:
-        family_id = uuid.UUID(family)
-    except ValueError:
-        sys.stderr.write(f"error: invalid family UUID: {family}\n")
+        return uuid.UUID(value)
+    except ValueError as exc:
+        msg = f"error: invalid {label} UUID: {value}\n"
+        raise ValueError(msg) from exc
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Parse args, import the story, and print the resulting story id.
+
+    Args:
+        argv: Optional argument list (defaults to sys.argv).
+
+    Returns:
+        Exit code: 0 on success, 1 on any handled failure.
+    """
+    args = build_arg_parser().parse_args(argv)
+    # Bind argparse Namespace attributes (typed Any) to explicit locals so the
+    # rest of main stays strictly typed.
+    path: str = args.path
+    family: str | None = args.family
+    model: str | None = args.model
+    job: str | None = args.job
+    if job is None and family is None:
+        sys.stderr.write("error: --family is required unless --job is given\n")
+        return 1
+    blob = _load_blob(path)
+    if blob is None:
+        return 1
+    try:
+        job_id = _parse_optional_uuid("job", job)
+        family_id = _parse_optional_uuid("family", family)
+    except ValueError as exc:
+        sys.stderr.write(str(exc))
         return 1
     # #CRITICAL: data-integrity: ProjectBaseError (not a bare ValueError) covers
     # both the validation gate's ValidationError and any exception the
@@ -116,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
     # #VERIFY: test_arg_parser_* cover parsing; gate and moderation failures
     # both map to exit 1.
     try:
-        story_id = asyncio.run(_run(blob, family_id, model))
+        story_id = asyncio.run(_run(blob, family_id, model, job_id))
     except ProjectBaseError as exc:
         sys.stderr.write(f"import failed: {exc}\n")
         return 1
