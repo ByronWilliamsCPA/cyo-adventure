@@ -21,6 +21,7 @@ import {
   RouteError,
   RouteFallback,
 } from './routeElements'
+import { GUARDIAN_LOGIN_PATH } from './routes'
 
 function suspended(element: ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
@@ -65,13 +66,13 @@ export const routes = [
     errorElement: <RouteError />,
     children: [
       {
-        path: '/guardian/login',
+        path: GUARDIAN_LOGIN_PATH,
         element: suspended(<LoginPage />),
       },
       {
         path: '/guardian',
         element: (
-          <ProtectedRoute redirectTo="/guardian/login" allowedRoles={['guardian', 'admin']} />
+          <ProtectedRoute redirectTo={GUARDIAN_LOGIN_PATH} allowedRoles={['guardian', 'admin']} />
         ),
         children: [
           {
