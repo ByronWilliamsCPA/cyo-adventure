@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { useApi } from '../hooks/useApi'
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 import {
   AuthContext,
   type AuthContextValue,
@@ -159,7 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithOAuth: async (provider) => {
         const { error } = await supabase.auth.signInWithOAuth({
           provider,
-          options: { redirectTo: `${window.location.origin}/guardian/login` },
+          options: { redirectTo: `${window.location.origin}${GUARDIAN_LOGIN_PATH}` },
         })
         if (error) throw error
       },
