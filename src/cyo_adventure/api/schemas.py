@@ -143,7 +143,9 @@ class ConceptCreatedResponse(BaseModel):
 # boundary coercion in api/generation.py. GenerationJob.status is a plain string
 # column guarded at rest by the ck_generation_job_status CHECK constraint, so the
 # handler casts the read-back value to this alias and Pydantic revalidates it.
-JobStatusLiteral = Literal["queued", "running", "passed", "needs_review", "failed"]
+JobStatusLiteral = Literal[
+    "queued", "running", "passed", "needs_review", "failed", "awaiting_manual_fill"
+]
 
 
 class GenerationEnqueuedResponse(BaseModel):
@@ -162,6 +164,8 @@ class GenerationJobResponse(BaseModel):
     storybook_id: str | None = None
     version: int | None = None
     error: str | None = None
+    skeleton_slug: str | None = None
+    theme_brief: dict[str, object] | None = None
 
 
 class GenerationJobListItem(BaseModel):
@@ -362,12 +366,48 @@ class StoryRequestCreatedView(BaseModel):
 
 
 class StoryRequestApprovedView(BaseModel):
-    """The result of approving a request: the linked concept and generation job."""
+    """The result of approving a request: the linked concept.
+
+    No GenerationJob is created at approval time; an admin creates one by
+    calling POST /story-requests/{id}/authoring-plan (see
+    story_requests/authoring_plan.py).
+    """
 
     id: str
     status: Literal["approved"]
     concept_id: str
+
+
+AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
+AuthoringMechanism = Literal["skill", "automated_provider"]
+
+
+class AuthoringPlanRequest(BaseModel):
+    """Admin's choice of authoring method, mechanism, and prep model.
+
+    ``review_stage1_model`` / ``review_stage2_model`` are Plan 2 additions
+    (no Stage 1 fidelity review or Stage 2 override exists yet); omitted here
+    rather than added as unused fields.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    method: AuthoringMethod
+    mechanism: AuthoringMechanism
+    prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
+
+class AuthoringPlanResponse(BaseModel):
+    """The generation job created (or parked) by an authoring-plan decision."""
+
+    request_id: str
+    concept_id: str
     job_id: str
+    method: AuthoringMethod
+    mechanism: AuthoringMechanism
+    status: JobStatusLiteral
+    skeleton_slug: str | None = None
+    warnings: list[str] = Field(default_factory=list)
 
 
 class StoryRequestDeclinedView(BaseModel):
