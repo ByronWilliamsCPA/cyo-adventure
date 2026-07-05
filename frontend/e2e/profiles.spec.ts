@@ -6,19 +6,10 @@ import { expect, test } from '@playwright/test'
  * GET /api/v1/profiles the same way reader.spec.ts mocks the reader
  * endpoints: `page.route`, no live backend.
  *
- * Guardian scenario (ProfilesPage at /guardian/profiles) is intentionally
- * NOT covered here. That route tree mounts GuardianAuthLayout, which loads
- * AuthProvider -> supabaseClient.ts as a lazy chunk. supabaseClient throws at
- * module-evaluation time unless VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY
- * are set (neither is set anywhere in this repo or CI; only a placeholder
- * lives in frontend/.env.example), so `npm run build` for this e2e run bakes
- * in `undefined` and the guardian subtree renders its errorElement instead
- * of ProfilesPage. Getting a real guardian page to render would additionally
- * require faking the Supabase JS SDK's own session/localStorage handling
- * (GoTrueClient), not a two-endpoint page.route mock like the kid surface
- * uses, so it is not cheap the way the reader/picker mocks are. The guardian
- * ProfilesPage and ProfileFormDialog have thorough Vitest coverage instead
- * (src/guardian/ProfilesPage.test.tsx).
+ * Guardian-surface e2e (ProfilesPage at /guardian/profiles) now lives in
+ * guardian-*.spec.ts, seeded via support/auth.ts's seedGuardianSession and
+ * mockMe helpers instead of driving the Supabase JS SDK's real session
+ * handling. This file covers only the kid-surface picker.
  */
 
 const TWO_PROFILES = {

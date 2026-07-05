@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { mockMe, seedGuardianSession } from './support/auth'
 
 /**
  * C4a-6 guardian assign flow (route-mocked): open the Assign-more dialog from an
@@ -10,43 +11,12 @@ import { expect, test } from '@playwright/test'
  * principal from a real Supabase (GoTrueClient) session before ProtectedRoute
  * will render IntakePage. A plain `auth_token` localStorage entry is not enough
  * (that only feeds useApi's bearer interceptor). So this spec seeds a
- * far-future GoTrueClient session under the SDK's storage key and mocks
- * GET /v1/me to resolve a guardian principal. The storage key is
- * `sb-<ref>-auth-token`, where <ref> is the first label of the Supabase URL
- * hostname; playwright.config.ts builds with VITE_SUPABASE_URL
- * https://example.supabase.co, so the ref is `example`. getSession() returns a
- * non-expired session from storage without any network call, so no live
- * Supabase backend is required. API traffic is still page.route-mocked.
+ * far-future GoTrueClient session under the SDK's storage key (via
+ * seedGuardianSession, see support/auth.ts) and mocks GET /v1/me to resolve a
+ * guardian principal. getSession() returns a non-expired session from storage
+ * without any network call, so no live Supabase backend is required. API
+ * traffic is still page.route-mocked.
  */
-
-const SUPABASE_SESSION_KEY = 'sb-example-auth-token'
-
-// A GoTrueClient session shape: getSession's _isValidSession only requires
-// access_token / refresh_token / expires_at, and a far-future expires_at skips
-// the auto-refresh network path. The frontend never inspects the token itself
-// (AuthContext treats it as opaque and reads role/family from /v1/me).
-const GUARDIAN_SESSION = {
-  access_token: 'e2e-guardian-access-token',
-  refresh_token: 'e2e-guardian-refresh-token',
-  token_type: 'bearer',
-  expires_in: 3600,
-  expires_at: 4102444800, // 2100-01-01, comfortably non-expired
-  user: {
-    id: 'guardian-a',
-    aud: 'authenticated',
-    role: 'authenticated',
-    app_metadata: {},
-    user_metadata: {},
-    created_at: '2026-07-02T00:00:00Z',
-  },
-}
-
-const ME = {
-  subject: 'guardian-a',
-  role: 'guardian',
-  family_id: 'fam-a',
-  profile_ids: ['p1', 'p2'],
-}
 
 const PROFILES = {
   profiles: [
@@ -109,17 +79,15 @@ const JOBS = {
 }
 
 test.beforeEach(async ({ context }) => {
-  await context.addInitScript(
-    ([key, session]) => {
-      window.localStorage.setItem('auth_token', 'guardian-a')
-      window.localStorage.setItem(key as string, session as string)
-    },
-    [SUPABASE_SESSION_KEY, JSON.stringify(GUARDIAN_SESSION)] as const
-  )
+  await seedGuardianSession(context)
 })
 
 test('assigning a sibling posts only the new profile id', async ({ page }) => {
-  await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
+  await mockMe(page, {
+    subject: 'guardian-a',
+    family_id: 'fam-a',
+    profile_ids: ['p1', 'p2'],
+  })
   await page.route('**/api/v1/generation-jobs', (route) =>
     route.fulfill({ json: JOBS })
   )

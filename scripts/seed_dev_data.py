@@ -4,10 +4,12 @@ Run against a local Postgres so the reader app has content to serve::
 
     uv run python scripts/seed_dev_data.py
 
-It creates the schema (if missing), one family with a guardian and a child
-profile, and publishes the two hand-authored Phase 1 stories. It is idempotent:
-re-running skips rows that already exist. This is a development convenience, not a
-migration; production data comes through the generation pipeline.
+It creates the schema (if missing), one family with a guardian, an admin, and
+a child profile; publishes the two hand-authored Phase 1 stories; and leaves a
+third story in review with a flagged moderation report so the admin review
+queue has work to approve. It is idempotent: re-running skips rows that
+already exist. This is a development convenience, not a migration; production
+data comes through the generation pipeline.
 """
 
 from __future__ import annotations
@@ -40,9 +42,39 @@ _VALID = (
     Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "storybook" / "valid"
 )
 _STORIES = ["06_tier1_tide_pools.json", "07_tier2_clockwork_garden.json"]
+_REVIEW_STORY = "08_tier2_bridge_builder.json"
 
 _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
+_ADMIN_SUBJECT = "dev-admin"
+
+
+def _flagged_moderation_report(node_id: str) -> dict[str, object]:
+    """A minimal soft-flag report so the review surface shows a flagged passage."""
+    # #ASSUME: data-integrity: this dict must match ModerationReport.to_dict()
+    # (src/cyo_adventure/moderation/report.py); approve() only checks non-null,
+    # but the review surface reads findings[].node_id/verdict/message.
+    # #VERIFY: test_seed_dev_data_seeds_admin_and_review_story.
+    return {
+        "findings": [
+            {
+                "stage": 1,
+                "source": "llm_safety",
+                "category": "safety",
+                "verdict": "flag",
+                "message": "Dev seed: sample flag so the review queue has work.",
+                "node_id": node_id,
+                "score": 0.4,
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": True,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
 
 
 async def seed_dev_data(
@@ -111,6 +143,9 @@ async def seed_dev_data(
                 child_profile_id=profile.id,
             )
         )
+        session.add(
+            User(family_id=family.id, role="admin", authn_subject=_ADMIN_SUBJECT)
+        )
 
         # #ASSUME: data integrity: published_at must be timezone-aware to match
         # StorybookVersion.published_at, a TIMESTAMP WITH TIME ZONE column
@@ -156,10 +191,44 @@ async def seed_dev_data(
                 )
             )
 
+        # #ASSUME: concurrency: the review-story Storybook/Version/Assignment
+        # inserts share the composite-PK / no-rerun assumption tagged on the
+        # published-story loop above; the function-level early return is the
+        # sole guard against a second run duplicating these rows.
+        # #VERIFY: test_seed_dev_data_seeds_admin_and_review_story.
+        review_blob = json.loads((_VALID / _REVIEW_STORY).read_text(encoding="utf-8"))
+        review_id = str(review_blob["id"])
+        review_version = int(review_blob["version"])
+        first_node_id = str(review_blob["nodes"][0]["id"])
+        session.add(
+            Storybook(
+                id=review_id,
+                family_id=family.id,
+                current_published_version=None,
+                status="in_review",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=review_id,
+                version=review_version,
+                blob=review_blob,
+                moderation_report=_flagged_moderation_report(first_node_id),
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=profile.id,
+                storybook_id=review_id,
+                assigned_by=guardian.id,
+            )
+        )
+
         await session.commit()
         print(
-            f"Seeded family {family.id}, profile {profile.id}, "
-            f"and {len(_STORIES)} stories."
+            f"Seeded family {family.id}, profile {profile.id}, admin user, "
+            f"{len(_STORIES)} published stories, and 1 in-review story "
+            f"({review_id}) awaiting approval."
         )
 
 

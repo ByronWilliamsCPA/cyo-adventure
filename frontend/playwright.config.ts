@@ -2,7 +2,14 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * Playwright E2E config. Tests run against the built app served by `vite preview`.
- * The reader API is mocked per-test via route interception; no backend is required.
+ *
+ * Two tiers, as separate projects:
+ * - `chromium` (testDir `./e2e`): the reader API is mocked per-test via route
+ *   interception; no backend is required.
+ * - `real-backend` (testDir `./e2e-real`): zero route mocks; requires the
+ *   local stack (Postgres + seeded uvicorn on :8000) and reaches it through
+ *   the `preview` proxy configured in vite.config.ts. Run via
+ *   `npm run test:e2e:real`.
  *
  * Service workers are blocked: VitePWA's workbox runtime-caches `/api`, so an
  * active service worker would make the API fetch itself and bypass Playwright's
@@ -12,7 +19,6 @@ import { defineConfig, devices } from '@playwright/test'
  * shell cache, so blocking the service worker does not weaken the coverage.
  */
 export default defineConfig({
-  testDir: './e2e',
   timeout: 30_000,
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
@@ -37,5 +43,21 @@ export default defineConfig({
       VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-e2e-build',
     },
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', testDir: './e2e', use: { ...devices['Desktop Chrome'] } },
+    {
+      // Real-backend smoke tier: zero route mocks; requires the local stack
+      // (Postgres + seeded uvicorn on :8000). Run via npm run test:e2e:real.
+      name: 'real-backend',
+      testDir: './e2e-real',
+      fullyParallel: false,
+      // #EDGE: data-integrity: the approve test mutates the database, so a CI
+      // retry after a post-mutation failure re-enters an already-approved
+      // state and fails with a different symptom; read the FIRST attempt's
+      // error when diagnosing.
+      // #VERIFY: approval-flow.spec.ts asserts persisted state after reload.
+      retries: process.env.CI ? 1 : 0,
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
 })

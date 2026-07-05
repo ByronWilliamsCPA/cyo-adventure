@@ -186,24 +186,29 @@ when deciding what e2e tests to write next.
   offline read, state-gated choices, malformed/missing error states, tap-target
   and no-scroll a11y), library (hero, shelf, rating, empty, mobile), and sibling
   assignment all have Playwright specs.
-- The **entire guardian console is amber**: sign-in, the review queue, review
-  detail, and the **ADR-005 Approve gate** all have Vitest coverage but **no
-  Playwright test**. A safety-critical, human-in-the-loop gate with no e2e test
-  is the highest-value item in the backlog.
-- Two more amber gaps: **guardian-side sign-in success** (e2e only tests the
-  unauthenticated redirect, never a real login) and the reader **409-conflict
-  reconciliation** (offline *read* is e2e-tested, but the conflict *resolution*
-  path is not).
+- The **guardian console is now e2e-covered too**: sign-in, profile management,
+  intake, the review queue, review detail, the send-back revision loop, and the
+  **ADR-005 Approve gate** all have Playwright specs alongside their existing
+  Vitest coverage. Approve carries two layers: a mocked e2e test
+  (`guardian-review.spec.ts`, including the guardian-403 fail-closed case) and a
+  real-backend smoke test (`e2e-real/approval-flow.spec.ts`) that exercises the
+  gate with zero mocks against a real FastAPI and Postgres stack. Run it with
+  `npm run test:e2e:real` (runbook: `frontend/README.md`).
+- The reader **409-conflict reconciliation** path, once amber, now has a
+  dedicated spec covering both reconciliation outcomes.
+- One residual gap: the offline-queue **reconnect flush** is untested because
+  it is unimplemented, `replayQueue` is never invoked by app code. See
+  [issue #110](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/110).
 
-| e2e gap (amber, no Playwright) | Covering unit test today | Risk if it regresses |
-| ------------------------------ | ------------------------ | -------------------- |
-| Guardian successful sign-in | `AuthContext.test`, `ProtectedRoute.test` | Guardians locked out of the console |
-| Console review queue + ordering | `ConsolePage.test`, `FlagBadge.test` | Flagged stories not surfaced first |
-| Review detail + **Approve (ADR-005)** | `ReviewDetailPage.test`, `reviewApi.test` | Unsafe story reaches a child, or approval silently fails |
-| Send-back / revision loop | `ReviewDetailPage.test` | Rejected story cannot be corrected |
-| Intake request + job status | `IntakePage.test`, `intakeApi.test` | Requests fail with no visible feedback |
-| Guardian profile management | `ProfilesPage.test`, `profilesApi.test` | Cannot add or edit a child |
-| Reader 409-conflict reconciliation | `dialogs.test`, `offline/sync.test` | Silent progress loss across devices |
+| Former e2e gap | Covered by |
+| -------------- | ---------- |
+| Guardian successful sign-in | `frontend/e2e/guardian-auth.spec.ts` |
+| Console review queue + ordering | `frontend/e2e/guardian-console.spec.ts` |
+| Review detail + **Approve (ADR-005)** | `frontend/e2e/guardian-review.spec.ts` (+ `e2e-real/approval-flow.spec.ts`) |
+| Send-back / revision loop | `frontend/e2e/guardian-review.spec.ts` |
+| Intake request + job status | `frontend/e2e/intake.spec.ts` |
+| Guardian profile management | `frontend/e2e/guardian-profiles.spec.ts` |
+| Reader 409-conflict reconciliation | `frontend/e2e/reader-conflict.spec.ts` |
 
 ## Related pages
 

@@ -37,6 +37,8 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 # reportPrivateUsage warning for a cross-module private-name reference.
 _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
+_ADMIN_SUBJECT = "dev-admin"
+_REVIEW_STORY_ID = "s_bridge_builder"
 
 
 async def _library_storybook_ids(
@@ -97,20 +99,21 @@ async def test_seed_dev_data_publishes_and_assigns_both_stories(
         assert child.child_profile_id == profile.id
 
         versions = (await session.scalars(select(StorybookVersion))).all()
-        assert len(versions) == 2
-        for version in versions:
+        assert len(versions) == 3
+        published_versions = [v for v in versions if v.storybook_id != _REVIEW_STORY_ID]
+        for version in published_versions:
             assert version.approved_by == guardian.id
             assert version.published_at is not None
 
         assignments = (await session.scalars(select(StorybookAssignment))).all()
-        assert len(assignments) == 2
+        assert len(assignments) == 3
         assert {a.child_profile_id for a in assignments} == {profile.id}
         assert {a.storybook_id for a in assignments} == {
             v.storybook_id for v in versions
         }
 
     story_ids = await _library_storybook_ids(sessions, profile.id)
-    assert set(story_ids) == {v.storybook_id for v in versions}
+    assert set(story_ids) == {v.storybook_id for v in published_versions}
 
 
 async def test_seed_dev_data_is_idempotent(
@@ -125,5 +128,55 @@ async def test_seed_dev_data_is_idempotent(
     async with sessions() as session:
         assignments = (await session.scalars(select(StorybookAssignment))).all()
         versions = (await session.scalars(select(StorybookVersion))).all()
-        assert len(assignments) == 2
-        assert len(versions) == 2
+        assert len(assignments) == 3
+        assert len(versions) == 3
+
+
+async def test_seed_dev_data_seeds_admin_and_review_story(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The seed provides an admin principal and an approvable in-review story."""
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        admin = await session.scalar(
+            select(User).where(User.authn_subject == _ADMIN_SUBJECT)
+        )
+        assert admin is not None
+        assert admin.role == "admin"
+
+        profile = await session.scalar(
+            select(ChildProfile).where(ChildProfile.display_name == "Dev Reader")
+        )
+        assert profile is not None
+
+        review = await session.scalar(
+            select(Storybook).where(Storybook.id == _REVIEW_STORY_ID)
+        )
+        assert review is not None
+        assert review.status == "in_review"
+        assert review.current_published_version is None
+
+        version = await session.scalar(
+            select(StorybookVersion).where(
+                StorybookVersion.storybook_id == _REVIEW_STORY_ID
+            )
+        )
+        assert version is not None
+        # approve() refuses a version without a moderation report (service.py),
+        # so the seed must carry one; a flag finding makes the review surface
+        # render a flagged passage.
+        assert version.moderation_report is not None
+        assert version.moderation_report["summary"]["soft_flag"] is True
+        assert version.approved_by is None
+
+        assignment = await session.scalar(
+            select(StorybookAssignment).where(
+                StorybookAssignment.storybook_id == _REVIEW_STORY_ID
+            )
+        )
+        assert assignment is not None
+
+    # Not yet approved: must NOT clear the kid library gate.
+    story_ids = await _library_storybook_ids(sessions, profile.id)
+    assert _REVIEW_STORY_ID not in story_ids

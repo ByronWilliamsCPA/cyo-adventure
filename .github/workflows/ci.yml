@@ -101,10 +101,14 @@ jobs:
             ghcr.io/byronwilliamscpa/dhi-nginx:1.26-debian13@sha256:6b0137dc31dcff3c86854e3d9bbafb33201a6b0b83c44ecb0f4f6f092d68a7f4 \
             -t
 
-      - name: Install Playwright browsers
+      - name: Install Playwright browsers (mocked e2e tier)
         run: npx playwright install --with-deps chromium
 
-      - name: E2E (Playwright)
+      # Only the mocked `test:e2e` (chromium) project runs in CI; it mocks the
+      # API per test and needs no backend. The real-backend `test:e2e:real`
+      # tier stays local-only (it needs Postgres + a seeded uvicorn); run it
+      # per frontend/README.md before opening a PR.
+      - name: E2E (Playwright, mocked tier)
         run: npm run test:e2e
 
       - name: Upload frontend coverage
@@ -175,6 +179,11 @@ jobs:
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Note: the mocked Playwright tier (`test:e2e`) runs inside the `frontend`
+  # job above. The real-backend tier (`test:e2e:real`) is deliberately not a CI
+  # job: it needs Postgres + a seeded uvicorn, so it is local-only; run it per
+  # frontend/README.md before opening a PR.
 
   ci-gate:
     name: CI Gate

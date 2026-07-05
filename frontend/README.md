@@ -129,3 +129,52 @@ npm run test:coverage
 ```
 
 Tests use Vitest with React Testing Library.
+
+## Real-backend e2e (smoke tier)
+
+Two e2e tiers exist: `chromium` (`e2e/`) mocks the API per test and needs no backend running;
+`real-backend` (`e2e-real/`) makes zero mocks and requires the local stack below. Full design:
+`docs/superpowers/specs/2026-07-04-playwright-e2e-suite-design.md`.
+
+The mocked tier (`npm run test:e2e`, no backend needed) runs in CI on every PR. The
+real-backend smoke tier is local-only (it needs Postgres and a seeded uvicorn). Run the
+smoke tier below when touching guardian/real-backend flows before opening a PR; you can run
+the mocked tier locally too for a fast pre-push check.
+
+```bash
+# 1. Postgres (default port 5432 is often taken; pick a free port, 5442+)
+DB_PORT=5442 docker compose up -d db
+
+# 2. Seed (schema + family + stories + admin + in-review story)
+CYO_ADVENTURE_DATABASE_URL='postgresql+asyncpg://cyo_adventure:password@localhost:5442/cyo_adventure' \
+  uv run python scripts/seed_dev_data.py
+
+# 3. Backend (ENVIRONMENT defaults to local)
+CYO_ADVENTURE_DATABASE_URL='postgresql+asyncpg://cyo_adventure:password@localhost:5442/cyo_adventure' \
+  uv run uvicorn cyo_adventure.app:app --port 8000 &
+
+# 4. Wait for readiness, then run the smoke tier
+curl --retry 15 --retry-delay 2 --retry-all-errors -fsS http://localhost:8000/health/ready
+cd frontend && npm run test:e2e:real
+```
+
+If 8000 or the chosen Postgres port are already taken, pick different ones and set
+`E2E_BACKEND_URL` so `requireBackend()` checks the right host. Never set `VITE_API_URL` when
+building for this tier: Vite bakes it into the client bundle at build time, so the browser
+calls the backend directly and bypasses the same-origin preview proxy. For a non-default
+backend port, build with `VITE_API_URL` unset, then run `vite preview` separately with
+`VITE_API_URL` set only for that process; Playwright reuses the already-running preview server.
+When building manually like this, also set the dummy Supabase vars the Playwright webServer
+normally provides (`VITE_SUPABASE_URL=https://example.supabase.co`
+`VITE_SUPABASE_ANON_KEY=dummy-anon-key-for-e2e-build`); without them the guardian chunk throws
+its missing-env guard at load and every guardian smoke test fails on the app error boundary.
+
+Reset between runs (the approve test mutates the database), then repeat steps 2 to 4:
+
+```bash
+docker compose down -v db
+DB_PORT=5442 docker compose up -d db
+```
+
+`test:e2e:real` runs with `--workers=1`: the backend's per-IP rate limiter (100 rpm, burst 10)
+trips when two workers share the loopback IP, producing spurious 429s.
