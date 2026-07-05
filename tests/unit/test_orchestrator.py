@@ -24,12 +24,17 @@ from __future__ import annotations
 import copy
 import json
 from pathlib import Path
+from typing import cast
 
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
-from cyo_adventure.generation.orchestrator import GenerationOutcome, generate_story
+from cyo_adventure.generation.orchestrator import (
+    GenerationOutcome,
+    fill_skeleton,
+    generate_story,
+)
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import MockProvider
 from cyo_adventure.storybook.models import AgeBand
@@ -624,4 +629,77 @@ async def test_stage_b_parse_failure_preserves_stage_a_skeleton() -> None:
         "Stage A skeleton should be surfaced as needs_review, not failed"
     )
     assert outcome.storybook is not None, "Stage A skeleton must be preserved"
+
+
+# ---------------------------------------------------------------------------
+# Test: fill_skeleton (Stage B' -- reuses the same repair-loop machinery)
+# ---------------------------------------------------------------------------
+#
+# #ASSUME: data-integrity: unlike generate_story's Stage A, fill_skeleton is
+# always handed a schema-shaped skeleton by its caller (never None), so its
+# "last known good" fallback (`skeleton`) is never absent. That means a
+# fill_skeleton run can never terminate with status="failed": even if the
+# fill call and every repair attempt return unparseable output, the raw
+# skeleton (FILL directives still in place) is surfaced as needs_review
+# rather than being discarded. This differs from the brief's illustrative
+# expectation (status="failed"); verified directly against the implementation
+# below (test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed).
+# #VERIFY: covered by both tests in this section.
+
+
+def _skeleton_with_fill_placeholder() -> dict[str, object]:
+    """A schema-valid skeleton (hello_world fixture) with one FILL placeholder.
+
+    Mirrors what a matched skeleton library file looks like before Stage B'
+    fills it in: structurally valid and gate-clean except for the one node
+    body still carrying an unfilled ``<<FILL ...>>`` directive.
+    """
+    skeleton = copy.deepcopy(VALID_STORY)
+    nodes = cast("list[dict[str, object]]", skeleton["nodes"])
+    nodes[0]["body"] = "<<FILL role=setup words=10 beats='greet the fox'>>"
+    return skeleton
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_returns_passed_on_clean_fill() -> None:
+    """A clean first-attempt fill (gate passes) returns status='passed', attempts==0."""
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)  # provider "fills" the placeholder cleanly
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert outcome.storybook is not None
+    assert outcome.attempts == 0
+    assert len(provider.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> None:
+    """A malformed first response routes into the same repair loop as generate_story.
+
+    Every provider response is malformed (fill call + max_repairs repairs), so
+    the repair loop runs to exhaustion. Because fill_skeleton always has the
+    caller-supplied skeleton as a non-None fallback document (unlike
+    generate_story's Stage A, which can genuinely produce no document), the
+    outcome is "needs_review" with the original skeleton surfaced, not
+    "failed". attempts==max_repairs since no-progress detection does not
+    short-circuit before the cap here (each repair sees the same skeleton
+    payload as the previous one, but this is the first differing signature
+    from the seed, so no early abort occurs before the cap is hit).
+    """
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=["not json", "still not json", "nope"])
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+    outcome = await fill_skeleton(
+        skeleton, {"premise": "a fox"}, provider, pii, max_repairs=2
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.storybook is not None
+    assert outcome.attempts == 2
+    assert len(provider.calls) == 3
     assert outcome.storybook["id"] == VALID_STORY["id"]

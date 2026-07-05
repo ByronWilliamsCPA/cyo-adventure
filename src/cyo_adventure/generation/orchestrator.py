@@ -36,6 +36,7 @@ from typing import TYPE_CHECKING, Literal, cast
 
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.generation.prompts import (
+    build_fill_prompt,
     build_prose_prompt,
     build_repair_prompt,
     build_structure_prompt,
@@ -56,6 +57,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "GenerationOutcome",
+    "fill_skeleton",
     "generate_story",
 ]
 
@@ -568,6 +570,71 @@ async def generate_story(
             gate_result,
             repair_seed,
             repair_ctx,
+        )
+
+    return _build_outcome(gate_result, current_doc, attempts, stage_log)
+
+
+async def fill_skeleton(
+    skeleton: dict[str, object],
+    theme_brief: dict[str, object],
+    provider: GenerationProvider,
+    pii: PiiContext,
+    *,
+    max_repairs: int = 3,
+) -> GenerationOutcome:
+    """Run the automated skeleton-fill pipeline (Stage B': Fill -> Repair).
+
+    A matched skeleton library file already has hand-authored, gate-validated
+    structure; every node needing prose carries a
+    ``<<FILL role=... words=... beats='...'>>`` placeholder body, the same
+    kind of placeholder Stage A produces for :func:`generate_story`'s Stage B.
+    This function reuses the same repair-loop machinery (:func:`_run_one_stage`,
+    :func:`_run_repair_loop`, :func:`_build_outcome`) with no Stage A step,
+    since the structure already exists on disk.
+
+    Scale is always "standard": skeleton library files use genre-faithful
+    authored node counts (ADR-011), never the "compact" live-model budget
+    profile that exists only to bound LLM-invented structure.
+
+    Args:
+        skeleton: The matched skeleton dict, FILL directives intact.
+        theme_brief: The concept brief driving the reskin (names, setting,
+            surface theme adapted; plot beats preserved).
+        provider: The :class:`~cyo_adventure.generation.provider.GenerationProvider`
+            to call for completions.
+        pii: The :class:`~cyo_adventure.generation.pii.PiiContext` carrying
+            real-child names and birthdates that must not appear in any prompt.
+        max_repairs: Maximum number of repair attempts before giving up.
+            Defaults to 3.
+
+    Returns:
+        A :class:`GenerationOutcome` describing the final status, the last
+        produced document (if any), the final gate report, the number of
+        repair attempts, and a human-readable stage log.
+
+    Raises:
+        ValidationError: If any assembled prompt contains forbidden PII. The
+            provider is never called when this occurs.
+    """
+    stage_log: list[str] = []
+    guarded_provider = PiiGuardedProvider(provider, forbidden=pii)
+
+    fill_prompt = build_fill_prompt(json.dumps(skeleton), json.dumps(theme_brief))
+    current_doc, gate_result = await _run_one_stage(
+        fill_prompt, provider=guarded_provider, max_tokens=_MAX_TOKENS_PROSE
+    )
+    _append_stage_log(stage_log, "stage_fill", current_doc, gate_result)
+    last_valid_doc = current_doc if current_doc is not None else skeleton
+
+    attempts = 0
+    if gate_result.blocked:
+        repair_ctx = _RepairContext(
+            provider=guarded_provider, max_repairs=max_repairs, stage_log=stage_log
+        )
+        repair_seed = current_doc if current_doc is not None else last_valid_doc
+        current_doc, gate_result, attempts = await _run_repair_loop(
+            gate_result, repair_seed, repair_ctx
         )
 
     return _build_outcome(gate_result, current_doc, attempts, stage_log)
