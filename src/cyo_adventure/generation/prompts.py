@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "StagePrompt",
+    "build_fill_prompt",
     "build_prose_prompt",
     "build_repair_prompt",
     "build_structure_prompt",
@@ -334,6 +335,45 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> StagePrompt:
         .replace("{drafting_guide}", _drafting_guide())
         .replace("{schema_rules}", _schema_rules())
         .replace("{approved_skeleton}", skeleton_json)
+    )
+    return _split_stage_prompt(text)
+
+
+def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
+    """Build the Stage B' (Fill) generation prompt for automated skeleton_fill.
+
+    Loads ``fill.md`` from the bundled templates package, substitutes all
+    placeholders, and splits the result into a :class:`StagePrompt`:
+
+    - ``{drafting_guide}`` with the full text of the bundled drafting guide
+      (system).
+    - ``{schema_rules}`` with the pretty-printed Storybook JSON Schema (system).
+    - ``{skeleton_with_fill_directives}`` with the matched skeleton's JSON,
+      FILL directives intact (user).
+    - ``{theme_brief}`` with the JSON-serialised concept brief driving the
+      reskin (user).
+
+    Args:
+        skeleton_json: The full JSON string of the matched skeleton, with
+            "<<FILL role=... words=... beats='...'>>" bodies still in place.
+        theme_brief: JSON-serialised concept brief (the child's request) used
+            to adapt the skeleton's world/characters/theme.
+
+    Returns:
+        The Stage B' :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #ASSUME: data-integrity: skeleton_json and theme_brief are valid JSON
+    # and may contain literal `{` / `}` characters. .replace() handles this safely.
+    # #VERIFY: caller must pass schema-validated skeleton with FILL directives.
+    text = (
+        _load_template("fill.md")
+        .replace("{drafting_guide}", _drafting_guide())
+        .replace("{schema_rules}", _schema_rules())
+        .replace("{skeleton_with_fill_directives}", skeleton_json)
+        .replace("{theme_brief}", theme_brief)
     )
     return _split_stage_prompt(text)
 
