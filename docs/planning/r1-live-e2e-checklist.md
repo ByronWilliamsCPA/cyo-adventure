@@ -26,14 +26,31 @@ pre-deploy gate against a local stack; this checklist is the manual post-deploy 
 
 **Accounts** (prod seeding is manual; NEVER run `scripts/seed_dev_data.py` in prod).
 Source the real email + Supabase `sub` for each role from the private deployment
-runbook (kept out of the repo); the placeholders below stand in for them:
+runbook (kept out of the repo); current known values as of 2026-07-05:
 
 | Role | Email | Supabase sub |
 | --- | --- | --- |
-| Guardian | `<GUARDIAN_EMAIL>` | `<GUARDIAN_SUB>` |
-| Admin | `<ADMIN_EMAIL>` | `<ADMIN_SUB>` |
+| Guardian | `byronawilliams@gmail.com` | `21985c35` |
+| Guardian | `byron.a.williams@gmail.com` | `c1f33430` |
+| Admin | (unprovisioned, see blocker below) | `<ADMIN_SUB>` |
 
 The real read gate is `approved_by` + an assignment, not `published_at` alone.
+
+### Known blockers (resolve before running this checklist end to end)
+
+- **No working admin login.** The seeded admin row (`sub 2727d2d9`) maps to a
+  Supabase user that does not exist; the only real Supabase accounts today
+  (both guardian rows above) are guardians, not admins. Since ADR-005 makes
+  approval admin-only, any step that requires an admin session (Section 1a,
+  Section 2's approve step, Section 4's admin-approve step) is BLOCKED until a
+  real Supabase account is granted the admin role. Resolve this first; every
+  other blocker below is downstream of having a working admin session.
+- **API keys must be funded before Sections 2 and 4.** Both OpenRouter
+  (generation) and the OpenAI classifier (Stage-0 moderation) need funded
+  quota before the generation-touching sections run. A 429 quota exhaustion on
+  the classifier fails silently from the operator's point of view: the
+  generation job stalls at the moderation step with no obvious error in the
+  UI, so check worker logs for 429s if a job hangs there.
 
 ## 0. Infrastructure probes
 
@@ -44,6 +61,9 @@ The real read gate is `approved_by` + an assignment, not `published_at` alone.
 - [ ] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
       `generation`)
 - [ ] Alembic migrations current (migrate profile ran; `alembic current` matches head)
+- [ ] Backup sidecar is healthy (`.last_success` timestamp is fresh)
+- [ ] Worker survives a restart (`docker compose restart worker`; queued/in-flight jobs resume or
+      re-queue rather than being lost)
 
 ## 1. Guardian sign-in and profiles
 
@@ -52,14 +72,23 @@ The real read gate is `approved_by` + an assignment, not `published_at` alone.
 - [ ] Create or edit a child profile; preset avatar picker works
 - [ ] Sign out and back in; session resumes
 
+## 1a. Admin sign-in and review queue access
+
+BLOCKED: see the admin-login blocker above; skip until a real account has the admin role.
+
+- [ ] Admin email/password sign-in succeeds
+- [ ] Admin Google sign-in succeeds
+- [ ] Either sign-in path lands on a review queue that loads (not the guardian console)
+
 ## 2. Guardian authoring path (intake to published book)
 
 - [ ] Submit a story request via Intake; job status shows "Generating..."
 - [ ] RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)
 - [ ] Story lands in the review queue; queue orders Flagged, then Ready, then processing
 - [ ] Review detail shows the story and any moderation flags
-- [ ] Approve as ADMIN succeeds (ADR-005: approve is admin-only; verify the guardian account gets the
-      403 "safety reviewer" notice instead)
+- [ ] Guardian account attempting approve gets the 403 "safety reviewer" notice (ADR-005: approve is
+      admin-only)
+- [ ] BLOCKED (see admin-login blocker above): Approve as ADMIN succeeds
 - [ ] Send-back / revision loop works on a second story
 
 ## 3. Assignment surfaces
@@ -71,13 +100,17 @@ The real read gate is `approved_by` + an assignment, not `published_at` alone.
 
 ## 4. Kid request-a-story loop (the completed R1 journey)
 
+- [ ] From the guardian console, hand off to the kid surface; the profile picker appears and selecting a
+      profile lands on that child's library
 - [ ] Kid library shows the request-a-story affordance
 - [ ] Submit a request; friendly status appears in the kid's status list (id/status only on the wire)
 - [ ] Submit text with obvious PII (a phone number); PII guard blocks it before classifier spend
 - [ ] Submit 5 pending requests; the 6th gets the distinct 409 cap message
 - [ ] Guardian Requests queue shows the pending request with redacted screening flags
-- [ ] Approve creates a Concept + GenerationJob; generation runs; book publishes (admin approve)
-- [ ] Assign the generated book; it appears in the kid's library
+- [ ] Guardian approves the request; a Concept + GenerationJob is created, generation runs, and the book
+      reaches the admin review queue with content tags
+- [ ] BLOCKED (see admin-login blocker above): Admin approves; guardian then assigns from the browse
+      page, seeing the same content tags, and the book appears in the kid's library
 
 ## 5. Kid reading loop
 
