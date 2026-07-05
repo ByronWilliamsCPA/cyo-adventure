@@ -2533,6 +2533,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#task-17-cut-over-the-operational-database-to-supabase-postgres-adr-009-path-a-ops-supervisor-user" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1.7: Cut over the operational database to Supabase Postgres (ADR-009, Path A) [ops, supervisor + user]
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2927,6 +2938,47 @@ is standard Supabase practice, not a secret leak.</p>
   admin login reaches the review queue; guardian gets the 403 notice there.</li>
 </ul>
 <hr />
+<h3 id="task-17-cut-over-the-operational-database-to-supabase-postgres-adr-009-path-a-ops-supervisor-user">Task 1.7: Cut over the operational database to Supabase Postgres (ADR-009, Path A) [ops, supervisor + user]<a class="headerlink" href="#task-17-cut-over-the-operational-database-to-supabase-postgres-adr-009-path-a-ops-supervisor-user" title="Permanent link">&para;</a></h3>
+<p>Decision (owner-confirmed 2026-07-05): move the app's operational database from
+the self-hosted <code>cyo-adventure-db</code> Postgres to the <strong>Supabase project's
+Postgres</strong>, so user profiles and stories are stored and fetched from Supabase.
+This is not a new decision: <a href="../adr/adr-009-supabase-platform/">ADR-009</a> already
+ratifies "Supabase Postgres as the database (async SQLAlchemy and Alembic
+unchanged)"; R1 shipped on an interim local Postgres per the homelab-first
+<a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>, and this task executes the
+deferred cutover.</p>
+<p><strong>Path A (chosen): backend stays the only database client.</strong> The FastAPI API is
+unchanged, authorization stays server-side (Supabase JWT verification + family
+scoping in <code>api/deps.py</code>), and the browser never queries Supabase Postgres
+directly. Rejected Path B (frontend reads Supabase via PostgREST + RLS) as a
+larger surface that exposes child-profile rows to a client-side path.</p>
+<p>Not required for R1 login (working as of 2026-07-05); schedule when convenient.
+Depends on Task 1.4 (durable migrate step) and Task 1.5 (seed script) existing
+as real artifacts first, since the cutover reuses both.</p>
+<p>Steps:</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> DSNs: app uses the Supabase <strong>session pooler</strong> (Supavisor, port 6543,
+  transaction mode); Alembic uses the <strong>direct</strong> connection (port 5432).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> asyncpg + transaction-mode pooler: disable prepared-statement caching
+  (<code>prepared_statement_cache_size=0</code> connect arg / DSN option) or reused
+  prepared statements error. Verify on a staging login before flipping prod.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run <code>alembic upgrade head</code> against the Supabase direct DSN (Task 1.4).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Run <code>scripts/seed_prod_users.py</code> against Supabase (Task 1.5).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Data migration: R1 prod holds no real content yet, so no row copy is
+  needed; if that changes by cutover, <code>pg_dump --data-only</code> from
+  <code>cyo-adventure-db</code> and restore into Supabase.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Portainer: set <code>CYO_ADVENTURE_DATABASE_URL</code> to the Supabase pooler DSN;
+  redeploy backend + worker.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Retire <code>cyo-adventure-db</code> and the (currently crash-looping)
+  <code>cyo-adventure-db-backup</code> once verified; Supabase manages backups.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Verify: guardian <code>/api/v1/me</code> 200; profiles/stories persist across a
+  redeploy; worker still reaches the DB.</li>
+</ul>
+<p>Privacy note (COPPA): this places child-profile PII on a third-party managed
+platform (already contemplated by ADR-009). Path A keeps that data behind our
+API rather than client-exposed, the smaller exposure surface; record in the R2
+compliance review.</p>
+<hr />
 <h2 id="phase-2-guardian-gaps-and-reader-fixes-cyo-repo">Phase 2: Guardian gaps and reader fixes (CYO repo)<a class="headerlink" href="#phase-2-guardian-gaps-and-reader-fixes-cyo-repo" title="Permanent link">&para;</a></h2>
 <p>Each task below is a slice: an opus Plan agent writes the detailed TDD plan
 (saved beside this file as <code>r1-slice-&lt;name&gt;.md</code>), then sonnet implements it
@@ -3082,7 +3134,7 @@ UI (DB-edit only today), GHCR image flip (external workstream), Apple OAuth,
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 01:41:26 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 16:15:10 UTC">July 5, 2026</span>
   </span>
 
     
