@@ -10,7 +10,9 @@
 '   src/cyo_adventure/db/models.py     (Storybook + GenerationJob lifecycles)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md (amended: global-admin approver)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
-'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
+'     decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/r1-gap-closure-plan.md (Task 1.7: Supabase Postgres cutover)
 '   docs/planning/tech-spec.md
 ' ============================================================
 
@@ -45,7 +47,7 @@ rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as syst
 rectangle "OpenRouter\n[Primary LLM provider]\nMulti-model API gateway" as openrouter #F3E5F5
 rectangle "Ollama\n[Local fallback LLM]\nSelf-hosted, homelab" as ollama #FFEBEE
 rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_auth #E0F7FA
-rectangle "PostgreSQL\n[Operational database]\nMetadata and reading state" as postgres #FFF8E1
+rectangle "Supabase Postgres\n[Managed operational database,\nADR-009 decision 2]\nSession pooler :5432 (session mode)\nMetadata and reading state" as postgres #E0F7FA
 rectangle "Redis + RQ\n[Job queue]\nAsync generation jobs" as redis #E0E0E0
 
 ' --- Relationships ---
@@ -56,7 +58,7 @@ pwa --> backend : "REST /api/v1\n(OIDC bearer token)"
 backend --> openrouter : "LLM completions\n(primary, ADR-003)"
 backend ..> ollama : "LLM completions\n(local fallback)"
 backend --> supabase_auth : "OIDC token validation\n(JWKS, ADR-009)"
-backend --> postgres : "Async SQLAlchemy 2"
+backend --> postgres : "Async SQLAlchemy 2\nsession pooler :5432"
 backend --> redis : "Enqueue generation jobs"
 
 note bottom of pwa
