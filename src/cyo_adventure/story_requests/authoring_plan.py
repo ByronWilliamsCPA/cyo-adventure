@@ -142,7 +142,7 @@ async def build_authoring_plan(
 
     Raises:
         ValidationError: On an invalid method/mechanism combination (-> 422),
-            an unrecognized skill-mechanism model (-> 400), or no matching
+            an unrecognized skill-mechanism model (-> 422), or no matching
             production skeleton for the concept's band (-> 422).
         StateTransitionError: If a GenerationJob already exists for this
             concept (-> 409, idempotency guard).
@@ -151,12 +151,6 @@ async def build_authoring_plan(
     method, mechanism, prep_model = plan.method, plan.mechanism, plan.prep_model
     if method == "fresh_generation" and mechanism == "skill":
         msg = "mechanism='skill' requires method='skeleton_fill'"
-        raise ValidationError(msg, field="mechanism", value=mechanism)
-    if method == "skeleton_fill" and mechanism == "automated_provider":
-        msg = (
-            "method='skeleton_fill' with mechanism='automated_provider' is not "
-            "yet supported; use mechanism='skill', or method='fresh_generation'"
-        )
         raise ValidationError(msg, field="mechanism", value=mechanism)
 
     # #CRITICAL: concurrency: relies on the caller holding a FOR UPDATE lock on
@@ -187,13 +181,16 @@ async def build_authoring_plan(
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
 
     if method == "skeleton_fill":
+        status = "awaiting_manual_fill" if mechanism == "skill" else "queued"
         job = GenerationJob(
             concept_id=concept.id,
-            status="awaiting_manual_fill",
+            status=status,
             model=prep_model,
             authoring_metadata={
                 "skeleton_slug": skeleton_slug,
                 "theme_brief": concept.brief,
+                "review_stage1_model": plan.review_stage1_model,
+                "review_stage2_model": plan.review_stage2_model,
             },
         )
     else:

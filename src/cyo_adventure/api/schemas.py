@@ -385,9 +385,9 @@ AuthoringMechanism = Literal["skill", "automated_provider"]
 class AuthoringPlanRequest(BaseModel):
     """Admin's choice of authoring method, mechanism, and prep model.
 
-    ``review_stage1_model`` / ``review_stage2_model`` are Plan 2 additions
-    (no Stage 1 fidelity review or Stage 2 override exists yet); omitted here
-    rather than added as unused fields.
+    ``review_stage1_model`` / ``review_stage2_model`` are optional overrides
+    for the Stage 1 fidelity review and Stage 2 model, used only when
+    method='skeleton_fill'.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -395,6 +395,8 @@ class AuthoringPlanRequest(BaseModel):
     method: AuthoringMethod
     mechanism: AuthoringMechanism
     prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    review_stage1_model: str | None = None
+    review_stage2_model: str | None = None
 
 
 class AuthoringPlanResponse(BaseModel):

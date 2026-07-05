@@ -98,6 +98,8 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     assert result.job.authoring_metadata == {
         "skeleton_slug": "the-cave-of-echoes",
         "theme_brief": concept.brief,
+        "review_stage1_model": None,
+        "review_stage2_model": None,
     }
 
 
@@ -115,20 +117,26 @@ async def test_fresh_generation_with_skill_mechanism_is_rejected() -> None:
         )
 
 
-async def test_skeleton_fill_automated_provider_not_yet_supported() -> None:
-    """Plan 1 restriction: automated skeleton-fill prep does not exist yet."""
+async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata() -> (
+    None
+):
+    """Plan 2: automated skeleton-fill prep is now supported and queued."""
     session = _FakeSession()
-    with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept(),
-            AuthoringPlanRequest(
-                method="skeleton_fill",
-                mechanism="automated_provider",
-                prep_model="openrouter/some-model",
-            ),
-        )
+    concept = _concept("8-11")
+    plan = AuthoringPlanRequest(
+        method="skeleton_fill",
+        mechanism="automated_provider",
+        prep_model="openrouter/some-model",
+    )
+    result = await build_authoring_plan(session, _request(), concept, plan)
+    assert result.job.status == "queued"
+    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.job.authoring_metadata == {
+        "skeleton_slug": "the-cave-of-echoes",
+        "theme_brief": concept.brief,
+        "review_stage1_model": None,
+        "review_stage2_model": None,
+    }
 
 
 async def test_unrecognized_skill_model_is_rejected() -> None:

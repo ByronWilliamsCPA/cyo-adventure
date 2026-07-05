@@ -98,10 +98,10 @@ async def test_fresh_generation_with_skill_mechanism_is_422(
     assert res.status_code == 422, res.text
 
 
-async def test_skeleton_fill_automated_provider_is_422(
-    client: AsyncClient, seed: Seed
+async def test_skeleton_fill_automated_provider_enqueues(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """Plan 1 restriction: automated skeleton-fill prep is not yet supported."""
+    """Plan 2: automated skeleton-fill prep is now supported and queued."""
     req_id = await _approved_request_id(client, seed, "a quiet library")
     res = await client.post(
         f"{_CREATE}/{req_id}/authoring-plan",
@@ -112,7 +112,16 @@ async def test_skeleton_fill_automated_provider_is_422(
         },
         headers=auth(seed.admin_token),
     )
-    assert res.status_code == 422, res.text
+    assert res.status_code == 201, res.text
+    body = res.json()
+    assert body["status"] == "queued"
+    assert body["skeleton_slug"]
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, uuid.UUID(body["job_id"]))
+        assert job is not None
+        assert job.status == "queued"
+        assert job.authoring_metadata is not None
 
 
 async def test_unrecognized_skill_model_is_422(client: AsyncClient, seed: Seed) -> None:
