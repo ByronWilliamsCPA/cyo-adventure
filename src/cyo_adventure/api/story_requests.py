@@ -15,7 +15,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Literal, cast, get_args
 
-from fastapi import APIRouter, BackgroundTasks
+from fastapi import APIRouter
 from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
@@ -293,17 +293,20 @@ async def _load_scoped_request(
 
 @router.post("/story-requests/{request_id}/approve")
 async def approve_story_request_endpoint(
-    request_id: str, ctx: Context, background_tasks: BackgroundTasks
+    request_id: str, ctx: Context
 ) -> StoryRequestApprovedView:
-    """Approve a pending request and enqueue generation (guardian or admin).
+    """Approve a pending request, creating its concept (guardian or admin).
+
+    No GenerationJob is created here; an admin picks the authoring method,
+    mechanism, and model afterward via POST .../authoring-plan, which is what
+    creates the job (see story_requests/authoring_plan.py).
 
     Args:
         request_id: The request id from the path.
         ctx: The request context.
-        background_tasks: The enqueue runs here so it fires after commit.
 
     Returns:
-        StoryRequestApprovedView: The linked concept and generation job ids.
+        StoryRequestApprovedView: The linked concept id.
 
     Raises:
         ResourceNotFoundError: If the request is out of scope (-> 404).
@@ -317,15 +320,13 @@ async def approve_story_request_endpoint(
         msg = "guardian or admin role required"
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
-    concept_id, job_id = await service.approve_story_request(
+    concept_id = await service.approve_story_request(
         ctx.session, ctx.principal, request
     )
-    background_tasks.add_task(_enqueue_safely, job_id)
     return StoryRequestApprovedView(
         id=str(request.id),
         status=cast("Literal['approved']", request.status),
         concept_id=concept_id,
-        job_id=job_id,
     )
 
 
