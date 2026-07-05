@@ -331,7 +331,8 @@ async def test_get_generation_job(
     client: AsyncClient,
     seed: Seed,
 ) -> None:
-    """Guardian can fetch a generation job they own."""
+    """Guardian can fetch a generation job they own, and gets None for the
+    skeleton/theme fields since this job has no authoring_metadata."""
     concept_resp = await client.post(
         "/api/v1/concepts",
         json={"brief": _BRIEF_PAYLOAD},
@@ -355,6 +356,8 @@ async def test_get_generation_job(
     data = job_resp.json()
     assert data["id"] == job_id
     assert data["status"] in {"queued", "running", "passed", "needs_review", "failed"}
+    assert data["skeleton_slug"] is None
+    assert data["theme_brief"] is None
 
 
 @pytest.mark.integration
