@@ -12,9 +12,10 @@ tags:
 CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
 by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
 zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
-identity for the guardian, child, and admin roles (ADR-009), and the operational
-database is Supabase Postgres, reached through the session pooler (ADR-009 decision 2;
-R1 Task 1.7, cut over 2026-07-05).
+identity for the guardian and admin roles (ADR-009; children authenticate via
+backend-minted scoped sessions, not Supabase), and the operational database is
+Supabase Postgres, reached through the session pooler (ADR-009 decision 2; R1 Task 1.7,
+cut over 2026-07-05).
 
 ## Deployment Diagram
 
