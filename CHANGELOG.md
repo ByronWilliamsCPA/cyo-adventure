@@ -16,13 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   writes `auth_token` never ran, so the guardian landed unauthenticated and
   every API call went out tokenless ("We could not load your profiles"). Requires
   `<origin>/guardian/login` in the Supabase Auth redirect allowlist.
-- The production frontend image now ships with Supabase auth configured: the
-  frontend Dockerfile declares `ARG VITE_SUPABASE_URL` and
-  `ARG VITE_SUPABASE_ANON_KEY` so the build args passed by the homelab build
-  workflow reach Vite. Previously Docker silently ignored the undeclared args,
-  the bundle contained no Supabase config, and the deployed app sent every API
-  request without a bearer token ("We could not load your profiles" on the
-  first live sign-in attempt).
+- Removed a duplicated `ARG`/`ENV` block for `VITE_SUPABASE_URL` and
+  `VITE_SUPABASE_ANON_KEY` in the frontend Dockerfile builder stage (added by
+  #117 under the mistaken belief the args were undeclared; #103 had already
+  declared them, and published images since #103 carry the Supabase config).
+  The duplicate was functionally harmless (both defaults are empty and the
+  later declaration wins) but its comment misdescribed the deployed state. The
+  "We could not load your profiles" symptom that prompted #117 was the guardian
+  OAuth callback landing on the signed-out kid-surface profile picker (which has
+  no sign-in affordance); that redirect is the entry above, fixed by returning
+  the callback to /guardian/login.
 - The production backend image now actually starts: the venv is created against
   the hardened runtime image's `/opt/python` interpreter path (previously every
   console script exec-failed on a dangling symlink), the `api` extra
