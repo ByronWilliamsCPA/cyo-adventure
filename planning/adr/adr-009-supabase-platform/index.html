@@ -2716,9 +2716,13 @@ drove the read:</p>
 <li><strong>Technical</strong>: the Python safety pipeline (validation gate, moderation, staged
   generation, publish state machine) and the <code>Principal</code> authorization layer stay our
   code; any platform must host plain Postgres (SQLAlchemy 2.x async + Alembic) and
-  S3-compatible storage (the seam ADR-004 deliberately preserved). asyncpg requires a
-  direct or session-mode connection; transaction-mode pooling breaks its prepared
-  statements.</li>
+  S3-compatible storage (the seam ADR-004 deliberately preserved). asyncpg's own
+  prepared-statement cache collides under a transaction-mode pooler (a reused or
+  renamed server-side statement once the pooler reassigns a backend mid-session);
+  Task 1.7 mitigates this with <code>CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE</code> (disables
+  both asyncpg's and the SQLAlchemy dialect's caches, unique-names every prepared
+  statement, and switches to <code>NullPool</code>), so a Supavisor transaction-pooler connection
+  (<code>:6543</code>) is viable alongside the direct/session-mode DSN Alembic still uses.</li>
 <li><strong>Business</strong>: solo operation; minimize vendor count and pager surface. Login
   availability is the one failure a subscription product cannot tolerate.</li>
 <li><strong>Regulatory</strong>: guardian-only IdP identities, kid-context SDK bans, and the deletion
@@ -2904,10 +2908,12 @@ client-secret plumbing in the native path).</p>
    is already thin by design: <code>generation/worker.py</code> keeps the async core
    Redis/RQ-free and <code>generation/queue.py</code> (~75 lines) is the only RQ-coupled
    module, so the pgmq port replaces one module plus a polling loop.</li>
-<li><strong><code>core/database.py</code></strong> (P9-03): set explicit <code>pool_size</code>/<code>max_overflow</code> (the
-   module's existing <code>#CRITICAL</code> marker already requires this before production;
-   Supabase session-mode connections are a bounded resource, so defaults are not
-   acceptable there).</li>
+<li><strong><code>core/database.py</code></strong> (P9-03): set explicit <code>pool_size</code>/<code>max_overflow</code> for the
+   direct/session-mode connection branch (the module's existing <code>#CRITICAL</code> marker
+   already requires this before production; Supabase session-mode connections are a
+   bounded resource, so defaults are not acceptable there). Does not apply to the
+   Task 1.7 transaction-pooler branch, which uses <code>NullPool</code> and has no pool size of
+   its own.</li>
 <li><strong>Retention</strong> (ADR-007): purge job moves to pg_cron.</li>
 </ol>
 <h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
@@ -2971,7 +2977,7 @@ client-secret plumbing in the native path).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 20:38:44 UTC">July 5, 2026</span>
   </span>
 
     
