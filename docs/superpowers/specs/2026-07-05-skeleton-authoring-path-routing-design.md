@@ -62,12 +62,27 @@ a new one.
 
 ## 2. End-to-end flow
 
-Steps 1, 2, and 7 are today's existing, unchanged behavior; steps 3-6 are new.
+Step 1 is existing behavior, **modified** (see the callout below); step 7 is
+existing, unchanged; steps 3-6 are new.
 
-1. **Child requests a story; guardian approves.** Unchanged
-   (`api/story_requests.py`: `create_story_request`, `approve_story_request_endpoint`).
+1. **Child requests a story; guardian approves -- MODIFIED.** Today,
+   `approve_story_request` (`story_requests/service.py:70-139`) creates the
+   `Concept` **and** a `GenerationJob(status="queued")`, then
+   `approve_story_request_endpoint` (`api/story_requests.py:294-329`)
+   immediately enqueues it to the worker -- generation starts before any
+   authoring method is chosen, which conflicts with this design's premise.
+   **Resolved:** approval still creates the `Concept` (band/theme, no admin
+   input needed) but **no longer creates or enqueues a `GenerationJob`**. Job
+   creation and enqueueing move entirely to step 3. This is a real, breaking
+   contract change: `StoryRequestApprovedView.job_id` (`api/schemas.py:364-369`)
+   no longer exists at approval time (no job exists yet) and must be dropped
+   from that response model; existing tests asserting approval creates a job
+   (`tests/integration/test_story_requests_api.py`,
+   `tests/unit/test_story_requests.py`) need updating to assert only a
+   `concept_id`.
 2. *(implicit)* the approved request carries the data an authoring plan needs:
-   child's age band, requested theme/premise.
+   `request.concept_id` (band/theme already captured in the `Concept.brief`
+   built by `brief_from_request`, `story_requests/brief.py:58-92`).
 3. **NEW: admin creates an authoring plan.**
    `POST /story-requests/{id}/authoring-plan`
 
@@ -94,9 +109,17 @@ Steps 1, 2, and 7 are today's existing, unchanged behavior; steps 3-6 are new.
    - The endpoint runs the warn-only eligibility check (Section 5) and returns any
      warnings in the response, but always proceeds -- per decision, the admin can
      pick any syntactically-valid model.
-   - On success this creates the `ConceptBrief` (band/theme pulled from the
-     request, exactly as `create_concept` does today) and a `GenerationJob` row
-     carrying the new `authoring_metadata` (Section 4).
+   - Requires `request.status == "approved"` (409 if `pending`/`declined`/
+     `blocked`). Loads the request's existing `concept_id` (created at
+     approval, step 1); does **not** create a second `Concept`. Idempotency:
+     if a `GenerationJob` already exists for that `concept_id`, this is also a
+     409 (one authoring plan per request; no duplicate-job path).
+   - On success this creates **one** `GenerationJob` row against that existing
+     `concept_id`, carrying the new `authoring_metadata` (Section 4), and (for
+     `automated_provider`) enqueues it exactly as today's
+     `enqueue_concept_generation` (`api/generation.py:179-241`) does; for
+     `skill` it is created directly at `status="awaiting_manual_fill"`, never
+     enqueued.
 4. **Skeleton auto-match** (`skeleton_fill` only): pick the best `production_eligible`
    library skeleton for the request's band (nearest length/style; first match if
    several tie -- no admin picking, see non-goals). No matching skeleton for the
@@ -190,6 +213,8 @@ Two model universes, kept apart by `mechanism`, never mixed:
 
 | Condition | Response |
 | --- | --- |
+| `request.status != "approved"` | 409 |
+| A `GenerationJob` already exists for the request's `concept_id` | 409 (one authoring plan per request) |
 | `method=fresh_generation` with `mechanism=skill` | 422 |
 | `prep_model` outside the universe `mechanism` implies | 400 |
 | No `production_eligible` skeleton for the request's band (`skeleton_fill`) | 422, names `fresh_generation` as the alternative |
