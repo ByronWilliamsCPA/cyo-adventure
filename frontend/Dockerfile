@@ -38,22 +38,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Copy source code
 COPY . .
 
-# Build arguments for environment configuration.
-# #CRITICAL: external resources: Docker silently ignores build-args with no
-# matching ARG declaration in the target stage. The homelab build workflow
-# passes VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY, but they were never
-# declared here, so Vite baked empty strings and the deployed app shipped
-# without auth (every API call went out tokenless). The anon key is a public
-# client credential by design; baking it into the bundle is the standard
-# Supabase pattern, not a secret leak.
-# #VERIFY: after a build with args supplied, the Supabase project ref must
-# appear in dist/assets/*.js (grep the bundle in the production image).
+# Build arguments for environment configuration
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=${VITE_API_URL}
-ARG VITE_SUPABASE_URL=""
-ENV VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-ARG VITE_SUPABASE_ANON_KEY=""
-ENV VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
 
 # Guardian login requires these at build time (Vite inlines VITE_* env vars
 # into the bundle during `npm run build`; supabaseClient.ts throws at runtime
