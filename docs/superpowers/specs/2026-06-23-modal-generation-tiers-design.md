@@ -307,6 +307,16 @@ skeleton-class -> cheapest-model-that-passes mapping.
 
 ## 8. Validator and Budget Changes
 
+> **Superseded by ADR-011 (2026-07-05).** The node budgets, words-per-node walls,
+> ending/decision floors, and min-to-complete arc floors below are historical
+> context for how this section's requirements were first specified. The merged
+> `story-scale` enabler (PR #70, ADR-011,
+> [adr-011-story-scale-framework.md](../../planning/adr/adr-011-story-scale-framework.md))
+> implemented the actual `(band, length, style)`-keyed budgets in
+> `src/cyo_adventure/validator/band_profile.py`; query those live rather than the
+> numbers transcribed here, which reflect an earlier design pass, not the shipped
+> gate.
+
 - **Add ending-count and decision-count floors** (quadruple-confirmed as the key
   gap; today `_BUDGETS` gates only `(min_nodes, max_nodes, max_branch_depth)` and
   `ending_count` is only checked for consistency). Prefer "more short leaves" over
@@ -387,22 +397,35 @@ trees. Factor exposure into per-story value, not just raw generation cost.
 
 ## 12. Phased Rollout
 
-1. **Authoring skill + at least one hand-authored skeleton and filled sample per
-   band (all six)** -> concept test on Opus via Claude Code, importing each filled
+1. **DONE.** Authoring skill + at least one hand-authored skeleton and filled sample per
+   band (all six) -> concept test on Opus via Claude Code, importing each filled
    story into the `Storybook`/`StorybookVersion` store. (Minimal app code; fastest
    validation of the core bet and the per-band word-size and topology targets.)
-2. **Skeleton schema/metadata + skeleton store + seed library** per (band, scale,
+   Shipped as the `cyo-author` skill (`.claude/skills/cyo-author`).
+2. **DONE.** Skeleton schema/metadata + skeleton store + seed library per (band, scale,
    topology) cell; validate with existing L1 gates; add coverage tracking.
-3. **Validator floors** (endings, decisions) + **age-gated fail-state gate** +
-   **compact budget profile** (the latter in flight on the Ollama session).
-4. **`ModalProvider` + settings + `build_provider` branch**, behind
-   `generation_provider=modal`, default unchanged.
-5. **Deploy standard then heavy Modal endpoints**; calibrate; build the alignment
+   Shipped via ADR-011 (PR #70) + the skeleton batches (PRs #80/#81/#82/#84/#87):
+   17 production-eligible skeletons across all 6 bands.
+3. **DONE (superseded numbers).** Validator floors (endings, decisions) + age-gated
+   fail-state gate + budget profile: shipped via ADR-011's `band_profile.py`, see
+   the note on Section 8 above.
+4. **DONE.** `ModalProvider` + settings + `build_provider` branch, behind
+   `generation_provider=modal`, default unchanged. Shipped per
+   `docs/superpowers/specs/2026-07-04-modal-generation-leg-design.md`.
+5. **Deferred step, now designed:** "skeleton-fill wiring into the
+   worker/orchestrator" (this section's flow, Section 5/6) was explicitly called a
+   non-goal in the 2026-07-04 Modal-leg design. It is designed (not yet
+   implemented) in
+   [2026-07-05-skeleton-authoring-path-routing-design.md](2026-07-05-skeleton-authoring-path-routing-design.md),
+   which also adds the admin-facing method/mechanism/model-routing layer this
+   section does not cover (this section designs the fill backend only; the newer
+   spec designs how a live child request picks a backend and model).
+6. **Deploy standard then heavy Modal endpoints**; calibrate; build the alignment
    table.
-6. **Procedural skeleton generator** for scale.
-7. **ADR-003 update**; migrate to the config-driven band table and add the 3-5,
+7. **Procedural skeleton generator** for scale.
+8. **ADR-003 update**; migrate to the config-driven band table and add the 3-5,
    5-8, and 16+ bands; reading-level -> tier/skeleton routing.
-8. **Series schema** (ending taxonomy with `completion`, named entry points,
+9. **Series schema** (ending taxonomy with `completion`, named entry points,
    state-export contract) as a forward-compatible data model now; **series manifest,
    series-linkage validator, and series generation** in a later phase.
 
