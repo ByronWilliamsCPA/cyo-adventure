@@ -24,7 +24,9 @@ provider call. No PII leaves this process before the guard fires.
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import uuid
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -38,10 +40,12 @@ from cyo_adventure.db.models import (
     GenerationJob,
 )
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.generation.orchestrator import generate_story
+from cyo_adventure.generation.fidelity_gate import run_stage1_gate
+from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
     set_correlation_id,
@@ -55,6 +59,7 @@ if TYPE_CHECKING:
 
     from sqlalchemy.ext.asyncio import AsyncSession
 
+    from cyo_adventure.generation.orchestrator import GenerationOutcome
     from cyo_adventure.generation.provider import GenerationProvider
 
 __all__ = [
@@ -123,6 +128,76 @@ def _provider_label(provider: GenerationProvider) -> str:
 # bypassed when wiring real providers in Phase 2b.
 # #VERIFY: integration test asserts PiiContext is populated from real child rows
 # and that mock story generation does not include any real-child name in prompts.
+
+
+async def _run_skeleton_fill(
+    authoring: dict[str, object],
+    brief: ConceptBrief,
+    effective_provider: GenerationProvider,
+    pii: PiiContext,
+) -> GenerationOutcome:
+    """Run the automated skeleton-fill pipeline (Stage B') for one job.
+
+    Loads the matched skeleton library file, fills it via
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, then runs
+    the Stage 1 fidelity gate. A fidelity violation downgrades an
+    otherwise-``"passed"`` outcome to ``"needs_review"`` without discarding
+    the produced storybook, so a guardian/admin can still review the fill.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict (set by
+            ``story_requests/authoring_plan.py::build_authoring_plan`` for
+            ``method="skeleton_fill"`` + ``mechanism="automated_provider"``).
+        brief: The concept brief; only its ``age_band`` is used, to resolve
+            the skeleton library path.
+        effective_provider: The provider used for the fill/repair calls.
+        pii: PII context for the egress guard on every prompt.
+
+    Returns:
+        The :class:`~cyo_adventure.generation.orchestrator.GenerationOutcome`,
+        with ``report`` augmented when a Stage 1 fidelity violation downgrades
+        the status.
+
+    Raises:
+        ResourceNotFoundError: If ``authoring["skeleton_slug"]`` is missing or
+            not a string.
+        ValidationError: If the matched skeleton file fails structural
+            validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`).
+    """
+    skeleton_slug = authoring.get("skeleton_slug")
+    theme_brief = authoring.get("theme_brief")
+    # #ASSUME: data-integrity: authoring_metadata for a method="skeleton_fill"
+    # job always carries a string skeleton_slug (see
+    # story_requests/authoring_plan.py); a missing/wrong-typed value here
+    # means the job was constructed outside that path.
+    # #VERIFY: test_worker_runs_fill_skeleton_for_authoring_metadata_jobs.
+    if not isinstance(skeleton_slug, str):
+        msg = "authoring_metadata.skeleton_slug is missing or not a string"
+        raise ResourceNotFoundError(msg)
+    skeleton_path = Path("skeletons") / brief.age_band.value / f"{skeleton_slug}.json"
+    skeleton = load_skeleton(skeleton_path)
+    theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
+    outcome = await fill_skeleton(skeleton, theme_brief_dict, effective_provider, pii)
+    if outcome.storybook is None:
+        return outcome
+
+    review_stage1_model = authoring.get("review_stage1_model")
+    stage1_violations = await run_stage1_gate(
+        skeleton,
+        outcome.storybook,
+        review_stage1_model=review_stage1_model
+        if isinstance(review_stage1_model, str)
+        else None,
+        settings=_default_settings,
+        pii=pii,
+    )
+    if stage1_violations and outcome.status == "passed":
+        return dataclasses.replace(
+            outcome,
+            status="needs_review",
+            report={**outcome.report, "stage1_fidelity_violations": stage1_violations},
+        )
+    return outcome
 
 
 async def run_generation_job(
@@ -239,8 +314,18 @@ async def run_generation_job(
         # ------------------------------------------------------------------
         # Run the generation pipeline. Wrap to persist failures.
         # ------------------------------------------------------------------
+        authoring = (
+            job_row.authoring_metadata
+            if isinstance(job_row.authoring_metadata, dict)
+            else None
+        )
         try:
-            outcome = await generate_story(brief, effective_provider, pii)
+            if authoring is not None:
+                outcome = await _run_skeleton_fill(
+                    authoring, brief, effective_provider, pii
+                )
+            else:
+                outcome = await generate_story(brief, effective_provider, pii)
         except Exception as exc:
             # Record failure and re-raise so RQ marks the job failed.
             error_text = str(exc)[:512]
@@ -311,6 +396,12 @@ async def run_generation_job(
                     settings=_default_settings,
                     generation_provider=effective_provider,
                     pii=pii,
+                    review_model_override=(
+                        authoring.get("review_stage2_model")
+                        if authoring is not None
+                        and isinstance(authoring.get("review_stage2_model"), str)
+                        else None
+                    ),
                 )
             except Exception as exc:
                 # #CRITICAL: external-resource: a live review backend can raise

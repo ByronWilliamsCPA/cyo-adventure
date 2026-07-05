@@ -9,14 +9,19 @@ Test cases:
    validation_report, job.storybook_id and job.version set.
 5. needs_review run (injected provider returns a story that fails gate even
    after repairs): job.status == "needs_review", no StorybookVersion created.
+6. authoring_metadata routing (Task 8): a queued job carrying authoring_metadata
+   runs fill_skeleton + the Stage 1 fidelity gate instead of generate_story.
+7. No authoring_metadata: the pre-existing generate_story path is unaffected.
 """
 
 from __future__ import annotations
 
+import copy
 import json
 import uuid  # noqa: TC003 -- uuid.UUID used at runtime in test bodies
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
 import pytest
 import pytest_asyncio
@@ -31,7 +36,9 @@ from cyo_adventure.db.models import (
     StorybookVersion,
     User,
 )
+from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
+from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.worker import run_generation_job
 
 if TYPE_CHECKING:
@@ -83,6 +90,40 @@ _INVALID_STORY_JSON = json.dumps(
         ],
     }
 )
+
+# A real, production skeleton library file (ADR-011). worker.py resolves the
+# authoring_metadata.skeleton_slug through Path("skeletons") / age_band / f"{slug}.json"
+# relative to the process cwd, so this must be a path that already exists on
+# disk under the repo root (where pytest is invoked from), not a test fixture.
+_SKELETON_SLUG = "the-cave-of-echoes"
+_SKELETON_AGE_BAND = "8-11"
+_SKELETON_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "skeletons"
+    / _SKELETON_AGE_BAND
+    / f"{_SKELETON_SLUG}.json"
+)
+
+
+def _filled_skeleton_json() -> str:
+    """Return a JSON string: the real skeleton with every FILL body replaced.
+
+    Each node's FILL directive is swapped for placeholder prose sized to the
+    directive's declared word target; every other field (ids, choices minus
+    label, top-level metadata) is left untouched. This satisfies both the
+    structural gate (run_gate) fill_skeleton itself applies and the Stage 1
+    fidelity pure-code checks (generation/fidelity.py::structure_violations,
+    has_unfilled_directives, word-count tolerance) the worker runs afterward.
+    """
+    skeleton = load_skeleton(_SKELETON_PATH)
+    filled = copy.deepcopy(skeleton)
+    for node in cast("list[dict[str, object]]", filled["nodes"]):
+        body = node.get("body")
+        directive = parse_fill_directive(body) if isinstance(body, str) else None
+        if directive is not None:
+            words = max(int(directive["words"]), 1)
+            node["body"] = " ".join(["word"] * words)
+    return json.dumps(filled)
 
 
 @asynccontextmanager
@@ -166,6 +207,81 @@ async def gen_seed(sessions: async_sessionmaker[AsyncSession]) -> dict[str, obje
         job = GenerationJob(
             concept_id=concept.id,
             status="queued",
+        )
+        session.add(job)
+        await session.commit()
+
+        return {
+            "job_id": job.id,
+            "concept_id": concept.id,
+            "family_id": fam.id,
+        }
+
+
+@pytest_asyncio.fixture
+async def gen_seed_authoring(
+    sessions: async_sessionmaker[AsyncSession],
+) -> dict[str, object]:
+    """Seed rows for a skeleton_fill job: Family, User, Concept, and a Job
+    carrying authoring_metadata (method="skeleton_fill", mechanism="automated_provider";
+    see story_requests/authoring_plan.py::build_authoring_plan).
+
+    Otherwise identical to ``gen_seed``; only the job row differs.
+    """
+    async with sessions() as session:
+        fam = Family(name="Test Family")
+        session.add(fam)
+        await session.flush()
+
+        guardian = User(
+            family_id=fam.id,
+            role="guardian",
+            authn_subject="guardian-gen-test-authoring",
+        )
+        child_profile = ChildProfile(
+            family_id=fam.id,
+            display_name="TestKid",
+            age_band="8-11",
+        )
+        session.add_all([guardian, child_profile])
+        await session.flush()
+
+        concept = Concept(
+            family_id=fam.id,
+            created_by=guardian.id,
+            brief={
+                "premise": "A brave explorer discovers a hidden garden.",
+                "protagonist": {
+                    "name": "Captain Rosa",
+                    "age": 9,
+                    "role": "young explorer",
+                },
+                "point_of_view": "second",
+                "age_band": "8-11",
+                "reading_level_target": 3.0,
+                "tier": 1,
+                "tone": "adventurous",
+                "themes_allowed": ["exploration", "nature"],
+                "content_nogo": [],
+                "target_node_count": 4,
+                "ending_count": 1,
+                "structure_pattern": "time_cave",
+                "desired_variables": [],
+                "special_constraints": [],
+            },
+        )
+        session.add(concept)
+        await session.flush()
+
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="queued",
+            authoring_metadata={
+                "skeleton_slug": _SKELETON_SLUG,
+                "theme_brief": {
+                    "premise": "A brave explorer discovers a hidden garden."
+                },
+            },
         )
         session.add(job)
         await session.commit()
@@ -265,3 +381,88 @@ async def test_needs_review_run_creates_no_storybook_version(
             .where(Storybook.family_id == gen_seed["family_id"])
         )
         assert result.first() is None, "StorybookVersion must not be created"
+
+
+# ---------------------------------------------------------------------------
+# Test 6: authoring_metadata routes to fill_skeleton + Stage 1 fidelity gate
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_worker_runs_fill_skeleton_for_authoring_metadata_jobs(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed_authoring: dict[str, object],
+) -> None:
+    """A queued job carrying authoring_metadata runs fill_skeleton, not generate_story.
+
+    Exactly two scripted responses are queued: one for the fill call itself
+    (fill_skeleton makes a single provider call for a clean fill; no Stage A,
+    unlike generate_story which always makes at least two: Stage A then Stage
+    B), plus one for the moderation pipeline's guaranteed bounded auto-repair
+    (the default "mock" review backend always returns an unparseable "{}"
+    verdict, which soft-flags Stage 1 safety and triggers exactly one
+    attempt_repair call against this same provider -- see
+    test_passing_run_creates_storybook_version, which budgets for the same
+    thing with headroom to spare).
+
+    If the worker still routes through generate_story, Stage A and Stage B
+    alone consume both queued responses, leaving none for the guaranteed
+    repair call; MockProvider raises on that third call, so the job ends up
+    "failed" instead of "passed"/"needs_review". This is what makes the
+    assertion below a real signal of which pipeline ran, not just "did the
+    run not crash".
+    """
+    job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
+
+    # A valid filled-skeleton JSON string (not a generate_story Stage-A/B
+    # output), reused for both the fill call and the moderation repair call.
+    provider = MockProvider(responses=[_filled_skeleton_json()] * 2)
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status in {
+            "passed",
+            "needs_review",
+        }, f"Expected passed or needs_review, got {job.status}"
+        assert job.report is not None
+
+
+# ---------------------------------------------------------------------------
+# Test 7: no authoring_metadata leaves the generate_story path unaffected
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_worker_still_runs_generate_story_when_no_authoring_metadata(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],
+) -> None:
+    """A job with authoring_metadata=None (fresh_generation) is unaffected by Task 8.
+
+    Mirrors test_passing_run_creates_storybook_version: documents (not changes)
+    that the pre-existing generate_story path still runs when authoring_metadata
+    is absent.
+    """
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "passed", f"Expected passed, got {job.status}"
+        assert job.storybook_id is not None
+        assert job.report is not None
