@@ -126,3 +126,47 @@ class TestImportSideEffects:
         # Access sync pool status without touching the DB
         pool = engine.sync_engine.pool
         assert pool.checkedout() == 0  # type: ignore[attr-defined]
+
+
+class TestConnectArgs:
+    """Tests for transaction-pooler connect args (ADR-009 Task 1.7)."""
+
+    @pytest.mark.unit
+    def test_direct_connection_gets_no_connect_args(self) -> None:
+        """A direct PostgreSQL connection must not disable prepared statements."""
+        from cyo_adventure.core.database import _build_connect_args
+
+        assert _build_connect_args(disable_prepared_cache=False) == {}
+
+    @pytest.mark.unit
+    def test_transaction_pooler_disables_prepared_statement_cache(self) -> None:
+        """A transaction pooler must disable the cache and use a name func."""
+        from cyo_adventure.core.database import _build_connect_args
+
+        args = _build_connect_args(disable_prepared_cache=True)
+
+        assert args["prepared_statement_cache_size"] == 0
+        assert callable(args["prepared_statement_name_func"])
+
+    @pytest.mark.unit
+    def test_prepared_statement_names_are_unique(self) -> None:
+        """Each generated prepared-statement name must be distinct."""
+        from cyo_adventure.core.database import _unique_prepared_statement_name
+
+        first = _unique_prepared_statement_name()
+        second = _unique_prepared_statement_name()
+
+        assert first != second
+        assert first.startswith("__cyo_asyncpg_")
+
+    @pytest.mark.unit
+    def test_name_func_in_connect_args_produces_valid_names(self) -> None:
+        """The wired name func must be the module's unique-name generator."""
+        from cyo_adventure.core.database import (
+            _build_connect_args,
+            _unique_prepared_statement_name,
+        )
+
+        args = _build_connect_args(disable_prepared_cache=True)
+
+        assert args["prepared_statement_name_func"] is _unique_prepared_statement_name

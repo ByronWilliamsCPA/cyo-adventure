@@ -38,6 +38,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or directory`.
 
 ### Added
+- `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE` setting (default `false`) that
+  disables the asyncpg dialect's prepared-statement cache and gives each prepared
+  statement a unique name. Set it to `true` when `CYO_ADVENTURE_DATABASE_URL`
+  points at a transaction-mode connection pooler (Supabase Supavisor on `:6543`,
+  or PgBouncer transaction mode), where a cached or fixed-name server-side
+  prepared statement collides when the pooler reassigns a backend mid-session and
+  500s requests under concurrency. This is the backend enabler for the ADR-009
+  Task 1.7 cutover to Supabase Postgres; a direct connection (local dev, or the
+  Supabase `:5432` DSN used by Alembic) leaves it `false` and keeps server-side
+  prepared statements.
 - Guardian console, sign-in, intake, profiles, and reader 409-conflict flows now
   have Playwright e2e coverage (all seven amber gaps from the journey coverage
   map), plus a real-backend smoke tier exercising the ADR-005 approve path

@@ -87,6 +87,24 @@ class Settings(BaseSettings):
         default=_DEV_DATABASE_URL,
         validation_alias=AliasChoices("CYO_ADVENTURE_DATABASE_URL", "DATABASE_URL"),
     )
+    # Disable SQLAlchemy's asyncpg prepared-statement cache when the backend
+    # connects through a transaction-mode connection pooler: Supabase Supavisor
+    # on :6543 (ADR-009 Task 1.7) or PgBouncer in transaction mode. Such poolers
+    # multiplex one backend connection across many client sessions, so a
+    # server-side prepared statement created under one logical session can be
+    # reused, or have its name collide, under another. Disabling the cache and
+    # giving each prepared statement a unique name is the SQLAlchemy-documented
+    # fix. Leave False for a direct PostgreSQL connection (local dev, or
+    # Supabase's :5432 session/direct DSN that Alembic uses), where server-side
+    # prepared statements are safe and faster.
+    # #CRITICAL: external-resources: with a transaction pooler and this flag
+    # unset, the first reused/renamed prepared statement raises asyncpg
+    # DuplicatePreparedStatementError / InvalidSQLStatementNameError and the
+    # request 500s intermittently under concurrency, not at startup.
+    # #VERIFY: set CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE=true whenever
+    # CYO_ADVENTURE_DATABASE_URL points at a :6543 transaction pooler; consumed
+    # by core/database.py::_build_connect_args.
+    database_disable_prepared_cache: bool = False
     # Development default for local Redis; safe to leave unset in non-production
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
