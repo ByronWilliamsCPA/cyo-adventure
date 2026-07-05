@@ -376,6 +376,13 @@ known-first-party = ["cyo_adventure"]
 # object would obscure which fields are row identity vs. profile overlay.
 "**/api/library.py" = ["PLR0913"]
 
+# The authoring-plan builder carries session, request, and concept (the
+# identity/context of the decision) plus method, mechanism, and prep_model
+# (the admin's mandatory, keyword-only choice); each is a distinct concern
+# and a config object would obscure which fields are call context vs.
+# admin-supplied plan choice.
+"**/story_requests/authoring_plan.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
