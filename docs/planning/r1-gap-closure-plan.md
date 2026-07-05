@@ -223,28 +223,40 @@ scoping in `api/deps.py`), and the browser never queries Supabase Postgres
 directly. Rejected Path B (frontend reads Supabase via PostgREST + RLS) as a
 larger surface that exposes child-profile rows to a client-side path.
 
-Not required for R1 login (working as of 2026-07-05); schedule when convenient.
-Depends on Task 1.4 (durable migrate step) and Task 1.5 (seed script) existing
-as real artifacts first, since the cutover reuses both.
+**Status: DONE (deployed 2026-07-05)** via homelab-infra #576 (compose repoints
+`backend`/`worker`/`migrate` at the Supabase DSN), after `alembic upgrade head`
+plus the guardian/admin seed were run against Supabase out-of-band. Verified:
+site 200, backend clean startup on Supabase, 3 seeded users present, browser
+login works, and data now survives redeploys.
 
-Steps:
+**Correction to the DSN plan (what was actually done vs sketched below):** the
+app AND Alembic both use the Supabase **session pooler**
+(`aws-0-us-east-1.pooler.supabase.com:5432`, session mode) as a SINGLE DSN, not
+the app-pooler/Alembic-direct split originally sketched. Reasons found during
+execution: (a) `migrations/env.py` reads the same `settings.database_url` as the
+app, so one DSN necessarily covers both; (b) a persistent FastAPI + SQLAlchemy
+connection pool is the session-mode use case (transaction mode / port 6543 is
+for serverless), which is exactly ADR-009's "direct or session-mode" constraint;
+(c) the **direct** connection (`db.<ref>.supabase.co:5432`) is IPv6-only and
+unreachable from the IPv4 docker-host, so the session pooler is the IPv4-safe
+substitute. Session mode gives each connection a dedicated backend, so prepared
+statements work and no `prepared_statement_cache_size=0` workaround is needed;
+PR #122's transaction-mode connect-args flag is present but **unused** here
+(default off), reserved for a future serverless move.
 
-- [ ] DSNs: app uses the Supabase **session pooler** (Supavisor, port 6543,
-  transaction mode); Alembic uses the **direct** connection (port 5432).
-- [ ] asyncpg + transaction-mode pooler: disable prepared-statement caching
-  (`prepared_statement_cache_size=0` connect arg / DSN option) or reused
-  prepared statements error. Verify on a staging login before flipping prod.
-- [ ] Run `alembic upgrade head` against the Supabase direct DSN (Task 1.4).
-- [ ] Run `scripts/seed_prod_users.py` against Supabase (Task 1.5).
-- [ ] Data migration: R1 prod holds no real content yet, so no row copy is
-  needed; if that changes by cutover, `pg_dump --data-only` from
-  `cyo-adventure-db` and restore into Supabase.
-- [ ] Portainer: set `CYO_ADVENTURE_DATABASE_URL` to the Supabase pooler DSN;
-  redeploy backend + worker.
-- [ ] Retire `cyo-adventure-db` and the (currently crash-looping)
-  `cyo-adventure-db-backup` once verified; Supabase manages backups.
-- [ ] Verify: guardian `/api/v1/me` 200; profiles/stories persist across a
-  redeploy; worker still reaches the DB.
+Completed steps:
+
+- [x] `alembic upgrade head` against the Supabase session-pooler DSN (7 revs to
+  `e5f6a7b8c9d0`).
+- [x] Seed family + two guardians + admin into Supabase (idempotent insert).
+- [x] Portainer: `SUPABASE_PASSWORD` secret set; compose repoints
+  `backend`/`worker`/`migrate` to the Supabase DSN (#576); stack redeployed.
+- [x] Verify: `/api/v1/me` path healthy, browser login works, data persists
+  across a redeploy.
+- [x] No row copy needed (R1 prod held no real content at cutover).
+- [ ] Retire `cyo-adventure-db` and the crash-looping `cyo-adventure-db-backup`
+  after a Supabase soak: tracked in **homelab-infra #577** (kept temporarily,
+  off the data path, for one-redeploy rollback; Supabase manages backups).
 
 Privacy note (COPPA): this places child-profile PII on a third-party managed
 platform (already contemplated by ADR-009). Path A keeps that data behind our

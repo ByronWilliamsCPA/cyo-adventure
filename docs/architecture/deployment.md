@@ -12,7 +12,10 @@ tags:
 CYO Adventure deploys to a self-hosted homelab using Docker containers orchestrated
 by Dockge (ADR-004: homelab-first deployment). External access is secured by Pangolin
 zero-trust reverse proxy (Tailscale or Cloudflare Tunnel). Supabase Auth provides OIDC
-identity for the guardian, child, and admin roles (ADR-009).
+identity for the guardian and admin roles (ADR-009; children authenticate via
+backend-minted scoped sessions, not Supabase), and the operational database is
+Supabase Postgres, reached through the session pooler (ADR-009 decision 2; R1 Task 1.7,
+cut over 2026-07-05).
 
 ## Deployment Diagram
 
@@ -24,7 +27,7 @@ identity for the guardian, child, and admin roles (ADR-009).
 |-----------|-------|---------|
 | `cyo-backend` | `cyo-backend:latest` | FastAPI application (uvicorn, port 8000) |
 | `cyo-worker` | `cyo-worker:latest` | RQ generation worker (long-running, no inbound HTTP) |
-| `cyo-postgres` | `postgres:16-alpine` | PostgreSQL 16, port 5432 |
+| `cyo-postgres` | `postgres:16-alpine` | Retained for one-redeploy rollback only; off the data path, tracked for removal in homelab-infra #577 |
 | `cyo-redis` | `redis:7-alpine` | Redis 7, port 6379, RQ job broker |
 | `cyo-ollama` | `ollama/ollama:latest` | Local LLM fallback, port 11434 |
 | `cyo-minio` | `minio/minio` | Object storage, planned Phase 5 |
@@ -32,6 +35,11 @@ identity for the guardian, child, and admin roles (ADR-009).
 The backend and worker share the same Python codebase but run as separate containers.
 Separating the worker prevents long-running LLM calls (30-120s per story) from
 blocking the API event loop.
+
+The operational database itself is **Supabase Postgres** (managed, external to the
+homelab), not a container in this stack; `cyo-backend` and `cyo-worker` reach it over
+the internet through Supabase's session pooler (`aws-0-us-east-1.pooler.supabase.com:5432`,
+session mode). See the Network Architecture section below.
 
 ## Network Architecture
 
@@ -47,12 +55,18 @@ FastAPI container internally rather than Pangolin forwarding to it directly. See
 
 Internal container-to-container communication uses Docker's bridge network:
 
-- `cyo-backend` -> `cyo-postgres` (async SQLAlchemy, port 5432)
 - `cyo-backend` -> `cyo-redis` (RQ enqueue, port 6379)
-- `cyo-worker` -> `cyo-postgres` (job status updates, port 5432)
 - `cyo-worker` -> `cyo-redis` (job dequeue, port 6379)
 - `cyo-worker` -> `cyo-ollama` (LLM fallback, port 11434)
 - `cyo-worker` -> OpenRouter API (HTTPS, egress to internet, primary LLM)
+
+Egress to the managed database (not on the Docker bridge network):
+
+- `cyo-backend` -> Supabase Postgres (async SQLAlchemy, session pooler, port 5432)
+- `cyo-worker` -> Supabase Postgres (job status updates, session pooler, port 5432)
+
+`cyo-postgres` is retained in the compose stack only as a one-redeploy rollback
+fallback; it carries no live traffic (tracked for removal in homelab-infra #577).
 
 ## PWA Delivery
 

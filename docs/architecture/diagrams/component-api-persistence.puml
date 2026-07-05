@@ -23,7 +23,9 @@
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
 '   src/cyo_adventure/db/models.py           (9 ORM tables)
 '   docs/planning/authorization-matrix.md
-'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik)
+'   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
+'     decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/r1-gap-closure-plan.md (Task 1.7: Supabase Postgres cutover)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -83,7 +85,7 @@ package "ORM Models\nsrc/cyo_adventure/db/models.py" #FFF8E1 {
   component "ReadingState\nCompletion\nConcept\nGenerationJob" as models_b #FFF8E1
 }
 
-database "PostgreSQL 16\nAsync SQLAlchemy 2 sessions\nAlembic migrations" as pg #FFF8E1
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nAlembic migrations" as pg #E0F7FA
 
 ' --- Relationships ---
 corr_mw --> sec_mw : "request chain"
