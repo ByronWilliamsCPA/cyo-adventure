@@ -62,9 +62,13 @@ drove the read:
 - **Technical**: the Python safety pipeline (validation gate, moderation, staged
   generation, publish state machine) and the `Principal` authorization layer stay our
   code; any platform must host plain Postgres (SQLAlchemy 2.x async + Alembic) and
-  S3-compatible storage (the seam ADR-004 deliberately preserved). asyncpg requires a
-  direct or session-mode connection; transaction-mode pooling breaks its prepared
-  statements.
+  S3-compatible storage (the seam ADR-004 deliberately preserved). asyncpg's own
+  prepared-statement cache collides under a transaction-mode pooler (a reused or
+  renamed server-side statement once the pooler reassigns a backend mid-session);
+  Task 1.7 mitigates this with `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE` (disables
+  both asyncpg's and the SQLAlchemy dialect's caches, unique-names every prepared
+  statement, and switches to `NullPool`), so a Supavisor transaction-pooler connection
+  (`:6543`) is viable alongside the direct/session-mode DSN Alembic still uses.
 - **Business**: solo operation; minimize vendor count and pager surface. Login
   availability is the one failure a subscription product cannot tolerate.
 - **Regulatory**: guardian-only IdP identities, kid-context SDK bans, and the deletion
@@ -263,10 +267,12 @@ client-secret plumbing in the native path).
    is already thin by design: `generation/worker.py` keeps the async core
    Redis/RQ-free and `generation/queue.py` (~75 lines) is the only RQ-coupled
    module, so the pgmq port replaces one module plus a polling loop.
-7. **`core/database.py`** (P9-03): set explicit `pool_size`/`max_overflow` (the
-   module's existing `#CRITICAL` marker already requires this before production;
-   Supabase session-mode connections are a bounded resource, so defaults are not
-   acceptable there).
+7. **`core/database.py`** (P9-03): set explicit `pool_size`/`max_overflow` for the
+   direct/session-mode connection branch (the module's existing `#CRITICAL` marker
+   already requires this before production; Supabase session-mode connections are a
+   bounded resource, so defaults are not acceptable there). Does not apply to the
+   Task 1.7 transaction-pooler branch, which uses `NullPool` and has no pool size of
+   its own.
 8. **Retention** (ADR-007): purge job moves to pg_cron.
 
 ### Testing Strategy
