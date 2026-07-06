@@ -17,6 +17,7 @@ from fastapi import BackgroundTasks
 
 from cyo_adventure.api.deps import Principal, RequestContext
 from cyo_adventure.api.generation import (
+    MAX_ACTIVE_JOBS_PER_FAMILY,
     _enqueue_safely,
     create_concept,
     enqueue_concept_generation,
@@ -27,6 +28,7 @@ from cyo_adventure.api.schemas import ConceptCreateRequest
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 from cyo_adventure.db.models import (
@@ -76,10 +78,12 @@ class _FakeSession:
         get_result: object | None = None,
         results: dict[type[object], object] | None = None,
         child_names: list[str] | None = None,
+        scalar_result: int = 0,
     ) -> None:
         self._get_result = get_result
         self._results = results or {}
         self._child_names = child_names or []
+        self._scalar_result = scalar_result
         self.added: list[object] = []
         self.flush_count = 0
 
@@ -87,6 +91,11 @@ class _FakeSession:
         """Return the seeded child display names."""
         _ = statement
         return _FakeScalars(self._child_names)
+
+    async def scalar(self, statement: object) -> int:
+        """Return the seeded scalar count (used by the per-family job throttle)."""
+        _ = statement
+        return self._scalar_result
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Return the per-model seeded row, falling back to a single result."""
@@ -195,6 +204,41 @@ async def test_enqueue_cross_family_forbidden() -> None:
     )
     with pytest.raises(AuthorizationError):
         await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_enqueue_family_at_cap_rejected() -> None:
+    """A family already at the active-job cap is refused with 409 (audit F9)."""
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    session = _FakeSession(get_result=concept, scalar_result=MAX_ACTIVE_JOBS_PER_FAMILY)
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(StateTransitionError):
+        await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+    assert not any(isinstance(obj, GenerationJob) for obj in session.added)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_enqueue_family_under_cap_allowed() -> None:
+    """A family under the active-job cap may still enqueue (audit F9)."""
+    family_id = uuid.uuid4()
+    concept = Concept(family_id=family_id, brief=_VALID_BRIEF)
+    session = _FakeSession(
+        get_result=concept, scalar_result=MAX_ACTIVE_JOBS_PER_FAMILY - 1
+    )
+    ctx = RequestContext(
+        principal=_principal("guardian", family_id, uuid.uuid4()), session=session
+    )
+
+    resp = await enqueue_concept_generation(str(uuid.uuid4()), ctx, BackgroundTasks())
+
+    assert resp.status == "queued"
+    assert any(isinstance(obj, GenerationJob) for obj in session.added)
 
 
 @pytest.mark.unit

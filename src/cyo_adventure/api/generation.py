@@ -30,11 +30,14 @@ from __future__ import annotations
 
 import logging
 import uuid
-from typing import Literal, cast
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter, BackgroundTasks
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import defer
+
+if TYPE_CHECKING:
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api.deps import Context, authorize_family
 from cyo_adventure.api.schemas import (
@@ -51,6 +54,7 @@ from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
+    StateTransitionError,
     ValidationError,
 )
 from cyo_adventure.db.models import (
@@ -69,6 +73,46 @@ router = APIRouter(prefix="/api/v1", tags=["generation"])
 _log = logging.getLogger(__name__)
 
 _GUARDIAN_REQUIRED = "guardian role required for this endpoint"
+
+# Max active (queued+running) generation jobs per family before a new enqueue
+# is refused (audit Finding 9). Mirrors MAX_PENDING_PER_PROFILE
+# (story_requests/service.py): an abuse throttle, not a correctness invariant.
+MAX_ACTIVE_JOBS_PER_FAMILY = 2
+
+# Lifecycle states that count as "active" for the per-family throttle: a job
+# that has already finished (passed/needs_review/failed) no longer occupies a
+# generation slot.
+_ACTIVE_JOB_STATUSES = ("queued", "running")
+
+
+async def count_active_jobs_for_family(session: AsyncSession, family_id: object) -> int:
+    """Return the count of queued+running GenerationJob rows for a family.
+
+    Args:
+        session: The request session.
+        family_id: The family id to scope the count to.
+
+    Returns:
+        int: Count of active (queued or running) job rows joined through
+            their Concept's family.
+    """
+    # #CRITICAL: concurrency: two concurrent enqueue requests could both read
+    # count=N-1 and both create a job (a benign one-over race). The cap is an
+    # abuse throttle, not a correctness invariant; mirrors
+    # story_requests.service.count_pending_for_profile.
+    # #VERIFY: a strict guarantee would need a partial unique index or
+    # advisory lock; deferred as unnecessary for R1, matching the mirrored
+    # pending-request cap.
+    total = await session.scalar(
+        select(func.count())
+        .select_from(GenerationJob)
+        .join(Concept, GenerationJob.concept_id == Concept.id)
+        .where(
+            Concept.family_id == family_id,
+            GenerationJob.status.in_(_ACTIVE_JOB_STATUSES),
+        )
+    )
+    return int(total or 0)
 
 
 def _parse_uuid(raw: str, field: str) -> uuid.UUID:
@@ -201,6 +245,7 @@ async def enqueue_concept_generation(
         AuthorizationError: If the principal is not a guardian (-> 403) or if
             the concept belongs to another family (-> 403).
         ResourceNotFoundError: If the concept does not exist (-> 404).
+        StateTransitionError: If the family is at its active-job cap (-> 409).
         ValidationError: If ``concept_id`` is not a valid UUID (-> 422).
     """
     # #CRITICAL: security: guardian-only (authorization-matrix.md).
@@ -217,6 +262,16 @@ async def enqueue_concept_generation(
         msg = f"concept '{concept_id}' not found"
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
+
+    # #CRITICAL: security: enforce the per-family active-job cap before insert
+    # (audit Finding 9). A rare off-by-one under concurrent enqueues is
+    # accepted here (see count_active_jobs_for_family); the cap is an abuse
+    # throttle, not a correctness invariant.
+    # #VERIFY: test_enqueue_family_at_cap_rejected / test_enqueue_family_under_cap_allowed.
+    active = await count_active_jobs_for_family(ctx.session, concept.family_id)
+    if active >= MAX_ACTIVE_JOBS_PER_FAMILY:
+        msg = "too many active generation jobs for this family"
+        raise StateTransitionError(msg)
 
     job = GenerationJob(concept_id=concept.id, status="queued")
     ctx.session.add(job)
