@@ -85,6 +85,22 @@ def test_structure_violations_flags_changed_metadata() -> None:
     assert any("metadata" in v for v in violations)
 
 
+def test_structure_violations_flags_net_new_node_key() -> None:
+    """A structural key the filled node ADDS but the skeleton lacked is flagged.
+
+    The union-of-keys iteration is what catches this: here the skeleton node has
+    no ``is_ending`` key and the fill injects ``is_ending=True`` (flipping the
+    node to an ending). Iterating only the original node's keys would miss the
+    net-new key and silently weaken the "structure exactly preserved" guarantee.
+    """
+    original = _minimal_story("<<FILL role=setup words=10 beats='go'>>")
+    del original["nodes"][0]["is_ending"]  # skeleton lacks the key entirely
+    filled = _minimal_story("You step into the glowing cave.")
+    filled["nodes"][0]["is_ending"] = True  # the fill injects it
+    violations = structure_violations(original, filled)
+    assert any("is_ending" in v for v in violations)
+
+
 def test_word_count_violations_flags_too_short() -> None:
     """A body far below its directive's word target is flagged."""
     original = _minimal_story("<<FILL role=setup words=100 beats='go'>>")

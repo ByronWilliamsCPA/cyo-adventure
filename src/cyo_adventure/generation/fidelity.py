@@ -108,7 +108,11 @@ def structure_violations(
         filled_node = filled_nodes.get(node_id)
         if filled_node is None:
             continue
-        for key in orig_node:
+        # Iterate the union of both nodes' keys so a filled node that ADDS a
+        # structural key the skeleton lacked (e.g. injecting "is_ending") is
+        # flagged too; iterating only the original's keys would miss net-new
+        # keys and weaken the "structure exactly preserved" guarantee.
+        for key in orig_node.keys() | filled_node.keys():
             if key in ("body", "choices"):
                 continue
             if orig_node.get(key) != filled_node.get(key):
