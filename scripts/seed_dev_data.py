@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -48,6 +49,10 @@ _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
 _ADMIN_SUBJECT = "dev-admin"
 
+# Fixed id so naive-kid-misuse-real.spec.ts can request a known cross-family
+# profile. Kept in sync with UNRELATED_PROFILE_ID in that spec.
+_UNRELATED_PROFILE_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
+
 
 def _flagged_moderation_report(node_id: str) -> dict[str, object]:
     """A minimal soft-flag report so the review surface shows a flagged passage."""
@@ -75,6 +80,32 @@ def _flagged_moderation_report(node_id: str) -> dict[str, object]:
             "reviewer_independent": True,
         },
     }
+
+
+async def _seed_unrelated_family(session: AsyncSession) -> bool:
+    """Idempotently seed the cross-family fixture profile.
+
+    Returns True when it inserted the fixture, False when it already existed.
+    Guarded on the fixed profile id (not the guardian) so it self-heals on a
+    database seeded before this fixture was added.
+    """
+    exists = await session.scalar(
+        select(ChildProfile.id).where(ChildProfile.id == _UNRELATED_PROFILE_ID)
+    )
+    if exists is not None:
+        return False
+    unrelated_family = Family(name="Unrelated Family")
+    session.add(unrelated_family)
+    await session.flush()
+    session.add(
+        ChildProfile(
+            id=_UNRELATED_PROFILE_ID,
+            family_id=unrelated_family.id,
+            display_name="Unrelated Reader",
+            age_band="8-11",
+        )
+    )
+    return True
 
 
 async def seed_dev_data(
@@ -110,11 +141,27 @@ async def seed_dev_data(
         new_session = get_session
 
     async with new_session() as session:
+        # #ASSUME: security: a second, wholly unrelated family exists solely so
+        # naive-kid-misuse-real.spec.ts can prove authorize_profile rejects a
+        # cross-family profile id, not just a cross-profile-same-family id.
+        # No guardian/admin User rows are seeded for this family: the test only
+        # needs the child profile to exist, not a full principal set. Seeded
+        # here (before the guardian early return) with its own existence check
+        # so a database seeded BEFORE this fixture was added still gains it on a
+        # re-run; gating it on guardian-absence would skip it forever on any
+        # already-seeded dev DB and break the real-backend cross-family spec.
+        # #VERIFY: test_seed_dev_data_seeds_unrelated_family_profile.
+        unrelated_profile_seeded = await _seed_unrelated_family(session)
+
         existing = await session.scalar(
             select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
         )
         if existing is not None:
-            print("Dev data already seeded; nothing to do.")
+            # Commit any just-added cross-family fixture before returning; the
+            # main dev family is already present, but the fixture may not be.
+            if unrelated_profile_seeded:
+                await session.commit()
+            print("Dev data already seeded; refreshed cross-family fixture if missing.")
             return
 
         family = Family(name="Dev Family")

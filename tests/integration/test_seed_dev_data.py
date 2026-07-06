@@ -13,6 +13,7 @@ in `api/library.py` does not itself check it.
 
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 import pytest
@@ -20,6 +21,7 @@ from sqlalchemy import and_, exists, select
 
 from cyo_adventure.db.models import (
     ChildProfile,
+    Family,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -39,6 +41,7 @@ _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
 _ADMIN_SUBJECT = "dev-admin"
 _REVIEW_STORY_ID = "s_bridge_builder"
+_UNRELATED_PROFILE_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
 
 
 async def _library_storybook_ids(
@@ -180,3 +183,36 @@ async def test_seed_dev_data_seeds_admin_and_review_story(
     # Not yet approved: must NOT clear the kid library gate.
     story_ids = await _library_storybook_ids(sessions, profile.id)
     assert _REVIEW_STORY_ID not in story_ids
+
+
+async def test_seed_dev_data_seeds_unrelated_family_profile(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The seed provides a second family's child profile, genuinely isolated
+    from the guardian's own family, for naive-kid-misuse-real.spec.ts to prove
+    authorize_profile rejects a cross-family profile id."""
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        guardian_profile = await session.scalar(
+            select(ChildProfile).where(ChildProfile.display_name == "Dev Reader")
+        )
+        assert guardian_profile is not None
+
+        unrelated_profile = await session.scalar(
+            select(ChildProfile).where(ChildProfile.id == _UNRELATED_PROFILE_ID)
+        )
+        assert unrelated_profile is not None
+        assert unrelated_profile.display_name == "Unrelated Reader"
+
+        assert unrelated_profile.family_id != guardian_profile.family_id
+
+        unrelated_family = await session.scalar(
+            select(Family).where(Family.id == unrelated_profile.family_id)
+        )
+        guardian_family = await session.scalar(
+            select(Family).where(Family.id == guardian_profile.family_id)
+        )
+        assert unrelated_family is not None
+        assert guardian_family is not None
+        assert unrelated_family.id != guardian_family.id
