@@ -51,6 +51,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer reads as a retryable "try again" (naive-UX F1, G2).
 
 ### Fixed
+- Concurrent approvals of the same story can no longer double-apply state
+  transitions: `api/approval.py` and `moderation/pipeline.py` load the story
+  row with `SELECT ... FOR UPDATE` so a second approve/submit blocks on the
+  first transaction instead of racing it. Closes #129.
+- Generation jobs can no longer be silently stranded: jobs run under an RQ
+  `job_timeout`, every failure path records a `failed` status through one
+  shared helper, a top-level guard force-fails a job interrupted mid-run
+  (tracking completion with an explicit flag set only after the terminal
+  commit, so an interrupt landing after an in-memory status write but before
+  the commit still records `failed`, not a phantom `passed`), and a reclaim
+  sweeper (`requeue_stranded_jobs`, run by the new `worker_main` entrypoint)
+  re-enqueues rows whose worker died before ever starting. Requeue is
+  idempotent via RQ-native unique job ids, so overlapping sweeps cannot
+  double-enqueue. Verified against a real Redis testcontainer.
+- Unexpected response-shape errors (`ResponseValidationError`) now return the
+  standard error envelope instead of an unhandled 500 traceback. Closes #48.
 - Offline reading progress queued while disconnected is now actually sent to
   the server: the replay queue flushes on reader mount and on the browser
   `online` event (previously nothing ever called `replayQueue`, so queued
