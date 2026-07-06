@@ -61,6 +61,11 @@ _TEMPLATES = files("cyo_adventure.generation.templates")
 # block; everything after is the user block.
 _USER_MARKER = "<!-- @user -->"
 
+# Placeholder tokens shared by every stage template (structure/prose/fill). Named
+# once so the substitution sites cannot drift from the template text.
+_SCHEMA_RULES_PLACEHOLDER = "{schema_rules}"
+_DRAFTING_GUIDE_PLACEHOLDER = "{drafting_guide}"
+
 
 @dataclass(frozen=True, slots=True)
 class StagePrompt:
@@ -294,8 +299,8 @@ def build_structure_prompt(
     """
     text = (
         _load_template("structure.md")
-        .replace("{schema_rules}", _schema_rules())
-        .replace("{drafting_guide}", _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
         .replace("{concept_brief}", brief.model_dump_json(indent=2))
         .replace("{budget_constraints}", _budget_block(brief, scale))
     )
@@ -332,8 +337,8 @@ def build_prose_prompt(skeleton_json: str, brief: ConceptBrief) -> StagePrompt:
     _ = brief  # reserved for future per-field prose customisation
     text = (
         _load_template("prose.md")
-        .replace("{drafting_guide}", _drafting_guide())
-        .replace("{schema_rules}", _schema_rules())
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{approved_skeleton}", skeleton_json)
     )
     return _split_stage_prompt(text)
@@ -370,8 +375,8 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
     # #VERIFY: caller must pass schema-validated skeleton with FILL directives.
     text = (
         _load_template("fill.md")
-        .replace("{drafting_guide}", _drafting_guide())
-        .replace("{schema_rules}", _schema_rules())
+        .replace(_DRAFTING_GUIDE_PLACEHOLDER, _drafting_guide())
+        .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace("{theme_brief}", theme_brief)
     )
