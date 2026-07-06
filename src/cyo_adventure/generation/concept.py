@@ -18,10 +18,18 @@ content we want to generate.
 
 from __future__ import annotations
 
+import re
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, cast
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    JsonValue,
+    StringConstraints,
+    model_validator,
+)
 
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 from cyo_adventure.validator.band_profile import offered_cells, production_cell_budget
@@ -30,6 +38,53 @@ from cyo_adventure.validator.band_profile import offered_cells, production_cell_
 # field cannot inflate prompt size unbounded or smuggle a large payload into a
 # generation prompt. Lists of these are themselves count-capped via Field.
 _BoundedText = Annotated[str, StringConstraints(min_length=1, max_length=200)]
+
+# ---------------------------------------------------------------------------
+# Concept-intake control-character strip (safety-eval Finding 5 / F24 / #64)
+# ---------------------------------------------------------------------------
+#
+# The ConceptBrief docstring below documents that "the API layer should
+# additionally strip control characters before the brief reaches the
+# orchestrator." Finding 5 of the adversarial safety evaluation found that no
+# such strip existed anywhere: the brief reached the generation prompt with
+# only Pydantic length/type constraints and PII screening. This pattern (and
+# the ``_strip_control_chars`` normalization path below) close that gap at
+# concept intake, the single point every free-text field passes through
+# before it can reach the generator.
+_CONTROL_CHAR_PATTERN = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+# #CRITICAL: security: guardian-supplied free text reaches the generation
+# prompt with only Pydantic length/type bounds; embedded control characters
+# (e.g. injected via a crafted brief field) could disrupt prompt framing for
+# the generator or corrupt downstream log/terminal rendering (safety-eval
+# Finding 5, #64). Applying the strip on every ConceptBrief before field
+# validation (see the ``model_validator`` on ConceptBrief) makes this the
+# single normalization path every free-text field passes through, rather
+# than a per-field opt-in that is easy to miss on a newly added field.
+# #VERIFY: test_concept.py::test_premise_control_chars_stripped and its
+# siblings (protagonist name, title, list items) assert the stripped text
+# round-trips clean; test_printable_text_unaffected_by_control_char_strip
+# asserts newline/tab (outside the stripped range) are left intact.
+def _strip_control_chars(value: JsonValue) -> JsonValue:
+    """Recursively strip ASCII control characters from string leaves.
+
+    Args:
+        value: Any JSON-compatible value from a ConceptBrief input payload:
+            a string is stripped directly; a dict or list is walked
+            recursively; any other type (int, float, bool, None) is returned
+            unchanged.
+
+    Returns:
+        The value with control characters removed from every string leaf.
+    """
+    if isinstance(value, str):
+        return _CONTROL_CHAR_PATTERN.sub("", value)
+    if isinstance(value, dict):
+        return {key: _strip_control_chars(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_strip_control_chars(item) for item in value]
+    return value
 
 
 # ---------------------------------------------------------------------------
@@ -118,15 +173,31 @@ class ConceptBrief(BaseModel):
     directly to the intake spec in ``docs/planning/tech-spec.md`` (section
     "Concept brief (intake fields)"). Free-text fields carry ``max_length``
     bounds (and list fields a count cap) so a brief cannot inflate prompt size
-    or smuggle an oversized payload into a generation prompt; the API layer
-    should additionally strip control characters before the brief reaches the
-    orchestrator.
+    or smuggle an oversized payload into a generation prompt. Every string
+    field (including nested ``protagonist`` fields and list items) additionally
+    has ASCII control characters stripped at intake, before field validation
+    runs (see ``_strip_control_chars`` above; safety-eval Finding 5 / #64).
 
     ``extra="forbid"`` ensures that any unexpected field name is rejected at
     parse time, preventing accidental injection of undeclared data.
     """
 
     model_config = ConfigDict(extra="forbid")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip_control_characters(cls, data: object) -> object:
+        """Strip ASCII control characters from every string field before validation.
+
+        Runs before Pydantic's own field validation, so the length/type
+        constraints below see already-stripped text. Only dict input (the
+        normal JSON-body/kwargs case) is walked; a non-dict value (e.g. an
+        already-constructed ``ConceptBrief`` passed as the sole positional
+        arg, which Pydantic itself rejects) is passed through unchanged.
+        """
+        if isinstance(data, dict):
+            return _strip_control_chars(cast("dict[str, JsonValue]", data))
+        return data
 
     # Optional story title supplied by the guardian.
     title: str | None = Field(default=None, max_length=200)
