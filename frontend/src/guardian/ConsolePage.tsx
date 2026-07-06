@@ -46,6 +46,11 @@ export function ConsolePage() {
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
+  // #ASSUME: data integrity: /v1/profiles returns { profiles: [...] }. On any
+  // failure childCount stays null and the onboarding nudge simply does not
+  // render, so a first-time guardian is nudged but a load hiccup is silent.
+  // #VERIFY: ConsolePage.test.tsx nudge / no-nudge cases.
+  const [childCount, setChildCount] = useState<number | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -77,6 +82,25 @@ export function ConsolePage() {
       cancelled = true
     }
   }, [reviewApi])
+
+  // Separate, non-blocking read: a first-time guardian with zero children needs
+  // a nudge toward profile creation, independent of the admin-only queue state.
+  useEffect(() => {
+    let cancelled = false
+    async function loadChildren() {
+      try {
+        const res = await api.get('/v1/profiles')
+        const profiles = (res.data?.profiles ?? []) as unknown[]
+        if (!cancelled) setChildCount(profiles.length)
+      } catch {
+        if (!cancelled) setChildCount(null)
+      }
+    }
+    void loadChildren()
+    return () => {
+      cancelled = true
+    }
+  }, [api])
 
   if (state.kind === 'loading') {
     return (
@@ -118,6 +142,13 @@ export function ConsolePage() {
         <EmptyState
           title="Nothing to review"
           description="New stories appear here once they finish generating."
+          actions={
+            childCount === 0 ? (
+              <Link className="console__cta" to="/guardian/profiles">
+                Add a child profile to get started
+              </Link>
+            ) : undefined
+          }
         />
       ) : (
         <>
