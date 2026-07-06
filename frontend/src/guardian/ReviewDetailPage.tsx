@@ -202,11 +202,38 @@ export function ReviewDetailPage() {
         ))}
       </div>
 
+      {/*
+        #ASSUME: UI state: the backend already re-checks status on approve/send-back
+        and rejects a story that is not in_review; this guard is UX only, so a
+        guardian never clicks into a confusing rejection for a story someone else
+        already approved or sent back in another tab.
+        #VERIFY: ReviewDetailPage.test.tsx disabled-for-published/draft +
+        enabled-for-in-review tests.
+      */}
       <div className="review-actionbar">
-        <Button variant="danger" onClick={() => openDialog('sendback')}>
+        <Button
+          variant="danger"
+          onClick={() => openDialog('sendback')}
+          disabled={surface.status !== 'in_review'}
+          aria-label={
+            surface.status !== 'in_review'
+              ? 'Only stories in review can be sent back'
+              : undefined
+          }
+        >
           Send Back
         </Button>
-        <Button onClick={() => openDialog('approve')}>Approve</Button>
+        <Button
+          onClick={() => openDialog('approve')}
+          disabled={surface.status !== 'in_review'}
+          aria-label={
+            surface.status !== 'in_review'
+              ? 'Only stories in review can be approved'
+              : undefined
+          }
+        >
+          Approve
+        </Button>
       </div>
 
       {dialog === 'approve' ? (

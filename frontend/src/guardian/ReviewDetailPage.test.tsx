@@ -115,6 +115,30 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
+  it.each(['published', 'draft'] as const)(
+    'disables Approve and Send Back for a %s story with an explanatory label',
+    async (status) => {
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status } })
+      renderAt('s1')
+      const approve = await screen.findByRole('button', {
+        name: /only stories in review can be approved/i,
+      })
+      const sendBack = screen.getByRole('button', {
+        name: /only stories in review can be sent back/i,
+      })
+      expect(approve).toBeDisabled()
+      expect(sendBack).toBeDisabled()
+    }
+  )
+
+  it('keeps Approve and Send Back enabled for a story in review', async () => {
+    renderAt('s1')
+    const approve = await screen.findByRole('button', { name: /^Approve$/i })
+    const sendBack = screen.getByRole('button', { name: /^Send Back$/i })
+    expect(approve).toBeEnabled()
+    expect(sendBack).toBeEnabled()
+  })
+
   it('does not bleed a prior action error into the other dialog', async () => {
     const user = userEvent.setup()
     mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 400 } })
