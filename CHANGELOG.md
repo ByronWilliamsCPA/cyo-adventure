@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+- The backend now trusts proxy headers only from an explicit boundary:
+  uvicorn's `forwarded_allow_ips` is threaded through Settings, the dev
+  docker-compose pins it to the compose network's `172.25.0.0/16`, and prod
+  keeps the documented homelab range (follow-up: #138). This repairs both
+  rate-limiter keying (previously every client shared the proxy's IP bucket)
+  and HSTS emission behind TLS termination, verified by an e2e rate-limit
+  keying test behind a real `ProxyHeadersMiddleware`.
+- Moderation reviewer and repair prompts now wrap story prose in an
+  `<untrusted_passage>` delimiter with instruction-hierarchy framing, and
+  literal delimiter tags inside the passage are neutralized, hardening the
+  Stage-1/repair pipeline against prompt injection from generated content.
+- Resource bounds across the generation surface: request body-size guard and
+  reading-state list/dict field caps, `ConceptBrief` node/ending count caps,
+  `persist_storybook` blob/report size guards, an Ollama stream-response
+  ceiling derived from `max_tokens`, and a per-family active-job throttle on
+  `enqueue_concept_generation` (caps derived from real skeleton/cell data).
+- CSP tightened with `object-src`, `base-uri`, and `form-action`; correlation,
+  request, trace, and span id headers are validated against
+  `[A-Za-z0-9_-]{1,64}` and never echoed back when invalid (CRLF and oversize
+  covered by tests); the SSRF guard docstring now matches what the code
+  actually checks.
+- Concept intake strips control characters (closes #64, safety-eval Finding 5),
+  and publishing hard-blocks submitting a story version that has not passed
+  moderation screening, mirroring the existing `approve()` check (closes #57).
+
 ### Added
 - Landing page at `/` with two doors: Kids (to the profile picker, now at
   `/kids`) and Grown-ups (to the guardian console; admins sign in there too).
