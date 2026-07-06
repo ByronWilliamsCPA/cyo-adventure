@@ -9,10 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - The integration test suite now fails instead of silently skipping when
-  Docker/testcontainers is unavailable while running in CI (`CI` env var
-  set); local runs without Docker still skip as before. Previously a broken
-  CI runner's testcontainers setup would show green by skipping the entire
-  suite.
+  Docker/testcontainers is unavailable while running in CI (`CI` env var set
+  to a truthy value such as GitHub Actions' `CI=true`); local runs without
+  Docker, including an explicit `CI=false`, still skip as before. Previously a
+  broken CI runner's testcontainers setup would show green by skipping the
+  entire suite.
 - The browser tab title and meta description now render real values ("CYO
   Adventure" / the app description) instead of the literal unrendered
   `{{ cookiecutter.project_name }}` placeholders in `frontend/index.html`;

@@ -78,14 +78,16 @@ def _pg_url() -> Iterator[str]:
     # #CRITICAL: external-resources: a CI runner that silently skips the whole
     # integration suite (rather than failing) would let a real Docker/testcontainers
     # regression pass CI unnoticed, since a skip and a pass both show green.
-    # #VERIFY: when the ``CI`` environment variable is set (GitHub Actions sets
-    # ``CI=true`` on every runner), fail loudly instead of skipping.
+    # #VERIFY: when the ``CI`` environment variable is set to a truthy value
+    # (GitHub Actions sets ``CI=true`` on every runner), fail loudly instead of
+    # skipping. Match on truthy tokens rather than mere presence so an explicit
+    # ``CI=false`` from a local shell keeps the developer-friendly skip.
     """
     try:
         container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
         container.start()
     except (DockerException, OSError) as exc:
-        if os.environ.get("CI"):
+        if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}:
             pytest.fail(
                 "Docker unavailable in CI runner; integration tests would "
                 f"silently skip: {exc}"
