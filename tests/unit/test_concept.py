@@ -10,7 +10,12 @@ from typing import Any
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
+from cyo_adventure.generation.concept import (
+    MAX_ENDING_COUNT,
+    MAX_TARGET_NODE_COUNT,
+    ConceptBrief,
+    StructurePattern,
+)
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # ---------------------------------------------------------------------------
@@ -156,6 +161,38 @@ def test_ending_count_zero_rejected() -> None:
     """ending_count < 1 is rejected (ge=1)."""
     bad = dict(VALID_BRIEF)
     bad["ending_count"] = 0
+    with pytest.raises(PydanticValidationError):
+        ConceptBrief(**bad)
+
+
+def test_target_node_count_at_max_accepted() -> None:
+    """target_node_count exactly at the ADR-011 matrix ceiling is accepted."""
+    ok = dict(VALID_BRIEF)
+    ok["target_node_count"] = MAX_TARGET_NODE_COUNT
+    brief = ConceptBrief(**ok)
+    assert brief.target_node_count == MAX_TARGET_NODE_COUNT
+
+
+def test_target_node_count_over_max_rejected() -> None:
+    """target_node_count one over the ADR-011 matrix ceiling is rejected (le=)."""
+    bad = dict(VALID_BRIEF)
+    bad["target_node_count"] = MAX_TARGET_NODE_COUNT + 1
+    with pytest.raises(PydanticValidationError):
+        ConceptBrief(**bad)
+
+
+def test_ending_count_at_max_accepted() -> None:
+    """ending_count exactly at the derived ceiling is accepted."""
+    ok = dict(VALID_BRIEF)
+    ok["ending_count"] = MAX_ENDING_COUNT
+    brief = ConceptBrief(**ok)
+    assert brief.ending_count == MAX_ENDING_COUNT
+
+
+def test_ending_count_over_max_rejected() -> None:
+    """ending_count one over the derived ceiling is rejected (le=)."""
+    bad = dict(VALID_BRIEF)
+    bad["ending_count"] = MAX_ENDING_COUNT + 1
     with pytest.raises(PydanticValidationError):
         ConceptBrief(**bad)
 
