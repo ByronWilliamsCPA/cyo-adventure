@@ -14,6 +14,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Docker, including an explicit `CI=false`, still skip as before. Previously a
   broken CI runner's testcontainers setup would show green by skipping the
   entire suite.
+- Stage-0 classifier findings now apply an advisory noise floor (score >=
+  0.01): OpenAI Moderation and Perspective return a nonzero score for every
+  category on every call, so every clean node previously emitted all 13
+  OpenAI categories as advisory findings (11 nodes x 13 = 143 findings on the
+  first live story, max real score 0.0006) and the admin review surface read
+  as "every section flagged with every flag". Sub-floor scores are dropped;
+  provider-flagged categories and bright-line blocks bypass the floor.
+  Advisories never gate (`has_soft_flag` counts `FLAG` only), so approval
+  outcomes are unchanged; this also shrinks the ~70KB per-version
+  `moderation_report` accordingly.
 - The browser tab title and meta description now render real values ("CYO
   Adventure" / the app description) instead of the literal unrendered
   `{{ cookiecutter.project_name }}` placeholders in `frontend/index.html`;

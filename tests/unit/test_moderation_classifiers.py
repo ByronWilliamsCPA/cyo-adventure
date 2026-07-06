@@ -81,6 +81,100 @@ async def test_graded_category_is_not_a_block() -> None:
     assert all(f.verdict is not Verdict.BLOCK for f in findings)
 
 
+@pytest.mark.unit
+async def test_openai_near_zero_score_yields_no_finding() -> None:
+    """Unflagged categories with noise-level scores must not emit findings.
+
+    OpenAI Moderation returns a nonzero float for every category on every
+    call, so without a floor every clean node emits all categories as
+    advisory findings and the review surface reads as fully flagged.
+    """
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False, "harassment": False},
+                        # Real noise ceiling observed on clean prose: ~6e-4.
+                        "category_scores": {
+                            "violence": 0.0006,
+                            "harassment": 0.0000022,
+                        },
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "a friendly unicorn story")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_openai_elevated_score_yields_advisory() -> None:
+    """An unflagged category at or above the floor still emits an advisory."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": {"violence": False},
+                        "category_scores": {"violence": 0.02},
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "a duel at dawn")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert [f.verdict for f in findings] == [Verdict.ADVISORY]
+
+
+@pytest.mark.unit
+async def test_openai_flagged_non_brightline_bypasses_floor() -> None:
+    """A provider-flagged category emits an advisory even with a sub-floor score.
+
+    OpenAI's own boolean flag crossed the provider's threshold; our score
+    floor must never silence it.
+    """
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": True,
+                        "categories": {"violence": True},
+                        "category_scores": {"violence": 0.001},
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert [f.verdict for f in findings] == [Verdict.ADVISORY]
+
+
 def _perspective_response(
     scores: dict[str, float],
 ) -> dict[str, object]:
@@ -133,6 +227,25 @@ async def test_perspective_toxicity_graded_score_is_not_block() -> None:
     )
     assert findings
     assert all(f.verdict is not Verdict.BLOCK for f in findings)
+
+
+@pytest.mark.unit
+async def test_perspective_near_zero_score_yields_no_finding() -> None:
+    """Perspective attributes with noise-level scores must not emit findings."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json=_perspective_response({"TOXICITY": 0.001, "INSULT": 0.004}),
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "a friendly unicorn story")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []
 
 
 @pytest.mark.unit
