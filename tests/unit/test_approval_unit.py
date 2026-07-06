@@ -9,10 +9,11 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pydantic import ValidationError as PydanticValidationError
+from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.api import approval
 from cyo_adventure.api.deps import Principal, RequestContext
@@ -53,6 +54,18 @@ def _ctx(role: str, session: AsyncMock) -> RequestContext:
     return RequestContext(principal=_principal(role), session=session)
 
 
+def _execute_result(value: object) -> MagicMock:
+    """Build a fake `Result` whose `scalar_one_or_none()` returns ``value``.
+
+    Mirrors production ``(await session.execute(stmt)).scalar_one_or_none()``:
+    ``execute()`` is awaited, but the `Result` it returns exposes a plain
+    (synchronous) `scalar_one_or_none` method.
+    """
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = value
+    return result
+
+
 # ---------------------------------------------------------------------------
 # _load_admin_story
 # ---------------------------------------------------------------------------
@@ -67,14 +80,14 @@ async def test_load_admin_story_non_admin_raises_before_load() -> None:
     with pytest.raises(AuthorizationError):
         await approval._load_admin_story(ctx, "s1")
 
-    session.get.assert_not_awaited()
+    session.execute.assert_not_awaited()
 
 
 @pytest.mark.unit
 async def test_load_admin_story_missing_raises_404() -> None:
     """An admin caller with an unknown story id raises ResourceNotFoundError."""
     session = AsyncMock()
-    session.get = AsyncMock(return_value=None)
+    session.execute = AsyncMock(return_value=_execute_result(None))
     ctx = _ctx("admin", session)
 
     with pytest.raises(ResourceNotFoundError):
@@ -86,12 +99,46 @@ async def test_load_admin_story_returns_book() -> None:
     """An admin caller with a known story id returns the Storybook."""
     book = _story("draft")
     session = AsyncMock()
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
 
     result = await approval._load_admin_story(ctx, "s1")
 
     assert result is book
+
+
+@pytest.mark.unit
+async def test_load_admin_story_locks_row_for_update() -> None:
+    """The admin-story load must carry SELECT ... FOR UPDATE.
+
+    Mirrors how tests/unit/test_reading_api_unit.py pins the lock on
+    api/reading.py's read-modify-write load. Every admin transition
+    (submit/approve/send_back/archive) loads through this one helper, so
+    losing the lock here reopens the concurrent-approve race that lets two
+    admins both pass the in-memory status check and the last writer silently
+    overwrite `approved_by` (#129 / audit Finding 3).
+    """
+    book = _story("in_review")
+    session = AsyncMock()
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    ctx = _ctx("admin", session)
+
+    result = await approval._load_admin_story(ctx, "s1")
+
+    assert result is book
+    session.execute.assert_awaited_once()
+    stmt = session.execute.await_args.args[0]
+    where = str(stmt.whereclause)
+    assert "storybook" in where.lower()
+
+    # Render with the Postgres dialect (the deployment target): the generic
+    # compiler omits skip_locked/nowait clauses, so a weakening would be
+    # invisible under str(stmt). skip_locked would let a concurrent admin
+    # slip past the lock instead of serializing behind it.
+    rendered = str(stmt.compile(dialect=postgresql.dialect()))
+    assert "FOR UPDATE" in rendered
+    assert "SKIP LOCKED" not in rendered
+    assert "NOWAIT" not in rendered
 
 
 # ---------------------------------------------------------------------------
@@ -132,7 +179,7 @@ async def test_submit_handler_calls_service_and_returns_view(
     """submit_storybook delegates to service.submit and echoes a state view."""
     book = _story("draft")
     session = AsyncMock()
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
 
     async def _submit(*_args: object, **_kwargs: object) -> None:
@@ -169,7 +216,7 @@ async def test_approve_handler_stamps_view(
     )
 
     session = AsyncMock()
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     session.scalar = AsyncMock(return_value=1)
     ctx = _ctx("admin", session)
 
@@ -198,7 +245,7 @@ async def test_send_back_handler_echoes_reason(
     """send_back_storybook echoes the reason in the returned view."""
     book = _story("in_review")
     session = AsyncMock()
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
     body = SendBackRequest(reason="too scary")
 
@@ -228,7 +275,7 @@ async def test_archive_handler_calls_service(
     """archive_storybook delegates to service.archive and returns a state view."""
     book = _story("published", current=1)
     session = AsyncMock()
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
 
     async def _archive(*_args: object, **_kwargs: object) -> None:
@@ -324,7 +371,10 @@ async def test_review_surface_returns_view_for_admin() -> None:
             },
         },
     )
-    session.get.side_effect = [book, version]  # _load_admin_story, then version row
+    # _load_admin_story loads via execute() (locked); the version row still
+    # loads via the plain session.get() in get_review_surface itself.
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    session.get = AsyncMock(return_value=version)
     ctx = _ctx("admin", session)
     view = await approval.get_review_surface(book.id, ctx, version=1)
     assert view.version == 1
@@ -340,6 +390,7 @@ async def test_review_surface_blocks_child() -> None:
     ctx = _ctx("child", session)
     with pytest.raises(AuthorizationError):
         await approval.get_review_surface("s1", ctx, version=1)
+    session.execute.assert_not_awaited()
     session.get.assert_not_awaited()
 
 
@@ -348,7 +399,8 @@ async def test_review_surface_missing_version_raises_404() -> None:
     """get_review_surface raises 404 when the requested version row is missing."""
     session = AsyncMock()
     book = _story("in_review", current=None)
-    session.get.side_effect = [book, None]  # admin story ok, version row missing
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    session.get = AsyncMock(return_value=None)  # version row missing
     ctx = _ctx("admin", session)
     with pytest.raises(ResourceNotFoundError):
         await approval.get_review_surface(book.id, ctx, version=9)
@@ -357,17 +409,18 @@ async def test_review_surface_missing_version_raises_404() -> None:
 @pytest.mark.unit
 async def test_review_surface_rejects_non_positive_version() -> None:
     """A non-positive version query param is rejected before the version-row
-    lookup: only _load_admin_story's session.get call happens.
+    lookup: only _load_admin_story's (locked) session.execute call happens.
     """
     session = AsyncMock()
     book = _story("in_review", current=None)
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
 
     with pytest.raises(ValidationError):
         await approval.get_review_surface(book.id, ctx, version=0)
 
-    session.get.assert_awaited_once()
+    session.execute.assert_awaited_once()
+    session.get.assert_not_awaited()
 
 
 @pytest.mark.unit
@@ -375,7 +428,7 @@ async def test_review_surface_rejects_negative_version() -> None:
     """A negative version query param is rejected the same as zero."""
     session = AsyncMock()
     book = _story("in_review", current=None)
-    session.get = AsyncMock(return_value=book)
+    session.execute = AsyncMock(return_value=_execute_result(book))
     ctx = _ctx("admin", session)
 
     with pytest.raises(ValidationError):

@@ -116,6 +116,16 @@ class Settings(BaseSettings):
     # environments where no queue is configured. Production must override via
     # CYO_ADVENTURE_REDIS_URL.
     redis_url: str = "redis://localhost:6379/0"
+    # #CRITICAL: timing: RQ's own default job_timeout is 180s; a live Ollama run
+    # (see ollama_timeout_seconds's cold-start note) routinely exceeds that, so an
+    # unset job_timeout lets RQ SIGALRM-kill a still-healthy generation job and
+    # strand its row. 1800s (30 min) comfortably covers a cold-start plus the
+    # full three-stage pipeline (structure, prose, up to 3 repairs) against the
+    # slowest configured leg.
+    # #VERIFY: generation/queue.py::enqueue_generation passes this as
+    # job_timeout= on every enqueue call (both the guardian-triggered enqueue and
+    # the stranded-job reclaim sweep's re-enqueue).
+    generation_job_timeout_seconds: int = 1800
     # Provider selection. "mock" remains the default so CI and local runs never
     # make live LLM calls; production/staging set this to "openrouter" (the
     # primary per ADR-003 as amended 2026-06-22). Live adapters are constructed

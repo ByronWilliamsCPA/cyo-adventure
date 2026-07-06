@@ -217,6 +217,48 @@ async def test_illegal_transition_returns_409(
     assert resp.status_code == 409
 
 
+async def test_second_approve_rejected_and_approved_by_not_overwritten(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Two sequential approve calls: the first stamps approved_by, the second
+    is rejected and must not overwrite it (closes #129 / audit Finding 3).
+
+    This is a sequential regression test, not a true concurrent-transaction
+    race: two admins hitting approve() at the same instant on two separate DB
+    connections is the scenario the row lock in
+    `api/approval.py::_load_admin_story` guards against, and a true
+    two-session concurrency test remains accepted debt (issue #129 comment,
+    debt item C4). This test instead pins the state-machine + stamping
+    behavior that the lock protects: once published, a second approver's
+    reload must see the new status and be rejected, never silently
+    overwriting the first approver's stamp.
+    """
+    story_id = await _seed_in_review(sessions)
+    async with sessions() as session:
+        fam_b = Family(name="B")
+        session.add(fam_b)
+        await session.flush()
+        session.add(User(family_id=fam_b.id, role="admin", authn_subject="admin-b"))
+        await session.commit()
+
+    first = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert first.status_code == 200
+    first_approver = first.json()["approved_by"]
+    assert first_approver is not None
+
+    second = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-b")
+    )
+    assert second.status_code == 409
+
+    async with sessions() as session:
+        version_row = await session.get(StorybookVersion, (story_id, 1))
+        assert version_row is not None
+        assert str(version_row.approved_by) == first_approver
+
+
 async def test_missing_story_returns_404(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

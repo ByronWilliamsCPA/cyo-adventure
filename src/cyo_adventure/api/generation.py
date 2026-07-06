@@ -153,8 +153,9 @@ def _enqueue_safely(job_id: str) -> None:
     """
     # #ASSUME: external-resources: Redis may be unreachable; the GenerationJob
     # row is the durable record, so a failed enqueue is logged, not raised.
-    # #VERIFY: Phase 2b adds a reclaim sweeper that re-queues rows stranded in
-    # the "queued" state by a Redis outage.
+    # #VERIFY: generation/queue.py::requeue_stranded_jobs re-queues rows
+    # stranded in the "queued" state by this failure (or any other outage);
+    # run once at worker-process startup (generation/worker_main.py::main).
     try:
         enqueue_generation(job_id, settings)
     except Exception:  # noqa: BLE001 -- best-effort enqueue; row is the source of truth
