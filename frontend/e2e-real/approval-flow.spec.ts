@@ -63,7 +63,7 @@ test('the approved story reaches the child library', async ({ page, context }) =
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })
-  await page.goto('/')
+  await page.goto('/kids')
   await page.getByText('Dev Reader').click()
   await expect(page.getByText('The Bridge Builder')).toBeVisible()
 })
