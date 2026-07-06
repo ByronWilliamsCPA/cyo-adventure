@@ -2455,6 +2455,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#frontend-indexhtml-ships-the-same-unrendered-cookiecutter-placeholders-the-apptsx-fix-missed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend index.html ships the same unrendered cookiecutter placeholders the App.tsx fix missed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2869,6 +2880,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#frontend-indexhtml-ships-the-same-unrendered-cookiecutter-placeholders-the-apptsx-fix-missed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend index.html ships the same unrendered cookiecutter placeholders the App.tsx fix missed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3260,6 +3282,30 @@ strings rendered into the JSX, so a fresh frontend shows raw template tags.</p>
 time (or use the project name/description values), the same way other generated
 files are templated.</p>
 <p><strong>Affected Files</strong>: <code>frontend/src/App.tsx</code></p>
+<h3 id="frontend-indexhtml-ships-the-same-unrendered-cookiecutter-placeholders-the-apptsx-fix-missed">Frontend <code>index.html</code> ships the same unrendered cookiecutter placeholders the App.tsx fix missed<a class="headerlink" href="#frontend-indexhtml-ships-the-same-unrendered-cookiecutter-placeholders-the-apptsx-fix-missed" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Medium</li>
+<li><strong>Category</strong>: Tooling</li>
+<li><strong>Discovered</strong>: 2026-07-05</li>
+</ul>
+<p><strong>Issue</strong>: <code>frontend/index.html</code> renders the document <code>&lt;title&gt;</code> as
+<code>{{ cookiecutter.project_name }}</code> and <code>&lt;meta name="description"&gt;</code> as
+<code>{{ cookiecutter.project_short_description }}</code>, the same two placeholders flagged
+for <code>App.tsx</code> on 2026-06-21 but in a different file the App.tsx fix did not
+cover. <code>index.html</code> is Vite's entry document, templated at generation time
+rather than rendered by React, so a project can "fix" the visible JSX and still
+ship a browser tab literally titled <code>{{ cookiecutter.project_name }}</code>.</p>
+<p><strong>Context</strong>: Surfaced by a naive-user Claude-for-Chrome pass over the live site
+(scenario K1): a 7-year-old persona immediately noticed the browser tab read
+<code>{{ cookiecutter.project_name }}</code> and called it "leftover computer-programmer
+text" on an otherwise broken-looking page.</p>
+<p><strong>Suggested Fix</strong>: Render the cookiecutter variables in <code>index.html</code> at
+generation time, exactly as other generated files are templated. Add a
+post-generation smoke check that greps the rendered project for any literal
+<code>{{ cookiecutter.</code> string across all file types (not just <code>.tsx</code>), so the whole
+class of missed-file placeholders is caught at once rather than one file at a
+time.</p>
+<p><strong>Affected Files</strong>: <code>frontend/index.html</code></p>
 <h3 id="generated-api-client-is-gitignored-but-ci-never-regenerates-it">Generated API client is gitignored but CI never regenerates it<a class="headerlink" href="#generated-api-client-is-gitignored-but-ci-never-regenerates-it" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>Priority</strong>: Medium</li>
@@ -3414,7 +3460,7 @@ generated <code>package.json</code> noting that the root <code>tsconfig.json</co
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:08:53 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 02:45:37 UTC">July 6, 2026</span>
   </span>
 
     
