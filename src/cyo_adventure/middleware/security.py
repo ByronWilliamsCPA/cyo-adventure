@@ -513,10 +513,18 @@ class SSRFPreventionMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
-        """Check for SSRF patterns in request.
+        """Check for SSRF patterns in the request's query parameters.
 
-        Validates query parameters, form data, and JSON body for potential
-        SSRF attempts targeting internal resources.
+        Only ``request.query_params`` is scanned for embedded URLs; this
+        middleware does NOT inspect form data or the JSON body (F21). No
+        current endpoint accepts a URL in a body field, so a body scanner
+        would be speculative complexity with nothing to guard.
+
+        #EDGE: security: if a future endpoint adds a body field that accepts
+        a URL (e.g. an image-import-by-URL feature), that field needs its own
+        SSRF guard; this middleware will not see it.
+        #VERIFY: add a dedicated check (reusing `_is_blocked_url`) at the
+        point that field is parsed, before any outbound request is made.
         """
         # Check query parameters for URLs
         for param, value in request.query_params.items():
