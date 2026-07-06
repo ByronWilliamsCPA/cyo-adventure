@@ -661,13 +661,30 @@ class TestOllamaProvider:
 
     @pytest.mark.asyncio
     async def test_stream_byte_ceiling_configurable_multiplier(self) -> None:
-        """A custom stream_byte_multiplier changes the effective ceiling."""
-        content = "z" * 5  # over the default ceiling (4) but under a custom one
+        """A custom stream_byte_multiplier raises the effective ceiling.
+
+        The content is sized to sit strictly between the default ceiling and
+        the custom one, so this only passes when the custom multiplier is
+        genuinely honored; a silent fallback to DEFAULT_STREAM_BYTE_MULTIPLIER
+        (16) would reject the same stream. The paired default-multiplier leg
+        proves 24 bytes really does exceed the default ceiling, so the
+        custom-multiplier success is not a false pass.
+        """
+        # 24 bytes: over the default ceiling (max_tokens=1 * 16 = 16) but under
+        # the custom ceiling (max_tokens=1 * 32 = 32).
+        content = "z" * 24
 
         def handler(_request: httpx.Request) -> httpx.Response:
             return httpx.Response(200, text=_ollama_stream(content))
 
-        provider = _ollama(handler, max_retries=1, stream_byte_multiplier=8)
+        # Default multiplier (16): 24 bytes exceeds the 16-byte ceiling, reject.
+        default_provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await default_provider.complete(system="s", prompt="u", max_tokens=1)
+        assert exc_info.value.leg_fatal is False
+
+        # Custom multiplier (32): the ceiling rises to 32 bytes, accept.
+        provider = _ollama(handler, max_retries=1, stream_byte_multiplier=32)
         result = await provider.complete(system="s", prompt="u", max_tokens=1)
         assert result == content
 
