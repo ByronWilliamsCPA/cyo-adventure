@@ -28,8 +28,9 @@ and use the same console.
 - Two doors, not three: **Kids** and **Guardians**. The guardian card notes
   "Admins sign in here too" because admin is a role inside the guardian
   console, not a separate page.
-- Visual scope is simple styled cards using existing design-system components.
-  No hero art, no marketing copy.
+- Visual scope is simple styled cards built with the shared parchment/ink/amber
+  design tokens (their own `landing.css`), matching the surfaces they link to,
+  not shared design-system components. No hero art, no marketing copy.
 
 ## Approach (selected: A, pathless-parent reshuffle)
 
