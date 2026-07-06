@@ -752,6 +752,79 @@ class TestProxyHeaderTrust:
         assert "Strict-Transport-Security" not in response.headers
 
     @pytest.mark.unit
+    def test_trusted_proxy_rate_limiter_keys_by_forwarded_client(self) -> None:
+        """End-to-end: the REAL RateLimitMiddleware, wired behind the REAL
+        uvicorn ProxyHeadersMiddleware, buckets by the trusted-proxy-rewritten
+        client IP, not the shared nginx peer IP.
+
+        Mirrors test_trusted_proxy_https_scheme_fires_hsts_header's
+        construction, but for the rate-limiter side of the same trust
+        boundary: before Task E1, RateLimitMiddleware read request.client.host
+        directly off the raw ASGI scope, so every request arriving via the
+        nginx/Traefik reverse proxy collapsed into ONE bucket keyed on the
+        proxy's own IP, regardless of which real client sent it. Exhausting
+        client A's burst limit must not throttle client B, even though both
+        requests share the same immediate TCP peer (the proxy) and differ
+        only in their X-Forwarded-For value.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=1000, burst_size=2)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        # 172.20.0.5 simulates the nginx sidecar's IP on the compose bridge
+        # network: the immediate TCP peer for BOTH clients below.
+        client = TestClient(wrapped, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        # Client A exhausts its burst limit (2 requests/second).
+        for _ in range(2):
+            response = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+            assert response.status_code == 200
+        throttled = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+        assert throttled.status_code == 429
+
+        # Client B, forwarded from the SAME nginx peer but a different
+        # X-Forwarded-For, gets its own bucket: it is not throttled by
+        # client A's exhausted limit.
+        response = client.get("/", headers={"X-Forwarded-For": "203.0.113.10"})
+        assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_untrusted_source_rate_limiter_collapses_to_peer_ip(self) -> None:
+        """Without the proxy trust boundary, two claimed clients sharing an
+        untrusted immediate peer collapse into the SAME rate-limit bucket.
+
+        Complements the previous test: it shows what Task E1 fixed. When the
+        immediate TCP peer is OUTSIDE the trusted CIDR, ProxyHeadersMiddleware
+        leaves scope["client"] unchanged, so RateLimitMiddleware keys on that
+        one peer IP no matter what X-Forwarded-For claims; one claimed
+        client's exhausted burst limit throttles a completely different
+        claimed client sharing the same peer.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=1000, burst_size=2)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        # 8.8.8.8 is outside the trusted CIDR: X-Forwarded-For is ignored and
+        # scope["client"] stays 8.8.8.8 for every request below.
+        client = TestClient(wrapped, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        for _ in range(2):
+            response = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+            assert response.status_code == 200
+
+        # A different claimed X-Forwarded-For does NOT get its own bucket:
+        # the untrusted peer IP is the real key, so this collides with the
+        # bucket client A already exhausted above.
+        collided = client.get("/", headers={"X-Forwarded-For": "203.0.113.10"})
+        assert collided.status_code == 429
+
+    @pytest.mark.unit
     def test_forwarded_allow_ips_setting_defaults_to_private_cidr(self) -> None:
         """Settings.forwarded_allow_ips defaults to a private CIDR, never '*'.
 
