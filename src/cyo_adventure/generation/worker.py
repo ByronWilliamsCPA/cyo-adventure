@@ -433,9 +433,10 @@ async def run_generation_job(
             job_row.version = _FIRST_VERSION
 
             logger.info(
-                "generation_job.passed",
+                "generation_job.storybook_persisted",
                 job_id=str(job_id),
                 storybook_id=story_id,
+                status=job_row.status,
             )
 
             # #CRITICAL: security: a passed story is only a draft; it must be screened

@@ -251,6 +251,13 @@ async def resume_manual_fill(
         await session.commit()
         raise
 
+    # import_filled_story already persisted a real Storybook + StorybookVersion
+    # for story_id above; link the job to it now, before the Stage 1 check
+    # below can downgrade the status, so neither outcome ever orphans the job
+    # row from the story it produced (only status/error differ below).
+    job.storybook_id = story_id
+    job.version = _FIRST_VERSION
+
     skeleton_slug = (
         job.authoring_metadata.get("skeleton_slug")
         if isinstance(job.authoring_metadata, dict)
@@ -285,26 +292,19 @@ async def resume_manual_fill(
             pii=pii,
         )
         if violations:
-            # #CRITICAL: data-integrity: import_filled_story already persisted
-            # a real Storybook + StorybookVersion for story_id moments ago; a
-            # Stage 1 violation must not orphan the job row from that story.
-            # Link storybook_id/version on this branch too (only status/error
-            # differ from the clean-pass branch below), mirroring the
-            # automated_provider mechanism's own Stage 1 downgrade in
-            # worker.py::run_generation_job, which persists the storybook and
-            # still marks the job needs_review.
+            # #CRITICAL: data-integrity: storybook_id/version were already
+            # linked above; only status/error differ from the clean-pass
+            # branch below, mirroring the automated_provider mechanism's own
+            # Stage 1 downgrade in worker.py::run_generation_job, which
+            # persists the storybook and still marks the job needs_review.
             # #VERIFY: covered by test_stage1_violations_are_recorded_on_the_job
             # in the unit test file, which checks the job's storybook_id and
             # version fields are both populated alongside needs_review.
             job.status = "needs_review"
             job.error = "; ".join(violations)[:512]
-            job.storybook_id = story_id
-            job.version = _FIRST_VERSION
             await session.commit()
             return story_id
 
     job.status = "passed"
-    job.storybook_id = story_id
-    job.version = _FIRST_VERSION
     await session.commit()
     return story_id
