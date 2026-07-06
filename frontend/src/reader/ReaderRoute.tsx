@@ -12,7 +12,7 @@ import {
 import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
 import type { QueuedWrite } from '../offline/db'
-import { saveProgress, type ReplayOutcome } from '../offline/sync'
+import { resolveConflict, saveProgress, type ReplayOutcome } from '../offline/sync'
 import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
 import { ConflictDialog } from './ConflictDialog'
@@ -53,21 +53,65 @@ export function ReaderRoute() {
   }, [])
   useReplayOnReconnect(syncApi, handleReplayOutcome)
 
+  // #CRITICAL: concurrency: resolveKeepThisDevice resends each story's furthest
+  // queued write after a B1 replay conflict. A held conflict entry never
+  // reached the server, so this first resend carries the local device's own
+  // state as-is; that resend can itself conflict again (a fresh concurrent
+  // edit landed while the dialog was open), and this time saveProgress's
+  // SaveResult carries a real currentRow to rebase onto. The resolution below
+  // rebases and retries exactly once via resolveConflict's
+  // 'continue_from_this_device' branch (offline/sync.ts); if that retry
+  // conflicts too, the story's items are kept in replayConflicts so the
+  // dialog re-surfaces for that story alone instead of the result being
+  // silently discarded (the queued writes were already dequeued by B1, so a
+  // dropped result is unrecoverable progress loss). replayConflicts is
+  // cleared per-story from actual outcomes, never blanket-cleared, so an
+  // unrelated story's still-open conflict is never wiped out by another
+  // story's resolution. A thrown LocalWriteError or propagated HTTP error is
+  // caught per story and routed to the existing failed-count banner instead
+  // of escaping this onClick as an unhandled rejection.
+  // #VERIFY: ReaderRoute.test.tsx "replay reconciliation (B2)" describe block
+  // covers (a) resend conflict then retry succeeds (dialog closes, rebased
+  // PUT sent), (b) resend re-conflicts after the retry (dialog stays open for
+  // that story only), (c) resend throws (failed banner count increments, no
+  // unhandled rejection escapes resolveKeepThisDevice).
   const resolveKeepThisDevice = useCallback(async () => {
-    // Adopt the furthest (last) queued write per story and resend it through
-    // saveProgress. A held conflict entry never reached the server (B1), so
-    // there is no currentRow to rebase onto here; this resends the local
-    // device's own state as-is. If the server still rejects it, saveProgress
-    // returns a fresh conflict that this MVP path does not re-surface; see
-    // the B2 report for this known follow-up.
+    // Adopt the furthest (last) queued write per story; earlier writes for a
+    // conflicted story were already superseded by this one (B1 semantics).
     const furthest = new Map<string, QueuedWrite>()
     for (const item of replayConflicts) {
       furthest.set(`${item.profile_id} ${item.storybook_id}`, item)
     }
+    const stillConflicted: QueuedWrite[] = []
+    let newFailures = 0
     for (const item of furthest.values()) {
-      await saveProgress(syncApi, item.profile_id, item.storybook_id, item.state)
+      try {
+        const result = await saveProgress(syncApi, item.profile_id, item.storybook_id, item.state)
+        if (result.kind === 'conflict') {
+          const retry = await resolveConflict(
+            syncApi,
+            item.profile_id,
+            item.storybook_id,
+            item.state,
+            result.currentRow,
+            'continue_from_this_device'
+          )
+          if (retry.kind === 'conflict') {
+            stillConflicted.push(item)
+          }
+        }
+      } catch {
+        // Resend failed outright (LocalWriteError or a propagated HTTP
+        // error): route it to the existing failed-progress banner instead of
+        // re-throwing into this onClick as an unhandled rejection. Mirrors
+        // replayQueue's non-offline-failure handling in offline/sync.ts.
+        newFailures += 1
+      }
     }
-    setReplayConflicts([])
+    setReplayConflicts(stillConflicted)
+    if (newFailures > 0) {
+      setReplayFailedCount((count) => count + newFailures)
+    }
   }, [replayConflicts, syncApi])
   const resolveUseNewest = useCallback(() => setReplayConflicts([]), [])
   const dismissReplayFailedBanner = useCallback(() => setReplayFailedCount(0), [])
