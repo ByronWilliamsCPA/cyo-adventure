@@ -224,9 +224,10 @@ export type CompletionView = {
  * directly to the intake spec in ``docs/planning/tech-spec.md`` (section
  * "Concept brief (intake fields)"). Free-text fields carry ``max_length``
  * bounds (and list fields a count cap) so a brief cannot inflate prompt size
- * or smuggle an oversized payload into a generation prompt; the API layer
- * should additionally strip control characters before the brief reaches the
- * orchestrator.
+ * or smuggle an oversized payload into a generation prompt. Every string
+ * field (including nested ``protagonist`` fields and list items) additionally
+ * has ASCII control characters stripped at intake, before field validation
+ * runs (see ``_strip_control_chars`` above; safety-eval Finding 5 / #64).
  *
  * ``extra="forbid"`` ensures that any unexpected field name is rejected at
  * parse time, preventing accidental injection of undeclared data.
