@@ -2370,6 +2370,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="How to use this checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#known-blockers-resolve-before-running-this-checklist-end-to-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Known blockers (resolve before running this checklist end to end)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -2388,6 +2405,17 @@
     <span class="md-ellipsis">
       
         1. Guardian sign-in and profiles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1a-admin-sign-in-and-review-queue-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1a. Admin sign-in and review queue access
       
     </span>
   </a>
@@ -2487,30 +2515,46 @@
 smoke tier (<code>frontend/e2e-real/</code>, <code>npm run test:e2e:real</code>, local-only, <code>--workers=1</code>) is the automated
 pre-deploy gate against a local stack; this checklist is the manual post-deploy verification against prod.</p>
 <p><strong>Accounts</strong> (prod seeding is manual; NEVER run <code>scripts/seed_dev_data.py</code> in prod).
-Source the real email + Supabase <code>sub</code> for each role from the private deployment
-runbook (kept out of the repo); the placeholders below stand in for them:</p>
+Both accounts below are real Supabase email/password logins. <code>User.role</code> is an
+exclusive enum, so one account cannot be both roles: author with the guardian
+account, then switch to the admin account to approve. Values current as of
+2026-07-05:</p>
 <table>
 <thead>
 <tr>
 <th>Role</th>
 <th>Email</th>
 <th>Supabase sub</th>
+<th>Sign-in</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Guardian</td>
-<td><code>&lt;GUARDIAN_EMAIL&gt;</code></td>
-<td><code>&lt;GUARDIAN_SUB&gt;</code></td>
+<td>Guardian (author, assign)</td>
+<td><code>byron.a.williams@gmail.com</code></td>
+<td><code>c1f33430</code></td>
+<td>email/password</td>
 </tr>
 <tr>
-<td>Admin</td>
-<td><code>&lt;ADMIN_EMAIL&gt;</code></td>
-<td><code>&lt;ADMIN_SUB&gt;</code></td>
+<td>Admin (content approver)</td>
+<td><code>byronawilliams@gmail.com</code></td>
+<td><code>21985c35</code></td>
+<td>email/password</td>
 </tr>
 </tbody>
 </table>
-<p>The real read gate is <code>approved_by</code> + an assignment, not <code>published_at</code> alone.</p>
+<p>The real read gate is <code>approved_by</code> + an assignment, not <code>published_at</code> alone.
+Approval is admin-only per ADR-005 (<code>storybook_version.approved_by</code>); the guardian
+account will correctly get a 403 on approve.</p>
+<h3 id="known-blockers-resolve-before-running-this-checklist-end-to-end">Known blockers (resolve before running this checklist end to end)<a class="headerlink" href="#known-blockers-resolve-before-running-this-checklist-end-to-end" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>API keys must be funded before Sections 2 and 4.</strong> Both OpenRouter
+  (generation) and the OpenAI classifier (Stage-0 moderation) need funded
+  quota before the generation-touching sections run. A 429 quota exhaustion on
+  the classifier fails silently from the operator's point of view: the
+  generation job stalls at the moderation step with no obvious error in the
+  UI, so check worker logs for 429s if a job hangs there.</li>
+</ul>
 <h2 id="0-infrastructure-probes">0. Infrastructure probes<a class="headerlink" href="#0-infrastructure-probes" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>https://cyo.williamshome.family</code> resolves through Pangolin to docker-host:443 with a valid TLS cert</li>
@@ -2520,6 +2564,11 @@ runbook (kept out of the repo); the placeholders below stand in for them:</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Redis and the RQ worker containers are up (<code>docker ps</code> on docker-host; worker listens on queue
       <code>generation</code>)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Alembic migrations current (migrate profile ran; <code>alembic current</code> matches head)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Supabase backups confirmed (DB is on the Supabase session pooler post-cutover; Supabase owns
+      backups/PITR. The old local <code>db-backup</code> sidecar is retired via homelab-infra #577, so do NOT
+      expect a local backup container.)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Worker survives a restart (<code>docker compose restart worker</code>; queued/in-flight jobs resume or
+      re-queue rather than being lost)</li>
 </ul>
 <h2 id="1-guardian-sign-in-and-profiles">1. Guardian sign-in and profiles<a class="headerlink" href="#1-guardian-sign-in-and-profiles" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
@@ -2528,14 +2577,21 @@ runbook (kept out of the repo); the placeholders below stand in for them:</p>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create or edit a child profile; preset avatar picker works</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign out and back in; session resumes</li>
 </ul>
+<h2 id="1a-admin-sign-in-and-review-queue-access">1a. Admin sign-in and review queue access<a class="headerlink" href="#1a-admin-sign-in-and-review-queue-access" title="Permanent link">&para;</a></h2>
+<p>Admin account: <code>byronawilliams@gmail.com</code> (role <code>admin</code>, sub <code>21985c35</code>).</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Admin email/password sign-in succeeds</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Sign-in lands on a review queue that loads (not the guardian console)</li>
+</ul>
 <h2 id="2-guardian-authoring-path-intake-to-published-book">2. Guardian authoring path (intake to published book)<a class="headerlink" href="#2-guardian-authoring-path-intake-to-published-book" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Submit a story request via Intake; job status shows "Generating..."</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> RQ worker picks up the job (worker logs show the generation; OpenRouter + classifier calls succeed)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Story lands in the review queue; queue orders Flagged, then Ready, then processing</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Review detail shows the story and any moderation flags</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Approve as ADMIN succeeds (ADR-005: approve is admin-only; verify the guardian account gets the
-      403 "safety reviewer" notice instead)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian account (<code>byron.a.williams</code>) attempting approve gets the 403 "safety reviewer" notice
+      (ADR-005: approve is admin-only)</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Approve as ADMIN (<code>byronawilliams</code>) succeeds</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Send-back / revision loop works on a second story</li>
 </ul>
 <h2 id="3-assignment-surfaces">3. Assignment surfaces<a class="headerlink" href="#3-assignment-surfaces" title="Permanent link">&para;</a></h2>
@@ -2547,13 +2603,17 @@ runbook (kept out of the repo); the placeholders below stand in for them:</p>
 </ul>
 <h2 id="4-kid-request-a-story-loop-the-completed-r1-journey">4. Kid request-a-story loop (the completed R1 journey)<a class="headerlink" href="#4-kid-request-a-story-loop-the-completed-r1-journey" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> From the guardian console, hand off to the kid surface; the profile picker appears and selecting a
+      profile lands on that child's library</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Kid library shows the request-a-story affordance</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Submit a request; friendly status appears in the kid's status list (id/status only on the wire)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Submit text with obvious PII (a phone number); PII guard blocks it before classifier spend</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Submit 5 pending requests; the 6<sup>th</sup> gets the distinct 409 cap message</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian Requests queue shows the pending request with redacted screening flags</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Approve creates a Concept + GenerationJob; generation runs; book publishes (admin approve)</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Assign the generated book; it appears in the kid's library</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Guardian approves the request; a Concept + GenerationJob is created, generation runs, and the book
+      reaches the admin review queue with content tags</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Admin (<code>byronawilliams</code>) approves; guardian then assigns from the browse
+      page, seeing the same content tags, and the book appears in the kid's library</li>
 </ul>
 <h2 id="5-kid-reading-loop">5. Kid reading loop<a class="headerlink" href="#5-kid-reading-loop" title="Permanent link">&para;</a></h2>
 <ul class="task-list">
@@ -2611,7 +2671,7 @@ runbook (kept out of the repo); the placeholders below stand in for them:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 01:41:26 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 00:38:14 UTC">July 6, 2026</span>
   </span>
 
     
