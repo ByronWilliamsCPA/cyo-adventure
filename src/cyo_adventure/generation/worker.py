@@ -40,7 +40,6 @@ from cyo_adventure.db.models import (
     GenerationJob,
 )
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
@@ -79,15 +78,6 @@ _FIRST_VERSION = 1
 # Fallback model label for a provider that exposes no real model identifier
 # (the in-phase mock). Phase 2b providers carry their own model name.
 _MOCK_MODEL_LABEL = "mock"
-
-# Bounded retry budget for a Stage 1 fidelity violation (#133): the design
-# spec calls for a fidelity miss to re-enter the fill/repair pipeline rather
-# than downgrading on the very first violation, mirroring the same-budget
-# treatment orchestrator.py's own structural repair loop gives a gate
-# violation. Matches fill_skeleton's own max_repairs default (3) so a Stage 1
-# miss gets the same number of do-over attempts a structural miss gets, then
-# falls back to the pre-existing needs_review downgrade once exhausted.
-_STAGE1_MAX_ATTEMPTS = 3
 
 logger = get_logger(__name__)
 
@@ -171,22 +161,26 @@ class _SkeletonFillContext:
 async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
-    Loads the matched skeleton library file, fills it via
-    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, then runs
-    the Stage 1 fidelity gate. A fidelity violation re-enters the fill
-    pipeline (a fresh :func:`fill_skeleton` call, itself carrying its own
-    structural repair loop) up to :data:`_STAGE1_MAX_ATTEMPTS` times before
-    downgrading an otherwise-``"passed"`` outcome to ``"needs_review"``
-    (closes #133); the produced storybook is never discarded, so a
-    guardian/admin can still review the fill either way.
+    Loads the matched skeleton library file and delegates to
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, threading the
+    Stage 1 fidelity-gate parameters through so the gate runs INSIDE
+    ``fill_skeleton``'s bounded repair loop (#133): a Stage 1 fidelity miss on a
+    structurally-clean fill re-enters the same ``max_repairs`` budget with a
+    fidelity-aware repair prompt, and only downgrades an otherwise-``"passed"``
+    fill to ``"needs_review"`` (recording ``"stage1_fidelity_violations"`` in
+    the report) once that shared budget is exhausted. The produced storybook is
+    never discarded, so a guardian/admin can still review the fill either way.
+    This function no longer runs the gate or an outer retry loop itself; that
+    logic now lives in the orchestrator so a fidelity miss and a structural
+    block share one budget.
 
     Args:
         ctx: The grouped skeleton-fill context (see :class:`_SkeletonFillContext`).
 
     Returns:
         The :class:`~cyo_adventure.generation.orchestrator.GenerationOutcome`,
-        with ``report`` augmented when a Stage 1 fidelity violation downgrades
-        the status.
+        with ``report`` augmented by ``fill_skeleton`` when a Stage 1 fidelity
+        violation downgrades the status.
 
     Raises:
         ResourceNotFoundError: If ``authoring["skeleton_slug"]`` is missing or
@@ -215,50 +209,24 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
         review_stage1_model if isinstance(review_stage1_model, str) else None
     )
 
-    # #ASSUME: external-resources: each retry re-calls the live provider for a
-    # full fill (plus its own bounded structural repair loop); a persistently
-    # flagged fill costs up to _STAGE1_MAX_ATTEMPTS provider calls before
-    # downgrading, same order of magnitude as a structural repair loop already
-    # costs today.
-    # #VERIFY: test_stage1_failure_once_then_pass_returns_passed /
-    # test_stage1_failure_exhausting_budget_still_downgrades.
-    attempt = 1
-    while True:
-        outcome = await fill_skeleton(
-            skeleton, theme_brief_dict, ctx.effective_provider, ctx.pii
-        )
-        if outcome.storybook is None:
-            return outcome
-
-        # Only a clean "passed" fill is eligible for a Stage 1 check. Skip the
-        # paid semantic fidelity call entirely for an outcome that is already
-        # "needs_review"/"failed": its result is consumed only on the passed
-        # branch below, so calling run_stage1_gate here would spend a
-        # review-model request whose violations are then discarded.
-        if outcome.status != "passed":
-            return outcome
-
-        stage1_violations = await run_stage1_gate(
-            skeleton,
-            outcome.storybook,
-            review_stage1_model=review_stage1_model,
-            prep_model=ctx.prep_model,
-            settings=_default_settings,
-            pii=ctx.pii,
-        )
-        if not stage1_violations:
-            return outcome
-
-        if attempt >= _STAGE1_MAX_ATTEMPTS:
-            return dataclasses.replace(
-                outcome,
-                status="needs_review",
-                report={
-                    **outcome.report,
-                    "stage1_fidelity_violations": stage1_violations,
-                },
-            )
-        attempt += 1
+    # #ASSUME: external-resources: fill_skeleton now runs the Stage 1 fidelity
+    # gate inside its own bounded repair loop, so a persistently-flagged fill
+    # costs at most 1 fill + max_repairs repair provider calls plus the paired
+    # Stage 1 review calls, all sharing ONE budget. This replaces the removed
+    # worker-level outer loop, which re-ran fill_skeleton from scratch up to 3
+    # times (each with its own max_repairs) for up to 9 provider calls.
+    # #VERIFY: test_fill_skeleton_stage1_exhaustion_downgrades_with_key and
+    # test_fill_skeleton_stage1_fail_once_then_pass_returns_passed in
+    # tests/unit/test_orchestrator.py.
+    return await fill_skeleton(
+        skeleton,
+        theme_brief_dict,
+        ctx.effective_provider,
+        ctx.pii,
+        settings=_default_settings,
+        review_stage1_model=review_stage1_model,
+        prep_model=ctx.prep_model,
+    )
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
@@ -266,8 +234,8 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
 
     Always true for a clean ``"passed"`` outcome. Also true for a
     ``"needs_review"`` outcome, but ONLY when the downgrade came from
-    :func:`_run_skeleton_fill`'s own Stage 1 fidelity check on an
-    otherwise-clean fill: that function adds the
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`'s own Stage 1
+    fidelity gate on an otherwise-clean fill: that function adds the
     ``"stage1_fidelity_violations"`` key to ``outcome.report`` only when it
     performs this specific downgrade (never for any other cause), so the
     key's presence is an exact signal that the base outcome was clean before
@@ -486,7 +454,8 @@ async def run_generation_job(
     On ``"needs_review"`` when the downgrade came from a Stage 1 fidelity
     check on an otherwise-clean fill (signaled by
     ``"stage1_fidelity_violations"`` in ``outcome.report``, the exact key
-    :func:`_run_skeleton_fill` adds only for this downgrade): the same
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` adds only for
+    this downgrade): the same
     Storybook/StorybookVersion creation and linking happens as for
     ``"passed"``, and the moderation pipeline still runs on the result, so a
     guardian/admin can review a real, queryable story instead of a job row

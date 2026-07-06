@@ -15,6 +15,7 @@ from typing import TYPE_CHECKING, cast
 import pytest
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.config import settings as config_settings
 from cyo_adventure.core.exceptions import ConfigurationError, ResourceNotFoundError
 from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.orchestrator import GenerationOutcome
@@ -437,81 +438,37 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
 
 
 @pytest.mark.asyncio
-async def test_stage1_failure_once_then_pass_returns_passed(
+async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """A Stage 1 fidelity failure re-enters the fill pipeline, not a downgrade (#133).
+    """The worker threads the Stage 1 gate inputs into the folded fill_skeleton (#133).
 
-    Before this fix, _run_skeleton_fill called run_stage1_gate exactly once
-    after fill_skeleton returned and downgraded to needs_review on the very
-    first violation -- unlike a structural gate violation, which gets
-    orchestrator.py's own bounded repair loop before failing. This proves a
-    Stage 1 violation on attempt 1, followed by a clean attempt 2, now yields
-    a "passed" outcome instead of an immediate downgrade.
+    After the rework, the Stage 1 fidelity gate runs INSIDE
+    orchestrator.fill_skeleton's bounded repair loop (see the acceptance and
+    shared-budget tests in tests/unit/test_orchestrator.py); the worker's job
+    is only to load the matched skeleton and hand fill_skeleton everything the
+    gate needs. This asserts the loaded skeleton (the gate's ``original``),
+    ``settings``, the admin ``review_stage1_model`` override, and the ``prep_model``
+    default (#134) all reach fill_skeleton, and that the worker no longer runs
+    the gate or an outer retry loop itself.
     """
     fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
     monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
 
-    fill_calls = 0
-    stage1_calls = 0
+    captured: dict[str, object] = {}
 
     async def _fake_fill_skeleton(
-        *_args: object, **_kwargs: object
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider: object,
+        pii: object,
+        **kwargs: object,
     ) -> GenerationOutcome:
-        nonlocal fill_calls
-        fill_calls += 1
-        return GenerationOutcome(
-            status="passed",
-            storybook={"id": "s_x", "nodes": [], "attempt": fill_calls},
-            report={},
-            attempts=0,
-            stage_log=[],
-        )
-
-    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
-        nonlocal stage1_calls
-        stage1_calls += 1
-        return ["node 'n1' word count mismatch"] if stage1_calls == 1 else []
-
-    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
-    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
-
-    brief = cast(
-        "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
-    )
-    outcome = await _run_skeleton_fill(
-        _SkeletonFillContext(
-            authoring={"skeleton_slug": "the-cave-of-echoes", "theme_brief": {}},
-            brief=brief,
-            effective_provider=cast("GenerationProvider", object()),
-            pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
-        )
-    )
-
-    assert outcome.status == "passed"
-    assert fill_calls == 2
-    assert stage1_calls == 2
-
-
-@pytest.mark.asyncio
-async def test_stage1_failure_exhausting_budget_still_downgrades(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """A Stage 1 violation that never clears still downgrades once the retry
-    budget is exhausted, preserving the pre-existing needs_review semantics
-    (#133's design says exhausting repairs uses the same failure semantics
-    moderation failures already use, not a stuck/failed job).
-    """
-    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
-    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
-
-    fill_calls = 0
-
-    async def _fake_fill_skeleton(
-        *_args: object, **_kwargs: object
-    ) -> GenerationOutcome:
-        nonlocal fill_calls
-        fill_calls += 1
+        captured["skeleton"] = skeleton
+        captured["theme_brief"] = theme_brief
+        captured["provider"] = provider
+        captured["pii"] = pii
+        captured.update(kwargs)
         return GenerationOutcome(
             status="passed",
             storybook={"id": "s_x", "nodes": []},
@@ -520,26 +477,36 @@ async def test_stage1_failure_exhausting_budget_still_downgrades(
             stage_log=[],
         )
 
-    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
-        return ["node 'n1' word count mismatch"]
-
     monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
-    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
 
     brief = cast(
         "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
     )
+    provider = cast("GenerationProvider", object())
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
     outcome = await _run_skeleton_fill(
         _SkeletonFillContext(
-            authoring={"skeleton_slug": "the-cave-of-echoes", "theme_brief": {}},
+            authoring={
+                "skeleton_slug": "the-cave-of-echoes",
+                "theme_brief": {"premise": "a fox"},
+                "review_stage1_model": "admin-chosen-reviewer",
+            },
             brief=brief,
-            effective_provider=cast("GenerationProvider", object()),
-            pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+            effective_provider=provider,
+            pii=pii,
+            prep_model="the-prep-model",
         )
     )
 
-    assert outcome.status == "needs_review"
-    assert "stage1_fidelity_violations" in outcome.report
-    assert fill_calls > 1, (
-        "a persistent Stage 1 violation must retry, not fail on attempt 1"
-    )
+    assert outcome.status == "passed"
+    # The loaded skeleton is the gate's UNFILLED "original"; the fill/repair
+    # provider and pii pass straight through.
+    assert captured["skeleton"] is fake_skeleton
+    assert captured["theme_brief"] == {"premise": "a fox"}
+    assert captured["provider"] is provider
+    assert captured["pii"] is pii
+    # Stage 1 gate inputs: settings enables the gate, plus the review-model
+    # override and the prep_model fallback (#134).
+    assert captured["settings"] is config_settings
+    assert captured["review_stage1_model"] == "admin-chosen-reviewer"
+    assert captured["prep_model"] == "the-prep-model"
