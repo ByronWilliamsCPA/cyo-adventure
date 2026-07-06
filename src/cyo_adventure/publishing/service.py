@@ -132,6 +132,17 @@ async def approve(
     # and it stamps approved_by in the same operation, so no story is published
     # without a recorded approver (the slice-1 invariant).
     # #VERIFY: test_no_publish_without_approver drives every endpoint path.
+    # #CRITICAL: concurrency: `storybook` arrives already locked (SELECT ... FOR
+    # UPDATE in api/approval.py::_load_admin_story, same transaction), so this
+    # in-memory status re-check is race-free: a second admin's transaction
+    # blocks on that lock until the first commits, then re-reads
+    # status="published" here and assert_transition raises instead of both
+    # admins passing the check and the last writer overwriting approved_by
+    # below (closes #129 / audit Finding 3).
+    # #VERIFY: tests/integration/test_approval_api.py::
+    # test_second_approve_rejected_and_approved_by_not_overwritten (sequential
+    # regression, not a true concurrent-transaction race; a two-session test is
+    # accepted debt per the #129 issue thread).
     target = assert_transition(Status(storybook.status), Action.APPROVE)
     version_row = await session.get(StorybookVersion, (storybook.id, version))
     if version_row is None:

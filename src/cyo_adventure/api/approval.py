@@ -83,7 +83,20 @@ async def _load_admin_story(ctx: Context, storybook_id: str) -> Storybook:
     if not ctx.principal.is_admin:
         msg = "admin role required"
         raise AuthorizationError(msg, required_permission="admin")
-    book = await ctx.session.get(Storybook, storybook_id)
+    # #CRITICAL: concurrency: every admin transition (submit/approve/send_back/
+    # archive) loads its storybook through this one helper, so locking here
+    # closes all four at once. Without the lock, two admins approving the same
+    # in-review story concurrently both read status="in_review" before either
+    # commits, both pass publishing/service.py's in-memory status re-check, and
+    # the last writer silently overwrites approved_by (audit Finding 3, #129).
+    # With the lock, the second admin's transaction blocks here until the first
+    # commits, then reloads status="published" and 409s instead of overwriting.
+    # #VERIFY: SELECT ... FOR UPDATE on Postgres;
+    # tests/unit/test_approval_unit.py::test_load_admin_story_locks_row_for_update
+    # asserts the lock clause is present; a true two-session concurrent test is
+    # deferred (accepted debt, see the #129 issue thread).
+    stmt = select(Storybook).where(Storybook.id == storybook_id).with_for_update()
+    book = (await ctx.session.execute(stmt)).scalar_one_or_none()
     if book is None:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
