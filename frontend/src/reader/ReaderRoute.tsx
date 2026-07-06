@@ -10,6 +10,7 @@ import {
   makeSyncApi,
 } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
+import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
 import { ReaderPage } from './ReaderPage'
 
@@ -46,7 +47,7 @@ export function ReaderRoute() {
         title="We couldn't tell which story to open"
         description="This link is missing some information. Let's go back to the start."
         actions={
-          <Button variant="ghost" onClick={() => navigate('/')}>
+          <Button variant="ghost" onClick={() => navigate(KID_PICKER_PATH)}>
             Back to start
           </Button>
         }

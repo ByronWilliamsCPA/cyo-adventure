@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -67,6 +67,19 @@ describe('ReaderRoute guards', () => {
     renderAtIncompleteRoute('/read/p1')
     expect(screen.getByText("We couldn't tell which story to open")).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Back to start' })).toBeTruthy()
+  })
+
+  it('missing-params fallback navigates to the profile picker', async () => {
+    render(
+      <MemoryRouter initialEntries={['/read/p1']}>
+        <Routes>
+          <Route path="/read/:profileId" element={<ReaderRoute />} />
+          <Route path="/kids" element={<div>picker-stub</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Back to start' }))
+    expect(await screen.findByText('picker-stub')).toBeTruthy()
   })
 })
 
