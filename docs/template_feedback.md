@@ -386,6 +386,34 @@ files are templated.
 
 **Affected Files**: `frontend/src/App.tsx`
 
+### Frontend `index.html` ships the same unrendered cookiecutter placeholders the App.tsx fix missed
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-05
+
+**Issue**: `frontend/index.html` renders the document `<title>` as
+`{{ cookiecutter.project_name }}` and `<meta name="description">` as
+`{{ cookiecutter.project_short_description }}`, the same two placeholders flagged
+for `App.tsx` on 2026-06-21 but in a different file the App.tsx fix did not
+cover. `index.html` is Vite's entry document, templated at generation time
+rather than rendered by React, so a project can "fix" the visible JSX and still
+ship a browser tab literally titled `{{ cookiecutter.project_name }}`.
+
+**Context**: Surfaced by a naive-user Claude-for-Chrome pass over the live site
+(scenario K1): a 7-year-old persona immediately noticed the browser tab read
+`{{ cookiecutter.project_name }}` and called it "leftover computer-programmer
+text" on an otherwise broken-looking page.
+
+**Suggested Fix**: Render the cookiecutter variables in `index.html` at
+generation time, exactly as other generated files are templated. Add a
+post-generation smoke check that greps the rendered project for any literal
+`{{ cookiecutter.` string across all file types (not just `.tsx`), so the whole
+class of missed-file placeholders is caught at once rather than one file at a
+time.
+
+**Affected Files**: `frontend/index.html`
+
 ### Generated API client is gitignored but CI never regenerates it
 
 - **Priority**: Medium
