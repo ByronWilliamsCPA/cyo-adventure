@@ -25,6 +25,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   longer reads as a retryable "try again" (naive-UX F1, G2).
 
 ### Fixed
+- Offline reading progress queued while disconnected is now actually sent to
+  the server: the replay queue flushes on reader mount and on the browser
+  `online` event (previously nothing ever called `replayQueue`, so queued
+  writes sat in IndexedDB forever). Replay conflicts surface a keep-this-device
+  / use-newest dialog; keep-this-device rebases and retries once on a second
+  conflict instead of silently dropping progress, and outright resend failures
+  land in a dismissible failed-progress banner. Same-device save-then-reload
+  resume is covered by a new e2e spec. Closes #110 and #62.
 - The integration test suite now fails instead of silently skipping when
   Docker/testcontainers is unavailable while running in CI (`CI` env var set
   to a truthy value such as GitHub Actions' `CI=true`); local runs without
