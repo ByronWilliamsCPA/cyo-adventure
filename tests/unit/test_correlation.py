@@ -434,6 +434,113 @@ class TestCorrelationMiddleware:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_oversized_correlation_id_is_replaced_not_echoed(self) -> None:
+        """An oversized X-Correlation-ID (F20) is rejected, never echoed back.
+
+        The header validation regex caps ids at 64 chars; a longer value must
+        not reach the response header (log/response injection, resource
+        exhaustion via unbounded id strings) and a freshly generated UUID4 is
+        used in its place.
+        """
+        from cyo_adventure.middleware.correlation import (
+            CORRELATION_ID_HEADER,
+            CorrelationMiddleware,
+        )
+
+        middleware = CorrelationMiddleware(app=MagicMock())
+
+        oversized = "a" * 65
+        mock_request = MagicMock()
+        mock_request.headers = {CORRELATION_ID_HEADER: oversized}
+
+        mock_response = MagicMock()
+        mock_response.headers = {}
+
+        async def mock_call_next(request):
+            return mock_response
+
+        response = await middleware.dispatch(mock_request, mock_call_next)
+
+        assert response.headers[CORRELATION_ID_HEADER] != oversized
+        assert oversized not in response.headers[CORRELATION_ID_HEADER]
+        # Still a valid UUID4, proving a fresh id was generated.
+        parsed = uuid.UUID(response.headers[CORRELATION_ID_HEADER])
+        assert parsed.version == 4
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_crlf_injection_in_correlation_id_is_replaced_not_echoed(
+        self,
+    ) -> None:
+        """A CRLF-laced X-Correlation-ID (F20) is rejected, never echoed back.
+
+        A value like ``"abc\\r\\nX-Injected: evil"`` attempts header/log
+        injection via embedded control characters. The safe-id regex
+        (``[A-Za-z0-9_-]{1,64}``, anchored with ``fullmatch``) rejects any
+        value containing characters outside that set, so the malicious value
+        never reaches a response header or a log line.
+        """
+        from cyo_adventure.middleware.correlation import (
+            CORRELATION_ID_HEADER,
+            CorrelationMiddleware,
+        )
+
+        middleware = CorrelationMiddleware(app=MagicMock())
+
+        malicious = "abc\r\nX-Injected: evil"
+        mock_request = MagicMock()
+        mock_request.headers = {CORRELATION_ID_HEADER: malicious}
+
+        mock_response = MagicMock()
+        mock_response.headers = {}
+
+        async def mock_call_next(request):
+            return mock_response
+
+        response = await middleware.dispatch(mock_request, mock_call_next)
+
+        assert response.headers[CORRELATION_ID_HEADER] != malicious
+        assert "\r" not in response.headers[CORRELATION_ID_HEADER]
+        assert "\n" not in response.headers[CORRELATION_ID_HEADER]
+        parsed = uuid.UUID(response.headers[CORRELATION_ID_HEADER])
+        assert parsed.version == 4
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_invalid_trace_and_span_id_dropped_not_echoed(self) -> None:
+        """An invalid X-Trace-ID/X-Span-ID (F20) is dropped, not forwarded.
+
+        Unlike correlation/request id, trace/span ids have no generated
+        fallback; an invalid value must simply be absent from the response
+        rather than echoed.
+        """
+        from cyo_adventure.middleware.correlation import (
+            SPAN_ID_HEADER,
+            TRACE_ID_HEADER,
+            CorrelationMiddleware,
+        )
+
+        middleware = CorrelationMiddleware(app=MagicMock())
+
+        mock_request = MagicMock()
+        mock_request.headers = {
+            TRACE_ID_HEADER: "bad\r\ntrace",
+            SPAN_ID_HEADER: "b" * 65,
+        }
+
+        mock_response = MagicMock()
+        mock_response.headers = {}
+
+        async def mock_call_next(request):
+            return mock_response
+
+        response = await middleware.dispatch(mock_request, mock_call_next)
+
+        assert TRACE_ID_HEADER not in response.headers
+        assert SPAN_ID_HEADER not in response.headers
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_middleware_resets_context_on_exception(self) -> None:
         """Verify middleware resets context variables even on exception."""
         from cyo_adventure.middleware.correlation import (

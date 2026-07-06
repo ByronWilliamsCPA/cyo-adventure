@@ -45,6 +45,7 @@ Integration with Logging:
 
 from __future__ import annotations
 
+import re
 import uuid
 from contextvars import ContextVar
 from typing import TYPE_CHECKING
@@ -131,6 +132,36 @@ def generate_correlation_id() -> str:
     return str(uuid.uuid4())
 
 
+def _validate_incoming_id(value: str | None) -> str | None:
+    """Validate an incoming correlation/request/trace/span id header.
+
+    # #CRITICAL: security: correlation/request/trace/span ids originate from
+    # attacker-controlled request headers and are echoed into response
+    # headers and structured log lines (correlation_context_processor). An
+    # unvalidated value could carry CRLF sequences (response/log injection)
+    # or be unbounded in length (log-flooding, header-size abuse). Any value
+    # that does not fully match the safe-id pattern is discarded here and
+    # never echoed back; the caller falls back to a freshly generated id
+    # (correlation/request) or simply omits the header (trace/span).
+    # #VERIFY: test_correlation.py::test_oversized_correlation_id_is_replaced_not_echoed,
+    # test_crlf_injection_in_correlation_id_is_replaced_not_echoed, and
+    # test_invalid_trace_and_span_id_dropped_not_echoed assert the raw
+    # malicious/oversized value never appears in the response.
+
+    Args:
+        value: The raw header value, or None if the header was absent.
+
+    Returns:
+        The value unchanged if it matches ``[A-Za-z0-9_-]{1,64}`` in full,
+        otherwise None.
+    """
+    if value is None:
+        return None
+    if re.fullmatch(r"[A-Za-z0-9_-]{1,64}", value):
+        return value
+    return None
+
+
 def correlation_context_processor(
     _logger: WrappedLogger,
     _method_name: str,
@@ -211,19 +242,21 @@ class CorrelationMiddleware(BaseHTTPMiddleware):
         Returns:
             The HTTP response with correlation headers added.
         """
-        # Extract or generate correlation ID
+        # Extract or generate correlation ID. Incoming headers are validated
+        # (F20) before use; a mismatch is discarded, never echoed.
+        raw_request_id = _validate_incoming_id(request.headers.get(REQUEST_ID_HEADER))
         correlation_id = (
-            request.headers.get(CORRELATION_ID_HEADER)
-            or request.headers.get(REQUEST_ID_HEADER)
+            _validate_incoming_id(request.headers.get(CORRELATION_ID_HEADER))
+            or raw_request_id
             or generate_correlation_id()
         )
 
         # Generate unique request ID for this specific request
-        request_id = request.headers.get(REQUEST_ID_HEADER) or generate_correlation_id()
+        request_id = raw_request_id or generate_correlation_id()
 
         # Extract distributed tracing headers
-        trace_id = request.headers.get(TRACE_ID_HEADER)
-        span_id = request.headers.get(SPAN_ID_HEADER)
+        trace_id = _validate_incoming_id(request.headers.get(TRACE_ID_HEADER))
+        span_id = _validate_incoming_id(request.headers.get(SPAN_ID_HEADER))
 
         # Set context variables
         correlation_token = _correlation_id_ctx.set(correlation_id)
