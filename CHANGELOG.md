@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- The browser tab title and meta description now render real values ("CYO
+  Adventure" / the app description) instead of the literal unrendered
+  `{{ cookiecutter.project_name }}` placeholders in `frontend/index.html`;
+  surfaced by a naive-user UX pass where the placeholder was the first thing a
+  kid persona noticed. Takes effect on the next frontend image rebuild.
 - Guardian Google sign-in now completes in the browser: `signInWithOAuth` passes
   `redirectTo=<origin>/guardian/login` so the OAuth callback returns to the
   guardian subtree. Previously it returned to Supabase's Site URL (`/`, the kid
