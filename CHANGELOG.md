@@ -50,6 +50,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a permanent permission error (for example an admin creating a child profile) no
   longer reads as a retryable "try again" (naive-UX F1, G2).
 
+### Changed
+- Removed the unwired `.semgrep.yml` config: it was never invoked from
+  `.pre-commit-config.yaml` or any `.github/workflows/` job, so it added no
+  scanning coverage. The active SAST/SCA gates remain Bandit, OSV-Scanner,
+  CodeQL, and SonarCloud (refs #61).
+
 ### Fixed
 - Concurrent approvals of the same story can no longer double-apply state
   transitions: `api/approval.py` and `moderation/pipeline.py` load the story
