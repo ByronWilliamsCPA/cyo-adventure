@@ -3009,8 +3009,8 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.<
   Supabase-managed infrastructure (auth via Supabase OIDC, Postgres, storage), which amends
   ADR-004's no-third-party-infra stance for that tier; see
   <a href="../adr/adr-009-supabase-platform/">ADR-009</a>.</li>
-<li><strong>Security baseline from day one</strong>: detect-secrets, Semgrep managed rules, CodeQL,
-  Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.</li>
+<li><strong>Security baseline from day one</strong>: detect-secrets, Bandit, OSV-Scanner, CodeQL,
+  SonarCloud, Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.</li>
 <li><strong>Performance</strong>: node transition under 50 ms (plays client-side from cache);
   validation under 2 s for a 200-node story; full offline play after one download.</li>
 </ul>
@@ -3073,7 +3073,7 @@ prompts; guardian-visible, family-scoped, short-lived raw outputs).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 17:00:15 UTC">July 6, 2026</span>
   </span>
 
     
