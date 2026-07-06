@@ -463,11 +463,14 @@ class GenerationJob(Base):
     # when a job fails mid-run before a full report is assembled).
     report: Mapped[dict[str, object] | None] = mapped_column(JSONB, default=None)
     # #ASSUME: data-integrity: shape is {"skeleton_slug": str, "theme_brief":
-    # dict} for method="skeleton_fill" jobs (see
-    # story_requests/authoring_plan.py::build_authoring_plan); None for
+    # dict, "review_stage1_model": str | None, "review_stage2_model": str |
+    # None} for method="skeleton_fill" jobs (see
+    # story_requests/authoring_plan.py::build_authoring_plan); the two
+    # review_* overrides are always written but may be null. None for
     # method="fresh_generation" jobs. No DB-level constraint enforces this.
-    # #VERIFY: readers (api/generation.py::get_generation_job) must tolerate a
-    # missing or wrong-typed key rather than trust the shape.
+    # #VERIFY: readers (api/generation.py::get_generation_job,
+    # generation/worker.py::_review_stage2_override) must tolerate a missing or
+    # wrong-typed key rather than trust the shape.
     authoring_metadata: Mapped[dict[str, object] | None] = mapped_column(
         JSONB, default=None
     )

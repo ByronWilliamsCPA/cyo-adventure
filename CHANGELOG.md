@@ -41,6 +41,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Naive-user UX test suite: Playwright misuse regressions for kid, guardian,
   and admin personas (`frontend/e2e/naive-user/`, `frontend/e2e-real/`), a
   Claude-for-Chrome comprehension prompt set, and the `/naive-ux-check` skill.
+- Authoring-path routing for approved story requests: a new admin-only
+  `POST /story-requests/{id}/authoring-plan` endpoint lets an admin choose how a
+  request is authored via `method` (`skeleton_fill` or `fresh_generation`) and
+  `mechanism` (`skill` or `automated_provider`), plus a `prep_model` and optional
+  `review_stage1_model`/`review_stage2_model` overrides. The illegal
+  `fresh_generation` + `skill` pairing is rejected at the schema boundary (422).
+  The `automated_provider` + `skeleton_fill` path runs a new Stage B' fill
+  pipeline (`fill_skeleton`, reusing the existing repair loop) followed by a
+  Stage 1 fidelity gate (pure-code structural checks plus one semantic
+  reviewer call); a clean fill that a Stage 1 check downgrades is still persisted
+  and moderated so an admin can review a real story instead of an empty job row.
+  The `skill` + `skeleton_fill` path parks the job at `awaiting_manual_fill` for
+  a human to fill via the `cyo-author` skill and resume through
+  `generation/import_cli.py --job`.
 - `CYO_ADVENTURE_DATABASE_DISABLE_PREPARED_CACHE` setting (default `false`) that
   disables both asyncpg's own prepared-statement cache and the SQLAlchemy asyncpg
   dialect's separate cache, gives each prepared statement a unique name, and
