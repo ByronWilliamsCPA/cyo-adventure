@@ -56,19 +56,26 @@ const REVIEW_SURFACE = {
   story_level_findings: [],
 }
 
-test('two admin sessions approving the same storybook concurrently both succeed silently (known gap, no server-side lock)', async ({
+test('two admin sessions approving the same storybook concurrently both reach the network with no client-side guard blocking either', async ({
   browser,
 }) => {
-  // Characterizes CURRENT behavior, confirmed by reading approval.py and
-  // publishing/service.py during planning: approve_storybook loads the row
-  // with a plain session.get, no SELECT FOR UPDATE and no version check, so
-  // two concurrent admin approvals both silently succeed (last write wins on
-  // approved_by / published_at). This is the OPPOSITE of the guarded request-
-  // approve path in naive-guardian-misuse.spec.ts. Not a bug in this test:
-  // it locks in today's actual behavior so a future fix (the same
-  // for_update pattern story_requests.py already uses) has a test to flip
-  // from "both succeed" to "second one 409s". The fix itself is out of
-  // scope here; Task 11 files the tracking issue.
+  // This test verifies FRONTEND behavior only: the UI has no cross-session
+  // guard that locks or disables the Approve action based on another
+  // session's in-flight or completed approval, so both sessions' clicks
+  // reach the network layer unblocked. The `/storybooks/s1/approve` route
+  // below is a mock that unconditionally returns 200 for every request, so
+  // `approveCount === 2` shows only that the frontend issued two requests,
+  // not that the backend safely handled two concurrent approvals.
+  //
+  // It does NOT characterize or regression-test the real server-side gap
+  // tracked in issue #129 (approve_storybook in approval.py uses a plain
+  // session.get, no SELECT FOR UPDATE and no version check). Because the
+  // route here is mocked to always return 200, fixing #129 in approval.py
+  // would never make this test start failing: a mocked test cannot serve as
+  // a regression sentinel for server-side concurrency behavior, the same
+  // reason the real cross-family-authorization check lives in
+  // frontend/e2e-real/ instead of this mocked tier. Real backend
+  // concurrency coverage for #129 belongs there, not here.
   let approveCount = 0
 
   const contextA = await browser.newContext()
@@ -110,7 +117,7 @@ test('two admin sessions approving the same storybook concurrently both succeed 
 
   await expect(pageA).toHaveURL(/\/guardian$/)
   await expect(pageB).toHaveURL(/\/guardian$/)
-  expect(approveCount).toBe(2) // both succeeded: today's undesired gap
+  expect(approveCount).toBe(2) // both requests reached the mock: no client-side guard blocked either
 
   await contextA.close()
   await contextB.close()
