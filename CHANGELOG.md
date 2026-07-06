@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   OpenAI categories as advisory findings (11 nodes x 13 = 143 findings on the
   first live story, max real score 0.0006) and the admin review surface read
   as "every section flagged with every flag". Sub-floor scores are dropped;
-  provider-flagged categories and bright-line blocks bypass the floor.
+  OpenAI provider-flagged categories and bright-line blocks bypass the floor.
   Advisories never gate (`has_soft_flag` counts `FLAG` only), so approval
   outcomes are unchanged; this also shrinks the ~70KB per-version
   `moderation_report` accordingly.

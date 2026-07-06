@@ -4,8 +4,9 @@ Each classifier is optional: a missing key skips it. Bright-line categories prod
 a hard ``BLOCK`` finding (the pipeline routes straight to auto_reject, no LLM spend);
 graded categories at or above ``_ADVISORY_SCORE_FLOOR`` produce non-blocking
 ``ADVISORY`` findings recorded in the report for the guardian (they do not
-currently feed the Stage 1 prompt). Sub-floor scores are classifier noise and
-are not recorded.
+currently feed the Stage 1 prompt). Sub-floor graded scores are classifier
+noise and are dropped, except that OpenAI's own boolean flag for a category
+bypasses the floor (a provider-flagged category is always recorded).
 """
 
 from __future__ import annotations
@@ -30,7 +31,8 @@ _CLASSIFIER_TIMEOUT = 20.0
 # return a nonzero float for every category on every call (observed ceiling on
 # clean children's prose ~6e-4), so without a floor every node emits every
 # category as an advisory finding and the review surface reads as fully
-# flagged. The provider's own boolean flag bypasses the floor; advisories
+# flagged. OpenAI's own boolean flag bypasses the floor (Perspective returns
+# no such flag, so its only bypass is the score-based bright-line); advisories
 # never gate (report.has_soft_flag counts FLAG only), so the floor is report
 # hygiene, not a safety relaxation.
 _ADVISORY_SCORE_FLOOR = 0.01
