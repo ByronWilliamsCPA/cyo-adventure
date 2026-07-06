@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-23-modal-generation-tiers-design/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-05-skeleton-authoring-path-routing-design/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Skeleton-Library Story Generation with Tiered Backends (Design) - CYO Adventure</title>
+        <title>Authoring-Path Routing for Approved Story Requests (Design) - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#1-problem" class="md-skip">
+        <a href="#1-problem-and-goal" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Skeleton-Library Story Generation with Tiered Backends (Design)
+              Authoring-Path Routing for Approved Story Requests (Design)
             
           </span>
         </div>
@@ -2362,10 +2362,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-problem" class="md-nav__link">
+  <a href="#1-problem-and-goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Problem
+        1. Problem and goal
       
     </span>
   </a>
@@ -2373,10 +2373,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-core-decision-pre-authored-skeletons-model-fills-prose" class="md-nav__link">
+  <a href="#2-end-to-end-flow" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Core Decision: Pre-Authored Skeletons, Model Fills Prose
+        2. End-to-end flow
       
     </span>
   </a>
@@ -2384,77 +2384,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-the-matrix-reading-level-x-topology-x-scale" class="md-nav__link">
+  <a href="#3-two-backends-one-contract-reused-not-reinvented" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. The Matrix: Reading Level x Topology x Scale
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="3. The Matrix: Reading Level x Topology x Scale">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#genre-faithful-targets-from-the-reconciled-four-source-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Genre-faithful targets (from the reconciled four-source matrix)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#4-skeleton-as-a-data-artifact" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. Skeleton as a Data Artifact
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="4. Skeleton as a Data Artifact">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#41-series-and-campaign-continuity" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.1 Series and Campaign Continuity
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#42-persistence-and-stores" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.2 Persistence and Stores
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#5-generation-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        5. Generation Flow
+        3. Two backends, one contract (reused, not reinvented)
       
     </span>
   </a>
@@ -2462,60 +2395,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-backends-two-modalities-one-contract" class="md-nav__link">
+  <a href="#4-data-model-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Backends: Two Modalities, One Contract
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="6. Backends: Two Modalities, One Contract">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#61-runtime-providers-automated-in-the-fastapi-app" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.1 Runtime providers (automated, in the FastAPI app)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#62-authoring-skill-opus-via-claude-code-offline-shareable" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.2 Authoring skill (Opus via Claude Code, offline, shareable)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#63-fallback-and-selection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        6.3 Fallback and selection
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#7-model-alignment-empirical" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        7. Model Alignment (Empirical)
+        4. Data model changes
       
     </span>
   </a>
@@ -2523,10 +2406,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#8-validator-and-budget-changes" class="md-nav__link">
+  <a href="#5-model-routing-and-eligibility-warn-only" class="md-nav__link">
     <span class="md-ellipsis">
       
-        8. Validator and Budget Changes
+        5. Model routing and eligibility (warn-only)
       
     </span>
   </a>
@@ -2534,10 +2417,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#9-cost-model" class="md-nav__link">
+  <a href="#6-error-handling" class="md-nav__link">
     <span class="md-ellipsis">
       
-        9. Cost Model
+        6. Error handling
       
     </span>
   </a>
@@ -2545,54 +2428,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#10-security-and-data-policy" class="md-nav__link">
+  <a href="#7-testing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        10. Security and Data Policy
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#11-testing-and-calibration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        11. Testing and Calibration
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#12-phased-rollout" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        12. Phased Rollout
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#13-decisions-and-open-questions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        13. Decisions and Open Questions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
+        7. Testing
       
     </span>
   </a>
@@ -2619,554 +2458,277 @@
   
 
 
-  <h1>Skeleton-Library Story Generation with Tiered Backends (Design)</h1>
+  <h1>Authoring-Path Routing for Approved Story Requests (Design)</h1>
 
 <blockquote>
-<p>Branch: <code>feat/modal-generation-tiers</code> | Date: 2026-06-23 | Author: Byron Williams (with Claude)
-Supersedes the chunked-generation draft of the same date.
-Research basis: <code>commercial-cyoa-graph-theory-handoff.md</code> (JHM primary) and
-<code>cyoa-research-reconciliation.md</code> (four sources cross-checked).</p>
+<p>Branch: <code>feat/authoring-path-routing</code> | Date: 2026-07-05 | Author: Byron Williams (with Claude)
+Implements the deferred "skeleton-fill wiring into the worker/orchestrator" step
+from <code>docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md</code>
+(Sections 5-6, called a non-goal in the 2026-07-04 Modal-leg design), and adds a
+new admin-workflow layer that spec did not cover: how a <em>live, approved child
+story request</em> picks an authoring backend and which models do the work.</p>
 </blockquote>
-<h2 id="1-problem">1. Problem<a class="headerlink" href="#1-problem" title="Permanent link">&para;</a></h2>
-<p>Phase 2b live generation has the model design the story graph and write the prose
-in one pass. The model-designed graph is the dominant failure source: every yield
-blocker (dangling refs, orphan nodes, node-count, depth, reachability, the
-orphan-DELETE repair loop) is <em>structural</em>. First live yield was ~30%.</p>
-<p>Two backends exist, each with a disqualifying weakness:</p>
+<h2 id="1-problem-and-goal">1. Problem and goal<a class="headerlink" href="#1-problem-and-goal" title="Permanent link">&para;</a></h2>
+<p>Two pipelines exist today and neither is chosen deliberately:</p>
 <ul>
-<li><strong>OpenRouter</strong> (<code>anthropic/claude-haiku-4.5</code>): reliable, but ~$2-3.5/story and
-  only ~30% yield without more work.</li>
-<li><strong>Local homelab Ollama</strong>: $0, but 64+ min/story, currently TLS-blocked, and
-  small models fail the structural gates.</li>
+<li>The concept-brief API (<code>POST /api/v1/concepts/{id}/generate</code> -&gt;
+  <code>generation/worker.py</code> -&gt; <code>orchestrator.generate_story()</code>) always invents fresh
+  structure from an LLM. It never reads the skeleton library at all;
+  <code>select_skeleton(band, length, theme)</code> was speced (tiered-backends Section 5)
+  but never implemented.</li>
+<li>The <code>cyo-author</code> skill fills an existing skeleton's <code>&lt;&lt;FILL&gt;&gt;</code> directives, but
+  only as a manual, offline, one-skeleton-at-a-time developer action, with no
+  connection to a live child story request.</li>
 </ul>
-<p>Separately, commercial CYOA has a known shape the current budgets do not target.
-Four cross-checked sources converge: classic kids' CYOA is <strong>short, shallow, and
-binary; its ~20 endings come from many short reconvergent leaves, not deep trees;
-and age rises by escalating theme and tone, not branch depth.</strong> Endings and
-decisions are the two structural properties that drive both reader ratings and
-sales, exactly what a yield-optimizing generator sheds first.</p>
-<p>We also have two under-used assets: <strong>$30/month of Modal credits</strong> (use-it-or-lose
-it) and <strong>Claude subscription capacity</strong> usable from within Claude Code.</p>
-<h2 id="2-core-decision-pre-authored-skeletons-model-fills-prose">2. Core Decision: Pre-Authored Skeletons, Model Fills Prose<a class="headerlink" href="#2-core-decision-pre-authored-skeletons-model-fills-prose" title="Permanent link">&para;</a></h2>
-<p>Separate <strong>structure</strong> from <strong>prose</strong>. Maintain a library of pre-authored,
-pre-validated <strong>skeletons</strong> (abstract story graphs with empty prose slots),
-organized in a matrix of <strong>reading level x length x topology</strong>. To generate a
-story, select a skeleton for the requested (theme, reading level, length),
-tracking coverage for variety, then hand the fixed graph to a model and have it
-fill <em>only</em> the prose to fit the framework.</p>
-<p>Why this is the right architecture:</p>
+<p>An approved story request (child requests, guardian approves) has no path today
+that lets an admin choose <em>which</em> of these to use, or which model does the
+prep/review work. This design adds that choice as one new step, wires the
+skeleton-fill flow into the automated backend for the first time, and reuses the
+fill-contract shape the tiered-backends spec already defined instead of inventing
+a new one.</p>
+<p><strong>Non-goals</strong> (explicitly out of scope, tracked elsewhere or deferred):</p>
 <ul>
-<li><strong>It deletes the failure class.</strong> The model never emits an invalid graph because
-  it never emits a graph. Structural gates become invariants that pass by
-  construction.</li>
-<li><strong>A skeleton is a pre-validated Storybook with empty prose</strong>, so the existing
-  schema (<code>models.py</code>) and validator (<code>layer1.py</code>) validate it once at
-  authoring time. At generation, only the <em>filled prose</em> is re-checked against
-  content and reading-level gates.</li>
-<li><strong>It guarantees the commercial metrics.</strong> Endings and decisions become authored
-  properties of the skeleton, not emergent behavior a yield loop erodes. The genre
-  achieves many endings through <strong>short reconvergent leaves</strong>, which the skeleton
-  encodes deliberately.</li>
-<li><strong>Fill is embarrassingly parallel</strong> given the skeleton; node prose is generated
-  in batches, cheaply and fast.</li>
-<li><strong>It makes stateful coherence tractable.</strong> Because the graph and state rules are
-  fixed before any prose exists, the reachable state at each node is computable and
-  handed to the model as fill context, instead of asking the model to invent
-  structure and track state at once.</li>
-<li><strong>Node count decouples from model ability.</strong> Genre-faithful sizes (e.g. ~45 short
-  nodes for a young story) are authored into the skeleton; the model only fills
-  short beats, regardless of the graph size a model would naturally produce.</li>
+<li><strong>Admin-facing UI.</strong> This design specifies the API only. A UI can be layered on
+  later (following the existing <code>frontend/src/guardian/ReviewDetailPage.tsx</code>
+  pattern, which already serves the admin reviewer for the review-queue
+  approve/send-back flow) without changing this contract.</li>
+<li>The empirical model-alignment calibration table (tiered-backends Section 7) is
+  a future input to this design's warn-only eligibility check, not something this
+  design builds. Until it exists, the eligibility check uses a small,
+  hand-authored starting table.</li>
+<li>Deploying new Modal endpoints, procedural skeleton generation, series
+  generation: unrelated phased-rollout steps (tiered-backends Section 12, items
+  6-9), untouched here.</li>
+<li>Staleness handling for a job parked at <code>awaiting_manual_fill</code>: explicitly
+  deferred (see Section 6).</li>
+<li>Theme-aware skeleton selection at library scale (picking among many
+  same-band, same-theme skeletons): the library currently has 1-3 skeletons per
+  band, each with one fixed baked-in theme, so this design reskins the nearest
+  band/length/style match instead. Revisit once the library has enough per-theme
+  breadth for true selection (the original design intent).</li>
 </ul>
-<h2 id="3-the-matrix-reading-level-x-topology-x-scale">3. The Matrix: Reading Level x Topology x Scale<a class="headerlink" href="#3-the-matrix-reading-level-x-topology-x-scale" title="Permanent link">&para;</a></h2>
-<p>Reading level is the organizing axis: it selects topology family, scale, fail-state
-policy, and (with length) the backend. Story size and shape are a product decision
-tied to the reader, never a side effect of which backend answered. Topology names
-follow the standard gamebook vocabulary (Ashwell): Time Cave, Gauntlet,
-Branch-and-Bottleneck, Loop-and-Grow.</p>
-<table>
-<thead>
-<tr>
-<th>Band</th>
-<th>Topology</th>
-<th>Nodes</th>
-<th>Endings</th>
-<th>Decisions/path</th>
-<th>State (tier)</th>
-<th>Fail-state</th>
-<th>Primary backend</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>3-5 read-aloud</td>
-<td>linear / Loop-and-Grow</td>
-<td>~10-20 very short</td>
-<td>3-6</td>
-<td>~2-4</td>
-<td>none (Tier 1)</td>
-<td><strong>no death; comic, always-recover</strong></td>
-<td>Modal Gemma 12B / OpenRouter / Claude Code</td>
-</tr>
-<tr>
-<td>5-8 early</td>
-<td>near-pure tree / Loop-and-Grow</td>
-<td>~42-46 short</td>
-<td>9-12</td>
-<td>~3-6</td>
-<td>none (Tier 1)</td>
-<td><strong>no death; try-again, comic</strong></td>
-<td>Modal Gemma 12B / OpenRouter / Claude Code</td>
-</tr>
-<tr>
-<td>8-11 core</td>
-<td>tree-dominant, light reconvergence</td>
-<td>~90-120 short (or ~45 at 250w)</td>
-<td>~20</td>
-<td>~4-5 (max 7)</td>
-<td>none (Tier 1)</td>
-<td>failure/entrapment, adventure-forward</td>
-<td>Modal Gemma 26B-A4B</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>Branch-and-Bottleneck (reconvergent leaves)</td>
-<td>~110-180</td>
-<td>~19-28</td>
-<td>~5-10</td>
-<td>light (item/flag)</td>
-<td>horror variety, logical</td>
-<td>Modal gpt-oss-120b</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>Gauntlet / Branch-and-Bottleneck (stateful)</td>
-<td>350-456 sections</td>
-<td>1 win + many fails</td>
-<td>~12-25 section hops</td>
-<td>full (stats, inventory, dice)</td>
-<td>resource-based, lethal</td>
-<td>gpt-oss-120b / Opus authoring skill</td>
-</tr>
-<tr>
-<td>16+ advanced</td>
-<td>deep Gauntlet / B&amp;B (stateful)</td>
-<td>400+ sections</td>
-<td>many fails + few wins</td>
-<td>~20-30+</td>
-<td>full (stats, inventory, dice)</td>
-<td>lethal, resource-based, mature</td>
-<td>gpt-oss-120b / Opus authoring skill</td>
-</tr>
-</tbody>
-</table>
-<p>The graph-theory study (ages 9-12) validates the tree-dominant shape for 5-8 and
-8-11 (two measured sources agree on node counts). It does <strong>not</strong> cover the
-teen/stateful tiers; Fighting Fantasy gamebooks are a deliberate older-band product,
-calibrated separately. The 3-5 and 16+ bands are product-defined (the research
-measured only 9-12). The schema already enforces the state boundary: Tier 1 stories
-must declare no variables (<code>_check_tier_variables</code>); higher tiers carry state.</p>
-<p><strong>Bands are config-driven, not a hardcoded enum.</strong> A band is a profile bundling
-<code>{age_range, reading_level (Lexile/FK target), words_per_node target, node/ending/
-decision budget, topology family, fail-state policy, default model tier}</code>. Modeling the band set as a
-configuration table (seeded with the six above) means adding or tuning a band is a
-config change, not a schema migration. The current schema hardcodes three bands
-(8-11/10-13/13-16); migrating to the config table and adding 3-5, 5-8, and 16+ is
-part of this work.</p>
-<h3 id="genre-faithful-targets-from-the-reconciled-four-source-matrix">Genre-faithful targets (from the reconciled four-source matrix)<a class="headerlink" href="#genre-faithful-targets-from-the-reconciled-four-source-matrix" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Node word-size scales by reading level</strong>, ~100 words/node at the youngest bands
-  (short flip-and-choose beats) rising to ~250 at the top band (paragraph-length
-  passages). Gradient: 3-5 ~75-100, 5-8 ~100, 8-11 ~125-150, 10-13 ~175, 13-16 ~225,
-  16+ ~250. Words/node is a per-band profile field. Shorter young-band nodes also
-  yield more nodes, hence more room for reconvergent leaves and endings.</li>
-<li><strong>Endings via reconvergent leaves, not depth.</strong> To raise ending count, add short
-  leaves and bottlenecks, not deeper paths.</li>
-<li><strong>Depth budgets unchanged and correct</strong> (~4-5 decisions average, ~7 longest).
-  Path-length-in-nodes is a different metric from decisions-per-path; do not inflate
-  depth from longest-path figures.</li>
-<li><strong>Choices per decision: 2-3</strong> (mostly binary); rare 5-12-choice mystery hubs are
-  premise-specific, not a default.</li>
-<li><strong>Reading level by age, independent of graph complexity.</strong> Lexile anchors: core
-  CYOA ~500-710L, Goosebumps ~480-490L, You Choose 590-720L, Dragonlarks
-  ~480-570L. Move age up via premise, tone, and ending harshness before depth.</li>
-<li><strong>Edition-family anchoring:</strong> tag any imported structural number with its edition
-  (modern Chooseco vs vintage Bantam); they are not interchangeable.</li>
-</ul>
-<h2 id="4-skeleton-as-a-data-artifact">4. Skeleton as a Data Artifact<a class="headerlink" href="#4-skeleton-as-a-data-artifact" title="Permanent link">&para;</a></h2>
-<p>A skeleton is a Storybook instance with structural content authored and prose slots
-empty, plus fill metadata:</p>
-<ul>
-<li><strong>Graph:</strong> nodes (ids, <code>is_ending</code>, ending type), choices (ids, target node),
-  start node, declared <code>variables</code>, node <code>conditions</code>/<code>effects</code> (Tier 2+).</li>
-<li><strong>Fill metadata per node:</strong> arc role (setup / rising / choice / climax /
-  ending-type), and for Tier 2+ the <strong>reachable state set</strong> (computed statically
-  from the graph) so prose is written consistent with every approach.</li>
-<li><strong>Classification:</strong> <code>{topology_class, node_count, reading_band, ending_count,
-  decision_count, state_depth, reconvergence_degree, fail_state_policy,
-  edition_family}</code>. Drives library selection and model routing.</li>
-</ul>
-<p>Skeletons are validated <strong>once</strong> at authoring time by the existing L1 gates
-(references, choice targets, reachability via <code>_nodes_reaching_endings</code>,
-termination, variable/condition/effect integrity). Stored as schema-valid Storybook
-shells.</p>
-<p>Creation: a small <strong>hand-authored seed set</strong> per cell first (proves the pipeline
-against the real validator), then a <strong>procedural skeleton generator</strong> that emits
-valid topologies (validated by the same gates) as the scaling step.</p>
-<h3 id="41-series-and-campaign-continuity">4.1 Series and Campaign Continuity<a class="headerlink" href="#41-series-and-campaign-continuity" title="Permanent link">&para;</a></h3>
-<p>A story may belong to a <strong>series</strong>: a subset of its endings are flagged
-<strong>successful-completion</strong> endings, and a completion ending of book N continues into
-book N+1 (the D&amp;D-campaign model). This extends the architecture fractally: a series
-is a <strong>meta-skeleton</strong> (books as nodes, completion-to-entry links as edges), authored
-and validated the same way a book skeleton is.</p>
-<p>Schema additions (data model now; full series generation is a later phase):</p>
-<ul>
-<li><strong>Ending taxonomy</strong> becomes an explicit enum: <code>completion</code> (success;
-  series-advancing) versus <code>good</code> / <code>neutral</code> / <code>failure</code> / <code>death</code> (terminal). This
-  generalizes the age-gated fail-state types in Section 8; only <code>completion</code> endings
-  continue a series, and they are inherently positive and safe.</li>
-<li><strong>Series manifest:</strong> a separate pre-authored artifact (not embedded in each book,
-  so books stay reusable and standalone), holding the ordered book list and, per
-  completion ending, a <code>continuation = {next_book, entry_point, state_export}</code> edge.</li>
-<li><strong>Entry points:</strong> a book declares named <code>entry_points</code> (default: the single
-  <code>start_node</code>); a prior book's completion ending targets one.</li>
-<li><strong>State carry-over (the D&amp;D part):</strong> a completion ending exports a typed <strong>state
-  snapshot</strong> (a subset of the book's Tier 2+ <code>variables</code>: inventory, stats, pivotal
-  flags); the next book's entry point declares the state it expects. Series continuity
-  IS state continuity, so series ride the existing variable/effect/condition machinery.</li>
-</ul>
-<p><strong>v1 rule (decided):</strong> any successful-completion ending of book A continues to the
-<strong>same single entry point</strong> in book B; the exported state snapshot still carries the
-difference between paths. Distinct entry points per completion ending are deferred.
-This gives book B exactly one opening to author and validate.</p>
-<p>Dual value across tiers: for young readers, a near-stateless <strong>leveled-reader series</strong>
-(same characters, reading level rising book to book) needs only "you succeeded -&gt;
-next book"; for teens, a full <strong>D&amp;D-style campaign</strong> carries stats and inventory
-across books on the stateful tier.</p>
-<h3 id="42-persistence-and-stores">4.2 Persistence and Stores<a class="headerlink" href="#42-persistence-and-stores" title="Permanent link">&para;</a></h3>
-<p>The repo already persists generated stories and runtime state; this design reuses
-that and adds two artifact stores plus one import step.</p>
-<p>Existing (reuse, do not rebuild):</p>
-<ul>
-<li><strong>Story store:</strong> <code>db/models.py</code> <code>Storybook</code> + <code>StorybookVersion</code> tables; the
-  generation worker validates then commits the finished story
-  (<code>worker.py</code>). Every worker-path
-  generation already writes through this, so "once generated, it is saved" holds.</li>
-<li><strong>Runtime state:</strong> the <code>ReadingState</code> table persists per-reader variables and
-  <code>visit_set</code> (drives <code>once: true</code> effects); <code>player/engine.py</code> + <code>state.py</code> run the
-  stateful machine. Tier 2+ in-story state is already durable.</li>
-<li><strong>Completion:</strong> the <code>Completion</code> table records finished playthroughs, the natural
-  substrate for series progression (a completion of book N unlocks and seeds N+1).</li>
-</ul>
-<p>New for this design:</p>
-<ul>
-<li><strong>Skeleton store:</strong> versioned, validated skeleton shells (templates) with the
-  Section 4 classification metadata for coverage-aware selection.</li>
-<li><strong>Series manifest store:</strong> ordered book list, completion-to-entry links, and the
-  state-export contract (Section 4.1).</li>
-<li><strong>Authoring-skill import (the gap to close):</strong> the offline Opus authoring path
-  emits a Storybook JSON; it MUST be imported into the same
-  <code>Storybook</code>/<code>StorybookVersion</code> store, not left as a loose file, so skill-authored
-  and worker-generated stories are saved identically and share the library,
-  versioning, and series wiring.</li>
-<li>Optional: <strong>generation checkpointing</strong> for long fills (skeleton + filled-so-far) so
-  an interrupted Opus or gamebook run resumes instead of restarting.</li>
-</ul>
-<h2 id="5-generation-flow">5. Generation Flow<a class="headerlink" href="#5-generation-flow" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>select skeleton (theme, reading_band, length; coverage-aware)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>   -&gt; bind theme (world/character bible, reading-level rules)  [stable, cached]
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>   -&gt; fill nodes in batches against the fill contract          [parallel]
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>   -&gt; assemble Storybook
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>   -&gt; validate filled prose (content, reading level, fail-state, PII)
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>   -&gt; prose-only repair loop if a content/reading gate fails
-</span></code></pre></div>
-<p>The orchestrator's Stage A (structure) is replaced by skeleton select+bind; Stage B
-(prose) becomes batched fill; the repair loop shrinks to prose-only (reading level,
-content policy, local coherence), never structural repair.</p>
-<p><strong>Fill contract (transport-agnostic).</strong> Each node fill is a self-contained task:
-<code>{arc_role, incoming_context, reachable_state, choice_slots (target + label
-intent), reading_level, fail_state_policy, content_policy}</code>. The same contract is
-consumed by an automated provider or by the authoring skill, so fill logic is
-independent of backend.</p>
-<h2 id="6-backends-two-modalities-one-contract">6. Backends: Two Modalities, One Contract<a class="headerlink" href="#6-backends-two-modalities-one-contract" title="Permanent link">&para;</a></h2>
-<h3 id="61-runtime-providers-automated-in-the-fastapi-app">6.1 Runtime providers (automated, in the FastAPI app)<a class="headerlink" href="#61-runtime-providers-automated-in-the-fastapi-app" title="Permanent link">&para;</a></h3>
-<p><code>GenerationProvider</code> adapters called by the worker. New <code>ModalProvider</code> is ~90% the
-existing <code>OpenRouterProvider</code> (OpenAI-compatible HTTP, same <code>run_with_retries</code>
-Layer-1 retry/backoff, same fence stripping), differing in base URL, auth, and a
-cold-start-tolerant timeout. Streams SSE so the per-attempt timeout bounds
-time-to-first-token (reusing the Ollama streaming lesson).</p>
-<p>Modal endpoints are deployed out-of-band as config, not maintained Python:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>modal<span class="w"> </span>endpoint<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>cyo-light<span class="w">    </span>--model<span class="w"> </span>google/gemma-4-12b-it
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>modal<span class="w"> </span>endpoint<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>cyo-standard<span class="w"> </span>--model<span class="w"> </span>google/gemma-4-26B-A4B-it
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>modal<span class="w"> </span>endpoint<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>cyo-heavy<span class="w">    </span>--model<span class="w"> </span>openai/gpt-oss-120b
-</span></code></pre></div>
-<p>Model picks are grounded in OpenRouter roleplay-category usage (creative narrative)
-plus verified self-host VRAM: Gemma 4 26B-A4B is a 4B-active MoE on L40S;
-gpt-oss-120b is 117B/5.1B-active MXFP4 fitting a single 80GB GPU (A100-80 or H100).
-<strong>Self-hosting decouples model choice from the ADR-003 allowlist</strong>: the weights run
-on our Modal GPU, so the model's creator never receives the prompt.</p>
-<h3 id="62-authoring-skill-opus-via-claude-code-offline-shareable">6.2 Authoring skill (Opus via Claude Code, offline, shareable)<a class="headerlink" href="#62-authoring-skill-opus-via-claude-code-offline-shareable" title="Permanent link">&para;</a></h3>
-<p>The flagship path is <strong>not</strong> a runtime provider. It is a repo <strong>skill/agent</strong> that
-runs inside Claude Code, using Claude subscription capacity (not API/OpenRouter).
-It takes <code>skeleton + theme + fill contract</code>, fills the prose on Opus 4.8 (max
-effort), validates against the schema, and emits a Storybook JSON imported like any
-other story.</p>
-<ul>
-<li><strong>Concept-test enabler:</strong> needs zero adapter code. Hand a hand-authored skeleton
-  to the skill, fill on Opus, validate. Fastest test of "does skeleton-fill produce
-  good stories?", and the right tool to crack the hardest teen/stateful skeletons
-  first, then ratchet down to cheaper models.</li>
-<li><strong>Caching discipline:</strong> keep the stable prefix (system prompt + skeleton +
-  world/character bible + reading-level rules) constant and cached; vary only the
-  per-node fill. Subscription + high cache hit rate fills a whole story far below
-  per-token API cost.</li>
-<li><strong>Shareable:</strong> packaged as a skill, any user with their own subscription can
-  author stories.</li>
-</ul>
-<h3 id="63-fallback-and-selection">6.3 Fallback and selection<a class="headerlink" href="#63-fallback-and-selection" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Gemini 3 Flash via OpenRouter</strong> is the allowlist-clean, creative-strong, cheap
-  fallback when Modal credits are spent. A single floor is preferred over
-  tier-matching open models on OpenRouter (which would reintroduce the data-policy
-  question self-hosting avoids).</li>
-<li><strong>Monthly regime flip</strong> (<code>generation_provider</code>) picks Modal-primary (credits) vs
-  OpenRouter-primary (spent), not a per-request fallover. Manual; no credit-balance
-  auto-detection (YAGNI).</li>
-<li>Per-tier runtime cascade: <code>[Modal open model] -&gt; [Gemini 3 Flash via OpenRouter]</code>.
-  <strong>Local Ollama is an opt-in leg</strong> (callable via config), not the default tail; its
-  homelab TLS/throughput blockers keep it off the primary path for now. The Claude
-  Code authoring skill is a separate offline path. Primary backends are
-  Modal/OpenRouter/Claude Code.</li>
-</ul>
-<h2 id="7-model-alignment-empirical">7. Model Alignment (Empirical)<a class="headerlink" href="#7-model-alignment-empirical" title="Permanent link">&para;</a></h2>
-<p>Skeleton difficulty class -&gt; model tier, <em>measured</em>, not guessed. v1 designs the
-full difficulty range, runs every model against every class, and records a
-skeleton-class -&gt; cheapest-model-that-passes mapping.</p>
-<table>
-<thead>
-<tr>
-<th>Skeleton class</th>
-<th>Fill difficulty</th>
-<th>Starting model hypothesis</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Tree / Loop-and-Grow (5-8, 8-11)</td>
-<td>low</td>
-<td>Gemma 4 12B / Ollama</td>
-</tr>
-<tr>
-<td>Tree-dominant + light reconvergence (8-11)</td>
-<td>medium</td>
-<td>Gemma 4 26B-A4B</td>
-</tr>
-<tr>
-<td>Branch-and-Bottleneck (10-13)</td>
-<td>medium-high</td>
-<td>gpt-oss-120b</td>
-</tr>
-<tr>
-<td>Stateful Gauntlet / B&amp;B (13-16)</td>
-<td>high</td>
-<td>gpt-oss-120b / Opus authoring skill</td>
-</tr>
-</tbody>
-</table>
-<h2 id="8-validator-and-budget-changes">8. Validator and Budget Changes<a class="headerlink" href="#8-validator-and-budget-changes" title="Permanent link">&para;</a></h2>
-<blockquote>
-<p><strong>Superseded by ADR-011 (2026-07-05).</strong> The node budgets, words-per-node walls,
-ending/decision floors, and min-to-complete arc floors below are historical
-context for how this section's requirements were first specified. The merged
-<code>story-scale</code> enabler (PR #70, ADR-011,
-<a href="../../../planning/adr/adr-011-story-scale-framework/">adr-011-story-scale-framework.md</a>)
-implemented the actual <code>(band, length, style)</code>-keyed budgets in
-<code>src/cyo_adventure/validator/band_profile.py</code>; query those live rather than the
-numbers transcribed here, which reflect an earlier design pass, not the shipped
-gate.</p>
-</blockquote>
-<ul>
-<li><strong>Add ending-count and decision-count floors</strong> (quadruple-confirmed as the key
-  gap; today <code>_BUDGETS</code> gates only <code>(min_nodes, max_nodes, max_branch_depth)</code> and
-  <code>ending_count</code> is only checked for consistency). Prefer "more short leaves" over
-  "deeper tree" when raising endings. Skeleton-authored stories pass by
-  construction; the floor catches malformed skeletons and any non-skeleton path.</li>
-<li><strong>Add an age-gated fail-state gate</strong> (new; child-safety, not style): hard
-  no-death on the 5-8 band, failure/entrapment allowed at 8-11, horror variety at
-  10-13, lethal/resource-based at 13-16. Enforced both as a validator gate
-  (ending types) and a fill-contract constraint.</li>
-<li><strong>Compact budget profile</strong> for the live-model path (the Ollama session):
-  <code>band_budget(age_band, scale="standard"|"compact")</code>, threaded to both the prompt
-  block and the gate so they cannot drift; scale driven by reading level, never by
-  backend. Note the philosophy split: the compact profile is a stopgap for
-  <em>model-built</em> graphs; the <strong>skeleton path uses genre-faithful authored counts</strong>
-  (e.g. ~42-46 nodes at 5-8) and does not need the compact compromise.</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>age_band</th>
-<th>standard (min, max, depth)</th>
-<th>compact (min, max, depth)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>8-11</td>
-<td>(15, 30, 6)</td>
-<td>(6, 12, 4)</td>
-</tr>
-<tr>
-<td>10-13</td>
-<td>(25, 50, 8)</td>
-<td>(10, 18, 5)</td>
-</tr>
-<tr>
-<td>13-16</td>
-<td>(30, 60, 10)</td>
-<td>(12, 24, 6)</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Structural gates (references, orphans, reachability, termination) become
-  invariants for skeleton-authored stories. State gates (variable/condition/effect)
-  already exist and serve Tier 2+ gamebooks unchanged.</li>
-<li><strong>Series validation</strong> (Section 4.1): within a book, a completion ending's
-  <code>state_export</code> and an entry point's <code>expected_state</code> must reference declared
-  variables (reuses existing variable checks). Cross-book <strong>series-linkage</strong> (every
-  non-final book has &gt;=1 completion ending; each completion targets a valid
-  (next_book, entry_point); exported state is a superset of the next entry's expected
-  state) is a new validator layer, deferred with the series-generation phase.</li>
-</ul>
-<h2 id="9-cost-model">9. Cost Model<a class="headerlink" href="#9-cost-model" title="Permanent link">&para;</a></h2>
-<p>Automated Modal tiers (estimates; first deploy replaces with measured GPU-seconds).
-Assumes ~20k output tokens for a standard story, +20% warm-idle; throughput Gemma 4
-12B ~50, 26B-A4B ~90 (4B active), gpt-oss-120b ~100 tok/s (5.1B active).</p>
-<table>
-<thead>
-<tr>
-<th>Tier / GPU</th>
-<th>$/hr</th>
-<th>~$/standard story</th>
-<th>per $10/mo</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Gemma 4 12B / L4</td>
-<td>$0.80</td>
-<td>~$0.10</td>
-<td>~100</td>
-</tr>
-<tr>
-<td>Gemma 4 26B-A4B / L40S</td>
-<td>$1.95</td>
-<td>~$0.14</td>
-<td>~70</td>
-</tr>
-<tr>
-<td>gpt-oss-120b / A100-80</td>
-<td>$2.50</td>
-<td>~$0.24</td>
-<td>~40</td>
-</tr>
-</tbody>
-</table>
-<p>Full $30 unused triples the count. Local Ollama light-tier stories are $0. The Opus
-authoring path is billed to the subscription.</p>
-<p><strong>Exposure ratio (value metric).</strong> A single playthrough exposes only ~15-20% of the
-text; you pay to generate the full graph (~8-15k words) though one read sees
-~2.5-3k. Higher reconvergence raises exposure and lowers the unseen-prose fraction,
-so Branch-and-Bottleneck skeletons are more token-efficient per read than wide
-trees. Factor exposure into per-story value, not just raw generation cost.</p>
-<h2 id="10-security-and-data-policy">10. Security and Data Policy<a class="headerlink" href="#10-security-and-data-policy" title="Permanent link">&para;</a></h2>
-<ul>
-<li><code>modal_api_key</code> and endpoint tokens are secrets: never logged, validated by name
-  on absence (mirrors OpenRouter key handling).</li>
-<li>Modal and Ollama are self-hosted inference; the prompt never reaches the model's
-  creator. No real child PII reaches any model regardless (PII guard strips real
-  names; only fictional briefs are sent).</li>
-<li><strong>ADR-003 update:</strong> record the self-hosted exemption (creator receives no data),
-  confirm Gemini 3 Flash on the OpenRouter allowlist; DeepSeek stays off-allowlist
-  pending a separate decision.</li>
-</ul>
-<h2 id="11-testing-and-calibration">11. Testing and Calibration<a class="headerlink" href="#11-testing-and-calibration" title="Permanent link">&para;</a></h2>
-<ul>
-<li><strong>Concept test first (zero new app code):</strong> author one skeleton per topology
-  class, fill via the authoring skill on Opus, validate against the schema. Confirms
-  skeleton-fill produces good stories and that the hardest classes are fillable.</li>
-<li><strong>Unit:</strong> <code>ModalProvider</code> mirrors the OpenRouter adapter tests (transient-&gt;retry,
-  leg-fatal mapping, fence strip, streaming accumulation) with an injected client;
-  CI default stays <code>generation_provider=mock</code>.</li>
-<li><strong>Calibration:</strong> deploy endpoints; record GPU-seconds and cold-start per endpoint;
-  run every model against every skeleton class to build the alignment table;
-  confirm each band clears its Lexile/FK gate; verify the 5-8 no-death gate; compare
-  Modal-tier yield against Gemini 3 Flash on identical briefs.</li>
-<li>Coverage &gt;= 80%; ruff, basedpyright strict, bandit, pip-audit green.</li>
-</ul>
-<h2 id="12-phased-rollout">12. Phased Rollout<a class="headerlink" href="#12-phased-rollout" title="Permanent link">&para;</a></h2>
+<h2 id="2-end-to-end-flow">2. End-to-end flow<a class="headerlink" href="#2-end-to-end-flow" title="Permanent link">&para;</a></h2>
+<p>Step 1 is existing behavior, <strong>modified</strong> (see the callout below); step 7 is
+existing, unchanged; steps 3-6 are new.</p>
 <ol>
-<li><strong>DONE.</strong> Authoring skill + at least one hand-authored skeleton and filled sample per
-   band (all six) -&gt; concept test on Opus via Claude Code, importing each filled
-   story into the <code>Storybook</code>/<code>StorybookVersion</code> store. (Minimal app code; fastest
-   validation of the core bet and the per-band word-size and topology targets.)
-   Shipped as the <code>cyo-author</code> skill (<code>.claude/skills/cyo-author</code>).</li>
-<li><strong>DONE.</strong> Skeleton schema/metadata + skeleton store + seed library per (band, scale,
-   topology) cell; validate with existing L1 gates; add coverage tracking.
-   Shipped via ADR-011 (PR #70) + the skeleton batches (PRs #80/#81/#82/#84/#87):
-   17 production-eligible skeletons across all 6 bands.</li>
-<li><strong>DONE (superseded numbers).</strong> Validator floors (endings, decisions) + age-gated
-   fail-state gate + budget profile: shipped via ADR-011's <code>band_profile.py</code>, see
-   the note on Section 8 above.</li>
-<li><strong>DONE.</strong> <code>ModalProvider</code> + settings + <code>build_provider</code> branch, behind
-   <code>generation_provider=modal</code>, default unchanged. Shipped per
-   <code>docs/superpowers/specs/2026-07-04-modal-generation-leg-design.md</code>.</li>
-<li><strong>Deferred step, now designed:</strong> "skeleton-fill wiring into the
-   worker/orchestrator" (this section's flow, Section &#8538;) was explicitly called a
-   non-goal in the 2026-07-04 Modal-leg design. It is designed (not yet
-   implemented) in
-   <a href="../2026-07-05-skeleton-authoring-path-routing-design/">2026-07-05-skeleton-authoring-path-routing-design.md</a>,
-   which also adds the admin-facing method/mechanism/model-routing layer this
-   section does not cover (this section designs the fill backend only; the newer
-   spec designs how a live child request picks a backend and model).</li>
-<li><strong>Deploy standard then heavy Modal endpoints</strong>; calibrate; build the alignment
-   table.</li>
-<li><strong>Procedural skeleton generator</strong> for scale.</li>
-<li><strong>ADR-003 update</strong>; migrate to the config-driven band table and add the 3-5,
-   5-8, and 16+ bands; reading-level -&gt; tier/skeleton routing.</li>
-<li><strong>Series schema</strong> (ending taxonomy with <code>completion</code>, named entry points,
-   state-export contract) as a forward-compatible data model now; <strong>series manifest,
-   series-linkage validator, and series generation</strong> in a later phase.</li>
+<li><strong>Child requests a story; guardian approves -- MODIFIED.</strong> Today,
+   <code>approve_story_request</code> (<code>story_requests/service.py:70-139</code>) creates the
+   <code>Concept</code> <strong>and</strong> a <code>GenerationJob(status="queued")</code>, then
+   <code>approve_story_request_endpoint</code> (<code>api/story_requests.py:294-329</code>)
+   immediately enqueues it to the worker -- generation starts before any
+   authoring method is chosen, which conflicts with this design's premise.
+   <strong>Resolved:</strong> approval still creates the <code>Concept</code> (band/theme, no admin
+   input needed) but <strong>no longer creates or enqueues a <code>GenerationJob</code></strong>. Job
+   creation and enqueueing move entirely to step 3. This is a real, breaking
+   contract change: <code>StoryRequestApprovedView.job_id</code> (<code>api/schemas.py:364-369</code>)
+   no longer exists at approval time (no job exists yet) and must be dropped
+   from that response model; existing tests asserting approval creates a job
+   (<code>tests/integration/test_story_requests_api.py</code>,
+   <code>tests/unit/test_story_requests.py</code>) need updating to assert only a
+   <code>concept_id</code>.</li>
+<li><em>(implicit)</em> the approved request carries the data an authoring plan needs:
+   <code>request.concept_id</code> (band/theme already captured in the <code>Concept.brief</code>
+   built by <code>brief_from_request</code>, <code>story_requests/brief.py:58-92</code>).</li>
+<li><strong>NEW: admin creates an authoring plan.</strong>
+   <code>POST /story-requests/{id}/authoring-plan</code></li>
 </ol>
-<h2 id="13-decisions-and-open-questions">13. Decisions and Open Questions<a class="headerlink" href="#13-decisions-and-open-questions" title="Permanent link">&para;</a></h2>
-<p>Resolved (2026-06-23):</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;skeleton_fill&quot;</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="s2">&quot;fresh_generation&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">&quot;mechanism&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;skill&quot;</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="s2">&quot;automated_provider&quot;</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="nt">&quot;prep_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">  </span><span class="nt">&quot;review_stage1_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">&quot;review_stage2_model&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;...&quot;</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">}</span>
+</span></code></pre></div>
 <ul>
-<li><strong>Node word-size scales by band</strong>, ~100 (youngest) to ~250 (top); per-band gradient
-  in Section 3.</li>
-<li><strong>All six bands ship in v1</strong> with at least one authored sample each.</li>
-<li><strong>Primary backends are Modal / OpenRouter / Claude Code</strong>; local Ollama is an opt-in
-  leg, not the default.</li>
-<li><strong>Series v1:</strong> any successful-completion ending of book A continues to the same
-  single entry point in book B (state still carries).</li>
+<li><code>method</code>, <code>mechanism</code>, and <code>prep_model</code> are required. <code>review_stage1_model</code>
+     and <code>review_stage2_model</code> are optional: omitted, Stage 1's semantic check
+     (Section 2, step 6) defaults to <code>prep_model</code> (the same model that wrote the
+     prose judges its own fidelity to the directive -- adequate for v1; an
+     independent reviewer is a future refinement, not required now), and Stage 2
+     defaults to <code>run_moderation_pipeline()</code>'s existing default review model
+     (today's unchanged behavior).</li>
+<li><code>fresh_generation</code> requires <code>mechanism = automated_provider</code>; the reverse
+     combination (<code>fresh_generation</code> + <code>skill</code>) is a 422 -- the <code>cyo-author</code> skill
+     only fills existing structure, it has no fresh-structure mode.</li>
+<li>The endpoint runs the warn-only eligibility check (Section 5) and returns any
+     warnings in the response, but always proceeds -- per decision, the admin can
+     pick any syntactically-valid model.</li>
+<li>Requires <code>request.status == "approved"</code> (409 if <code>pending</code>/<code>declined</code>/
+     <code>blocked</code>). Loads the request's existing <code>concept_id</code> (created at
+     approval, step 1); does <strong>not</strong> create a second <code>Concept</code>. Idempotency:
+     if a <code>GenerationJob</code> already exists for that <code>concept_id</code>, this is also a
+     409 (one authoring plan per request; no duplicate-job path).</li>
+<li>On success this creates <strong>one</strong> <code>GenerationJob</code> row against that existing
+     <code>concept_id</code>, carrying the new <code>authoring_metadata</code> (Section 4), and (for
+     <code>automated_provider</code>) enqueues it exactly as today's
+     <code>enqueue_concept_generation</code> (<code>api/generation.py:179-241</code>) does; for
+     <code>skill</code> it is created directly at <code>status="awaiting_manual_fill"</code>, never
+     enqueued.</li>
+<li><strong>Skeleton auto-match</strong> (<code>skeleton_fill</code> only): pick the best <code>production_eligible</code>
+   library skeleton for the request's band (nearest length/style; first match if
+   several tie -- no admin picking, see non-goals). No matching skeleton for the
+   band -&gt; 422 naming <code>fresh_generation</code> as the alternative.</li>
+<li><strong>Prep</strong>, branching on <code>mechanism</code>:</li>
+<li><code>automated_provider</code> + <code>fresh_generation</code>: unchanged <code>generate_story()</code>
+     (Stage A structure, Stage B prose, Stage C repair) against the concept brief,
+     using <code>prep_model</code> as the <code>GenerationProvider</code> model.</li>
+<li><code>automated_provider</code> + <code>skeleton_fill</code>: <strong>new</strong> Stage B' -- load the matched
+     skeleton, build one <strong>fill-contract</strong> payload per <code>&lt;&lt;FILL&gt;&gt;</code> node
+     (<code>{arc_role, incoming_context, reachable_state, choice_slots, reading_level,
+     fail_state_policy, content_policy}</code>, per tiered-backends Section 5, plus one
+     added field: <code>theme_brief</code>, the child's requested theme, so the same contract
+     also carries the reskin instruction), call <code>prep_model</code> per node (or batched),
+     assemble, run <code>run_gate()</code>.</li>
+<li><code>skill</code> + <code>skeleton_fill</code>: job parks at <code>authoring_metadata.status =
+     "awaiting_manual_fill"</code>; the matched skeleton and its fill-contract payloads
+     (including <code>theme_brief</code>) are exposed via <code>GET /generation-jobs/{id}</code> for a
+     human to hand to the <code>cyo-author</code> skill (told to also reskin the theme per
+     <code>theme_brief</code>, while leaving structure untouched, exactly as its existing
+     "structure is immutable" rule already requires). Resuming: <code>import_cli</code> gains
+     an optional <code>--job &lt;id&gt;</code> flag; supplying it transitions that job out of
+     <code>awaiting_manual_fill</code> instead of creating an unlinked standalone import
+     (today's behavior, unchanged when <code>--job</code> is omitted).</li>
+<li><strong>NEW Stage 1 review -- fidelity to the directive.</strong> Runs before Stage 2,
+   regardless of mechanism:</li>
+<li>Pure code, no model: every <code>words=N</code> budget is honored within tolerance, no
+     <code>&lt;&lt;FILL</code> markers remain, and (skeleton_fill only) structure is byte-identical
+     to the source skeleton (<code>id</code>, <code>choices[].target</code>, <code>start_node</code>, node ids,
+     <code>is_ending</code>, <code>ending</code>, <code>variables</code>, <code>metadata</code> all unchanged -- the same
+     invariant the <code>cyo-author</code> skill's "Hard rules" already state, now enforced
+     in code rather than only by instruction).</li>
+<li>One semantic check needs judgment: does the prose honor each node's
+     <code>beats=</code>? Uses <code>review_stage1_model</code>.</li>
+<li>A failure here re-enters the existing repair-loop machinery (Stage C);
+     exhausting repairs uses the same failure semantics moderation failures use
+     today (<code>needs_revision</code>), not a new status.</li>
+<li><strong>Existing Stage 2 review -- moderation.</strong> <code>run_moderation_pipeline()</code>,
+   unchanged, gains one new optional parameter: an override for its default LLM
+   review model, sourced from <code>review_stage2_model</code> when the admin set one.</li>
+<li><strong>Existing admin review-queue</strong> (<code>api/approval.py</code>: submit/approve/send-back/
+   archive, <code>GET /review-queue</code>) is the unchanged final human gate. This design
+   does not touch it.</li>
 </ul>
-<p>Open:</p>
+<h2 id="3-two-backends-one-contract-reused-not-reinvented">3. Two backends, one contract (reused, not reinvented)<a class="headerlink" href="#3-two-backends-one-contract-reused-not-reinvented" title="Permanent link">&para;</a></h2>
+<p>This reuses tiered-backends Section 6's framing directly:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><code>automated_provider</code></th>
+<th><code>skill</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Where it runs</td>
+<td><code>GenerationProvider</code> call inside the FastAPI worker</td>
+<td>Claude Code session, offline, human-in-the-loop</td>
+</tr>
+<tr>
+<td>Model universe</td>
+<td>OpenRouter/Ollama/Modal model ids (<code>generation/provider.py</code>)</td>
+<td>Claude Code session models (Sonnet/Opus/Fable/Haiku)</td>
+</tr>
+<tr>
+<td>Valid for</td>
+<td><code>fresh_generation</code> and <code>skeleton_fill</code></td>
+<td><code>skeleton_fill</code> only</td>
+</tr>
+<tr>
+<td>Resumption</td>
+<td>Fully automatic; worker completes the job</td>
+<td>Job parks at <code>awaiting_manual_fill</code> until <code>import_cli --job &lt;id&gt;</code> runs</td>
+</tr>
+</tbody>
+</table>
+<p>The fill-contract payload (Section 2, step 5) is the same shape regardless of
+which mechanism consumes it, per tiered-backends Section 5's "transport-agnostic"
+design goal -- the automated path builds it and calls a provider directly; the
+skill path builds it and hands it to a human running <code>cyo-author</code>.</p>
+<h2 id="4-data-model-changes">4. Data model changes<a class="headerlink" href="#4-data-model-changes" title="Permanent link">&para;</a></h2>
+<p>No new tables (this is what Approach C, which you chose, buys):</p>
 <ul>
-<li>Per-tier <strong>reconvergence ceiling</strong> (max indegree / state-variable count) before fill
-  coherence degrades: deferred, set empirically in the calibration run.</li>
-<li>Whether to later promote local Ollama to a default light-tier backend once its
-  homelab TLS/throughput blockers clear.</li>
+<li><code>GenerationJob.authoring_metadata</code>: new nullable JSON column --
+  <code>{method, mechanism, prep_model, review_stage1_model, review_stage2_model,
+  skeleton_slug, warnings: [...]}</code>. Keeps this routing data out of <code>ConceptBrief</code>,
+  which stays purely "what the story is about."</li>
+<li><code>GenerationJob.status</code>: one new value, <code>awaiting_manual_fill</code>. Only reachable
+  via <code>mechanism = skill</code>; <code>automated_provider</code> jobs never see it.</li>
+<li><code>import_cli</code>: new optional <code>--job &lt;uuid&gt;</code> argument. Ties a manually-filled
+  story back to the job it fulfills; omitted, today's standalone behavior
+  (library-seeding via <code>cyo-author</code>, unrelated to any live request, per
+  <code>docs/planning/skeleton-corpus-story-generation-test-plan.md</code>) is unchanged.</li>
 </ul>
-<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h2 id="5-model-routing-and-eligibility-warn-only">5. Model routing and eligibility (warn-only)<a class="headerlink" href="#5-model-routing-and-eligibility-warn-only" title="Permanent link">&para;</a></h2>
+<p>Two model universes, kept apart by <code>mechanism</code>, never mixed:</p>
 <ul>
-<li>Reconciliation (four sources): <code>docs/planning/research/cyoa-research-reconciliation.md</code></li>
-<li>Graph-theory study: <code>docs/planning/research/commercial-cyoa-graph-theory-handoff.md</code>
-  (Adams, Beckelhymer, Marr 2019, JHM 9(2), DOI 10.5642/jhummath.201902.05)</li>
-<li>Modal auto-endpoints: <a href="https://modal.com/blog/introducing-auto-endpoints">https://modal.com/blog/introducing-auto-endpoints</a></li>
-<li>gpt-oss-120b (117B/5.1B active, single 80GB GPU): <a href="https://huggingface.co/openai/gpt-oss-120b">https://huggingface.co/openai/gpt-oss-120b</a></li>
-<li>Gemma 4 family: <a href="https://ai.google.dev/gemma/docs/core">https://ai.google.dev/gemma/docs/core</a></li>
-<li>Schema / validator: <code>src/cyo_adventure/storybook/models.py</code>,
-  <code>src/cyo_adventure/validator/layer1.py</code></li>
-<li>Provider protocol / factory: <code>src/cyo_adventure/generation/provider.py</code></li>
+<li><strong>Hard validation (422):</strong> <code>prep_model</code> must syntactically belong to the
+  universe <code>mechanism</code> implies (an OpenRouter model id submitted with
+  <code>mechanism: skill</code> is a category error, not a judgment call).</li>
+<li><strong>Soft warning (never blocks):</strong> a small code-level lookup keyed on
+  <code>(method, mechanism, band, tier)</code> flags likely-poor fits (e.g. a lightweight
+  model against a Tier-2 stateful <code>16+</code> skeleton) as a warning string. Seeded from
+  the "starting model hypothesis" column in tiered-backends Section 7; replace
+  with the real alignment table once that calibration run exists (non-goal here).
+  The admin can proceed past any warning.</li>
+</ul>
+<h2 id="6-error-handling">6. Error handling<a class="headerlink" href="#6-error-handling" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>request.status != "approved"</code></td>
+<td>409</td>
+</tr>
+<tr>
+<td>A <code>GenerationJob</code> already exists for the request's <code>concept_id</code></td>
+<td>409 (one authoring plan per request)</td>
+</tr>
+<tr>
+<td><code>method=fresh_generation</code> with <code>mechanism=skill</code></td>
+<td>422</td>
+</tr>
+<tr>
+<td><code>prep_model</code> outside the universe <code>mechanism</code> implies</td>
+<td>422</td>
+</tr>
+<tr>
+<td>No <code>production_eligible</code> skeleton for the request's band (<code>skeleton_fill</code>)</td>
+<td>422, names <code>fresh_generation</code> as the alternative</td>
+</tr>
+<tr>
+<td>Stage 1 fidelity check fails</td>
+<td>Existing repair-loop / <code>needs_revision</code> semantics, not new ones</td>
+</tr>
+<tr>
+<td>Job stuck at <code>awaiting_manual_fill</code> indefinitely</td>
+<td><strong>Out of scope for v1</strong> (explicit decision) -- no timeout, no automated reminder; visible today via <code>GET /generation-jobs/{id}</code> for anyone who checks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-testing">7. Testing<a class="headerlink" href="#7-testing" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Unit:</strong> authoring-plan request validation (422 branches: schema-level
+  method/mechanism rejection plus service-level prep_model/band checks), the
+  eligibility-warning function (pure; table-driven test), skeleton auto-match
+  tie-break, Stage 1's word-count / leftover-marker / structure-diff checks (pure
+  code, no model, straightforward to test exhaustively).</li>
+<li><strong>Integration:</strong> extend the existing <code>test_generation_worker.py</code> /
+  <code>test_generation_api.py</code> pattern for both mechanisms; a new test for the
+  <code>awaiting_manual_fill</code> -&gt; <code>import_cli --job</code> resume round trip; <code>MockProvider</code>
+  covers <code>automated_provider</code> tests exactly as today's tests already do.</li>
+<li><strong>Manual/E2E:</strong> one full run per method
+  (<code>skeleton_fill</code>+<code>automated_provider</code>, <code>skeleton_fill</code>+<code>skill</code>,
+  <code>fresh_generation</code>) against the dev DB. This is the same exercise
+  <code>docs/planning/skeleton-corpus-story-generation-test-plan.md</code> already scoped;
+  that doc's results table can absorb these runs rather than duplicating a
+  tracking table here.</li>
 </ul>
 
 
@@ -3200,7 +2762,7 @@ trees. Factor exposure into per-story value, not just raw generation cost.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 25, 2026 19:46:51 UTC">June 25, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 02:01:54 UTC">July 6, 2026</span>
   </span>
 
     
