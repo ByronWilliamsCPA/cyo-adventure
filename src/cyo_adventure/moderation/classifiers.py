@@ -2,8 +2,11 @@
 
 Each classifier is optional: a missing key skips it. Bright-line categories produce
 a hard ``BLOCK`` finding (the pipeline routes straight to auto_reject, no LLM spend);
-graded categories produce non-blocking ``ADVISORY`` findings recorded in the report
-for the guardian (they do not currently feed the Stage 1 prompt).
+graded categories at or above ``_ADVISORY_SCORE_FLOOR`` produce non-blocking
+``ADVISORY`` findings recorded in the report for the guardian (they do not
+currently feed the Stage 1 prompt). Sub-floor graded scores are classifier
+noise and are dropped, except that OpenAI's own boolean flag for a category
+bypasses the floor (a provider-flagged category is always recorded).
 """
 
 from __future__ import annotations
@@ -23,6 +26,16 @@ _logger = get_logger(__name__)
 _OPENAI_URL = "https://api.openai.com/v1/moderations"
 _OPENAI_MODEL = "omni-moderation-latest"
 _CLASSIFIER_TIMEOUT = 20.0
+
+# Graded scores below this floor are classifier noise, not signal: both APIs
+# return a nonzero float for every category on every call (observed ceiling on
+# clean children's prose ~6e-4), so without a floor every node emits every
+# category as an advisory finding and the review surface reads as fully
+# flagged. OpenAI's own boolean flag bypasses the floor (Perspective returns
+# no such flag, so its only bypass is the score-based bright-line); advisories
+# never gate (report.has_soft_flag counts FLAG only), so the floor is report
+# hygiene, not a safety relaxation.
+_ADVISORY_SCORE_FLOOR = 0.01
 
 # Bright-line OpenAI categories: any True flag is an immediate hard block.
 _OPENAI_BRIGHTLINE: frozenset[str] = frozenset(
@@ -114,7 +127,7 @@ def _openai_finding(
             score=score,
             message=f"OpenAI bright-line category '{category}' flagged",
         )
-    if score > 0.0:
+    if flagged or score >= _ADVISORY_SCORE_FLOOR:
         return Finding(
             stage=0,
             source=Source.OPENAI,
@@ -245,7 +258,11 @@ async def _run_perspective(
 def _perspective_attribute_finding(
     node_id: str, attribute: str, payload: object
 ) -> Finding | None:
-    """Build a Perspective Finding for one attribute, or return None on malformed data."""
+    """Build a Perspective Finding for one attribute.
+
+    Returns None on malformed data, and for non-bright-line attributes whose
+    score sits below the advisory noise floor.
+    """
     payload_dict = _as_str_map(payload)
     if payload_dict is None:
         _logger.warning(
@@ -278,6 +295,8 @@ def _perspective_attribute_finding(
 
     score = float(raw_value)
     is_brightline = attribute == "SEXUALLY_EXPLICIT" and score >= 0.8
+    if not is_brightline and score < _ADVISORY_SCORE_FLOOR:
+        return None
     return Finding(
         stage=0,
         source=Source.PERSPECTIVE,
