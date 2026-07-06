@@ -49,8 +49,16 @@ async def _seed_in_review(
 
 async def _seed_draft(
     sessions: async_sessionmaker[AsyncSession],
+    *,
+    moderation_report: dict[str, object] | None = None,
 ) -> str:
-    """Seed Family A (admin + guardian + child) and a draft single-version story."""
+    """Seed Family A (admin + guardian + child) and a draft single-version story.
+
+    Args:
+        sessions: The session factory fixture.
+        moderation_report: The version's moderation_report; None (default)
+            models a version never screened by moderation.
+    """
     async with sessions() as session:
         fam = Family(name="A")
         session.add(fam)
@@ -65,7 +73,12 @@ async def _seed_draft(
         story_id = "draft-me"
         session.add(Storybook(id=story_id, family_id=fam.id, status="draft"))
         session.add(
-            StorybookVersion(storybook_id=story_id, version=1, blob={"id": story_id})
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=moderation_report,
+            )
         )
         await session.commit()
         return story_id
@@ -249,13 +262,26 @@ async def test_submit_and_send_back_flow(
 async def test_admin_submits_draft_story(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """An admin submits a draft story for review -> 200, in_review."""
-    story_id = await _seed_draft(sessions)
+    """An admin submits a screened draft story for review -> 200, in_review."""
+    story_id = await _seed_draft(
+        sessions, moderation_report=make_clean_moderation_report()
+    )
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/submit", headers=auth("admin-a")
     )
     assert resp.status_code == 200
     assert resp.json()["status"] == "in_review"
+
+
+async def test_admin_submit_without_moderation_returns_400(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Submitting a draft never screened by moderation returns 400 (closes #57)."""
+    story_id = await _seed_draft(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/submit", headers=auth("admin-a")
+    )
+    assert resp.status_code == 400
 
 
 async def test_admin_archives_published_story(
