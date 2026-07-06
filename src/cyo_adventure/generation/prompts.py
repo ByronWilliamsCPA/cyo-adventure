@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
 __all__ = [
     "StagePrompt",
+    "build_fidelity_repair_prompt",
     "build_fill_prompt",
     "build_prose_prompt",
     "build_repair_prompt",
@@ -379,6 +380,60 @@ def build_fill_prompt(skeleton_json: str, theme_brief: str) -> StagePrompt:
         .replace(_SCHEMA_RULES_PLACEHOLDER, _schema_rules())
         .replace("{skeleton_with_fill_directives}", skeleton_json)
         .replace("{theme_brief}", theme_brief)
+    )
+    return _split_stage_prompt(text)
+
+
+def build_fidelity_repair_prompt(
+    filled_json: str,
+    violations: list[str],
+) -> StagePrompt:
+    """Build the Stage 1 fidelity-aware repair prompt for a skeleton fill.
+
+    A structurally-clean fill can still fail the Stage 1 fidelity checks (see
+    :func:`~cyo_adventure.generation.fidelity.run_fidelity_checks` and the
+    semantic beat check): a node may miss its FILL directive's word-count
+    target, leave the directive unfilled, or perturb a field the skeleton
+    fixed. This builder carries the concrete violation strings back to the
+    model so the retry is a targeted correction, not a blind re-fill.
+
+    A dedicated template is used rather than reusing :func:`build_repair_prompt`
+    because the structural ``repair.md`` contract actively conflicts with a
+    fidelity fix: it instructs the model to preserve every node ``body`` and,
+    when no node ids are named, to restructure the graph. A fidelity fix does
+    the opposite: it must rewrite the flagged node's ``body`` prose to hit its
+    directive while keeping the graph structure frozen.
+
+    Loads ``fidelity_repair.md`` and substitutes its two volatile placeholders:
+
+    - ``{filled_story}`` with the filled story JSON being corrected (user).
+    - ``{fidelity_violations}`` with the bulleted violation messages (user).
+
+    Args:
+        filled_json: The full JSON string of the filled story that missed one
+            or more Stage 1 fidelity checks.
+        violations: The human-readable fidelity violation messages returned by
+            :func:`~cyo_adventure.generation.fidelity_gate.run_stage1_gate`.
+
+    Returns:
+        The Stage 1 fidelity-repair :class:`StagePrompt` (no unfilled tokens).
+
+    Raises:
+        BusinessLogicError: If the template lacks its ``<!-- @user -->`` marker.
+    """
+    # #ASSUME: data-integrity: filled_json is valid JSON and may contain literal
+    # `{` / `}` characters; substitute it first so any braces in the payload
+    # cannot shadow the later `{fidelity_violations}` replacement.
+    # #VERIFY: test_no_unfilled_placeholders / test_carries_violation_text_verbatim.
+    violations_block = (
+        "\n".join(f"  - {message}" for message in violations)
+        if violations
+        else "  (none)"
+    )
+    text = (
+        _load_template("fidelity_repair.md")
+        .replace("{filled_story}", filled_json)
+        .replace("{fidelity_violations}", violations_block)
     )
     return _split_stage_prompt(text)
 

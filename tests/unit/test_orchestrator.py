@@ -28,6 +28,7 @@ from typing import cast
 
 import pytest
 
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
 from cyo_adventure.generation.orchestrator import (
@@ -703,3 +704,174 @@ async def test_fill_skeleton_repair_exhaustion_is_needs_review_not_failed() -> N
     assert outcome.attempts == 2
     assert len(provider.calls) == 3
     assert outcome.storybook["id"] == VALID_STORY["id"]
+
+
+# ---------------------------------------------------------------------------
+# Test: fill_skeleton Stage 1 fidelity fold (#133)
+# ---------------------------------------------------------------------------
+#
+# These tests exercise the folded design: when fill_skeleton is given the
+# Stage 1 parameters (settings not None), a structurally-clean-but-Stage-1-
+# failing fill re-enters the SAME bounded max_repairs repair loop that
+# structural blocks use, with a fidelity-aware repair prompt, sharing one
+# budget. run_stage1_gate is monkeypatched at the orchestrator seam so the
+# gate outcome is deterministic without a real review backend.
+
+
+def _valid_variant(index: int) -> str:
+    """A gate-clean VALID_STORY variant with a distinct start-node body.
+
+    Distinct bodies give each repair a distinct no-progress signature so the
+    bounded loop runs to its budget instead of aborting on an identical redo.
+    """
+    doc = copy.deepcopy(VALID_STORY)
+    nodes = cast("list[dict[str, object]]", doc["nodes"])
+    nodes[0]["body"] = f"A gate-clean variant number {index} of the same story."
+    return json.dumps(doc)
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stage1_fail_once_then_pass_returns_passed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Stage 1 miss then a clean recheck yields passed within the shared budget.
+
+    The fill is structurally clean; Stage 1 fails on attempt 1 and passes on
+    attempt 2, so exactly one fidelity-aware repair runs (attempts == 1) and no
+    downgrade key is added.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=[_valid_variant(0), _valid_variant(1)])
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+    stage1_calls = 0
+
+    async def _fake_gate(*_args: object, **_kwargs: object) -> list[str]:
+        nonlocal stage1_calls
+        stage1_calls += 1
+        return ["node 'n1' word count mismatch"] if stage1_calls == 1 else []
+
+    monkeypatch.setattr(orch, "run_stage1_gate", _fake_gate)
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        pii,
+        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+    )
+
+    assert outcome.status == "passed"
+    assert "stage1_fidelity_violations" not in outcome.report
+    assert outcome.attempts == 1
+    assert stage1_calls == 2
+    assert len(provider.calls) == 2  # fill + one fidelity repair
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stage1_exhaustion_downgrades_with_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A persistent Stage 1 miss downgrades to needs_review with the violations key.
+
+    The retries share the SAME max_repairs budget as structural repairs: with
+    max_repairs=2 the fill makes exactly 1 fill + 2 repair provider calls (3
+    total), NOT a separate 3x3 budget, before downgrading.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(
+        responses=[_valid_variant(0), _valid_variant(1), _valid_variant(2)]
+    )
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+    stage1_calls = 0
+
+    async def _fake_gate(*_args: object, **_kwargs: object) -> list[str]:
+        nonlocal stage1_calls
+        stage1_calls += 1
+        return ["node 'n1' still short"]
+
+    monkeypatch.setattr(orch, "run_stage1_gate", _fake_gate)
+
+    outcome = await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        pii,
+        max_repairs=2,
+        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+    )
+
+    assert outcome.status == "needs_review"
+    assert outcome.report.get("stage1_fidelity_violations") == ["node 'n1' still short"]
+    assert outcome.attempts == 2
+    assert len(provider.calls) == 3  # fill + max_repairs repairs, one shared budget
+    assert stage1_calls == 3
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_stage1_repair_is_fidelity_aware(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The retry prompt carries the violation text, proving it is not a blind redo."""
+    import cyo_adventure.generation.orchestrator as orch
+
+    skeleton = _skeleton_with_fill_placeholder()
+    provider = MockProvider(responses=[_valid_variant(0), _valid_variant(1)])
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    violation = "node 'greeting' word count 3 outside [6, 14] for target 10"
+
+    calls = 0
+
+    async def _fake_gate(*_args: object, **_kwargs: object) -> list[str]:
+        nonlocal calls
+        calls += 1
+        return [violation] if calls == 1 else []
+
+    monkeypatch.setattr(orch, "run_stage1_gate", _fake_gate)
+
+    await fill_skeleton(
+        skeleton,
+        {"premise": "a fox"},
+        provider,
+        pii,
+        settings=Settings(generation_provider="mock"),  # type: ignore[call-arg]
+    )
+
+    # provider.calls[0] is the fill; provider.calls[1] is the fidelity repair.
+    assert len(provider.calls) == 2
+    assert violation in provider.calls[1]
+
+
+@pytest.mark.asyncio
+async def test_fill_skeleton_without_settings_never_runs_stage1(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No Stage 1 params means the gate is never called and behavior is unchanged.
+
+    This is the guard that keeps generate_story and every non-authoring caller
+    of the shared repair machinery byte-identical: Stage 1 is opt-in via the
+    settings parameter.
+    """
+    import cyo_adventure.generation.orchestrator as orch
+
+    skeleton = _skeleton_with_fill_placeholder()
+    filled = copy.deepcopy(VALID_STORY)
+    provider = MockProvider(responses=[json.dumps(filled)])
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+    async def _boom(*_args: object, **_kwargs: object) -> list[str]:
+        msg = "run_stage1_gate must not be called when settings is None"
+        raise AssertionError(msg)
+
+    monkeypatch.setattr(orch, "run_stage1_gate", _boom)
+
+    outcome = await fill_skeleton(skeleton, {"premise": "a fox"}, provider, pii)
+
+    assert outcome.status == "passed"
+    assert outcome.attempts == 0
+    assert len(provider.calls) == 1
