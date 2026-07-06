@@ -2,6 +2,7 @@ import { useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { AVATARS } from '../profiles/avatars'
 import {
   AGE_BANDS,
@@ -35,11 +36,15 @@ export function ProfileFormDialog({
   const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null)
   const [tts, setTts] = useState(initial?.tts_enabled ?? false)
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(false)
+  // Classified failure message (null when there is no error). A 403 here is the
+  // by-design admin rejection (an admin is not a guardian, so `_require_guardian`
+  // returns 403): naive-UX finding G2 saw it read as a transient "try again",
+  // which is misleading because retrying can never succeed for this account.
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   async function save() {
     setSaving(true)
-    setError(false)
+    setErrorMsg(null)
     try {
       await onSubmit({
         display_name: displayName,
@@ -51,7 +56,12 @@ export function ProfileFormDialog({
       onClose()
     } catch (err) {
       console.error('profile save failed', err)
-      setError(true)
+      setErrorMsg(
+        classifyApiError(err, {
+          forbidden: 'Only a guardian can add child profiles.',
+          transient: 'We could not save this profile. Please try again.',
+        }).message,
+      )
       setSaving(false)
     }
   }
@@ -88,9 +98,9 @@ export function ProfileFormDialog({
           if (valid && !saving) void save()
         }}
       >
-        {error ? (
+        {errorMsg ? (
           <p role="alert" className="profile-form__error">
-            We could not save this profile. Please try again.
+            {errorMsg}
           </p>
         ) : null}
         <label>
@@ -124,8 +134,12 @@ export function ProfileFormDialog({
             step="0.5"
             value={cap}
             onChange={(e) => setCap(e.target.value)}
+            aria-describedby="reading-level-cap-help"
           />
         </label>
+        <p id="reading-level-cap-help" className="profile-form__hint">
+          99 means no limit.
+        </p>
         <fieldset className="profile-form__avatars">
           <legend>Avatar</legend>
           <label>

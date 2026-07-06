@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { makeReviewApi, type FindingView, type ReviewSurface } from './reviewApi'
@@ -41,7 +42,7 @@ function readNodes(blob: Record<string, unknown>): StoryNode[] {
 
 type LoadState =
   | { kind: 'loading' }
-  | { kind: 'error' }
+  | { kind: 'error'; message: string }
   | { kind: 'ready'; surface: ReviewSurface }
 
 type ActionDialog = null | 'approve' | 'sendback'
@@ -85,7 +86,14 @@ export function ReviewDetailPage() {
         // Log the message, not the axios error object (its config.headers
         // carries the caller's Authorization bearer token).
         console.error('review surface load failed:', err instanceof Error ? err.message : err)
-        if (!cancelled) setState({ kind: 'error' })
+        if (!cancelled) {
+          setState({
+            kind: 'error',
+            message: classifyApiError(err, {
+              transient: 'We could not load this story for review. Please reload.',
+            }).message,
+          })
+        }
       }
     }
     void load()
@@ -132,7 +140,7 @@ export function ReviewDetailPage() {
   if (state.kind === 'error') {
     return (
       <p role="alert" className="console__error">
-        We could not load this story for review. Please reload.
+        {state.message}
       </p>
     )
   }
@@ -202,12 +210,47 @@ export function ReviewDetailPage() {
         ))}
       </div>
 
+      {/*
+        #ASSUME: UI state: the backend already re-checks status on approve/send-back
+        and rejects a story that is not in_review; this guard is UX only, so a
+        guardian never clicks into a confusing rejection for a story someone else
+        already approved or sent back in another tab.
+        #VERIFY: ReviewDetailPage.test.tsx disabled-for-published/draft +
+        enabled-for-in-review tests.
+      */}
       <div className="review-actionbar">
-        <Button variant="danger" onClick={() => openDialog('sendback')}>
+        <Button
+          variant="danger"
+          onClick={() => openDialog('sendback')}
+          disabled={surface.status !== 'in_review'}
+          aria-describedby={
+            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
+          }
+        >
           Send Back
         </Button>
-        <Button onClick={() => openDialog('approve')}>Approve</Button>
+        <Button
+          onClick={() => openDialog('approve')}
+          disabled={surface.status !== 'in_review'}
+          aria-describedby={
+            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
+          }
+        >
+          Approve
+        </Button>
       </div>
+      {/*
+        Keep each button's accessible name its visible label ("Approve" / "Send
+        Back") and carry the disabled reason in a separate described-by hint, so a
+        screen-reader user still hears the primary action name and sighted users see
+        why the controls are greyed. Overwriting aria-label with the reason (the
+        earlier approach) hid the action name from assistive tech.
+      */}
+      {surface.status !== 'in_review' ? (
+        <p id="review-actions-disabled-hint" className="review-actionbar__hint">
+          Only stories in review can be approved or sent back.
+        </p>
+      ) : null}
 
       {dialog === 'approve' ? (
         <Dialog

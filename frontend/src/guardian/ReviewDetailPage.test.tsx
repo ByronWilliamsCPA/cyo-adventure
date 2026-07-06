@@ -115,6 +115,33 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
+  it.each(['published', 'draft'] as const)(
+    'disables Approve and Send Back for a %s story while keeping their labels',
+    async (status) => {
+      mockGet.mockResolvedValue({ data: { ...SURFACE, status } })
+      renderAt('s1')
+      // The buttons keep their action names ("Approve" / "Send Back"); the
+      // disabled reason is carried by an aria-describedby hint, not by
+      // overwriting the accessible name.
+      const approve = await screen.findByRole('button', { name: /^Approve$/i })
+      const sendBack = screen.getByRole('button', { name: /^Send Back$/i })
+      expect(approve).toBeDisabled()
+      expect(sendBack).toBeDisabled()
+
+      const hint = screen.getByText(/only stories in review can be approved or sent back/i)
+      expect(approve).toHaveAttribute('aria-describedby', hint.id)
+      expect(sendBack).toHaveAttribute('aria-describedby', hint.id)
+    }
+  )
+
+  it('keeps Approve and Send Back enabled for a story in review', async () => {
+    renderAt('s1')
+    const approve = await screen.findByRole('button', { name: /^Approve$/i })
+    const sendBack = screen.getByRole('button', { name: /^Send Back$/i })
+    expect(approve).toBeEnabled()
+    expect(sendBack).toBeEnabled()
+  })
+
   it('does not bleed a prior action error into the other dialog', async () => {
     const user = userEvent.setup()
     mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 400 } })

@@ -41,11 +41,17 @@ function renderPage() {
 // The console loads /v1/review-queue and /v1/generation-jobs in one Promise.all,
 // so a realistic mock must branch on the URL: returning items-shaped data for
 // the jobs endpoint would throw in stillProcessing (res.data.jobs undefined).
-function mockQueue(items: unknown[], jobs: unknown[] = []) {
+function mockQueue(
+  items: unknown[],
+  jobs: unknown[] = [],
+  profiles: unknown[] = [{ id: 'p1' }]
+) {
   mockGet.mockImplementation((url: string) =>
     url === '/v1/generation-jobs'
       ? Promise.resolve({ data: { jobs } })
-      : Promise.resolve({ data: { items } })
+      : url === '/v1/profiles'
+        ? Promise.resolve({ data: { profiles } })
+        : Promise.resolve({ data: { items } })
   )
 }
 
@@ -102,6 +108,22 @@ describe('ConsolePage', () => {
     mockQueue([])
     renderPage()
     expect(await screen.findByText(/Nothing to review/i)).toBeInTheDocument()
+  })
+
+  it('nudges a childless family to add a profile in the empty state', async () => {
+    mockQueue([], [], [])
+    renderPage()
+    const link = await screen.findByRole('link', { name: /add a child profile/i })
+    expect(link).toHaveAttribute('href', '/guardian/profiles')
+  })
+
+  it('does not nudge to add a profile when the family already has children', async () => {
+    mockQueue([]) // default mock has one child profile
+    renderPage()
+    await screen.findByText(/Nothing to review/i)
+    expect(
+      screen.queryByRole('link', { name: /add a child profile/i })
+    ).not.toBeInTheDocument()
   })
 
   it('renders queued/running jobs in the Still processing section', async () => {

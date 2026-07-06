@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { AssignChildrenDialog } from './AssignChildrenDialog'
@@ -17,6 +19,12 @@ import {
 // Poll interval while any request is still generating; matches the ApiStatus
 // polling shape (setInterval + clearInterval cleanup), tuned to ~8s here.
 const POLL_MS = 8000
+
+// Transient (network / 5xx) copy per surface. classifyApiError swaps in a
+// distinct message for a 401/403 so a permanent auth/role failure no longer
+// reads as a retryable blip (naive-UX report F1); these are the fallbacks.
+const LOAD_ERROR_TRANSIENT = 'We could not load your requests and profiles.'
+const SUBMIT_ERROR_TRANSIENT = 'We could not send this request. Please try again.'
 
 function isActive(job: GenerationJobSummary): boolean {
   return job.status === 'queued' || job.status === 'running'
@@ -42,19 +50,19 @@ export function IntakePage() {
   const [tone, setTone] = useState<ToneValue>('gentle')
   const [jobs, setJobs] = useState<GenerationJobSummary[]>([])
   const [saving, setSaving] = useState(false)
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   // The storybook id whose "Assign to children" dialog is open, or null when
   // closed. Approved request rows carry a non-null storybook_id (see statusPill).
   const [assigning, setAssigning] = useState<string | null>(null)
   // Distinct from `error` (a submit failure): a read failure on the initial
   // load or a poll. Surfacing it prevents an empty/stale list from masquerading
   // as a genuine "no requests" state after a session expiry or network drop.
-  const [loadError, setLoadError] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const refreshJobs = useCallback(async () => {
     const rows = await intakeApi.listJobs()
     setJobs(rows)
-    setLoadError(false)
+    setLoadError(null)
   }, [intakeApi])
 
   // #ASSUME: external-resources: profiles/jobs fetch can reject (session expiry,
@@ -69,10 +77,10 @@ export function IntakePage() {
       ])
       setProfiles(rows)
       setJobs(jobRows)
-      setLoadError(false)
+      setLoadError(null)
     } catch (err) {
       console.error('intake load failed', err)
-      setLoadError(true)
+      setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
     }
   }, [profilesApi, intakeApi])
 
@@ -93,7 +101,7 @@ export function IntakePage() {
     const id = setInterval(() => {
       void refreshJobs().catch((err) => {
         console.error('poll failed', err)
-        setLoadError(true)
+        setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
       })
     }, POLL_MS)
     return () => clearInterval(id)
@@ -105,7 +113,7 @@ export function IntakePage() {
   async function submit() {
     if (selected === null) return
     setSaving(true)
-    setError(false)
+    setError(null)
     // #CRITICAL: data-integrity: createConcept + generate create durable rows
     // (and downstream generation cost). The success/failure of the request is
     // decided by these two POSTs ALONE. The trailing job-list refresh is a
@@ -126,7 +134,7 @@ export function IntakePage() {
       submitted = true
     } catch (err) {
       console.error('story request failed', err)
-      setError(true)
+      setError(classifyApiError(err, { transient: SUBMIT_ERROR_TRANSIENT }).message)
     } finally {
       setSaving(false)
     }
@@ -136,7 +144,7 @@ export function IntakePage() {
       setPremise('')
       await refreshJobs().catch((err) => {
         console.error('post-submit refresh failed', err)
-        setLoadError(true)
+        setLoadError(classifyApiError(err, { transient: LOAD_ERROR_TRANSIENT }).message)
       })
     }
   }
@@ -146,7 +154,7 @@ export function IntakePage() {
       <h1>Request a story</h1>
       {loadError ? (
         <div role="alert" className="intake-form__error">
-          We could not load your requests.{' '}
+          {loadError}{' '}
           <button
             type="button"
             className="intake-retry"
@@ -165,14 +173,16 @@ export function IntakePage() {
       >
         {error ? (
           <p role="alert" className="intake-form__error">
-            We could not send this request. Please try again.
+            {error}
           </p>
         ) : null}
 
         <fieldset className="intake-form__chips">
           <legend>Who&apos;s it for?</legend>
           {profiles.length === 0 ? (
-            <p className="intake-form__hint">Add a child profile first.</p>
+            <Link to="/guardian/profiles" className="intake-form__hint">
+              Add a child profile first.
+            </Link>
           ) : (
             profiles.map((p) => (
               <button

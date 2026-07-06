@@ -1,5 +1,6 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { IntakePage } from './IntakePage'
@@ -35,7 +36,25 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
+// IntakePage now renders a react-router <Link> (the add-child hint), so every
+// render needs Router context.
+function renderPage() {
+  return render(<IntakePage />, { wrapper: MemoryRouter })
+}
+
 describe('IntakePage', () => {
+  it('shows the add-child hint as a link to profiles when there are no children', async () => {
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [] } })
+      if (url === '/v1/generation-jobs') return Promise.resolve({ data: { jobs: [] } })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    const link = await screen.findByRole('link', { name: /add a child profile first/i })
+    expect(link).toHaveAttribute('href', '/guardian/profiles')
+  })
+
   it('posts a concept then enqueues generation with a display-name-free brief', async () => {
     const user = userEvent.setup()
     mockPost.mockImplementation((url: string) => {
@@ -44,7 +63,7 @@ describe('IntakePage', () => {
         return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
       throw new Error(`unexpected POST ${url}`)
     })
-    render(<IntakePage />)
+    renderPage()
 
     await user.click(await screen.findByRole('button', { name: /Reader A/i }))
     await user.type(
@@ -93,7 +112,7 @@ describe('IntakePage', () => {
         },
       })
     })
-    render(<IntakePage />)
+    renderPage()
 
     expect(await screen.findByTestId('request-status-jq')).toHaveTextContent('Generating')
     expect(screen.getByTestId('request-status-jw')).toHaveTextContent('Waiting for review')
@@ -111,7 +130,7 @@ describe('IntakePage', () => {
     // Both mount fetches reject (e.g. session expiry). Without a surfaced
     // error the page would render a false "no profiles / no requests" state.
     mockGet.mockReset().mockRejectedValue(new Error('boom'))
-    render(<IntakePage />)
+    renderPage()
 
     expect(await screen.findByText(/could not load your requests/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument()
@@ -125,7 +144,7 @@ describe('IntakePage', () => {
       if (url === '/v1/concepts') return Promise.reject(new Error('nope'))
       throw new Error(`unexpected POST ${url}`)
     })
-    render(<IntakePage />)
+    renderPage()
 
     await user.click(await screen.findByRole('button', { name: /Reader A/i }))
     await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
@@ -161,7 +180,7 @@ describe('IntakePage', () => {
         return Promise.resolve({ data: { job_id: 'j1', status: 'queued' } })
       throw new Error(`unexpected POST ${url}`)
     })
-    render(<IntakePage />)
+    renderPage()
 
     await user.click(await screen.findByRole('button', { name: /Reader A/i }))
     await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
@@ -193,7 +212,7 @@ describe('IntakePage', () => {
       call += 1
       return Promise.resolve({ data: { jobs: [call === 1 ? active : settled] } })
     })
-    render(<IntakePage />)
+    renderPage()
 
     // Flush the initial load (promise-only, no timers): shows the active pill.
     await act(async () => {

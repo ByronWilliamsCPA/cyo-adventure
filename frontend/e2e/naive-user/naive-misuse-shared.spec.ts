@@ -220,28 +220,16 @@ test('double-clicking Request Story in intake only creates one generation job', 
   expect(conceptCalls).toBe(1)
 })
 
-test('browser back after a successful approve still offers the Approve affordance (#130 gap; server re-check blocks the actual re-approval)', async ({
+test('browser back after a successful approve disables the Approve affordance (#130 closed)', async ({
   page,
   context,
 }) => {
-  // Known gap #130: ReviewDetailPage.tsx never gates the Approve button on
-  // surface.status, rendering it unconditionally even for an already-published
-  // story. This test characterizes today's buggy behavior positively (Approve
-  // IS still offered after goBack) so it stays green for the RIGHT reason and
-  // flips red the moment #130 is fixed and the button is correctly gated. When
-  // closing #130, change the final assertion to `.toHaveCount(0)` and remove
-  // this note. A bare test.fail() was avoided deliberately: it would mark the
-  // test green if ANY assertion or navigation step threw, masking an unrelated
-  // regression in the approve / goBack / confirm path instead of pinning the
-  // gap.
-  // TRIAGE NOTE (verified): ReviewDetailPage.tsx does refetch the review
-  // surface on remount (its data-loading useEffect keys on storybookId), but
-  // the component never reads `surface.status` at all (grep confirms the only
-  // "status" reference in the file is the unrelated `role="status"` loading
-  // indicator); the Approve button at lines 205-209 renders unconditionally.
-  // So even a fresh, correct refetch after goBack() still offers Approve on an
-  // already-published story; only the server-side re-check (referenced in the
-  // confirm-button's #CRITICAL comment) prevents an actual re-approval.
+  // #130 closed: ReviewDetailPage.tsx now gates the action bar on
+  // surface.status, so after the story is published the remounted review detail
+  // still keeps the "Approve" button (its accessible name is unchanged) but
+  // renders it disabled. This test pins that: the naive browser-back move lands
+  // on a review URL whose Approve control is present-but-disabled rather than
+  // clickable, and no second approve reaches the network.
   await seedGuardianSession(context)
   await mockMe(page, { role: 'admin' })
   await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
@@ -272,7 +260,11 @@ test('browser back after a successful approve still offers the Approve affordanc
     })
   )
   await page.route('**/api/v1/storybooks/s1/review*', (route) =>
+    // no-store so the post-goBack remount refetches the CURRENT (published)
+    // surface instead of the browser replaying the first in_review GET from its
+    // HTTP cache; without it the status gate would read stale in_review state.
     route.fulfill({
+      headers: { 'cache-control': 'no-store' },
       json: {
         storybook_id: 's1',
         version: 1,
@@ -311,30 +303,32 @@ test('browser back after a successful approve still offers the Approve affordanc
   await page.getByRole('button', { name: 'Confirm approve' }).click()
   await expect(page).toHaveURL(/\/guardian$/)
 
-  // The naive move: hit back expecting to redo the approval.
+  // The naive move: hit back expecting to redo the approval. A bfcache restore
+  // can hand back the pre-approval snapshot (stale in_review state, no refetch),
+  // so reload once to force the review detail to re-read current server truth,
+  // which is what the naive user's next interaction would trigger anyway.
   await page.goBack()
   await expect(page).toHaveURL(/\/guardian\/review\/s1$/)
+  await page.reload()
   // Wait for the remount's data fetch to actually resolve before checking for
   // Approve; without this, the assertion below races ReviewDetailPage's own
   // `loading` state and can pass for the wrong reason (caught before the
-  // fetch settles) instead of deterministically exercising the real gap.
+  // fetch settles).
   await expect(page.getByRole('heading', { name: 'The Cave' })).toBeVisible()
-  // #130: today the Approve button is still offered here (the gap). Flip to
-  // .toHaveCount(0) when #130 lands.
-  await expect(page.getByRole('button', { name: /^Approve$/ })).toBeVisible()
+  // #130 closed: the Approve button is still present (name unchanged) but the
+  // status gate now disables it for the already-published story.
+  await expect(page.getByRole('button', { name: /^Approve$/ })).toBeDisabled()
   expect(approveCalls).toBe(1)
 })
 
-test('a hand-typed review URL for an already-published storybook still offers Approve (#130 gap)', async ({
+test('a hand-typed review URL for an already-published storybook disables Approve (#130 closed)', async ({
   page,
   context,
 }) => {
-  // Known gap #130 (shared with the browser-back test above): ReviewDetailPage.tsx
-  // never gates the Approve button on `surface.status`, so it renders
-  // unconditionally for a published (no longer in_review) story too. This test
-  // characterizes today's buggy behavior positively (Approve IS offered) so it
-  // stays green for the right reason and flips red when #130 is fixed. Flip the
-  // final assertion to `.toHaveCount(0)` and remove this note when closing #130.
+  // #130 closed (shared with the browser-back test above): ReviewDetailPage.tsx
+  // now gates the action bar on `surface.status`, so a hand-typed review URL for
+  // a published (no longer in_review) story keeps the "Approve" button but renders
+  // it disabled rather than clickable.
   await seedGuardianSession(context)
   await mockMe(page, { role: 'admin' })
   await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: { items: [] } }))
@@ -362,7 +356,7 @@ test('a hand-typed review URL for an already-published storybook still offers Ap
 
   await page.goto('/guardian/review/s1')
   await expect(page.getByRole('heading', { name: 'The Cave' })).toBeVisible()
-  await expect(page.getByRole('button', { name: /^Approve$/ })).toBeVisible()
+  await expect(page.getByRole('button', { name: /^Approve$/ })).toBeDisabled()
 })
 
 test('an expired session mid-intake redirects to sign-in rather than hanging silently', async ({
@@ -403,20 +397,11 @@ test('an expired session mid-intake redirects to sign-in rather than hanging sil
   await page.getByLabel(/What's it about/).fill('tide pools and brave crabs')
   await page.getByRole('button', { name: 'Request Story' }).click()
 
-  // TRIAGE NOTE (verified): useApi.ts's response interceptor (lines 49-59)
-  // only clears the `auth_token` localStorage key on a 401 and re-rejects; it
-  // never redirects (the inline comment at useApi.ts:54 even says "redirect
-  // to login, clear token, etc." but only the clear-token half is
-  // implemented). IntakePage.tsx's submit() catch (lines 127-129) sets
-  // `error`, which renders the inline "We could not send this request."
-  // alert (lines 166-170). That is NOT a silent hang, so per this note's
-  // branch (a) the assertion below characterizes today's real behavior
-  // (a visible, retryable inline error, session token silently cleared)
-  // rather than a redirect that does not exist. This is still a naive-user
-  // gap worth tracking: nothing tells the user their session expired, and a
-  // retry click will silently fail the same way every time.
-  await expect(page.getByRole('alert')).toHaveText(
-    'We could not send this request. Please try again.'
-  )
-  await expect(page).toHaveURL(/\/guardian\/intake$/)
+  // useApi.ts's response interceptor now closes the gap this test used to
+  // characterize: on a 401 from a `/guardian/*` surface it clears `auth_token`
+  // AND redirects to the guardian login (via window.location.replace, so the
+  // expired URL does not linger in history). So an expired session mid-intake
+  // lands the naive user on sign-in instead of a retryable inline error that
+  // would fail identically on every retry.
+  await expect(page).toHaveURL(/\/guardian\/login$/)
 })
