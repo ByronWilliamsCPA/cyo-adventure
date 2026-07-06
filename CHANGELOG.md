@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
+- The integration test suite now fails instead of silently skipping when
+  Docker/testcontainers is unavailable while running in CI (`CI` env var
+  set); local runs without Docker still skip as before. Previously a broken
+  CI runner's testcontainers setup would show green by skipping the entire
+  suite.
 - The browser tab title and meta description now render real values ("CYO
   Adventure" / the app description) instead of the literal unrendered
   `{{ cookiecutter.project_name }}` placeholders in `frontend/index.html`;
@@ -43,6 +48,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or directory`.
 
 ### Added
+- `contract` CI job (`.github/workflows/ci.yml`): dumps the FastAPI app's
+  OpenAPI schema in-process, regenerates the frontend API client against it,
+  and fails the build on any diff, so a route or model change that was not
+  followed by `npm run generate-client` no longer merges unnoticed. Required
+  the generated client at `frontend/src/client/` to actually be tracked in
+  git (it was gitignored with no CI step ever regenerating it); it is now
+  committed as build output. Added to the `ci-gate` required job list.
+- `pytest.mark.security` now actually tags tests (OIDC/JWT verification,
+  IDOR/authorization, and the security-middleware suite), so the org reusable
+  CI workflow's `pytest -m security` step collects real tests instead of
+  silently running zero.
 - Naive-user UX test suite: Playwright misuse regressions for kid, guardian,
   and admin personas (`frontend/e2e/naive-user/`, `frontend/e2e-real/`), a
   Claude-for-Chrome comprehension prompt set, and the `/naive-ux-check` skill.
