@@ -202,7 +202,7 @@ When working on this project, always suggest appropriate security measures:
 - **Containers**: Suggest image vulnerability scanning (Trivy)
 ### 2. Never Bypass Security Issues
 
-- **ALL security findings** from scanners (Semgrep, SonarQube, Bandit, Checkov) should be addressed, not dismissed
+- **ALL security findings** from scanners (Bandit, OSV-Scanner, CodeQL, SonarCloud) should be addressed, not dismissed
 - If a finding is a false positive, document WHY with inline comments
 - Use baseline files only for truly unavoidable exceptions with justification
 

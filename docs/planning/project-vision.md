@@ -161,8 +161,8 @@ editor, and read-aloud are valuable and scoped into later phases, not the core.
   Supabase-managed infrastructure (auth via Supabase OIDC, Postgres, storage), which amends
   ADR-004's no-third-party-infra stance for that tier; see
   [ADR-009](./adr/adr-009-supabase-platform.md).
-- **Security baseline from day one**: detect-secrets, Semgrep managed rules, CodeQL,
-  Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.
+- **Security baseline from day one**: detect-secrets, Bandit, OSV-Scanner, CodeQL,
+  SonarCloud, Trivy, CycloneDX SBOM, Cosign, centralized GitHub Actions.
 - **Performance**: node transition under 50 ms (plays client-side from cache);
   validation under 2 s for a 200-node story; full offline play after one download.
 

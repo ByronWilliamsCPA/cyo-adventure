@@ -416,10 +416,10 @@ No app code until this gate passes.
 
 **Quality gates**:
 
-- [ ] Pre-commit green (Ruff, BasedPyright, detect-secrets, Bandit, Semgrep)
-- [ ] CI pipeline green (CodeQL, Trivy, CycloneDX SBOM, Cosign)
+- [ ] Pre-commit green (Ruff, BasedPyright, detect-secrets, Bandit)
+- [ ] CI pipeline green (CodeQL, SonarCloud, OSV-Scanner, Trivy, CycloneDX SBOM, Cosign)
 - [ ] 80% line / 70% branch coverage on any code introduced (schema module, fixture runner)
-- [ ] No high or critical findings from Bandit, pip-audit, or Semgrep
+- [ ] No high or critical findings from Bandit, pip-audit, or OSV-Scanner
 - [ ] All commits signed (`git commit -S`) with conventional commit messages
 
 **Dependencies**: None. Blocks all subsequent phases.
@@ -480,7 +480,7 @@ and [ADR-002](./adr/adr-002-client-pwa.md).
 - [ ] Runtime semantics fixtures: transition order, `once` on re-entry, bound rejection,
       hidden-vs-shown choices, version pinning all pass identically in test harness and browser
 - [ ] Playwright E2E: offline playthrough, save/resume, 409 reconciliation
-- [ ] No high or critical Bandit, pip-audit, or Semgrep findings
+- [ ] No high or critical Bandit, pip-audit, or OSV-Scanner findings
 - [ ] Ruff clean; BasedPyright strict clean; ESLint + Prettier clean
 - [ ] Pre-commit green; all commits signed with conventional messages
 
@@ -1091,7 +1091,7 @@ These gates apply to every phase. Phase-specific gates are listed in each phase 
 | Formatting | Ruff format | `uv run ruff format --check .` |
 | Type checking | BasedPyright strict: zero errors | `uv run basedpyright src/` |
 | Frontend linting | ESLint + Prettier clean | CI step |
-| Security: SAST | No high or critical | Bandit, Semgrep managed rules, CodeQL |
+| Security: SAST | No high or critical | Bandit, CodeQL, SonarCloud |
 | Security: dependencies | No high or critical | `uv run pip-audit`; OSV-Scanner |
 | Security: containers | No high or critical | Trivy |
 | Secret scanning | Clean | detect-secrets |

@@ -605,8 +605,8 @@ cap.
   multi-device 409 reconciliation, read-aloud, and the ending tracker.
 - **Safety evaluation**: adversarial concept briefs verifying moderation flags and the
   human gate cannot be bypassed.
-- **CI/CD and security baseline**: Ruff, BasedPyright, Bandit, detect-secrets, Semgrep,
-  CodeQL, Trivy, CycloneDX SBOM, Cosign; ESLint, Prettier, Vitest, Playwright.
+- **CI/CD and security baseline**: Ruff, BasedPyright, Bandit, detect-secrets, OSV-Scanner,
+  CodeQL, SonarCloud, Trivy, CycloneDX SBOM, Cosign; ESLint, Prettier, Vitest, Playwright.
 
 ## Related Documents
 
