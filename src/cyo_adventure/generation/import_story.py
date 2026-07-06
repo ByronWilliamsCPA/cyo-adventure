@@ -236,10 +236,23 @@ async def resume_manual_fill(
     status itself for every HANDLED outcome (gate block -> "failed", Stage 1
     downgrade -> "needs_review", clean -> "passed"), so a caller-side rollback
     cannot silently discard a recorded outcome. An UNEXPECTED exception after
-    the storybook was persisted (a provider error in the semantic check, or an
-    unreadable skeleton file) is deliberately NOT committed here: it propagates
-    and the caller's session rolls back, discarding the just-persisted story so
-    the job stays "awaiting_manual_fill" for a clean retry (never orphaned).
+    the storybook was persisted (a provider error in the semantic check) is
+    deliberately NOT committed here: it propagates and the caller's session
+    rolls back, discarding the just-persisted story so the job stays
+    "awaiting_manual_fill" for a clean retry (never orphaned).
+
+    The matched skeleton library file is loaded BEFORE the story is persisted
+    (closes #128), not re-read afterward: the file may be moved, renamed, or
+    removed at any point in the job's lifetime (it is static production
+    content matched at authoring-plan time, possibly long before a skill
+    resumes it), and a re-read after persisting used to raise an uncaught
+    ResourceNotFoundError, stranding the job at "awaiting_manual_fill" despite
+    a real, already-persisted story existing for it. Loading first means the
+    in-memory snapshot survives even if the file is deleted later in this same
+    call. If the file cannot be loaded at all (missing even at this earlier
+    point), the Stage 1 gate is skipped and the job is marked "needs_review"
+    instead of being stranded: the story already exists and passed moderation,
+    it just cannot be re-verified against its origin skeleton.
 
     Args:
         session: Open async session; the story/version write still follows
@@ -252,15 +265,14 @@ async def resume_manual_fill(
     Returns:
         A ``(story_id, status)`` pair: the persisted story id and the job's
         final status, either ``"passed"`` or ``"needs_review"`` (a Stage 1
-        fidelity downgrade). A hard gate block does not return; it raises.
+        fidelity downgrade, or a skeleton the Stage 1 gate could not load). A
+        hard gate block does not return; it raises.
 
     Raises:
-        ResourceNotFoundError: If the job or its concept does not exist, or the
-            matched skeleton file no longer exists.
+        ResourceNotFoundError: If the job or its concept does not exist.
         StateTransitionError: If the job is not "awaiting_manual_fill".
         ValidationError: Propagated from import_filled_story if the gate
-            blocks the filled story (the job is marked "failed" first), or if
-            the matched skeleton file is unreadable or invalid JSON.
+            blocks the filled story (the job is marked "failed" first).
         ProjectBaseError: Propagated from the moderation pipeline on failure,
             same as import_filled_story (not intercepted here).
     """
@@ -280,6 +292,29 @@ async def resume_manual_fill(
         raise ResourceNotFoundError(
             msg, resource_type="Concept", resource_id=str(job.concept_id)
         )
+
+    # #CRITICAL: external-resources: load the matched skeleton BEFORE
+    # persisting the filled story, not after (#128). The skeleton library file
+    # is read once here, into memory; even if it is moved or removed later in
+    # this same call (or at any point before this call, since it may have been
+    # matched long ago), the Stage 1 gate below still runs against this
+    # captured snapshot -- or, if it could not be loaded at all, degrades to
+    # a needs_review downgrade instead of stranding the job.
+    # #VERIFY: integration test test_resume_survives_skeleton_file_deleted_after_persist
+    # in tests/integration/test_resume_manual_fill.py exercises a real missing
+    # file, not a monkeypatched load_skeleton.
+    skeleton_slug = _str_meta(job.authoring_metadata, "skeleton_slug")
+    original_skeleton: dict[str, object] | None = None
+    skeleton_load_error: str | None = None
+    if skeleton_slug is not None:
+        band = (
+            concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
+        )
+        band = band if isinstance(band, str) else ""
+        try:
+            original_skeleton = _load_resume_skeleton(band, skeleton_slug)
+        except (ResourceNotFoundError, ValidationError) as exc:
+            skeleton_load_error = str(exc)
 
     review_stage2_model = _str_meta(job.authoring_metadata, "review_stage2_model")
     request = ImportRequest(
@@ -311,13 +346,25 @@ async def resume_manual_fill(
     job.storybook_id = story_id
     job.version = _FIRST_VERSION
 
-    skeleton_slug = _str_meta(job.authoring_metadata, "skeleton_slug")
     if skeleton_slug is not None:
-        band = (
-            concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
-        )
-        band = band if isinstance(band, str) else ""
-        original_skeleton = _load_resume_skeleton(band, skeleton_slug)
+        if original_skeleton is None:
+            # #CRITICAL: data-integrity: the skeleton could not be loaded even
+            # before persisting (moved/removed at any point since the
+            # authoring-plan match, or concurrently). The story already exists
+            # and passed moderation; it just cannot be re-verified against its
+            # origin skeleton, so this is a needs_review downgrade, never a
+            # stuck "awaiting_manual_fill" job (#128).
+            # #VERIFY: covered at the unit level by monkeypatching
+            # load_skeleton to raise; no dedicated real-file test for this
+            # branch since it degenerates to the same missing-file mechanics
+            # test_resume_survives_skeleton_file_deleted_after_persist proves.
+            job.status = "needs_review"
+            job.error = (
+                skeleton_load_error or "matched skeleton unavailable for Stage 1 gate"
+            )[:512]
+            await session.commit()
+            return story_id, "needs_review"
+
         pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
         review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
         violations = await run_stage1_gate(
