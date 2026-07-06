@@ -85,6 +85,23 @@ class TestSecurityHeadersMiddleware:
         )
 
     @pytest.mark.unit
+    def test_content_security_policy_includes_hardening_directives(self) -> None:
+        """CSP additionally locks down object/base/form vectors (F11).
+
+        ``object-src 'none'`` blocks plugin-based content (Flash/Java applets),
+        ``base-uri 'self'`` stops a base-tag injection from rewriting relative
+        URLs, and ``form-action 'self'`` stops a form-action hijack from
+        exfiltrating form submissions to an attacker-controlled origin.
+        """
+        client = TestClient(_app_with_security_headers(), raise_server_exceptions=True)
+        response = client.get("/")
+
+        csp = response.headers.get("Content-Security-Policy", "")
+        assert "object-src 'none'" in csp
+        assert "base-uri 'self'" in csp
+        assert "form-action 'self'" in csp
+
+    @pytest.mark.unit
     def test_referrer_policy_header_present(self) -> None:
         """SecurityHeadersMiddleware adds Referrer-Policy header."""
         client = TestClient(_app_with_security_headers(), raise_server_exceptions=True)

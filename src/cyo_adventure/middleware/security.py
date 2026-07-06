@@ -87,6 +87,9 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             )
 
         # Content Security Policy: Prevent inline scripts (OWASP A03)
+        # object-src/base-uri/form-action close three additional injection
+        # vectors (F11): plugin content, base-tag hijacking of relative URLs,
+        # and form-action redirection to an attacker-controlled origin.
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; "
             "script-src 'self'; "
@@ -94,7 +97,10 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "img-src 'self' data: https:; "
             "font-src 'self'; "
             "connect-src 'self'; "
-            "frame-ancestors 'none'"
+            "frame-ancestors 'none'; "
+            "object-src 'none'; "
+            "base-uri 'self'; "
+            "form-action 'self'"
         )
 
         # Control referrer information (OWASP A09)
