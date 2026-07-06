@@ -272,8 +272,11 @@ class _PersistContext:
     stays under the argument-count limit while keeping each field explicit.
 
     Attributes:
-        job_row: The job row being processed (mutated in place). Its ``id`` is
-            also the source of the per-job storybook id.
+        job_id: The job's UUID (the source of the per-job storybook id and the
+            re-fetch key). Passed explicitly rather than read off ``job_row`` so
+            the storybook id matches the id the job was loaded by, exactly as the
+            pre-refactor inline code used it.
+        job_row: The job row being processed (mutated in place).
         concept_row: The job's concept (supplies family/creator for the persist).
         effective_provider: The provider that actually ran (labels + review).
         authoring: The job's ``authoring_metadata``, or ``None`` for a fresh
@@ -281,6 +284,7 @@ class _PersistContext:
         pii: The PII guard context passed through to moderation.
     """
 
+    job_id: uuid.UUID
     job_row: GenerationJob
     concept_row: Concept
     effective_provider: GenerationProvider
@@ -310,7 +314,7 @@ async def _persist_and_moderate(
         Exception: Re-raises any moderation-pipeline failure after rolling back
             the persist and recording the failure on the job row.
     """
-    job_id = ctx.job_row.id
+    job_id = ctx.job_id
     # The `outcome.storybook is not None` half is redundant with
     # _should_persist_storybook's own None check, but is repeated so BasedPyright
     # narrows outcome.storybook to dict[str, object] for the persist call below.
@@ -572,6 +576,7 @@ async def run_generation_job(
         await _persist_and_moderate(
             session,
             _PersistContext(
+                job_id=job_id,
                 job_row=job_row,
                 concept_row=concept_row,
                 effective_provider=effective_provider,

@@ -96,7 +96,9 @@ def test_main_exits_0_on_success(tmp_path: Path) -> None:
     f.write_text('{"id": "s1"}')
     with (
         patch("pathlib.Path.cwd", return_value=tmp_path),
-        patch("asyncio.run", return_value="story-abc-123"),
+        # _run returns (story_id, status); a standalone import has no job to
+        # downgrade, so status is None.
+        patch("asyncio.run", return_value=("story-abc-123", None)),
     ):
         code = main([str(f), "--family", str(uuid.uuid4())])
     assert code == 0
@@ -110,9 +112,10 @@ def test_job_flag_makes_family_optional(tmp_path, monkeypatch) -> None:
 
     captured: dict[str, object] = {}
 
-    def _fake_run(coro: object) -> str:
+    def _fake_run(coro: object) -> tuple[str, str]:
         captured["coro"] = coro
-        return "s_resumed"
+        # _run returns (story_id, status); a resumed job carries its final status.
+        return "s_resumed", "passed"
 
     with patch(
         "cyo_adventure.generation.import_cli.asyncio.run", side_effect=_fake_run
