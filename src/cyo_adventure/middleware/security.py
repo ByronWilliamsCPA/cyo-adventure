@@ -20,10 +20,11 @@ Usage:
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 from collections import defaultdict
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -36,7 +37,13 @@ logger = logging.getLogger(__name__)
 if TYPE_CHECKING:
     from fastapi import FastAPI, Request
     from starlette.middleware.base import RequestResponseEndpoint
-    from starlette.types import ASGIApp
+    from starlette.types import ASGIApp, Message, Receive, Scope, Send
+
+# Default request-body ceiling for BodySizeLimitMiddleware (1 MiB). A guardian
+# reading-state save or concept brief is a small JSON payload; 1 MiB is
+# generous headroom over any legitimate request while still bounding a
+# byte-bomb POST (audit Finding 8).
+_DEFAULT_MAX_BODY_BYTES: Final[int] = 1_048_576
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
@@ -103,6 +110,102 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             del response.headers["Server"]
 
         return response
+
+
+class _BodyTooLargeError(Exception):
+    """Internal signal: the streamed request body exceeded the byte cap.
+
+    Raised from inside the wrapped ``receive`` callable in
+    :class:`BodySizeLimitMiddleware` and caught by that same middleware to
+    render the 413 response; never escapes the middleware.
+    """
+
+
+class BodySizeLimitMiddleware:
+    """Reject an oversized request body with 413, before it reaches the app.
+
+    A pure ASGI middleware (not ``BaseHTTPMiddleware``): Starlette's
+    ``Request.body()`` (which ``BaseHTTPMiddleware.dispatch`` and downstream
+    Pydantic body-parsing both eventually call) buffers the WHOLE body in
+    memory before anything can inspect its size. Wrapping ``receive`` instead
+    lets every chunk be counted and rejected the moment the cap is crossed,
+    so an oversized body is never fully materialized (audit Finding 8).
+
+    Args:
+        app: The wrapped ASGI application.
+        max_body_bytes: The byte ceiling (default 1 MiB).
+    """
+
+    def __init__(
+        self, app: ASGIApp, max_body_bytes: int = _DEFAULT_MAX_BODY_BYTES
+    ) -> None:
+        """Store the wrapped app and the configured byte ceiling."""
+        self.app = app
+        self.max_body_bytes = max_body_bytes
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """Enforce the body-size cap for an http scope; pass through otherwise."""
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+
+        # Fast-path reject when the client declares an oversized body upfront
+        # via Content-Length, without reading a single byte of it.
+        raw_headers: list[tuple[bytes, bytes]] = scope.get("headers", [])
+        for name, value in raw_headers:
+            if name == b"content-length":
+                declared = _parse_content_length(value)
+                if declared is not None and declared > self.max_body_bytes:
+                    await _send_413(send)
+                    return
+                break
+
+        total = 0
+
+        async def limited_receive() -> Message:
+            nonlocal total
+            message = await receive()
+            if message["type"] == "http.request":
+                total += len(message.get("body") or b"")
+                # #CRITICAL: security: this is the resource-bound backstop for
+                # a missing or understated Content-Length: the cap is enforced
+                # against bytes actually streamed, not the (untrusted) header.
+                # #VERIFY: test_body_over_limit_rejected_with_413 posts a body
+                # with no explicit Content-Length override and still gets 413.
+                if total > self.max_body_bytes:
+                    raise _BodyTooLargeError
+            return message
+
+        try:
+            await self.app(scope, limited_receive, send)
+        except _BodyTooLargeError:
+            await _send_413(send)
+
+
+def _parse_content_length(value: bytes) -> int | None:
+    """Return the parsed Content-Length header value, or ``None`` if malformed."""
+    try:
+        return int(value)
+    except ValueError:
+        return None
+
+
+async def _send_413(send: Send) -> None:
+    """Send a minimal 413 JSON response directly at the ASGI layer."""
+    body = json.dumps(
+        {
+            "error": "Payload Too Large",
+            "message": "request body exceeds the size limit",
+        }
+    ).encode()
+    await send(
+        {
+            "type": "http.response.start",
+            "status": 413,
+            "headers": [(b"content-type", b"application/json")],
+        }
+    )
+    await send({"type": "http.response.body", "body": body})
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
@@ -431,9 +534,11 @@ def add_security_middleware(
     enable_https_redirect: bool = False,
     enable_rate_limiting: bool = True,
     enable_ssrf_prevention: bool = True,
+    enable_body_size_limit: bool = True,
     allowed_origins: list[str] | None = None,
     allowed_hosts: list[str] | None = None,
     rate_limit_rpm: int = 60,
+    max_body_bytes: int = _DEFAULT_MAX_BODY_BYTES,
 ) -> None:
     """Add all security middleware to FastAPI application.
 
@@ -444,9 +549,11 @@ def add_security_middleware(
         enable_https_redirect: Redirect HTTP to HTTPS (production only)
         enable_rate_limiting: Enable rate limiting middleware
         enable_ssrf_prevention: Enable SSRF prevention middleware
+        enable_body_size_limit: Enable the request-body size guard (413 over cap)
         allowed_origins: CORS allowed origins (default: none)
         allowed_hosts: Trusted host names (default: all)
         rate_limit_rpm: Rate limit requests per minute
+        max_body_bytes: Request-body byte ceiling (default 1 MiB)
 
     Example:
         >>> from fastapi import FastAPI
@@ -504,6 +611,13 @@ def add_security_middleware(
     # SSRF prevention (OWASP A10)
     if enable_ssrf_prevention:
         app.add_middleware(SSRFPreventionMiddleware)
+
+    # Request body size guard (audit Finding 8: unbounded body -> resource
+    # exhaustion). Added last so it wraps every other middleware added here,
+    # rejecting an oversized body before anything else (rate limiting, CORS,
+    # SSRF checks) does any work on the request.
+    if enable_body_size_limit:
+        app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_body_bytes)
 
 
 # Example usage in main.py:

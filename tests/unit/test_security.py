@@ -281,6 +281,79 @@ class TestRateLimitMiddleware:
 
 
 # ---------------------------------------------------------------------------
+# BodySizeLimitMiddleware (audit Finding 8: unbounded request body)
+# ---------------------------------------------------------------------------
+
+
+class TestBodySizeLimitMiddleware:
+    """Tests for the ASGI-layer request-body size guard (413 over the cap)."""
+
+    def _body_limited_app(self, max_body_bytes: int) -> FastAPI:
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_body_bytes)
+        return app
+
+    @pytest.mark.unit
+    def test_body_at_limit_passes_through(self) -> None:
+        """A body exactly at the byte cap is accepted."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post("/echo", content=b"0123456789")
+
+        assert response.status_code == 200
+        assert response.json() == {"received": 10}
+
+    @pytest.mark.unit
+    def test_body_over_limit_rejected_with_413(self) -> None:
+        """A body one byte over the cap receives HTTP 413, not the handler."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post("/echo", content=b"0123456789X")
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_declared_content_length_over_limit_rejected_without_reading_body(
+        self,
+    ) -> None:
+        """An oversized declared Content-Length is rejected on the fast path."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post(
+            "/echo",
+            content=b"0123456789012345",
+            headers={"content-length": "16"},
+        )
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_non_http_scope_passes_through_unmodified(self) -> None:
+        """A non-http ASGI scope (e.g. lifespan) is forwarded untouched."""
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        calls: list[str] = []
+
+        async def inner_app(
+            scope: dict[str, object], receive: object, send: object
+        ) -> None:
+            calls.append(str(scope["type"]))
+
+        middleware = BodySizeLimitMiddleware(inner_app, max_body_bytes=10)
+
+        import asyncio
+
+        asyncio.run(middleware({"type": "lifespan"}, None, None))  # type: ignore[arg-type]
+
+        assert calls == ["lifespan"]
+
+
+# ---------------------------------------------------------------------------
 # SSRFPreventionMiddleware
 # ---------------------------------------------------------------------------
 
@@ -515,6 +588,44 @@ class TestAddSecurityMiddleware:
         add_security_middleware(app, rate_limit_rpm=120, enable_ssrf_prevention=False)
         client = TestClient(app, raise_server_exceptions=True)
         response = client.get("/")
+
+        assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_add_security_middleware_enforces_body_size_limit_by_default(self) -> None:
+        """add_security_middleware wires the body-size guard on by default."""
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        add_security_middleware(app, max_body_bytes=10)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        response = client.post("/echo", content=b"0123456789X")
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_add_security_middleware_disable_body_size_limit(self) -> None:
+        """add_security_middleware skips the body-size guard when disabled."""
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        add_security_middleware(app, enable_body_size_limit=False, max_body_bytes=10)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        response = client.post("/echo", content=b"0123456789X")
 
         assert response.status_code == 200
 
