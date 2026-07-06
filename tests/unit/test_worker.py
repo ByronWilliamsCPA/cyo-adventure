@@ -14,6 +14,7 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.provider import (
     _CANNED_STORY,
     _CANNED_STORY_JSON,
@@ -27,6 +28,7 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
+from cyo_adventure.generation.worker import _should_persist_storybook
 from cyo_adventure.storybook.models import Storybook
 
 
@@ -298,3 +300,78 @@ class TestCannedStorySchemaValid:
         book = Storybook.model_validate(_CANNED_STORY)
         node_ids = {node.id for node in book.nodes}
         assert book.start_node in node_ids
+
+
+class TestShouldPersistStorybook:
+    """_should_persist_storybook: the widened persist gate (Item 3).
+
+    A pure function over GenerationOutcome, so these are unit tests with no
+    database, provider, or session involved -- the regression guard for the
+    persist-gating logic itself, independent of the integration-level
+    end-to-end coverage in tests/integration/test_generation_worker.py.
+    """
+
+    def test_passed_with_storybook_persists(self) -> None:
+        """The pre-existing "passed" case must keep persisting."""
+        outcome = GenerationOutcome(
+            status="passed",
+            storybook={"id": "s1"},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is True
+
+    def test_passed_with_no_storybook_does_not_persist(self) -> None:
+        """A "passed" outcome with no storybook document has nothing to persist."""
+        outcome = GenerationOutcome(
+            status="passed", storybook=None, report={}, attempts=0, stage_log=[]
+        )
+        assert _should_persist_storybook(outcome) is False
+
+    def test_stage1_downgraded_needs_review_persists(self) -> None:
+        """The NEW case: a Stage 1 downgrade on an otherwise-clean fill persists."""
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook={"id": "s1"},
+            report={"stage1_fidelity_violations": ["some violation"]},
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is True
+
+    def test_safety_flagged_needs_review_does_not_persist(self) -> None:
+        """Regression guard: a safety-flagged needs_review (no Stage 1 key) must
+        NOT persist -- this is the pre-existing, non-Plan-2 semantics that the
+        widened gate must not change."""
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook={"id": "s1"},
+            report={"safety_flagged": True},
+            attempts=0,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is False
+
+    def test_gate_blocked_needs_review_with_no_storybook_does_not_persist(self) -> None:
+        """Regression guard: gate-blocked-with-doc-exhausted repairs still has no
+        storybook to persist here (fill_skeleton's own outcome, pre-Stage-1)."""
+        outcome = GenerationOutcome(
+            status="needs_review",
+            storybook=None,
+            report={},
+            attempts=3,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is False
+
+    def test_failed_does_not_persist(self) -> None:
+        """A "failed" outcome never persists, Stage 1 key or not."""
+        outcome = GenerationOutcome(
+            status="failed",
+            storybook={"id": "s1"},
+            report={"stage1_fidelity_violations": ["irrelevant here"]},
+            attempts=3,
+            stage_log=[],
+        )
+        assert _should_persist_storybook(outcome) is False

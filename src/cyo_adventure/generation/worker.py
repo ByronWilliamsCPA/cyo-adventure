@@ -200,6 +200,43 @@ async def _run_skeleton_fill(
     return outcome
 
 
+def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
+    """Decide whether ``run_generation_job`` should persist ``outcome.storybook``.
+
+    Always true for a clean ``"passed"`` outcome. Also true for a
+    ``"needs_review"`` outcome, but ONLY when the downgrade came from
+    :func:`_run_skeleton_fill`'s own Stage 1 fidelity check on an
+    otherwise-clean fill: that function adds the
+    ``"stage1_fidelity_violations"`` key to ``outcome.report`` only when it
+    performs this specific downgrade (never for any other cause), so the
+    key's presence is an exact signal that the base outcome was clean before
+    Stage 1 touched it. This lets an admin reach the real story behind a
+    Stage-1-flagged fill instead of a job row pointing at nothing.
+
+    Any OTHER ``"needs_review"`` (safety-flagged, or gate-blocked-with-doc
+    after exhausting repairs -- both produced by
+    :func:`~cyo_adventure.generation.orchestrator._build_outcome`, for either
+    ``generate_story`` or ``fill_skeleton``'s own pre-Stage-1 outcome) and
+    every ``"failed"`` outcome must keep NOT persisting a storybook: this is
+    pre-existing, non-Plan-2 semantics that this widened gate must not
+    change.
+
+    Args:
+        outcome: The pipeline outcome (from ``generate_story`` or
+            ``_run_skeleton_fill``) about to be persisted onto the job row.
+
+    Returns:
+        True if a Storybook/StorybookVersion should be created for this
+        outcome.
+    """
+    if outcome.storybook is None:
+        return False
+    stage1_downgraded = "stage1_fidelity_violations" in outcome.report
+    return outcome.status == "passed" or (
+        outcome.status == "needs_review" and stage1_downgraded
+    )
+
+
 async def run_generation_job(
     job_id: uuid.UUID,
     *,
@@ -222,8 +259,20 @@ async def run_generation_job(
     and a :class:`~cyo_adventure.db.models.StorybookVersion` row, then links
     both back to the job.
 
-    On ``"needs_review"`` or ``"failed"``: records the report and error on the
-    job row; no Storybook or StorybookVersion is created.
+    On ``"needs_review"`` when the downgrade came from a Stage 1 fidelity
+    check on an otherwise-clean fill (signaled by
+    ``"stage1_fidelity_violations"`` in ``outcome.report``, the exact key
+    :func:`_run_skeleton_fill` adds only for this downgrade): the same
+    Storybook/StorybookVersion creation and linking happens as for
+    ``"passed"``, and the moderation pipeline still runs on the result, so a
+    guardian/admin can review a real, queryable story instead of a job row
+    pointing at nothing.
+
+    On any OTHER ``"needs_review"`` (safety-flagged by
+    :func:`~cyo_adventure.generation.orchestrator._build_outcome`, or
+    gate-blocked-with-doc after exhausting repairs) or on ``"failed"``:
+    records the report and error on the job row; no Storybook or
+    StorybookVersion is created.
 
     On unexpected exception: sets ``job.status = "failed"``, records the error,
     commits, then re-raises so RQ marks the job failed in its own bookkeeping.
@@ -353,7 +402,12 @@ async def run_generation_job(
         # is None but the mock still runs); _model_label reflects the real run.
         job_row.model = _model_label(effective_provider)
 
-        if outcome.status == "passed" and outcome.storybook is not None:
+        # The `outcome.storybook is not None` half of this condition is
+        # redundant with _should_persist_storybook's own check (it already
+        # returns False on a None storybook), but is repeated here so
+        # BasedPyright narrows outcome.storybook to dict[str, object] (not
+        # Optional) inside this block, for the persist_storybook call below.
+        if _should_persist_storybook(outcome) and outcome.storybook is not None:
             # Mint a per-job storybook id so successive passing jobs never
             # collide on the storybook primary key. The mock provider returns a
             # fixed blob id ("s_mock_generated"), so reusing it would raise an

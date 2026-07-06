@@ -48,6 +48,12 @@ class ImportRequest:
         created_by: Optional authoring user id.
         model: Optional model identifier (e.g. the fill model).
         prompt_version: Skill/prompt version recorded on the version.
+        review_model_override: Optional admin-chosen override for the Stage 2
+            moderation review model, threaded into ``run_moderation_pipeline``.
+            Mirrors ``generation/worker.py::run_generation_job``'s own
+            ``authoring_metadata.get("review_stage2_model")`` read, so the
+            skill-authored resume path (``resume_manual_fill``) honors the
+            same per-job override the automated_provider path already does.
     """
 
     family_id: uuid.UUID
@@ -55,6 +61,7 @@ class ImportRequest:
     created_by: uuid.UUID | None = None
     model: str | None = None
     prompt_version: str = "skeleton-fill-v1"
+    review_model_override: str | None = None
 
 
 async def import_filled_story(session: AsyncSession, request: ImportRequest) -> str:
@@ -137,6 +144,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         settings=_default_settings,
         generation_provider=build_provider(_default_settings),
         pii=pii,
+        review_model_override=request.review_model_override,
     )
 
     return story_id
@@ -153,13 +161,22 @@ async def resume_manual_fill(
 
     Loads the job's concept for its family_id, then delegates to
     :func:`import_filled_story` for the same gate + persist + moderation
-    pipeline every other import uses. On success the job is marked "passed"
-    and linked to the new storybook. On a validation-gate block the job is
+    pipeline every other import uses, threading the job's own
+    ``authoring_metadata.get("review_stage2_model")`` override through as
+    ``ImportRequest.review_model_override``. On success the job is marked
+    "passed" and linked to the new storybook. If the job carries a
+    ``skeleton_slug``, the Stage 1 fidelity gate also runs afterward (using
+    ``authoring_metadata.get("review_stage1_model")`` as its own override,
+    same source dict, different key); a fidelity violation marks the job
+    "needs_review" instead of "passed", but the job is still linked to the
+    storybook :func:`import_filled_story` already persisted (only
+    status/error differ between the two outcomes -- neither branch orphans
+    the job row from its story). On a validation-gate block the job is
     marked "failed" and the error is recorded before the exception
     propagates, mirroring generation/worker.py's failure-commit-then-reraise
     pattern. Unlike import_filled_story (which deliberately does not own the
     transaction -- see its own docstring), this function DOES commit the job
-    row's status itself, in both branches, so a caller-side rollback can
+    row's status itself, in every branch, so a caller-side rollback can
     never silently discard it.
 
     Args:
@@ -198,7 +215,26 @@ async def resume_manual_fill(
             msg, resource_type="Concept", resource_id=str(job.concept_id)
         )
 
-    request = ImportRequest(blob=blob, family_id=concept.family_id, model=model)
+    # #ASSUME: data-integrity: authoring_metadata is a plain dict for every
+    # method="skeleton_fill" job (see story_requests/authoring_plan.py); guard
+    # with isinstance the same way skeleton_slug is read just below, so a
+    # missing/wrong-typed authoring_metadata degrades to "no override" instead
+    # of raising here.
+    # #VERIFY: test_resume_threads_review_model_overrides.
+    review_stage2_model = (
+        job.authoring_metadata.get("review_stage2_model")
+        if isinstance(job.authoring_metadata, dict)
+        else None
+    )
+    review_stage2_model = (
+        review_stage2_model if isinstance(review_stage2_model, str) else None
+    )
+    request = ImportRequest(
+        blob=blob,
+        family_id=concept.family_id,
+        model=model,
+        review_model_override=review_stage2_model,
+    )
     try:
         story_id = await import_filled_story(session, request)
     except ValidationError as exc:
@@ -233,16 +269,37 @@ async def resume_manual_fill(
             Path("skeletons") / band / f"{skeleton_slug}.json"
         )
         pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+        review_stage1_model = (
+            job.authoring_metadata.get("review_stage1_model")
+            if isinstance(job.authoring_metadata, dict)
+            else None
+        )
+        review_stage1_model = (
+            review_stage1_model if isinstance(review_stage1_model, str) else None
+        )
         violations = await run_stage1_gate(
             original_skeleton,
             blob,
-            review_stage1_model=None,
+            review_stage1_model=review_stage1_model,
             settings=_default_settings,
             pii=pii,
         )
         if violations:
+            # #CRITICAL: data-integrity: import_filled_story already persisted
+            # a real Storybook + StorybookVersion for story_id moments ago; a
+            # Stage 1 violation must not orphan the job row from that story.
+            # Link storybook_id/version on this branch too (only status/error
+            # differ from the clean-pass branch below), mirroring the
+            # automated_provider mechanism's own Stage 1 downgrade in
+            # worker.py::run_generation_job, which persists the storybook and
+            # still marks the job needs_review.
+            # #VERIFY: covered by test_stage1_violations_are_recorded_on_the_job
+            # in the unit test file, which checks the job's storybook_id and
+            # version fields are both populated alongside needs_review.
             job.status = "needs_review"
             job.error = "; ".join(violations)[:512]
+            job.storybook_id = story_id
+            job.version = _FIRST_VERSION
             await session.commit()
             return story_id
 

@@ -36,7 +36,9 @@ from cyo_adventure.db.models import (
     StorybookVersion,
     User,
 )
+from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.fidelity import parse_fill_directive
+from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.worker import run_generation_job
@@ -466,3 +468,140 @@ async def test_worker_still_runs_generate_story_when_no_authoring_metadata(
         assert job.status == "passed", f"Expected passed, got {job.status}"
         assert job.storybook_id is not None
         assert job.report is not None
+
+
+# ---------------------------------------------------------------------------
+# Test 8 (Item 3): a Stage-1-downgraded automated_provider job still persists
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_stage1_downgraded_needs_review_still_persists_storybook(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed_authoring: dict[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Stage-1-downgraded needs_review still gets a real, queryable Storybook.
+
+    Before this fix, run_generation_job's persist gate was
+    ``outcome.status == "passed"``, so _run_skeleton_fill's Stage 1 downgrade
+    (an otherwise-clean fill flagged by the fidelity gate) left the job
+    needs_review with NO storybook at all -- worse than Item 2's skill-path
+    orphaning, since here the story was never persisted in the first place.
+
+    fill_skeleton and run_stage1_gate are monkeypatched (both are bare-name
+    imports in worker.py, following the same pattern
+    tests/unit/test_resume_manual_fill_stage1.py uses for import_story.py) so
+    the downgrade is deterministic: a real filled-skeleton document with a
+    forced Stage 1 violation, rather than depending on the mock review
+    backend's own soft-flagging behavior (see
+    test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's docstring,
+    which documents that ambiguity for the undowngraded case).
+    """
+    job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
+    filled = json.loads(_filled_skeleton_json())
+
+    async def _fake_fill_skeleton(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        return GenerationOutcome(
+            status="passed",
+            storybook=filled,
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
+        return ["node 'n1' word count 3 outside [6, 14] for target 10"]
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
+
+    # One response budgeted for the moderation pipeline's guaranteed bounded
+    # auto-repair call (see test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's
+    # docstring); fill_skeleton itself is faked above and makes no provider call.
+    provider = MockProvider(responses=[_filled_skeleton_json()])
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "needs_review", f"Expected needs_review, got {job.status}"
+        assert job.storybook_id is not None
+        assert job.version == 1
+
+        story = await session.get(Storybook, job.storybook_id)
+        assert story is not None
+
+        sv = await session.get(StorybookVersion, (job.storybook_id, 1))
+        assert sv is not None
+        assert sv.blob is not None
+
+
+@pytest.mark.asyncio
+async def test_non_stage1_needs_review_still_creates_no_storybook(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed_authoring: dict[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regression guard: a needs_review from a DIFFERENT cause must not persist.
+
+    Simulates orchestrator._build_outcome's own needs_review (safety-flagged,
+    or gate-blocked-with-doc after exhausting repairs) by having fill_skeleton
+    itself return needs_review with no "stage1_fidelity_violations" key. Item
+    3's widened persist gate must not touch this pre-existing, non-Plan-2
+    case: the job ends up needs_review with no Storybook created, exactly as
+    before this fix.
+    """
+    job_id: uuid.UUID = gen_seed_authoring["job_id"]  # type: ignore[assignment]
+    filled = json.loads(_filled_skeleton_json())
+
+    async def _fake_fill_skeleton(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        return GenerationOutcome(
+            status="needs_review",
+            storybook=filled,
+            report={},
+            attempts=3,
+            stage_log=[],
+        )
+
+    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
+        # Stage 1 never even gets a chance to flag anything new here in
+        # practice (the outcome is already needs_review), but return no
+        # violations regardless so the fake behaves like a clean pass.
+        return []
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
+
+    provider = MockProvider(responses=[_filled_skeleton_json()])
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "needs_review", f"Expected needs_review, got {job.status}"
+        assert job.storybook_id is None
+
+        result = await session.execute(
+            select(StorybookVersion)
+            .join(
+                Storybook,
+                Storybook.id == StorybookVersion.storybook_id,
+            )
+            .where(Storybook.family_id == gen_seed_authoring["family_id"])
+        )
+        assert result.first() is None, "StorybookVersion must not be created"
