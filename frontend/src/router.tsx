@@ -22,7 +22,7 @@ import {
   RouteError,
   RouteFallback,
 } from './routeElements'
-import { GUARDIAN_LOGIN_PATH } from './routes'
+import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from './routes'
 
 function suspended(element: ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
@@ -62,7 +62,10 @@ export const routes = [
       {
         element: suspended(<KidShell />),
         children: [
-          { path: 'kids', element: suspended(<ProfilePickerPage />) },
+          // KID_PICKER_PATH minus its leading slash: React Router child paths
+          // are relative segments, so this ties the picker's URL to the same
+          // constant that LandingPage and ReaderRoute navigate to.
+          { path: KID_PICKER_PATH.slice(1), element: suspended(<ProfilePickerPage />) },
           { path: 'library/:profileId', element: suspended(<LibraryPage />) },
           {
             path: 'read/:profileId/:storybookId/:version',
@@ -83,7 +86,7 @@ export const routes = [
         element: suspended(<LoginPage />),
       },
       {
-        path: '/guardian',
+        path: GUARDIAN_CONSOLE_PATH,
         element: (
           <ProtectedRoute redirectTo={GUARDIAN_LOGIN_PATH} allowedRoles={['guardian', 'admin']} />
         ),
