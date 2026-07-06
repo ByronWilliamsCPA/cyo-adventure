@@ -16,6 +16,10 @@ from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.stages import (
+    _UNTRUSTED_SUFFIX,  # pyright: ignore[reportPrivateUsage]
+    _sanitize_delimited,  # pyright: ignore[reportPrivateUsage]
+)
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -29,6 +33,7 @@ _REPAIR_SYSTEM = (
     "You revise a children's choose-your-own-adventure story to address review "
     "findings. Preserve the exact node ids, choices, and branching structure. "
     "Only revise prose. Return ONLY the full revised story JSON, same schema."
+    + _UNTRUSTED_SUFFIX
 )
 
 
@@ -68,13 +73,23 @@ async def attempt_repair(
     # provider outage propagates to the worker for rollback + RQ retry (intentional
     # non-catch). Only a parse failure of a returned body degrades to None here.
     # #VERIFY: only json.JSONDecodeError is caught below; provider errors propagate.
+    # #CRITICAL: security: the story JSON below contains untrusted node prose
+    # (the same fifth-concat-site risk as the stages.py prompts): it MUST be
+    # delimited and sanitized exactly like the stage prompts, or a hostile
+    # generation could break out of the delimited zone and steer the repair
+    # model directly.
+    # #VERIFY: the blob is sanitized via _sanitize_delimited and wrapped in
+    # <untrusted_passage> below (test_repair_prompt_wraps_story_json_in_untrusted_delimiter
+    # and test_repair_prompt_neutralizes_literal_closing_tag_in_story_json in
+    # tests/unit/test_moderation_repair.py).
     guarded = PiiGuardedProvider(generation_provider, forbidden=pii)
     findings_text = "\n".join(
         f"- node {f.node_id} ({f.category}): {f.message}" for f in soft
     )
+    sanitized_blob = _sanitize_delimited(json.dumps(blob))
     prompt = (
         f"Revise this story to address these findings:\n{findings_text}\n\n"
-        f"Story JSON:\n{json.dumps(blob)}"
+        f"Story JSON:\n<untrusted_passage>\n{sanitized_blob}\n</untrusted_passage>"
     )
     raw = await guarded.complete(
         system=_REPAIR_SYSTEM, prompt=prompt, max_tokens=max_tokens

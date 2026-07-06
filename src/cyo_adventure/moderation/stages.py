@@ -9,6 +9,7 @@ the caller.
 from __future__ import annotations
 
 import json
+import re
 from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.moderation.report import Finding, Source, Verdict
@@ -91,6 +92,40 @@ _ENGAGEMENT_SYSTEM = (
 
 
 # ---------------------------------------------------------------------------
+# Delimiter escape hardening
+# ---------------------------------------------------------------------------
+
+# #CRITICAL: security: every prompt below wraps untrusted prose in
+# <untrusted_passage>...</untrusted_passage> so the reviewer can tell delimited
+# story text apart from its own instructions. Without escaping, a generation
+# that embeds the literal substring "</untrusted_passage" in its prose can
+# close the delimited zone early and have any text that follows read as
+# system/reviewer framing instead of untrusted content, defeating the
+# delimiter regardless of the instruction-hierarchy suffix above it.
+# #VERIFY: _sanitize_delimited is applied to prose before every
+# <untrusted_passage> wrap (the *_neutralizes_literal_closing_tag_in_prose
+# tests in tests/unit/test_moderation_stages.py assert exactly one opening
+# and closing delimiter remain per wrapped block even when the prose contains
+# the literal closing token).
+_UNTRUSTED_TAG_RE = re.compile(r"</?untrusted_passage", re.IGNORECASE)
+
+
+def _sanitize_delimited(prose: str) -> str:
+    """Neutralize literal untrusted_passage delimiter tokens inside prose.
+
+    Args:
+        prose: Raw story prose about to be wrapped in the ``<untrusted_passage>``
+            delimiter before being sent to a review model.
+
+    Returns:
+        ``prose`` with any ``<untrusted_passage`` or ``</untrusted_passage``
+        occurrence (case-insensitive) escaped so it can no longer act as a
+        delimiter tag; the token remains visible to the reviewer as inert text.
+    """
+    return _UNTRUSTED_TAG_RE.sub(lambda m: "&lt;" + m.group(0)[1:], prose)
+
+
+# ---------------------------------------------------------------------------
 # Shared verdict parser
 # ---------------------------------------------------------------------------
 
@@ -161,7 +196,8 @@ async def run_safety_stage(
     findings: list[Finding] = []
     for node_id, prose in nodes:
         prompt = (
-            f"Age band: {age_band}\n<untrusted_passage>\n{prose}\n</untrusted_passage>"
+            f"Age band: {age_band}\n<untrusted_passage>\n"
+            f"{_sanitize_delimited(prose)}\n</untrusted_passage>"
         )
         raw = await provider.complete(
             system=_SAFETY_SYSTEM, prompt=prompt, max_tokens=max_tokens
@@ -213,7 +249,7 @@ async def run_readability_stage(
         prompt = (
             f"Flesch-Kincaid grade target: {reading_target} "
             f"(tolerance: +/-{tolerance})\n"
-            f"<untrusted_passage>\n{prose}\n</untrusted_passage>"
+            f"<untrusted_passage>\n{_sanitize_delimited(prose)}\n</untrusted_passage>"
         )
         raw = await provider.complete(
             system=_READABILITY_SYSTEM, prompt=prompt, max_tokens=max_tokens
@@ -260,7 +296,7 @@ async def run_coherence_stage(
     # approximate; fail_safe=PASS avoids blocking on model uncertainty.
     # #VERIFY: FLAG findings are surfaced for human review, never auto-blocked.
     node_lines = "\n".join(
-        f"[{nid}] <untrusted_passage>\n{prose}\n</untrusted_passage>"
+        f"[{nid}] <untrusted_passage>\n{_sanitize_delimited(prose)}\n</untrusted_passage>"
         for nid, prose in nodes
     )
     prompt = f"Story nodes:\n{node_lines}"
@@ -308,7 +344,7 @@ async def run_engagement_stage(
     # fail_safe=PASS ensures a parse failure never advisory-flags clean content.
     # #VERIFY: ADVISORY findings surface to the author but do not gate the pipeline.
     node_lines = "\n".join(
-        f"[{nid}] <untrusted_passage>\n{prose}\n</untrusted_passage>"
+        f"[{nid}] <untrusted_passage>\n{_sanitize_delimited(prose)}\n</untrusted_passage>"
         for nid, prose in nodes
     )
     prompt = f"Story nodes:\n{node_lines}"
