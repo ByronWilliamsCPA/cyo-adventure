@@ -28,7 +28,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | # | Debt | Source | Why it gates R2 |
 | --- | --- | --- | --- |
 | G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire | R1 architecture (accepted for family-internal web) | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
-| G2 | Issue #57: residual admin-submit gap (accepted for R1 local testing only) | PR #55 closeout | Explicitly scoped as R1-only acceptance |
+| G2 | **[Closed]** Issue #57: residual admin-submit gap (accepted for R1 local testing only). Closed by the Task E4 hardening pass: `submit()` (`publishing/service.py`) now refuses the draft/needs_revision -> in_review transition when the story's latest version has `moderation_report is None`, mirroring the gate `approve()` already enforced. | PR #55 closeout | Explicitly scoped as R1-only acceptance (resolved) |
 | G3 | **[Closed]** Issue #64 (safety-eval Finding 5: a documented control-character strip in concept.py does not exist; accepted for R1 local testing only, same ruling as #57). Closed by the Task E4 hardening pass: `ConceptBrief` now strips control characters from every string field at intake (`generation/concept.py`). | C4a review cycle | Same acceptance boundary (resolved) |
 
 ## Correctness and data-integrity debts
