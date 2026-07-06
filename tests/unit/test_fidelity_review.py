@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from typing import cast
 
 import pytest
 
@@ -23,6 +24,15 @@ class _ScriptedReviewProvider:
         _ = max_tokens
         self.calls.append((system, prompt))
         return self._response
+
+
+class _NonStringReviewProvider:
+    """A misbehaving double that violates the ``complete -> str`` contract."""
+
+    async def complete(self, *, system: str, prompt: str, max_tokens: int) -> str:
+        """Return a non-string, simulating a contract-violating provider."""
+        _ = (system, prompt, max_tokens)
+        return cast("str", None)
 
 
 def _skeleton(body: str) -> dict[str, object]:
@@ -75,6 +85,22 @@ async def test_unparseable_response_fails_open() -> None:
     original = _skeleton("<<FILL role=setup words=10 beats='a fox finds a lantern'>>")
     filled = _skeleton("A fox finds a lantern.")
     provider = _ScriptedReviewProvider("not json at all")
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+
+
+async def test_semantic_check_fails_open_on_non_string_response() -> None:
+    """A provider returning a non-str (contract violation) fails open, not crash.
+
+    The isinstance guard before json.loads prevents a TypeError from a None (or
+    other non-str) response. This advisory-only check must treat a misbehaving
+    reviewer as "pass" (return None) rather than aborting the fill job.
+    """
+    original = _skeleton("<<FILL role=setup words=10 beats='a fox finds a lantern'>>")
+    filled = _skeleton("A fox finds a lantern.")
+    provider = _NonStringReviewProvider()
 
     result = await run_semantic_fidelity_check(original, filled, provider)
 

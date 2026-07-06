@@ -3,8 +3,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import StorybookVersion
+from cyo_adventure.generation import import_story
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
 
@@ -285,3 +286,36 @@ async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
     # The id guard must reject before any row is staged: a regression that
     # appends rows before the check would otherwise leak a partial import.
     assert session.added == []
+
+
+def test_resume_missing_skeleton_file_is_clean_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A skeleton file that vanished since matching maps to ResourceNotFoundError.
+
+    _load_resume_skeleton re-reads the matched skeleton at resume time. A raw
+    FileNotFoundError is not a ProjectBaseError, so it would surface from
+    import_cli as a raw traceback; the helper maps it into the project exception
+    hierarchy so the CLI reports a clean "import failed" and the caller rolls
+    back with no orphaned job.
+    """
+
+    def _raise_missing(_path: object) -> dict[str, object]:
+        raise FileNotFoundError("gone")
+
+    monkeypatch.setattr(import_story, "load_skeleton", _raise_missing)
+    with pytest.raises(ResourceNotFoundError):
+        import_story._load_resume_skeleton("8-11", "the-cave-of-echoes")
+
+
+def test_resume_invalid_skeleton_json_is_validation_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unreadable or non-JSON skeleton maps to ValidationError, not a raw error."""
+
+    def _raise_bad_json(_path: object) -> dict[str, object]:
+        raise ValueError("bad json")
+
+    monkeypatch.setattr(import_story, "load_skeleton", _raise_bad_json)
+    with pytest.raises(ValidationError):
+        import_story._load_resume_skeleton("8-11", "the-cave-of-echoes")

@@ -39,7 +39,18 @@ def select_skeleton_for_band(band: str) -> str | None:
     if not band_dir.is_dir():
         return None
     for path in sorted(band_dir.glob("*.json")):
-        data = cast("dict[str, object]", json.loads(path.read_text(encoding="utf-8")))
+        # #EDGE: external-resources: a corrupt or unreadable skeleton file must
+        # not crash auto-match. This runs synchronously inside the
+        # POST /authoring-plan request path, and a raw JSONDecodeError/OSError is
+        # not a ProjectBaseError, so it would bypass app.py's structured handler
+        # and surface as an unstructured 500. Skip the bad file and keep
+        # scanning, honoring the "returns None, not a crash" contract above.
+        # #VERIFY: test_select_skeleton_skips_malformed_file.
+        try:
+            raw = path.read_text(encoding="utf-8")
+            data = cast("dict[str, object]", json.loads(raw))
+        except (OSError, json.JSONDecodeError):
+            continue
         if is_production_eligible(data):
             return path.stem
     return None

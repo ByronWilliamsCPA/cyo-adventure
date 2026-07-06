@@ -56,11 +56,12 @@ async def test_stage1_violations_are_recorded_on_the_job(monkeypatch) -> None:
     # already-bound name; the patch target must be import_story itself.
     monkeypatch.setattr(import_story, "load_skeleton", lambda _path: {"nodes": []})
 
-    story_id = await import_story.resume_manual_fill(
+    story_id, status = await import_story.resume_manual_fill(
         session, job.id, {"id": "s_x", "nodes": []}
     )
 
     assert story_id == "s_x"
+    assert status == "needs_review"
     assert job.status == "needs_review"
     assert job.error is not None
     assert "word count" in job.error
@@ -110,11 +111,12 @@ async def test_review_model_overrides_are_threaded_through_resume(
     monkeypatch.setattr(import_story, "run_stage1_gate", _fake_run_stage1_gate)
     monkeypatch.setattr(import_story, "load_skeleton", lambda _path: {"nodes": []})
 
-    story_id = await import_story.resume_manual_fill(
+    story_id, status = await import_story.resume_manual_fill(
         session, job.id, {"id": "s_x", "nodes": []}
     )
 
     assert story_id == "s_x"
+    assert status == "passed"
     assert job.status == "passed"
     assert captured_request["review_model_override"] == "stage2-override-model"
     assert captured_stage1_kwargs["review_stage1_model"] == "stage1-override-model"

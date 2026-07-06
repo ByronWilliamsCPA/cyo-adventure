@@ -150,13 +150,70 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
     return story_id
 
 
+def _str_meta(metadata: object, key: str) -> str | None:
+    """Read a string value from a job's ``authoring_metadata``, tolerating junk.
+
+    Args:
+        metadata: The job's ``authoring_metadata`` (expected dict, but any type
+            is tolerated).
+        key: The metadata key to read.
+
+    Returns:
+        The value at ``key`` only when ``metadata`` is a dict and the value is a
+        string; any other shape degrades to ``None`` (no override) instead of
+        raising, matching the defensive reads in generation/worker.py.
+    """
+    # #ASSUME: data-integrity: authoring_metadata is a plain dict for every
+    # method="skeleton_fill" job (see story_requests/authoring_plan.py); a
+    # missing/wrong-typed value degrades to "no override" instead of raising.
+    # #VERIFY: test_review_model_overrides_are_threaded_through_resume.
+    if not isinstance(metadata, dict):
+        return None
+    value = metadata.get(key)
+    return value if isinstance(value, str) else None
+
+
+def _load_resume_skeleton(band: str, skeleton_slug: str) -> dict[str, object]:
+    """Load the skeleton a parked fill was matched against, as a clean error.
+
+    Args:
+        band: The age-band directory segment (may be "").
+        skeleton_slug: The matched skeleton's filename stem.
+
+    Returns:
+        The parsed skeleton document.
+
+    Raises:
+        ResourceNotFoundError: If the skeleton file no longer exists.
+        ValidationError: If the skeleton file is unreadable or not valid JSON.
+    """
+    # #ASSUME: external-resources: re-reads the same skeleton file the
+    # authoring-plan endpoint matched (see generation/skeleton_match.py); a file
+    # moved or corrupted since matching raises a raw FileNotFoundError/JSON
+    # error, which is not a ProjectBaseError. Map those to the project hierarchy
+    # so import_cli's top-level handler reports a clean "import failed" instead
+    # of a raw traceback; the caller still rolls back cleanly (no orphaned job).
+    # #VERIFY: test_resume_missing_skeleton_file_is_clean_error.
+    skeleton_path = Path("skeletons") / band / f"{skeleton_slug}.json"
+    try:
+        return load_skeleton(skeleton_path)
+    except FileNotFoundError as exc:
+        msg = f"skeleton file not found for resume: {skeleton_path}"
+        raise ResourceNotFoundError(
+            msg, resource_type="Skeleton", resource_id=skeleton_slug
+        ) from exc
+    except (OSError, ValueError) as exc:
+        msg = f"skeleton for resume is unreadable or invalid: {skeleton_path}"
+        raise ValidationError(msg) from exc
+
+
 async def resume_manual_fill(
     session: AsyncSession,
     job_id: uuid.UUID,
     blob: dict[str, object],
     *,
     model: str | None = None,
-) -> str:
+) -> tuple[str, str]:
     """Resume a skill-authored skeleton fill parked at "awaiting_manual_fill".
 
     Loads the job's concept for its family_id, then delegates to
@@ -175,9 +232,14 @@ async def resume_manual_fill(
     marked "failed" and the error is recorded before the exception
     propagates, mirroring generation/worker.py's failure-commit-then-reraise
     pattern. Unlike import_filled_story (which deliberately does not own the
-    transaction -- see its own docstring), this function DOES commit the job
-    row's status itself, in every branch, so a caller-side rollback can
-    never silently discard it.
+    transaction -- see its own docstring), this function commits the job row's
+    status itself for every HANDLED outcome (gate block -> "failed", Stage 1
+    downgrade -> "needs_review", clean -> "passed"), so a caller-side rollback
+    cannot silently discard a recorded outcome. An UNEXPECTED exception after
+    the storybook was persisted (a provider error in the semantic check, or an
+    unreadable skeleton file) is deliberately NOT committed here: it propagates
+    and the caller's session rolls back, discarding the just-persisted story so
+    the job stays "awaiting_manual_fill" for a clean retry (never orphaned).
 
     Args:
         session: Open async session; the story/version write still follows
@@ -188,13 +250,17 @@ async def resume_manual_fill(
         model: Optional model identifier to record (the fill model).
 
     Returns:
-        The persisted story id.
+        A ``(story_id, status)`` pair: the persisted story id and the job's
+        final status, either ``"passed"`` or ``"needs_review"`` (a Stage 1
+        fidelity downgrade). A hard gate block does not return; it raises.
 
     Raises:
-        ResourceNotFoundError: If the job or its concept does not exist.
+        ResourceNotFoundError: If the job or its concept does not exist, or the
+            matched skeleton file no longer exists.
         StateTransitionError: If the job is not "awaiting_manual_fill".
         ValidationError: Propagated from import_filled_story if the gate
-            blocks the filled story; the job is marked "failed" first.
+            blocks the filled story (the job is marked "failed" first), or if
+            the matched skeleton file is unreadable or invalid JSON.
         ProjectBaseError: Propagated from the moderation pipeline on failure,
             same as import_filled_story (not intercepted here).
     """
@@ -215,20 +281,7 @@ async def resume_manual_fill(
             msg, resource_type="Concept", resource_id=str(job.concept_id)
         )
 
-    # #ASSUME: data-integrity: authoring_metadata is a plain dict for every
-    # method="skeleton_fill" job (see story_requests/authoring_plan.py); guard
-    # with isinstance the same way skeleton_slug is read just below, so a
-    # missing/wrong-typed authoring_metadata degrades to "no override" instead
-    # of raising here.
-    # #VERIFY: test_resume_threads_review_model_overrides.
-    review_stage2_model = (
-        job.authoring_metadata.get("review_stage2_model")
-        if isinstance(job.authoring_metadata, dict)
-        else None
-    )
-    review_stage2_model = (
-        review_stage2_model if isinstance(review_stage2_model, str) else None
-    )
+    review_stage2_model = _str_meta(job.authoring_metadata, "review_stage2_model")
     request = ImportRequest(
         blob=blob,
         family_id=concept.family_id,
@@ -258,32 +311,15 @@ async def resume_manual_fill(
     job.storybook_id = story_id
     job.version = _FIRST_VERSION
 
-    skeleton_slug = (
-        job.authoring_metadata.get("skeleton_slug")
-        if isinstance(job.authoring_metadata, dict)
-        else None
-    )
-    if isinstance(skeleton_slug, str):
+    skeleton_slug = _str_meta(job.authoring_metadata, "skeleton_slug")
+    if skeleton_slug is not None:
         band = (
             concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
         )
         band = band if isinstance(band, str) else ""
-        # #ASSUME: external-resources: re-reads the same skeleton file the
-        # authoring-plan endpoint matched (see generation/skeleton_match.py);
-        # a moved or renamed file since matching would raise FileNotFoundError.
-        # #VERIFY: test_stage1_violations_are_recorded_on_the_job.
-        original_skeleton = load_skeleton(
-            Path("skeletons") / band / f"{skeleton_slug}.json"
-        )
+        original_skeleton = _load_resume_skeleton(band, skeleton_slug)
         pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
-        review_stage1_model = (
-            job.authoring_metadata.get("review_stage1_model")
-            if isinstance(job.authoring_metadata, dict)
-            else None
-        )
-        review_stage1_model = (
-            review_stage1_model if isinstance(review_stage1_model, str) else None
-        )
+        review_stage1_model = _str_meta(job.authoring_metadata, "review_stage1_model")
         violations = await run_stage1_gate(
             original_skeleton,
             blob,
@@ -303,8 +339,8 @@ async def resume_manual_fill(
             job.status = "needs_review"
             job.error = "; ".join(violations)[:512]
             await session.commit()
-            return story_id
+            return story_id, "needs_review"
 
     job.status = "passed"
     await session.commit()
-    return story_id
+    return story_id, "passed"

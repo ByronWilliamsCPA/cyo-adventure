@@ -48,7 +48,7 @@ async def _run(
     family_id: uuid.UUID | None,
     model: str | None,
     job_id: uuid.UUID | None,
-) -> str:
+) -> tuple[str, str | None]:
     """Validate and persist a filled story blob, or resume a parked job.
 
     Args:
@@ -60,7 +60,9 @@ async def _run(
             a standalone import (see import_story.py::resume_manual_fill).
 
     Returns:
-        The persisted story id.
+        A ``(story_id, status)`` pair. For a resumed job, ``status`` is the
+        job's final status (``"passed"`` or ``"needs_review"``); for a
+        standalone import it is ``None`` (there is no job row to downgrade).
 
     Raises:
         ProjectBaseError: Propagated from the validation gate, the moderation
@@ -73,7 +75,7 @@ async def _run(
         request = ImportRequest(blob=blob, family_id=family_id, model=model)
         story_id = await import_filled_story(session, request)
         await session.commit()
-        return story_id
+        return story_id, None
 
 
 def _load_blob(path: str) -> dict[str, object] | None:
@@ -92,15 +94,20 @@ def _load_blob(path: str) -> dict[str, object] | None:
     # not reach the filesystem read.
     cwd = Path.cwd()
     resolved = Path(path).resolve()
+    # Traversal check and file read are separated so their errors do not
+    # conflate: relative_to raises ValueError on an out-of-tree path, while
+    # read_text raises OSError (missing/unreadable) or UnicodeDecodeError (a
+    # ValueError subclass) on a non-UTF-8 file. A single broad catch would
+    # mislabel a decode error as a traversal rejection.
     try:
         resolved.relative_to(cwd)
+    except ValueError:
+        sys.stderr.write(f"error: {path} resolves outside the working directory\n")
+        return None
+    try:
         raw = resolved.read_text(encoding="utf-8")
-    except (ValueError, OSError) as exc:
-        sys.stderr.write(
-            f"error: {path} resolves outside the working directory\n"
-            if isinstance(exc, ValueError)
-            else f"error: cannot read {path}: {exc}\n"
-        )
+    except (OSError, UnicodeDecodeError) as exc:
+        sys.stderr.write(f"error: cannot read {path}: {exc}\n")
         return None
     try:
         raw_blob = json.loads(raw)
@@ -178,11 +185,17 @@ def main(argv: list[str] | None = None) -> int:
     # #VERIFY: test_arg_parser_* cover parsing; gate and moderation failures
     # both map to exit 1.
     try:
-        story_id = asyncio.run(_run(blob, family_id, model, job_id))
+        story_id, status = asyncio.run(_run(blob, family_id, model, job_id))
     except ProjectBaseError as exc:
         sys.stderr.write(f"import failed: {exc}\n")
         return 1
-    sys.stdout.write(f"imported {story_id}\n")
+    # Surface a Stage 1 fidelity downgrade so the operator can tell a clean
+    # pass from a fill parked for admin review; a bare story id looked
+    # identical for both outcomes.
+    if status is not None and status != "passed":
+        sys.stdout.write(f"imported {story_id} (job status: {status})\n")
+    else:
+        sys.stdout.write(f"imported {story_id}\n")
     return 0
 
 

@@ -32,6 +32,25 @@ _FIDELITY_SYSTEM = (
 _MAX_FIDELITY_TOKENS = 512
 
 
+def _string_bodies_by_id(nodes: list[object]) -> dict[str, str]:
+    """Index node string bodies by node id, skipping malformed entries.
+
+    Args:
+        nodes: A story's ``nodes`` list (entries of unknown shape).
+
+    Returns:
+        A mapping of node id to body for every node that is a dict with both a
+        string ``id`` and a string ``body``.
+    """
+    result: dict[str, str] = {}
+    for node in nodes:
+        if isinstance(node, dict) and isinstance(node.get("id"), str):
+            body = node.get("body")
+            if isinstance(body, str):
+                result[node["id"]] = body
+    return result
+
+
 def _beat_prose_pairs(
     original: dict[str, object], filled: dict[str, object]
 ) -> list[tuple[str, str, str]]:
@@ -49,26 +68,14 @@ def _beat_prose_pairs(
     filled_nodes = filled.get("nodes")
     if not isinstance(original_nodes, list) or not isinstance(filled_nodes, list):
         return []
-    filled_by_id: dict[str, str] = {}
-    for node in filled_nodes:
-        if isinstance(node, dict) and isinstance(node.get("id"), str):
-            body = node.get("body")
-            if isinstance(body, str):
-                filled_by_id[node["id"]] = body
+    filled_by_id = _string_bodies_by_id(filled_nodes)
 
     pairs: list[tuple[str, str, str]] = []
-    for node in original_nodes:
-        if not isinstance(node, dict) or not isinstance(node.get("id"), str):
-            continue
-        body = node.get("body")
-        if not isinstance(body, str):
-            continue
+    for node_id, body in _string_bodies_by_id(original_nodes).items():
         directive = parse_fill_directive(body)
-        if directive is None:
-            continue
-        filled_body = filled_by_id.get(node["id"])
-        if filled_body is not None:
-            pairs.append((node["id"], directive["beats"], filled_body))
+        filled_body = filled_by_id.get(node_id)
+        if directive is not None and filled_body is not None:
+            pairs.append((node_id, directive["beats"], filled_body))
     return pairs
 
 
@@ -98,9 +105,17 @@ async def run_semantic_fidelity_check(
         f"Node {node_id}\nBeat: {beats}\nProse: {body}"
         for node_id, beats, body in pairs
     )
+    # #ASSUME: external-resources: the review provider returns a str per the
+    # ReviewProvider.complete contract. An unparseable, empty, or non-str
+    # response fails open (returns None = "pass"), matching this module's
+    # advisory-only design (see docstring); the isinstance guard covers a
+    # contract violation (e.g. None) that json.loads would raise TypeError on.
+    # #VERIFY: test_semantic_check_fails_open_on_non_string_response.
     raw = await review_provider.complete(
         system=_FIDELITY_SYSTEM, prompt=user, max_tokens=_MAX_FIDELITY_TOKENS
     )
+    if not isinstance(raw, str):
+        return None
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:

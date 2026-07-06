@@ -96,8 +96,9 @@ async def test_resume_success_marks_job_passed(
     # it to match the original skeleton's id exactly.
 
     async with sessions() as session:
-        story_id = await resume_manual_fill(session, uuid.UUID(job_id), blob)
+        story_id, status = await resume_manual_fill(session, uuid.UUID(job_id), blob)
         await session.commit()
+    assert status == "passed"
 
     async with sessions() as session:
         job = await session.get(GenerationJob, uuid.UUID(job_id))
@@ -144,6 +145,7 @@ async def test_resume_records_stage1_violations_but_still_persists(
     # tests/unit/test_resume_manual_fill_stage1.py via a monkeypatched
     # run_stage1_gate.
     async with sessions() as session:
-        story_id = await resume_manual_fill(session, uuid.UUID(job_id), blob)
+        story_id, status = await resume_manual_fill(session, uuid.UUID(job_id), blob)
         await session.commit()
     assert story_id
+    assert status == "passed"
