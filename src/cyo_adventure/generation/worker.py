@@ -80,6 +80,15 @@ _FIRST_VERSION = 1
 # (the in-phase mock). Phase 2b providers carry their own model name.
 _MOCK_MODEL_LABEL = "mock"
 
+# Bounded retry budget for a Stage 1 fidelity violation (#133): the design
+# spec calls for a fidelity miss to re-enter the fill/repair pipeline rather
+# than downgrading on the very first violation, mirroring the same-budget
+# treatment orchestrator.py's own structural repair loop gives a gate
+# violation. Matches fill_skeleton's own max_repairs default (3) so a Stage 1
+# miss gets the same number of do-over attempts a structural miss gets, then
+# falls back to the pre-existing needs_review downgrade once exhausted.
+_STAGE1_MAX_ATTEMPTS = 3
+
 logger = get_logger(__name__)
 
 
@@ -164,9 +173,12 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
 
     Loads the matched skeleton library file, fills it via
     :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, then runs
-    the Stage 1 fidelity gate. A fidelity violation downgrades an
-    otherwise-``"passed"`` outcome to ``"needs_review"`` without discarding
-    the produced storybook, so a guardian/admin can still review the fill.
+    the Stage 1 fidelity gate. A fidelity violation re-enters the fill
+    pipeline (a fresh :func:`fill_skeleton` call, itself carrying its own
+    structural repair loop) up to :data:`_STAGE1_MAX_ATTEMPTS` times before
+    downgrading an otherwise-``"passed"`` outcome to ``"needs_review"``
+    (closes #133); the produced storybook is never discarded, so a
+    guardian/admin can still review the fill either way.
 
     Args:
         ctx: The grouped skeleton-fill context (see :class:`_SkeletonFillContext`).
@@ -198,38 +210,55 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     )
     skeleton = load_skeleton(skeleton_path)
     theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
-    outcome = await fill_skeleton(
-        skeleton, theme_brief_dict, ctx.effective_provider, ctx.pii
-    )
-    if outcome.storybook is None:
-        return outcome
-
-    # Only a clean "passed" fill is eligible for a Stage 1 downgrade. Skip the
-    # paid semantic fidelity call entirely for an outcome that is already
-    # "needs_review"/"failed": its result is consumed only on the passed branch
-    # below, so calling run_stage1_gate here would spend a review-model request
-    # whose violations are then discarded.
-    if outcome.status != "passed":
-        return outcome
-
     review_stage1_model = authoring.get("review_stage1_model")
-    stage1_violations = await run_stage1_gate(
-        skeleton,
-        outcome.storybook,
-        review_stage1_model=review_stage1_model
-        if isinstance(review_stage1_model, str)
-        else None,
-        prep_model=ctx.prep_model,
-        settings=_default_settings,
-        pii=ctx.pii,
+    review_stage1_model = (
+        review_stage1_model if isinstance(review_stage1_model, str) else None
     )
-    if stage1_violations:
-        return dataclasses.replace(
-            outcome,
-            status="needs_review",
-            report={**outcome.report, "stage1_fidelity_violations": stage1_violations},
+
+    # #ASSUME: external-resources: each retry re-calls the live provider for a
+    # full fill (plus its own bounded structural repair loop); a persistently
+    # flagged fill costs up to _STAGE1_MAX_ATTEMPTS provider calls before
+    # downgrading, same order of magnitude as a structural repair loop already
+    # costs today.
+    # #VERIFY: test_stage1_failure_once_then_pass_returns_passed /
+    # test_stage1_failure_exhausting_budget_still_downgrades.
+    attempt = 1
+    while True:
+        outcome = await fill_skeleton(
+            skeleton, theme_brief_dict, ctx.effective_provider, ctx.pii
         )
-    return outcome
+        if outcome.storybook is None:
+            return outcome
+
+        # Only a clean "passed" fill is eligible for a Stage 1 check. Skip the
+        # paid semantic fidelity call entirely for an outcome that is already
+        # "needs_review"/"failed": its result is consumed only on the passed
+        # branch below, so calling run_stage1_gate here would spend a
+        # review-model request whose violations are then discarded.
+        if outcome.status != "passed":
+            return outcome
+
+        stage1_violations = await run_stage1_gate(
+            skeleton,
+            outcome.storybook,
+            review_stage1_model=review_stage1_model,
+            prep_model=ctx.prep_model,
+            settings=_default_settings,
+            pii=ctx.pii,
+        )
+        if not stage1_violations:
+            return outcome
+
+        if attempt >= _STAGE1_MAX_ATTEMPTS:
+            return dataclasses.replace(
+                outcome,
+                status="needs_review",
+                report={
+                    **outcome.report,
+                    "stage1_fidelity_violations": stage1_violations,
+                },
+            )
+        attempt += 1
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:

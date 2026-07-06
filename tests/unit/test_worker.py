@@ -9,12 +9,14 @@ Tests cover:
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import ConfigurationError, ResourceNotFoundError
+from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import (
@@ -432,3 +434,112 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
                 pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
             )
         )
+
+
+@pytest.mark.asyncio
+async def test_stage1_failure_once_then_pass_returns_passed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Stage 1 fidelity failure re-enters the fill pipeline, not a downgrade (#133).
+
+    Before this fix, _run_skeleton_fill called run_stage1_gate exactly once
+    after fill_skeleton returned and downgraded to needs_review on the very
+    first violation -- unlike a structural gate violation, which gets
+    orchestrator.py's own bounded repair loop before failing. This proves a
+    Stage 1 violation on attempt 1, followed by a clean attempt 2, now yields
+    a "passed" outcome instead of an immediate downgrade.
+    """
+    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+
+    fill_calls = 0
+    stage1_calls = 0
+
+    async def _fake_fill_skeleton(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        nonlocal fill_calls
+        fill_calls += 1
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x", "nodes": [], "attempt": fill_calls},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
+        nonlocal stage1_calls
+        stage1_calls += 1
+        return ["node 'n1' word count mismatch"] if stage1_calls == 1 else []
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
+
+    brief = cast(
+        "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
+    )
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={"skeleton_slug": "the-cave-of-echoes", "theme_brief": {}},
+            brief=brief,
+            effective_provider=cast("GenerationProvider", object()),
+            pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        )
+    )
+
+    assert outcome.status == "passed"
+    assert fill_calls == 2
+    assert stage1_calls == 2
+
+
+@pytest.mark.asyncio
+async def test_stage1_failure_exhausting_budget_still_downgrades(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A Stage 1 violation that never clears still downgrades once the retry
+    budget is exhausted, preserving the pre-existing needs_review semantics
+    (#133's design says exhausting repairs uses the same failure semantics
+    moderation failures already use, not a stuck/failed job).
+    """
+    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+
+    fill_calls = 0
+
+    async def _fake_fill_skeleton(
+        *_args: object, **_kwargs: object
+    ) -> GenerationOutcome:
+        nonlocal fill_calls
+        fill_calls += 1
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x", "nodes": []},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
+        return ["node 'n1' word count mismatch"]
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
+
+    brief = cast(
+        "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
+    )
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={"skeleton_slug": "the-cave-of-echoes", "theme_brief": {}},
+            brief=brief,
+            effective_provider=cast("GenerationProvider", object()),
+            pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        )
+    )
+
+    assert outcome.status == "needs_review"
+    assert "stage1_fidelity_violations" in outcome.report
+    assert fill_calls > 1, (
+        "a persistent Stage 1 violation must retry, not fail on attempt 1"
+    )
