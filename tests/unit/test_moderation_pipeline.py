@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import uuid
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import Storybook, StorybookVersion
@@ -40,9 +41,80 @@ def _version() -> StorybookVersion:
     return StorybookVersion(storybook_id="s1", version=1, blob=_BLOB, model="gen-model")
 
 
+def _execute_result(value: object) -> MagicMock:
+    """Build a fake `Result` whose `scalar_one_or_none()` returns ``value``.
+
+    Mirrors tests/unit/test_approval_unit.py::_execute_result: `execute()` is
+    awaited, but the `Result` it returns exposes a plain (synchronous)
+    `scalar_one_or_none` method.
+    """
+    result = MagicMock()
+    result.scalar_one_or_none.return_value = value
+    return result
+
+
+def _load(session: AsyncMock, story: Storybook, version_row: object) -> None:
+    """Wire a mock session for the pipeline's locked-load pattern.
+
+    The storybook now loads via ``session.execute(...).scalar_one_or_none()``
+    (SELECT ... FOR UPDATE); the version row still loads via ``session.get``.
+    """
+    session.execute = AsyncMock(return_value=_execute_result(story))
+    session.get = AsyncMock(return_value=version_row)
+
+
 @pytest.fixture
 def mock_session() -> AsyncMock:
     return AsyncMock()
+
+
+@pytest.mark.unit
+async def test_pipeline_locks_storybook_row_for_update(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The pipeline's storybook load must carry SELECT ... FOR UPDATE.
+
+    Mirrors tests/unit/test_approval_unit.py::
+    test_load_admin_story_locks_row_for_update. This worker path drives the
+    same submit/auto_reject transitions api/approval.py's admin path drives,
+    so losing the lock here reopens the #129-style race for the worker path:
+    a concurrent transition on the same story could read a stale in-memory
+    status and clobber the other's write.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
+    for name in (
+        "run_safety_stage",
+        "run_readability_stage",
+        "run_coherence_stage",
+        "run_engagement_stage",
+    ):
+        monkeypatch.setattr(pipeline_mod, name, AsyncMock(return_value=[]))
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", AsyncMock())
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=AsyncMock(),
+        pii=_pii(),
+    )
+
+    mock_session.execute.assert_awaited_once()
+    stmt = mock_session.execute.await_args.args[0]
+    where = str(stmt.whereclause)
+    assert "storybook" in where.lower()
+
+    # Render with the Postgres dialect (the deployment target): the generic
+    # compiler omits skip_locked/nowait clauses, so a weakening would be
+    # invisible under str(stmt). skip_locked would let a concurrent caller
+    # slip past the lock instead of serializing behind it.
+    rendered = str(stmt.compile(dialect=postgresql.dialect()))
+    assert "FOR UPDATE" in rendered
+    assert "SKIP LOCKED" not in rendered
+    assert "NOWAIT" not in rendered
 
 
 @pytest.mark.unit
@@ -50,7 +122,7 @@ async def test_hard_block_routes_to_auto_reject(
     mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     story, version = _story(), _version()
-    mock_session.get = AsyncMock(side_effect=[story, version])
+    _load(mock_session, story, version)
     monkeypatch.setattr(
         pipeline_mod,
         "run_classifiers",
@@ -92,7 +164,7 @@ async def test_clean_story_routes_to_submit(
     mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     story, version = _story(), _version()
-    mock_session.get = AsyncMock(side_effect=[story, version])
+    _load(mock_session, story, version)
     monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
     for name in (
         "run_safety_stage",
@@ -124,7 +196,7 @@ async def test_soft_flag_triggers_repair_then_submits(
     """A soft FLAG triggers repair; if repair succeeds and re-moderation is clean,
     submit is awaited and the report carries repaired=True."""
     story, version = _story(), _version()
-    mock_session.get = AsyncMock(side_effect=[story, version])
+    _load(mock_session, story, version)
 
     # Stage 0 classifiers: clean
     monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
@@ -184,7 +256,7 @@ async def test_invalid_blob_routes_to_auto_reject(
     bad_version = StorybookVersion(
         storybook_id="s1", version=1, blob={"garbage": True}, model="gen-model"
     )
-    mock_session.get = AsyncMock(side_effect=[story, bad_version])
+    _load(mock_session, story, bad_version)
     auto_reject = AsyncMock()
     submit = AsyncMock()
     monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
@@ -213,7 +285,7 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
     soft-flagged report drives routing (submit), repaired stays False, and the
     invalid revision is never persisted to the version row."""
     story, version = _story(), _version()
-    mock_session.get = AsyncMock(side_effect=[story, version])
+    _load(mock_session, story, version)
     monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
     monkeypatch.setattr(pipeline_mod, "run_safety_stage", AsyncMock(return_value=[]))
     monkeypatch.setattr(pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[]))

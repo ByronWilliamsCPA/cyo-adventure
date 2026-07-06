@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import httpx
 from pydantic import ValidationError
+from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
@@ -76,10 +77,22 @@ async def run_moderation_pipeline(
     Raises:
         ResourceNotFoundError: when the story or version row is missing.
     """
+    # #CRITICAL: concurrency: this worker path drives the same submit/auto_reject
+    # transitions that api/approval.py's admin path drives (publishing/service.py),
+    # so it must load the storybook under the same SELECT ... FOR UPDATE lock.
+    # Without it, a worker re-moderating a story and an admin sending it back (or
+    # another worker run) could both read a stale in-memory status, both pass
+    # assert_transition, and the last writer would silently clobber the other's
+    # transition, the same #129 race api/approval.py::_load_admin_story closed
+    # for the admin path.
+    # #VERIFY: SELECT ... FOR UPDATE on Postgres;
+    # tests/unit/test_moderation_pipeline.py::test_pipeline_locks_storybook_row_for_update
+    # asserts the lock clause is present.
     # #CRITICAL: data-integrity: the rows must exist (just persisted as draft) or
     # the state-machine transition has nothing to act on.
-    # #VERIFY: both session.get results are checked for None.
-    storybook = await session.get(Storybook, story_id)
+    # #VERIFY: both loads are checked for None.
+    stmt = select(Storybook).where(Storybook.id == story_id).with_for_update()
+    storybook = (await session.execute(stmt)).scalar_one_or_none()
     version_row = await session.get(StorybookVersion, (story_id, version))
     if storybook is None or version_row is None:
         msg = f"storybook '{story_id}' v{version} not found for moderation"
