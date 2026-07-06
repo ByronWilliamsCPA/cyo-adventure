@@ -2,9 +2,12 @@ import { expect, test } from '@playwright/test'
 
 /**
  * Coverage for the C4a-2 profile-management flows: the kid-surface Profile
- * Picker (`/`) and its two states (populated, empty). Both mock
+ * Picker (`/kids`) and its two states (populated, empty). Both mock
  * GET /api/v1/profiles the same way reader.spec.ts mocks the reader
  * endpoints: `page.route`, no live backend.
+ *
+ * The Profile Picker now lives at `/kids`, not `/`; the landing page at `/`
+ * is covered separately by landing.spec.ts.
  *
  * Guardian-surface e2e (ProfilesPage at /guardian/profiles) now lives in
  * guardian-*.spec.ts, seeded via support/auth.ts's seedGuardianSession and
@@ -51,7 +54,7 @@ test('picker renders both profile tiles and links to the guardian surface (US: p
   // and rendering the error state.
   await page.route('**/api/v1/library*', (route) => route.fulfill({ json: { stories: [] } }))
 
-  await page.goto('/')
+  await page.goto('/kids')
 
   await expect(page.getByText('Remy')).toBeVisible()
   await expect(page.getByText('Zoe')).toBeVisible()
@@ -76,7 +79,7 @@ test('picker shows the empty state and grown-up link when there are no profiles'
 }) => {
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
 
-  await page.goto('/')
+  await page.goto('/kids')
 
   await expect(page.getByText('No profiles yet')).toBeVisible()
   const grownUpLink = page.getByRole('link', { name: 'I am a grown-up' })
