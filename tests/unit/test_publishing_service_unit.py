@@ -84,6 +84,47 @@ async def test_submit_illegal_status_raises() -> None:
 
 
 @pytest.mark.unit
+async def test_submit_without_moderation_report_raises() -> None:
+    """submit() on a draft whose latest version was never screened is blocked (#57).
+
+    Mirrors the moderation-report gate approve() already enforces: without
+    this check, the admin submit endpoint (api/approval.py::submit_storybook)
+    could move a draft straight to in_review without moderation ever running.
+    """
+    story = _story("draft")
+    version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
+    session = AsyncMock()
+    session.scalar = AsyncMock(return_value=1)
+    session.get = AsyncMock(return_value=version_row)
+
+    with pytest.raises(BusinessLogicError):
+        await service.submit(session, story)
+
+    assert story.status == "draft"
+    session.flush.assert_not_awaited()
+
+
+@pytest.mark.unit
+async def test_submit_with_moderation_report_succeeds() -> None:
+    """submit() on a draft whose latest version has a moderation_report succeeds."""
+    story = _story("draft")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        moderation_report=make_clean_moderation_report(),
+    )
+    session = AsyncMock()
+    session.scalar = AsyncMock(return_value=1)
+    session.get = AsyncMock(return_value=version_row)
+
+    await service.submit(session, story)
+
+    assert story.status == "in_review"
+    session.flush.assert_awaited_once()
+
+
+@pytest.mark.unit
 async def test_approve_publishes_and_stamps() -> None:
     """approve() transitions to published, stamps approved_by and published_at."""
     story = _story("in_review")

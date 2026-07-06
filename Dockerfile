@@ -109,7 +109,35 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
 
 # Default command - run web server. The application module is
 # cyo_adventure.app (create_app() at import time); there is no main.py.
-CMD ["uvicorn", "cyo_adventure.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# --proxy-headers/--forwarded-allow-ips (Task E1, audit Group A: A1/A2): trust
+# X-Forwarded-For/-Proto from this CIDR only, so RateLimitMiddleware keys on
+# the real client (security.py) instead of the nginx/Traefik container's own
+# IP, and SecurityHeadersMiddleware's HSTS branch (request.url.scheme ==
+# "https") can fire behind the TLS-terminating reverse proxy.
+# #CRITICAL: security: this hardcoded 172.16.0.0/12 default is the PRODUCTION
+# fallback only, not a dev value: this repo's own docker-compose.yml pins its
+# dev network to an exact /16 and overrides FORWARDED_ALLOW_IPS to that
+# narrower subnet instead (see its own comment), so this broad /12 default
+# is reached only when running this image directly or via
+# docker-compose.prod.yml. It stays broad because the separate homelab-infra
+# repo's production `cyo-adventure` stack's `backend-net` has no pinned
+# subnet: Docker auto-assigns it from the 172.17.0.0-172.31.255.255 pool on
+# each recreation, so no single narrower CIDR can be hardcoded here yet.
+# Narrow this once backend-net is pinned; tracked in issue #138 (see
+# core/config.py's forwarded_allow_ips docstring for the full rationale).
+# This exec-form CMD is a hardcoded fallback, not the override point: the DHI
+# hardened runtime image ships no shell (confirmed for this same image in the
+# separate homelab-infra repo's own cyo-adventure-worker service, which needs
+# the analogous compose-level override for the same reason), so it cannot
+# itself expand ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}. docker-compose.yml and
+# docker-compose.prod.yml override the CIDR via their own compose-level
+# `command:` with client-side ${FORWARDED_ALLOW_IPS:-...} substitution
+# (resolved by the docker compose CLI before the container starts, needing no
+# shell inside the image).
+# #VERIFY: never set FORWARDED_ALLOW_IPS to "*" in any compose override or
+# deployment env; that would let any upstream peer spoof its own client IP or
+# scheme.
+CMD ["uvicorn", "cyo_adventure.app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=172.16.0.0/12"]
 # =============================================================================
 # Build Arguments (optional, for build-time configuration)
 # =============================================================================

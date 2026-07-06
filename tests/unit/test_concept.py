@@ -10,7 +10,12 @@ from typing import Any
 import pytest
 from pydantic import ValidationError as PydanticValidationError
 
-from cyo_adventure.generation.concept import ConceptBrief, StructurePattern
+from cyo_adventure.generation.concept import (
+    MAX_ENDING_COUNT,
+    MAX_TARGET_NODE_COUNT,
+    ConceptBrief,
+    StructurePattern,
+)
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # ---------------------------------------------------------------------------
@@ -160,6 +165,38 @@ def test_ending_count_zero_rejected() -> None:
         ConceptBrief(**bad)
 
 
+def test_target_node_count_at_max_accepted() -> None:
+    """target_node_count exactly at the ADR-011 matrix ceiling is accepted."""
+    ok = dict(VALID_BRIEF)
+    ok["target_node_count"] = MAX_TARGET_NODE_COUNT
+    brief = ConceptBrief(**ok)
+    assert brief.target_node_count == MAX_TARGET_NODE_COUNT
+
+
+def test_target_node_count_over_max_rejected() -> None:
+    """target_node_count one over the ADR-011 matrix ceiling is rejected (le=)."""
+    bad = dict(VALID_BRIEF)
+    bad["target_node_count"] = MAX_TARGET_NODE_COUNT + 1
+    with pytest.raises(PydanticValidationError):
+        ConceptBrief(**bad)
+
+
+def test_ending_count_at_max_accepted() -> None:
+    """ending_count exactly at the derived ceiling is accepted."""
+    ok = dict(VALID_BRIEF)
+    ok["ending_count"] = MAX_ENDING_COUNT
+    brief = ConceptBrief(**ok)
+    assert brief.ending_count == MAX_ENDING_COUNT
+
+
+def test_ending_count_over_max_rejected() -> None:
+    """ending_count one over the derived ceiling is rejected (le=)."""
+    bad = dict(VALID_BRIEF)
+    bad["ending_count"] = MAX_ENDING_COUNT + 1
+    with pytest.raises(PydanticValidationError):
+        ConceptBrief(**bad)
+
+
 # ---------------------------------------------------------------------------
 # Test 4: Default values are applied correctly.
 # ---------------------------------------------------------------------------
@@ -215,3 +252,55 @@ def test_all_age_bands_valid() -> None:
     for band in AgeBand:
         brief = ConceptBrief(**{**VALID_BRIEF, "age_band": band})
         assert brief.age_band == band
+
+
+# ---------------------------------------------------------------------------
+# Test 5: Control-character stripping at concept intake (F24/#64).
+#
+# The module docstring documents that the API layer strips control
+# characters before a brief reaches the generation prompt; safety-eval
+# Finding 5 found no such strip existed anywhere. These tests drive the
+# intake-side implementation of that documented mitigation.
+# ---------------------------------------------------------------------------
+
+
+def test_premise_control_chars_stripped() -> None:
+    """Control characters embedded in premise are stripped at intake."""
+    bad = dict(VALID_BRIEF)
+    bad["premise"] = "A quiet\x00\x01 adventure\x07 begins.\x1f"
+    brief = ConceptBrief(**bad)
+    assert brief.premise == "A quiet adventure begins."
+
+
+def test_protagonist_name_control_chars_stripped() -> None:
+    """Control characters embedded in protagonist.name are stripped at intake."""
+    bad = dict(VALID_BRIEF)
+    bad["protagonist"] = {**VALID_PROTAGONIST, "name": "Captain\x00 Rosa\x7f"}
+    brief = ConceptBrief(**bad)
+    assert brief.protagonist.name == "Captain Rosa"
+
+
+def test_title_control_chars_stripped() -> None:
+    """Control characters embedded in title are stripped at intake."""
+    bad = dict(VALID_BRIEF)
+    bad["title"] = "The\x0bLost\x0cIsland"
+    brief = ConceptBrief(**bad)
+    assert brief.title == "TheLostIsland"
+
+
+def test_themes_allowed_list_items_control_chars_stripped() -> None:
+    """Control characters in list-typed free-text fields are stripped too."""
+    bad = dict(VALID_BRIEF)
+    bad["themes_allowed"] = ["friend\x00ship", "cour\x1bage"]
+    brief = ConceptBrief(**bad)
+    assert brief.themes_allowed == ["friendship", "courage"]
+
+
+def test_printable_text_unaffected_by_control_char_strip() -> None:
+    """Ordinary printable text (including newlines/tabs are NOT stripped)."""
+    bad = dict(VALID_BRIEF)
+    # \t and \n are control chars but excluded from the strip range per the
+    # documented pattern (only \x00-\x08, \x0b, \x0c, \x0e-\x1f, \x7f).
+    bad["premise"] = "Line one\nLine two\twith a tab."
+    brief = ConceptBrief(**bad)
+    assert brief.premise == "Line one\nLine two\twith a tab."

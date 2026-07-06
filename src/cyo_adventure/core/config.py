@@ -297,6 +297,44 @@ class Settings(BaseSettings):
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
 
+    # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
+    # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
+    # It is consumed by uvicorn's --forwarded-allow-ips CLI flag (set from this same
+    # env var in the Dockerfile CMD and docker-compose*.yml `command:`), which is
+    # what actually decides whether X-Forwarded-For/X-Forwarded-Proto are honored;
+    # this Settings field mirrors that value for introspection and tests, it does not
+    # itself gate anything at request time. Before this fix, the backend never
+    # trusted any proxy header: RateLimitMiddleware keyed on the nginx container's
+    # own IP (security.py, all clients collapsed into one bucket) and
+    # SecurityHeadersMiddleware's HSTS branch (request.url.scheme == "https") never
+    # fired behind the TLS-terminating reverse proxy. This Settings default of
+    # the RFC 1918 172.16.0.0/12 block backs the PRODUCTION path only
+    # (docker-compose.prod.yml's FORWARDED_ALLOW_IPS default and the
+    # Dockerfile's hardcoded CMD fallback): the separate homelab-infra repo's
+    # production `cyo-adventure` stack's `backend-net` (the network the nginx
+    # container that fronts this backend reaches it over) has no pinned
+    # subnet and is auto-assigned by Docker from the 172.17.0.0-172.31.255.255
+    # pool on each recreation, so no single narrower CIDR can be hardcoded
+    # there yet; narrowing it once backend-net is pinned is tracked in issue
+    # #138. This repo's own dev docker-compose.yml network IS pinned
+    # (172.25.0.0/16 as of this writing) and overrides FORWARDED_ALLOW_IPS to
+    # that exact narrower subnet at the compose layer instead of trusting the
+    # whole /12 umbrella, since anything broader would needlessly cover
+    # addresses that can never be this backend's real dev reverse-proxy peer;
+    # that dev subnet is not itself authoritative for production. Never widen
+    # this to "*" (uvicorn's own trust-everyone sentinel): that would let any
+    # client spoof its own IP (defeating per-client rate limiting) or scheme
+    # (forging HSTS).
+    # #VERIFY: FORWARDED_ALLOW_IPS must never be set to "*" in any Dockerfile,
+    # compose file, or deployment env. Principal-keying (auth subject rather than
+    # IP) and a Redis-backed rate-limit store are tracked separately in issue #71
+    # (R2 rate-limit policy); this setting only restores correct client-IP/scheme
+    # visibility at the proxy boundary, it does not change how RateLimitMiddleware
+    # keys or stores requests.
+    forwarded_allow_ips: str = Field(
+        default="172.16.0.0/12", validation_alias="FORWARDED_ALLOW_IPS"
+    )
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.

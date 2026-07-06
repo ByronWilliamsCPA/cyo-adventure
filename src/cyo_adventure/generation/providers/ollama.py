@@ -58,6 +58,17 @@ _LEG_FATAL_STATUS: Final[frozenset[int]] = frozenset({400, 404})
 # per-chunk payloads are tiny, so this costs effectively nothing.
 _STREAM_HEADERS: Final[dict[str, str]] = {"Accept-Encoding": "identity"}
 
+# Default multiplier for the per-call total-byte stream ceiling: the request
+# already bounds the model's OWN token budget via ``options.num_predict``, but
+# a misbehaving or malicious server could still stream far more bytes than
+# that budget implies (a compromised/rogue Ollama endpoint, or a runaway
+# reasoning-model dump). The ceiling is ``max_tokens * DEFAULT_STREAM_BYTE_MULTIPLIER``
+# bytes: ~4 bytes/token is a standard rough token-to-byte heuristic for
+# English prose, and a further 4x safety factor covers markdown/whitespace
+# overhead and estimation error, without hardcoding a story-size-independent
+# magic constant. Configurable per adapter instance via ``stream_byte_multiplier``.
+DEFAULT_STREAM_BYTE_MULTIPLIER: Final[int] = 16
+
 
 class OllamaProvider:
     """A ``GenerationProvider`` that calls a local Ollama server's chat API.
@@ -83,6 +94,10 @@ class OllamaProvider:
         client: Optional injected ``httpx.AsyncClient`` (for tests). When
             provided the adapter uses it and does not close it; when ``None`` a
             fresh client is created and closed per ``complete`` call.
+        stream_byte_multiplier: Multiplier applied to a call's ``max_tokens``
+            to derive the total-byte stream ceiling (default
+            :data:`DEFAULT_STREAM_BYTE_MULTIPLIER`). See that constant's
+            docstring for the derivation.
     """
 
     def __init__(
@@ -97,6 +112,7 @@ class OllamaProvider:
         max_retries: int = DEFAULT_MAX_RETRIES,
         backoff_base_seconds: float = DEFAULT_BACKOFF_BASE_SECONDS,
         client: httpx.AsyncClient | None = None,
+        stream_byte_multiplier: int = DEFAULT_STREAM_BYTE_MULTIPLIER,
     ) -> None:
         self._model: Final[str] = model
         self._base_url: Final[str] = base_url.rstrip("/")
@@ -116,6 +132,7 @@ class OllamaProvider:
         self._max_retries: Final[int] = max_retries
         self._backoff_base_seconds: Final[float] = backoff_base_seconds
         self._client: Final[httpx.AsyncClient | None] = client
+        self._stream_byte_multiplier: Final[int] = stream_byte_multiplier
 
     @property
     def name(self) -> str:
@@ -154,19 +171,23 @@ class OllamaProvider:
         url = f"{self._base_url}/api/chat"
 
         return await run_with_retries(
-            lambda: self._attempt(url, body),
+            lambda: self._attempt(url, body, max_tokens),
             provider="ollama",
             model=self._model,
             max_retries=self._max_retries,
             backoff_base_seconds=self._backoff_base_seconds,
         )
 
-    async def _attempt(self, url: str, body: Mapping[str, object]) -> str:
+    async def _attempt(
+        self, url: str, body: Mapping[str, object], max_tokens: int
+    ) -> str:
         """Perform one HTTP attempt and map the outcome to text or ProviderError.
 
         Args:
             url: The Ollama chat endpoint url.
             body: The JSON request body.
+            max_tokens: The call's requested token budget, used to derive the
+                total-byte stream ceiling (see :data:`DEFAULT_STREAM_BYTE_MULTIPLIER`).
 
         Returns:
             The model completion text on success.
@@ -184,11 +205,11 @@ class OllamaProvider:
         # _verify wiring (SSLContext when a CA bundle is set, else True).
         try:
             if self._client is not None:
-                return await self._stream(self._client, url, body)
+                return await self._stream(self._client, url, body, max_tokens)
             async with httpx.AsyncClient(
                 timeout=self._timeout_seconds, verify=self._verify
             ) as client:
-                return await self._stream(client, url, body)
+                return await self._stream(client, url, body, max_tokens)
         except (httpx.TimeoutException, httpx.TransportError) as exc:
             msg = f"ollama request failed: {type(exc).__name__}"
             raise ProviderError(
@@ -196,7 +217,11 @@ class OllamaProvider:
             ) from exc
 
     async def _stream(
-        self, client: httpx.AsyncClient, url: str, body: Mapping[str, object]
+        self,
+        client: httpx.AsyncClient,
+        url: str,
+        body: Mapping[str, object],
+        max_tokens: int,
     ) -> str:
         """Stream ``/api/chat`` and accumulate the chunked completion text.
 
@@ -209,13 +234,16 @@ class OllamaProvider:
             client: The AsyncClient to use (injected for tests, or per-call).
             url: The Ollama chat endpoint url.
             body: The JSON request body (with ``stream: true``).
+            max_tokens: The call's requested token budget, used to derive the
+                total-byte stream ceiling.
 
         Returns:
             The fence-stripped completion text accumulated across all chunks.
 
         Raises:
             ProviderError: Leg-fatal/transient per status (via _raise_for_status);
-                transient on a malformed chunk, an error chunk, or empty content.
+                transient on a malformed chunk, an error chunk, empty content,
+                or a total accumulated size over the byte ceiling.
         """
         # #CRITICAL: security: HTTP Basic credentials are attached to this
         # streaming request; the password must never be logged or echoed into a
@@ -230,7 +258,16 @@ class OllamaProvider:
             request = client.stream(
                 "POST", url, json=body, auth=auth, headers=_STREAM_HEADERS
             )
+        # #CRITICAL: security: num_predict bounds the MODEL's own token budget,
+        # but a misbehaving or malicious server could still stream far more
+        # bytes than that budget implies; this ceiling bounds the accumulated
+        # response independently of what the server claims to be producing.
+        # #VERIFY: test_stream_over_byte_ceiling_raises_transient asserts a
+        # transient ProviderError once accumulated bytes cross the ceiling;
+        # test_stream_at_byte_ceiling_succeeds asserts the boundary passes.
+        max_bytes = max_tokens * self._stream_byte_multiplier
         parts: list[str] = []
+        total_bytes = 0
         async with request as response:
             if response.status_code >= 300:
                 # Drain the (non-streamed) error body so the connection closes
@@ -240,7 +277,20 @@ class OllamaProvider:
             async for line in response.aiter_lines():
                 stripped = line.strip()
                 if stripped:
-                    parts.append(self._chunk_content(stripped))
+                    chunk_text = self._chunk_content(stripped)
+                    total_bytes += len(chunk_text.encode("utf-8"))
+                    if total_bytes > max_bytes:
+                        msg = (
+                            f"ollama stream exceeded the byte ceiling "
+                            f"({max_bytes} bytes for max_tokens={max_tokens})"
+                        )
+                        raise ProviderError(
+                            msg,
+                            provider="ollama",
+                            model=self._model,
+                            leg_fatal=False,
+                        )
+                    parts.append(chunk_text)
         content = "".join(parts)
         if not content:
             # An empty accumulation usually means the budget was spent on a

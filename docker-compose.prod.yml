@@ -16,6 +16,21 @@ services:
       ENVIRONMENT: production
       JSON_LOGS: "true"
       LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+      # Task E1 (audit Group A: A1/A2): overridable per-deployment; the base
+      # docker-compose.yml `command:` already threads this through uvicorn's
+      # --forwarded-allow-ips, so only the value needs overriding here (and
+      # the override must be exported as a real shell env var or set in a
+      # `.env` file next to this compose file: the `docker compose` CLI
+      # resolves ${FORWARDED_ALLOW_IPS:-...} at interpolation time, before any
+      # container starts, so setting it only in the container's runtime
+      # environment has no effect on the command actually launched). Defaults
+      # to the broad 172.16.0.0/12 Docker-bridge umbrella, NOT a pinned
+      # subnet like the dev compose file: the homelab-infra production
+      # stack's backend-net has no pinned subnet today, so no narrower CIDR
+      # can be hardcoded here yet. Narrow this to the pinned subnet once it
+      # exists; tracked in issue #138. Never set this to "*"; see
+      # core/config.py's forwarded_allow_ips docstring.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}
 
     # Production replicas (for load balancing)
     deploy:

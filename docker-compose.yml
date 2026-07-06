@@ -39,6 +39,35 @@ services:
       # GOOGLE_APPLICATION_CREDENTIALS_B64: ${GOOGLE_APPLICATION_CREDENTIALS_B64:-}
       # GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
 
+      # Task E1 (audit Group A: A1/A2): trust boundary for X-Forwarded-For/
+      # -Proto (uvicorn --forwarded-allow-ips below). Defaults to this stack's
+      # OWN pinned subnet (see the `networks:` block at the bottom of this
+      # file), not the wider 172.16.0.0/12 Docker-bridge umbrella: this
+      # network's subnet IS pinned here, so trusting anything broader would
+      # needlessly cover addresses that can never legitimately be this
+      # backend's reverse-proxy peer in dev. Production uses the broader /12
+      # default instead (docker-compose.prod.yml, Dockerfile CMD) because the
+      # homelab-infra backend-net there has no pinned subnet; see those files'
+      # comments and issue #138. See core/config.py's forwarded_allow_ips
+      # docstring for the full rationale; never set this to "*".
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+
+    # Overrides the Dockerfile's hardcoded CMD default so this env var actually
+    # takes effect: the DHI hardened runtime image ships no shell, so the
+    # Dockerfile's own exec-form CMD cannot expand ${FORWARDED_ALLOW_IPS:-...}
+    # itself (see the Dockerfile's CMD comment). Compose resolves this
+    # substitution client-side before the container starts, so no in-container
+    # shell is needed.
+    command:
+      - uvicorn
+      - cyo_adventure.app:app
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --proxy-headers
+      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.25.0.0/16}
+
     volumes:
       # Development: Mount source code for hot reload
       - ./src:/app/src:ro

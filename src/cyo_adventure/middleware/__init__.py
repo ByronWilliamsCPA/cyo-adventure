@@ -21,6 +21,7 @@ from cyo_adventure.middleware.correlation import (
     set_correlation_id,
 )
 from cyo_adventure.middleware.security import (
+    BodySizeLimitMiddleware,
     RateLimitMiddleware,
     SecurityHeadersMiddleware,
     SSRFPreventionMiddleware,
@@ -32,6 +33,7 @@ __all__ = [
     "REQUEST_ID_HEADER",
     "SPAN_ID_HEADER",
     "TRACE_ID_HEADER",
+    "BodySizeLimitMiddleware",
     "CorrelationMiddleware",
     "RateLimitMiddleware",
     "SSRFPreventionMiddleware",

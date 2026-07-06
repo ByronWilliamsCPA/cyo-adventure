@@ -93,8 +93,12 @@ def _ollama(
     max_retries: int = 3,
     username: str | None = None,
     password: str | None = None,
+    stream_byte_multiplier: int | None = None,
 ) -> OllamaProvider:
     """Build an OllamaProvider wired to a mock client with no backoff sleep."""
+    kwargs: dict[str, object] = {}
+    if stream_byte_multiplier is not None:
+        kwargs["stream_byte_multiplier"] = stream_byte_multiplier
     return OllamaProvider(
         model=model,
         base_url="http://localhost:11434",
@@ -104,6 +108,7 @@ def _ollama(
         max_retries=max_retries,
         backoff_base_seconds=0,
         client=_client(handler),
+        **kwargs,
     )
 
 
@@ -614,6 +619,74 @@ class TestOllamaProvider:
         assert exc_info.value.leg_fatal is True
         assert "302" in str(exc_info.value)
         assert calls == 1
+
+    @pytest.mark.asyncio
+    async def test_stream_at_byte_ceiling_succeeds(self) -> None:
+        """A stream totaling exactly the max_tokens-derived byte ceiling succeeds."""
+        # OllamaProvider.STREAM_BYTE_MULTIPLIER (default 16) x max_tokens is the
+        # ceiling; max_tokens=1 gives a tiny, exactly-controllable 16-byte cap.
+        content = "x" * 16
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=_ollama_stream(content))
+
+        provider = _ollama(handler, max_retries=1)
+        result = await provider.complete(system="s", prompt="u", max_tokens=1)
+        assert result == content
+
+    @pytest.mark.asyncio
+    async def test_stream_over_byte_ceiling_raises_transient(self) -> None:
+        """A stream one byte over the max_tokens-derived ceiling is rejected."""
+        content = "x" * 17
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=_ollama_stream(content))
+
+        provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=1)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_stream_byte_ceiling_scales_with_max_tokens(self) -> None:
+        """A larger max_tokens raises the byte ceiling proportionally."""
+        content = "y" * 32  # fits under max_tokens=2 -> 32-byte ceiling
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=_ollama_stream(content))
+
+        provider = _ollama(handler, max_retries=1)
+        result = await provider.complete(system="s", prompt="u", max_tokens=2)
+        assert result == content
+
+    @pytest.mark.asyncio
+    async def test_stream_byte_ceiling_configurable_multiplier(self) -> None:
+        """A custom stream_byte_multiplier raises the effective ceiling.
+
+        The content is sized to sit strictly between the default ceiling and
+        the custom one, so this only passes when the custom multiplier is
+        genuinely honored; a silent fallback to DEFAULT_STREAM_BYTE_MULTIPLIER
+        (16) would reject the same stream. The paired default-multiplier leg
+        proves 24 bytes really does exceed the default ceiling, so the
+        custom-multiplier success is not a false pass.
+        """
+        # 24 bytes: over the default ceiling (max_tokens=1 * 16 = 16) but under
+        # the custom ceiling (max_tokens=1 * 32 = 32).
+        content = "z" * 24
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=_ollama_stream(content))
+
+        # Default multiplier (16): 24 bytes exceeds the 16-byte ceiling, reject.
+        default_provider = _ollama(handler, max_retries=1)
+        with pytest.raises(ProviderError) as exc_info:
+            await default_provider.complete(system="s", prompt="u", max_tokens=1)
+        assert exc_info.value.leg_fatal is False
+
+        # Custom multiplier (32): the ceiling rises to 32 bytes, accept.
+        provider = _ollama(handler, max_retries=1, stream_byte_multiplier=32)
+        result = await provider.complete(system="s", prompt="u", max_tokens=1)
+        assert result == content
 
 
 # ---------------------------------------------------------------------------

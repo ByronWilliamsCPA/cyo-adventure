@@ -105,12 +105,32 @@ async def test_submit_then_send_back(
 ) -> None:
     """submit() draft->in_review, send_back() in_review->needs_revision."""
     async with sessions() as session:
-        book, guardian_id = await _make_story(session, status="draft")
+        book, guardian_id = await _make_story(
+            session,
+            status="draft",
+            moderation_report=make_clean_moderation_report(),
+        )
         principal = _principal(guardian_id, book.family_id)
         await approval_service.submit(session, book)
         assert book.status == "in_review"
         await approval_service.send_back(session, principal, book, "too scary")
         assert book.status == "needs_revision"
+
+
+async def test_submit_without_moderation_raises(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """submit() on a draft with no moderation_report is blocked (closes #57).
+
+    Mirrors test_approve_without_moderation_raises: a story that reached
+    draft by any route other than the moderated generation worker must not
+    be movable to in_review until it has been screened.
+    """
+    async with sessions() as session:
+        book, _guardian_id = await _make_story(session, status="draft")
+        with pytest.raises(BusinessLogicError):
+            await approval_service.submit(session, book)
+        assert book.status == "draft"
 
 
 async def test_archive_published(

@@ -224,6 +224,7 @@ export const createConceptApiV1ConceptsPost = <ThrowOnError extends boolean = fa
  * AuthorizationError: If the principal is not a guardian (-> 403) or if
  * the concept belongs to another family (-> 403).
  * ResourceNotFoundError: If the concept does not exist (-> 404).
+ * StateTransitionError: If the family is at its active-job cap (-> 409).
  * ValidationError: If ``concept_id`` is not a valid UUID (-> 422).
  */
 export const enqueueConceptGenerationApiV1ConceptsConceptIdGeneratePost = <ThrowOnError extends boolean = false>(options: Options<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, ThrowOnError>): RequestResult<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, ThrowOnError> => (options.client ?? client).post<EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, ThrowOnError>({

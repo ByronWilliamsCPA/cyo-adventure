@@ -13,6 +13,8 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from sqlalchemy import func, select
+
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.publishing.state_machine import Action, Status, assert_transition
@@ -36,12 +38,45 @@ async def submit(session: AsyncSession, storybook: Storybook) -> None:
 
     Raises:
         StateTransitionError: If the story is not in ``draft``/``needs_revision``.
+        BusinessLogicError: If the story's latest version has never been
+            screened by the moderation pipeline (``moderation_report is None``).
     """
     # #CRITICAL: data integrity: status is the ORM boundary for the lifecycle;
     # assert_transition is the only gate that may change it. The ORM string is
     # coerced through Status() so an unmodeled DB status raises (closed-world).
     # #VERIFY: assert_transition raises StateTransitionError -> 409 on illegal hops.
-    storybook.status = assert_transition(Status(storybook.status), Action.SUBMIT).value
+    target = assert_transition(Status(storybook.status), Action.SUBMIT)
+    # #CRITICAL: security: mirrors the moderation-report gate approve() already
+    # enforces (closes #57). Without this check, the admin submit endpoint
+    # (api/approval.py::submit_storybook) could move a draft straight to
+    # in_review without moderation ever having run on its latest version.
+    # Refusing here, at the sole function that performs the submit
+    # transition, makes "no unscreened version reaches in_review" hold
+    # structurally regardless of how many routes call submit().
+    # #VERIFY: test_submit_without_moderation_report_raises and
+    # test_submit_with_moderation_report_succeeds in
+    # tests/unit/test_publishing_service_unit.py.
+    latest_version = await session.scalar(
+        select(func.max(StorybookVersion.version)).where(
+            StorybookVersion.storybook_id == storybook.id
+        )
+    )
+    # #ASSUME: data-integrity: a storybook with zero version rows skips the
+    # moderation gate. persist_storybook (generation/persistence.py) is the sole
+    # creation path and always inserts the first StorybookVersion in the same
+    # flush, so latest_version is None only for a not-yet-persisted storybook,
+    # which cannot reach submit(). If a future path creates a versionless
+    # storybook, this branch would let it submit unscreened.
+    # #VERIFY: guarded by test_submit_without_moderation_report_raises and the
+    # integration test_submit_without_moderation_raises.
+    if latest_version is not None:
+        version_row = await session.get(
+            StorybookVersion, (storybook.id, latest_version)
+        )
+        if version_row is not None and version_row.moderation_report is None:
+            msg = "cannot submit a version that has never been screened by moderation"
+            raise BusinessLogicError(msg, rule="submit_without_moderation")
+    storybook.status = target.value
     await session.flush()
 
 

@@ -283,7 +283,7 @@ one family. At minimum the guardian console should present the full playthrough,
 not only flagged passages, so the human actually exercises the compensating
 control.
 
-### Finding 5 [Important]: the documented concept-brief control-character strip does not exist
+### Finding 5 [Important, CLOSED]: the documented concept-brief control-character strip does not exist
 
 `generation/concept.py` documents that "the API layer should additionally strip
 control characters before the brief reaches the orchestrator." No such pass exists
@@ -295,6 +295,13 @@ that silently does not exist is worse than none, because it reads as covered.
 Recommendation: implement the strip at concept intake, or delete the claim and
 record the accepted risk with a `#CRITICAL: security:` RAD marker naming the
 downstream bounds (Stage 1 + human approval).
+
+**Closed** (F24/#64): `ConceptBrief` now runs a `model_validator(mode="before")`
+(`generation/concept.py`) that recursively strips
+`re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", "", text)` from every string field,
+including nested `protagonist` fields and list items, before Pydantic's own field
+validation runs. See `tests/unit/test_concept.py` (control-char stripping tests)
+for coverage.
 
 ## Adversarial corpus
 

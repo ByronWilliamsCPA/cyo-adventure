@@ -1,7 +1,9 @@
 """Tests for cyo_adventure.middleware.security module.
 
 Covers SecurityHeadersMiddleware, RateLimitMiddleware, SSRFPreventionMiddleware,
-and the add_security_middleware configuration function.
+the add_security_middleware configuration function, and the proxy-header trust
+boundary (Task E1) that lets both RateLimitMiddleware and SecurityHeadersMiddleware
+see the real client behind the nginx/Traefik reverse proxy.
 
 All tests use a minimal FastAPI app with TestClient; no real network calls.
 """
@@ -11,7 +13,7 @@ from __future__ import annotations
 import time
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
 pytestmark = [pytest.mark.security]
@@ -81,6 +83,23 @@ class TestSecurityHeadersMiddleware:
         assert "default-src 'self'" in response.headers.get(
             "Content-Security-Policy", ""
         )
+
+    @pytest.mark.unit
+    def test_content_security_policy_includes_hardening_directives(self) -> None:
+        """CSP additionally locks down object/base/form vectors (F11).
+
+        ``object-src 'none'`` blocks plugin-based content (Flash/Java applets),
+        ``base-uri 'self'`` stops a base-tag injection from rewriting relative
+        URLs, and ``form-action 'self'`` stops a form-action hijack from
+        exfiltrating form submissions to an attacker-controlled origin.
+        """
+        client = TestClient(_app_with_security_headers(), raise_server_exceptions=True)
+        response = client.get("/")
+
+        csp = response.headers.get("Content-Security-Policy", "")
+        assert "object-src 'none'" in csp
+        assert "base-uri 'self'" in csp
+        assert "form-action 'self'" in csp
 
     @pytest.mark.unit
     def test_referrer_policy_header_present(self) -> None:
@@ -276,6 +295,79 @@ class TestRateLimitMiddleware:
 
         assert result is mock_response
         assert "unknown" in middleware.requests
+
+
+# ---------------------------------------------------------------------------
+# BodySizeLimitMiddleware (audit Finding 8: unbounded request body)
+# ---------------------------------------------------------------------------
+
+
+class TestBodySizeLimitMiddleware:
+    """Tests for the ASGI-layer request-body size guard (413 over the cap)."""
+
+    def _body_limited_app(self, max_body_bytes: int) -> FastAPI:
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        app.add_middleware(BodySizeLimitMiddleware, max_body_bytes=max_body_bytes)
+        return app
+
+    @pytest.mark.unit
+    def test_body_at_limit_passes_through(self) -> None:
+        """A body exactly at the byte cap is accepted."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post("/echo", content=b"0123456789")
+
+        assert response.status_code == 200
+        assert response.json() == {"received": 10}
+
+    @pytest.mark.unit
+    def test_body_over_limit_rejected_with_413(self) -> None:
+        """A body one byte over the cap receives HTTP 413, not the handler."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post("/echo", content=b"0123456789X")
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_declared_content_length_over_limit_rejected_without_reading_body(
+        self,
+    ) -> None:
+        """An oversized declared Content-Length is rejected on the fast path."""
+        client = TestClient(self._body_limited_app(max_body_bytes=10))
+        response = client.post(
+            "/echo",
+            content=b"0123456789012345",
+            headers={"content-length": "16"},
+        )
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_non_http_scope_passes_through_unmodified(self) -> None:
+        """A non-http ASGI scope (e.g. lifespan) is forwarded untouched."""
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        calls: list[str] = []
+
+        async def inner_app(
+            scope: dict[str, object], receive: object, send: object
+        ) -> None:
+            calls.append(str(scope["type"]))
+
+        middleware = BodySizeLimitMiddleware(inner_app, max_body_bytes=10)
+
+        import asyncio
+
+        asyncio.run(middleware({"type": "lifespan"}, None, None))  # type: ignore[arg-type]
+
+        assert calls == ["lifespan"]
 
 
 # ---------------------------------------------------------------------------
@@ -515,3 +607,261 @@ class TestAddSecurityMiddleware:
         response = client.get("/")
 
         assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_add_security_middleware_enforces_body_size_limit_by_default(self) -> None:
+        """add_security_middleware wires the body-size guard on by default."""
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        add_security_middleware(app, max_body_bytes=10)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        response = client.post("/echo", content=b"0123456789X")
+
+        assert response.status_code == 413
+
+    @pytest.mark.unit
+    def test_add_security_middleware_disable_body_size_limit(self) -> None:
+        """add_security_middleware skips the body-size guard when disabled."""
+        from cyo_adventure.middleware.security import add_security_middleware
+
+        app = FastAPI()
+
+        @app.post("/echo")
+        async def echo(request: Request) -> dict[str, int]:
+            body = await request.body()
+            return {"received": len(body)}
+
+        add_security_middleware(app, enable_body_size_limit=False, max_body_bytes=10)
+        client = TestClient(app, raise_server_exceptions=False)
+
+        response = client.post("/echo", content=b"0123456789X")
+
+        assert response.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Proxy header trust boundary (Task E1, audit Group A: A1 rate-limit keying,
+# A2 HSTS gating)
+# ---------------------------------------------------------------------------
+#
+# Neither RateLimitMiddleware nor SecurityHeadersMiddleware reads
+# X-Forwarded-For/X-Forwarded-Proto directly: they read request.client.host
+# and request.url.scheme, which Starlette populates from the ASGI scope's
+# "client" and "scheme" keys. Behind the nginx/Traefik TLS-terminating
+# reverse proxy, the raw scope always carries the proxy's own IP and plain
+# "http" scheme unless something rewrites the scope first. uvicorn's
+# ProxyHeadersMiddleware is that rewriter: run with --proxy-headers
+# --forwarded-allow-ips=<CIDR>, it rewrites scope["client"]/scope["scheme"]
+# from X-Forwarded-For/-Proto, but ONLY when the immediate TCP peer is inside
+# the trusted CIDR. These tests exercise the real uvicorn middleware (not a
+# mock) at the ASGI layer via TestClient(app, client=(...)), which sets the
+# scope's "client" tuple to simulate the immediate TCP peer -- no live server
+# needed to prove the trust boundary.
+
+
+class TestProxyHeaderTrust:
+    """ASGI-layer tests proving the proxy-header trust boundary works."""
+
+    @staticmethod
+    def _proxy_wrapped_app(trusted_hosts: str) -> object:
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        app = _minimal_app()
+
+        @app.get("/whoami")
+        async def whoami(request: Request) -> dict[str, str | None]:
+            return {
+                "scheme": request.url.scheme,
+                "client_host": request.client.host if request.client else None,
+            }
+
+        return ProxyHeadersMiddleware(app, trusted_hosts=trusted_hosts)
+
+    @pytest.mark.unit
+    def test_trusted_proxy_forwarded_headers_rewrite_scheme_and_client(self) -> None:
+        """A request whose immediate peer is inside the trusted CIDR has its
+        scheme and client rewritten from X-Forwarded-Proto/-For.
+        """
+        app = self._proxy_wrapped_app(trusted_hosts="172.16.0.0/12")
+        # 172.20.0.5 simulates the immediate TCP peer (e.g. the nginx sidecar
+        # on the compose bridge network), which sits inside the trusted CIDR.
+        client = TestClient(app, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        response = client.get(
+            "/whoami",
+            headers={
+                "X-Forwarded-Proto": "https",
+                "X-Forwarded-For": "203.0.113.9",
+            },
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["scheme"] == "https"
+        assert body["client_host"] == "203.0.113.9"
+
+    @pytest.mark.unit
+    def test_untrusted_source_forwarded_headers_are_ignored(self) -> None:
+        """A request from OUTSIDE the trusted CIDR keeps its original scheme
+        and client: forwarded headers from an untrusted peer must be ignored,
+        not trusted, or any client could spoof its own IP/scheme.
+        """
+        app = self._proxy_wrapped_app(trusted_hosts="172.16.0.0/12")
+        # 8.8.8.8 is outside 172.16.0.0/12: an attacker (or misrouted
+        # request) reaching the backend directly rather than via the proxy.
+        client = TestClient(app, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        response = client.get(
+            "/whoami",
+            headers={
+                "X-Forwarded-Proto": "https",
+                "X-Forwarded-For": "203.0.113.9",
+            },
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["scheme"] == "http"  # unchanged: TestClient's own scheme
+        assert body["client_host"] == "8.8.8.8"  # unchanged: untrusted source
+
+    @pytest.mark.unit
+    def test_trusted_proxy_https_scheme_fires_hsts_header(self) -> None:
+        """End-to-end: a trusted-proxy https-forwarded request makes
+        SecurityHeadersMiddleware's HSTS branch (security.py) fire.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import SecurityHeadersMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(SecurityHeadersMiddleware)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        client = TestClient(wrapped, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+
+        assert "Strict-Transport-Security" in response.headers
+
+    @pytest.mark.unit
+    def test_untrusted_source_https_header_does_not_fire_hsts(self) -> None:
+        """An untrusted source cannot forge HSTS by sending X-Forwarded-Proto
+        on its own: the scheme stays "http" so the HSTS branch stays closed.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import SecurityHeadersMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(SecurityHeadersMiddleware)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        client = TestClient(wrapped, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+
+        assert "Strict-Transport-Security" not in response.headers
+
+    @pytest.mark.unit
+    def test_trusted_proxy_rate_limiter_keys_by_forwarded_client(self) -> None:
+        """End-to-end: the REAL RateLimitMiddleware, wired behind the REAL
+        uvicorn ProxyHeadersMiddleware, buckets by the trusted-proxy-rewritten
+        client IP, not the shared nginx peer IP.
+
+        Mirrors test_trusted_proxy_https_scheme_fires_hsts_header's
+        construction, but for the rate-limiter side of the same trust
+        boundary: before Task E1, RateLimitMiddleware read request.client.host
+        directly off the raw ASGI scope, so every request arriving via the
+        nginx/Traefik reverse proxy collapsed into ONE bucket keyed on the
+        proxy's own IP, regardless of which real client sent it. Exhausting
+        client A's burst limit must not throttle client B, even though both
+        requests share the same immediate TCP peer (the proxy) and differ
+        only in their X-Forwarded-For value.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=1000, burst_size=2)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        # 172.20.0.5 simulates the nginx sidecar's IP on the compose bridge
+        # network: the immediate TCP peer for BOTH clients below.
+        client = TestClient(wrapped, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        # Client A exhausts its burst limit (2 requests/second).
+        for _ in range(2):
+            response = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+            assert response.status_code == 200
+        throttled = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+        assert throttled.status_code == 429
+
+        # Client B, forwarded from the SAME nginx peer but a different
+        # X-Forwarded-For, gets its own bucket: it is not throttled by
+        # client A's exhausted limit.
+        response = client.get("/", headers={"X-Forwarded-For": "203.0.113.10"})
+        assert response.status_code == 200
+
+    @pytest.mark.unit
+    def test_untrusted_source_rate_limiter_collapses_to_peer_ip(self) -> None:
+        """Without the proxy trust boundary, two claimed clients sharing an
+        untrusted immediate peer collapse into the SAME rate-limit bucket.
+
+        Complements the previous test: it shows what Task E1 fixed. When the
+        immediate TCP peer is OUTSIDE the trusted CIDR, ProxyHeadersMiddleware
+        leaves scope["client"] unchanged, so RateLimitMiddleware keys on that
+        one peer IP no matter what X-Forwarded-For claims; one claimed
+        client's exhausted burst limit throttles a completely different
+        claimed client sharing the same peer.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(RateLimitMiddleware, requests_per_minute=1000, burst_size=2)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        # 8.8.8.8 is outside the trusted CIDR: X-Forwarded-For is ignored and
+        # scope["client"] stays 8.8.8.8 for every request below.
+        client = TestClient(wrapped, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        for _ in range(2):
+            response = client.get("/", headers={"X-Forwarded-For": "203.0.113.9"})
+            assert response.status_code == 200
+
+        # A different claimed X-Forwarded-For does NOT get its own bucket:
+        # the untrusted peer IP is the real key, so this collides with the
+        # bucket client A already exhausted above.
+        collided = client.get("/", headers={"X-Forwarded-For": "203.0.113.10"})
+        assert collided.status_code == 429
+
+    @pytest.mark.unit
+    def test_forwarded_allow_ips_setting_defaults_to_private_cidr(self) -> None:
+        """Settings.forwarded_allow_ips defaults to a private CIDR, never '*'.
+
+        A wildcard default would let ANY upstream peer forge its client IP
+        (bypassing per-client rate-limit keying) or scheme (forging HSTS).
+        """
+        from cyo_adventure.core.config import Settings
+
+        default_value = Settings().forwarded_allow_ips
+
+        assert default_value == "172.16.0.0/12"
+        assert default_value != "*"
+
+    @pytest.mark.unit
+    def test_forwarded_allow_ips_setting_overridable_via_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """FORWARDED_ALLOW_IPS env var overrides the Settings default."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("FORWARDED_ALLOW_IPS", "203.0.113.0/24")
+
+        assert Settings().forwarded_allow_ips == "203.0.113.0/24"

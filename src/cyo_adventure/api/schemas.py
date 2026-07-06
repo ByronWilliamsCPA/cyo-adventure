@@ -7,6 +7,7 @@ the path and validated against the token subject (IDOR defense).
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -17,6 +18,32 @@ from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
 from cyo_adventure.storybook.models import AgeBand
 
+# ---------------------------------------------------------------------------
+# Reading-state resource bounds (audit Finding 8)
+# ---------------------------------------------------------------------------
+#
+# Derivation (do not invent numbers; see the F8 commit body for the full
+# reasoning): the largest currently-authored skeleton is
+# skeletons/16+/the-ashfall-expedition.json with 505 nodes (16+ band, "long"
+# gamebook, production_eligible). ``visit_set`` is the set of DISTINCT nodes
+# entered in a reading session; a real story's distinct-visit count can never
+# exceed its total node count, so 505 is the exact real ceiling. ``path`` is
+# the FULL ordered visit history INCLUDING revisits (loop_and_grow topology
+# stories legitimately revisit nodes), so it needs headroom above
+# ``visit_set``; a 4x multiplier is a judgment call (not itself derived from
+# repo data) sized to comfortably cover heavy backtracking without leaving the
+# cap effectively unbounded.
+_MAX_REAL_SKELETON_NODES = 505
+VISIT_SET_MAX_LENGTH = _MAX_REAL_SKELETON_NODES
+PATH_MAX_LENGTH = _MAX_REAL_SKELETON_NODES * 4
+
+# Byte ceiling for the serialized save_slots payload. save_slots is
+# arbitrary client-supplied game state persisted in a JSONB column; without a
+# byte-size guard a client could submit a multi-megabyte blob (row/storage
+# bloat, a DoS vector independent of the list-length caps above, since a dict
+# has no natural "count" cap).
+_SAVE_SLOTS_MAX_BYTES = 64_000
+
 
 class ReadingStateBody(BaseModel):
     """A reading-state save submitted by the client (PUT body)."""
@@ -26,13 +53,40 @@ class ReadingStateBody(BaseModel):
     version: int = Field(ge=1)
     current_node: str = Field(min_length=1)
     var_state: VarState = Field(default_factory=dict)
-    path: list[str] = Field(default_factory=list)
-    visit_set: list[str] = Field(default_factory=list)
+    # #ASSUME: security: path/visit_set are client-supplied lists persisted to
+    # a JSONB column; an unbounded list is a resource-exhaustion vector (a
+    # malicious or buggy client could submit millions of entries). See the
+    # module-level derivation comment above for how these caps were sized.
+    # #VERIFY: tests/unit/test_schemas.py::test_path_over_max_length_rejected
+    # and test_visit_set_over_max_length_rejected assert a 422 past the cap;
+    # the ``_at_max_length_accepted`` counterparts assert the boundary itself
+    # still passes.
+    path: list[str] = Field(default_factory=list, max_length=PATH_MAX_LENGTH)
+    visit_set: list[str] = Field(default_factory=list, max_length=VISIT_SET_MAX_LENGTH)
     save_slots: dict[str, object] = Field(default_factory=dict)
     state_revision: int = Field(ge=0)
     device_id: str | None = None
     event_id: str | None = None
     choice_path: list[str] | None = None
+
+    @model_validator(mode="after")
+    def _save_slots_within_byte_budget(self) -> ReadingStateBody:
+        """Reject a save_slots payload whose serialized size exceeds the cap.
+
+        # #ASSUME: security: save_slots has no natural item-count cap (it is a
+        # dict of arbitrary client-chosen keys), so the guard is on the
+        # serialized byte size instead, mirroring the audit finding.
+        # #VERIFY: test_save_slots_over_byte_budget_rejected /
+        # test_save_slots_at_byte_budget_accepted exercise the boundary.
+        """
+        size = len(json.dumps(self.save_slots))
+        if size > _SAVE_SLOTS_MAX_BYTES:
+            msg = (
+                f"save_slots serialized size {size} exceeds the "
+                f"{_SAVE_SLOTS_MAX_BYTES}-byte limit"
+            )
+            raise ValueError(msg)
+        return self
 
 
 class ReadingStateView(BaseModel):

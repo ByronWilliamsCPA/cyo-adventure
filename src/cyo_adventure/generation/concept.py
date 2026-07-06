@@ -18,19 +18,107 @@ content we want to generate.
 
 from __future__ import annotations
 
+import re
 from enum import StrEnum
-from typing import Annotated
+from typing import Annotated, cast
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    JsonValue,
+    StringConstraints,
+    model_validator,
+)
 
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
+from cyo_adventure.validator.band_profile import offered_cells, production_cell_budget
 
 # Bounded free-text list item: non-empty and length-capped so a single brief
 # field cannot inflate prompt size unbounded or smuggle a large payload into a
 # generation prompt. Lists of these are themselves count-capped via Field.
 _BoundedText = Annotated[str, StringConstraints(min_length=1, max_length=200)]
 
+# ---------------------------------------------------------------------------
+# Concept-intake control-character strip (safety-eval Finding 5 / F24 / #64)
+# ---------------------------------------------------------------------------
+#
+# The ConceptBrief docstring below documents that "the API layer should
+# additionally strip control characters before the brief reaches the
+# orchestrator." Finding 5 of the adversarial safety evaluation found that no
+# such strip existed anywhere: the brief reached the generation prompt with
+# only Pydantic length/type constraints and PII screening. This pattern (and
+# the ``_strip_control_chars`` normalization path below) close that gap at
+# concept intake, the single point every free-text field passes through
+# before it can reach the generator.
+_CONTROL_CHAR_PATTERN = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]")
+
+
+# #CRITICAL: security: guardian-supplied free text reaches the generation
+# prompt with only Pydantic length/type bounds; embedded control characters
+# (e.g. injected via a crafted brief field) could disrupt prompt framing for
+# the generator or corrupt downstream log/terminal rendering (safety-eval
+# Finding 5, #64). Applying the strip on every ConceptBrief before field
+# validation (see the ``model_validator`` on ConceptBrief) makes this the
+# single normalization path every free-text field passes through, rather
+# than a per-field opt-in that is easy to miss on a newly added field.
+# #VERIFY: test_concept.py::test_premise_control_chars_stripped and its
+# siblings (protagonist name, title, list items) assert the stripped text
+# round-trips clean; test_printable_text_unaffected_by_control_char_strip
+# asserts newline/tab (outside the stripped range) are left intact.
+def _strip_control_chars(value: JsonValue) -> JsonValue:
+    """Recursively strip ASCII control characters from string leaves.
+
+    Args:
+        value: Any JSON-compatible value from a ConceptBrief input payload:
+            a string is stripped directly; a dict or list is walked
+            recursively; any other type (int, float, bool, None) is returned
+            unchanged.
+
+    Returns:
+        The value with control characters removed from every string leaf.
+    """
+    if isinstance(value, str):
+        return _CONTROL_CHAR_PATTERN.sub("", value)
+    if isinstance(value, dict):
+        return {key: _strip_control_chars(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_strip_control_chars(item) for item in value]
+    return value
+
+
+# ---------------------------------------------------------------------------
+# Structural-parameter resource bounds (audit Finding 10)
+# ---------------------------------------------------------------------------
+#
+# Derivation (do not invent numbers): target_node_count/ending_count had no
+# upper bound (only ge=1), so a guardian brief could request an arbitrarily
+# large generation job. The ceiling is read directly from the ADR-011
+# story-scale matrix (validator/band_profile.py's offered production cells,
+# the single source of truth the L1-7 gate and the Stage A prompt both
+# resolve against): the largest offered cell is (16+, long, gamebook) at
+# (min=475, max=750, depth=93). MAX_TARGET_NODE_COUNT is that cell's max_nodes
+# (750): no offered cell ever legitimately needs more nodes than that.
+# MAX_ENDING_COUNT reuses the same 750 ceiling: layer1._check_ending_count
+# requires ending_count to equal the actual count of distinct ending nodes,
+# and an ending is always one of the story's nodes, so ending_count can never
+# legitimately exceed the largest cell's node ceiling either.
+def _max_offered_node_ceiling() -> int:
+    """Return the largest ``max_nodes`` across every offered ADR-011 cell."""
+    ceilings: list[int] = []
+    for band, length, style in offered_cells():
+        budget = production_cell_budget(band, length, style)
+        if budget is not None:
+            ceilings.append(budget[1])
+    return max(ceilings)
+
+
+MAX_TARGET_NODE_COUNT = _max_offered_node_ceiling()
+MAX_ENDING_COUNT = MAX_TARGET_NODE_COUNT
+
 __all__ = [
+    "MAX_ENDING_COUNT",
+    "MAX_TARGET_NODE_COUNT",
     "ConceptBrief",
     "Protagonist",
     "StructurePattern",
@@ -85,15 +173,31 @@ class ConceptBrief(BaseModel):
     directly to the intake spec in ``docs/planning/tech-spec.md`` (section
     "Concept brief (intake fields)"). Free-text fields carry ``max_length``
     bounds (and list fields a count cap) so a brief cannot inflate prompt size
-    or smuggle an oversized payload into a generation prompt; the API layer
-    should additionally strip control characters before the brief reaches the
-    orchestrator.
+    or smuggle an oversized payload into a generation prompt. Every string
+    field (including nested ``protagonist`` fields and list items) additionally
+    has ASCII control characters stripped at intake, before field validation
+    runs (see ``_strip_control_chars`` above; safety-eval Finding 5 / #64).
 
     ``extra="forbid"`` ensures that any unexpected field name is rejected at
     parse time, preventing accidental injection of undeclared data.
     """
 
     model_config = ConfigDict(extra="forbid")
+
+    @model_validator(mode="before")
+    @classmethod
+    def _strip_control_characters(cls, data: object) -> object:
+        """Strip ASCII control characters from every string field before validation.
+
+        Runs before Pydantic's own field validation, so the length/type
+        constraints below see already-stripped text. Only dict input (the
+        normal JSON-body/kwargs case) is walked; a non-dict value (e.g. an
+        already-constructed ``ConceptBrief`` passed as the sole positional
+        arg, which Pydantic itself rejects) is passed through unchanged.
+        """
+        if isinstance(data, dict):
+            return _strip_control_chars(cast("dict[str, JsonValue]", data))
+        return data
 
     # Optional story title supplied by the guardian.
     title: str | None = Field(default=None, max_length=200)
@@ -143,12 +247,22 @@ class ConceptBrief(BaseModel):
     )
 
     # Structural parameters.
+    # #ASSUME: security: an unbounded target_node_count/ending_count lets a
+    # guardian brief request an arbitrarily large generation job (prompt-size
+    # and downstream-storage resource exhaustion). See the module-level
+    # derivation comment above for how MAX_TARGET_NODE_COUNT/MAX_ENDING_COUNT
+    # were sized from the ADR-011 matrix rather than invented.
+    # #VERIFY: tests/unit/test_concept.py::test_target_node_count_over_max_rejected
+    # and test_ending_count_over_max_rejected assert a 422 past the cap; the
+    # ``_at_max_accepted`` counterparts assert the boundary itself still passes.
     target_node_count: int = Field(
         ge=1,
+        le=MAX_TARGET_NODE_COUNT,
         description="Desired number of passage nodes.",
     )
     ending_count: int = Field(
         ge=1,
+        le=MAX_ENDING_COUNT,
         description="Number of distinct endings to generate.",
     )
     structure_pattern: StructurePattern = Field(
