@@ -33,6 +33,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   conflict instead of silently dropping progress, and outright resend failures
   land in a dismissible failed-progress banner. Same-device save-then-reload
   resume is covered by a new e2e spec. Closes #110 and #62.
+- Story generation now recovers from Stage 1 fidelity violations instead of
+  failing the job outright: the fidelity gate is folded into the skeleton-fill
+  repair loop, sharing the single `max_repairs` budget with structural repairs
+  and using a dedicated fidelity repair prompt that rewrites the flagged node
+  body while freezing the story structure. The previous worker-level outer
+  retry loop (blind full-pipeline retries on a separate budget) is removed.
+  Closes #133.
+- The Stage 1 review model now defaults to the job's `prep_model` instead of a
+  hard-coded default, threaded from `GenerationJob.model`. Closes #134.
+- `resume_manual_fill` loads the skeleton before persisting anything, with a
+  downgrade-to-`needs_review` safety net if the skeleton file is missing, so a
+  deleted skeleton can no longer strand a half-persisted story. Covered by a
+  real file-deletion integration test. Closes #128.
+>>>>>>> 33fa922 (docs(changelog): add generation authoring cluster entries (Workstream D3))
 - The integration test suite now fails instead of silently skipping when
   Docker/testcontainers is unavailable while running in CI (`CI` env var set
   to a truthy value such as GitHub Actions' `CI=true`); local runs without
