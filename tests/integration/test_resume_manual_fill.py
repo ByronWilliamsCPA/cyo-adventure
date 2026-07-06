@@ -11,6 +11,7 @@ import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob
+from cyo_adventure.generation import import_story as import_story_module
 from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.import_story import resume_manual_fill
 from cyo_adventure.generation.skeleton import load_skeleton
@@ -149,3 +150,101 @@ async def test_resume_records_stage1_violations_but_still_persists(
         await session.commit()
     assert story_id
     assert status == "passed"
+
+
+async def test_resume_survives_skeleton_file_deleted_after_persist(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The Stage 1 gate still runs even if the skeleton file vanishes mid-resume (#128).
+
+    Copies the real skeleton's content to a throwaway slug file so it can be
+    safely deleted mid-test (the real production library file under
+    skeletons/ is never touched). ``import_filled_story`` is wrapped so it
+    deletes that file as a side effect right after persisting, reproducing
+    the exact race #128 describes: the skeleton file moves or is removed
+    after the story has already been persisted.
+
+    Before the fix, resume_manual_fill re-read the skeleton from disk AFTER
+    persisting, so this file's absence raised an uncaught ResourceNotFoundError:
+    the job stayed stuck at "awaiting_manual_fill" forever despite a real,
+    already-persisted story existing for it. The mutated node below forces a
+    genuine Stage 1 word-count violation, so a "needs_review" result here can
+    only happen if the gate ran against the real pre-persist skeleton
+    snapshot, not a skipped/faked check.
+    """
+    test_slug = f"tmp-delete-test-{uuid.uuid4().hex[:8]}"
+    test_skeleton_path = _SKELETON_PATH.parent / f"{test_slug}.json"
+    test_skeleton_path.write_bytes(_SKELETON_PATH.read_bytes())
+
+    try:
+        async with sessions() as session:
+            concept = Concept(
+                family_id=seed.family_id,
+                brief={"age_band": _SKELETON_AGE_BAND, "premise": "x"},
+            )
+            session.add(concept)
+            await session.flush()
+            job = GenerationJob(
+                concept_id=concept.id,
+                status="awaiting_manual_fill",
+                model="sonnet",
+                authoring_metadata={"skeleton_slug": test_slug, "theme_brief": {}},
+            )
+            session.add(job)
+            await session.commit()
+            job_id = job.id
+
+        blob = _filled_skeleton_blob()
+        skeleton = load_skeleton(_SKELETON_PATH)
+        original_nodes_by_id = {
+            cast("str", node["id"]): node
+            for node in cast("list[dict[str, object]]", skeleton["nodes"])
+        }
+        target_node = next(
+            node
+            for node in cast("list[dict[str, object]]", blob["nodes"])
+            if parse_fill_directive(
+                cast("str", original_nodes_by_id[cast("str", node["id"])]["body"])
+            )
+            is not None
+        )
+        # 1 word is outside tolerance for every FILL directive's word target
+        # in this skeleton; forces a real word_count_violations finding.
+        target_node["body"] = "x"
+
+        real_import_filled_story = import_story_module.import_filled_story
+
+        async def _delete_skeleton_file_after_persist(
+            session_: AsyncSession,
+            request: import_story_module.ImportRequest,
+        ) -> str:
+            story_id = await real_import_filled_story(session_, request)
+            test_skeleton_path.unlink()
+            return story_id
+
+        monkeypatch.setattr(
+            import_story_module,
+            "import_filled_story",
+            _delete_skeleton_file_after_persist,
+        )
+
+        async with sessions() as session:
+            story_id, status = await resume_manual_fill(session, job_id, blob)
+            await session.commit()
+
+        assert not test_skeleton_path.exists()
+        assert story_id
+        assert status == "needs_review"
+
+        async with sessions() as session:
+            job = await session.get(GenerationJob, job_id)
+            assert job is not None
+            assert job.status == "needs_review"
+            assert job.error is not None
+            assert "word count" in job.error
+            assert job.storybook_id == story_id
+            assert job.version == 1
+    finally:
+        test_skeleton_path.unlink(missing_ok=True)

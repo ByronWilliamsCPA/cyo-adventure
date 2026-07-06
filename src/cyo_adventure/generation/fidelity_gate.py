@@ -27,6 +27,7 @@ async def run_stage1_gate(
     filled: dict[str, object],
     *,
     review_stage1_model: str | None,
+    prep_model: str | None = None,
     settings: Settings,
     pii: PiiContext,
 ) -> list[str]:
@@ -42,6 +43,12 @@ async def run_stage1_gate(
         review_stage1_model: Optional admin-chosen model override for the
             semantic check's review provider (see
             story_requests/authoring_plan.py::AuthoringPlanRequest).
+        prep_model: The model that wrote the fill (the job's prep_model).
+            Used as the semantic check's review-model default whenever
+            ``review_stage1_model`` is omitted, per the design spec (closes
+            #134): the same model that wrote the prose judges its own
+            fidelity to the directive, rather than falling through to
+            ``build_review_provider``'s unrelated generic default.
         settings: Application settings (review backend selection).
         pii: PII context for the egress guard on the semantic-check prompt.
 
@@ -52,7 +59,9 @@ async def run_stage1_gate(
     if violations:
         return violations
 
-    review_settings = resolve_review_settings(settings, review_stage1_model)
+    review_settings = resolve_review_settings(
+        settings, review_stage1_model or prep_model
+    )
     provider, _independent = build_review_provider(
         review_settings, generator_provider=None, generator_model=None
     )

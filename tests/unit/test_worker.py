@@ -9,12 +9,15 @@ Tests cover:
 from __future__ import annotations
 
 import json
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
 
 import pytest
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.config import settings as config_settings
 from cyo_adventure.core.exceptions import ConfigurationError, ResourceNotFoundError
+from cyo_adventure.generation import worker as worker_module
 from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import (
@@ -34,6 +37,7 @@ from cyo_adventure.generation.worker import (
     _review_stage2_override,
     _run_skeleton_fill,
     _should_persist_storybook,
+    _SkeletonFillContext,
 )
 from cyo_adventure.storybook.models import Storybook
 
@@ -424,8 +428,85 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
     """
     with pytest.raises(ResourceNotFoundError):
         await _run_skeleton_fill(
-            {"theme_brief": {}},  # no skeleton_slug key
-            cast("ConceptBrief", object()),
-            cast("GenerationProvider", object()),
-            PiiContext(child_names=frozenset(), birthdates=frozenset()),
+            _SkeletonFillContext(
+                authoring={"theme_brief": {}},  # no skeleton_slug key
+                brief=cast("ConceptBrief", object()),
+                effective_provider=cast("GenerationProvider", object()),
+                pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+            )
         )
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The worker threads the Stage 1 gate inputs into the folded fill_skeleton (#133).
+
+    After the rework, the Stage 1 fidelity gate runs INSIDE
+    orchestrator.fill_skeleton's bounded repair loop (see the acceptance and
+    shared-budget tests in tests/unit/test_orchestrator.py); the worker's job
+    is only to load the matched skeleton and hand fill_skeleton everything the
+    gate needs. This asserts the loaded skeleton (the gate's ``original``),
+    ``settings``, the admin ``review_stage1_model`` override, and the ``prep_model``
+    default (#134) all reach fill_skeleton, and that the worker no longer runs
+    the gate or an outer retry loop itself.
+    """
+    fake_skeleton: dict[str, object] = {"id": "s_x", "nodes": []}
+    monkeypatch.setattr(worker_module, "load_skeleton", lambda _path: fake_skeleton)
+
+    captured: dict[str, object] = {}
+
+    async def _fake_fill_skeleton(
+        skeleton: dict[str, object],
+        theme_brief: dict[str, object],
+        provider: object,
+        pii: object,
+        **kwargs: object,
+    ) -> GenerationOutcome:
+        captured["skeleton"] = skeleton
+        captured["theme_brief"] = theme_brief
+        captured["provider"] = provider
+        captured["pii"] = pii
+        captured.update(kwargs)
+        return GenerationOutcome(
+            status="passed",
+            storybook={"id": "s_x", "nodes": []},
+            report={},
+            attempts=0,
+            stage_log=[],
+        )
+
+    monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
+
+    brief = cast(
+        "ConceptBrief", SimpleNamespace(age_band=SimpleNamespace(value="8-11"))
+    )
+    provider = cast("GenerationProvider", object())
+    pii = PiiContext(child_names=frozenset(), birthdates=frozenset())
+    outcome = await _run_skeleton_fill(
+        _SkeletonFillContext(
+            authoring={
+                "skeleton_slug": "the-cave-of-echoes",
+                "theme_brief": {"premise": "a fox"},
+                "review_stage1_model": "admin-chosen-reviewer",
+            },
+            brief=brief,
+            effective_provider=provider,
+            pii=pii,
+            prep_model="the-prep-model",
+        )
+    )
+
+    assert outcome.status == "passed"
+    # The loaded skeleton is the gate's UNFILLED "original"; the fill/repair
+    # provider and pii pass straight through.
+    assert captured["skeleton"] is fake_skeleton
+    assert captured["theme_brief"] == {"premise": "a fox"}
+    assert captured["provider"] is provider
+    assert captured["pii"] is pii
+    # Stage 1 gate inputs: settings enables the gate, plus the review-model
+    # override and the prep_model fallback (#134).
+    assert captured["settings"] is config_settings
+    assert captured["review_stage1_model"] == "admin-chosen-reviewer"
+    assert captured["prep_model"] == "the-prep-model"

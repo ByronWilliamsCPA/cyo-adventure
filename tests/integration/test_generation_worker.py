@@ -489,12 +489,13 @@ async def test_stage1_downgraded_needs_review_still_persists_storybook(
     needs_review with NO storybook at all -- worse than Item 2's skill-path
     orphaning, since here the story was never persisted in the first place.
 
-    fill_skeleton and run_stage1_gate are monkeypatched (both are bare-name
-    imports in worker.py, following the same pattern
-    tests/unit/test_resume_manual_fill_stage1.py uses for import_story.py) so
-    the downgrade is deterministic: a real filled-skeleton document with a
-    forced Stage 1 violation, rather than depending on the mock review
-    backend's own soft-flagging behavior (see
+    After the #133 rework the Stage 1 fidelity gate runs INSIDE
+    orchestrator.fill_skeleton, so fill_skeleton itself emits the
+    ``"stage1_fidelity_violations"`` report key on a budget-exhausted downgrade.
+    Here fill_skeleton is monkeypatched (a bare-name import in worker.py) to
+    return that exact needs_review-with-key outcome deterministically, isolating
+    the behavior under test to worker.py's persist gate rather than depending on
+    the mock review backend's own soft-flagging behavior (see
     test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's docstring,
     which documents that ambiguity for the undowngraded case).
     """
@@ -505,18 +506,18 @@ async def test_stage1_downgraded_needs_review_still_persists_storybook(
         *_args: object, **_kwargs: object
     ) -> GenerationOutcome:
         return GenerationOutcome(
-            status="passed",
+            status="needs_review",
             storybook=filled,
-            report={},
-            attempts=0,
+            report={
+                "stage1_fidelity_violations": [
+                    "node 'n1' word count 3 outside [6, 14] for target 10"
+                ]
+            },
+            attempts=3,
             stage_log=[],
         )
 
-    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
-        return ["node 'n1' word count 3 outside [6, 14] for target 10"]
-
     monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
-    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
 
     # One response budgeted for the moderation pipeline's guaranteed bounded
     # auto-repair call (see test_worker_runs_fill_skeleton_for_authoring_metadata_jobs's
@@ -573,14 +574,7 @@ async def test_non_stage1_needs_review_still_creates_no_storybook(
             stage_log=[],
         )
 
-    async def _fake_run_stage1_gate(*_args: object, **_kwargs: object) -> list[str]:
-        # Stage 1 never even gets a chance to flag anything new here in
-        # practice (the outcome is already needs_review), but return no
-        # violations regardless so the fake behaves like a clean pass.
-        return []
-
     monkeypatch.setattr(worker_module, "fill_skeleton", _fake_fill_skeleton)
-    monkeypatch.setattr(worker_module, "run_stage1_gate", _fake_run_stage1_gate)
 
     provider = MockProvider(responses=[_filled_skeleton_json()])
 

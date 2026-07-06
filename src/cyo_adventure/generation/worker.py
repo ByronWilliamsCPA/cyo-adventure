@@ -40,7 +40,6 @@ from cyo_adventure.db.models import (
     GenerationJob,
 )
 from cyo_adventure.generation.concept import ConceptBrief
-from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
@@ -130,21 +129,15 @@ def _provider_label(provider: GenerationProvider) -> str:
 # and that mock story generation does not include any real-child name in prompts.
 
 
-async def _run_skeleton_fill(
-    authoring: dict[str, object],
-    brief: ConceptBrief,
-    effective_provider: GenerationProvider,
-    pii: PiiContext,
-) -> GenerationOutcome:
-    """Run the automated skeleton-fill pipeline (Stage B') for one job.
+@dataclasses.dataclass(frozen=True, slots=True)
+class _SkeletonFillContext:
+    """Grouped parameters for :func:`_run_skeleton_fill`.
 
-    Loads the matched skeleton library file, fills it via
-    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, then runs
-    the Stage 1 fidelity gate. A fidelity violation downgrades an
-    otherwise-``"passed"`` outcome to ``"needs_review"`` without discarding
-    the produced storybook, so a guardian/admin can still review the fill.
+    Bundled into one object (mirroring :class:`_PersistContext` below) so the
+    function stays under the argument-count limit while keeping each field
+    explicit.
 
-    Args:
+    Attributes:
         authoring: The job's ``authoring_metadata`` dict (set by
             ``story_requests/authoring_plan.py::build_authoring_plan`` for
             ``method="skeleton_fill"`` + ``mechanism="automated_provider"``).
@@ -152,11 +145,42 @@ async def _run_skeleton_fill(
             the skeleton library path.
         effective_provider: The provider used for the fill/repair calls.
         pii: PII context for the egress guard on every prompt.
+        prep_model: The job's prep_model (``GenerationJob.model`` at call
+            time, before the post-run label overwrite), threaded into the
+            Stage 1 gate as its review-model fallback whenever the job's
+            ``review_stage1_model`` override is unset (closes #134).
+    """
+
+    authoring: dict[str, object]
+    brief: ConceptBrief
+    effective_provider: GenerationProvider
+    pii: PiiContext
+    prep_model: str | None = None
+
+
+async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
+    """Run the automated skeleton-fill pipeline (Stage B') for one job.
+
+    Loads the matched skeleton library file and delegates to
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`, threading the
+    Stage 1 fidelity-gate parameters through so the gate runs INSIDE
+    ``fill_skeleton``'s bounded repair loop (#133): a Stage 1 fidelity miss on a
+    structurally-clean fill re-enters the same ``max_repairs`` budget with a
+    fidelity-aware repair prompt, and only downgrades an otherwise-``"passed"``
+    fill to ``"needs_review"`` (recording ``"stage1_fidelity_violations"`` in
+    the report) once that shared budget is exhausted. The produced storybook is
+    never discarded, so a guardian/admin can still review the fill either way.
+    This function no longer runs the gate or an outer retry loop itself; that
+    logic now lives in the orchestrator so a fidelity miss and a structural
+    block share one budget.
+
+    Args:
+        ctx: The grouped skeleton-fill context (see :class:`_SkeletonFillContext`).
 
     Returns:
         The :class:`~cyo_adventure.generation.orchestrator.GenerationOutcome`,
-        with ``report`` augmented when a Stage 1 fidelity violation downgrades
-        the status.
+        with ``report`` augmented by ``fill_skeleton`` when a Stage 1 fidelity
+        violation downgrades the status.
 
     Raises:
         ResourceNotFoundError: If ``authoring["skeleton_slug"]`` is missing or
@@ -164,6 +188,7 @@ async def _run_skeleton_fill(
         ValidationError: If the matched skeleton file fails structural
             validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`).
     """
+    authoring = ctx.authoring
     skeleton_slug = authoring.get("skeleton_slug")
     theme_brief = authoring.get("theme_brief")
     # #ASSUME: data-integrity: authoring_metadata for a method="skeleton_fill"
@@ -174,38 +199,34 @@ async def _run_skeleton_fill(
     if not isinstance(skeleton_slug, str):
         msg = "authoring_metadata.skeleton_slug is missing or not a string"
         raise ResourceNotFoundError(msg)
-    skeleton_path = Path("skeletons") / brief.age_band.value / f"{skeleton_slug}.json"
+    skeleton_path = (
+        Path("skeletons") / ctx.brief.age_band.value / f"{skeleton_slug}.json"
+    )
     skeleton = load_skeleton(skeleton_path)
     theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
-    outcome = await fill_skeleton(skeleton, theme_brief_dict, effective_provider, pii)
-    if outcome.storybook is None:
-        return outcome
-
-    # Only a clean "passed" fill is eligible for a Stage 1 downgrade. Skip the
-    # paid semantic fidelity call entirely for an outcome that is already
-    # "needs_review"/"failed": its result is consumed only on the passed branch
-    # below, so calling run_stage1_gate here would spend a review-model request
-    # whose violations are then discarded.
-    if outcome.status != "passed":
-        return outcome
-
     review_stage1_model = authoring.get("review_stage1_model")
-    stage1_violations = await run_stage1_gate(
-        skeleton,
-        outcome.storybook,
-        review_stage1_model=review_stage1_model
-        if isinstance(review_stage1_model, str)
-        else None,
-        settings=_default_settings,
-        pii=pii,
+    review_stage1_model = (
+        review_stage1_model if isinstance(review_stage1_model, str) else None
     )
-    if stage1_violations:
-        return dataclasses.replace(
-            outcome,
-            status="needs_review",
-            report={**outcome.report, "stage1_fidelity_violations": stage1_violations},
-        )
-    return outcome
+
+    # #ASSUME: external-resources: fill_skeleton now runs the Stage 1 fidelity
+    # gate inside its own bounded repair loop, so a persistently-flagged fill
+    # costs at most 1 fill + max_repairs repair provider calls plus the paired
+    # Stage 1 review calls, all sharing ONE budget. This replaces the removed
+    # worker-level outer loop, which re-ran fill_skeleton from scratch up to 3
+    # times (each with its own max_repairs) for up to 9 provider calls.
+    # #VERIFY: test_fill_skeleton_stage1_exhaustion_downgrades_with_key and
+    # test_fill_skeleton_stage1_fail_once_then_pass_returns_passed in
+    # tests/unit/test_orchestrator.py.
+    return await fill_skeleton(
+        skeleton,
+        theme_brief_dict,
+        ctx.effective_provider,
+        ctx.pii,
+        settings=_default_settings,
+        review_stage1_model=review_stage1_model,
+        prep_model=ctx.prep_model,
+    )
 
 
 def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
@@ -213,8 +234,8 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
 
     Always true for a clean ``"passed"`` outcome. Also true for a
     ``"needs_review"`` outcome, but ONLY when the downgrade came from
-    :func:`_run_skeleton_fill`'s own Stage 1 fidelity check on an
-    otherwise-clean fill: that function adds the
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton`'s own Stage 1
+    fidelity gate on an otherwise-clean fill: that function adds the
     ``"stage1_fidelity_violations"`` key to ``outcome.report`` only when it
     performs this specific downgrade (never for any other cause), so the
     key's presence is an exact signal that the base outcome was clean before
@@ -433,7 +454,8 @@ async def run_generation_job(
     On ``"needs_review"`` when the downgrade came from a Stage 1 fidelity
     check on an otherwise-clean fill (signaled by
     ``"stage1_fidelity_violations"`` in ``outcome.report``, the exact key
-    :func:`_run_skeleton_fill` adds only for this downgrade): the same
+    :func:`~cyo_adventure.generation.orchestrator.fill_skeleton` adds only for
+    this downgrade): the same
     Storybook/StorybookVersion creation and linking happens as for
     ``"passed"``, and the moderation pipeline still runs on the result, so a
     guardian/admin can review a real, queryable story instead of a job row
@@ -542,7 +564,13 @@ async def run_generation_job(
         try:
             if authoring is not None:
                 outcome = await _run_skeleton_fill(
-                    authoring, brief, effective_provider, pii
+                    _SkeletonFillContext(
+                        authoring=authoring,
+                        brief=brief,
+                        effective_provider=effective_provider,
+                        pii=pii,
+                        prep_model=job_row.model,
+                    )
                 )
             else:
                 outcome = await generate_story(brief, effective_provider, pii)

@@ -6,6 +6,7 @@ import uuid
 
 import pytest
 
+from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Concept, GenerationJob
 from cyo_adventure.generation import import_story
 
@@ -69,6 +70,59 @@ async def test_stage1_violations_are_recorded_on_the_job(monkeypatch) -> None:
     # import_filled_story already persisted moments earlier.
     assert job.storybook_id == "s_x"
     assert job.version == import_story._FIRST_VERSION
+
+
+async def test_missing_skeleton_downgrades_instead_of_stranding_job(
+    monkeypatch,
+) -> None:
+    """A skeleton that cannot be loaded degrades to needs_review, not a stuck job.
+
+    Closes #128: the matched skeleton library file may be moved, renamed, or
+    removed at any point in the job's lifetime, including before this call
+    even starts. run_stage1_gate must not even be attempted in that case (no
+    original document to compare against); the job still completes instead of
+    being left at "awaiting_manual_fill" with a real, already-persisted story
+    orphaned from it.
+    """
+    concept = Concept(id=uuid.uuid4(), family_id=uuid.uuid4(), brief={})
+    job = GenerationJob(
+        id=uuid.uuid4(),
+        concept_id=concept.id,
+        status="awaiting_manual_fill",
+        authoring_metadata={"skeleton_slug": "x", "theme_brief": {}},
+    )
+    session = _FakeSession(job=job, concept=concept)
+
+    async def _fake_import_filled_story(_session, _request):
+        return "s_x"
+
+    def _raise_missing(_path):
+        raise ResourceNotFoundError(
+            "skeleton file not found", resource_type="Skeleton", resource_id="x"
+        )
+
+    stage1_called = False
+
+    async def _fake_run_stage1_gate(*args, **kwargs):
+        nonlocal stage1_called
+        stage1_called = True
+        return []
+
+    monkeypatch.setattr(import_story, "import_filled_story", _fake_import_filled_story)
+    monkeypatch.setattr(import_story, "run_stage1_gate", _fake_run_stage1_gate)
+    monkeypatch.setattr(import_story, "load_skeleton", _raise_missing)
+
+    story_id, status = await import_story.resume_manual_fill(
+        session, job.id, {"id": "s_x", "nodes": []}
+    )
+
+    assert story_id == "s_x"
+    assert status == "needs_review"
+    assert job.status == "needs_review"
+    assert job.error is not None
+    assert job.storybook_id == "s_x"
+    assert job.version == import_story._FIRST_VERSION
+    assert not stage1_called, "run_stage1_gate must not be called with no original doc"
 
 
 async def test_review_model_overrides_are_threaded_through_resume(

@@ -24,6 +24,7 @@ import pytest
 from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
 from cyo_adventure.generation.prompts import (
     StagePrompt,
+    build_fidelity_repair_prompt,
     build_fill_prompt,
     build_prose_prompt,
     build_repair_prompt,
@@ -417,6 +418,50 @@ class TestBuildFillPrompt:
         """
         prompt = build_fill_prompt("{}", "{}")
         for token in ("{skeleton_with_fill_directives}", "{theme_brief}"):
+            assert token not in prompt.combined
+
+
+# ---------------------------------------------------------------------------
+# build_fidelity_repair_prompt
+# ---------------------------------------------------------------------------
+
+
+class TestBuildFidelityRepairPrompt:
+    """Tests for build_fidelity_repair_prompt (Stage 1 fidelity-aware repair)."""
+
+    def test_returns_stage_prompt_split(self) -> None:
+        """The builder returns a StagePrompt with distinct system/user blocks."""
+        prompt = build_fidelity_repair_prompt(
+            '{"id": "s_x", "nodes": []}',
+            ["node 'n1' word count 3 outside [6, 14] for target 10"],
+        )
+        assert isinstance(prompt, StagePrompt)
+        assert "<!-- @user -->" not in prompt.system
+        assert "<!-- @user -->" not in prompt.user
+        assert prompt.system
+        assert prompt.user
+
+    def test_carries_violation_text_verbatim(self) -> None:
+        """The fidelity violation strings reach the user block, not a blind redo."""
+        violations = [
+            "node 'n1' word count 3 outside [6, 14] for target 10",
+            "filled document still contains unfilled FILL directives",
+        ]
+        prompt = build_fidelity_repair_prompt('{"id": "s_x", "nodes": []}', violations)
+        for violation in violations:
+            assert violation in prompt.user
+
+    def test_embeds_filled_story_json(self) -> None:
+        """The story being corrected lands verbatim in the user block."""
+        prompt = build_fidelity_repair_prompt(
+            '{"id": "s_cave", "nodes": []}', ["some violation"]
+        )
+        assert '"id": "s_cave"' in prompt.user
+
+    def test_no_unfilled_placeholders(self) -> None:
+        """No owned slot token remains unfilled after substitution."""
+        prompt = build_fidelity_repair_prompt("{}", ["v"])
+        for token in ("{filled_story}", "{fidelity_violations}"):
             assert token not in prompt.combined
 
 
