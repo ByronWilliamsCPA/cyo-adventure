@@ -181,6 +181,14 @@ async def _run_skeleton_fill(
     if outcome.storybook is None:
         return outcome
 
+    # Only a clean "passed" fill is eligible for a Stage 1 downgrade. Skip the
+    # paid semantic fidelity call entirely for an outcome that is already
+    # "needs_review"/"failed": its result is consumed only on the passed branch
+    # below, so calling run_stage1_gate here would spend a review-model request
+    # whose violations are then discarded.
+    if outcome.status != "passed":
+        return outcome
+
     review_stage1_model = authoring.get("review_stage1_model")
     stage1_violations = await run_stage1_gate(
         skeleton,
@@ -191,7 +199,7 @@ async def _run_skeleton_fill(
         settings=_default_settings,
         pii=pii,
     )
-    if stage1_violations and outcome.status == "passed":
+    if stage1_violations:
         return dataclasses.replace(
             outcome,
             status="needs_review",
@@ -235,6 +243,165 @@ def _should_persist_storybook(outcome: GenerationOutcome) -> bool:
     return outcome.status == "passed" or (
         outcome.status == "needs_review" and stage1_downgraded
     )
+
+
+def _review_stage2_override(authoring: dict[str, object] | None) -> str | None:
+    """Return the Stage 2 review-model override recorded on the job, if valid.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict, or ``None`` for a
+            fresh (non-skeleton) generation that carries no override.
+
+    Returns:
+        The override model id when ``authoring`` carries a string
+        ``review_stage2_model``; otherwise ``None`` (moderation uses its
+        default reviewer).
+    """
+    if authoring is None:
+        return None
+    value = authoring.get("review_stage2_model")
+    return value if isinstance(value, str) else None
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class _PersistContext:
+    """The per-job context :func:`_persist_and_moderate` needs to persist + moderate.
+
+    Bundled into one object (mirroring
+    :class:`~cyo_adventure.generation.persistence.StorybookParams`) so the helper
+    stays under the argument-count limit while keeping each field explicit.
+
+    Attributes:
+        job_row: The job row being processed (mutated in place). Its ``id`` is
+            also the source of the per-job storybook id.
+        concept_row: The job's concept (supplies family/creator for the persist).
+        effective_provider: The provider that actually ran (labels + review).
+        authoring: The job's ``authoring_metadata``, or ``None`` for a fresh
+            (non-skeleton) generation.
+        pii: The PII guard context passed through to moderation.
+    """
+
+    job_row: GenerationJob
+    concept_row: Concept
+    effective_provider: GenerationProvider
+    authoring: dict[str, object] | None
+    pii: PiiContext
+
+
+async def _persist_and_moderate(
+    session: AsyncSession, ctx: _PersistContext, outcome: GenerationOutcome
+) -> None:
+    """Persist a persist-eligible outcome's storybook and run moderation on it.
+
+    For a non-persist-eligible outcome (see :func:`_should_persist_storybook`)
+    this logs and returns without touching the store, so the caller's single
+    ``session.commit()`` still records the job's status/report/error. For a
+    persist-eligible outcome it creates the Storybook/StorybookVersion, links
+    them to the job, and drives the moderation pipeline; a moderation failure
+    rolls back the unreviewed persist and records the failure on a re-fetched
+    row before re-raising (see the inline RAD markers).
+
+    Args:
+        session: The worker's owned session (caller commits on the happy path).
+        ctx: The per-job persist/moderate context (see :class:`_PersistContext`).
+        outcome: The pipeline outcome about to be recorded on the job.
+
+    Raises:
+        Exception: Re-raises any moderation-pipeline failure after rolling back
+            the persist and recording the failure on the job row.
+    """
+    job_id = ctx.job_row.id
+    # The `outcome.storybook is not None` half is redundant with
+    # _should_persist_storybook's own None check, but is repeated so BasedPyright
+    # narrows outcome.storybook to dict[str, object] for the persist call below.
+    if not (_should_persist_storybook(outcome) and outcome.storybook is not None):
+        logger.info(
+            "generation_job.not_passed",
+            job_id=str(job_id),
+            status=outcome.status,
+            attempts=outcome.attempts,
+        )
+        return
+
+    # Mint a per-job storybook id so successive passing jobs never collide on the
+    # storybook primary key. The mock provider returns a fixed blob id
+    # ("s_mock_generated"), so reusing it would raise an IntegrityError on the
+    # second passing job. Stamp the same id back onto the stored blob so the
+    # blob's "id" matches its DB row.
+    story_id = f"s_{job_id}"
+
+    await persist_storybook(
+        session,
+        StorybookParams(
+            story_id=story_id,
+            blob=outcome.storybook,
+            family_id=ctx.concept_row.family_id,
+            created_by=ctx.concept_row.created_by,
+            model=ctx.job_row.model,
+            prompt_version=_PROMPT_VERSION,
+            validation_report=dict(outcome.report),
+            version=_FIRST_VERSION,
+        ),
+    )
+
+    ctx.job_row.storybook_id = story_id
+    ctx.job_row.version = _FIRST_VERSION
+
+    logger.info(
+        "generation_job.storybook_persisted",
+        job_id=str(job_id),
+        storybook_id=story_id,
+        status=ctx.job_row.status,
+    )
+
+    # #CRITICAL: security: a passed story is only a draft; it must be screened
+    # and submitted/auto-rejected before commit so no unreviewed story rests in
+    # a state a guardian could approve.
+    # #VERIFY: run_moderation_pipeline drives submit or auto_reject on the row.
+    try:
+        await run_moderation_pipeline(
+            session=session,
+            story_id=story_id,
+            version=_FIRST_VERSION,
+            settings=_default_settings,
+            generation_provider=ctx.effective_provider,
+            pii=ctx.pii,
+            review_model_override=_review_stage2_override(ctx.authoring),
+        )
+    except Exception as exc:
+        # #CRITICAL: external-resource: a live review backend can raise
+        # (timeout, 5xx, auth). Roll back the unreviewed storybook persist
+        # first: the per-job story_id (f"s_{job_id}") would otherwise collide
+        # on an RQ retry of this same job. Then record the failure on a
+        # re-fetched row and commit, so the committed job state is "failed"
+        # (not a stale "running") and the row agrees with the queue.
+        # #VERIFY: rollback discards the persist; failure is committed before
+        # the re-raise.
+        error_text = str(exc)[:512]
+        await session.rollback()
+        failed_row = await session.get(GenerationJob, job_id)
+        if failed_row is not None:
+            failed_row.status = "failed"
+            failed_row.error = error_text
+            failed_row.provider = _provider_label(ctx.effective_provider)
+            failed_row.prompt_version = _PROMPT_VERSION
+            await session.commit()
+        else:
+            # The "record failed" half of the invariant could not run: the row
+            # vanished post-rollback (concurrent delete, or a rollback that
+            # unwound its visibility). Surface it so the queue/DB divergence the
+            # rollback is meant to prevent is observable, not silent.
+            logger.exception(
+                "generation_job.failure_record_lost",
+                job_id=str(job_id),
+                error=error_text,
+            )
+        logger.exception(
+            "generation_job.moderation_error",
+            job_id=str(job_id),
+            error=error_text,
+        )
+        raise
 
 
 async def run_generation_job(
@@ -402,103 +569,17 @@ async def run_generation_job(
         # is None but the mock still runs); _model_label reflects the real run.
         job_row.model = _model_label(effective_provider)
 
-        # The `outcome.storybook is not None` half of this condition is
-        # redundant with _should_persist_storybook's own check (it already
-        # returns False on a None storybook), but is repeated here so
-        # BasedPyright narrows outcome.storybook to dict[str, object] (not
-        # Optional) inside this block, for the persist_storybook call below.
-        if _should_persist_storybook(outcome) and outcome.storybook is not None:
-            # Mint a per-job storybook id so successive passing jobs never
-            # collide on the storybook primary key. The mock provider returns a
-            # fixed blob id ("s_mock_generated"), so reusing it would raise an
-            # IntegrityError on the second passing job. Stamp the same id back
-            # onto the stored blob so the blob's "id" matches its DB row.
-            story_id = f"s_{job_id}"
-
-            await persist_storybook(
-                session,
-                StorybookParams(
-                    story_id=story_id,
-                    blob=outcome.storybook,
-                    family_id=concept_row.family_id,
-                    created_by=concept_row.created_by,
-                    model=job_row.model,
-                    prompt_version=_PROMPT_VERSION,
-                    validation_report=dict(outcome.report),
-                    version=_FIRST_VERSION,
-                ),
-            )
-
-            job_row.storybook_id = story_id
-            job_row.version = _FIRST_VERSION
-
-            logger.info(
-                "generation_job.storybook_persisted",
-                job_id=str(job_id),
-                storybook_id=story_id,
-                status=job_row.status,
-            )
-
-            # #CRITICAL: security: a passed story is only a draft; it must be screened
-            # and submitted/auto-rejected before commit so no unreviewed story rests in
-            # a state a guardian could approve.
-            # #VERIFY: run_moderation_pipeline drives submit or auto_reject on the row.
-            try:
-                await run_moderation_pipeline(
-                    session=session,
-                    story_id=story_id,
-                    version=_FIRST_VERSION,
-                    settings=_default_settings,
-                    generation_provider=effective_provider,
-                    pii=pii,
-                    review_model_override=(
-                        authoring.get("review_stage2_model")
-                        if authoring is not None
-                        and isinstance(authoring.get("review_stage2_model"), str)
-                        else None
-                    ),
-                )
-            except Exception as exc:
-                # #CRITICAL: external-resource: a live review backend can raise
-                # (timeout, 5xx, auth). Roll back the unreviewed storybook persist
-                # first: the per-job story_id (f"s_{job_id}") would otherwise collide
-                # on an RQ retry of this same job. Then record the failure on a
-                # re-fetched row and commit, so the committed job state is "failed"
-                # (not a stale "running") and the row agrees with the queue.
-                # #VERIFY: rollback discards the persist; failure is committed before
-                # the re-raise.
-                error_text = str(exc)[:512]
-                await session.rollback()
-                failed_row = await session.get(GenerationJob, job_id)
-                if failed_row is not None:
-                    failed_row.status = "failed"
-                    failed_row.error = error_text
-                    failed_row.provider = _provider_label(effective_provider)
-                    failed_row.prompt_version = _PROMPT_VERSION
-                    await session.commit()
-                else:
-                    # The "record failed" half of the invariant could not run: the row
-                    # vanished post-rollback (concurrent delete, or a rollback that
-                    # unwound its visibility). Surface it so the queue/DB divergence the
-                    # rollback is meant to prevent is observable, not silent.
-                    logger.exception(
-                        "generation_job.failure_record_lost",
-                        job_id=str(job_id),
-                        error=error_text,
-                    )
-                logger.exception(
-                    "generation_job.moderation_error",
-                    job_id=str(job_id),
-                    error=error_text,
-                )
-                raise
-        else:
-            logger.info(
-                "generation_job.not_passed",
-                job_id=str(job_id),
-                status=outcome.status,
-                attempts=outcome.attempts,
-            )
+        await _persist_and_moderate(
+            session,
+            _PersistContext(
+                job_row=job_row,
+                concept_row=concept_row,
+                effective_provider=effective_provider,
+                authoring=authoring,
+                pii=pii,
+            ),
+            outcome,
+        )
 
         await session.commit()
 

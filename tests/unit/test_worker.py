@@ -9,12 +9,14 @@ Tests cover:
 from __future__ import annotations
 
 import json
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.core.exceptions import ConfigurationError
+from cyo_adventure.core.exceptions import ConfigurationError, ResourceNotFoundError
 from cyo_adventure.generation.orchestrator import GenerationOutcome
+from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import (
     _CANNED_STORY,
     _CANNED_STORY_JSON,
@@ -28,8 +30,16 @@ from cyo_adventure.generation.providers import (
     OllamaProvider,
     OpenRouterProvider,
 )
-from cyo_adventure.generation.worker import _should_persist_storybook
+from cyo_adventure.generation.worker import (
+    _review_stage2_override,
+    _run_skeleton_fill,
+    _should_persist_storybook,
+)
 from cyo_adventure.storybook.models import Storybook
+
+if TYPE_CHECKING:
+    from cyo_adventure.generation.concept import ConceptBrief
+    from cyo_adventure.generation.provider import GenerationProvider
 
 
 @pytest.fixture
@@ -375,3 +385,47 @@ class TestShouldPersistStorybook:
             stage_log=[],
         )
         assert _should_persist_storybook(outcome) is False
+
+
+class TestReviewStage2Override:
+    """_review_stage2_override: the Stage 2 review-model override selector.
+
+    A pure helper the worker uses to pass an admin's review_stage2_model choice
+    (from authoring_metadata) into the moderation pipeline; it must degrade any
+    missing or wrong-typed value to None (the default reviewer) rather than
+    forwarding junk.
+    """
+
+    def test_none_authoring_returns_none(self) -> None:
+        """A fresh (non-skeleton) job carries no authoring_metadata."""
+        assert _review_stage2_override(None) is None
+
+    def test_valid_string_override_is_forwarded(self) -> None:
+        """A string review_stage2_model is returned verbatim."""
+        authoring = {"review_stage2_model": "stage2-override-model"}
+        assert _review_stage2_override(authoring) == "stage2-override-model"
+
+    def test_missing_key_returns_none(self) -> None:
+        """authoring_metadata without the key means the default reviewer."""
+        assert _review_stage2_override({"skeleton_slug": "x"}) is None
+
+    def test_non_string_value_returns_none(self) -> None:
+        """A wrong-typed override degrades to None instead of forwarding junk."""
+        assert _review_stage2_override({"review_stage2_model": 123}) is None
+
+
+@pytest.mark.asyncio
+async def test_run_skeleton_fill_missing_slug_raises() -> None:
+    """authoring_metadata without a string skeleton_slug is a clean ResourceNotFoundError.
+
+    The guard fires before the brief/provider are ever touched, so a job
+    constructed outside build_authoring_plan (no skeleton_slug) fails as a
+    handled ProjectBaseError rather than crashing deeper in the fill pipeline.
+    """
+    with pytest.raises(ResourceNotFoundError):
+        await _run_skeleton_fill(
+            {"theme_brief": {}},  # no skeleton_slug key
+            cast("ConceptBrief", object()),
+            cast("GenerationProvider", object()),
+            PiiContext(child_names=frozenset(), birthdates=frozenset()),
+        )
