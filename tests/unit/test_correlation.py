@@ -541,6 +541,77 @@ class TestCorrelationMiddleware:
 
     @pytest.mark.unit
     @pytest.mark.asyncio
+    async def test_oversized_request_id_is_replaced_not_echoed(self) -> None:
+        """An oversized X-Request-ID (F20) is rejected, never echoed back.
+
+        The request-id header takes the same validation path as correlation-id
+        and, like it, has a generated UUID4 fallback. This closes the
+        per-header discrimination gap: without validation, the raw oversized
+        value would reach the response REQUEST_ID header.
+        """
+        from cyo_adventure.middleware.correlation import (
+            REQUEST_ID_HEADER,
+            CorrelationMiddleware,
+        )
+
+        middleware = CorrelationMiddleware(app=MagicMock())
+
+        oversized = "a" * 65
+        mock_request = MagicMock()
+        mock_request.headers = {REQUEST_ID_HEADER: oversized}
+
+        mock_response = MagicMock()
+        mock_response.headers = {}
+
+        async def mock_call_next(request):
+            return mock_response
+
+        response = await middleware.dispatch(mock_request, mock_call_next)
+
+        assert response.headers[REQUEST_ID_HEADER] != oversized
+        assert oversized not in response.headers[REQUEST_ID_HEADER]
+        # Still a valid UUID4, proving a fresh id was generated.
+        parsed = uuid.UUID(response.headers[REQUEST_ID_HEADER])
+        assert parsed.version == 4
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_crlf_injection_in_request_id_is_replaced_not_echoed(
+        self,
+    ) -> None:
+        """A CRLF-laced X-Request-ID (F20) is rejected, never echoed back.
+
+        Mirrors the correlation-id CRLF test for the request-id header so both
+        generated-fallback headers have direct injection coverage, not just the
+        shared code path.
+        """
+        from cyo_adventure.middleware.correlation import (
+            REQUEST_ID_HEADER,
+            CorrelationMiddleware,
+        )
+
+        middleware = CorrelationMiddleware(app=MagicMock())
+
+        malicious = "abc\r\nX-Injected: evil"
+        mock_request = MagicMock()
+        mock_request.headers = {REQUEST_ID_HEADER: malicious}
+
+        mock_response = MagicMock()
+        mock_response.headers = {}
+
+        async def mock_call_next(request):
+            return mock_response
+
+        response = await middleware.dispatch(mock_request, mock_call_next)
+
+        assert response.headers[REQUEST_ID_HEADER] != malicious
+        assert "\r" not in response.headers[REQUEST_ID_HEADER]
+        assert "\n" not in response.headers[REQUEST_ID_HEADER]
+        parsed = uuid.UUID(response.headers[REQUEST_ID_HEADER])
+        assert parsed.version == 4
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
     async def test_middleware_resets_context_on_exception(self) -> None:
         """Verify middleware resets context variables even on exception."""
         from cyo_adventure.middleware.correlation import (

@@ -61,6 +61,14 @@ async def submit(session: AsyncSession, storybook: Storybook) -> None:
             StorybookVersion.storybook_id == storybook.id
         )
     )
+    # #ASSUME: data-integrity: a storybook with zero version rows skips the
+    # moderation gate. persist_storybook (generation/persistence.py) is the sole
+    # creation path and always inserts the first StorybookVersion in the same
+    # flush, so latest_version is None only for a not-yet-persisted storybook,
+    # which cannot reach submit(). If a future path creates a versionless
+    # storybook, this branch would let it submit unscreened.
+    # #VERIFY: guarded by test_submit_without_moderation_report_raises and the
+    # integration test_submit_without_moderation_raises.
     if latest_version is not None:
         version_row = await session.get(
             StorybookVersion, (storybook.id, latest_version)

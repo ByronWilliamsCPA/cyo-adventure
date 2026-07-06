@@ -132,21 +132,21 @@ def generate_correlation_id() -> str:
     return str(uuid.uuid4())
 
 
+# #CRITICAL: security: correlation/request/trace/span ids originate from
+# attacker-controlled request headers and are echoed into response headers and
+# structured log lines (correlation_context_processor). An unvalidated value
+# could carry CRLF sequences (response/log injection) or be unbounded in length
+# (log-flooding, header-size abuse). Any value that does not fully match the
+# safe-id pattern is discarded here and never echoed back; the caller falls back
+# to a freshly generated id (correlation/request) or simply omits the header
+# (trace/span).
+# #VERIFY: test_correlation.py::test_oversized_correlation_id_is_replaced_not_echoed,
+# test_crlf_injection_in_correlation_id_is_replaced_not_echoed,
+# test_invalid_trace_and_span_id_dropped_not_echoed, and the X-Request-ID
+# equivalents assert the raw malicious/oversized value never appears in the
+# response.
 def _validate_incoming_id(value: str | None) -> str | None:
     """Validate an incoming correlation/request/trace/span id header.
-
-    # #CRITICAL: security: correlation/request/trace/span ids originate from
-    # attacker-controlled request headers and are echoed into response
-    # headers and structured log lines (correlation_context_processor). An
-    # unvalidated value could carry CRLF sequences (response/log injection)
-    # or be unbounded in length (log-flooding, header-size abuse). Any value
-    # that does not fully match the safe-id pattern is discarded here and
-    # never echoed back; the caller falls back to a freshly generated id
-    # (correlation/request) or simply omits the header (trace/span).
-    # #VERIFY: test_correlation.py::test_oversized_correlation_id_is_replaced_not_echoed,
-    # test_crlf_injection_in_correlation_id_is_replaced_not_echoed, and
-    # test_invalid_trace_and_span_id_dropped_not_echoed assert the raw
-    # malicious/oversized value never appears in the response.
 
     Args:
         value: The raw header value, or None if the header was absent.
