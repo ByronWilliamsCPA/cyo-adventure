@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
@@ -172,7 +173,9 @@ export function IntakePage() {
         <fieldset className="intake-form__chips">
           <legend>Who&apos;s it for?</legend>
           {profiles.length === 0 ? (
-            <p className="intake-form__hint">Add a child profile first.</p>
+            <Link to="/guardian/profiles" className="intake-form__hint">
+              Add a child profile first.
+            </Link>
           ) : (
             profiles.map((p) => (
               <button
