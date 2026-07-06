@@ -138,8 +138,11 @@ async def test_list_rejects_invalid_status(client: AsyncClient, seed: Seed) -> N
     assert res.status_code == 422
 
 
-async def test_admin_approve_creates_job(client: AsyncClient, seed: Seed) -> None:
-    """An admin approves a pending request; a concept + job are created."""
+async def test_admin_approve_creates_concept_but_no_job(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An admin approves a pending request; a concept is created but no
+    GenerationJob yet (that requires POST .../authoring-plan)."""
     created = await client.post(
         _CREATE,
         json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
@@ -153,7 +156,15 @@ async def test_admin_approve_creates_job(client: AsyncClient, seed: Seed) -> Non
     body = res.json()
     assert body["status"] == "approved"
     assert body["concept_id"]
-    assert body["job_id"]
+    assert "job_id" not in body
+
+    async with sessions() as session:
+        job = await session.scalar(
+            select(GenerationJob).where(
+                GenerationJob.concept_id == uuid.UUID(body["concept_id"])
+            )
+        )
+        assert job is None
 
 
 async def test_admin_approve_is_global_across_families(
@@ -199,11 +210,6 @@ async def test_admin_approve_is_global_across_families(
         assert concept.family_id == request_family_id
         assert concept.family_id != seed.family_id
         assert concept.brief["premise"] == request_text
-
-        job = await session.scalar(
-            select(GenerationJob).where(GenerationJob.concept_id == concept.id)
-        )
-        assert job is not None
 
 
 async def test_approve_stamps_reviewer_and_builds_brief_from_stored_text(
@@ -303,7 +309,8 @@ async def test_approve_twice_conflicts(
     client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
     """A second approval of an already-approved request is a 409, not a second
-    Concept/GenerationJob (locks the sequential double-approval path)."""
+    Concept (locks the sequential double-approval path). No GenerationJob is
+    created by approve at all anymore; that happens via POST .../authoring-plan."""
     created = await client.post(
         _CREATE,
         json={"profile_id": str(seed.child_profile_id), "request_text": "a fox"},
@@ -333,7 +340,7 @@ async def test_approve_twice_conflicts(
             .select_from(GenerationJob)
             .where(GenerationJob.concept_id == uuid.UUID(concept_id))
         )
-        assert job_count == 1
+        assert job_count == 0
 
 
 async def test_blocked_request_hides_raw_text(client: AsyncClient, seed: Seed) -> None:

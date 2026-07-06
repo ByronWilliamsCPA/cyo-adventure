@@ -92,3 +92,32 @@ def build_review_provider(
 
     independent = backend != generator_provider or review_model != generator_model
     return provider, independent
+
+
+def resolve_review_settings(settings: Settings, model_override: str | None) -> Settings:
+    """Return settings with the active backend's review model overridden.
+
+    Used by the admin-chosen review_stage1_model / review_stage2_model
+    fields on an authoring plan: the override replaces whichever field
+    ``build_review_provider`` will actually read for the configured backend,
+    without needing a new parameter on that function.
+
+    Args:
+        settings: The base application settings.
+        model_override: An admin-chosen model id, or None to leave settings
+            unchanged.
+
+    Returns:
+        The original ``settings`` object unchanged when ``model_override`` is
+        None; otherwise a copy with ``review_openrouter_model`` or
+        ``review_ollama_model`` overridden, matching whichever backend
+        ``settings.review_provider`` selects. The mock backend has no
+        configurable model, so the override is a no-op for it.
+    """
+    if model_override is None:
+        return settings
+    if settings.review_provider == "openrouter":
+        return settings.model_copy(update={"review_openrouter_model": model_override})
+    if settings.review_provider == "ollama":
+        return settings.model_copy(update={"review_ollama_model": model_override})
+    return settings

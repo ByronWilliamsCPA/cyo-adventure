@@ -13,6 +13,7 @@ from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import _CANNED_STORY
 from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.review_provider import build_review_provider
 
 pytestmark = pytest.mark.asyncio
 
@@ -250,3 +251,52 @@ async def test_invalid_repair_is_discarded_and_original_report_submits(
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["repaired"] is False
     assert version.blob == _BLOB
+
+
+@pytest.mark.unit
+async def test_review_model_override_reaches_build_review_provider(
+    mock_session: AsyncMock, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """review_model_override is threaded through to build_review_provider's settings."""
+    captured: dict[str, object] = {}
+    real_build = build_review_provider
+
+    def _spy(settings, **kwargs):
+        captured["review_openrouter_model"] = settings.review_openrouter_model
+        return real_build(settings, **kwargs)
+
+    monkeypatch.setattr("cyo_adventure.moderation.pipeline.build_review_provider", _spy)
+
+    story, version = _story(), _version()
+    mock_session.get = AsyncMock(side_effect=[story, version])
+    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
+    for name in (
+        "run_safety_stage",
+        "run_readability_stage",
+        "run_coherence_stage",
+        "run_engagement_stage",
+    ):
+        monkeypatch.setattr(pipeline_mod, name, AsyncMock(return_value=[]))
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    settings_with_openrouter_backend = Settings(
+        review_provider="openrouter",
+        openai_api_key="k",
+        openrouter_api_key="key",
+    )
+    generation_provider = AsyncMock()
+    pii = _pii()
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=settings_with_openrouter_backend,
+        generation_provider=generation_provider,
+        pii=pii,
+        review_model_override="anthropic/claude-opus-4.8",
+    )
+
+    assert captured["review_openrouter_model"] == "anthropic/claude-opus-4.8"
+    submit.assert_awaited_once()

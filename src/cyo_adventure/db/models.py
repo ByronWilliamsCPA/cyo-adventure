@@ -47,9 +47,13 @@ _STORYBOOK_STATUS_VALUES = (
     "'draft', 'in_review', 'needs_revision', 'published', 'archived'"
 )
 
-# The five generation-job lifecycle states, named once for the CHECK constraint.
+# The six generation-job lifecycle states, named once for the CHECK constraint.
+# "awaiting_manual_fill" is set only for method="skeleton_fill" +
+# mechanism="skill" jobs (see story_requests/authoring_plan.py), and cleared by
+# generation/import_story.py::resume_manual_fill once the human-authored fill
+# is imported.
 _GENERATION_JOB_STATUS_VALUES = (
-    "'queued', 'running', 'passed', 'needs_review', 'failed'"
+    "'queued', 'running', 'passed', 'needs_review', 'failed', 'awaiting_manual_fill'"
 )
 
 # The four story-request lifecycle states, named once for the CHECK constraint.
@@ -458,6 +462,18 @@ class GenerationJob(Base):
     # #VERIFY: all readers must tolerate None and partial report dicts (e.g.
     # when a job fails mid-run before a full report is assembled).
     report: Mapped[dict[str, object] | None] = mapped_column(JSONB, default=None)
+    # #ASSUME: data-integrity: shape is {"skeleton_slug": str, "theme_brief":
+    # dict, "review_stage1_model": str | None, "review_stage2_model": str |
+    # None} for method="skeleton_fill" jobs (see
+    # story_requests/authoring_plan.py::build_authoring_plan); the two
+    # review_* overrides are always written but may be null. None for
+    # method="fresh_generation" jobs. No DB-level constraint enforces this.
+    # #VERIFY: readers (api/generation.py::get_generation_job,
+    # generation/worker.py::_review_stage2_override) must tolerate a missing or
+    # wrong-typed key rather than trust the shape.
+    authoring_metadata: Mapped[dict[str, object] | None] = mapped_column(
+        JSONB, default=None
+    )
     # #ASSUME: data integrity: ``storybook_id`` is NOT a FK intentionally.
     # A job may fail before any storybook row is created; a hard FK constraint
     # would prevent inserting the failure record. The application layer must

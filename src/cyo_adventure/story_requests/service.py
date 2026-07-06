@@ -1,9 +1,12 @@
 """Service layer for story-request decisions (approve, decline, pending cap).
 
-Approve builds a ConceptBrief and creates the Concept + GenerationJob directly,
-so both guardian and admin approvals reuse one path WITHOUT touching the
-guardian-only POST /concepts API gate. The caller (the endpoint) is responsible
-for authorization before invoking these functions.
+Approve builds a ConceptBrief and creates the Concept directly, so both
+guardian and admin approvals reuse one path WITHOUT touching the
+guardian-only POST /concepts API gate. It no longer creates a GenerationJob;
+that happens later, when an admin picks an authoring method/mechanism/model
+via POST /story-requests/{id}/authoring-plan (see
+story_requests/authoring_plan.py::build_authoring_plan). The caller (the
+endpoint) is responsible for authorization before invoking these functions.
 """
 
 from __future__ import annotations
@@ -14,7 +17,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import func, select
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError, StateTransitionError
-from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
+from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.brief import brief_from_request
 
@@ -69,8 +72,8 @@ async def count_pending_for_profile(session: AsyncSession, profile_id: object) -
 
 async def approve_story_request(
     session: AsyncSession, principal: Principal, request: StoryRequest
-) -> tuple[str, str]:
-    """Approve a pending request: build a concept, enqueue generation.
+) -> str:
+    """Approve a pending request: build a concept (no job created yet).
 
     Args:
         session: The request session (caller owns the transaction).
@@ -78,7 +81,7 @@ async def approve_story_request(
         request: The pending story request.
 
     Returns:
-        tuple[str, str]: ``(concept_id, job_id)`` as strings.
+        str: The new concept id.
 
     Raises:
         StateTransitionError: If the request is not pending (-> 409).
@@ -88,8 +91,8 @@ async def approve_story_request(
     # #CRITICAL: concurrency: ensure_pending's guard is an in-memory read of the
     # ``request`` object passed in by the caller; it is not itself a lock. Two
     # concurrent approvals of the same request could both read status="pending"
-    # and both create a Concept + GenerationJob (a double paid generation)
-    # unless the caller holds a row lock across the read-check-write.
+    # and both create a Concept (a duplicate concept for one request) unless
+    # the caller holds a row lock across the read-check-write.
     # #VERIFY: the API endpoint (api/story_requests.py::_load_scoped_request)
     # loads the row with ``.with_for_update()`` before calling this function, so
     # a second concurrent approval blocks on the row lock until the first
@@ -133,10 +136,7 @@ async def approve_story_request(
     request.reviewed_by = principal.user_id
     request.reviewed_at = datetime.now(UTC)
 
-    job = GenerationJob(concept_id=concept.id, status="queued")
-    session.add(job)
-    await session.flush()
-    return str(concept.id), str(job.id)
+    return str(concept.id)
 
 
 def decline_story_request(principal: Principal, request: StoryRequest) -> None:

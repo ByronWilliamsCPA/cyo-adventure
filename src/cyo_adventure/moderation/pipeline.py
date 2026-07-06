@@ -26,6 +26,7 @@ from cyo_adventure.moderation.report import (
 from cyo_adventure.moderation.review_provider import (
     ReviewProvider,
     build_review_provider,
+    resolve_review_settings,
 )
 from cyo_adventure.moderation.stages import (
     run_coherence_stage,
@@ -57,6 +58,7 @@ async def run_moderation_pipeline(
     settings: Settings,
     generation_provider: GenerationProvider,
     pii: PiiContext,
+    review_model_override: str | None = None,
 ) -> None:
     """Screen a persisted draft story and drive it to in_review or needs_revision.
 
@@ -67,6 +69,9 @@ async def run_moderation_pipeline(
         settings: Application settings (review provider and classifier keys).
         generation_provider: Provider used for the bounded auto-repair re-prompt.
         pii: PII context for the egress guard on review and repair prompts.
+        review_model_override: Optional admin-chosen override for the review
+            model (see story_requests/authoring_plan.py::AuthoringPlanRequest's
+            review_stage2_model). None uses the configured settings model.
 
     Raises:
         ResourceNotFoundError: when the story or version row is missing.
@@ -81,8 +86,9 @@ async def run_moderation_pipeline(
         raise ResourceNotFoundError(msg)
 
     report = ModerationReport()
+    review_settings = resolve_review_settings(settings, review_model_override)
     review_provider, independent = build_review_provider(
-        settings,
+        review_settings,
         generator_provider=settings.generation_provider,
         generator_model=version_row.model,
     )

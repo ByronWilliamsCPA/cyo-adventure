@@ -376,6 +376,13 @@ known-first-party = ["cyo_adventure"]
 # object would obscure which fields are row identity vs. profile overlay.
 "**/api/library.py" = ["PLR0913"]
 
+# The combined Stage 1 fidelity gate carries original and filled (the two
+# documents being compared) plus the mandatory keyword-only
+# review_stage1_model, settings, and pii (no sensible default for any of
+# the five); each is a distinct concern and a config object would obscure
+# which fields are document content vs. review-backend configuration.
+"**/generation/fidelity_gate.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

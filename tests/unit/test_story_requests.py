@@ -232,7 +232,9 @@ def _guardian(family_id: uuid.UUID) -> Principal:
 @pytest.mark.asyncio
 async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
     """Approval stamps status/reviewer/timestamp/concept_id, and the concept's
-    brief premise is the request's own stored text, not any other source."""
+    brief premise is the request's own stored text, not any other source.
+    Approval no longer creates a GenerationJob (see
+    story_requests/authoring_plan.py for that step)."""
     family_id = uuid.uuid4()
     profile = _profile("8-11")
     profile.id = uuid.uuid4()
@@ -246,9 +248,7 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
     )
     session = _FakeSession(get_result=profile, child_names=[])
 
-    concept_id, job_id = await service.approve_story_request(
-        session, principal, request
-    )
+    concept_id = await service.approve_story_request(session, principal, request)
 
     assert request.status == "approved"
     assert request.reviewed_by == principal.user_id
@@ -258,9 +258,7 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
 
     concept = next(o for o in session.added if isinstance(o, Concept))
     assert concept.brief["premise"] == stored_text
-    job = next(o for o in session.added if isinstance(o, GenerationJob))
-    assert job.concept_id == concept.id
-    assert job_id == str(job.id)
+    assert not any(isinstance(o, GenerationJob) for o in session.added)
 
 
 @pytest.mark.asyncio

@@ -20,6 +20,9 @@ from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
+    AuthoringPlanRequest,
+    AuthoringPlanResponse,
+    JobStatusLiteral,
     StoryRequestApprovedView,
     StoryRequestCreateBody,
     StoryRequestCreatedView,
@@ -36,10 +39,11 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, StoryRequest
+from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
 from cyo_adventure.story_requests import service
+from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
 
 if TYPE_CHECKING:
@@ -293,17 +297,20 @@ async def _load_scoped_request(
 
 @router.post("/story-requests/{request_id}/approve")
 async def approve_story_request_endpoint(
-    request_id: str, ctx: Context, background_tasks: BackgroundTasks
+    request_id: str, ctx: Context
 ) -> StoryRequestApprovedView:
-    """Approve a pending request and enqueue generation (guardian or admin).
+    """Approve a pending request, creating its concept (guardian or admin).
+
+    No GenerationJob is created here; an admin picks the authoring method,
+    mechanism, and model afterward via POST .../authoring-plan, which is what
+    creates the job (see story_requests/authoring_plan.py).
 
     Args:
         request_id: The request id from the path.
         ctx: The request context.
-        background_tasks: The enqueue runs here so it fires after commit.
 
     Returns:
-        StoryRequestApprovedView: The linked concept and generation job ids.
+        StoryRequestApprovedView: The linked concept id.
 
     Raises:
         ResourceNotFoundError: If the request is out of scope (-> 404).
@@ -317,15 +324,83 @@ async def approve_story_request_endpoint(
         msg = "guardian or admin role required"
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
-    concept_id, job_id = await service.approve_story_request(
+    concept_id = await service.approve_story_request(
         ctx.session, ctx.principal, request
     )
-    background_tasks.add_task(_enqueue_safely, job_id)
     return StoryRequestApprovedView(
         id=str(request.id),
         status=cast("Literal['approved']", request.status),
         concept_id=concept_id,
-        job_id=job_id,
+    )
+
+
+@router.post("/story-requests/{request_id}/authoring-plan", status_code=201)
+async def create_authoring_plan(
+    request_id: str,
+    body: AuthoringPlanRequest,
+    ctx: Context,
+    background_tasks: BackgroundTasks,
+) -> AuthoringPlanResponse:
+    """Choose an authoring method/mechanism/model for an approved request.
+
+    Admin-only: a guardian may approve a request but does not pick its
+    authoring backend or model.
+
+    Args:
+        request_id: The request id from the path.
+        body: The chosen method, mechanism, and prep model.
+        ctx: The request context.
+        background_tasks: The enqueue (fresh_generation only) runs here so it
+            fires after commit.
+
+    Returns:
+        AuthoringPlanResponse: The created job id, status, matched skeleton
+        (if any), and any non-blocking eligibility warnings.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (-> 403).
+        ResourceNotFoundError: If the request is out of scope, or its concept
+            is missing (-> 404).
+        StateTransitionError: If the request is not approved, or a job
+            already exists for its concept (-> 409).
+        ValidationError: On an invalid method/mechanism combination, an
+            unrecognized skill-mechanism model, or no matching skeleton
+            (-> 422).
+    """
+    # #CRITICAL: security: admin-only -- a guardian may approve a request but
+    # must not choose its authoring backend or model (a child token is already
+    # rejected by is_guardian/is_admin below, matching the approve endpoint).
+    # #VERIFY: test_guardian_forbidden, test_child_forbidden.
+    if not ctx.principal.is_admin:
+        msg = "admin role required"
+        raise AuthorizationError(msg)
+
+    request = await _load_scoped_request(ctx, request_id, for_update=True)
+    if request.status != "approved":
+        msg = f"story request is '{request.status}', not approved"
+        raise StateTransitionError(msg)
+    if request.concept_id is None:
+        msg = f"approved story request '{request_id}' has no linked concept"
+        raise ResourceNotFoundError(msg)
+    concept = await ctx.session.get(Concept, request.concept_id)
+    if concept is None:
+        msg = f"concept for story request '{request_id}' not found"
+        raise ResourceNotFoundError(msg)
+
+    result = await build_authoring_plan(ctx.session, request, concept, body)
+
+    if result.job.status == "queued":
+        background_tasks.add_task(_enqueue_safely, str(result.job.id))
+
+    return AuthoringPlanResponse(
+        request_id=str(request.id),
+        concept_id=str(concept.id),
+        job_id=str(result.job.id),
+        method=body.method,
+        mechanism=body.mechanism,
+        status=cast("JobStatusLiteral", result.job.status),
+        skeleton_slug=result.skeleton_slug,
+        warnings=result.warnings,
     )
 
 

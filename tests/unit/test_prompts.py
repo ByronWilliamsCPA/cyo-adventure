@@ -24,6 +24,7 @@ import pytest
 from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
 from cyo_adventure.generation.prompts import (
     StagePrompt,
+    build_fill_prompt,
     build_prose_prompt,
     build_repair_prompt,
     build_structure_prompt,
@@ -381,6 +382,42 @@ class TestBuildProsePrompt:
         first = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
         second = build_prose_prompt(skeleton_json_with_braces, minimal_brief)
         assert first == second
+
+
+# ---------------------------------------------------------------------------
+# build_fill_prompt
+# ---------------------------------------------------------------------------
+
+
+class TestBuildFillPrompt:
+    """Tests for build_fill_prompt."""
+
+    def test_build_fill_prompt_splits_system_and_user(self) -> None:
+        """The fill prompt has a stable system block and a volatile user block."""
+        prompt = build_fill_prompt('{"id": "s_x", "nodes": []}', '{"premise": "a fox"}')
+        assert "<!-- @user -->" not in prompt.system
+        assert "<!-- @user -->" not in prompt.user
+        assert prompt.system
+        assert prompt.user
+
+    def test_build_fill_prompt_embeds_skeleton_and_theme_brief(self) -> None:
+        """Both the skeleton JSON and the theme brief reach the user block."""
+        prompt = build_fill_prompt(
+            '{"id": "s_cave", "nodes": []}', '{"premise": "a curious otter"}'
+        )
+        assert '"id": "s_cave"' in prompt.user
+        assert '"premise": "a curious otter"' in prompt.user
+
+    def test_build_fill_prompt_no_unfilled_placeholders(self) -> None:
+        """No owned slot token remains unfilled.
+
+        The drafting guide documents ``{drafting_guide}`` as literal text, so
+        that token legitimately appears in the system block after substitution.
+        We assert absence only for the tokens the guide does not self-reference.
+        """
+        prompt = build_fill_prompt("{}", "{}")
+        for token in ("{skeleton_with_fill_directives}", "{theme_brief}"):
+            assert token not in prompt.combined
 
 
 # ---------------------------------------------------------------------------

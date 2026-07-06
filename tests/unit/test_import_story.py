@@ -3,8 +3,9 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import StorybookVersion
+from cyo_adventure.generation import import_story
 from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
 
 
@@ -198,6 +199,36 @@ async def test_import_propagates_moderation_failure(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_import_threads_review_model_override_to_moderation_pipeline(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ImportRequest.review_model_override reaches run_moderation_pipeline.
+
+    Closes the parity gap between the two authoring mechanisms: the
+    automated_provider path (generation/worker.py) already threaded
+    authoring_metadata's review_stage2_model into this same call; the
+    skill/import path had no override parameter at all until this fix.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        review_model_override="claude-opus-4.8",
+    )
+
+    await import_filled_story(session, request)
+
+    moderation.assert_awaited_once()
+    _, kwargs = moderation.call_args
+    assert kwargs["review_model_override"] == "claude-opus-4.8"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_import_rejects_a_blocked_story() -> None:
     session = _FakeSession()
     broken = _filled_story()
@@ -255,3 +286,36 @@ async def test_import_id_check_fires_when_gate_passes_without_id() -> None:
     # The id guard must reject before any row is staged: a regression that
     # appends rows before the check would otherwise leak a partial import.
     assert session.added == []
+
+
+def test_resume_missing_skeleton_file_is_clean_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A skeleton file that vanished since matching maps to ResourceNotFoundError.
+
+    _load_resume_skeleton re-reads the matched skeleton at resume time. A raw
+    FileNotFoundError is not a ProjectBaseError, so it would surface from
+    import_cli as a raw traceback; the helper maps it into the project exception
+    hierarchy so the CLI reports a clean "import failed" and the caller rolls
+    back with no orphaned job.
+    """
+
+    def _raise_missing(_path: object) -> dict[str, object]:
+        raise FileNotFoundError("gone")
+
+    monkeypatch.setattr(import_story, "load_skeleton", _raise_missing)
+    with pytest.raises(ResourceNotFoundError):
+        import_story._load_resume_skeleton("8-11", "the-cave-of-echoes")
+
+
+def test_resume_invalid_skeleton_json_is_validation_error(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An unreadable or non-JSON skeleton maps to ValidationError, not a raw error."""
+
+    def _raise_bad_json(_path: object) -> dict[str, object]:
+        raise ValueError("bad json")
+
+    monkeypatch.setattr(import_story, "load_skeleton", _raise_bad_json)
+    with pytest.raises(ValidationError):
+        import_story._load_resume_skeleton("8-11", "the-cave-of-echoes")

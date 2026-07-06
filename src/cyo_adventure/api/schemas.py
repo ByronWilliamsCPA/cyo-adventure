@@ -143,7 +143,9 @@ class ConceptCreatedResponse(BaseModel):
 # boundary coercion in api/generation.py. GenerationJob.status is a plain string
 # column guarded at rest by the ck_generation_job_status CHECK constraint, so the
 # handler casts the read-back value to this alias and Pydantic revalidates it.
-JobStatusLiteral = Literal["queued", "running", "passed", "needs_review", "failed"]
+JobStatusLiteral = Literal[
+    "queued", "running", "passed", "needs_review", "failed", "awaiting_manual_fill"
+]
 
 
 class GenerationEnqueuedResponse(BaseModel):
@@ -162,6 +164,8 @@ class GenerationJobResponse(BaseModel):
     storybook_id: str | None = None
     version: int | None = None
     error: str | None = None
+    skeleton_slug: str | None = None
+    theme_brief: dict[str, object] | None = None
 
 
 class GenerationJobListItem(BaseModel):
@@ -362,12 +366,66 @@ class StoryRequestCreatedView(BaseModel):
 
 
 class StoryRequestApprovedView(BaseModel):
-    """The result of approving a request: the linked concept and generation job."""
+    """The result of approving a request: the linked concept.
+
+    No GenerationJob is created at approval time; an admin creates one by
+    calling POST /story-requests/{id}/authoring-plan (see
+    story_requests/authoring_plan.py).
+    """
 
     id: str
     status: Literal["approved"]
     concept_id: str
+
+
+AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
+AuthoringMechanism = Literal["skill", "automated_provider"]
+
+
+class AuthoringPlanRequest(BaseModel):
+    """Admin's choice of authoring method, mechanism, and prep model.
+
+    ``review_stage1_model`` / ``review_stage2_model`` are optional overrides
+    for the Stage 1 fidelity review and Stage 2 model, used only when
+    method='skeleton_fill'.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    method: AuthoringMethod
+    mechanism: AuthoringMechanism
+    prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    review_stage1_model: str | None = None
+    review_stage2_model: str | None = None
+
+    @model_validator(mode="after")
+    def _skill_requires_skeleton_fill(self) -> AuthoringPlanRequest:
+        """Reject the one illegal method/mechanism pairing at the type boundary.
+
+        The ``skill`` mechanism means a human runs the cyo-author skill to fill
+        an existing skeleton, so it is only meaningful with
+        ``method='skeleton_fill'``. Encoding this here makes the illegal
+        ``fresh_generation`` + ``skill`` state unrepresentable rather than
+        relying on a downstream runtime guard, and FastAPI rejects it as a 422
+        before it ever reaches ``build_authoring_plan``.
+        """
+        if self.method == "fresh_generation" and self.mechanism == "skill":
+            msg = "mechanism='skill' requires method='skeleton_fill'"
+            raise ValueError(msg)
+        return self
+
+
+class AuthoringPlanResponse(BaseModel):
+    """The generation job created (or parked) by an authoring-plan decision."""
+
+    request_id: str
+    concept_id: str
     job_id: str
+    method: AuthoringMethod
+    mechanism: AuthoringMechanism
+    status: JobStatusLiteral
+    skeleton_slug: str | None = None
+    warnings: list[str] = Field(default_factory=list)
 
 
 class StoryRequestDeclinedView(BaseModel):

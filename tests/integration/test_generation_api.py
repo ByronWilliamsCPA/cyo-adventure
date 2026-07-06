@@ -331,7 +331,8 @@ async def test_get_generation_job(
     client: AsyncClient,
     seed: Seed,
 ) -> None:
-    """Guardian can fetch a generation job they own."""
+    """Guardian can fetch a generation job they own, and gets None for the
+    skeleton/theme fields since this job has no authoring_metadata."""
     concept_resp = await client.post(
         "/api/v1/concepts",
         json={"brief": _BRIEF_PAYLOAD},
@@ -355,6 +356,47 @@ async def test_get_generation_job(
     data = job_resp.json()
     assert data["id"] == job_id
     assert data["status"] in {"queued", "running", "passed", "needs_review", "failed"}
+    assert data["skeleton_slug"] is None
+    assert data["theme_brief"] is None
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_get_job_exposes_skeleton_and_theme_brief_when_parked(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An awaiting_manual_fill job's GET response carries skeleton_slug and
+    theme_brief so a human (or Plan 2's automated path) knows what to fill."""
+    async with sessions() as session:
+        concept = Concept(
+            family_id=seed.family_id,
+            brief={"age_band": "8-11", "premise": "a fox finds a lantern"},
+        )
+        session.add(concept)
+        await session.flush()
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="awaiting_manual_fill",
+            model="sonnet",
+            authoring_metadata={
+                "skeleton_slug": "the-cave-of-echoes",
+                "theme_brief": concept.brief,
+            },
+        )
+        session.add(job)
+        await session.commit()
+        job_id = str(job.id)
+
+    res = await client.get(
+        f"/api/v1/generation-jobs/{job_id}", headers=auth(seed.guardian_token)
+    )
+    assert res.status_code == 200, res.text
+    body = res.json()
+    assert body["skeleton_slug"] == "the-cave-of-echoes"
+    assert body["theme_brief"] == {
+        "age_band": "8-11",
+        "premise": "a fox finds a lantern",
+    }
 
 
 # ---------------------------------------------------------------------------

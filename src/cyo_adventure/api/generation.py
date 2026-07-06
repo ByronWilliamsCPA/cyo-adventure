@@ -374,6 +374,16 @@ async def get_generation_job(
         raise ResourceNotFoundError(msg)
     authorize_family(ctx.principal, concept.family_id)
 
+    # #ASSUME: data-integrity: authoring_metadata is loosely-typed JSON written
+    # by story_requests/authoring_plan.py::build_authoring_plan for
+    # method="skeleton_fill" jobs only; read both keys defensively.
+    # #VERIFY: test_get_job_exposes_skeleton_and_theme_brief_when_parked.
+    authoring = (
+        job.authoring_metadata if isinstance(job.authoring_metadata, dict) else {}
+    )
+    skeleton_slug = authoring.get("skeleton_slug")
+    theme_brief = authoring.get("theme_brief")
+
     # #ASSUME: data integrity: job.status is one of JobStatusLiteral's five
     # values; the ck_generation_job_status CHECK (db/models.py) constrains the
     # stored value, and Pydantic revalidates it against JobStatusLiteral on
@@ -389,6 +399,8 @@ async def get_generation_job(
         storybook_id=job.storybook_id,
         version=job.version,
         error=job.error,
+        skeleton_slug=skeleton_slug if isinstance(skeleton_slug, str) else None,
+        theme_brief=theme_brief if isinstance(theme_brief, dict) else None,
     )
 
 
