@@ -340,7 +340,7 @@ async def test_review_model_override_reaches_build_review_provider(
     monkeypatch.setattr("cyo_adventure.moderation.pipeline.build_review_provider", _spy)
 
     story, version = _story(), _version()
-    mock_session.get = AsyncMock(side_effect=[story, version])
+    _load(mock_session, story, version)
     monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
     for name in (
         "run_safety_stage",
