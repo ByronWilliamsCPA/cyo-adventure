@@ -19,6 +19,7 @@ import pytest
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Concept, GenerationJob, Storybook, StorybookVersion
+from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
 from cyo_adventure.generation.worker import (
@@ -334,6 +335,48 @@ async def test_pipeline_exception_records_failure_and_reraises(
     assert job.error == "provider exploded"
     assert job.provider == "mock"
     assert session.commit_count >= 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_interrupted_job_records_failed_in_finally(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An interruption between the running-flush and the inner pipeline try
+    must not strand the job at 'running'; the top-level finally force-fails
+    it with error 'interrupted' (Finding 4: no wedged queued/running rows).
+    """
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept)
+    provider = MockProvider(responses=[])
+
+    def _boom(*_args: object, **_kwargs: object) -> ConceptBrief:
+        msg = "boom mid-pipeline"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(ConceptBrief, "model_validate", _boom)
+
+    with pytest.raises(RuntimeError, match="boom mid-pipeline"):
+        await run_generation_job(
+            uuid.uuid4(), provider=provider, session_factory=_factory_for(session)
+        )
+
+    assert job.status == "failed"
+    assert job.error == "interrupted"
+    assert job.provider == "mock"
+    assert session.commit_count >= 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_missing_job_finally_is_a_noop() -> None:
+    """When the job row never existed, the finally guard finds nothing to fail."""
+    session = _FakeSession(job=None, concept=None)
+
+    with pytest.raises(ResourceNotFoundError):
+        await run_generation_job(uuid.uuid4(), session_factory=_factory_for(session))
+
+    assert session.commit_count == 0
 
 
 @pytest.mark.unit

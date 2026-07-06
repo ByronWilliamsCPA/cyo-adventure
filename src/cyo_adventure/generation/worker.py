@@ -114,6 +114,47 @@ def _provider_label(provider: GenerationProvider) -> str:
     return getattr(provider, "name", None) or _default_settings.generation_provider
 
 
+async def _record_failure(
+    session: AsyncSession,
+    job: GenerationJob,
+    exc: Exception,
+    *,
+    provider: GenerationProvider | None = None,
+) -> None:
+    """Mark ``job`` failed, record the truncated error, and commit.
+
+    Extracted from what were three near-identical inline blocks (concept
+    lookup miss, pipeline exception, moderation exception) plus the top-level
+    interrupted-job finally guard, so every failure path commits an identical
+    row shape.
+
+    # #CRITICAL: concurrency: this commits immediately. A caller that already
+    # mutated session state it needs to discard (e.g. an unreviewed storybook
+    # persist) MUST roll back before calling this. A prior rollback also
+    # discards any earlier uncommitted attribute writes on ``job`` itself
+    # (SQLAlchemy expires session objects on rollback), which is why
+    # ``provider`` must be re-supplied here rather than assumed still set.
+    # #VERIFY: the moderation-failure call site in run_generation_job rolls
+    # back before calling _record_failure.
+
+    Args:
+        session: Active async session; committed at the end of this call.
+        job: The GenerationJob row to mark failed (mutated in place).
+        exc: The exception whose message becomes ``job.error`` (truncated to
+            512 chars to match the column width).
+        provider: The provider in effect for this run. When given, stamps
+            ``job.provider``/``job.prompt_version`` too, so a job that fails
+            before or during generation still records which provider/prompt
+            version it was attempted under (matching the success path).
+    """
+    job.status = "failed"
+    job.error = str(exc)[:512]
+    if provider is not None:
+        job.provider = _provider_label(provider)
+        job.prompt_version = _PROMPT_VERSION
+    await session.commit()
+
+
 # #CRITICAL: concurrency: the worker owns its own session/transaction, separate
 # from any request unit-of-work. Never pass a request-scoped session into this
 # function; doing so creates cross-transaction contamination.
@@ -406,11 +447,9 @@ async def _persist_and_moderate(
         await session.rollback()
         failed_row = await session.get(GenerationJob, job_id)
         if failed_row is not None:
-            failed_row.status = "failed"
-            failed_row.error = error_text
-            failed_row.provider = _provider_label(ctx.effective_provider)
-            failed_row.prompt_version = _PROMPT_VERSION
-            await session.commit()
+            await _record_failure(
+                session, failed_row, exc, provider=ctx.effective_provider
+            )
         else:
             # The "record failed" half of the invariant could not run: the row
             # vanished post-rollback (concurrent delete, or a rollback that
@@ -470,6 +509,15 @@ async def run_generation_job(
     On unexpected exception: sets ``job.status = "failed"``, records the error,
     commits, then re-raises so RQ marks the job failed in its own bookkeeping.
 
+    A top-level ``finally`` guards against any interruption (an RQ
+    ``job_timeout`` SIGALRM, a process kill) landing somewhere not already
+    covered by one of the explicit failure paths above: if the job row is
+    still ``"queued"`` or ``"running"`` when this function unwinds, it is
+    force-failed with error ``"interrupted"`` so it is never left stranded
+    (Finding 4; see ``generation/queue.py::requeue_stranded_jobs`` for the
+    complementary reclaim sweep that recovers rows lost before this function
+    ever ran).
+
     Args:
         job_id: UUID of the :class:`~cyo_adventure.db.models.GenerationJob` to
             process. Raises :class:`~cyo_adventure.core.exceptions.ResourceNotFoundError`
@@ -499,122 +547,139 @@ async def run_generation_job(
     effective_provider = provider or build_provider(_default_settings)
 
     async with _factory() as session:  # type: ignore[attr-defined]
-        # ------------------------------------------------------------------
-        # Load and mark the job as running.
-        # ------------------------------------------------------------------
-        job_row = await session.get(GenerationJob, job_id)
-        if job_row is None:
-            msg = f"GenerationJob {job_id} not found"
-            raise ResourceNotFoundError(
-                msg, resource_type="GenerationJob", resource_id=str(job_id)
-            )
-
-        job_row.status = "running"
-        await session.flush()
-
-        logger.info(
-            "generation_job.started",
-            job_id=str(job_id),
-            concept_id=str(job_row.concept_id),
-        )
-
-        # ------------------------------------------------------------------
-        # Load the concept brief.
-        # ------------------------------------------------------------------
-        concept_row = await session.get(Concept, job_row.concept_id)
-        if concept_row is None:
-            # Record the failure on the job row before raising. Without this
-            # commit the "running" flush above is discarded on session close,
-            # leaving the job visibly "queued" with no error while RQ marks it
-            # failed; the row and the queue would disagree permanently.
-            msg = f"Concept {job_row.concept_id} not found"
-            job_row.status = "failed"
-            job_row.error = msg[:512]
-            await session.commit()
-            raise ResourceNotFoundError(
-                msg,
-                resource_type="Concept",
-                resource_id=str(job_row.concept_id),
-            )
-
-        brief = ConceptBrief.model_validate(concept_row.brief)
-
-        # ------------------------------------------------------------------
-        # Build PiiContext from the family's real child names.
-        # ChildProfile has no birthdate column; leave birthdates empty.
-        # ------------------------------------------------------------------
-        child_result = await session.execute(
-            select(ChildProfile.display_name).where(
-                ChildProfile.family_id == concept_row.family_id
-            )
-        )
-        child_names: frozenset[str] = frozenset(
-            row for (row,) in child_result.all() if row
-        )
-        pii = PiiContext(child_names=child_names, birthdates=frozenset())
-
-        # ------------------------------------------------------------------
-        # Run the generation pipeline. Wrap to persist failures.
-        # ------------------------------------------------------------------
-        authoring = (
-            job_row.authoring_metadata
-            if isinstance(job_row.authoring_metadata, dict)
-            else None
-        )
         try:
-            if authoring is not None:
-                outcome = await _run_skeleton_fill(
-                    _SkeletonFillContext(
-                        authoring=authoring,
-                        brief=brief,
-                        effective_provider=effective_provider,
-                        pii=pii,
-                        prep_model=job_row.model,
-                    )
+            # ------------------------------------------------------------------
+            # Load and mark the job as running.
+            # ------------------------------------------------------------------
+            job_row = await session.get(GenerationJob, job_id)
+            if job_row is None:
+                msg = f"GenerationJob {job_id} not found"
+                raise ResourceNotFoundError(
+                    msg, resource_type="GenerationJob", resource_id=str(job_id)
                 )
-            else:
-                outcome = await generate_story(brief, effective_provider, pii)
-        except Exception as exc:
-            # Record failure and re-raise so RQ marks the job failed.
-            error_text = str(exc)[:512]
-            job_row.status = "failed"
-            job_row.error = error_text
+
+            job_row.status = "running"
+            await session.flush()
+
+            logger.info(
+                "generation_job.started",
+                job_id=str(job_id),
+                concept_id=str(job_row.concept_id),
+            )
+
+            # ------------------------------------------------------------------
+            # Load the concept brief.
+            # ------------------------------------------------------------------
+            concept_row = await session.get(Concept, job_row.concept_id)
+            if concept_row is None:
+                msg = f"Concept {job_row.concept_id} not found"
+                exc = ResourceNotFoundError(
+                    msg,
+                    resource_type="Concept",
+                    resource_id=str(job_row.concept_id),
+                )
+                await _record_failure(
+                    session, job_row, exc, provider=effective_provider
+                )
+                raise exc
+
+            brief = ConceptBrief.model_validate(concept_row.brief)
+
+            # ------------------------------------------------------------------
+            # Build PiiContext from the family's real child names.
+            # ChildProfile has no birthdate column; leave birthdates empty.
+            # ------------------------------------------------------------------
+            child_result = await session.execute(
+                select(ChildProfile.display_name).where(
+                    ChildProfile.family_id == concept_row.family_id
+                )
+            )
+            child_names: frozenset[str] = frozenset(
+                row for (row,) in child_result.all() if row
+            )
+            pii = PiiContext(child_names=child_names, birthdates=frozenset())
+
+            # ------------------------------------------------------------------
+            # Run the generation pipeline. Wrap to persist failures.
+            # ------------------------------------------------------------------
+            authoring = (
+                job_row.authoring_metadata
+                if isinstance(job_row.authoring_metadata, dict)
+                else None
+            )
+            try:
+                if authoring is not None:
+                    outcome = await _run_skeleton_fill(
+                        _SkeletonFillContext(
+                            authoring=authoring,
+                            brief=brief,
+                            effective_provider=effective_provider,
+                            pii=pii,
+                            prep_model=job_row.model,
+                        )
+                    )
+                else:
+                    outcome = await generate_story(brief, effective_provider, pii)
+            except Exception as exc:
+                # Record failure and re-raise so RQ marks the job failed.
+                await _record_failure(
+                    session, job_row, exc, provider=effective_provider
+                )
+                logger.exception(
+                    "generation_job.pipeline_error",
+                    job_id=str(job_id),
+                    error=str(exc)[:512],
+                )
+                raise
+
+            # ------------------------------------------------------------------
+            # Persist outcome onto the job row.
+            # ------------------------------------------------------------------
+            job_row.status = outcome.status
+            job_row.report = dict(outcome.report)
             job_row.provider = _provider_label(effective_provider)
             job_row.prompt_version = _PROMPT_VERSION
-            await session.commit()
-            logger.exception(
-                "generation_job.pipeline_error",
-                job_id=str(job_id),
-                error=error_text,
+            # Record the model of the provider that actually ran. Deriving this from
+            # the injected-arg presence recorded None in production (where provider
+            # is None but the mock still runs); _model_label reflects the real run.
+            job_row.model = _model_label(effective_provider)
+
+            await _persist_and_moderate(
+                session,
+                _PersistContext(
+                    job_id=job_id,
+                    job_row=job_row,
+                    concept_row=concept_row,
+                    effective_provider=effective_provider,
+                    authoring=authoring,
+                    pii=pii,
+                ),
+                outcome,
             )
-            raise
 
-        # ------------------------------------------------------------------
-        # Persist outcome onto the job row.
-        # ------------------------------------------------------------------
-        job_row.status = outcome.status
-        job_row.report = dict(outcome.report)
-        job_row.provider = _provider_label(effective_provider)
-        job_row.prompt_version = _PROMPT_VERSION
-        # Record the model of the provider that actually ran. Deriving this from
-        # the injected-arg presence recorded None in production (where provider
-        # is None but the mock still runs); _model_label reflects the real run.
-        job_row.model = _model_label(effective_provider)
-
-        await _persist_and_moderate(
-            session,
-            _PersistContext(
-                job_id=job_id,
-                job_row=job_row,
-                concept_row=concept_row,
-                effective_provider=effective_provider,
-                authoring=authoring,
-                pii=pii,
-            ),
-            outcome,
-        )
-
-        await session.commit()
+            await session.commit()
+        finally:
+            # #CRITICAL: timing: an RQ job_timeout SIGALRM (Settings.
+            # generation_job_timeout_seconds), a process kill, or any other
+            # interrupt can land anywhere in the try block above, including
+            # mid-commit inside one of the except handlers. Without this
+            # guard the row is stranded at "queued" or "running" forever:
+            # no error recorded, and nothing to distinguish it from a job
+            # genuinely still executing. Re-checking the row here and
+            # force-failing anything still open means the stranded-job
+            # reclaim sweep (generation/queue.py::requeue_stranded_jobs) only
+            # ever has to recover rows that never reached this function at
+            # all (e.g. a Redis outage before the worker picked the job up).
+            # #VERIFY: test_interrupted_job_records_failed_in_finally injects
+            # a raise between the "running" flush and the inner pipeline try.
+            stranded = await session.get(GenerationJob, job_id)
+            if stranded is not None and stranded.status in ("queued", "running"):
+                await _record_failure(
+                    session,
+                    stranded,
+                    RuntimeError("interrupted"),
+                    provider=effective_provider,
+                )
 
 
 def run_generation_job_sync(job_id_str: str) -> None:
