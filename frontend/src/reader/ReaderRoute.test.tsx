@@ -4,13 +4,13 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { IDBFactory } from 'fake-indexeddb'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { _resetDbHandle } from '../offline/db'
-import type { Storybook } from '../player/types'
+import { _resetDbHandle, enqueueWrite, type QueuedWrite } from '../offline/db'
+import type { ReadingState, Storybook } from '../player/types'
 import { ReaderRoute } from './ReaderRoute'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
@@ -128,5 +128,97 @@ describe('ReaderRoute wiring (T5)', () => {
       String(url).startsWith('/v1/reading-state/')
     )
     expect(readingStateCalls.length).toBeLessThanOrEqual(2)
+  })
+})
+
+describe('ReaderRoute replay reconciliation (B2)', () => {
+  beforeEach(() => {
+    globalThis.indexedDB = new IDBFactory()
+    _resetDbHandle()
+    mockGet.mockReset()
+    mockPut.mockReset()
+    mockPost.mockReset()
+  })
+
+  afterEach(() => {
+    cleanup()
+  })
+
+  it('shows the conflict dialog for a replayed 409 and resends the local device state on "keep this device"', async () => {
+    const profileId = 'p_replay'
+    const queuedState: ReadingState = {
+      current_node: lantern.nodes[0].id,
+      var_state: {},
+      path: [lantern.nodes[0].id],
+      visit_set: [lantern.nodes[0].id],
+      version: lantern.version,
+      state_revision: 1,
+      save_slots: {},
+    }
+    const queuedWrite: QueuedWrite = {
+      event_id: 'evt-replay-1',
+      profile_id: profileId,
+      storybook_id: lantern.id,
+      base_revision: 1,
+      state: queuedState,
+      device_id: 'device-a',
+      queued_at: Date.now(),
+    }
+    await enqueueWrite(queuedWrite)
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+
+    const serverRow: ReadingState = { ...queuedState, state_revision: 2 }
+    // ReaderPage's own live save (Reader reporting its initial position on
+    // mount) races with the replay flush; both go through the same mocked
+    // `put`. Distinguish by state_revision rather than call order: the queued
+    // write (and its "keep this device" resend, which reuses the same
+    // unrebased item.state) carry revision 1, ReaderPage's fresh live save
+    // carries revision 0.
+    let replayConflictSent = false
+    mockPut.mockImplementation((_url: string, body: { state_revision: number }) => {
+      if (body.state_revision === 1) {
+        if (!replayConflictSent) {
+          replayConflictSent = true
+          return Promise.reject({
+            isAxiosError: true,
+            response: { status: 409, data: { current_row: serverRow } },
+          })
+        }
+        return Promise.resolve({ data: serverRow })
+      }
+      return Promise.resolve({ data: { ...body, state_revision: 1 } })
+    })
+
+    renderAt(`/read/${profileId}/${lantern.id}/${lantern.version}`)
+
+    await screen.findByTestId('reader')
+    await screen.findByTestId('conflict-dialog')
+
+    function putBodies(): { current_node: string; state_revision: number }[] {
+      return mockPut.mock.calls.map(
+        (call) => call[1] as { current_node: string; state_revision: number }
+      )
+    }
+    function replayBodies(): { current_node: string; state_revision: number }[] {
+      return putBodies().filter((body) => body.state_revision === 1)
+    }
+
+    expect(replayBodies().length).toBe(1)
+
+    fireEvent.click(screen.getByTestId('conflict-keep'))
+
+    await waitFor(() => expect(replayBodies().length).toBe(2))
+    expect(replayBodies()[1]).toMatchObject({ current_node: queuedState.current_node })
+
+    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
   })
 })

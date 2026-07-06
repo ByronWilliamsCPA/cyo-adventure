@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
@@ -10,8 +10,12 @@ import {
   makeSyncApi,
 } from '../api/readerApi'
 import { useApi } from '../hooks/useApi'
+import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
+import type { QueuedWrite } from '../offline/db'
+import { saveProgress, type ReplayOutcome } from '../offline/sync'
 import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
+import { ConflictDialog } from './ConflictDialog'
 import { ReaderPage } from './ReaderPage'
 
 /**
@@ -41,6 +45,33 @@ export function ReaderRoute() {
   const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
   const navigate = useNavigate()
 
+  const [replayConflicts, setReplayConflicts] = useState<QueuedWrite[]>([])
+  const [replayFailedCount, setReplayFailedCount] = useState(0)
+  const handleReplayOutcome = useCallback((o: ReplayOutcome) => {
+    if (o.conflicts.length > 0) setReplayConflicts(o.conflicts)
+    if (o.failed.length > 0) setReplayFailedCount(o.failed.length)
+  }, [])
+  useReplayOnReconnect(syncApi, handleReplayOutcome)
+
+  const resolveKeepThisDevice = useCallback(async () => {
+    // Adopt the furthest (last) queued write per story and resend it through
+    // saveProgress. A held conflict entry never reached the server (B1), so
+    // there is no currentRow to rebase onto here; this resends the local
+    // device's own state as-is. If the server still rejects it, saveProgress
+    // returns a fresh conflict that this MVP path does not re-surface; see
+    // the B2 report for this known follow-up.
+    const furthest = new Map<string, QueuedWrite>()
+    for (const item of replayConflicts) {
+      furthest.set(`${item.profile_id} ${item.storybook_id}`, item)
+    }
+    for (const item of furthest.values()) {
+      await saveProgress(syncApi, item.profile_id, item.storybook_id, item.state)
+    }
+    setReplayConflicts([])
+  }, [replayConflicts, syncApi])
+  const resolveUseNewest = useCallback(() => setReplayConflicts([]), [])
+  const dismissReplayFailedBanner = useCallback(() => setReplayFailedCount(0), [])
+
   if (!profileId || !storybookId || !version) {
     return (
       <EmptyState
@@ -66,19 +97,32 @@ export function ReaderRoute() {
   }
 
   return (
-    // Keyed by the route params so navigating to a different story (or a
-    // different version/profile) fully remounts ReaderPage instead of reusing
-    // the same instance; a stale in-flight load from the old story can then
-    // never resolve into the new one's state.
-    <ReaderPage
-      key={`${profileId}:${storybookId}:${parsedVersion}`}
-      api={syncApi}
-      fetchStory={fetchStory}
-      fetchServerState={fetchServerState}
-      recordCompletion={recordCompletion}
-      profileId={profileId}
-      storybookId={storybookId}
-      version={parsedVersion}
-    />
+    <>
+      {/* Keyed by the route params so navigating to a different story (or a
+          different version/profile) fully remounts ReaderPage instead of
+          reusing the same instance; a stale in-flight load from the old story
+          can then never resolve into the new one's state. */}
+      <ReaderPage
+        key={`${profileId}:${storybookId}:${parsedVersion}`}
+        api={syncApi}
+        fetchStory={fetchStory}
+        fetchServerState={fetchServerState}
+        recordCompletion={recordCompletion}
+        profileId={profileId}
+        storybookId={storybookId}
+        version={parsedVersion}
+      />
+      {replayConflicts.length > 0 && (
+        <ConflictDialog onKeepThisDevice={resolveKeepThisDevice} onUseNewest={resolveUseNewest} />
+      )}
+      {replayFailedCount > 0 && (
+        <div role="alert" className="replay-failed-banner">
+          <span>Some offline progress could not be saved.</span>
+          <button type="button" onClick={dismissReplayFailedBanner} aria-label="Dismiss">
+            Dismiss
+          </button>
+        </div>
+      )}
+    </>
   )
 }
