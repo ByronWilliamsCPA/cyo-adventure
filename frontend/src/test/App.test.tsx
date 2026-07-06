@@ -95,9 +95,18 @@ beforeEach(() => {
 })
 
 describe('router: kid surface', () => {
-  it('renders the profile picker at /', async () => {
-    mockGet.mockResolvedValue({ data: { profiles: [] } })
+  it('renders the landing page at /', async () => {
     renderAt('/')
+    expect(await screen.findByRole('link', { name: /grown-ups/i })).toHaveAttribute(
+      'href',
+      '/guardian'
+    )
+    expect(screen.getByRole('link', { name: /kids/i })).toHaveAttribute('href', '/kids')
+  })
+
+  it('renders the profile picker at /kids', async () => {
+    mockGet.mockResolvedValue({ data: { profiles: [] } })
+    renderAt('/kids')
     expect(await screen.findByText(/No profiles yet/i)).toBeInTheDocument()
   })
 

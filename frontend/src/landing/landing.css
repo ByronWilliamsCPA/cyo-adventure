@@ -1,0 +1,63 @@
+.landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 100vh;
+  padding: 1.5rem;
+  text-align: center;
+  background: var(--color-parchment, #f8f3e8);
+  color: var(--color-ink, #2c1a0e);
+}
+
+.landing__title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 2rem;
+  margin: 0;
+}
+
+.landing__tagline {
+  margin: 0 0 1.5rem;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.landing__doors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.landing-door {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.5rem 1rem;
+  border: 2px solid var(--color-parchment-deeper, #e0d5b8);
+  border-radius: 1rem;
+  background: var(--color-parchment-dark, #ede6d0);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.landing-door:hover,
+.landing-door:focus-visible {
+  border-color: var(--color-amber, #c17b2a);
+}
+
+.landing-door__heading {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.landing-door__sub {
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.landing-door__note {
+  font-size: 0.8rem;
+  color: var(--color-ink-muted, #8c6f56);
+}

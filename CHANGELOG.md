@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Landing page at `/` with two doors: Kids (to the profile picker, now at
+  `/kids`) and Grown-ups (to the guardian console; admins sign in there too).
+  Kid deep links (`/library/...`, `/read/...`) are unchanged; the reader's
+  "Back to start" fallback now returns to `/kids`.
+
 ### Fixed
 - The integration test suite now fails instead of silently skipping when
   Docker/testcontainers is unavailable while running in CI (`CI` env var set

@@ -16,7 +16,7 @@ test.beforeEach(async ({ context }) => {
 })
 
 test('the seeded child reads a real story to an ending', async ({ page }) => {
-  await page.goto('/')
+  await page.goto('/kids')
   await page.getByText('Dev Reader').click()
   await expect(page).toHaveURL(/\/library\//)
 

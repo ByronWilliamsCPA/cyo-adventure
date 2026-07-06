@@ -10,6 +10,7 @@ import {
   GuardianShell,
   IntakePage,
   KidShell,
+  LandingPage,
   LibraryPage,
   LoginPage,
   NotFoundPage,
@@ -21,19 +22,21 @@ import {
   RouteError,
   RouteFallback,
 } from './routeElements'
-import { GUARDIAN_LOGIN_PATH } from './routes'
+import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from './routes'
 
 function suspended(element: ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
 }
 
 /**
- * Two disjoint route trees (wireframe section 2 / section 6): the kid
- * surface (/, /read/*) and the guardian surface (/guardian/*) share no
- * navigation. Only the component library, axios client, and this router
- * module are shared. Each tree is a separate lazy chunk (routeElements.tsx)
- * so a kid device never downloads the guardian console's code, and vice versa.
+ * Three entry points plus two disjoint route trees (wireframe section 2 / section 6):
+ * the landing page at (/), the kid surface (/kids, /library/*, /read/*),
+ * and the guardian surface (/guardian/*) share no navigation. Only the
+ * component library, axios client, and this router module are shared. Each tree
+ * is a separate lazy chunk (routeElements.tsx) so a kid device never downloads the
+ * guardian console's code, and vice versa.
  *
+ * The landing page is chunk-neutral and doesn't inherit KidShell chrome.
  * The Supabase-backed AuthProvider is scoped to the guardian subtree via the
  * lazy GuardianAuthLayout, so the kid surface never imports
  * @supabase/supabase-js and does not require the VITE_SUPABASE_* env vars.
@@ -47,15 +50,28 @@ function suspended(element: ReactNode) {
  */
 export const routes = [
   {
+    // Root subtree: the index is the audience-neutral landing page (its own
+    // lazy chunk, outside KidShell so it inherits no kid chrome). The
+    // pathless KidShell wrapper keeps the kid surface's deep-link URLs
+    // (/library/..., /read/...) unchanged; only the profile picker moved,
+    // from the index to /kids, when the landing page took the root.
     path: '/',
-    element: suspended(<KidShell />),
     errorElement: <RouteError />,
     children: [
-      { index: true, element: suspended(<ProfilePickerPage />) },
-      { path: 'library/:profileId', element: suspended(<LibraryPage />) },
+      { index: true, element: suspended(<LandingPage />) },
       {
-        path: 'read/:profileId/:storybookId/:version',
-        element: suspended(<ReaderRoute />),
+        element: suspended(<KidShell />),
+        children: [
+          // KID_PICKER_PATH minus its leading slash: React Router child paths
+          // are relative segments, so this ties the picker's URL to the same
+          // constant that LandingPage and ReaderRoute navigate to.
+          { path: KID_PICKER_PATH.slice(1), element: suspended(<ProfilePickerPage />) },
+          { path: 'library/:profileId', element: suspended(<LibraryPage />) },
+          {
+            path: 'read/:profileId/:storybookId/:version',
+            element: suspended(<ReaderRoute />),
+          },
+        ],
       },
     ],
   },
@@ -70,7 +86,7 @@ export const routes = [
         element: suspended(<LoginPage />),
       },
       {
-        path: '/guardian',
+        path: GUARDIAN_CONSOLE_PATH,
         element: (
           <ProtectedRoute redirectTo={GUARDIAN_LOGIN_PATH} allowedRoles={['guardian', 'admin']} />
         ),
