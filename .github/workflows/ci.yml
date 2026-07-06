@@ -185,11 +185,72 @@ jobs:
   # job: it needs Postgres + a seeded uvicorn, so it is local-only; run it per
   # frontend/README.md before opening a PR.
 
+  contract:
+    name: OpenAPI Contract Drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      # The `api` extra (FastAPI, SQLAlchemy, uvicorn) is enough to build the
+      # app and call its .openapi() method in-process; no live server, no
+      # database connection, and none of the `dev` extra's test/lint tooling
+      # are needed just to dump the schema.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      - name: Dump OpenAPI schema from the app in-process
+        run: |
+          uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > openapi.json
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      # OPENAPI_INPUT overrides openapi-ts.config.ts's default localhost URL so
+      # this regenerates from the schema dumped above instead of needing a
+      # running backend (see openapi-ts.config.ts for the override).
+      - name: Regenerate client against the dumped schema
+        working-directory: ./frontend
+        env:
+          SCHEMA_PATH: ${{ github.workspace }}/openapi.json
+        run: OPENAPI_INPUT="$SCHEMA_PATH" npm run generate-client
+
+      - name: Fail on generated client drift
+        run: |
+          git diff --exit-code -- frontend/src/client || (echo "::error::Generated OpenAPI client is out of date. Run 'npm run generate-client' against a live backend (see frontend/README.md) and commit the result." && exit 1)
+
   ci-gate:
     name: CI Gate
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [ci, frontend, design-system]
+    needs: [ci, frontend, design-system, contract]
     if: always()
     permissions:
       contents: read
@@ -205,11 +266,13 @@ jobs:
           CI_RESULT: ${{ needs.ci.result }}
           FRONTEND_RESULT: ${{ needs.frontend.result }}
           DESIGN_SYSTEM_RESULT: ${{ needs.design-system.result }}
+          CONTRACT_RESULT: ${{ needs.contract.result }}
         run: |
           FAILED=false
           [ "$CI_RESULT" != "success" ] && FAILED=true
           [ "$FRONTEND_RESULT" != "success" ] && FAILED=true
           [ "$DESIGN_SYSTEM_RESULT" != "success" ] && FAILED=true
+          [ "$CONTRACT_RESULT" != "success" ] && FAILED=true
           if [ "$FAILED" = "true" ]; then
             echo "CI Gate failed"
             exit 1

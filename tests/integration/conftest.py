@@ -9,6 +9,7 @@ story, which the authorization and reading-state tests reuse.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -73,11 +74,24 @@ def _pg_url() -> Iterator[str]:
 
     Skips the integration suite when no Docker daemon is reachable so a developer
     without Docker is not blocked; CI runners provide Docker for testcontainers.
+
+    # #CRITICAL: external-resources: a CI runner that silently skips the whole
+    # integration suite (rather than failing) would let a real Docker/testcontainers
+    # regression pass CI unnoticed, since a skip and a pass both show green.
+    # #VERIFY: when the ``CI`` environment variable is set to a truthy value
+    # (GitHub Actions sets ``CI=true`` on every runner), fail loudly instead of
+    # skipping. Match on truthy tokens rather than mere presence so an explicit
+    # ``CI=false`` from a local shell keeps the developer-friendly skip.
     """
     try:
         container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
         container.start()
     except (DockerException, OSError) as exc:
+        if os.environ.get("CI", "").strip().lower() in {"1", "true", "yes", "on"}:
+            pytest.fail(
+                "Docker unavailable in CI runner; integration tests would "
+                f"silently skip: {exc}"
+            )
         pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
     try:
         yield container.get_connection_url()

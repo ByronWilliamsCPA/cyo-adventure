@@ -24,6 +24,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 from cyo_adventure.api import deps
 from cyo_adventure.core.exceptions import AuthenticationError
 
+pytestmark = [pytest.mark.security]
+
 _ISSUER = "https://example.supabase.co/auth/v1"
 _AUDIENCE = "authenticated"
 _SUBJECT = "9c6a6b1e-0000-4000-8000-000000000000"

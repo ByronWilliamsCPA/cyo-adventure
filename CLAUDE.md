@@ -59,8 +59,11 @@ in the same repository.
 **Backend** (`src/cyo_adventure/`):
 
 - **Python**: 3.10+ supported (`requires-python = ">=3.10"`, no enforced upper
-  bound); 3.12 is the primary local target. CI tests Python 3.10 through 3.14
-  via `nox`.
+  bound); 3.12 is the primary local target. No GitHub Actions workflow invokes
+  `nox`: `ci.yml` runs the full quality gate on Python 3.12 only, and
+  `python-compatibility.yml` covers 3.11-3.13 on Ubuntu plus 3.12 on
+  macOS/Windows. `nox -s test` runs the 3.10-3.14 matrix locally for parity
+  checks before pushing, but CI itself does not call it.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`)
@@ -79,7 +82,8 @@ in the same repository.
   below), not hand-written.
 
 **Task orchestration**: `nox` (`noxfile.py`) wraps the multi-version test/lint
-matrix plus docs, SBOM, REUSE, and security sessions used by CI.
+matrix plus docs, SBOM, REUSE, and security sessions for local use; no CI
+workflow invokes `nox` (see the Python version note above).
 
 ---
 

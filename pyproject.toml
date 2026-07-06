@@ -594,6 +594,7 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "unit: marks tests as unit tests",
+    "security: marks tests as security-focused tests (auth, input validation, etc.)",
     "benchmark: marks tests as benchmark tests",
     "py310: marks tests specific to Python 3.10",
     "py311plus: marks tests requiring Python 3.11+",

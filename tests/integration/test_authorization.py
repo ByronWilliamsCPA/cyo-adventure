@@ -8,6 +8,8 @@ import pytest
 
 from tests.integration.conftest import Seed, auth
 
+pytestmark = [pytest.mark.security]
+
 if TYPE_CHECKING:
     from httpx import AsyncClient
 

@@ -38,8 +38,10 @@ blob-report/
 .env.local
 .env.*.local
 
-# Generated API client (regenerate with npm run generate-client)
-src/client/
+# Generated API client: TRACKED, not ignored. It is committed build output
+# (regenerate with `npm run generate-client`) so a CI drift check has a
+# baseline to diff against; see docs/template_feedback.md "Generated API
+# client is gitignored but CI never regenerates it" for the prior gap.
 
 # TypeScript build info
 *.tsbuildinfo
