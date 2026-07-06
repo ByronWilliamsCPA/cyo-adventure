@@ -81,7 +81,7 @@ def test_enqueue_generation_returns_rq_id(monkeypatch: pytest.MonkeyPatch) -> No
         (
             queue_mod._WORKER_ENTRYPOINT,
             ("job-123",),
-            {"job_timeout": 1800, "job_id": None},
+            {"job_timeout": 1800, "job_id": None, "unique": False},
         )
     ]
 
@@ -132,3 +132,38 @@ def test_enqueue_generation_passes_rq_job_id(monkeypatch: pytest.MonkeyPatch) ->
 
     _entrypoint, _args, kwargs = captured["queue"].enqueued[0]
     assert kwargs["job_id"] == "job-123"
+
+
+@pytest.mark.unit
+def test_enqueue_generation_sets_unique_only_when_rq_job_id_given(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """unique=True reaches queue.enqueue() only when rq_job_id is given (Finding 1).
+
+    Passing job_id= alone does not make RQ's enqueue idempotent: RQ only
+    atomically check-and-skips a duplicate id when unique=True is ALSO
+    passed, else it silently rpushes a second queue entry for the same id.
+    This is a fast unit check on the kwarg reaching queue.enqueue(); the
+    real dedup behavior against a live RQ/Redis is exercised by
+    test_enqueue_generation_second_call_same_id_raises_duplicate in
+    tests/integration/test_queue_reclaim.py.
+    """
+    captured: dict[str, _FakeQueue] = {}
+
+    def _factory(name: str, *, connection: object) -> _FakeQueue:
+        q = _FakeQueue(name, connection=connection)
+        captured["queue"] = q
+        return q
+
+    monkeypatch.setattr(queue_mod.redis, "Redis", _FakeRedis)
+    monkeypatch.setattr(queue_mod, "Queue", _factory)
+
+    queue_mod.enqueue_generation("job-123", Settings(), rq_job_id="job-123")
+    _entrypoint, _args, kwargs = captured["queue"].enqueued[0]
+    assert kwargs["unique"] is True
+
+    # get_queue() builds a fresh Queue per call, so the second enqueue_generation
+    # call replaces captured["queue"] with a new _FakeQueue instance.
+    queue_mod.enqueue_generation("job-456", Settings())
+    _entrypoint, _args, kwargs = captured["queue"].enqueued[0]
+    assert kwargs["unique"] is False

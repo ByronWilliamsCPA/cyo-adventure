@@ -6,24 +6,34 @@ than a fake session (Docker-less legs skip cleanly via the shared
 ``_pg_url`` fixture in conftest.py). The enqueue side is mocked at the
 ``enqueue_generation`` boundary so no live Redis is required (Finding 4 D2
 Step 3: the reclaim sweeper).
+
+The tests below the mocked-enqueue block instead run against a REAL
+``rq.Queue`` backed by a Redis testcontainer (Finding 1, D2 review): the
+mocked tests above only assert that ``enqueue_generation`` was *called* with
+``rq_job_id`` equal to the row id; they never exercise what RQ itself does
+with that id, which is exactly where the idempotency bug lived (``job_id=``
+alone does not make RQ's enqueue idempotent; only ``unique=True`` does).
 """
 
 from __future__ import annotations
 
+import uuid
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
 import pytest
+from docker.errors import DockerException
+from rq.exceptions import DuplicateJobError
+from testcontainers.redis import RedisContainer
 
+from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import Concept, Family, GenerationJob
 from cyo_adventure.generation import queue as queue_mod
 
 if TYPE_CHECKING:
-    import uuid
+    from collections.abc import Iterator
 
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-    from cyo_adventure.core.config import Settings
 
 
 async def _seed_queued_job(
@@ -162,3 +172,118 @@ async def test_requeue_stranded_jobs_ignores_non_queued_status(
 
     assert count == 0
     assert calls == []
+
+
+# ---------------------------------------------------------------------------
+# Real-RQ idempotency tests (Finding 1, D2 review): a live Redis testcontainer,
+# no mocking of enqueue_generation or queue.enqueue(). The mocked tests above
+# only prove enqueue_generation was CALLED with rq_job_id=row_id; they cannot
+# catch a bug in what RQ itself does with that id, which is exactly where the
+# original finding lived.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="session")
+def redis_url() -> Iterator[str]:
+    """Start a Redis container for the session.
+
+    Skips cleanly when no Docker daemon is reachable, mirroring the
+    ``_pg_url`` Postgres fixture in conftest.py so a developer without Docker
+    is not blocked; CI runners provide Docker for testcontainers.
+    """
+    try:
+        container = RedisContainer("redis:7-alpine")
+        container.start()
+    except (DockerException, OSError) as exc:
+        pytest.skip(f"Docker/Redis testcontainer unavailable: {exc}")
+    try:
+        host = container.get_container_host_ip()
+        port = container.get_exposed_port(container.port)
+        yield f"redis://{host}:{port}/0"
+    finally:
+        container.stop()
+
+
+def test_enqueue_generation_second_call_same_id_raises_duplicate(
+    redis_url: str,
+) -> None:
+    """A second enqueue_generation call with the same rq_job_id raises
+    DuplicateJobError instead of silently growing the queue's job_ids list to
+    a second entry for the same id.
+
+    This is the direct proof for Finding 1: passing ``job_id=<row id>`` to
+    ``queue.enqueue()`` alone does NOT make the enqueue idempotent. Before the
+    fix (no ``unique=`` kwarg passed at all), the exact same two calls below
+    left ``queue.job_ids`` holding the row's id TWICE, meaning
+    ``run_generation_job_sync`` would have been invoked twice concurrently
+    for one job.
+    """
+    settings = Settings(redis_url=redis_url)  # type: ignore[call-arg]
+    row_id = str(uuid.uuid4())
+
+    first_rq_id = queue_mod.enqueue_generation(row_id, settings, rq_job_id=row_id)
+    assert first_rq_id == row_id
+
+    with pytest.raises(DuplicateJobError):
+        queue_mod.enqueue_generation(row_id, settings, rq_job_id=row_id)
+
+    queue = queue_mod.get_queue(settings)
+    assert queue.job_ids.count(row_id) == 1
+
+
+def test_enqueue_generation_without_rq_job_id_never_collides(
+    redis_url: str,
+) -> None:
+    """The normal per-request enqueue path (rq_job_id=None) is unaffected:
+    RQ mints a fresh id each call, so unique=False here is correct, not a
+    regression of the fix.
+    """
+    settings = Settings(redis_url=redis_url)  # type: ignore[call-arg]
+
+    first_rq_id = queue_mod.enqueue_generation(str(uuid.uuid4()), settings)
+    second_rq_id = queue_mod.enqueue_generation(str(uuid.uuid4()), settings)
+
+    assert first_rq_id != second_rq_id
+
+
+@pytest.mark.asyncio
+async def test_requeue_stranded_jobs_second_sweep_same_row_is_queue_idempotent(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+    redis_url: str,
+) -> None:
+    """Two sweeps of the same still-stale row do not create a second RQ entry,
+    and the second sweep's DuplicateJobError is swallowed as a no-op, not
+    raised out of requeue_stranded_jobs.
+
+    ``requeue_stranded_jobs`` performs no writes (see its docstring), so the
+    row's ``updated_at`` is still stale after the first sweep; a second call
+    picks the SAME row again, which is exactly the "merely deep in the queue"
+    scenario the reclaim sweep must not double-enqueue.
+    """
+    # requeue_stranded_jobs enqueues through the module-level _default_settings
+    # (not a parameter), so point that instance at the Redis testcontainer for
+    # the duration of this test.
+    monkeypatch.setattr(queue_mod._default_settings, "redis_url", redis_url)
+
+    stale_id = await _seed_queued_job(
+        sessions, updated_at=datetime.now(UTC) - timedelta(hours=2)
+    )
+
+    async with sessions() as session:
+        first_count = await queue_mod.requeue_stranded_jobs(
+            session, stale_after=timedelta(minutes=30)
+        )
+    async with sessions() as session:
+        second_count = await queue_mod.requeue_stranded_jobs(
+            session, stale_after=timedelta(minutes=30)
+        )
+
+    # Both sweeps genuinely found the (still-stale) row a valid candidate; the
+    # second sweep's RQ-level DuplicateJobError is caught internally, not
+    # surfaced as a sweep failure.
+    assert first_count == 1
+    assert second_count == 1
+
+    queue = queue_mod.get_queue(queue_mod._default_settings)
+    assert queue.job_ids.count(str(stale_id)) == 1

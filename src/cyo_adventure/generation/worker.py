@@ -119,7 +119,7 @@ async def _record_failure(
     job: GenerationJob,
     exc: Exception,
     *,
-    provider: GenerationProvider | None = None,
+    provider: GenerationProvider,
 ) -> None:
     """Mark ``job`` failed, record the truncated error, and commit.
 
@@ -142,16 +142,18 @@ async def _record_failure(
         job: The GenerationJob row to mark failed (mutated in place).
         exc: The exception whose message becomes ``job.error`` (truncated to
             512 chars to match the column width).
-        provider: The provider in effect for this run. When given, stamps
-            ``job.provider``/``job.prompt_version`` too, so a job that fails
-            before or during generation still records which provider/prompt
-            version it was attempted under (matching the success path).
+        provider: The provider in effect for this run. Every call site
+            resolves ``effective_provider`` before it can reach any failure
+            path (including the top-level finally guard), so this is
+            required, not optional; stamping ``job.provider``/
+            ``job.prompt_version`` here means a job that fails before or
+            during generation still records which provider/prompt version it
+            was attempted under (matching the success path).
     """
     job.status = "failed"
     job.error = str(exc)[:512]
-    if provider is not None:
-        job.provider = _provider_label(provider)
-        job.prompt_version = _PROMPT_VERSION
+    job.provider = _provider_label(provider)
+    job.prompt_version = _PROMPT_VERSION
     await session.commit()
 
 
@@ -518,6 +520,24 @@ async def run_generation_job(
     complementary reclaim sweep that recovers rows lost before this function
     ever ran).
 
+    # #CRITICAL: concurrency: the finally guard cannot trust a plain
+    # ``session.get(GenerationJob, job_id)`` read to reflect the row's durable
+    # state. ``job_row.status`` is set in memory (e.g. to ``"passed"``) well
+    # before the terminal commit lands: an interruption landing in that
+    # window (during ``persist_storybook`` or the moderation call, both of
+    # which run after the in-memory status write) previously returned the
+    # SAME identity-mapped object with the uncommitted status, so
+    # ``stranded.status in ("queued", "running")`` read False and the guard
+    # skipped force-failing a row that was actually still "queued"/"running"
+    # in the database (Finding 2, D2 review). The fix tracks completion with
+    # an explicit local flag set only right after the real terminal commit,
+    # and rolls back before re-reading in the finally so the read reflects
+    # the last durably committed row state, never a dirty in-memory write.
+    # #VERIFY: test_late_interrupt_during_persist_records_failed_not_passed
+    # interrupts inside persist_storybook, after job_row.status is already set
+    # to "passed" in memory but before any commit, and asserts the row lands
+    # "failed"/"interrupted", not "passed".
+
     Args:
         job_id: UUID of the :class:`~cyo_adventure.db.models.GenerationJob` to
             process. Raises :class:`~cyo_adventure.core.exceptions.ResourceNotFoundError`
@@ -547,6 +567,12 @@ async def run_generation_job(
     effective_provider = provider or build_provider(_default_settings)
 
     async with _factory() as session:  # type: ignore[attr-defined]
+        # #CRITICAL: concurrency: tracks whether the terminal commit below
+        # actually landed. Only set True immediately after that commit; every
+        # early-exit path (raise) leaves this False so the finally guard knows
+        # it must verify the row's true committed state rather than trust an
+        # in-memory attribute. See the finally block for the full rationale.
+        completed = False
         try:
             # ------------------------------------------------------------------
             # Load and mark the job as running.
@@ -658,6 +684,11 @@ async def run_generation_job(
             )
 
             await session.commit()
+            # #CRITICAL: concurrency: this is the ONLY place completed is set
+            # True. It must stay immediately after the commit it certifies
+            # (nothing may be inserted between them) so an interruption a
+            # single line earlier still finds completed == False.
+            completed = True
         finally:
             # #CRITICAL: timing: an RQ job_timeout SIGALRM (Settings.
             # generation_job_timeout_seconds), a process kill, or any other
@@ -672,14 +703,31 @@ async def run_generation_job(
             # all (e.g. a Redis outage before the worker picked the job up).
             # #VERIFY: test_interrupted_job_records_failed_in_finally injects
             # a raise between the "running" flush and the inner pipeline try.
-            stranded = await session.get(GenerationJob, job_id)
-            if stranded is not None and stranded.status in ("queued", "running"):
-                await _record_failure(
-                    session,
-                    stranded,
-                    RuntimeError("interrupted"),
-                    provider=effective_provider,
-                )
+            #
+            # #CRITICAL: concurrency: when completed is False, roll back
+            # before reading the row. Every explicit failure path above
+            # already committed (or, if the row vanished, has nothing left to
+            # commit) before raising, so a rollback here is a safe no-op for
+            # those; for a genuine mid-flight interruption (e.g. inside
+            # persist_storybook, after job_row.status was set to "passed" in
+            # memory but never committed) the rollback discards that dirty
+            # write and forces session.get() below to reflect the last row
+            # state actually committed to the database, not the stale
+            # in-memory identity-mapped object (Finding 2, D2 review).
+            # #VERIFY: proven by test_late_interrupt_during_persist_records_failed_not_passed,
+            # which shows the pre-fix bug (status read as "passed", never
+            # force-failed) and the fixed behavior (status "failed", error
+            # "interrupted") for the exact same interruption point.
+            if not completed:
+                await session.rollback()
+                stranded = await session.get(GenerationJob, job_id)
+                if stranded is not None and stranded.status in ("queued", "running"):
+                    await _record_failure(
+                        session,
+                        stranded,
+                        RuntimeError("interrupted"),
+                        provider=effective_provider,
+                    )
 
 
 def run_generation_job_sync(job_id_str: str) -> None:

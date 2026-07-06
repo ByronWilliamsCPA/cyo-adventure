@@ -62,7 +62,16 @@ class _FakeResult:
 
 
 class _FakeSession:
-    """Minimal async session double for the worker's call surface."""
+    """Minimal async session double for the worker's call surface.
+
+    Models the real ``AsyncSession`` transaction boundary that Finding 2 (D2
+    review) turned on: ``commit()`` snapshots the job row's attributes as the
+    new durable state; ``rollback()`` restores that last snapshot, discarding
+    any attribute writes made since (exactly what a real rollback does to an
+    uncommitted ``UPDATE``). Without this, the fake could not distinguish "set
+    in memory" from "actually committed", so it could not reproduce (or prove
+    the fix for) the stale-identity-map bug the finally guard hit.
+    """
 
     def __init__(
         self,
@@ -78,6 +87,9 @@ class _FakeSession:
         self.commit_count = 0
         self.flush_count = 0
         self.rollback_count = 0
+        self._committed_job_snapshot: dict[str, object] | None = (
+            dict(vars(job)) if job is not None else None
+        )
 
     async def get(self, model: type[object], key: object) -> object | None:
         """Return the seeded row for the requested model (ignores the key)."""
@@ -98,17 +110,29 @@ class _FakeSession:
         self.added.append(obj)
 
     async def flush(self) -> None:
-        """Count flushes (no-op persistence)."""
+        """Count flushes (no-op persistence; does NOT snapshot, matching a
+        real SQLAlchemy flush(), which pushes SQL inside the open transaction
+        but is not durable until commit()).
+        """
         self.flush_count += 1
 
     async def commit(self) -> None:
-        """Count commits (no-op persistence)."""
+        """Count commits and snapshot the job row as the new durable state."""
         self.commit_count += 1
+        if self._job is not None:
+            self._committed_job_snapshot = dict(vars(self._job))
 
     async def rollback(self) -> None:
-        """Count rollbacks and discard pending adds (models a DB rollback)."""
+        """Count rollbacks; discard pending adds and revert the job row to
+        its last committed snapshot (models a real DB rollback discarding any
+        uncommitted attribute writes, e.g. an in-memory status set just
+        before an interruption).
+        """
         self.rollback_count += 1
         self.added.clear()
+        if self._job is not None and self._committed_job_snapshot is not None:
+            for key, value in self._committed_job_snapshot.items():
+                setattr(self._job, key, value)
 
 
 def _factory_for(session: _FakeSession) -> Callable[[], object]:
@@ -168,7 +192,10 @@ async def test_passing_run_persists_unique_storybook(
     # stored blob id matches the per-job DB row id.
     assert versions[0].blob["id"] == f"s_{job_id}"
     assert versions[0].storybook_id == f"s_{job_id}"
-    assert session.commit_count >= 1
+    # Exactly one commit: the single terminal commit at the end of the try
+    # block. A second (or missing) commit here would mean completed-tracking
+    # in the finally guard fired when it should not have (Finding 2).
+    assert session.commit_count == 1
 
 
 @pytest.mark.unit
@@ -204,7 +231,10 @@ async def test_moderation_failure_records_failed_and_rolls_back(
     # The job is committed as failed (not stranded at 'running'/'passed').
     assert job.status == "failed"
     assert job.error == "review backend down"
-    assert session.commit_count >= 1
+    # Exactly one commit: the except-block's _record_failure call. The
+    # finally guard's rollback+refetch must see "failed" already and skip
+    # (no second _record_failure commit).
+    assert session.commit_count == 1
 
 
 @pytest.mark.unit
@@ -273,7 +303,8 @@ async def test_missing_concept_records_failure_and_commits() -> None:
 
     assert job.status == "failed"
     assert job.error is not None
-    assert session.commit_count >= 1
+    # Exactly one commit: the concept-missing branch's _record_failure call.
+    assert session.commit_count == 1
 
 
 @pytest.mark.unit
@@ -334,7 +365,8 @@ async def test_pipeline_exception_records_failure_and_reraises(
     assert job.status == "failed"
     assert job.error == "provider exploded"
     assert job.provider == "mock"
-    assert session.commit_count >= 1
+    # Exactly one commit: the inner pipeline except's _record_failure call.
+    assert session.commit_count == 1
 
 
 @pytest.mark.unit
@@ -364,7 +396,55 @@ async def test_interrupted_job_records_failed_in_finally(
     assert job.status == "failed"
     assert job.error == "interrupted"
     assert job.provider == "mock"
-    assert session.commit_count >= 1
+    # Exactly one commit: the finally guard's own _record_failure call.
+    assert session.commit_count == 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_late_interrupt_during_persist_records_failed_not_passed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """An interruption inside persist_storybook, AFTER job_row.status is set
+    to "passed" in memory but BEFORE the terminal commit, must still land
+    "failed"/"interrupted" -- not "passed" (Finding 2, D2 review).
+
+    Before the fix, the finally guard re-read job_row via session.get(), which
+    returned the SAME identity-mapped object still carrying the uncommitted
+    in-memory "passed" write. ``stranded.status in ("queued", "running")``
+    then read False, so the guard skipped force-failing a row whose durable
+    state was never actually "passed": the row would sit stranded until the
+    30-minute reclaim sweep. The fix rolls back before re-reading, which (per
+    _FakeSession's commit/rollback snapshot semantics, modeling a real
+    SQLAlchemy transaction) discards the dirty "passed" write and reverts the
+    row to its last genuinely committed status ("queued", since "running"
+    was only flushed, never committed), so the guard correctly force-fails.
+    """
+    job, concept = _job_and_concept()
+    session = _FakeSession(job=job, concept=concept, child_names=["TestKid"])
+    job_id = uuid.uuid4()
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    async def _boom(*_args: object, **_kwargs: object) -> None:
+        msg = "boom mid-persist"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr("cyo_adventure.generation.worker.persist_storybook", _boom)
+
+    with pytest.raises(RuntimeError, match="boom mid-persist"):
+        await run_generation_job(
+            job_id, provider=provider, session_factory=_factory_for(session)
+        )
+
+    assert job.status == "failed"
+    assert job.error == "interrupted"
+    assert job.provider == "mock"
+    # Exactly one commit: the finally guard's own _record_failure call (the
+    # in-memory "passed" write before persist_storybook never committed).
+    assert session.commit_count == 1
+    # The finally guard rolled back the dirty in-memory write before its
+    # verifying read.
+    assert session.rollback_count >= 1
 
 
 @pytest.mark.unit
