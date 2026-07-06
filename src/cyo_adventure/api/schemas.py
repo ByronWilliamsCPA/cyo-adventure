@@ -398,6 +398,22 @@ class AuthoringPlanRequest(BaseModel):
     review_stage1_model: str | None = None
     review_stage2_model: str | None = None
 
+    @model_validator(mode="after")
+    def _skill_requires_skeleton_fill(self) -> AuthoringPlanRequest:
+        """Reject the one illegal method/mechanism pairing at the type boundary.
+
+        The ``skill`` mechanism means a human runs the cyo-author skill to fill
+        an existing skeleton, so it is only meaningful with
+        ``method='skeleton_fill'``. Encoding this here makes the illegal
+        ``fresh_generation`` + ``skill`` state unrepresentable rather than
+        relying on a downstream runtime guard, and FastAPI rejects it as a 422
+        before it ever reaches ``build_authoring_plan``.
+        """
+        if self.method == "fresh_generation" and self.mechanism == "skill":
+            msg = "mechanism='skill' requires method='skeleton_fill'"
+            raise ValueError(msg)
+        return self
+
 
 class AuthoringPlanResponse(BaseModel):
     """The generation job created (or parked) by an authoring-plan decision."""

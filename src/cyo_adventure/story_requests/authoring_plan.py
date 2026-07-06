@@ -141,17 +141,16 @@ async def build_authoring_plan(
         and any non-blocking eligibility warnings.
 
     Raises:
-        ValidationError: On an invalid method/mechanism combination (-> 422),
-            an unrecognized skill-mechanism model (-> 422), or no matching
-            production skeleton for the concept's band (-> 422).
+        ValidationError: On an unrecognized skill-mechanism model (-> 422) or
+            no matching production skeleton for the concept's band (-> 422).
+            The illegal fresh_generation + skill pairing is rejected earlier, at
+            the schema boundary (AuthoringPlanRequest._skill_requires_skeleton_fill),
+            so it never reaches this function.
         StateTransitionError: If a GenerationJob already exists for this
             concept (-> 409, idempotency guard).
     """
     _ = request  # reserved for future request-level checks; status is caller-verified
     method, mechanism, prep_model = plan.method, plan.mechanism, plan.prep_model
-    if method == "fresh_generation" and mechanism == "skill":
-        msg = "mechanism='skill' requires method='skeleton_fill'"
-        raise ValidationError(msg, field="mechanism", value=mechanism)
 
     # #CRITICAL: concurrency: relies on the caller holding a FOR UPDATE lock on
     # `request` (mirrors service.approve_story_request's contract) so two

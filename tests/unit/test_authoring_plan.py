@@ -5,6 +5,7 @@ from __future__ import annotations
 import uuid
 
 import pytest
+from pydantic import ValidationError as PydanticValidationError
 
 from cyo_adventure.api.schemas import AuthoringPlanRequest
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
@@ -103,17 +104,16 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     }
 
 
-async def test_fresh_generation_with_skill_mechanism_is_rejected() -> None:
-    """mechanism='skill' only makes sense with method='skeleton_fill'."""
-    session = _FakeSession()
-    with pytest.raises(ValidationError):
-        await build_authoring_plan(
-            session,
-            _request(),
-            _concept(),
-            AuthoringPlanRequest(
-                method="fresh_generation", mechanism="skill", prep_model="sonnet"
-            ),
+def test_fresh_generation_with_skill_mechanism_is_rejected() -> None:
+    """mechanism='skill' only makes sense with method='skeleton_fill'.
+
+    The illegal pairing is now unrepresentable: the schema-level
+    model_validator rejects it at construction (a pydantic ValidationError ->
+    FastAPI 422), so it never reaches build_authoring_plan.
+    """
+    with pytest.raises(PydanticValidationError):
+        AuthoringPlanRequest(
+            method="fresh_generation", mechanism="skill", prep_model="sonnet"
         )
 
 

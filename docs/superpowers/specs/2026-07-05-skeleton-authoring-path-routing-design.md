@@ -199,7 +199,7 @@ No new tables (this is what Approach C, which you chose, buys):
 
 Two model universes, kept apart by `mechanism`, never mixed:
 
-- **Hard validation (400):** `prep_model` must syntactically belong to the
+- **Hard validation (422):** `prep_model` must syntactically belong to the
   universe `mechanism` implies (an OpenRouter model id submitted with
   `mechanism: skill` is a category error, not a judgment call).
 - **Soft warning (never blocks):** a small code-level lookup keyed on
@@ -216,14 +216,15 @@ Two model universes, kept apart by `mechanism`, never mixed:
 | `request.status != "approved"` | 409 |
 | A `GenerationJob` already exists for the request's `concept_id` | 409 (one authoring plan per request) |
 | `method=fresh_generation` with `mechanism=skill` | 422 |
-| `prep_model` outside the universe `mechanism` implies | 400 |
+| `prep_model` outside the universe `mechanism` implies | 422 |
 | No `production_eligible` skeleton for the request's band (`skeleton_fill`) | 422, names `fresh_generation` as the alternative |
 | Stage 1 fidelity check fails | Existing repair-loop / `needs_revision` semantics, not new ones |
 | Job stuck at `awaiting_manual_fill` indefinitely | **Out of scope for v1** (explicit decision) -- no timeout, no automated reminder; visible today via `GET /generation-jobs/{id}` for anyone who checks |
 
 ## 7. Testing
 
-- **Unit:** authoring-plan request validation (400/422 branches), the
+- **Unit:** authoring-plan request validation (422 branches: schema-level
+  method/mechanism rejection plus service-level prep_model/band checks), the
   eligibility-warning function (pure; table-driven test), skeleton auto-match
   tie-break, Stage 1's word-count / leftover-marker / structure-diff checks (pure
   code, no model, straightforward to test exhaustively).
