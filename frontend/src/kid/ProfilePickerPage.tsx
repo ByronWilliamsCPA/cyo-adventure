@@ -5,6 +5,7 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 
 type PickerState =
   | { status: 'loading' }
@@ -23,6 +24,7 @@ export function ProfilePickerPage() {
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
   const [state, setState] = useState<PickerState>({ status: 'loading' })
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     let cancelled = false
@@ -40,7 +42,7 @@ export function ProfilePickerPage() {
     return () => {
       cancelled = true
     }
-  }, [profilesApi])
+  }, [profilesApi, reloadKey])
 
   if (state.status === 'loading') {
     return (
@@ -52,9 +54,24 @@ export function ProfilePickerPage() {
 
   if (state.status === 'error') {
     return (
-      <div role="alert" className="picker-error">
-        We could not load your profiles. Please try again.
-      </div>
+      <EmptyState
+        title="Oops, we hit a snag"
+        description="We could not find your storybooks right now."
+        actions={
+          <>
+            <button
+              type="button"
+              className="picker-retry"
+              onClick={() => setReloadKey((k) => k + 1)}
+            >
+              Try again
+            </button>
+            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+              I am a grown-up
+            </Link>
+          </>
+        }
+      />
     )
   }
 
