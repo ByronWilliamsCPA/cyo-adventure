@@ -109,10 +109,17 @@ test.describe('refresh mid-reader', () => {
 
     await page.goto(READER_PATH)
     await expect(page.getByTestId('reader')).toBeVisible()
-    await page.getByTestId('choice-c_take_lantern').click()
 
-    // Wait for the reading state to be posted before refreshing
-    await page.waitForLoadState('networkidle')
+    // Deterministically wait for the reading-state save to land before
+    // refreshing, rather than waitForLoadState('networkidle') (which Playwright
+    // discourages and which can resolve before a debounced save fires).
+    // readerApi persists via PUT /v1/reading-state/... (see readerApi.ts).
+    // Register the wait before the click so it catches the save as it happens.
+    const savePersisted = page.waitForResponse(
+      (res) => res.url().includes('/api/v1/reading-state/') && res.request().method() === 'PUT'
+    )
+    await page.getByTestId('choice-c_take_lantern').click()
+    await savePersisted
     await page.reload()
 
     await expect(page.getByTestId('reader')).toBeVisible()

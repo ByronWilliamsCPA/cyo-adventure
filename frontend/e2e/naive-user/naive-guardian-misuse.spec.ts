@@ -18,60 +18,73 @@ test('two guardian sessions approving the same request: the second gets 409, not
 
   const contextA = await browser.newContext()
   const contextB = await browser.newContext()
-  await seedGuardianSession(contextA)
-  await seedGuardianSession(contextB)
-  const pageA = await contextA.newPage()
-  const pageB = await contextB.newPage()
+  try {
+    await seedGuardianSession(contextA)
+    await seedGuardianSession(contextB)
+    const pageA = await contextA.newPage()
+    const pageB = await contextB.newPage()
 
-  for (const page of [pageA, pageB]) {
-    await mockMe(page)
-    await page.route('**/api/v1/story-requests?status=pending', (route) =>
-      route.fulfill({
-        json: {
-          requests: [
-            {
-              id: 'req-1',
-              profile_id: 'p1',
-              status: 'pending',
-              request_text: 'A story about a friendly dragon',
-              moderation_flags: [],
-              created_at: '2026-07-04T10:00:00Z',
-            },
-          ],
-        },
-      })
-    )
-    await page.route('**/api/v1/story-requests/req-1/approve', (route) => {
-      if (approved) {
-        secondCallStatus = 409
-        return route.fulfill({
-          status: 409,
-          json: { detail: "story request 'req-1' is not pending" },
+    for (const page of [pageA, pageB]) {
+      await mockMe(page)
+      await page.route('**/api/v1/story-requests?status=pending', (route) =>
+        route.fulfill({
+          json: {
+            requests: [
+              {
+                id: 'req-1',
+                profile_id: 'p1',
+                status: 'pending',
+                request_text: 'A story about a friendly dragon',
+                moderation_flags: [],
+                created_at: '2026-07-04T10:00:00Z',
+              },
+            ],
+          },
         })
-      }
-      approved = true
-      return route.fulfill({
-        json: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+      )
+      await page.route('**/api/v1/story-requests/req-1/approve', (route) => {
+        if (approved) {
+          secondCallStatus = 409
+          return route.fulfill({
+            status: 409,
+            json: { detail: "story request 'req-1' is not pending" },
+          })
+        }
+        approved = true
+        return route.fulfill({
+          json: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+        })
       })
-    })
+    }
+
+    await pageA.goto('/guardian/requests')
+    await pageB.goto('/guardian/requests')
+
+    await Promise.all([
+      pageA.getByTestId('request-req-1').getByRole('button', { name: 'Approve' }).click(),
+      pageB.getByTestId('request-req-1').getByRole('button', { name: 'Approve' }).click(),
+    ])
+
+    // The second approve hits the mock's 409 branch...
+    await expect.poll(() => secondCallStatus).toBe(409)
+
+    // ...and, crucially, that 409 must SURFACE to the losing guardian rather
+    // than be silently swallowed (the failure mode this test is named for). On
+    // a failed approve, RequestsPage keeps the row and renders a visible per-row
+    // alert (runRowAction's catch sets rowErrors -> "Could not update the
+    // request. Try again."). The winner/loser split between the two pages is
+    // racy, so assert the alert appears on whichever page received the 409; a
+    // regression that discards the 409 without a notice drops the count to 0 and
+    // turns this red.
+    const rowError = (page: (typeof pageA)) =>
+      page.getByRole('alert').filter({ hasText: 'Could not update the request. Try again.' })
+    await expect
+      .poll(async () => (await rowError(pageA).count()) + (await rowError(pageB).count()))
+      .toBeGreaterThanOrEqual(1)
+  } finally {
+    await contextA.close()
+    await contextB.close()
   }
-
-  await pageA.goto('/guardian/requests')
-  await pageB.goto('/guardian/requests')
-
-  await Promise.all([
-    pageA.getByTestId('request-req-1').getByRole('button', { name: 'Approve' }).click(),
-    pageB.getByTestId('request-req-1').getByRole('button', { name: 'Approve' }).click(),
-  ])
-
-  // The 409 itself is the confirmed, guarded outcome. RequestsPage's exact
-  // error-copy for a 409 response is not yet verified against the component;
-  // if this expect.poll never resolves the 409 branch, read RequestsPage.tsx
-  // before assuming the UI silently swallows it.
-  await expect.poll(() => secondCallStatus).toBe(409)
-
-  await contextA.close()
-  await contextB.close()
 })
 
 test.describe('zero-child-profile empty states', () => {

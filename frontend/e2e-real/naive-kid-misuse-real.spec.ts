@@ -41,8 +41,11 @@ test("a hand-edited URL into another family's profile is rejected, not served", 
   // unverified error-state copy.
   await page.goto(`/library/${UNRELATED_PROFILE_ID}`)
   const apiResponse = await apiResponsePromise
-  await page.waitForLoadState('networkidle')
 
+  // No waitForLoadState('networkidle') here: the specific /api/v1/library
+  // response is already awaited above, and the toHaveCount(0) assertions below
+  // auto-retry, so the networkidle wait (which Playwright discourages as
+  // flake-prone) adds nothing.
   expect(apiResponse.status()).toBe(403)
   await expect(page.getByRole('region', { name: 'Continue Reading' })).toHaveCount(0)
   await expect(page.locator('.library__shelf > li')).toHaveCount(0)
