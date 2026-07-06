@@ -61,7 +61,10 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
           localStorage.removeItem('auth_token')
           const path = window.location.pathname
           if (path.startsWith('/guardian') && path !== GUARDIAN_LOGIN_PATH) {
-            window.location.assign(GUARDIAN_LOGIN_PATH)
+            // Use replace(), not assign(): the expired guardian URL must not stay
+            // in history, or Back would return to it, hit another 401, and bounce
+            // to login again in a loop.
+            window.location.replace(GUARDIAN_LOGIN_PATH)
           }
         }
         return Promise.reject(error)

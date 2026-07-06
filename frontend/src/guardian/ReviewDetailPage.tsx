@@ -223,10 +223,8 @@ export function ReviewDetailPage() {
           variant="danger"
           onClick={() => openDialog('sendback')}
           disabled={surface.status !== 'in_review'}
-          aria-label={
-            surface.status !== 'in_review'
-              ? 'Only stories in review can be sent back'
-              : undefined
+          aria-describedby={
+            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
           }
         >
           Send Back
@@ -234,15 +232,25 @@ export function ReviewDetailPage() {
         <Button
           onClick={() => openDialog('approve')}
           disabled={surface.status !== 'in_review'}
-          aria-label={
-            surface.status !== 'in_review'
-              ? 'Only stories in review can be approved'
-              : undefined
+          aria-describedby={
+            surface.status !== 'in_review' ? 'review-actions-disabled-hint' : undefined
           }
         >
           Approve
         </Button>
       </div>
+      {/*
+        Keep each button's accessible name its visible label ("Approve" / "Send
+        Back") and carry the disabled reason in a separate described-by hint, so a
+        screen-reader user still hears the primary action name and sighted users see
+        why the controls are greyed. Overwriting aria-label with the reason (the
+        earlier approach) hid the action name from assistive tech.
+      */}
+      {surface.status !== 'in_review' ? (
+        <p id="review-actions-disabled-hint" className="review-actionbar__hint">
+          Only stories in review can be approved or sent back.
+        </p>
+      ) : null}
 
       {dialog === 'approve' ? (
         <Dialog

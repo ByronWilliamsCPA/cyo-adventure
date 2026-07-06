@@ -57,7 +57,7 @@ export function ProfilePickerPage() {
       <div role="alert">
         <EmptyState
           title="Oops, we hit a snag"
-          description="We could not find your storybooks right now."
+          description="We could not load your profiles right now."
           actions={
             <>
               <button

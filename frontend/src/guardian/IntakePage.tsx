@@ -23,7 +23,7 @@ const POLL_MS = 8000
 // Transient (network / 5xx) copy per surface. classifyApiError swaps in a
 // distinct message for a 401/403 so a permanent auth/role failure no longer
 // reads as a retryable blip (naive-UX report F1); these are the fallbacks.
-const LOAD_ERROR_TRANSIENT = 'We could not load your requests.'
+const LOAD_ERROR_TRANSIENT = 'We could not load your requests and profiles.'
 const SUBMIT_ERROR_TRANSIENT = 'We could not send this request. Please try again.'
 
 function isActive(job: GenerationJobSummary): boolean {

@@ -116,18 +116,21 @@ describe('ReviewDetailPage', () => {
   })
 
   it.each(['published', 'draft'] as const)(
-    'disables Approve and Send Back for a %s story with an explanatory label',
+    'disables Approve and Send Back for a %s story while keeping their labels',
     async (status) => {
       mockGet.mockResolvedValue({ data: { ...SURFACE, status } })
       renderAt('s1')
-      const approve = await screen.findByRole('button', {
-        name: /only stories in review can be approved/i,
-      })
-      const sendBack = screen.getByRole('button', {
-        name: /only stories in review can be sent back/i,
-      })
+      // The buttons keep their action names ("Approve" / "Send Back"); the
+      // disabled reason is carried by an aria-describedby hint, not by
+      // overwriting the accessible name.
+      const approve = await screen.findByRole('button', { name: /^Approve$/i })
+      const sendBack = screen.getByRole('button', { name: /^Send Back$/i })
       expect(approve).toBeDisabled()
       expect(sendBack).toBeDisabled()
+
+      const hint = screen.getByText(/only stories in review can be approved or sent back/i)
+      expect(approve).toHaveAttribute('aria-describedby', hint.id)
+      expect(sendBack).toHaveAttribute('aria-describedby', hint.id)
     }
   )
 

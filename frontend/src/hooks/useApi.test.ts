@@ -45,7 +45,7 @@ const originalLocation = window.location
 function setPathname(pathname: string) {
   Object.defineProperty(window, 'location', {
     configurable: true,
-    value: { ...originalLocation, pathname, assign: vi.fn() },
+    value: { ...originalLocation, pathname, assign: vi.fn(), replace: vi.fn() },
   })
 }
 
@@ -70,7 +70,9 @@ describe('useApi 401 interceptor', () => {
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(window.location.assign).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+    // replace(), not assign(): the expired URL must not linger in history.
+    expect(window.location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+    expect(window.location.assign).not.toHaveBeenCalled()
   })
 
   it('clears the token but does not navigate on a kid-path 401', async () => {
@@ -81,7 +83,7 @@ describe('useApi 401 interceptor', () => {
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(window.location.assign).not.toHaveBeenCalled()
+    expect(window.location.replace).not.toHaveBeenCalled()
   })
 
   it('does not redirect loop when already on the guardian login page', async () => {
@@ -92,6 +94,6 @@ describe('useApi 401 interceptor', () => {
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(window.location.assign).not.toHaveBeenCalled()
+    expect(window.location.replace).not.toHaveBeenCalled()
   })
 })
