@@ -88,7 +88,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   downgrade-to-`needs_review` safety net if the skeleton file is missing, so a
   deleted skeleton can no longer strand a half-persisted story. Covered by a
   real file-deletion integration test. Closes #128.
->>>>>>> 33fa922 (docs(changelog): add generation authoring cluster entries (Workstream D3))
 - The integration test suite now fails instead of silently skipping when
   Docker/testcontainers is unavailable while running in CI (`CI` env var set
   to a truthy value such as GitHub Actions' `CI=true`); local runs without
