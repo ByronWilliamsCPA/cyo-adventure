@@ -437,6 +437,14 @@ document which approach the template intends.
 
 **Affected Files**: `frontend/.gitignore`, `.github/workflows/ci.yml`, `CLAUDE.md`
 
+**Resolution (2026-07-06)**: Took the "commit the generated client" branch.
+`frontend/.gitignore` no longer ignores `src/client/`; the generated client is
+now tracked as committed build output, and a new `contract` job in `ci.yml`
+dumps the backend's OpenAPI schema in-process (no live server needed),
+regenerates the client against that dump, and fails the build on any diff
+against the tracked copy. This also closes the gap this entry originally
+flagged (no CI step ever regenerated the client at all).
+
 ### Workflow concurrency keys break the merge queue (missing `|| github.ref`)
 
 - **Priority**: High
