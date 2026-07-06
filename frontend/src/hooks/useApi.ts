@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import { useMemo } from 'react'
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 
 /**
  * Creates and returns a configured Axios instance for API calls.
@@ -51,8 +52,17 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
       (error) => {
         // Handle common errors
         if (error.response?.status === 401) {
-          // Handle unauthorized - redirect to login, clear token, etc.
+          // #ASSUME: security: an expired/invalid session token means the
+          // guardian is no longer authenticated for guardian-only routes.
+          // Kid paths (`/`, `/library/*`) intentionally do NOT navigate here;
+          // the profile-picker's own error UI owns kid-surface 401 recovery.
+          // #VERIFY: only navigate off a guardian path, and never navigate
+          // away from the login page itself (redirect-loop guard).
           localStorage.removeItem('auth_token')
+          const path = window.location.pathname
+          if (path.startsWith('/guardian') && path !== GUARDIAN_LOGIN_PATH) {
+            window.location.assign(GUARDIAN_LOGIN_PATH)
+          }
         }
         return Promise.reject(error)
       }
