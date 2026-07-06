@@ -14,7 +14,7 @@ function renderProtected(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/" element={<div>Kid home</div>} />
+        <Route path="/kids" element={<div>Kid picker</div>} />
         <Route path="/login" element={<div>Login page</div>} />
         <Route
           element={<ProtectedRoute redirectTo="/login" allowedRoles={['guardian', 'admin']} />}
@@ -48,14 +48,14 @@ describe('ProtectedRoute', () => {
     expect(screen.getByText('Login page')).toBeInTheDocument()
   })
 
-  it('sends a signed-in but disallowed role to the kid home, not the login page', () => {
+  it('sends a signed-in but disallowed role to the kid picker, not the login page', () => {
     // Regression guard for the redirect loop: a child hitting /guardian must
     // NOT be bounced to the guardian login (redirectTo), because a login page
     // redirects an already-signed-in user straight back, looping forever. The
-    // default deniedRedirectTo ('/') breaks that cycle.
+    // default deniedRedirectTo (KID_PICKER_PATH, /kids) breaks that cycle.
     mockUseAuth.mockReturnValue({ status: 'signed-in', principal: principal('child') })
     renderProtected('/protected')
-    expect(screen.getByText('Kid home')).toBeInTheDocument()
+    expect(screen.getByText('Kid picker')).toBeInTheDocument()
     expect(screen.queryByText('Login page')).not.toBeInTheDocument()
   })
 
