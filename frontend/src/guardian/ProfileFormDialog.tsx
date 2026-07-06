@@ -124,8 +124,12 @@ export function ProfileFormDialog({
             step="0.5"
             value={cap}
             onChange={(e) => setCap(e.target.value)}
+            aria-describedby="reading-level-cap-help"
           />
         </label>
+        <p id="reading-level-cap-help" className="profile-form__hint">
+          99 means no limit.
+        </p>
         <fieldset className="profile-form__avatars">
           <legend>Avatar</legend>
           <label>
