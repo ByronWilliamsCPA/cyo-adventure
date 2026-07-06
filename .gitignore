@@ -303,3 +303,8 @@ docs/superpowers/plans/
 
 # Superpowers visual brainstorming companion (mockup scratch files)
 .superpowers/
+
+# Naive-user QA reports: pasted-back browser responses may contain real
+# children's/guardians' names, emails, or account details. Keep them local;
+# the tracked .gitkeep preserves the directory.
+docs/qa/naive-ux-reports/*.md
