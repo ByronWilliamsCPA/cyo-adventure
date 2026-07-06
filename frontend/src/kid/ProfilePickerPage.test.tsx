@@ -72,6 +72,13 @@ describe('ProfilePickerPage', () => {
     expect(await screen.findByText(/Oops, we hit a snag/i)).toBeInTheDocument()
   })
 
+  it('announces the error state via a role=alert live region', async () => {
+    mockGet.mockRejectedValue(new Error('boom'))
+    renderPicker()
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/Oops, we hit a snag/i)
+  })
+
   it('recovers to the ready state when Try again succeeds after a failed load', async () => {
     const user = userEvent.setup()
     mockGet.mockRejectedValueOnce(new Error('boom'))

@@ -54,24 +54,26 @@ export function ProfilePickerPage() {
 
   if (state.status === 'error') {
     return (
-      <EmptyState
-        title="Oops, we hit a snag"
-        description="We could not find your storybooks right now."
-        actions={
-          <>
-            <button
-              type="button"
-              className="picker-retry"
-              onClick={() => setReloadKey((k) => k + 1)}
-            >
-              Try again
-            </button>
-            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
-              I am a grown-up
-            </Link>
-          </>
-        }
-      />
+      <div role="alert">
+        <EmptyState
+          title="Oops, we hit a snag"
+          description="We could not find your storybooks right now."
+          actions={
+            <>
+              <button
+                type="button"
+                className="picker-retry"
+                onClick={() => setReloadKey((k) => k + 1)}
+              >
+                Try again
+              </button>
+              <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+                I am a grown-up
+              </Link>
+            </>
+          }
+        />
+      </div>
     )
   }
 
