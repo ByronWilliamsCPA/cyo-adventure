@@ -14,7 +14,12 @@ import pytest
 from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
-from cyo_adventure.app import _handle_project_error, _status_for, create_app
+from cyo_adventure.app import (
+    _INTERNAL_ERROR,
+    _handle_project_error,
+    _status_for,
+    create_app,
+)
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -209,6 +214,37 @@ class TestCreateApp:
             ConfigurationError,
         ):
             assert isinstance(cls("msg"), ProjectBaseError)
+
+
+# ---------------------------------------------------------------------------
+# ResponseValidationError handler (#48)
+# ---------------------------------------------------------------------------
+
+
+class TestResponseValidationErrorHandler:
+    """A route whose return value violates its response_model must surface the
+    standard error envelope (500 + correlation id), not an unhandled traceback."""
+
+    @pytest.mark.unit
+    def test_response_model_violation_returns_standard_envelope(self) -> None:
+        from pydantic import BaseModel
+
+        class _StrictModel(BaseModel):
+            status: str
+
+        app = create_app()
+
+        @app.get("/test-response-validation", response_model=_StrictModel)
+        async def _bad_response() -> dict[str, str]:
+            return {}  # missing required `status` field triggers ResponseValidationError
+
+        client = TestClient(app, raise_server_exceptions=False)
+        response = client.get("/test-response-validation")
+
+        assert response.status_code == 500
+        body = json.loads(response.content)
+        assert body == _INTERNAL_ERROR
+        assert "X-Correlation-ID" in response.headers
 
 
 # ---------------------------------------------------------------------------

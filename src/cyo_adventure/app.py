@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import ResponseValidationError
 from fastapi.responses import JSONResponse
 
 from cyo_adventure.api import (
@@ -114,6 +115,38 @@ def _handle_project_error(_request: Request, exc: Exception) -> JSONResponse:
     return JSONResponse(status_code=status, content=_client_safe_error(payload))
 
 
+def _handle_response_validation_error(
+    _request: Request, exc: Exception
+) -> JSONResponse:
+    """Render a ResponseValidationError as the standard JSON error envelope.
+
+    Raised when a route's return value violates its `response_model` (for
+    example, a status field narrowed to a `Literal` no longer matching
+    runtime data, issue #48). This is a server-side bug, not caller input, so
+    it must never surface as an unhandled traceback to the client. The full
+    Pydantic error detail is logged server-side only; the client gets the
+    same generic `InternalError` envelope as any other unmapped exception.
+
+    Args:
+        _request: The incoming request (unused).
+        exc: The `ResponseValidationError` raised during response
+            serialization.
+
+    Returns:
+        JSONResponse: The standard `InternalError` envelope with a 500
+        status code.
+    """
+    # #CRITICAL: data integrity: a response_model violation means the route
+    # returned data its own contract disallows (e.g. a stale Literal). This
+    # is a bug to fix in the route, not a client error, so log full detail
+    # (with correlation id, via correlation_context_processor) at error level
+    # for debugging while keeping the client body generic.
+    # #VERIFY: alerting/monitoring on this log event so silent contract drift
+    # is caught before it reaches production traffic.
+    logger.error("response_validation_error", error=str(exc))
+    return JSONResponse(status_code=500, content=_INTERNAL_ERROR)
+
+
 def create_app() -> FastAPI:
     """Build and configure the FastAPI application.
 
@@ -129,6 +162,9 @@ def create_app() -> FastAPI:
     app.add_middleware(CorrelationMiddleware)
     add_security_middleware(app)
     app.add_exception_handler(ProjectBaseError, _handle_project_error)
+    app.add_exception_handler(
+        ResponseValidationError, _handle_response_validation_error
+    )
     app.include_router(health.router)
     app.include_router(library.router)
     app.include_router(reading.router)
