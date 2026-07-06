@@ -283,7 +283,7 @@ one family. At minimum the guardian console should present the full playthrough,
 not only flagged passages, so the human actually exercises the compensating
 control.
 
-### Finding 5 [Important] [Closed]: the documented concept-brief control-character strip does not exist
+### Finding 5 [Important, CLOSED]: the documented concept-brief control-character strip does not exist
 
 `generation/concept.py` documents that "the API layer should additionally strip
 control characters before the brief reaches the orchestrator." No such pass exists
