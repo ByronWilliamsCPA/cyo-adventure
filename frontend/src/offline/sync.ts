@@ -204,24 +204,47 @@ function queueKey(item: QueuedWrite): string {
  * (still no network), leaving the rest queued. Writes for the same story made
  * while offline share a base revision; each is rebased onto the latest revision
  * applied earlier in this replay so the reader's sequential progress lands as a
- * chain instead of every write after the first losing a 409 and being dropped. A
- * real cross-device 409 is collected for reconciliation; a non-offline error
- * (e.g. 422/5xx) drops that write so it cannot wedge every later write.
+ * chain instead of every write after the first losing a 409 and being dropped.
+ * That chaining applies only up to a genuine cross-device 409: once a story hits
+ * one, it is latched and every remaining queued write for that story (including
+ * the one that 409'd) is surfaced in outcome.conflicts for reconciliation
+ * instead of being auto-rebased onto the server's revision, which would silently
+ * overwrite the still-unreconciled row. A non-offline error (e.g. 422/5xx) drops
+ * that write so it cannot wedge every later write.
  */
 // #CRITICAL: concurrency: replayQueue replays writes in insertion order.
 // Writes for the same story share a base_revision; latestRevision rebases each
 // subsequent write onto the revision applied by the previous one so the chain
 // lands sequentially rather than every write after the first producing a 409.
+// The FIRST 409 for a story latches it in `conflicted`: every later queued
+// write for that story is held (pushed to outcome.conflicts, dequeued, never
+// sent) rather than auto-rebased onto the server's revision. Auto-rebasing
+// past a genuine cross-device conflict would silently overwrite the
+// unreconciled row before a human (or B2's reconciliation UI) ever sees it.
 // #VERIFY: a genuine cross-device 409 (server advanced by another device mid-
-// replay) is collected in outcome.conflicts, not silently dropped.
+// replay) is collected in outcome.conflicts, not silently dropped, and no
+// write queued after it for the same story reaches the server until the
+// conflict is reconciled.
 
 export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
   const outcome: ReplayOutcome = { replayed: 0, conflicts: [], failed: [] }
   // Latest server revision applied per story during this replay, so subsequent
   // same-base writes rebase onto it rather than 409 against a stale base.
   const latestRevision = new Map<string, number>()
+  // Stories that have already hit a genuine cross-device 409 in this replay.
+  // Every remaining write for such a story is held, not sent.
+  const conflicted = new Set<string>()
   for (const item of await listQueue()) {
     const key = queueKey(item)
+    if (conflicted.has(key)) {
+      // A prior write for this story hit a genuine cross-device conflict. Do
+      // not auto-rebase the tail onto the server revision (that would
+      // overwrite the still-unreconciled row); surface every held write to
+      // reconciliation instead.
+      outcome.conflicts.push(item)
+      await dequeue(item.event_id)
+      continue
+    }
     const knownRevision = latestRevision.get(key)
     const state =
       knownRevision === undefined ? item.state : { ...item.state, state_revision: knownRevision }
@@ -244,7 +267,7 @@ export async function replayQueue(api: SyncApi): Promise<ReplayOutcome> {
     }
     if (res.status === 409) {
       outcome.conflicts.push(item)
-      latestRevision.set(key, res.currentRow.state_revision)
+      conflicted.add(key) // latch: hold every later write for this story too
     } else {
       await putReadingState(item.profile_id, item.storybook_id, res.row)
       outcome.replayed += 1

@@ -241,6 +241,24 @@ describe('replayQueue', () => {
     expect(await listQueue()).toHaveLength(0)
   })
 
+  it('holds every queued write for a story after its first cross-device conflict', async () => {
+    // three queued writes for the same profile/story, increasing progress
+    const offline = fakeApi(() => {
+      throw new OfflineError()
+    })
+    await saveProgress(offline, 'p1', 's1', makeState('a', 0), { newId: ids })
+    await saveProgress(offline, 'p1', 's1', makeState('b', 1), { newId: ids })
+    await saveProgress(offline, 'p1', 's1', makeState('c', 2), { newId: ids })
+    expect(await listQueue()).toHaveLength(3)
+
+    const online = fakeApi(() => ({ status: 409, currentRow: rowAt('server', 7) }))
+    const outcome = await replayQueue(online)
+    expect(outcome.replayed).toBe(0)
+    expect(outcome.conflicts).toHaveLength(3) // w1 (the 409) AND w2, w3 (held, not auto-rebased)
+    expect(online.calls).toHaveLength(1) // w2/w3 never sent
+    expect(await listQueue()).toHaveLength(0) // all surfaced to reconciliation, none silently kept
+  })
+
   it('drops a write that fails with a non-offline error without wedging the queue', async () => {
     const offline = fakeApi(() => {
       throw new OfflineError()
