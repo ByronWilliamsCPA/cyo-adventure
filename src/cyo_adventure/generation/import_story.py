@@ -324,6 +324,7 @@ async def resume_manual_fill(
             original_skeleton,
             blob,
             review_stage1_model=review_stage1_model,
+            prep_model=job.model,
             settings=_default_settings,
             pii=pii,
         )

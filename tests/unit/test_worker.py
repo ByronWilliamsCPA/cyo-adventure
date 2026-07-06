@@ -34,6 +34,7 @@ from cyo_adventure.generation.worker import (
     _review_stage2_override,
     _run_skeleton_fill,
     _should_persist_storybook,
+    _SkeletonFillContext,
 )
 from cyo_adventure.storybook.models import Storybook
 
@@ -424,8 +425,10 @@ async def test_run_skeleton_fill_missing_slug_raises() -> None:
     """
     with pytest.raises(ResourceNotFoundError):
         await _run_skeleton_fill(
-            {"theme_brief": {}},  # no skeleton_slug key
-            cast("ConceptBrief", object()),
-            cast("GenerationProvider", object()),
-            PiiContext(child_names=frozenset(), birthdates=frozenset()),
+            _SkeletonFillContext(
+                authoring={"theme_brief": {}},  # no skeleton_slug key
+                brief=cast("ConceptBrief", object()),
+                effective_provider=cast("GenerationProvider", object()),
+                pii=PiiContext(child_names=frozenset(), birthdates=frozenset()),
+            )
         )

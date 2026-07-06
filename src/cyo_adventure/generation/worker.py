@@ -130,12 +130,36 @@ def _provider_label(provider: GenerationProvider) -> str:
 # and that mock story generation does not include any real-child name in prompts.
 
 
-async def _run_skeleton_fill(
-    authoring: dict[str, object],
-    brief: ConceptBrief,
-    effective_provider: GenerationProvider,
-    pii: PiiContext,
-) -> GenerationOutcome:
+@dataclasses.dataclass(frozen=True, slots=True)
+class _SkeletonFillContext:
+    """Grouped parameters for :func:`_run_skeleton_fill`.
+
+    Bundled into one object (mirroring :class:`_PersistContext` below) so the
+    function stays under the argument-count limit while keeping each field
+    explicit.
+
+    Attributes:
+        authoring: The job's ``authoring_metadata`` dict (set by
+            ``story_requests/authoring_plan.py::build_authoring_plan`` for
+            ``method="skeleton_fill"`` + ``mechanism="automated_provider"``).
+        brief: The concept brief; only its ``age_band`` is used, to resolve
+            the skeleton library path.
+        effective_provider: The provider used for the fill/repair calls.
+        pii: PII context for the egress guard on every prompt.
+        prep_model: The job's prep_model (``GenerationJob.model`` at call
+            time, before the post-run label overwrite), threaded into the
+            Stage 1 gate as its review-model fallback whenever the job's
+            ``review_stage1_model`` override is unset (closes #134).
+    """
+
+    authoring: dict[str, object]
+    brief: ConceptBrief
+    effective_provider: GenerationProvider
+    pii: PiiContext
+    prep_model: str | None = None
+
+
+async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     """Run the automated skeleton-fill pipeline (Stage B') for one job.
 
     Loads the matched skeleton library file, fills it via
@@ -145,13 +169,7 @@ async def _run_skeleton_fill(
     the produced storybook, so a guardian/admin can still review the fill.
 
     Args:
-        authoring: The job's ``authoring_metadata`` dict (set by
-            ``story_requests/authoring_plan.py::build_authoring_plan`` for
-            ``method="skeleton_fill"`` + ``mechanism="automated_provider"``).
-        brief: The concept brief; only its ``age_band`` is used, to resolve
-            the skeleton library path.
-        effective_provider: The provider used for the fill/repair calls.
-        pii: PII context for the egress guard on every prompt.
+        ctx: The grouped skeleton-fill context (see :class:`_SkeletonFillContext`).
 
     Returns:
         The :class:`~cyo_adventure.generation.orchestrator.GenerationOutcome`,
@@ -164,6 +182,7 @@ async def _run_skeleton_fill(
         ValidationError: If the matched skeleton file fails structural
             validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`).
     """
+    authoring = ctx.authoring
     skeleton_slug = authoring.get("skeleton_slug")
     theme_brief = authoring.get("theme_brief")
     # #ASSUME: data-integrity: authoring_metadata for a method="skeleton_fill"
@@ -174,10 +193,14 @@ async def _run_skeleton_fill(
     if not isinstance(skeleton_slug, str):
         msg = "authoring_metadata.skeleton_slug is missing or not a string"
         raise ResourceNotFoundError(msg)
-    skeleton_path = Path("skeletons") / brief.age_band.value / f"{skeleton_slug}.json"
+    skeleton_path = (
+        Path("skeletons") / ctx.brief.age_band.value / f"{skeleton_slug}.json"
+    )
     skeleton = load_skeleton(skeleton_path)
     theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
-    outcome = await fill_skeleton(skeleton, theme_brief_dict, effective_provider, pii)
+    outcome = await fill_skeleton(
+        skeleton, theme_brief_dict, ctx.effective_provider, ctx.pii
+    )
     if outcome.storybook is None:
         return outcome
 
@@ -196,8 +219,9 @@ async def _run_skeleton_fill(
         review_stage1_model=review_stage1_model
         if isinstance(review_stage1_model, str)
         else None,
+        prep_model=ctx.prep_model,
         settings=_default_settings,
-        pii=pii,
+        pii=ctx.pii,
     )
     if stage1_violations:
         return dataclasses.replace(
@@ -542,7 +566,13 @@ async def run_generation_job(
         try:
             if authoring is not None:
                 outcome = await _run_skeleton_fill(
-                    authoring, brief, effective_provider, pii
+                    _SkeletonFillContext(
+                        authoring=authoring,
+                        brief=brief,
+                        effective_provider=effective_provider,
+                        pii=pii,
+                        prep_model=job_row.model,
+                    )
                 )
             else:
                 outcome = await generate_story(brief, effective_provider, pii)
