@@ -8,9 +8,11 @@ commit), matching the worker's unit-of-work contract.
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 
 if TYPE_CHECKING:
@@ -19,6 +21,15 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
 _FIRST_VERSION = 1
+
+# Byte ceiling for the stored blob and validation_report JSONB columns (audit
+# Finding 12). Neither has a natural structural size cap (a story blob's node
+# count is bounded elsewhere, but total serialized size also depends on prose
+# length; a validation_report's finding count is data-dependent), so this is a
+# flat resource-exhaustion backstop rather than a value derived from story
+# structure: 2,000,000 bytes (2 MB) comfortably exceeds any real story or
+# report while still bounding a pathological or malicious multi-megabyte blob.
+_MAX_BLOB_BYTES = 2_000_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,11 +72,27 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
 
     Returns:
         The ``story_id`` that was persisted.
+
+    Raises:
+        ValidationError: If the stamped blob or the validation report
+            serializes to more than ``_MAX_BLOB_BYTES`` (audit Finding 12).
     """
     # #CRITICAL: data-integrity: the stored blob's id must equal its DB row id, or
     # the reader resolves a story by a key absent from the blob.
     # #VERIFY: test_persist_creates_storybook_and_version asserts blob["id"] == story_id.
     stamped = {**params.blob, "id": params.story_id}
+
+    # #CRITICAL: security: guard both JSONB payloads BEFORE any row is added,
+    # so an oversized blob or report never partially persists (Storybook row
+    # created, StorybookVersion rejected) and never reaches the database as an
+    # unbounded write.
+    # #VERIFY: test_persist_rejects_oversized_blob and
+    # test_persist_rejects_oversized_validation_report assert session.added
+    # stays empty; the ``_at_byte_limit_accepted`` counterparts assert the
+    # boundary itself still passes.
+    _check_byte_budget(stamped, field="blob")
+    if params.validation_report is not None:
+        _check_byte_budget(params.validation_report, field="validation_report")
 
     storybook_row = Storybook(
         id=params.story_id,
@@ -88,3 +115,21 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
     await session.flush()
 
     return params.story_id
+
+
+def _check_byte_budget(payload: dict[str, object], *, field: str) -> None:
+    """Raise ``ValidationError`` when ``payload``'s serialized size is too large.
+
+    Args:
+        payload: The JSONB-bound dict to size-check (the stamped blob, or the
+            validation report).
+        field: The field name to attach to the raised error for context.
+
+    Raises:
+        ValidationError: If ``len(json.dumps(payload))`` exceeds
+            ``_MAX_BLOB_BYTES``.
+    """
+    size = len(json.dumps(payload))
+    if size > _MAX_BLOB_BYTES:
+        msg = f"{field} serialized size {size} exceeds the {_MAX_BLOB_BYTES}-byte limit"
+        raise ValidationError(msg, field=field)
