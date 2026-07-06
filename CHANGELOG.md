@@ -12,6 +12,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `/kids`) and Grown-ups (to the guardian console; admins sign in there too).
   Kid deep links (`/library/...`, `/read/...`) are unchanged; the reader's
   "Back to start" fallback now returns to `/kids`.
+- Kid profile picker now recovers from a failed load instead of dead-ending: the
+  error state is a `role=alert` live region with a Retry button and a "grown-up"
+  sign-in link (naive-UX K1, #73).
+- Guardian console and intake nudge a childless family toward profile creation:
+  the console empty state and the intake "Add a child profile first" hint are now
+  real links to `/guardian/profiles` (naive-UX F3/F4).
+- Reading-level-cap field explains that 99 means no limit via `aria-describedby`
+  (naive-UX F5).
+- Shared `classifyApiError` helper distinguishes 401 / 403 / transient failures so
+  a permanent permission error (for example an admin creating a child profile) no
+  longer reads as a retryable "try again" (naive-UX F1, G2).
 
 ### Fixed
 - The integration test suite now fails instead of silently skipping when
@@ -35,6 +46,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `{{ cookiecutter.project_name }}` placeholders in `frontend/index.html`;
   surfaced by a naive-user UX pass where the placeholder was the first thing a
   kid persona noticed. Takes effect on the next frontend image rebuild.
+- Guardian review actions are gated on story status: Approve and Send Back are
+  disabled (with an `aria-describedby` hint explaining why, and their action names
+  preserved for assistive tech) for a story that is not `in_review`, closing the
+  re-approval affordance gap (#130).
+- Guardian surfaces redirect to the login page on a 401 (token cleared via
+  `window.location.replace` so the expired URL does not linger in history); kid
+  surfaces keep their own picker recovery (#73).
 - Guardian Google sign-in now completes in the browser: `signInWithOAuth` passes
   `redirectTo=<origin>/guardian/login` so the OAuth callback returns to the
   guardian subtree. Previously it returned to Supabase's Site URL (`/`, the kid
