@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { makeReviewApi, type FindingView, type ReviewSurface } from './reviewApi'
@@ -41,7 +42,7 @@ function readNodes(blob: Record<string, unknown>): StoryNode[] {
 
 type LoadState =
   | { kind: 'loading' }
-  | { kind: 'error' }
+  | { kind: 'error'; message: string }
   | { kind: 'ready'; surface: ReviewSurface }
 
 type ActionDialog = null | 'approve' | 'sendback'
@@ -85,7 +86,14 @@ export function ReviewDetailPage() {
         // Log the message, not the axios error object (its config.headers
         // carries the caller's Authorization bearer token).
         console.error('review surface load failed:', err instanceof Error ? err.message : err)
-        if (!cancelled) setState({ kind: 'error' })
+        if (!cancelled) {
+          setState({
+            kind: 'error',
+            message: classifyApiError(err, {
+              transient: 'We could not load this story for review. Please reload.',
+            }).message,
+          })
+        }
       }
     }
     void load()
@@ -132,7 +140,7 @@ export function ReviewDetailPage() {
   if (state.kind === 'error') {
     return (
       <p role="alert" className="console__error">
-        We could not load this story for review. Please reload.
+        {state.message}
       </p>
     )
   }

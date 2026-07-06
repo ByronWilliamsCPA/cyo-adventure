@@ -1,8 +1,8 @@
-import { isAxiosError } from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import {
@@ -41,7 +41,7 @@ export function RequestsPage() {
         // surface a clear notice rather than the generic error state.
         // #VERIFY: RequestsPage.test.tsx asserts the notice on a 403 and the
         // generic error on a 500.
-        if (isAxiosError(err) && err.response?.status === 403) {
+        if (classifyApiError(err).kind === 'forbidden') {
           if (!cancelled) setState({ kind: 'forbidden' })
           return
         }

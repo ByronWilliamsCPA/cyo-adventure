@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -74,8 +75,8 @@ export function AssignChildrenDialog({
   const [profiles, setProfiles] = useState<ProfileView[] | null>(null)
   const [assigned, setAssigned] = useState<Set<string>>(new Set())
   const [picked, setPicked] = useState<Set<string>>(new Set())
-  const [loadError, setLoadError] = useState(false)
-  const [saveError, setSaveError] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [summary, setSummary] = useState<ContentSummary | null>(null)
   const [summaryError, setSummaryError] = useState(false)
@@ -94,7 +95,13 @@ export function AssignChildrenDialog({
         }
       } catch (err) {
         console.error('assign dialog load failed', err)
-        if (!cancelled) setLoadError(true)
+        if (!cancelled) {
+          setLoadError(
+            classifyApiError(err, {
+              transient: "We could not load your family's profiles and assignments.",
+            }).message,
+          )
+        }
       }
     }
     void load()
@@ -155,14 +162,18 @@ export function AssignChildrenDialog({
       return
     }
     setSaving(true)
-    setSaveError(false)
+    setSaveError(null)
     try {
       const result = await assignApi.add(storybookId, additions)
       onAssigned?.(result)
       onClose()
     } catch (err) {
       console.error('assign save failed', err)
-      setSaveError(true)
+      setSaveError(
+        classifyApiError(err, {
+          transient: 'We could not assign this story. Please try again.',
+        }).message,
+      )
       setSaving(false)
     }
   }
@@ -186,18 +197,14 @@ export function AssignChildrenDialog({
       }
     >
       {loadError ? (
-        <p role="alert">
-          We could not load your family&apos;s profiles and assignments.
-        </p>
+        <p role="alert">{loadError}</p>
       ) : profiles === null ? (
         <div role="status" aria-live="polite">
           Loading…
         </div>
       ) : (
         <>
-          {saveError ? (
-            <p role="alert">We could not assign this story. Please try again.</p>
-          ) : null}
+          {saveError ? <p role="alert">{saveError}</p> : null}
           {summaryError ? (
             <p className="assign__content-summary console__notice">
               Content review unavailable right now. You can still assign, but
