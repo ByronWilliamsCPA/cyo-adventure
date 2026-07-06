@@ -16,6 +16,11 @@ services:
       ENVIRONMENT: production
       JSON_LOGS: "true"
       LOG_LEVEL: ${LOG_LEVEL:-WARNING}
+      # Task E1 (audit Group A: A1/A2): overridable per-deployment; the base
+      # docker-compose.yml `command:` already threads this through uvicorn's
+      # --forwarded-allow-ips, so only the value needs overriding here. Never
+      # set this to "*"; see core/config.py's forwarded_allow_ips docstring.
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}
 
     # Production replicas (for load balancing)
     deploy:

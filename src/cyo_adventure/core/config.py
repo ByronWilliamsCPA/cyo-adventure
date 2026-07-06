@@ -297,6 +297,36 @@ class Settings(BaseSettings):
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
 
+    # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
+    # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
+    # It is consumed by uvicorn's --forwarded-allow-ips CLI flag (set from this same
+    # env var in the Dockerfile CMD and docker-compose*.yml `command:`), which is
+    # what actually decides whether X-Forwarded-For/X-Forwarded-Proto are honored;
+    # this Settings field mirrors that value for introspection and tests, it does not
+    # itself gate anything at request time. Before this fix, the backend never
+    # trusted any proxy header: RateLimitMiddleware keyed on the nginx container's
+    # own IP (security.py, all clients collapsed into one bucket) and
+    # SecurityHeadersMiddleware's HSTS branch (request.url.scheme == "https") never
+    # fired behind the TLS-terminating reverse proxy. Defaults to the RFC 1918
+    # 172.16.0.0/12 block: this covers Docker's default bridge-network address pool
+    # (172.17.0.0-172.31.255.255), which is what actually matters here, since the
+    # homelab-infra production stack's `backend-net` (the network the nginx
+    # container that fronts this backend reaches it over) has no pinned subnet and
+    # is auto-assigned by Docker from that same pool; this repo's own local
+    # docker-compose.yml subnet (172.25.0.0/16 as of this writing) has already moved
+    # once and is not itself authoritative for production. Never widen this to "*"
+    # (uvicorn's own trust-everyone sentinel): that would let any client spoof its
+    # own IP (defeating per-client rate limiting) or scheme (forging HSTS).
+    # #VERIFY: FORWARDED_ALLOW_IPS must never be set to "*" in any Dockerfile,
+    # compose file, or deployment env. Principal-keying (auth subject rather than
+    # IP) and a Redis-backed rate-limit store are tracked separately in issue #71
+    # (R2 rate-limit policy); this setting only restores correct client-IP/scheme
+    # visibility at the proxy boundary, it does not change how RateLimitMiddleware
+    # keys or stores requests.
+    forwarded_allow_ips: str = Field(
+        default="172.16.0.0/12", validation_alias="FORWARDED_ALLOW_IPS"
+    )
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.

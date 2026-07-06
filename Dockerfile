@@ -109,7 +109,28 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
 
 # Default command - run web server. The application module is
 # cyo_adventure.app (create_app() at import time); there is no main.py.
-CMD ["uvicorn", "cyo_adventure.app:app", "--host", "0.0.0.0", "--port", "8000"]
+# --proxy-headers/--forwarded-allow-ips (Task E1, audit Group A: A1/A2): trust
+# X-Forwarded-For/-Proto from this CIDR only, so RateLimitMiddleware keys on
+# the real client (security.py) instead of the nginx/Traefik container's own
+# IP, and SecurityHeadersMiddleware's HSTS branch (request.url.scheme ==
+# "https") can fire behind the TLS-terminating reverse proxy.
+# #CRITICAL: security: 172.16.0.0/12 covers Docker's default bridge-network
+# address pool, which both this repo's local docker-compose.yml network and
+# the homelab-infra production stack's unpinned `backend-net` are allocated
+# from (see core/config.py's forwarded_allow_ips docstring for the full
+# rationale). This exec-form CMD is a hardcoded fallback, not the override
+# point: the DHI hardened runtime image ships no shell (confirmed for this
+# same image elsewhere in this repo, e.g. the homelab-infra worker service's
+# command comment), so it cannot itself expand
+# ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}. docker-compose.yml and
+# docker-compose.prod.yml override the CIDR via their own compose-level
+# `command:` with client-side ${FORWARDED_ALLOW_IPS:-...} substitution
+# (resolved by the docker compose CLI before the container starts, needing no
+# shell inside the image), mirroring that same established pattern.
+# #VERIFY: never set FORWARDED_ALLOW_IPS to "*" in any compose override or
+# deployment env; that would let any upstream peer spoof its own client IP or
+# scheme.
+CMD ["uvicorn", "cyo_adventure.app:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips=172.16.0.0/12"]
 # =============================================================================
 # Build Arguments (optional, for build-time configuration)
 # =============================================================================

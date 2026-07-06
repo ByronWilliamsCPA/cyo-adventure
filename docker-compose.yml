@@ -39,6 +39,30 @@ services:
       # GOOGLE_APPLICATION_CREDENTIALS_B64: ${GOOGLE_APPLICATION_CREDENTIALS_B64:-}
       # GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
 
+      # Task E1 (audit Group A: A1/A2): trust boundary for X-Forwarded-For/
+      # -Proto (uvicorn --forwarded-allow-ips below). Default covers Docker's
+      # default bridge-network address pool, which this stack's network (see
+      # the `networks:` block at the bottom of this file) is allocated from.
+      # See core/config.py's forwarded_allow_ips docstring for the full
+      # rationale; never set this to "*".
+      FORWARDED_ALLOW_IPS: ${FORWARDED_ALLOW_IPS:-172.16.0.0/12}
+
+    # Overrides the Dockerfile's hardcoded CMD default so this env var actually
+    # takes effect: the DHI hardened runtime image ships no shell, so the
+    # Dockerfile's own exec-form CMD cannot expand ${FORWARDED_ALLOW_IPS:-...}
+    # itself (see the Dockerfile's CMD comment). Compose resolves this
+    # substitution client-side before the container starts, so no in-container
+    # shell is needed.
+    command:
+      - uvicorn
+      - cyo_adventure.app:app
+      - --host
+      - "0.0.0.0"
+      - --port
+      - "8000"
+      - --proxy-headers
+      - --forwarded-allow-ips=${FORWARDED_ALLOW_IPS:-172.16.0.0/12}
+
     volumes:
       # Development: Mount source code for hot reload
       - ./src:/app/src:ro

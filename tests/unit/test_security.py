@@ -1,7 +1,9 @@
 """Tests for cyo_adventure.middleware.security module.
 
 Covers SecurityHeadersMiddleware, RateLimitMiddleware, SSRFPreventionMiddleware,
-and the add_security_middleware configuration function.
+the add_security_middleware configuration function, and the proxy-header trust
+boundary (Task E1) that lets both RateLimitMiddleware and SecurityHeadersMiddleware
+see the real client behind the nginx/Traefik reverse proxy.
 
 All tests use a minimal FastAPI app with TestClient; no real network calls.
 """
@@ -11,7 +13,7 @@ from __future__ import annotations
 import time
 
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.testclient import TestClient
 
 pytestmark = [pytest.mark.security]
@@ -515,3 +517,150 @@ class TestAddSecurityMiddleware:
         response = client.get("/")
 
         assert response.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Proxy header trust boundary (Task E1, audit Group A: A1 rate-limit keying,
+# A2 HSTS gating)
+# ---------------------------------------------------------------------------
+#
+# Neither RateLimitMiddleware nor SecurityHeadersMiddleware reads
+# X-Forwarded-For/X-Forwarded-Proto directly: they read request.client.host
+# and request.url.scheme, which Starlette populates from the ASGI scope's
+# "client" and "scheme" keys. Behind the nginx/Traefik TLS-terminating
+# reverse proxy, the raw scope always carries the proxy's own IP and plain
+# "http" scheme unless something rewrites the scope first. uvicorn's
+# ProxyHeadersMiddleware is that rewriter: run with --proxy-headers
+# --forwarded-allow-ips=<CIDR>, it rewrites scope["client"]/scope["scheme"]
+# from X-Forwarded-For/-Proto, but ONLY when the immediate TCP peer is inside
+# the trusted CIDR. These tests exercise the real uvicorn middleware (not a
+# mock) at the ASGI layer via TestClient(app, client=(...)), which sets the
+# scope's "client" tuple to simulate the immediate TCP peer -- no live server
+# needed to prove the trust boundary.
+
+
+class TestProxyHeaderTrust:
+    """ASGI-layer tests proving the proxy-header trust boundary works."""
+
+    @staticmethod
+    def _proxy_wrapped_app(trusted_hosts: str) -> object:
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        app = _minimal_app()
+
+        @app.get("/whoami")
+        async def whoami(request: Request) -> dict[str, str | None]:
+            return {
+                "scheme": request.url.scheme,
+                "client_host": request.client.host if request.client else None,
+            }
+
+        return ProxyHeadersMiddleware(app, trusted_hosts=trusted_hosts)
+
+    @pytest.mark.unit
+    def test_trusted_proxy_forwarded_headers_rewrite_scheme_and_client(self) -> None:
+        """A request whose immediate peer is inside the trusted CIDR has its
+        scheme and client rewritten from X-Forwarded-Proto/-For.
+        """
+        app = self._proxy_wrapped_app(trusted_hosts="172.16.0.0/12")
+        # 172.20.0.5 simulates the immediate TCP peer (e.g. the nginx sidecar
+        # on the compose bridge network), which sits inside the trusted CIDR.
+        client = TestClient(app, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        response = client.get(
+            "/whoami",
+            headers={
+                "X-Forwarded-Proto": "https",
+                "X-Forwarded-For": "203.0.113.9",
+            },
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["scheme"] == "https"
+        assert body["client_host"] == "203.0.113.9"
+
+    @pytest.mark.unit
+    def test_untrusted_source_forwarded_headers_are_ignored(self) -> None:
+        """A request from OUTSIDE the trusted CIDR keeps its original scheme
+        and client: forwarded headers from an untrusted peer must be ignored,
+        not trusted, or any client could spoof its own IP/scheme.
+        """
+        app = self._proxy_wrapped_app(trusted_hosts="172.16.0.0/12")
+        # 8.8.8.8 is outside 172.16.0.0/12: an attacker (or misrouted
+        # request) reaching the backend directly rather than via the proxy.
+        client = TestClient(app, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        response = client.get(
+            "/whoami",
+            headers={
+                "X-Forwarded-Proto": "https",
+                "X-Forwarded-For": "203.0.113.9",
+            },
+        )
+
+        assert response.status_code == 200
+        body = response.json()
+        assert body["scheme"] == "http"  # unchanged: TestClient's own scheme
+        assert body["client_host"] == "8.8.8.8"  # unchanged: untrusted source
+
+    @pytest.mark.unit
+    def test_trusted_proxy_https_scheme_fires_hsts_header(self) -> None:
+        """End-to-end: a trusted-proxy https-forwarded request makes
+        SecurityHeadersMiddleware's HSTS branch (security.py) fire.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import SecurityHeadersMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(SecurityHeadersMiddleware)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        client = TestClient(wrapped, client=("172.20.0.5", 12345))  # type: ignore[arg-type]
+
+        response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+
+        assert "Strict-Transport-Security" in response.headers
+
+    @pytest.mark.unit
+    def test_untrusted_source_https_header_does_not_fire_hsts(self) -> None:
+        """An untrusted source cannot forge HSTS by sending X-Forwarded-Proto
+        on its own: the scheme stays "http" so the HSTS branch stays closed.
+        """
+        from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+
+        from cyo_adventure.middleware.security import SecurityHeadersMiddleware
+
+        app = _minimal_app()
+        app.add_middleware(SecurityHeadersMiddleware)
+        wrapped = ProxyHeadersMiddleware(app, trusted_hosts="172.16.0.0/12")
+        client = TestClient(wrapped, client=("8.8.8.8", 12345))  # type: ignore[arg-type]
+
+        response = client.get("/", headers={"X-Forwarded-Proto": "https"})
+
+        assert "Strict-Transport-Security" not in response.headers
+
+    @pytest.mark.unit
+    def test_forwarded_allow_ips_setting_defaults_to_private_cidr(self) -> None:
+        """Settings.forwarded_allow_ips defaults to a private CIDR, never '*'.
+
+        A wildcard default would let ANY upstream peer forge its client IP
+        (bypassing per-client rate-limit keying) or scheme (forging HSTS).
+        """
+        from cyo_adventure.core.config import Settings
+
+        default_value = Settings().forwarded_allow_ips
+
+        assert default_value == "172.16.0.0/12"
+        assert default_value != "*"
+
+    @pytest.mark.unit
+    def test_forwarded_allow_ips_setting_overridable_via_env(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """FORWARDED_ALLOW_IPS env var overrides the Settings default."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("FORWARDED_ALLOW_IPS", "203.0.113.0/24")
+
+        assert Settings().forwarded_allow_ips == "203.0.113.0/24"
