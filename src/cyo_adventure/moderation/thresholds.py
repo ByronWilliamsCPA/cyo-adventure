@@ -150,3 +150,71 @@ async def load_threshold_policy(
             min_verdict=verdict, min_score=row.min_score
         )
     return ThresholdPolicy(rows=rows)
+
+
+# The code default for the admin noise floor, mirrored in the seed row inserted
+# by migrations/versions/20260707_1700_add_moderation_setting.py
+# ("admin_noise_floor" = 0.05). Used when the moderation_setting row is absent
+# (e.g. a test schema built from ORM metadata rather than migrated).
+ADMIN_NOISE_FLOOR_DEFAULT = 0.05
+
+
+def admin_surfaces(
+    verdict: Verdict | str,
+    score: float | None,
+    *,
+    noise_floor: float,
+) -> bool:
+    """Return whether a finding surfaces on the ADMIN review view specifically.
+
+    This denoises the admin view only; it is unrelated to ``ThresholdPolicy``
+    which gates guardian/kid-facing surfaces. It never hides a FLAG or BLOCK
+    finding (including a bright-line BLOCK carrying score ``0.0``) and never
+    hides an unscored finding. It hides only an ADVISORY finding whose score
+    is present and below ``noise_floor``.
+
+    Args:
+        verdict: The finding's verdict; serialized strings are coerced.
+        score: The finding's classifier score, if any.
+        noise_floor: The admin-configured global noise floor in [0.0, 1.0].
+
+    Returns:
+        bool: True when the finding should surface on the admin review view.
+    """
+    # #ASSUME: data-integrity: verdicts arrive from unconstrained JSONB, so an
+    # out-of-enum string must degrade to "hidden", never raise.
+    # #VERIFY: test_admin_surfaces_unknown_verdict_hidden.
+    if not isinstance(verdict, Verdict):
+        try:
+            verdict = Verdict(verdict)
+        except ValueError:
+            return False
+    if verdict is Verdict.PASS:
+        return False
+    return not (
+        verdict is Verdict.ADVISORY and score is not None and score < noise_floor
+    )
+
+
+async def load_admin_noise_floor(session: AsyncSession) -> float:
+    """Load the admin noise floor scalar, falling back to the code default.
+
+    Args:
+        session: The request-scoped async session.
+
+    Returns:
+        float: The stored ``admin_noise_floor`` value, or
+        ``ADMIN_NOISE_FLOOR_DEFAULT`` when the row is absent (a test schema
+        built from ORM metadata with no seed migration applied, or a
+        not-yet-migrated deployment).
+    """
+    # #ASSUME: external-resources: one small primary-key lookup per admin
+    # review request; this is a single scalar row, so no request-scope
+    # caching is added.
+    # #VERIFY: tests/integration covering load_admin_noise_floor.
+    from cyo_adventure.db.models import ModerationSetting  # noqa: PLC0415
+
+    row = await session.get(ModerationSetting, "admin_noise_floor")
+    if row is None:
+        return ADMIN_NOISE_FLOOR_DEFAULT
+    return row.value

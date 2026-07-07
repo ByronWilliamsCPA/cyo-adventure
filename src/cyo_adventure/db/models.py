@@ -505,6 +505,48 @@ class ModerationThresholdAudit(Base):
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
+class ModerationSetting(Base):
+    """A single named global moderation scalar (WS-A admin noise-floor addendum).
+
+    Distinct from ``ModerationThreshold``: this table holds global scalars
+    (currently one row, key ``admin_noise_floor``) rather than sparse
+    per-(age_band, category) overrides. No append-only audit table backs this
+    one; see the module-level design note in
+    ``docs/planning/ws-a-admin-noise-floor.md`` ("Design decision") for the
+    deliberate YAGNI call.
+
+    Attributes:
+        key: The setting's unique name (e.g. ``admin_noise_floor``).
+        value: The scalar value, constrained to [0.0, 1.0].
+        updated_by: The admin who last edited this setting, or ``None``.
+        updated_at: Last edit time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "moderation_setting"
+    # #ASSUME: security: admin_noise_floor controls which ADVISORY findings
+    # surface on the admin moderation review surface; a row persisted with an
+    # out-of-range value could hide real signal behind an over-wide floor (or
+    # defeat the denoise with a floor of 0). The ck_moderation_setting_value
+    # CHECK is the at-rest backstop against any non-API write path.
+    # #VERIFY: the application boundary (Task A3's PUT endpoint) validates
+    # to [0, 1] before writing; tests/integration/test_moderation_setting_migration.py
+    # round-trips the migration that creates this CHECK.
+    __table_args__ = (
+        CheckConstraint(
+            "value >= 0 AND value <= 1", name="ck_moderation_setting_value"
+        ),
+    )
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[float] = mapped_column()
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+
 class GenerationJob(Base):
     """Tracks a single staged-generation attempt for a Concept.
 
