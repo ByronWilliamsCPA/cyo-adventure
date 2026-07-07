@@ -247,6 +247,10 @@ async def list_story_requests(
     """
     stmt = (
         select(StoryRequest, ChildProfile.age_band)
+        # #EDGE: data-integrity: INNER JOIN assumes every StoryRequest.profile_id
+        # resolves to a live ChildProfile (non-nullable FK, no soft-delete today).
+        # #VERIFY: switch to LEFT OUTER JOIN with an age-band default fallback if
+        # ChildProfile ever gains a soft-delete path.
         .join(ChildProfile, StoryRequest.profile_id == ChildProfile.id)
         .order_by(StoryRequest.created_at.desc())
     )
