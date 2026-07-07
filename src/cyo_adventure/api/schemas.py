@@ -767,3 +767,36 @@ class MeResponse(BaseModel):
     role: str
     family_id: str
     profile_ids: list[str]
+
+
+# ---------------------------------------------------------------------------
+# Moderation threshold admin CRUD (WS-A)
+# ---------------------------------------------------------------------------
+
+# The surfacing floor domain; PASS is deliberately excluded (never surfaces).
+MinVerdict = Literal["advisory", "flag", "block"]
+
+
+class ThresholdView(BaseModel):
+    """One stored (age_band, category) surfacing override."""
+
+    age_band: str
+    category: str
+    min_verdict: MinVerdict
+    min_score: float | None
+
+
+class ThresholdListView(BaseModel):
+    """All overrides plus the code default and the category suggestion list."""
+
+    default_min_verdict: MinVerdict
+    default_min_score: float | None
+    known_categories: list[str]
+    rows: list[ThresholdView]
+
+
+class ThresholdUpsertBody(BaseModel):
+    """PUT body for a threshold override."""
+
+    min_verdict: MinVerdict
+    min_score: float | None = Field(default=None, ge=0.0, le=1.0)
