@@ -2531,6 +2531,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#scaffolded-apistatus-demo-component-has-no-removal-trail-once-the-app-has-real-api-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaffolded ApiStatus demo component has no removal trail once the app has real API calls
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2961,6 +2972,17 @@
     <span class="md-ellipsis">
       
         frontend's npm run typecheck silently checks zero files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scaffolded-apistatus-demo-component-has-no-removal-trail-once-the-app-has-real-api-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaffolded ApiStatus demo component has no removal trail once the app has real API calls
       
     </span>
   </a>
@@ -3513,6 +3535,31 @@ generated <code>package.json</code> noting that the root <code>tsconfig.json</co
 <code>--noEmit</code> alone will not check anything through it.</p>
 <p><strong>Affected Files</strong>: template <code>frontend/package.json</code> (<code>typecheck</code> script), template
 <code>frontend/tsconfig.json</code> scaffold comment</p>
+<h3 id="scaffolded-apistatus-demo-component-has-no-removal-trail-once-the-app-has-real-api-calls">Scaffolded <code>ApiStatus</code> demo component has no removal trail once the app has real API calls<a class="headerlink" href="#scaffolded-apistatus-demo-component-has-no-removal-trail-once-the-app-has-real-api-calls" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Low</li>
+<li><strong>Category</strong>: Structure</li>
+<li><strong>Discovered</strong>: 2026-07-06</li>
+</ul>
+<p><strong>Issue</strong>: The template scaffolds <code>frontend/src/components/ApiStatus.tsx</code> (plus
+<code>ApiStatus.css</code>) as a demo "is the backend reachable" health-check widget. Once a project
+wires its own real API calls (this app's <code>useApi()</code> hook, auth flow, and generated OpenAPI
+client), the component is never referenced again, but nothing flags it as scaffolding to
+delete: it has no <code>TODO</code>/<code>FIXME</code> marker, is not covered by any lint rule for unused
+exported components (an exported React component with zero importers is not dead-code
+flagged the way an unused local <code>const</code> would be), and has no test file to prompt a
+"why is this still here" question during a coverage review.</p>
+<p><strong>Context</strong>: Found during a repo-wide contract/cleanup pass (R1 remediation Task F4,
+Finding 22): a grep for <code>ApiStatus</code> outside its own file turned up only a stale comment
+in an unrelated page referencing its polling interval by name, confirming zero real
+imports.</p>
+<p><strong>Suggested Fix</strong>: Either drop the scaffold from the template entirely (a project's first
+real API call supersedes it immediately), or mark it clearly as removable scaffolding, for
+example a <code>// TEMPLATE-SCAFFOLD: delete once you have a real API-consuming component</code>
+comment at the top of the file, so a later cleanup pass has something to grep for instead
+of relying on manual dead-code discovery.</p>
+<p><strong>Affected Files</strong>: template <code>frontend/src/components/ApiStatus.tsx</code>, template
+<code>frontend/src/components/ApiStatus.css</code></p>
 
 
 
@@ -3535,7 +3582,7 @@ generated <code>package.json</code> noting that the root <code>tsconfig.json</co
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 7, 2026 00:48:20 UTC">July 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 7, 2026 01:30:26 UTC">July 7, 2026</span>
   </span>
 
     
