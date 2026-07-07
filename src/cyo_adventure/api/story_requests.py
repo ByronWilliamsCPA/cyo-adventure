@@ -42,6 +42,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
@@ -92,14 +93,20 @@ async def _family_child_names(ctx: Context, family_id: uuid.UUID) -> frozenset[s
     return frozenset(rows.all())
 
 
-def _to_view(request: StoryRequest) -> StoryRequestView:
+def _to_view(
+    request: StoryRequest, *, age_band: str, policy: ThresholdPolicy
+) -> StoryRequestView:
     """Project a row to the guardian view; hide raw text for blocked rows.
 
     Args:
         request: The story request row.
+        age_band: The requesting child profile's age band, used to resolve
+            the surfacing threshold for each stored flag.
+        policy: The loaded threshold policy (surfaces flag+above by default).
 
     Returns:
-        StoryRequestView: The guardian-facing projection.
+        StoryRequestView: The guardian-facing projection, filtered to flags
+        that meet the age-band/category threshold.
     """
     # #CRITICAL: security: the raw text of a blocked (bright-line) request is
     # never surfaced; only the redacted flags cross the boundary.
@@ -132,6 +139,14 @@ def _to_view(request: StoryRequest) -> StoryRequestView:
                     request.id,
                     verdict,
                 )
+                continue
+            # Stored request flags carry no score; verdict-level filtering only.
+            if not policy.surfaces(
+                age_band=age_band,
+                category=category,
+                verdict=parsed_verdict,
+                score=None,
+            ):
                 continue
             flags.append(
                 StoryRequestFlag(
@@ -230,7 +245,11 @@ async def list_story_requests(
         AuthorizationError: If a guardian filters on an inaccessible profile.
         ValidationError: If ``status`` or ``profile_id`` is malformed (-> 422).
     """
-    stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
+    stmt = (
+        select(StoryRequest, ChildProfile.age_band)
+        .join(ChildProfile, StoryRequest.profile_id == ChildProfile.id)
+        .order_by(StoryRequest.created_at.desc())
+    )
     # #CRITICAL: security: admin is global; a guardian is family-scoped. A child
     # token (used directly) would also be family-scoped via family_id.
     # #VERIFY: test_guardian_lists_family_requests.
@@ -247,8 +266,13 @@ async def list_story_requests(
         if not ctx.principal.is_admin:
             authorize_profile(ctx.principal, profile_uuid)
         stmt = stmt.where(StoryRequest.profile_id == profile_uuid)
-    rows = (await ctx.session.scalars(stmt)).all()
-    return StoryRequestListView(requests=[_to_view(r) for r in rows])
+    rows = (await ctx.session.execute(stmt)).all()
+    policy = await load_threshold_policy(ctx.session)
+    requests = [
+        _to_view(request, age_band=age_band, policy=policy)
+        for request, age_band in rows
+    ]
+    return StoryRequestListView(requests=requests)
 
 
 async def _load_scoped_request(

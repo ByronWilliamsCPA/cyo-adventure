@@ -18,6 +18,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.story_requests.screening import screen_request_text
@@ -305,6 +306,11 @@ def test_to_view_skips_malformed_verdict() -> None:
     moderation_flags is unconstrained JSONB, so a legacy or manually-edited row
     can hold a verdict string outside the Verdict enum. _to_view must drop that
     single flag rather than let Verdict(verdict) raise and 500 the whole list.
+
+    The second flag uses "flag" (not "advisory"): the default threshold policy
+    hides advisory-level findings (WS-A), so a verdict that must survive both
+    the malformed-verdict skip AND the threshold filter is used here to isolate
+    the malformed-verdict behavior under test.
     """
     request = StoryRequest(
         id=uuid.uuid4(),
@@ -322,7 +328,7 @@ def test_to_view_skips_malformed_verdict() -> None:
                 },
                 {
                     "category": "toxicity",
-                    "verdict": "advisory",
+                    "verdict": "flag",
                     "message": "borderline",
                 },
             ],
@@ -330,8 +336,8 @@ def test_to_view_skips_malformed_verdict() -> None:
         created_at=datetime(2026, 7, 4, tzinfo=UTC),
     )
 
-    view = _to_view(request)
+    view = _to_view(request, age_band="10-13", policy=ThresholdPolicy(rows={}))
 
     assert len(view.moderation_flags) == 1
-    assert view.moderation_flags[0].verdict is Verdict.ADVISORY
+    assert view.moderation_flags[0].verdict is Verdict.FLAG
     assert view.moderation_flags[0].message == "borderline"
