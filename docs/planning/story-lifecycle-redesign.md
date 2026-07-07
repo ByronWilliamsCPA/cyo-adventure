@@ -174,7 +174,15 @@ one child.
   verdict level that surfaces as a tag, plus an optional classifier-score
   floor. Seeded from code defaults; admin-editable with an audit trail.
 - Guardian- and kid-facing serializers filter findings through the threshold
-  for the book's band. Admin endpoints always return the full report.
+  for the book's band. Admin endpoints bypass the age-band threshold entirely
+  and return every finding.
+- Addendum (implemented): a separate, global, admin-editable noise floor
+  (seeded 0.05) denoises only the admin storybook review surface by hiding
+  low-score ADVISORY findings; FLAG and BLOCK findings (including bright-line
+  score-0.0 blocks) and unscored findings always surface. This floor is
+  orthogonal to the per-band threshold: the age-band policy governs the
+  guardian/kid surfaces, the noise floor governs admin denoising. See
+  `docs/planning/ws-a-admin-noise-floor.md`.
 - Because the filter lives at the serialization boundary, it applies
   retroactively to every already-moderated book the moment it ships; no
   re-moderation pass is needed.
