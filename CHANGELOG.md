@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   moderation screening, mirroring the existing `approve()` check (closes #57).
 
 ### Added
+- Age-band moderation thresholds: the moderation pipeline now records every
+  advisory finding, and a per-`(age_band, category)` threshold determines
+  which findings surface on guardian and kid-facing content summaries.
+  Findings below the configured floor for a story's age band are recorded for
+  audit but filtered out at the serialization boundary; admins continue to see
+  every finding regardless of threshold. A new admin CRUD editor
+  (`/guardian/moderation-thresholds`) lets admins view and adjust thresholds
+  per age band and category, with every change written to an audit trail.
 - Landing page at `/` with two doors: Kids (to the profile picker, now at
   `/kids`) and Grown-ups (to the guardian console; admins sign in there too).
   Kid deep links (`/library/...`, `/read/...`) are unchanged; the reader's
