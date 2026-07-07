@@ -626,3 +626,32 @@ generated `package.json` noting that the root `tsconfig.json` is references-only
 
 **Affected Files**: template `frontend/package.json` (`typecheck` script), template
 `frontend/tsconfig.json` scaffold comment
+
+### Scaffolded `ApiStatus` demo component has no removal trail once the app has real API calls
+
+- **Priority**: Low
+- **Category**: Structure
+- **Discovered**: 2026-07-06
+
+**Issue**: The template scaffolds `frontend/src/components/ApiStatus.tsx` (plus
+`ApiStatus.css`) as a demo "is the backend reachable" health-check widget. Once a project
+wires its own real API calls (this app's `useApi()` hook, auth flow, and generated OpenAPI
+client), the component is never referenced again, but nothing flags it as scaffolding to
+delete: it has no `TODO`/`FIXME` marker, is not covered by any lint rule for unused
+exported components (an exported React component with zero importers is not dead-code
+flagged the way an unused local `const` would be), and has no test file to prompt a
+"why is this still here" question during a coverage review.
+
+**Context**: Found during a repo-wide contract/cleanup pass (R1 remediation Task F4,
+Finding 22): a grep for `ApiStatus` outside its own file turned up only a stale comment
+in an unrelated page referencing its polling interval by name, confirming zero real
+imports.
+
+**Suggested Fix**: Either drop the scaffold from the template entirely (a project's first
+real API call supersedes it immediately), or mark it clearly as removable scaffolding, for
+example a `// TEMPLATE-SCAFFOLD: delete once you have a real API-consuming component`
+comment at the top of the file, so a later cleanup pass has something to grep for instead
+of relying on manual dead-code discovery.
+
+**Affected Files**: template `frontend/src/components/ApiStatus.tsx`, template
+`frontend/src/components/ApiStatus.css`

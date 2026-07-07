@@ -2,6 +2,7 @@ import type { Session } from '@supabase/supabase-js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
+import type { MeResponse } from '../client/types.gen'
 import { useApi } from '../hooks/useApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import {
@@ -29,12 +30,10 @@ function safeRemoveToken(): void {
   }
 }
 
-interface MeResponseBody {
-  subject: string
-  role: string
-  family_id: string
-  profile_ids: string[]
-}
+// Alias, not a hand-typed shadow interface: the shape is the generated
+// OpenAPI client's MeResponse (frontend/src/client/types.gen.ts), the single
+// source of truth for the backend's GET /v1/me contract (Finding 7).
+type MeResponseBody = MeResponse
 
 /**
  * Wraps the Supabase guardian session and resolves it to a backend

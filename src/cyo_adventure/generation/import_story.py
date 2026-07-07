@@ -37,6 +37,11 @@ if TYPE_CHECKING:
 # sole version is 1, mirroring generation/worker.py's _FIRST_VERSION.
 _FIRST_VERSION = 1
 
+# Sentinel recorded on StorybookVersion.provider for a version created via
+# this offline authoring import path, distinguishing it from a real generation
+# provider name ("mock", "anthropic", ...) stamped by generation/worker.py.
+_IMPORT_PROVIDER = "import"
+
 
 @dataclass(frozen=True, slots=True)
 class ImportRequest:
@@ -111,6 +116,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         created_by=request.created_by,
         model=request.model,
         prompt_version=request.prompt_version,
+        provider=_IMPORT_PROVIDER,
         validation_report=result.report.to_dict(),
     )
     await persist_storybook(session, params)

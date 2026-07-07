@@ -146,6 +146,9 @@ async def test_import_persists_a_valid_filled_story(
     versions = [r for r in session.added if isinstance(r, StorybookVersion)]
     assert len(versions) == 1
     assert versions[0].blob["id"] == "s_filled"
+    # F18/#63: an imported story is stamped with the "import" sentinel so it
+    # is distinguishable from a live generation provider ("mock", "anthropic").
+    assert versions[0].provider == "import"
 
 
 @pytest.mark.unit

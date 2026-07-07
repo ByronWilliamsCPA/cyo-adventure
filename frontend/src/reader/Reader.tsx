@@ -89,7 +89,7 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
           <h2 className="reader-ending__title">{ending?.title ?? 'The End'}</h2>
-          <div data-testid="passage-body">
+          <div data-testid="passage-body" aria-live="polite">
             <PassageText text={node?.body ?? ''} />
           </div>
           <p data-testid="ending-id" hidden>
@@ -115,7 +115,7 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
     <div className="reader-shell">
       {chrome}
       <section data-testid="reader" className="reader">
-        <div data-testid="passage-body">
+        <div data-testid="passage-body" aria-live="polite">
           <PassageText text={node?.body ?? ''} />
         </div>
         <ul className="reader-choices">

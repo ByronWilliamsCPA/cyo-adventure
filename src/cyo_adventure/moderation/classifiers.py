@@ -189,6 +189,18 @@ async def _run_openai(
 
     categories = _narrow_bool_map(result.get("categories"))
     scores = _narrow_float_map(result.get("category_scores"))
+    # #EDGE: external-resources: `_narrow_bool_map` degrades a missing or
+    # non-dict `categories` field to `{}` rather than raising, so a shape
+    # change on OpenAI's side would otherwise fail silently (empty findings,
+    # no signal that the payload was malformed). Log it like the sibling
+    # shape checks above so the degrade is observable.
+    # #VERIFY: alerting on openai_moderation_malformed log volume.
+    if not categories:
+        _logger.warning(
+            "openai_moderation_malformed",
+            node_id=node_id,
+            reason="categories missing or not a dict",
+        )
 
     findings: list[Finding] = []
     for category, flagged in categories.items():
