@@ -152,6 +152,12 @@ async def load_threshold_policy(
     return ThresholdPolicy(rows=rows)
 
 
+# The moderation_setting row key for the admin noise floor. This is the single
+# runtime source of truth for the key string; the migration's seed INSERT uses
+# its own frozen literal (migrations must not import live app constants) and
+# must be kept in sync with this value by hand.
+ADMIN_NOISE_FLOOR_KEY = "admin_noise_floor"
+
 # The code default for the admin noise floor, mirrored in the seed row inserted
 # by migrations/versions/20260707_1700_add_moderation_setting.py
 # ("admin_noise_floor" = 0.05). Used when the moderation_setting row is absent
@@ -214,7 +220,7 @@ async def load_admin_noise_floor(session: AsyncSession) -> float:
     # #VERIFY: tests/integration covering load_admin_noise_floor.
     from cyo_adventure.db.models import ModerationSetting  # noqa: PLC0415
 
-    row = await session.get(ModerationSetting, "admin_noise_floor")
+    row = await session.get(ModerationSetting, ADMIN_NOISE_FLOOR_KEY)
     if row is None:
         return ADMIN_NOISE_FLOOR_DEFAULT
     return row.value

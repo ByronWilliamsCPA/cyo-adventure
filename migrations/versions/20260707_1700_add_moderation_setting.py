@@ -46,6 +46,9 @@ def upgrade() -> None:
     # the row atomically with table creation.
     # #VERIFY: tests/integration/test_moderation_setting_migration.py asserts
     # the seeded row is present with value 0.05 immediately after upgrade.
+    # Migrations are frozen and must not import live app constants, so this
+    # literal is hand-maintained; it must match
+    # cyo_adventure.moderation.thresholds.ADMIN_NOISE_FLOOR_KEY.
     op.execute(
         sa.text(
             "INSERT INTO moderation_setting (key, value, updated_at, updated_by) "

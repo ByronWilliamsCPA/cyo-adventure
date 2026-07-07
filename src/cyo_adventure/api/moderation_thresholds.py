@@ -27,13 +27,16 @@ from cyo_adventure.db.models import (
     ModerationThresholdAudit,
 )
 from cyo_adventure.moderation.thresholds import (
+    ADMIN_NOISE_FLOOR_KEY,
     DEFAULT_THRESHOLD,
     KNOWN_CATEGORIES,
     load_admin_noise_floor,
 )
 from cyo_adventure.storybook.models import AgeBand
 
-_NOISE_FLOOR_KEY = "admin_noise_floor"
+# Re-exported locally so call sites below read naturally; the string itself
+# lives in exactly one place: cyo_adventure.moderation.thresholds.
+_NOISE_FLOOR_KEY = ADMIN_NOISE_FLOOR_KEY
 
 router = APIRouter(prefix="/api/v1", tags=["moderation-thresholds"])
 

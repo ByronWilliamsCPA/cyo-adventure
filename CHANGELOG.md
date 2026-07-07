@@ -40,7 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   as on the guardian-facing story-request list. Findings below the configured
   floor for a story's age band are recorded for audit but filtered out at the
   serialization boundary; admins continue to see every finding regardless of
-  threshold on all three surfaces. A new admin CRUD editor
+  this per-age-band threshold on all three surfaces (the guardian and
+  kid-facing content summaries and the guardian-facing story-request list); a
+  separate, admin-only noise floor on the admin review surface itself is
+  described below and does not affect this guarantee. A new admin CRUD editor
   (`/guardian/moderation-thresholds`) lets admins view and adjust thresholds
   per age band and category, with every change written to an audit trail.
   That same editor now also exposes an admin-configurable global moderation
