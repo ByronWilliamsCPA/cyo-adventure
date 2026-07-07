@@ -65,8 +65,8 @@ const mockOnAuthStateChange = vi.fn()
 vi.mock('../auth/supabaseClient', () => ({
   supabase: {
     auth: {
-      getSession: (...args: unknown[]) => mockGetSession(...args),
-      onAuthStateChange: (...args: unknown[]) => mockOnAuthStateChange(...args),
+      getSession: (...args: unknown[]): unknown => mockGetSession(...args),
+      onAuthStateChange: (...args: unknown[]): unknown => mockOnAuthStateChange(...args),
       signInWithOAuth: vi.fn(),
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),

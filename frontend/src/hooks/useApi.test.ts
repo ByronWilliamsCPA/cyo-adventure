@@ -42,11 +42,20 @@ function makeUnauthorizedError(): AxiosError {
 // calling setPathname, and afterEach restores the real location.
 const originalLocation = window.location
 
+// Returning the mocks directly (rather than reading them back off
+// `window.location`) sidesteps @typescript-eslint/unbound-method: the DOM
+// lib types `Location.replace`/`.assign` as methods that could lose `this`
+// if referenced unbound, which doesn't apply to these plain vi.fn() stubs
+// but the type checker cannot see that once they are read from a
+// Location-typed object.
 function setPathname(pathname: string) {
+  const assign = vi.fn()
+  const replace = vi.fn()
   Object.defineProperty(window, 'location', {
     configurable: true,
-    value: { ...originalLocation, pathname, assign: vi.fn(), replace: vi.fn() },
+    value: { ...originalLocation, pathname, assign, replace },
   })
+  return { assign, replace }
 }
 
 describe('useApi 401 interceptor', () => {
@@ -63,7 +72,7 @@ describe('useApi 401 interceptor', () => {
   })
 
   it('clears the token and redirects to the guardian login on a guardian-path 401', async () => {
-    setPathname('/guardian/console')
+    const location = setPathname('/guardian/console')
     const { result } = renderHook(() => useApi())
     const rejected = getResponseRejectedHandler(result.current)
 
@@ -71,29 +80,29 @@ describe('useApi 401 interceptor', () => {
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     // replace(), not assign(): the expired URL must not linger in history.
-    expect(window.location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
-    expect(window.location.assign).not.toHaveBeenCalled()
+    expect(location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+    expect(location.assign).not.toHaveBeenCalled()
   })
 
   it('clears the token but does not navigate on a kid-path 401', async () => {
-    setPathname('/library/some-story')
+    const location = setPathname('/library/some-story')
     const { result } = renderHook(() => useApi())
     const rejected = getResponseRejectedHandler(result.current)
 
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(window.location.replace).not.toHaveBeenCalled()
+    expect(location.replace).not.toHaveBeenCalled()
   })
 
   it('does not redirect loop when already on the guardian login page', async () => {
-    setPathname(GUARDIAN_LOGIN_PATH)
+    const location = setPathname(GUARDIAN_LOGIN_PATH)
     const { result } = renderHook(() => useApi())
     const rejected = getResponseRejectedHandler(result.current)
 
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
-    expect(window.location.replace).not.toHaveBeenCalled()
+    expect(location.replace).not.toHaveBeenCalled()
   })
 })

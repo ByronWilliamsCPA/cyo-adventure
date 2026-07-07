@@ -191,6 +191,7 @@ path = [
     "frontend/tsconfig.json",  # TypeScript base config
     "frontend/tsconfig.app.json",  # TypeScript app config
     "frontend/tsconfig.node.json",  # TypeScript node config
+    "frontend/tsconfig.e2e.json",  # TypeScript e2e/e2e-real config
     "frontend/public/**",  # Static public assets
     "frontend/src/**/*.css",  # Frontend stylesheets
     "frontend/src/assets/**",  # Frontend asset files

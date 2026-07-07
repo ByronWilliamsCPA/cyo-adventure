@@ -122,7 +122,7 @@ export function ReaderRoute() {
         title="We couldn't tell which story to open"
         description="This link is missing some information. Let's go back to the start."
         actions={
-          <Button variant="ghost" onClick={() => navigate(KID_PICKER_PATH)}>
+          <Button variant="ghost" onClick={() => void navigate(KID_PICKER_PATH)}>
             Back to start
           </Button>
         }
@@ -157,7 +157,10 @@ export function ReaderRoute() {
         version={parsedVersion}
       />
       {replayConflicts.length > 0 && (
-        <ConflictDialog onKeepThisDevice={resolveKeepThisDevice} onUseNewest={resolveUseNewest} />
+        <ConflictDialog
+          onKeepThisDevice={() => void resolveKeepThisDevice()}
+          onUseNewest={resolveUseNewest}
+        />
       )}
       {replayFailedCount > 0 && (
         <div role="alert" className="replay-failed-banner">

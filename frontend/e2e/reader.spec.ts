@@ -1,13 +1,8 @@
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { expect, test } from '@playwright/test'
 
-const here = path.dirname(fileURLToPath(import.meta.url))
-const lantern = JSON.parse(
-  readFileSync(path.resolve(here, '../../schema/conformance/player_traces.json'), 'utf-8')
-).traces[0].story
+import { loadLanternStory } from './support/fixtures'
+
+const lantern = loadLanternStory()
 
 // The reader lives at /read/:profileId/:storybookId/:version (ReaderRoute); the
 // bare `/` renders the kid-surface Profile Picker (C4a-2, see profiles.spec.ts),

@@ -7,7 +7,7 @@ import type { Principal } from './types'
 
 const mockUseAuth = vi.fn()
 vi.mock('./useAuth', () => ({
-  useAuth: () => mockUseAuth(),
+  useAuth: (): unknown => mockUseAuth(),
 }))
 
 function renderProtected(initialPath: string) {

@@ -21,6 +21,16 @@ const lantern = (
   }
 ).traces[0].story
 
+/**
+ * Real axios rejections are `AxiosError` instances (an `Error` subclass); this
+ * builds a real `Error` carrying the same shape axios attaches (`isAxiosError`,
+ * `response`) so the mocked rejection is faithful to what the code under test
+ * actually receives.
+ */
+function mockAxiosError(props: Record<string, unknown>): Error {
+  return Object.assign(new Error('mock axios error'), props)
+}
+
 const mockGet = vi.fn()
 const mockPut = vi.fn()
 const mockPost = vi.fn()
@@ -112,7 +122,7 @@ describe('ReaderRoute wiring (T5)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -171,7 +181,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
         return Promise.resolve({ data: lantern })
       }
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -188,10 +198,12 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       if (body.state_revision === 1) {
         if (!replayConflictSent) {
           replayConflictSent = true
-          return Promise.reject({
-            isAxiosError: true,
-            response: { status: 409, data: { current_row: serverRow } },
-          })
+          return Promise.reject(
+            mockAxiosError({
+              isAxiosError: true,
+              response: { status: 409, data: { current_row: serverRow } },
+            })
+          )
         }
         return Promise.resolve({ data: serverRow })
       }
@@ -246,7 +258,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -263,10 +275,12 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       if (body.state_revision === 1) {
         revision1Calls += 1
         const currentRow = revision1Calls === 1 ? flushConflictRow : resendConflictRow
-        return Promise.reject({
-          isAxiosError: true,
-          response: { status: 409, data: { current_row: currentRow } },
-        })
+        return Promise.reject(
+          mockAxiosError({
+            isAxiosError: true,
+            response: { status: 409, data: { current_row: currentRow } },
+          })
+        )
       }
       if (body.state_revision === 3) {
         return Promise.resolve({ data: { ...body, state_revision: 3 } as ReadingState })
@@ -317,7 +331,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -330,17 +344,21 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       if (body.state_revision === 1) {
         revision1Calls += 1
         const currentRow = revision1Calls === 1 ? flushConflictRow : resendConflictRow
-        return Promise.reject({
-          isAxiosError: true,
-          response: { status: 409, data: { current_row: currentRow } },
-        })
+        return Promise.reject(
+          mockAxiosError({
+            isAxiosError: true,
+            response: { status: 409, data: { current_row: currentRow } },
+          })
+        )
       }
       if (body.state_revision === 3) {
         // The rebased retry conflicts again: a second concurrent edit landed.
-        return Promise.reject({
-          isAxiosError: true,
-          response: { status: 409, data: { current_row: retryConflictRow } },
-        })
+        return Promise.reject(
+          mockAxiosError({
+            isAxiosError: true,
+            response: { status: 409, data: { current_row: retryConflictRow } },
+          })
+        )
       }
       return Promise.resolve({ data: { ...body, state_revision: 1 } as ReadingState })
     })
@@ -392,7 +410,7 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
     mockGet.mockImplementation((url: string) => {
       if (url.startsWith('/v1/storybooks/')) return Promise.resolve({ data: lantern })
       if (url.startsWith('/v1/reading-state/')) {
-        return Promise.reject({ isAxiosError: true, response: { status: 404 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
       }
       return Promise.reject(new Error(`unexpected GET ${url}`))
     })
@@ -403,15 +421,19 @@ describe('ReaderRoute replay reconciliation (B2)', () => {
       if (body.state_revision === 1) {
         revision1Calls += 1
         if (revision1Calls === 1) {
-          return Promise.reject({
-            isAxiosError: true,
-            response: { status: 409, data: { current_row: flushConflictRow } },
-          })
+          return Promise.reject(
+            mockAxiosError({
+              isAxiosError: true,
+              response: { status: 409, data: { current_row: flushConflictRow } },
+            })
+          )
         }
         // The resend itself fails outright (a real HTTP error, not a 409 and
         // not a transport failure): saveProgress must propagate this rather
         // than queue it, and resolveKeepThisDevice must catch it per story.
-        return Promise.reject({ isAxiosError: true, response: { status: 500, data: {} } })
+        return Promise.reject(
+          mockAxiosError({ isAxiosError: true, response: { status: 500, data: {} } })
+        )
       }
       return Promise.resolve({ data: { ...body, state_revision: 1 } as ReadingState })
     })

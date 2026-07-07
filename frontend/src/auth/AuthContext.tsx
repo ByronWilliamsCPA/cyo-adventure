@@ -124,7 +124,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    supabase.auth.getSession().then(({ data }) => {
+    // Fire-and-forget: this runs inside a useEffect with no async cleanup
+    // seam, and the `cancelled` flag (checked below and inside syncPrincipal)
+    // already guards against a resolved-after-unmount state update.
+    void supabase.auth.getSession().then(({ data }) => {
       if (!cancelled) void syncPrincipal(data.session)
     })
 

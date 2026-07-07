@@ -64,7 +64,7 @@ test.beforeEach(async ({ context }) => {
   await context.addInitScript(
     ([key, session]) => {
       window.localStorage.setItem('auth_token', 'guardian-a')
-      window.localStorage.setItem(key as string, session as string)
+      window.localStorage.setItem(key, session)
     },
     [SUPABASE_SESSION_KEY, JSON.stringify(GUARDIAN_SESSION)] as const
   )

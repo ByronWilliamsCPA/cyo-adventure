@@ -39,8 +39,12 @@ describe('useReplayOnReconnect', () => {
     renderHook(() => useReplayOnReconnect(fakeApi, onOutcome))
     await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(1))
 
+    // The explicit await flushes the microtask queue inside act() so the
+    // hook's replayQueue(...).then(...) chain settles before this act call
+    // returns, not just the synchronous dispatchEvent.
     await act(async () => {
       window.dispatchEvent(new Event('online'))
+      await Promise.resolve()
     })
 
     await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(2))
@@ -60,19 +64,24 @@ describe('useReplayOnReconnect', () => {
     await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(1))
 
     // The mount flush is still in flight; a reconnect event during that window
-    // must not start a second concurrent flush.
+    // must not start a second concurrent flush. The trailing await flushes
+    // the microtask queue inside act() so any (suppressed) second flush
+    // attempt would have already settled by the assertion below.
     await act(async () => {
       window.dispatchEvent(new Event('online'))
+      await Promise.resolve()
     })
     expect(mockReplayQueue).toHaveBeenCalledTimes(1)
 
     await act(async () => {
       resolveFlush(emptyOutcome)
+      await Promise.resolve()
     })
 
     // Now that the first flush has settled, a fresh online event may flush again.
     await act(async () => {
       window.dispatchEvent(new Event('online'))
+      await Promise.resolve()
     })
     await waitFor(() => expect(mockReplayQueue).toHaveBeenCalledTimes(2))
   })

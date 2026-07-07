@@ -29,7 +29,7 @@ describe('makeLibraryApi', () => {
         ],
       },
     })
-    const api = makeLibraryApi(fakeAxios({ get } as Partial<AxiosInstance>))
+    const api = makeLibraryApi(fakeAxios({ get }))
     const items = await api.list('p1')
     expect(get).toHaveBeenCalledWith('/v1/library', { params: { profile_id: 'p1' } })
     expect(items[0].title).toBe('The Lantern')
@@ -46,7 +46,7 @@ describe('makeLibraryApi', () => {
         updated_at: '2026-07-02T00:00:00Z',
       },
     })
-    const api = makeLibraryApi(fakeAxios({ post } as Partial<AxiosInstance>))
+    const api = makeLibraryApi(fakeAxios({ post }))
     const view = await api.rate('p1', 's1', 5)
     expect(post).toHaveBeenCalledWith('/v1/ratings', {
       profile_id: 'p1',

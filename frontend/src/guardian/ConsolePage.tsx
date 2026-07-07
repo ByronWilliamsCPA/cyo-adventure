@@ -89,8 +89,8 @@ export function ConsolePage() {
     let cancelled = false
     async function loadChildren() {
       try {
-        const res = await api.get('/v1/profiles')
-        const profiles = (res.data?.profiles ?? []) as unknown[]
+        const res = await api.get<{ profiles?: unknown[] }>('/v1/profiles')
+        const profiles = res.data.profiles ?? []
         if (!cancelled) setChildCount(profiles.length)
       } catch {
         if (!cancelled) setChildCount(null)

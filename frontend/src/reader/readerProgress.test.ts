@@ -17,7 +17,7 @@ function story(nodeCount: number): Storybook {
     })),
     start_node: 'n0',
     variables: [],
-  } as unknown as Storybook
+  }
 }
 
 function reading(visited: number): ReadingState {
