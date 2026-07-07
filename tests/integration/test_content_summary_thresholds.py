@@ -118,24 +118,53 @@ async def test_guardian_summary_hides_below_threshold_advisory(
 async def test_admin_review_surface_ignores_age_band_threshold_policy(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """Age-band ThresholdPolicy never gates the admin review surface: the FLAG
-    finding surfaces regardless of band.
+    """The admin review surface bypasses the per-band ThresholdPolicy entirely.
 
-    The 0.02 ADVISORY is hidden here too, but by the separate WS-A admin
-    noise-floor addendum (default floor 0.05), not by ThresholdPolicy; see
-    tests/integration/test_review_surface_noise_floor.py for that contract.
+    Seeds a ('8-11', 'safety') override raising min_verdict to BLOCK. The
+    ``safety`` finding is a FLAG (severity below BLOCK), so the override HIDES
+    it for guardians. The admin surface must still SHOW it, proving admin does
+    not apply ThresholdPolicy (and is not being gated like a guardian). The
+    ``safety`` finding carries score ``None`` (unscored), so the admin noise
+    floor is not a confound here: only the age-band-policy hypothesis explains
+    the divergence.
+
+    The 0.02 ADVISORY is hidden on the admin surface too, but by the separate
+    WS-A admin noise-floor addendum (default floor 0.05), not by
+    ThresholdPolicy; see tests/integration/test_review_surface_noise_floor.py.
     """
     story_id = await _seed_banded_published(sessions)
-    res = await client.get(
+    async with sessions() as session:
+        session.add(
+            ModerationThreshold(
+                age_band="8-11",
+                category="safety",
+                min_verdict="block",
+                min_score=None,
+            )
+        )
+        await session.commit()
+
+    # Guardian: the override raises the safety threshold to BLOCK, so the
+    # FLAG-level safety finding is hidden for the guardian.
+    guardian_res = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary",
+        headers=auth("guardian-t"),
+    )
+    assert guardian_res.status_code == 200
+    guardian_categories = [f["category"] for f in guardian_res.json()["findings"]]
+    assert "safety" not in guardian_categories
+
+    # Admin: the same override does NOT gate the admin review surface, so the
+    # safety FLAG still surfaces. Were the admin path wrongly gated by the
+    # per-band policy (like a guardian), this assertion would fail.
+    admin_res = await client.get(
         f"/api/v1/storybooks/{story_id}/review",
         headers=auth("admin-t"),
     )
-    assert res.status_code == 200
-    body = res.json()
-    categories = [f["category"] for f in body["story_level_findings"]]
-    assert "safety" in categories
-    assert "toxicity" not in categories
-    assert "safety" in categories
+    assert admin_res.status_code == 200
+    admin_categories = [f["category"] for f in admin_res.json()["story_level_findings"]]
+    assert "safety" in admin_categories
+    assert "toxicity" not in admin_categories
 
 
 async def test_threshold_row_lowers_floor_for_matching_band(
