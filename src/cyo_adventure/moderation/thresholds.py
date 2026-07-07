@@ -120,7 +120,7 @@ class ThresholdPolicy:
 
 
 async def load_threshold_policy(
-    session: "AsyncSession",  # noqa: UP037
+    session: AsyncSession,
 ) -> ThresholdPolicy:
     """Load all threshold override rows into an immutable policy.
 
