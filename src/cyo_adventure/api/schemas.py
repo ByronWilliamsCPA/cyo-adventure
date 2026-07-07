@@ -803,3 +803,21 @@ class ThresholdUpsertBody(BaseModel):
     # Story-request flags always pass score=None, so a min_score override
     # never affects story-request surfacing; verdict-level filtering only.
     min_score: float | None = Field(default=None, ge=0.0, le=1.0)
+
+
+# ---------------------------------------------------------------------------
+# Admin noise-floor schemas (WS-A admin noise-floor addendum, Task A3)
+# ---------------------------------------------------------------------------
+
+
+class NoiseFloorView(BaseModel):
+    """The global admin noise floor: the ADVISORY-score cutoff for admin review."""
+
+    value: float
+
+
+class NoiseFloorUpdateBody(BaseModel):
+    """PUT body for the global admin noise floor."""
+
+    # The global admin noise floor, bounded to [0, 1]; out-of-range values 422.
+    value: float = Field(ge=0.0, le=1.0)

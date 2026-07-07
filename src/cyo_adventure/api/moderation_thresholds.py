@@ -10,6 +10,8 @@ from sqlalchemy import select
 from cyo_adventure.api.deps import Context
 from cyo_adventure.api.schemas import (
     MinVerdict,
+    NoiseFloorUpdateBody,
+    NoiseFloorView,
     ThresholdListView,
     ThresholdUpsertBody,
     ThresholdView,
@@ -19,9 +21,19 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
-from cyo_adventure.db.models import ModerationThreshold, ModerationThresholdAudit
-from cyo_adventure.moderation.thresholds import DEFAULT_THRESHOLD, KNOWN_CATEGORIES
+from cyo_adventure.db.models import (
+    ModerationSetting,
+    ModerationThreshold,
+    ModerationThresholdAudit,
+)
+from cyo_adventure.moderation.thresholds import (
+    DEFAULT_THRESHOLD,
+    KNOWN_CATEGORIES,
+    load_admin_noise_floor,
+)
 from cyo_adventure.storybook.models import AgeBand
+
+_NOISE_FLOOR_KEY = "admin_noise_floor"
 
 router = APIRouter(prefix="/api/v1", tags=["moderation-thresholds"])
 
@@ -228,3 +240,66 @@ async def delete_threshold(
     await ctx.session.delete(row)
     await ctx.session.flush()
     return await list_thresholds(ctx)
+
+
+# ---------------------------------------------------------------------------
+# Admin noise-floor endpoints (WS-A admin noise-floor addendum, Task A3)
+# ---------------------------------------------------------------------------
+
+
+@router.get("/admin/moderation/noise-floor")
+async def get_noise_floor(ctx: Context) -> NoiseFloorView:
+    """Return the global admin noise floor (admin only).
+
+    Args:
+        ctx: The request context (principal + session).
+
+    Returns:
+        NoiseFloorView: The stored floor, or the code default when no row
+        has been persisted yet.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (403).
+    """
+    _require_admin(ctx)
+    value = await load_admin_noise_floor(ctx.session)
+    return NoiseFloorView(value=value)
+
+
+@router.put("/admin/moderation/noise-floor")
+async def update_noise_floor(
+    body: NoiseFloorUpdateBody, ctx: Context
+) -> NoiseFloorView:
+    """Create or update the global admin noise floor (admin only).
+
+    Args:
+        body: The desired floor value, already bounded to [0, 1] by the
+            schema (out-of-range values 422 before this runs).
+        ctx: The request context (principal + session).
+
+    Returns:
+        NoiseFloorView: The stored floor after the write.
+
+    Raises:
+        AuthorizationError: If the caller is not an admin (403).
+    """
+    # #ASSUME: security: the floor governs what admins see on the review
+    # surface; the role gate runs before any query.
+    _require_admin(ctx)
+    # #ASSUME: concurrency: check-then-act on the single 'admin_noise_floor'
+    # key is unlocked; two concurrent admin PUTs can both miss the row and
+    # race to INSERT, the loser gets a PK-conflict 500. Admin-only and rare.
+    # #VERIFY: switch to INSERT ... ON CONFLICT DO UPDATE if it recurs.
+    row = await ctx.session.get(ModerationSetting, _NOISE_FLOOR_KEY)
+    if row is None:
+        row = ModerationSetting(
+            key=_NOISE_FLOOR_KEY,
+            value=body.value,
+            updated_by=ctx.principal.user_id,
+        )
+        ctx.session.add(row)
+    else:
+        row.value = body.value
+        row.updated_by = ctx.principal.user_id
+    await ctx.session.flush()
+    return NoiseFloorView(value=row.value)
