@@ -8,12 +8,15 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
+import type { ConflictView } from '../client/types.gen'
 import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 
-interface ConflictBody {
-  current_row: ReadingState
-}
+// Alias, not a hand-typed shadow interface: the shape is the generated
+// OpenAPI client's ConflictView (frontend/src/client/types.gen.ts), the
+// single source of truth for the 409 body PUT /v1/reading-state returns
+// (Finding 7).
+type ConflictBody = ConflictView
 
 export function makeSyncApi(api: AxiosInstance): SyncApi {
   return {

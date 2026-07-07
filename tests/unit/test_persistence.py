@@ -51,6 +51,7 @@ async def test_persist_creates_storybook_and_version() -> None:
         family_id=family_id,
         model="opus-4.8",
         prompt_version="skeleton-fill-v1",
+        provider="anthropic",
     )
     story_id = await persist_storybook(session, params)
 
@@ -67,6 +68,7 @@ async def test_persist_creates_storybook_and_version() -> None:
     assert versions[0].blob["id"] == "s_demo"
     assert versions[0].model == "opus-4.8"
     assert versions[0].prompt_version == "skeleton-fill-v1"
+    assert versions[0].provider == "anthropic"
 
 
 # ---------------------------------------------------------------------------

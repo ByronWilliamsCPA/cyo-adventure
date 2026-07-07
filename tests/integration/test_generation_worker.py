@@ -339,6 +339,9 @@ async def test_passing_run_creates_storybook_version(
         assert sv is not None
         assert sv.blob is not None
         assert sv.validation_report is not None
+        # F18/#63: the version's provider matches the job's, stamped at
+        # persist time from the same effective_provider.
+        assert sv.provider == job.provider
 
 
 # ---------------------------------------------------------------------------

@@ -80,15 +80,3 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
 
   return api
 }
-
-/**
- * Standalone API client for use outside React components.
- * Prefer useApi() hook inside components for proper lifecycle management.
- */
-export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})

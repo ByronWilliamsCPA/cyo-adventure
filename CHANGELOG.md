@@ -66,8 +66,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   violations (floating promises, unsafe `any` member access/return, unsafe
   promise rejection reasons, an unbound-method false positive, and a couple of
   redundant type assertions) are fixed with no rule weakened or suppressed.
+- `run_generation_job` (`generation/worker.py`) is refactored into three
+  focused helpers (`_load_and_start_job`, `_load_concept_and_pii`,
+  `_persist_passed_outcome`) alongside the existing `_record_failure`, with no
+  behavior change: the same failure-recording, completion-flag, and
+  finally-guard semantics from the D/D3 remediation are preserved exactly.
+  Closes F17.
+- The frontend's hand-typed `MeResponseBody` (`auth/AuthContext.tsx`) and
+  `ConflictBody` (`api/readerApi.ts`) shadow interfaces are replaced with
+  aliases of the generated OpenAPI client's `MeResponse`/`ConflictView`
+  types, so a backend contract change surfaces as a type error instead of a
+  silent shape drift. Full `sdk.gen` adoption (routing every hand-rolled axios
+  call through the generated client functions) is left to a follow-up PR.
+  Closes F7 (minimum-viable slice).
+- Removed the unused `components/ApiStatus.tsx` scaffold (plus its CSS) and
+  the unreferenced `apiClient` standalone axios export from `hooks/useApi.ts`;
+  neither had any remaining import. Closes F22.
 
 ### Fixed
+- OpenAI Moderation's `_run_openai` now logs `openai_moderation_malformed`
+  when the response's `categories` field degrades to an empty map (missing or
+  non-dict shape), matching the sibling shape-check log lines instead of
+  failing silently. Closes F15.
+- `StorybookVersion` now records a `provider` column (nullable, added by
+  migration `a7b8c9d0e1f2`), stamped by the generation worker at persist time
+  and by the offline authoring import path (sentinel `"import"`), so a
+  version's provenance is queryable independently of the owning job's
+  `provider` field. Closes #63/F18.
 - The `worker_main` reclaim sweep no longer poisons the shared async engine
   pool: the sweep now disposes the engine's connection pool inside its own
   event loop before `Worker.work()` starts, so pooled asyncpg connections

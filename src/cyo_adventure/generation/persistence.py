@@ -43,6 +43,9 @@ class StorybookParams:
         created_by: Optional authoring user id.
         model: Optional model identifier recorded on the version.
         prompt_version: Optional prompt/skill version recorded on the version.
+        provider: Optional provider identifier recorded on the version (e.g.
+            "mock", "anthropic"), or the "import" sentinel for the offline
+            authoring import path.
         validation_report: Optional gate report stored on the version.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
@@ -54,6 +57,7 @@ class StorybookParams:
     created_by: uuid.UUID | None = None
     model: str | None = None
     prompt_version: str | None = None
+    provider: str | None = None
     validation_report: dict[str, object] | None = None
     status: str = "draft"
     version: int = _FIRST_VERSION
@@ -110,6 +114,7 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         validation_report=params.validation_report,
         model=params.model,
         prompt_version=params.prompt_version,
+        provider=params.provider,
     )
     session.add(version_row)
     await session.flush()

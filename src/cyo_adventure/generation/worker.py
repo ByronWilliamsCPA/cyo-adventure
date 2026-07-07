@@ -407,6 +407,7 @@ async def _persist_and_moderate(
             created_by=ctx.concept_row.created_by,
             model=ctx.job_row.model,
             prompt_version=_PROMPT_VERSION,
+            provider=_provider_label(ctx.effective_provider),
             validation_report=dict(outcome.report),
             version=_FIRST_VERSION,
         ),
@@ -468,6 +469,123 @@ async def _persist_and_moderate(
             error=error_text,
         )
         raise
+
+
+async def _load_and_start_job(
+    session: AsyncSession, job_id: uuid.UUID
+) -> GenerationJob:
+    """Load the job row, raise if missing, and mark it running.
+
+    Extracted from :func:`run_generation_job`'s job-load section so that
+    function's body stays under the file's line budget; behavior is
+    unchanged, the same query, the same missing-row exception, the same
+    "running" transition, and the same startup log line.
+
+    Args:
+        session: Active async session.
+        job_id: UUID of the GenerationJob to load.
+
+    Returns:
+        The loaded GenerationJob row, flushed with ``status="running"``.
+
+    Raises:
+        ResourceNotFoundError: If no GenerationJob row exists for ``job_id``.
+    """
+    job_row = await session.get(GenerationJob, job_id)
+    if job_row is None:
+        msg = f"GenerationJob {job_id} not found"
+        raise ResourceNotFoundError(
+            msg, resource_type="GenerationJob", resource_id=str(job_id)
+        )
+
+    job_row.status = "running"
+    await session.flush()
+
+    logger.info(
+        "generation_job.started",
+        job_id=str(job_id),
+        concept_id=str(job_row.concept_id),
+    )
+    return job_row
+
+
+async def _load_concept_and_pii(
+    session: AsyncSession,
+    job_row: GenerationJob,
+    *,
+    effective_provider: GenerationProvider,
+) -> tuple[Concept, ConceptBrief, PiiContext]:
+    """Load the job's concept, its brief, and a PiiContext from real child names.
+
+    Extracted from :func:`run_generation_job`'s concept-load section so that
+    function's body stays under the file's line budget. Behavior is
+    unchanged: the same missing-concept failure recording + re-raise, the
+    same brief validation, and the same PiiContext construction (ChildProfile
+    has no birthdate column, so ``birthdates`` is always empty).
+
+    Args:
+        session: Active async session.
+        job_row: The job row being processed (its ``concept_id`` is looked up).
+        effective_provider: The provider in effect, threaded to
+            :func:`_record_failure` if the concept is missing.
+
+    Returns:
+        A ``(concept_row, brief, pii)`` tuple.
+
+    Raises:
+        ResourceNotFoundError: If no Concept row exists for
+            ``job_row.concept_id``; the failure is recorded on ``job_row``
+            before this re-raises.
+    """
+    concept_row = await session.get(Concept, job_row.concept_id)
+    if concept_row is None:
+        msg = f"Concept {job_row.concept_id} not found"
+        exc = ResourceNotFoundError(
+            msg, resource_type="Concept", resource_id=str(job_row.concept_id)
+        )
+        await _record_failure(session, job_row, exc, provider=effective_provider)
+        raise exc
+
+    brief = ConceptBrief.model_validate(concept_row.brief)
+
+    # ChildProfile has no birthdate column; leave birthdates empty.
+    child_result = await session.execute(
+        select(ChildProfile.display_name).where(
+            ChildProfile.family_id == concept_row.family_id
+        )
+    )
+    child_names: frozenset[str] = frozenset(row for (row,) in child_result.all() if row)
+    pii = PiiContext(child_names=child_names, birthdates=frozenset())
+    return concept_row, brief, pii
+
+
+async def _persist_passed_outcome(
+    session: AsyncSession, ctx: _PersistContext, outcome: GenerationOutcome
+) -> None:
+    """Stamp the pipeline outcome onto ``ctx.job_row``, then persist + moderate.
+
+    Extracted from :func:`run_generation_job`'s post-pipeline section so that
+    function's body stays under the file's line budget. Behavior is
+    unchanged: the same status/report/provider/prompt_version/model stamps in
+    the same order, followed by the same :func:`_persist_and_moderate`
+    delegation.
+
+    Args:
+        session: The worker's owned session (caller commits on the happy path).
+        ctx: The per-job persist/moderate context (see :class:`_PersistContext`);
+            ``ctx.job_row`` is mutated in place.
+        outcome: The pipeline outcome to record.
+    """
+    ctx.job_row.status = outcome.status
+    ctx.job_row.report = dict(outcome.report)
+    ctx.job_row.provider = _provider_label(ctx.effective_provider)
+    ctx.job_row.prompt_version = _PROMPT_VERSION
+    # Record the model of the provider that actually ran. Deriving this from
+    # the injected-arg presence recorded None in production (where provider
+    # is None but the mock still runs); _model_label reflects the real run.
+    ctx.job_row.model = _model_label(ctx.effective_provider)
+
+    await _persist_and_moderate(session, ctx, outcome)
 
 
 async def run_generation_job(
@@ -574,56 +692,10 @@ async def run_generation_job(
         # in-memory attribute. See the finally block for the full rationale.
         completed = False
         try:
-            # ------------------------------------------------------------------
-            # Load and mark the job as running.
-            # ------------------------------------------------------------------
-            job_row = await session.get(GenerationJob, job_id)
-            if job_row is None:
-                msg = f"GenerationJob {job_id} not found"
-                raise ResourceNotFoundError(
-                    msg, resource_type="GenerationJob", resource_id=str(job_id)
-                )
-
-            job_row.status = "running"
-            await session.flush()
-
-            logger.info(
-                "generation_job.started",
-                job_id=str(job_id),
-                concept_id=str(job_row.concept_id),
+            job_row = await _load_and_start_job(session, job_id)
+            concept_row, brief, pii = await _load_concept_and_pii(
+                session, job_row, effective_provider=effective_provider
             )
-
-            # ------------------------------------------------------------------
-            # Load the concept brief.
-            # ------------------------------------------------------------------
-            concept_row = await session.get(Concept, job_row.concept_id)
-            if concept_row is None:
-                msg = f"Concept {job_row.concept_id} not found"
-                exc = ResourceNotFoundError(
-                    msg,
-                    resource_type="Concept",
-                    resource_id=str(job_row.concept_id),
-                )
-                await _record_failure(
-                    session, job_row, exc, provider=effective_provider
-                )
-                raise exc
-
-            brief = ConceptBrief.model_validate(concept_row.brief)
-
-            # ------------------------------------------------------------------
-            # Build PiiContext from the family's real child names.
-            # ChildProfile has no birthdate column; leave birthdates empty.
-            # ------------------------------------------------------------------
-            child_result = await session.execute(
-                select(ChildProfile.display_name).where(
-                    ChildProfile.family_id == concept_row.family_id
-                )
-            )
-            child_names: frozenset[str] = frozenset(
-                row for (row,) in child_result.all() if row
-            )
-            pii = PiiContext(child_names=child_names, birthdates=frozenset())
 
             # ------------------------------------------------------------------
             # Run the generation pipeline. Wrap to persist failures.
@@ -659,18 +731,9 @@ async def run_generation_job(
                 raise
 
             # ------------------------------------------------------------------
-            # Persist outcome onto the job row.
+            # Stamp the outcome, persist, and moderate.
             # ------------------------------------------------------------------
-            job_row.status = outcome.status
-            job_row.report = dict(outcome.report)
-            job_row.provider = _provider_label(effective_provider)
-            job_row.prompt_version = _PROMPT_VERSION
-            # Record the model of the provider that actually ran. Deriving this from
-            # the injected-arg presence recorded None in production (where provider
-            # is None but the mock still runs); _model_label reflects the real run.
-            job_row.model = _model_label(effective_provider)
-
-            await _persist_and_moderate(
+            await _persist_passed_outcome(
                 session,
                 _PersistContext(
                     job_id=job_id,
@@ -690,34 +753,14 @@ async def run_generation_job(
             # single line earlier still finds completed == False.
             completed = True
         finally:
-            # #CRITICAL: timing: an RQ job_timeout SIGALRM (Settings.
-            # generation_job_timeout_seconds), a process kill, or any other
-            # interrupt can land anywhere in the try block above, including
-            # mid-commit inside one of the except handlers. Without this
-            # guard the row is stranded at "queued" or "running" forever:
-            # no error recorded, and nothing to distinguish it from a job
-            # genuinely still executing. Re-checking the row here and
-            # force-failing anything still open means the stranded-job
-            # reclaim sweep (generation/queue.py::requeue_stranded_jobs) only
-            # ever has to recover rows that never reached this function at
-            # all (e.g. a Redis outage before the worker picked the job up).
-            # #VERIFY: test_interrupted_job_records_failed_in_finally injects
-            # a raise between the "running" flush and the inner pipeline try.
-            #
-            # #CRITICAL: concurrency: when completed is False, roll back
-            # before reading the row. Every explicit failure path above
-            # already committed (or, if the row vanished, has nothing left to
-            # commit) before raising, so a rollback here is a safe no-op for
-            # those; for a genuine mid-flight interruption (e.g. inside
-            # persist_storybook, after job_row.status was set to "passed" in
-            # memory but never committed) the rollback discards that dirty
-            # write and forces session.get() below to reflect the last row
-            # state actually committed to the database, not the stale
-            # in-memory identity-mapped object (Finding 2, D2 review).
-            # #VERIFY: proven by test_late_interrupt_during_persist_records_failed_not_passed,
-            # which shows the pre-fix bug (status read as "passed", never
-            # force-failed) and the fixed behavior (status "failed", error
-            # "interrupted") for the exact same interruption point.
+            # #CRITICAL: timing/concurrency: an interrupt (RQ job_timeout
+            # SIGALRM, process kill) landing anywhere above must not strand
+            # the row at "queued"/"running" forever. Roll back BEFORE reading
+            # so the read reflects the last durably committed state, never a
+            # dirty in-memory write (e.g. status set to "passed" but never
+            # committed). Full rationale in this function's docstring; pinned
+            # by test_interrupted_job_records_failed_in_finally and
+            # test_late_interrupt_during_persist_records_failed_not_passed.
             if not completed:
                 await session.rollback()
                 stranded = await session.get(GenerationJob, job_id)

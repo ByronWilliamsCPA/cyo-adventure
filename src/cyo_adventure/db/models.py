@@ -165,6 +165,13 @@ class StorybookVersion(Base):
     published_at: Mapped[datetime | None] = mapped_column(_TS, default=None)
     model: Mapped[str | None] = mapped_column(String(120), default=None)
     prompt_version: Mapped[str | None] = mapped_column(String(120), default=None)
+    # Which generation provider produced this version ("mock", "anthropic",
+    # "openrouter", ...), or the "import" sentinel for a version created via
+    # the offline authoring import path (generation/import_story.py) rather
+    # than the live worker. Nullable: backfilled rows predating this column
+    # (and any future write path that forgets to stamp it) simply have no
+    # provenance recorded, which degrades to "unknown" for display, not an error.
+    provider: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
