@@ -27,7 +27,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 
 | # | Debt | Source | Why it gates R2 |
 | --- | --- | --- | --- |
-| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire | R1 architecture (accepted for family-internal web) | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
+| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per Task C4 of the remediation plan, since a real child-scoped session is architecture work, not a mechanical fix. | R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in Task C4, docs/planning/r1-remediation-plan-2026-07-05.md | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
 | G2 | **[Closed]** Issue #57: residual admin-submit gap (accepted for R1 local testing only). Closed by the Task E4 hardening pass: `submit()` (`publishing/service.py`) now refuses the draft/needs_revision -> in_review transition when the story's latest version has `moderation_report is None`, mirroring the gate `approve()` already enforced. | PR #55 closeout | Explicitly scoped as R1-only acceptance (resolved) |
 | G3 | **[Closed]** Issue #64 (safety-eval Finding 5: a documented control-character strip in concept.py does not exist; accepted for R1 local testing only, same ruling as #57). Closed by the Task E4 hardening pass: `ConceptBrief` now strips control characters from every string field at intake (`generation/concept.py`). | C4a review cycle | Same acceptance boundary (resolved) |
 
@@ -36,7 +36,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | # | Debt | Source | Severity | Suggested action |
 | --- | --- | --- | --- | --- |
 | C1 | Offline reader completions are fire-and-forget: a completion recorded offline that fails on replay is silently lost (event_id omitted, server PK dedupes; deviceId unwired) | PR #107 final review | Medium | Wire the replay queue (see C2) and surface replay failures; add event_id once dedup semantics need it |
-| C2 | Issue #110: `replayQueue` reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect | PR #112 review discovery | Medium | Wire the flush into the reconnect handler; covered by an e2e-real scenario once wired |
+| C2 | **[Resolved]** Issue #110: `replayQueue` reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect. Resolved by Workstream B (PR #145): `useReplayOnReconnect` flushes on reader mount and on the browser `online` event; a replayed 409 surfaces a conflict dialog; a new e2e-real spec (`reader-reload-resume.spec.ts`) covers the resume path. | PR #112 review discovery; resolved PR #145 | Medium | Closed; no further action |
 | C3 | Blocked story-request submissions bypass the 5-pending cap, so a kid can retry a blocked text repeatedly and each retry spends classifier budget | PR #108 accepted design | Medium | Count blocked submissions against the cap, or rate-limit screening per child |
 | C4 | No true-concurrent test of the `SELECT ... FOR UPDATE` row-lock guard on request approval (double-approve race is guarded in code, tested only sequentially) | PR #108/#109 reviews | Low | Add a two-session integration test with a barrier, or accept the lock as sufficient |
 
@@ -54,7 +54,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | # | Debt | Source | Severity | Suggested action |
 | --- | --- | --- | --- | --- |
 | T1 | ADR-005 admin-only approve 403 is not exercised server-side in the real tier (mock-layer 403 only) | PR #112 final review | Medium | Add a real-tier guardian POST /approve expecting 403 |
-| T2 | `frontend/e2e/` and `e2e-real/` are not covered by `npm run lint` | PR #112 ledger | Low | Add the dirs to the ESLint config |
+| T2 | **[Resolved]** `frontend/e2e/` and `e2e-real/` are not covered by `npm run lint`. Resolved by Task F3 (PR #154): ESLint switched to `recommendedTypeChecked`, both directories added to lint coverage with their own `tsconfig.e2e.json` project, and every violation the type-aware rules surfaced (including the `no-floating-promises` class that would have caught #110) was fixed. | PR #112 ledger; resolved PR #154 | Low | Closed; no further action |
 | T3 | Kid RequestStory error-clears-on-retry behavior is only implicitly tested | PR #111 ledger | Low | Pin with an explicit component test when touching U1 |
 | T4 | K3 sibling console noise in kid library tests (accepted as deliberate RAD-tagged design + pre-existing hygiene) | PR #111 final review | Low | Silence in a test-hygiene pass |
 | T5 | e2e-real auth helper hardcodes `user.id = 'e2e-user'` (fine while nothing reads it) | PR #112 task 1 ledger | Low | Parameterize when a test needs real per-user ids |

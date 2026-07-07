@@ -655,3 +655,36 @@ of relying on manual dead-code discovery.
 
 **Affected Files**: template `frontend/src/components/ApiStatus.tsx`, template
 `frontend/src/components/ApiStatus.css`
+
+---
+
+### Template's `SecurityHeadersMiddleware` ships a CSP missing three injection-relevant directives
+
+- **Priority**: Medium
+- **Category**: Security
+- **Discovered**: 2026-07-06
+
+**Issue**: The template's `src/{{package}}/middleware/security.py` (present verbatim from the
+"Initial commit from cookiecutter template", commit `0eddf0e`) builds its
+`Content-Security-Policy` header with `default-src`, `script-src`, `style-src`, `img-src`,
+`font-src`, `connect-src`, and `frame-ancestors`, but omits `object-src`, `base-uri`, and
+`form-action`. Without `object-src 'none'`, legacy plugin content (Flash/Java applets) can still
+be embedded; without `base-uri 'self'`, an injected `<base>` tag can redirect all relative URLs
+(including script `src` attributes) to an attacker-controlled origin; without `form-action
+'self'`, an injected form can exfiltrate submitted data to an external endpoint even though
+script execution itself is otherwise locked down. Every project generated from this template
+inherits the gap until someone notices it in a security review.
+
+**Context**: Found during the R1 security-hardening audit of this project (Finding F11), which
+flagged the missing directives against the live app's CSP. Fixed locally in
+`src/cyo_adventure/middleware/security.py` (PR #146, Task E4). Tracing the gap back with
+`git log --follow --diff-filter=A -- src/cyo_adventure/middleware/security.py` showed the file's
+first commit is the cookiecutter template's own initial commit, and `git show 0eddf0e:...` on that
+file shows the same three directives already absent at generation time, not a later regression.
+
+**Suggested Fix**: Add `; object-src 'none'; base-uri 'self'; form-action 'self'` to the CSP
+string the template scaffolds in `middleware/security.py`, and update the accompanying unit test
+to assert all directives are present, so every newly generated project ships the fuller policy
+from day one.
+
+**Affected Files**: template `src/{{package}}/middleware/security.py`, its unit test
