@@ -2476,8 +2476,8 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <tbody>
 <tr>
 <td>G1</td>
-<td>Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire</td>
-<td>R1 architecture (accepted for family-internal web)</td>
+<td>Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per Task C4 of the remediation plan, since a real child-scoped session is architecture work, not a mechanical fix.</td>
+<td>R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in Task C4, docs/planning/r1-remediation-plan-2026-07-05.md</td>
 <td>Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users</td>
 </tr>
 <tr>
@@ -2515,10 +2515,10 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 </tr>
 <tr>
 <td>C2</td>
-<td>Issue #110: <code>replayQueue</code> reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect</td>
-<td>PR #112 review discovery</td>
+<td><strong>[Resolved]</strong> Issue #110: <code>replayQueue</code> reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect. Resolved by Workstream B (PR #145): <code>useReplayOnReconnect</code> flushes on reader mount and on the browser <code>online</code> event; a replayed 409 surfaces a conflict dialog; a new e2e-real spec (<code>reader-reload-resume.spec.ts</code>) covers the resume path.</td>
+<td>PR #112 review discovery; resolved PR #145</td>
 <td>Medium</td>
-<td>Wire the flush into the reconnect handler; covered by an e2e-real scenario once wired</td>
+<td>Closed; no further action</td>
 </tr>
 <tr>
 <td>C3</td>
@@ -2599,10 +2599,10 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 </tr>
 <tr>
 <td>T2</td>
-<td><code>frontend/e2e/</code> and <code>e2e-real/</code> are not covered by <code>npm run lint</code></td>
-<td>PR #112 ledger</td>
+<td><strong>[Resolved]</strong> <code>frontend/e2e/</code> and <code>e2e-real/</code> are not covered by <code>npm run lint</code>. Resolved by Task F3 (PR #154): ESLint switched to <code>recommendedTypeChecked</code>, both directories added to lint coverage with their own <code>tsconfig.e2e.json</code> project, and every violation the type-aware rules surfaced (including the <code>no-floating-promises</code> class that would have caught #110) was fixed.</td>
+<td>PR #112 ledger; resolved PR #154</td>
 <td>Low</td>
-<td>Add the dirs to the ESLint config</td>
+<td>Closed; no further action</td>
 </tr>
 <tr>
 <td>T3</td>
@@ -2708,7 +2708,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 16:16:00 UTC">July 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 7, 2026 02:07:10 UTC">July 7, 2026</span>
   </span>
 
     
