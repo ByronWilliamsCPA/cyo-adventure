@@ -57,6 +57,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   CodeQL, and SonarCloud (refs #61).
 
 ### Fixed
+- The `worker_main` reclaim sweep no longer poisons the shared async engine
+  pool: the sweep now disposes the engine's connection pool inside its own
+  event loop before `Worker.work()` starts, so pooled asyncpg connections
+  bound to the sweep's closed loop can no longer crash the first generation
+  job (or any forked RQ work horse) with a cross-loop
+  "got Future attached to a different loop" RuntimeError. Closes #150.
 - Concurrent approvals of the same story can no longer double-apply state
   transitions: `api/approval.py` and `moderation/pipeline.py` load the story
   row with `SELECT ... FOR UPDATE` so a second approve/submit blocks on the
