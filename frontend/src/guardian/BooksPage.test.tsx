@@ -12,6 +12,16 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+/**
+ * Real axios rejections are `AxiosError` instances (an `Error` subclass); this
+ * builds a real `Error` carrying the same shape axios attaches (`isAxiosError`,
+ * `response`) so the mocked rejection is faithful to what the code under test
+ * actually receives.
+ */
+function mockAxiosError(props: Record<string, unknown>): Error {
+  return Object.assign(new Error('mock axios error'), props)
+}
+
 const PROFILES = {
   profiles: [
     {
@@ -128,7 +138,7 @@ describe('BooksPage', () => {
   it('shows a forbidden notice when the endpoint returns 403 (admin)', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/guardian/books') {
-        return Promise.reject({ isAxiosError: true, response: { status: 403 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 403 } }))
       }
       return Promise.resolve({ data: PROFILES })
     })
@@ -141,7 +151,7 @@ describe('BooksPage', () => {
   it('shows a generic error on a non-403 failure', async () => {
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/guardian/books') {
-        return Promise.reject({ isAxiosError: true, response: { status: 500 } })
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 500 } }))
       }
       return Promise.resolve({ data: PROFILES })
     })

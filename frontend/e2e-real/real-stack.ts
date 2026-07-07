@@ -8,7 +8,7 @@ export const BACKEND = process.env.E2E_BACKEND_URL || 'http://localhost:8000'
  * see the "Real-backend e2e" section of frontend/README.md.
  */
 export async function requireBackend(): Promise<void> {
-  let ready = false
+  let ready: boolean
   let detail = ''
   try {
     // A hung backend must not block for the full Playwright timeout; a 5s

@@ -107,7 +107,7 @@ export function ReviewDetailPage() {
     setActionError(false)
     try {
       await action()
-      navigate('/guardian')
+      void navigate('/guardian')
     } catch (err) {
       console.error('review action failed:', err instanceof Error ? err.message : err)
       setActionError(true)

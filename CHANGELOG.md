@@ -55,6 +55,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.pre-commit-config.yaml` or any `.github/workflows/` job, so it added no
   scanning coverage. The active SAST/SCA gates remain Bandit, OSV-Scanner,
   CodeQL, and SonarCloud (refs #61).
+- Frontend ESLint is now type-aware (`tseslint.configs.recommendedTypeChecked`
+  with `projectService`), and lint coverage now extends to `e2e/` and
+  `e2e-real/`, previously outside the lint glob entirely. This is the class of
+  rule (`@typescript-eslint/no-floating-promises`) that would have caught
+  issue #110's dropped-promise bug, where a replay was enqueued but the
+  promise handling it was never awaited or observed. A new
+  `frontend/tsconfig.e2e.json` type-covers the Playwright specs (added to the
+  `tsconfig.json` project references), and around 70 newly-surfaced
+  violations (floating promises, unsafe `any` member access/return, unsafe
+  promise rejection reasons, an unbound-method false positive, and a couple of
+  redundant type assertions) are fixed with no rule weakened or suppressed.
 
 ### Fixed
 - Concurrent approvals of the same story can no longer double-apply state

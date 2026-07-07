@@ -10,34 +10,53 @@ import {
   makeRecordCompletion,
 } from './readerApi'
 
-function axiosLike(reject: unknown): AxiosInstance {
+/**
+ * Real axios rejections are `AxiosError` instances (an `Error` subclass), so
+ * these test doubles build a real `Error` carrying the same shape axios
+ * attaches (`isAxiosError`, `response`) rather than rejecting with a bare
+ * object, keeping the mocks faithful to what the code under test actually
+ * receives.
+ */
+function mockAxiosError(props: Record<string, unknown>): Error {
+  return Object.assign(new Error('mock axios error'), props)
+}
+
+function axiosLike(reject: Error): AxiosInstance {
   return { get: () => Promise.reject(reject) } as unknown as AxiosInstance
 }
 
-function axiosGet(result: unknown, reject = false): AxiosInstance {
-  return {
-    get: () => (reject ? Promise.reject(result) : Promise.resolve(result)),
-  } as unknown as AxiosInstance
+function axiosGetResolve(data: unknown): AxiosInstance {
+  return { get: () => Promise.resolve(data) } as unknown as AxiosInstance
+}
+
+function axiosGetReject(error: Error): AxiosInstance {
+  return { get: () => Promise.reject(error) } as unknown as AxiosInstance
 }
 
 describe('makeFetchStory', () => {
   it('maps a 404 response to StoryNotFoundError', async () => {
-    const fetchStory = makeFetchStory(axiosLike({ isAxiosError: true, response: { status: 404 } }))
+    const fetchStory = makeFetchStory(
+      axiosLike(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+    )
     await expect(fetchStory('missing', 1)).rejects.toBeInstanceOf(StoryNotFoundError)
   })
 
   it('maps a 403 response to ForbiddenError', async () => {
-    const fetchStory = makeFetchStory(axiosLike({ isAxiosError: true, response: { status: 403 } }))
+    const fetchStory = makeFetchStory(
+      axiosLike(mockAxiosError({ isAxiosError: true, response: { status: 403 } }))
+    )
     await expect(fetchStory('locked', 1)).rejects.toBeInstanceOf(ForbiddenError)
   })
 
   it('maps a no-response (transport) failure to OfflineError', async () => {
-    const fetchStory = makeFetchStory(axiosLike({ isAxiosError: true, response: undefined }))
+    const fetchStory = makeFetchStory(
+      axiosLike(mockAxiosError({ isAxiosError: true, response: undefined }))
+    )
     await expect(fetchStory('s', 1)).rejects.toBeInstanceOf(OfflineError)
   })
 
   it('rethrows other HTTP errors unchanged', async () => {
-    const err = { isAxiosError: true, response: { status: 500 } }
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
     const fetchStory = makeFetchStory(axiosLike(err))
     await expect(fetchStory('s', 1)).rejects.toBe(err)
   })
@@ -55,27 +74,27 @@ const SERVER_ROW: ReadingState = {
 
 describe('makeFetchServerState', () => {
   it('returns the row on a 200', async () => {
-    const fetchServerState = makeFetchServerState(axiosGet({ data: SERVER_ROW }))
+    const fetchServerState = makeFetchServerState(axiosGetResolve({ data: SERVER_ROW }))
     await expect(fetchServerState('p1', 's1')).resolves.toEqual(SERVER_ROW)
   })
 
   it('maps a 404 (no server state) to null', async () => {
     const fetchServerState = makeFetchServerState(
-      axiosGet({ isAxiosError: true, response: { status: 404 } }, true)
+      axiosGetReject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
     )
     await expect(fetchServerState('p1', 's1')).resolves.toBeNull()
   })
 
   it('maps a no-response transport failure to OfflineError', async () => {
     const fetchServerState = makeFetchServerState(
-      axiosGet({ isAxiosError: true, response: undefined }, true)
+      axiosGetReject(mockAxiosError({ isAxiosError: true, response: undefined }))
     )
     await expect(fetchServerState('p1', 's1')).rejects.toBeInstanceOf(OfflineError)
   })
 
   it('rethrows other HTTP errors unchanged', async () => {
-    const err = { isAxiosError: true, response: { status: 500 } }
-    const fetchServerState = makeFetchServerState(axiosGet(err, true))
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
+    const fetchServerState = makeFetchServerState(axiosGetReject(err))
     await expect(fetchServerState('p1', 's1')).rejects.toBe(err)
   })
 })

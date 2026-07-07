@@ -10,7 +10,7 @@ export interface BackToLibraryProps {
 export function BackToLibrary({ profileId }: BackToLibraryProps) {
   const navigate = useNavigate()
   return (
-    <Button variant="ghost" onClick={() => navigate(`/library/${profileId}`)}>
+    <Button variant="ghost" onClick={() => void navigate(`/library/${profileId}`)}>
       Back to my books
     </Button>
   )

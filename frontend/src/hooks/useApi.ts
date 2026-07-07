@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 import { useMemo } from 'react'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 
@@ -43,13 +43,17 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
         }
         return config
       },
-      (error) => Promise.reject(error)
+      // axios types this handler's `error` param as `any`; annotating it as
+      // `AxiosError` (what axios actually rejects transport failures with)
+      // keeps the rejection reason a real Error for prefer-promise-reject-errors
+      // and makes the `.response` access below type-safe.
+      (error: AxiosError) => Promise.reject(error)
     )
 
     // Response interceptor for error handling
     instance.interceptors.response.use(
       (response) => response,
-      (error) => {
+      (error: AxiosError) => {
         // Handle common errors
         if (error.response?.status === 401) {
           // #ASSUME: security: an expired/invalid session token means the

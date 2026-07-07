@@ -21,14 +21,18 @@ const mockOnAuthStateChange = vi.fn()
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
 const mockSignOut = vi.fn()
+// Each mock method's return type is annotated `unknown`, not inferred, so the
+// untyped vi.fn() mocks don't leak a bare `any` past this seam: the real
+// AuthContext.tsx compiles against supabaseClient.ts's actual Supabase types
+// regardless of this test-only substitution.
 vi.mock('./supabaseClient', () => ({
   supabase: {
     auth: {
-      getSession: (...args: unknown[]) => mockGetSession(...args),
-      onAuthStateChange: (...args: unknown[]) => mockOnAuthStateChange(...args),
-      signInWithOAuth: (...args: unknown[]) => mockSignInWithOAuth(...args),
-      signInWithPassword: (...args: unknown[]) => mockSignInWithPassword(...args),
-      signOut: (...args: unknown[]) => mockSignOut(...args),
+      getSession: (...args: unknown[]): unknown => mockGetSession(...args),
+      onAuthStateChange: (...args: unknown[]): unknown => mockOnAuthStateChange(...args),
+      signInWithOAuth: (...args: unknown[]): unknown => mockSignInWithOAuth(...args),
+      signInWithPassword: (...args: unknown[]): unknown => mockSignInWithPassword(...args),
+      signOut: (...args: unknown[]): unknown => mockSignOut(...args),
     },
   },
 }))

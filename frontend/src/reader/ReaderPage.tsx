@@ -386,7 +386,7 @@ export function ReaderPage({
     return (
       <DownloadNeeded
         onRetry={retry}
-        onBackToLibrary={() => navigate(`/library/${profileId}`)}
+        onBackToLibrary={() => void navigate(`/library/${profileId}`)}
       />
     )
   }

@@ -59,7 +59,7 @@ export function LibraryPage() {
         if (!cancelled && isMountedRef.current) setState({ status: 'error' })
       }
     }
-    fetchItems()
+    void fetchItems()
     return () => {
       cancelled = true
     }

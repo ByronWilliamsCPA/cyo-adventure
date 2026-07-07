@@ -11,6 +11,10 @@ const mockPost = vi.fn()
 const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({ useApi: () => fakeApi }))
 
+interface ConceptRequestBody {
+  brief: { age_band: string; tone: string; reading_level_target: number }
+}
+
 const PROFILE = {
   id: 'p1',
   display_name: 'Reader A',
@@ -79,9 +83,10 @@ describe('IntakePage', () => {
     const conceptCall = mockPost.mock.calls.find((c) => c[0] === '/v1/concepts')
     const briefJson = JSON.stringify(conceptCall?.[1])
     expect(briefJson).not.toContain('Reader A')
-    expect(conceptCall?.[1].brief.age_band).toBe('8-11')
-    expect(conceptCall?.[1].brief.tone).toBe('gentle')
-    expect(conceptCall?.[1].brief.reading_level_target).toBe(4)
+    const conceptBody = conceptCall?.[1] as ConceptRequestBody | undefined
+    expect(conceptBody?.brief.age_band).toBe('8-11')
+    expect(conceptBody?.brief.tone).toBe('gentle')
+    expect(conceptBody?.brief.reading_level_target).toBe(4)
     expect(mockPost).toHaveBeenCalledWith('/v1/concepts/c1/generate')
   })
 

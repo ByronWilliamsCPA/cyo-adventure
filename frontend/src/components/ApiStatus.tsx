@@ -29,10 +29,11 @@ export function ApiStatus() {
       }
     }
 
-    checkHealth()
+    void checkHealth()
 
-    // Poll health status every 30 seconds
-    const interval = setInterval(checkHealth, 30000)
+    // Poll health status every 30 seconds; setInterval's callback must be
+    // void-returning, so wrap the fire-and-forget async call.
+    const interval = setInterval(() => void checkHealth(), 30000)
     return () => clearInterval(interval)
   }, [api])
 
