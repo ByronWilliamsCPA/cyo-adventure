@@ -365,7 +365,10 @@ class TestContentSummary:
         view = await get_content_summary("s1", _ctx(_guardian(fam, set()), session))
         assert view.storybook_id == "s1"
         assert view.screened is True
-        assert view.findings[0].category == "coherence"
+        # The lone finding is a story-level "coherence" advisory, below the
+        # default (FLAG) surfacing threshold, so it is filtered out here.
+        assert view.findings == []
+        assert view.flagged_count == 0
 
     @pytest.mark.unit
     @pytest.mark.asyncio

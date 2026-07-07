@@ -7,7 +7,7 @@ to per-node findings) and whole-story findings.
 
 from __future__ import annotations
 
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
 
@@ -22,6 +22,9 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import Source, Verdict
+
+if TYPE_CHECKING:
+    from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
 
 def build_review_surface(
@@ -287,26 +290,32 @@ def build_content_summary(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    age_band: str,
+    policy: ThresholdPolicy,
 ) -> ContentSummaryView:
     """Build the redacted guardian content summary for a published story version.
 
     Reuses build_review_surface so Verdict.PASS filtering, the screened-versus-
     unscreened rule, and corrupt-report rejection are defined in exactly one
     place. It then projects the admin surface down to a guardian-safe view: the
-    gating summary, the total flagged count (per-node plus story-level), and the
-    story-level findings only. Per-node flagged passages are intentionally
-    dropped: a guardian is the assigner, not the safety reviewer, and passage
-    prose can spoil content and leak generation internals.
+    gating summary, the total flagged count (per-node plus story-level, filtered
+    by the age-band threshold policy), and the story-level findings that clear
+    the threshold. Per-node flagged passages are intentionally dropped: a
+    guardian is the assigner, not the safety reviewer, and passage prose can
+    spoil content and leak generation internals.
 
     Args:
         storybook_id: The story id.
         version: The published version being summarized.
         blob: The stored story blob (source of node prose for the surface).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        age_band: The story's age band, used to resolve the surfacing threshold.
+        policy: The resolved threshold policy (code default plus DB overrides).
 
     Returns:
         ContentSummaryView: Screened flag, gating summary, flagged count, and
-            story-level findings (category, verdict, message).
+            story-level findings (category, verdict, message) that meet the
+            age-band threshold.
 
     Raises:
         ValidationError: If the stored moderation report is corrupt at rest
@@ -319,9 +328,26 @@ def build_content_summary(
         blob=blob,
         moderation_report=moderation_report,
     )
+
+    def _surfaces(category: str, verdict: Verdict, score: float | None) -> bool:
+        return policy.surfaces(
+            age_band=age_band, category=category, verdict=verdict, score=score
+        )
+
+    # #CRITICAL: security: guardian/kid surfaces filter by threshold; the admin
+    # review surface (build_review_surface) never does. flagged_count MUST count
+    # only surfaced findings or the badge contradicts the visible list.
+    # #VERIFY: test_guardian_summary_hides_below_threshold_advisory.
     flagged_count = sum(
-        len(passage.findings) for passage in surface.flagged_passages
-    ) + len(surface.story_level_findings)
+        1
+        for passage in surface.flagged_passages
+        for finding in passage.findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
+    ) + sum(
+        1
+        for finding in surface.story_level_findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
+    )
     findings = [
         GuardianFinding(
             category=finding.category,
@@ -329,6 +355,7 @@ def build_content_summary(
             message=finding.message,
         )
         for finding in surface.story_level_findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
     ]
     return ContentSummaryView(
         storybook_id=storybook_id,

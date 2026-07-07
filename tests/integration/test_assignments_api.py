@@ -368,12 +368,13 @@ async def test_guardian_sees_content_summary(
     assert resp.status_code == 200
     body = resp.json()
     assert body["screened"] is True
-    # per-node flag + story-level advisory both counted.
-    assert body["flagged_count"] == 2
+    # The per-node "violence" flag clears the default (FLAG) threshold; the
+    # story-level "coherence" advisory does not, so only the flag is counted.
+    assert body["flagged_count"] == 1
     # Only the story-level finding is enumerated; no flagged_passages key exists.
     assert "flagged_passages" not in body
-    assert [f["category"] for f in body["findings"]] == ["coherence"]
-    assert body["findings"][0]["verdict"] == "advisory"
+    # The advisory is below the default threshold, so it is filtered out here.
+    assert body["findings"] == []
 
 
 async def test_child_cannot_get_content_summary(

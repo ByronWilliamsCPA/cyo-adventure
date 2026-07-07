@@ -1,0 +1,155 @@
+"""Threshold filtering on guardian content summary and books list."""
+
+from __future__ import annotations
+
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
+
+import pytest
+
+from cyo_adventure.db.models import (
+    Family,
+    ModerationThreshold,
+    Storybook,
+    StorybookVersion,
+    User,
+)
+
+from .conftest import auth
+
+if TYPE_CHECKING:
+    from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
+
+# A report with one advisory (below default threshold) and one flag (at it).
+_MIXED_REPORT: dict[str, object] = {
+    "findings": [
+        {
+            "stage": 0,
+            "source": "openai",
+            "category": "toxicity",
+            "node_id": None,
+            "verdict": "advisory",
+            "score": 0.02,
+            "message": "graded classifier advisory",
+        },
+        {
+            "stage": 1,
+            "source": "llm_safety",
+            "category": "safety",
+            "node_id": None,
+            "verdict": "flag",
+            "score": None,
+            "message": "mild peril",
+        },
+    ],
+    "summary": {
+        "count": 2,
+        "hard_block": False,
+        "soft_flag": True,
+        "repaired": False,
+        "reviewer_independent": True,
+    },
+}
+
+
+async def _seed_banded_published(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed a family and a published 8-11 story carrying _MIXED_REPORT."""
+    async with sessions() as session:
+        fam = Family(name="T")
+        session.add(fam)
+        await session.flush()
+        admin = User(family_id=fam.id, role="admin", authn_subject="admin-t")
+        session.add_all(
+            [
+                admin,
+                User(family_id=fam.id, role="guardian", authn_subject="guardian-t"),
+            ]
+        )
+        await session.flush()
+        story_id = "threshold-me"
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=fam.id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={
+                    "id": story_id,
+                    "metadata": {"age_band": "8-11"},
+                    "nodes": [{"id": "n1", "body": "Prose."}],
+                },
+                moderation_report=_MIXED_REPORT,
+                approved_by=admin.id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_guardian_summary_hides_below_threshold_advisory(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Guardian sees the flag finding but not the 0.02 advisory."""
+    story_id = await _seed_banded_published(sessions)
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary",
+        headers=auth("guardian-t"),
+    )
+    assert res.status_code == 200
+    body = res.json()
+    categories = [f["category"] for f in body["findings"]]
+    assert "safety" in categories
+    assert "toxicity" not in categories
+    assert body["flagged_count"] == 1
+
+
+async def test_admin_review_surface_still_shows_everything(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The admin review surface is NOT filtered: both findings appear."""
+    story_id = await _seed_banded_published(sessions)
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/review",
+        headers=auth("admin-t"),
+    )
+    assert res.status_code == 200
+    body = res.json()
+    categories = [f["category"] for f in body["story_level_findings"]]
+    assert "toxicity" in categories
+    assert "safety" in categories
+
+
+async def test_threshold_row_lowers_floor_for_matching_band(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An override row ('8-11', 'toxicity') -> advisory surfaces the advisory."""
+    story_id = await _seed_banded_published(sessions)
+    async with sessions() as session:
+        session.add(
+            ModerationThreshold(
+                age_band="8-11",
+                category="toxicity",
+                min_verdict="advisory",
+                min_score=None,
+            )
+        )
+        await session.commit()
+    res = await client.get(
+        f"/api/v1/storybooks/{story_id}/content-summary",
+        headers=auth("guardian-t"),
+    )
+    body = res.json()
+    assert "toxicity" in [f["category"] for f in body["findings"]]
+    assert body["flagged_count"] == 2
