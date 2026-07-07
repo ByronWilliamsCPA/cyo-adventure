@@ -53,13 +53,18 @@ account will correctly get a 403 on approve.
 - [ ] `https://cyo.williamshome.family` resolves through Pangolin to docker-host:443 with a valid TLS cert
 - [ ] Frontend loads (React shell renders, no console errors about missing Supabase config; this proves the
       image was built with `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` build args)
-- [ ] `GET /api/v1/health/live` and `/api/v1/health/ready` return 200 (ready proves DB connectivity)
+- [ ] `GET /health/live` and `/health/ready` return 200 (ready proves DB connectivity; verified
+      live 2026-07-07: both 200. The `/api/v1/health/*` paths this checklist previously documented
+      return 404; the health router is mounted without the `/api/v1` prefix.)
 - [ ] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
       `generation`)
 - [ ] Alembic migrations current (migrate profile ran; `alembic current` matches head)
-- [ ] Supabase backups confirmed (DB is on the Supabase session pooler post-cutover; Supabase owns
-      backups/PITR. The old local `db-backup` sidecar is retired via homelab-infra #577, so do NOT
-      expect a local backup container.)
+- [ ] Backups confirmed: the local `db-backup` container is healthy (`docker ps` on docker-host)
+      AND a fresh `.dump` file is present under
+      `/mnt/unraid/appdata/cyo-adventure/backups`. As of 2026-07-07 this container runs a daily
+      `pg_dump -Fc` of the LIVE Supabase database's `public` schema (14-day retention), fixed via
+      homelab-infra #585/#586; Supabase-side backups/PITR also exist independently. Do not assume
+      Supabase backups alone satisfy this check: verify the local dump too.
 - [ ] Worker survives a restart (`docker compose restart worker`; queued/in-flight jobs resume or
       re-queue rather than being lost)
 
