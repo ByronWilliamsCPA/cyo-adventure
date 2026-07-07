@@ -1,12 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { classifyApiError } from '../hooks/classifyApiError'
+import { useApi } from '../hooks/useApi'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
-import {
-  deleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDelete as deleteThreshold,
-  listThresholdsApiV1AdminModerationThresholdsGet as listThresholds,
-  upsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPut as upsertThreshold,
-} from '../client/sdk.gen'
+import { makeThresholdsApi } from './moderationThresholdsApi'
 import type { ThresholdListView } from '../client/types.gen'
 
 const VERDICTS = ['advisory', 'flag', 'block'] as const
@@ -18,34 +15,6 @@ type LoadState =
   | { kind: 'ready'; data: ThresholdListView }
 
 /**
- * Per-call options for the generated OpenAPI client on this page.
- *
- * Every other guardian page reaches the backend through `useApi()`'s axios
- * instance, which already carries a same-origin base URL (dev proxy / prod
- * reverse proxy both forward `/api/*` from the page's own origin) and an
- * Authorization interceptor. This page is the first to call the generated
- * client (`src/client/sdk.gen.ts`) directly, and that client's own default
- * instance (`src/client/client.gen.ts`) has neither: its base URL is a
- * hardcoded `http://localhost:8000` baked in at generation time, and it has
- * no auth interceptor at all.
- *
- * #CRITICAL: security: without an explicit Authorization header every call
- * from this admin-only page would go out unauthenticated and 401 outside a
- * developer's own machine; without the baseURL override every call would
- * bypass the dev/prod reverse proxy and hit a literal `localhost:8000`.
- * #VERIFY: ModerationThresholdsPage.test.tsx asserts each generated call
- * receives an explicit Authorization header sourced from `auth_token`.
- */
-function requestOptions() {
-  const token = localStorage.getItem('auth_token')
-  return {
-    baseURL: window.location.origin,
-    throwOnError: true as const,
-    ...(token ? { headers: { Authorization: `Bearer ${token}` } } : {}),
-  }
-}
-
-/**
  * Admin-only editor for age-band moderation surfacing thresholds (WS-A Task 7).
  *
  * Lists the code default plus every stored (age_band, category) override and
@@ -54,6 +23,9 @@ function requestOptions() {
  * backend re-checks the admin role on every call regardless.
  */
 export function ModerationThresholdsPage() {
+  const api = useApi()
+  const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])
+
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [band, setBand] = useState<AgeBandValue>(AGE_BANDS[0])
   const [category, setCategory] = useState('')
@@ -64,16 +36,19 @@ export function ModerationThresholdsPage() {
 
   // Mount-time load, matching ReviewDetailPage's cancelled-guard idiom so an
   // unmount before the request resolves never calls setState on a gone
-  // component. refreshList() below (used after save/remove, from event
-  // handlers rather than an effect) is a separate function on purpose: an
-  // effect body must not call an outside setState-calling function directly
-  // (react-hooks/set-state-in-effect), so the initial load is inlined here.
+  // component. refreshAfterMutation() below (used after a successful save,
+  // from an event handler rather than an effect) is a separate function on
+  // purpose: an effect body must not call an outside setState-calling
+  // function directly (react-hooks/set-state-in-effect), so the initial load
+  // is inlined here. This initial load is also the only place a failure
+  // should replace the whole page with the top-level error state: it is the
+  // only point where there is no ready table/form to preserve yet.
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const res = await listThresholds(requestOptions())
-        if (!cancelled) setState({ kind: 'ready', data: res.data })
+        const data = await thresholdsApi.list()
+        if (!cancelled) setState({ kind: 'ready', data })
       } catch (err) {
         // Log the message, not the axios error object (its config.headers
         // carries the caller's Authorization bearer token).
@@ -92,20 +67,25 @@ export function ModerationThresholdsPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [thresholdsApi])
 
-  async function refreshList() {
+  // Re-fetches the list after a save that has already succeeded. A failure
+  // here must NOT replace the ready table/form with the top-level error
+  // state: the admin's edit went through, only the on-screen list is stale.
+  // Surface it as the same scoped actionError the save/delete failure paths
+  // use instead, so the table and form stay visible and usable.
+  async function refreshAfterMutation() {
     try {
-      const res = await listThresholds(requestOptions())
-      setState({ kind: 'ready', data: res.data })
+      const data = await thresholdsApi.list()
+      setState({ kind: 'ready', data })
     } catch (err) {
-      console.error('threshold list load failed:', err instanceof Error ? err.message : err)
-      setState({
-        kind: 'error',
-        message: classifyApiError(err, {
-          transient: 'We could not load moderation thresholds. Please reload.',
-        }).message,
-      })
+      console.error('threshold list refresh failed:', err instanceof Error ? err.message : err)
+      setActionError(
+        classifyApiError(err, {
+          transient:
+            'That override saved, but the list could not refresh. Reload to see the latest changes.',
+        }).message
+      )
     }
   }
 
@@ -134,17 +114,13 @@ export function ModerationThresholdsPage() {
     setSubmitting(true)
     setActionError(null)
     try {
-      await upsertThreshold({
-        ...requestOptions(),
-        path: { age_band: band, category: trimmedCategory },
-        body: {
-          min_verdict: verdict,
-          min_score: score === '' ? null : Number(score),
-        },
+      await thresholdsApi.upsert(band, trimmedCategory, {
+        min_verdict: verdict,
+        min_score: score === '' ? null : Number(score),
       })
       setCategory('')
       setScore('')
-      await refreshList()
+      await refreshAfterMutation()
     } catch (err) {
       console.error('threshold upsert failed:', err instanceof Error ? err.message : err)
       setActionError(
@@ -162,12 +138,10 @@ export function ModerationThresholdsPage() {
     setActionError(null)
     try {
       // The delete endpoint returns the full refreshed list view, so no
-      // separate refreshList() round-trip is needed after a successful removal.
-      const res = await deleteThreshold({
-        ...requestOptions(),
-        path: { age_band: rowBand, category: rowCategory },
-      })
-      setState({ kind: 'ready', data: res.data })
+      // separate refreshAfterMutation() round-trip is needed after a
+      // successful removal.
+      const data = await thresholdsApi.remove(rowBand, rowCategory)
+      setState({ kind: 'ready', data })
     } catch (err) {
       console.error('threshold delete failed:', err instanceof Error ? err.message : err)
       setActionError(
