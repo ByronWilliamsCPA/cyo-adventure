@@ -808,7 +808,11 @@ default = true
 version_toml = ["pyproject.toml:project.version"]
 
 # Commit message parsing
-commit_parser = "conventional_commits"
+# python-semantic-release v10's built-in parser registry (_known_commit_parsers
+# in cli/config.py) only recognizes "angular", "conventional", "emoji", "scipy",
+# and "tag"; the pre-v10 alias "conventional_commits" is rejected with
+# "Unrecognized commit parser value" and fails the release job outright.
+commit_parser = "conventional"
 commit_parser_options = { parse_squash_commits = true, ignore_merge_commits = true }
 
 # Version behavior
