@@ -94,19 +94,29 @@ async def _family_child_names(ctx: Context, family_id: uuid.UUID) -> frozenset[s
 
 
 def _to_view(
-    request: StoryRequest, *, age_band: str, policy: ThresholdPolicy
+    request: StoryRequest,
+    *,
+    age_band: str,
+    policy: ThresholdPolicy,
+    surface_all: bool,
 ) -> StoryRequestView:
-    """Project a row to the guardian view; hide raw text for blocked rows.
+    """Project a row to the caller's view; hide raw text for blocked rows.
 
     Args:
         request: The story request row.
         age_band: The requesting child profile's age band, used to resolve
             the surfacing threshold for each stored flag.
         policy: The loaded threshold policy (surfaces flag+above by default).
+        surface_all: When True (admin caller), every well-formed flag is
+            included regardless of the age-band/category threshold: admins
+            see every finding, per the design invariant that thresholds only
+            filter what guardians see. When False (guardian caller), flags
+            below the resolved threshold are dropped.
 
     Returns:
-        StoryRequestView: The guardian-facing projection, filtered to flags
-        that meet the age-band/category threshold.
+        StoryRequestView: The caller-facing projection. For a guardian,
+        filtered to flags that meet the age-band/category threshold; for an
+        admin, unfiltered.
     """
     # #CRITICAL: security: the raw text of a blocked (bright-line) request is
     # never surfaced; only the redacted flags cross the boundary.
@@ -140,8 +150,16 @@ def _to_view(
                     verdict,
                 )
                 continue
-            # Stored request flags carry no score; verdict-level filtering only.
-            if not policy.surfaces(
+            # Stored request flags carry no score, so an admin-configured
+            # min_score override never gates story-request flags (only
+            # storybook flags carry real classifier scores); verdict-level
+            # filtering only.
+            # #CRITICAL: security: thresholds filter what a GUARDIAN sees;
+            # an admin bypasses this check (surface_all) and sees every
+            # well-formed flag, per the design invariant "admins see every
+            # finding regardless of threshold."
+            # #VERIFY: test_admin_sees_all_flags_guardian_sees_filtered.
+            if not surface_all and not policy.surfaces(
                 age_band=age_band,
                 category=category,
                 verdict=parsed_verdict,
@@ -273,7 +291,12 @@ async def list_story_requests(
     rows = (await ctx.session.execute(stmt)).all()
     policy = await load_threshold_policy(ctx.session)
     requests = [
-        _to_view(request, age_band=age_band, policy=policy)
+        _to_view(
+            request,
+            age_band=age_band,
+            policy=policy,
+            surface_all=ctx.principal.is_admin,
+        )
         for request, age_band in rows
     ]
     return StoryRequestListView(requests=requests)

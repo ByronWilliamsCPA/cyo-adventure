@@ -141,6 +141,11 @@ async def upsert_threshold(
     """
     _require_admin(ctx)
     _validate_band(age_band)
+    # #ASSUME: concurrency: check-then-act on (age_band, category) is unlocked;
+    # two concurrent admin PUTs to the same cell can both miss the row and race
+    # to INSERT. Admin-only and rare; the uq_moderation_threshold_band_category
+    # UniqueConstraint is the backstop (the loser gets a 500, not corruption).
+    # #VERIFY: switch to INSERT ... ON CONFLICT DO UPDATE if this ever recurs.
     row = await _get_row(ctx, age_band, category)
     old_verdict = row.min_verdict if row else None
     old_score = row.min_score if row else None

@@ -799,4 +799,7 @@ class ThresholdUpsertBody(BaseModel):
     """PUT body for a threshold override."""
 
     min_verdict: MinVerdict
+    # Only gates storybook flags, which carry a real classifier score.
+    # Story-request flags always pass score=None, so a min_score override
+    # never affects story-request surfacing; verdict-level filtering only.
     min_score: float | None = Field(default=None, ge=0.0, le=1.0)

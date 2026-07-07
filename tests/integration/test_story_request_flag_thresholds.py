@@ -93,6 +93,50 @@ async def test_blocked_request_flags_still_surface(
     assert [f["verdict"] for f in target["moderation_flags"]] == ["block"]
 
 
+async def test_admin_sees_all_flags_guardian_sees_filtered(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """Admins see every flag regardless of threshold; guardians stay filtered."""
+    request_id = await _seed_request(
+        sessions,
+        seed,
+        status="pending",
+        flags={
+            "blocked": False,
+            "flags": [
+                {
+                    "category": "toxicity",
+                    "verdict": "advisory",
+                    "message": "graded advisory",
+                },
+                {"category": "safety", "verdict": "flag", "message": "needs review"},
+            ],
+        },
+    )
+
+    guardian_res = await client.get(
+        "/api/v1/story-requests", headers=auth(seed.guardian_token)
+    )
+    assert guardian_res.status_code == 200
+    guardian_target = next(
+        r for r in guardian_res.json()["requests"] if r["id"] == request_id
+    )
+    guardian_categories = [f["category"] for f in guardian_target["moderation_flags"]]
+    assert guardian_categories == ["safety"]
+
+    admin_res = await client.get(
+        "/api/v1/story-requests", headers=auth(seed.admin_token)
+    )
+    assert admin_res.status_code == 200
+    admin_target = next(
+        r for r in admin_res.json()["requests"] if r["id"] == request_id
+    )
+    admin_categories = {f["category"] for f in admin_target["moderation_flags"]}
+    assert admin_categories == {"toxicity", "safety"}
+
+
 async def test_kid_library_exposes_no_moderation_fields(
     client: AsyncClient, seed: Seed
 ) -> None:
