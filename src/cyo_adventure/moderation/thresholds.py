@@ -18,6 +18,8 @@ from cyo_adventure.moderation.report import Verdict
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from sqlalchemy.ext.asyncio import AsyncSession
+
 # Severity ordering for surfacing decisions. PASS is deliberately absent: a
 # pass finding never surfaces regardless of thresholds.
 _SEVERITY: dict[Verdict, int] = {
@@ -115,3 +117,36 @@ class ThresholdPolicy:
             and score is not None
             and score < threshold.min_score
         )
+
+
+async def load_threshold_policy(
+    session: "AsyncSession",  # noqa: UP037
+) -> ThresholdPolicy:
+    """Load all threshold override rows into an immutable policy.
+
+    The table is admin-curated and small; a whole-table read per filtered
+    request is deliberate (no cache invalidation machinery).
+
+    Args:
+        session: The request-scoped async session.
+
+    Returns:
+        ThresholdPolicy: Override rows over the code default.
+    """
+    # #ASSUME: external-resources: one small SELECT per filtered request; if
+    # this table ever grows past a few hundred rows, add request-scope caching.
+    # #VERIFY: tests/integration/test_threshold_policy_loader.py.
+    from sqlalchemy import select  # noqa: PLC0415
+
+    from cyo_adventure.db.models import ModerationThreshold  # noqa: PLC0415
+
+    rows: dict[tuple[str, str], Threshold] = {}
+    for row in await session.scalars(select(ModerationThreshold)):
+        try:
+            verdict = Verdict(row.min_verdict)
+        except ValueError:
+            continue  # CHECK constraint should prevent this; skip defensively.
+        rows[(row.age_band, row.category)] = Threshold(
+            min_verdict=verdict, min_score=row.min_score
+        )
+    return ThresholdPolicy(rows=rows)
