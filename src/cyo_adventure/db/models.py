@@ -413,9 +413,29 @@ class ModerationThreshold(Base):
     Absence of a row means the code default applies
     (``moderation/thresholds.py::DEFAULT_THRESHOLD``). The table is small
     (admin-curated), so policy loads read it whole.
+
+    Attributes:
+        id: Surrogate primary key.
+        age_band: The reader age band this override applies to.
+        category: The moderation category this override applies to.
+        min_verdict: Minimum verdict severity that surfaces to review
+            (one of ``advisory``, ``flag``, ``block``).
+        min_score: Optional classifier-score floor in [0.0, 1.0], or
+            ``None`` to use the verdict gate alone.
+        updated_by: The admin who last edited this override, or ``None``.
+        updated_at: Last edit time (UTC, TIMESTAMPTZ).
     """
 
     __tablename__ = "moderation_threshold"
+    # #CRITICAL: data integrity / security: these overrides gate which
+    # moderation findings surface for review by age band; a row persisted with
+    # an unknown min_verdict or an out-of-range min_score could silently relax
+    # what content reaches children. The ck_moderation_threshold_min_verdict
+    # and ck_moderation_threshold_min_score CHECKs are the at-rest backstop
+    # against any non-API write path (admin script, backfill, raw SQL).
+    # #VERIFY: moderation/thresholds.py validates at the application boundary;
+    # tests/integration/test_moderation_threshold_migration.py round-trips the
+    # migration that creates both CHECKs.
     __table_args__ = (
         CheckConstraint(
             f"min_verdict IN ({_MIN_VERDICT_VALUES})",
@@ -448,6 +468,18 @@ class ModerationThresholdAudit(Base):
 
     Deliberately minimal: WS-D's pipeline_event log will subsume this role;
     keep this table write-only until then.
+
+    Attributes:
+        id: Surrogate primary key.
+        age_band: The age band of the edited override.
+        category: The moderation category of the edited override.
+        action: What happened, either ``upsert`` or ``delete``.
+        old_min_verdict: Verdict floor before the edit, or ``None`` on insert.
+        new_min_verdict: Verdict floor after the edit, or ``None`` on delete.
+        old_min_score: Score floor before the edit, or ``None``.
+        new_min_score: Score floor after the edit, or ``None``.
+        changed_by: The admin who made the edit (required; see RAD tag).
+        changed_at: When the edit was recorded (UTC, TIMESTAMPTZ).
     """
 
     __tablename__ = "moderation_threshold_audit"
@@ -460,6 +492,15 @@ class ModerationThresholdAudit(Base):
     new_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
     old_min_score: Mapped[float | None] = mapped_column(default=None)
     new_min_score: Mapped[float | None] = mapped_column(default=None)
+    # #CRITICAL: security / data integrity: every threshold edit must be
+    # attributable; ``changed_by`` is a NOT NULL FK to user.id so an anonymous
+    # or dangling edit record cannot be persisted. Rows are append-only by
+    # convention (no update/delete path in the application layer) until WS-D's
+    # pipeline_event log subsumes this table.
+    # #VERIFY: the round-trip test in
+    # tests/integration/test_moderation_threshold_migration.py covers the
+    # migration that creates this FK; the WS-A admin API must write one audit
+    # row per upsert/delete and never mutate existing rows.
     changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
