@@ -13,6 +13,7 @@ import {
   LandingPage,
   LibraryPage,
   LoginPage,
+  ModerationThresholdsPage,
   NotFoundPage,
   ProfilePickerPage,
   ProfilesPage,
@@ -100,6 +101,27 @@ export const routes = [
               { path: 'requests', element: suspended(<RequestsPage />) },
               { path: 'profiles', element: suspended(<ProfilesPage />) },
               { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
+              {
+                // Admin-only within the guardian subtree: a guardian who is
+                // not an admin already passed the outer ['guardian','admin']
+                // gate above, so this inner ProtectedRoute narrows further.
+                // deniedRedirectTo overrides the component's kid-picker
+                // default, which would otherwise send a denied guardian to
+                // the kid profile picker instead of somewhere they belong.
+                element: (
+                  <ProtectedRoute
+                    redirectTo={GUARDIAN_LOGIN_PATH}
+                    allowedRoles={['admin']}
+                    deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
+                  />
+                ),
+                children: [
+                  {
+                    path: 'moderation-thresholds',
+                    element: suspended(<ModerationThresholdsPage />),
+                  },
+                ],
+              },
             ],
           },
         ],

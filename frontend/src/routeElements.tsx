@@ -77,6 +77,11 @@ export const ProfilesPage = lazy(() =>
 export const ReviewDetailPage = lazy(() =>
   import('./guardian/ReviewDetailPage').then((m) => ({ default: m.ReviewDetailPage }))
 )
+export const ModerationThresholdsPage = lazy(() =>
+  import('./guardian/ModerationThresholdsPage').then((m) => ({
+    default: m.ModerationThresholdsPage,
+  }))
+)
 export const ReaderRoute = lazy(() =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )
