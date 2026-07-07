@@ -42,6 +42,57 @@ When working on this project, if you discover any issue that originates from the
 
 <!-- Add your feedback below this line -->
 
+### Semantic Release baseline pins an invalid `commit_parser` value for python-semantic-release v10
+
+- **Priority**: Critical
+- **Category**: CI/CD
+- **Discovered**: 2026-07-06
+
+**Issue**: The generated `[tool.semantic_release]` block sets
+`commit_parser = "conventional_commits"`. This alias does not exist in
+python-semantic-release v10's parser registry
+(`_known_commit_parsers` in `src/semantic_release/cli/config.py` only
+recognizes `angular`, `conventional`, `emoji`, `scipy`, and `tag`, or a
+`module:Class` import path). `release.yml` pins
+`python-semantic-release/python-semantic-release@v10.5.3`, so every run of the
+release job fails at the config-load step with `Unrecognized commit parser
+value: 'conventional_commits'.` / `Invalid import path 'conventional_commits',
+must use 'module:Class' format`. This is a 100% failure rate, not an
+intermittent one: every push to `main` since project creation
+(2026-06-20) failed the same way, and the project version has never bumped
+past the initial `0.1.0`.
+
+**Context**: Discovered while root-causing a failing SonarCloud "Fail on
+Quality Gate" step (R1 remediation Task F1). The SonarCloud reusable workflow
+was a red herring; `gh run view --log-failed` on the SonarCloud runs showed
+the "Poetry" text only as GitHub Actions' verbatim echo of the untaken `elif`
+branch of the package-manager-detection script, never an executed branch
+(`Detected: uv with lockfile` was the real, correctly-taken branch in
+100% of 13 sampled failures). The actual SonarCloud failure was
+`Quality Gate not set for the project`; `api/qualitygates/project_status`
+confirmed `status: NONE` with `periods: []` for every analysis. Comparing
+against sibling org projects (which all show `sonar.leak.period.type:
+previous_version` and a populated `periods` array) showed the difference is
+that those projects have had at least one version bump, while cyo-adventure's
+34 analyses to date all carry `projectVersion: "0.1.0"`: SonarCloud's
+`previous_version` New Code Definition cannot establish a leak-period
+baseline without a version change to diff against. Tracing why the version
+never moved led to the Semantic Release workflow, which has failed on every
+one of the last 15+ pushes to `main` with the parser error above.
+
+**Suggested Fix**: Update the cookiecutter template's
+`pyproject.toml.jinja` (or wherever `[tool.semantic_release]` is scaffolded)
+to emit `commit_parser = "conventional"`, matching the pinned
+python-semantic-release action version's valid registry values. Consider a
+post-generation smoke test that runs `semantic-release version --print` (or
+equivalent) against the freshly rendered config to catch parser/config drift
+like this before it reaches a generated project.
+
+**Affected Files**: template `pyproject.toml.jinja` (`[tool.semantic_release]`
+block), any template CI smoke test for the release workflow
+
+---
+
 ### check-json pre-commit hook fails on frontend tsconfig JSONC files
 
 - **Priority**: Medium
