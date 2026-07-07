@@ -25,7 +25,7 @@ source: "Brainstorming session 2026-07-06 (Fable 5); current-state codebase expl
 ## Why this redesign
 
 Skeletons were introduced because LLMs struggled to produce structurally sound
-branching stories from prompts alone: the skeleton presets the paths and nodes,
+branching stories from prompts alone: the skeleton predefines the paths and nodes,
 and the LLM fills in prose. They were never intended to be the only themes or
 stories. This design extends the pipeline so that:
 
@@ -84,9 +84,13 @@ them in a later session.
   direct-Anthropic provider (`"claude"`) currently raises ConfigurationError
   (deferred).
 - Moderation (`moderation/pipeline.py`, `stages.py`, `report.py`) runs stages
-  0-4 and adds every finding to the report unconditionally. `age_band` is
-  passed to the safety stage as prompt context only; there is no threshold or
-  floor anywhere. This is the structural cause of the wall-of-flags issue.
+  0-4 and adds every finding it receives to the report unconditionally. The
+  only existing filter sits upstream: PR #141 (`899db43b`) added a global
+  advisory noise floor in `classifiers.py` (`_ADVISORY_SCORE_FLOOR = 0.01`)
+  that drops sub-floor graded Stage-0 scores before they become findings.
+  `age_band` is passed to the safety stage as prompt context only; there is
+  no age-band threshold and no serialization-boundary filtering anywhere.
+  That absence is the structural cause of the wall-of-flags issue.
 - Storybook statuses: `draft / in_review / needs_revision / published /
   archived`. Admin-only release approval (`publishing/service.py::approve`,
   ADR-005 amended) stamps `approved_by` and `published_at` per version.
@@ -168,21 +172,27 @@ one child.
 
 ### 5. Moderation thresholds and surfacing
 
-- The pipeline keeps recording every finding (unchanged), preserving training
-  signal for the learning loop.
+- The pipeline keeps recording every finding that clears the Stage-0 advisory
+  noise floor (PR #141; sub-0.01 classifier scores are dropped before the
+  report), preserving training signal for the learning loop.
 - New `moderation_threshold` table keyed on (age_band, category): minimum
   verdict level that surfaces as a tag, plus an optional classifier-score
   floor. Seeded from code defaults; admin-editable with an audit trail.
+- v1 seeding (ratified 2026-07-07): WS-A ships zero override rows; the code
+  default (surface `flag` and above) applies to every band and category.
+  Per-band overrides are expected to come from WS-F dashboard evidence rather
+  than being guessed up front.
 - Guardian- and kid-facing serializers filter findings through the threshold
   for the book's band. Admin endpoints bypass the age-band threshold entirely
   and return every finding.
-- Addendum (implemented): a separate, global, admin-editable noise floor
-  (seeded 0.05) denoises only the admin storybook review surface by hiding
-  low-score ADVISORY findings; FLAG and BLOCK findings (including bright-line
-  score-0.0 blocks) and unscored findings always surface. This floor is
-  orthogonal to the per-band threshold: the age-band policy governs the
-  guardian/kid surfaces, the noise floor governs admin denoising. See
-  `docs/planning/ws-a-admin-noise-floor.md`.
+- Addendum (implemented in PR #162, in review): a separate, global,
+  admin-editable noise floor (seeded 0.05) denoises only the admin storybook
+  review surface by hiding low-score ADVISORY findings; FLAG and BLOCK
+  findings (including bright-line score-0.0 blocks) and unscored findings
+  always surface. This floor is orthogonal to the per-band threshold: the
+  age-band policy governs the guardian/kid surfaces, the noise floor governs
+  admin denoising. See `docs/planning/ws-a-admin-noise-floor.md`, which lands
+  with PR #162.
 - Because the filter lives at the serialization boundary, it applies
   retroactively to every already-moderated book the moment it ships; no
   re-moderation pass is needed.
@@ -239,7 +249,10 @@ state section before building.
 
 ## Open items deferred to workstream planning
 
-- Exact threshold default values per band and category (seed matrix).
+- Exact threshold default values per band and category (seed matrix):
+  resolved 2026-07-07. v1 ships zero seed rows; the code default applies
+  everywhere (see Design section 5). Future per-band values come from WS-F
+  dashboard evidence.
 - Event taxonomy enumeration (the event_type list above is the starting set).
 - Whether catalog series continuations need admin notification when a family
   branches a catalog trunk.

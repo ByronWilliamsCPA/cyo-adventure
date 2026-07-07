@@ -21,13 +21,18 @@ source: "docs/planning/story-lifecycle-redesign.md (umbrella design, decisions 2
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
-> checkbox (`- [ ]`) syntax for tracking.
+> checkbox (`- [ ]`) syntax for tracking. Without that tooling, implement the tasks in order
+> with test-first steps and one signed commit per task; the plan is self-contained.
 
 ## Goal
 
 Stop the wall of flags: record every moderation finding, but surface tags to guardians and kids
 only when they meet a per-(age_band, category) threshold; give admins full visibility plus an
 editor for the thresholds, with every change audited.
+
+v1 seeding (ratified 2026-07-07): this workstream ships zero threshold rows. The code default
+(surface `flag` and above) applies to every band and category; per-band overrides are expected
+to come from WS-F dashboard evidence, not up-front guesses.
 
 ## Architecture
 
@@ -76,7 +81,8 @@ testcontainers Postgres, React 19 + generated openapi-ts client, Vitest.
 ## Out of scope (deferred)
 
 - Annotating the ADMIN review surface with per-finding below-threshold markers (dashboard, WS-F).
-- Any change to the moderation pipeline itself (it keeps recording everything).
+- Any change to the moderation pipeline itself (unchanged; note that Stage-0 classifiers
+  already drop sub-0.01 advisory noise before recording, per PR #141).
 - pipeline_event rows for threshold changes (WS-D will subsume the audit table's role; the audit
   table here is deliberately minimal).
 - Kid-facing endpoints currently expose no moderation fields; Task 5 adds a contract test locking
@@ -103,7 +109,7 @@ testcontainers Postgres, React 19 + generated openapi-ts client, Vitest.
 Run:
 
 ```bash
-cd /home/byron/dev/CYO_Adventure
+cd <repo-root>
 git fetch origin main
 git worktree add .worktrees/ws-a-moderation-thresholds -b feat/ws-a-moderation-thresholds origin/main
 cd .worktrees/ws-a-moderation-thresholds && uv sync --all-extras
@@ -1126,12 +1132,30 @@ Also add the kid-surface contract test in the same file:
 async def test_kid_library_exposes_no_moderation_fields(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """Kid-facing library payloads carry no findings/flags/moderation keys."""
+    """Kid-facing library payloads carry no findings/flags/moderation keys.
+
+    Assert on JSON keys, not raw response text: story titles or prose can
+    legitimately contain words like "verdict", so a substring scan of the
+    whole body would false-positive on clean content.
+    """
+
+    def _all_keys(obj: object) -> set[str]:
+        keys: set[str] = set()
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                keys.add(str(key).lower())
+                keys |= _all_keys(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                keys |= _all_keys(item)
+        return keys
+
     res = await client.get("/api/v1/library", headers=auth(seed.child_token))
     assert res.status_code == 200
-    text = res.text.lower()
-    for needle in ("moderation", "finding", "verdict", "flagged"):
-        assert needle not in text, f"kid library leaked moderation field: {needle}"
+    keys = _all_keys(res.json())
+    for needle in ("moderation", "finding", "verdict", "flag"):
+        leaked = {key for key in keys if needle in key}
+        assert not leaked, f"kid library leaked moderation keys: {leaked}"
 ```
 
 Confirm the kid library route path first with
@@ -1166,6 +1190,11 @@ selects `StoryRequest` rows only; replace with:
 
 (Import `ChildProfile` from `cyo_adventure.db.models` and `load_threshold_policy` /
 `ThresholdPolicy` from `cyo_adventure.moderation.thresholds`.)
+
+WS-B landmine: this inner join is safe today because `profile_id` is non-nullable, but WS-B
+makes `profile_id` nullable for admin/no-child requests. When WS-B lands, this query must flip
+to a LEFT JOIN with an age-band fallback, or no-profile requests silently vanish from the
+guardian list. Record this in WS-B's brief.
 
 Change `_to_view(request: StoryRequest)` to
 `_to_view(request: StoryRequest, *, age_band: str, policy: ThresholdPolicy)` and, inside the flag
@@ -1258,13 +1287,15 @@ async def test_upsert_creates_then_updates_with_audit(
 ) -> None:
     """PUT creates a row, a second PUT updates it, both write audit rows."""
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": 0.3},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 200
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": 0.5},
         headers=auth(seed.admin_token),
     )
@@ -1285,12 +1316,15 @@ async def test_delete_removes_row_with_audit(
 ) -> None:
     """DELETE removes the override (falling back to default) and audits it."""
     await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": None},
         headers=auth(seed.admin_token),
     )
     res = await client.delete(
-        f"{_URL}/3-5/violence", headers=auth(seed.admin_token)
+        f"{_URL}/3-5",
+        params={"category": "violence"},
+        headers=auth(seed.admin_token),
     )
     assert res.status_code == 200
     assert (
@@ -1304,7 +1338,9 @@ async def test_delete_removes_row_with_audit(
 async def test_delete_missing_row_404(client: AsyncClient, seed: Seed) -> None:
     """Deleting a non-existent override is a 404, not a silent no-op."""
     res = await client.delete(
-        f"{_URL}/3-5/never-set", headers=auth(seed.admin_token)
+        f"{_URL}/3-5",
+        params={"category": "never-set"},
+        headers=auth(seed.admin_token),
     )
     assert res.status_code == 404
 
@@ -1314,17 +1350,41 @@ async def test_invalid_band_and_verdict_rejected(
 ) -> None:
     """Unknown age band -> 422; 'pass'/'block-typo' min_verdict -> 422."""
     res = await client.put(
-        f"{_URL}/4-6/violence",
+        f"{_URL}/4-6",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": None},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "pass", "min_score": None},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422
+
+
+async def test_slash_category_roundtrips(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Categories containing '/' (e.g. self-harm/instructions) round-trip.
+
+    `category` travels as a QUERY parameter precisely because five known
+    categories contain '/', which a path segment cannot carry (the decoded
+    slash breaks route matching and 404s).
+    """
+    res = await client.put(
+        f"{_URL}/3-5",
+        params={"category": "self-harm/instructions"},
+        json={"min_verdict": "advisory", "min_score": None},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 200
+    rows = (
+        await client.get(_URL, headers=auth(seed.admin_token))
+    ).json()["rows"]
+    assert rows[0]["category"] == "self-harm/instructions"
 ```
 
 Note: if the conftest's exception handling maps `ValidationError` to a different status than 422,
@@ -1464,11 +1524,17 @@ async def _get_row(
     )
 
 
-@router.put("/admin/moderation-thresholds/{age_band}/{category}")
+@router.put("/admin/moderation-thresholds/{age_band}")
 async def upsert_threshold(
     age_band: str, category: str, body: ThresholdUpsertBody, ctx: Context
 ) -> ThresholdView:
-    """Create or update one override; write an audit row (admin only)."""
+    """Create or update one override; write an audit row (admin only).
+
+    `category` is a QUERY parameter (FastAPI treats a str param absent from
+    the path template as query), NOT a path segment: five known categories
+    contain `/` (e.g. `self-harm/instructions`), and a decoded slash in a
+    path segment breaks route matching and 404s.
+    """
     _require_admin(ctx)
     _validate_band(age_band)
     row = await _get_row(ctx, age_band, category)
@@ -1508,11 +1574,15 @@ async def upsert_threshold(
     )
 
 
-@router.delete("/admin/moderation-thresholds/{age_band}/{category}")
+@router.delete("/admin/moderation-thresholds/{age_band}")
 async def delete_threshold(
     age_band: str, category: str, ctx: Context
 ) -> ThresholdListView:
-    """Remove one override (reverting to the default); audit it (admin only)."""
+    """Remove one override (reverting to the default); audit it (admin only).
+
+    `category` is a QUERY parameter for the same slash-in-category reason as
+    the upsert route.
+    """
     _require_admin(ctx)
     _validate_band(age_band)
     row = await _get_row(ctx, age_band, category)
@@ -1551,7 +1621,7 @@ In `src/cyo_adventure/app.py`, add to the imports the other routers use and afte
 - [ ] **Step 6: Run to verify pass**
 
 Run: `uv run pytest tests/integration/test_moderation_thresholds_api.py -v`
-Expected: 6 passed
+Expected: 7 passed
 
 - [ ] **Step 7: Commit**
 
@@ -1582,9 +1652,10 @@ Run:
 
 ```bash
 uv run uvicorn cyo_adventure.app:create_app --factory --port 8000 &
+BACKEND_PID=$!
 sleep 3
-cd frontend && npm install && npm run generate-client
-kill %1
+(cd frontend && npm install && npm run generate-client)
+kill "$BACKEND_PID"
 ```
 
 Expected: `frontend/src/client/types.gen.ts` gains `ThresholdListView`, `ThresholdView`,
@@ -1607,9 +1678,9 @@ import { useCallback, useEffect, useState } from 'react';
 // Import the three generated functions recorded in Step 1; the names below are
 // the expected pattern; use the actual generated identifiers.
 import {
-  deleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDelete as deleteThreshold,
+  deleteThresholdApiV1AdminModerationThresholdsAgeBandDelete as deleteThreshold,
   listThresholdsApiV1AdminModerationThresholdsGet as listThresholds,
-  upsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPut as upsertThreshold,
+  upsertThresholdApiV1AdminModerationThresholdsAgeBandPut as upsertThreshold,
 } from '../client/sdk.gen';
 import type { ThresholdListView } from '../client/types.gen';
 
@@ -1640,7 +1711,8 @@ export default function ModerationThresholdsPage() {
   const save = async () => {
     if (!category) return;
     await upsertThreshold({
-      path: { age_band: band, category },
+      path: { age_band: band },
+      query: { category },
       body: {
         min_verdict: verdict as (typeof VERDICTS)[number],
         min_score: score === '' ? null : Number(score),
@@ -1652,7 +1724,10 @@ export default function ModerationThresholdsPage() {
   };
 
   const remove = async (rowBand: string, rowCategory: string) => {
-    await deleteThreshold({ path: { age_band: rowBand, category: rowCategory } });
+    await deleteThreshold({
+      path: { age_band: rowBand },
+      query: { category: rowCategory },
+    });
     refresh();
   };
 
@@ -1771,8 +1846,8 @@ vi.mock('../client/sdk.gen', () => ({
       ],
     },
   }),
-  upsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPut: vi.fn(),
-  deleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDelete: vi.fn(),
+  upsertThresholdApiV1AdminModerationThresholdsAgeBandPut: vi.fn(),
+  deleteThresholdApiV1AdminModerationThresholdsAgeBandDelete: vi.fn(),
 }));
 
 describe('ModerationThresholdsPage', () => {
