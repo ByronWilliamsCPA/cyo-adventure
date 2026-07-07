@@ -371,10 +371,16 @@ async def test_review_surface_returns_view_for_admin() -> None:
             },
         },
     )
-    # _load_admin_story loads via execute() (locked); the version row still
-    # loads via the plain session.get() in get_review_surface itself.
+
+    # _load_admin_story loads via execute() (locked); the version row loads
+    # via session.get(StorybookVersion, ...), and load_admin_noise_floor loads
+    # via session.get(ModerationSetting, ...); disambiguate by model class
+    # since a single AsyncMock return_value cannot serve both call shapes.
+    async def _fake_get(model: object, _key: object) -> object | None:
+        return version if model is StorybookVersion else None
+
     session.execute = AsyncMock(return_value=_execute_result(book))
-    session.get = AsyncMock(return_value=version)
+    session.get = AsyncMock(side_effect=_fake_get)
     ctx = _ctx("admin", session)
     view = await approval.get_review_surface(book.id, ctx, version=1)
     assert view.version == 1

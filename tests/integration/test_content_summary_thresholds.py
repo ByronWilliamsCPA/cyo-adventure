@@ -115,10 +115,16 @@ async def test_guardian_summary_hides_below_threshold_advisory(
     assert body["flagged_count"] == 1
 
 
-async def test_admin_review_surface_still_shows_everything(
+async def test_admin_review_surface_ignores_age_band_threshold_policy(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:
-    """The admin review surface is NOT filtered: both findings appear."""
+    """Age-band ThresholdPolicy never gates the admin review surface: the FLAG
+    finding surfaces regardless of band.
+
+    The 0.02 ADVISORY is hidden here too, but by the separate WS-A admin
+    noise-floor addendum (default floor 0.05), not by ThresholdPolicy; see
+    tests/integration/test_review_surface_noise_floor.py for that contract.
+    """
     story_id = await _seed_banded_published(sessions)
     res = await client.get(
         f"/api/v1/storybooks/{story_id}/review",
@@ -127,7 +133,8 @@ async def test_admin_review_surface_still_shows_everything(
     assert res.status_code == 200
     body = res.json()
     categories = [f["category"] for f in body["story_level_findings"]]
-    assert "toxicity" in categories
+    assert "safety" in categories
+    assert "toxicity" not in categories
     assert "safety" in categories
 
 

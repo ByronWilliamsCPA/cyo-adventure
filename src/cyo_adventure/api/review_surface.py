@@ -22,6 +22,7 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.thresholds import admin_surfaces
 
 if TYPE_CHECKING:
     from cyo_adventure.moderation.thresholds import ThresholdPolicy
@@ -34,6 +35,7 @@ def build_review_surface(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None = None,
 ) -> ReviewSurfaceView:
     """Build the guardian review surface for one story version.
 
@@ -43,6 +45,12 @@ def build_review_surface(
         version: The version being reviewed.
         blob: The stored story blob (source of node prose).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        admin_noise_floor: The admin-configured global noise floor, or
+            ``None`` to skip floor filtering entirely. Only the admin review
+            call site (``api/approval.py``) passes a floor; guardian reuse
+            call sites in this module (``build_content_summary``,
+            ``build_review_queue_item``) must keep passing ``None`` since
+            they already filter by ``min_verdict=FLAG`` and must not change.
 
     Returns:
         ReviewSurfaceView: Blob plus summary, flagged passages, and story-level
@@ -66,6 +74,15 @@ def build_review_surface(
         for finding in _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:
+                continue
+            # #ASSUME: security: the floor denoises the ADMIN review view only
+            # (opt-in via admin_noise_floor); admin_surfaces guarantees
+            # FLAG/BLOCK/unscored findings always surface, so a bright-line
+            # 0.0 BLOCK is never hidden.
+            # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
+            if admin_noise_floor is not None and not admin_surfaces(
+                view.verdict, view.score, noise_floor=admin_noise_floor
+            ):
                 continue
             if view.node_id is None:
                 story_level.append(view)

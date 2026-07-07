@@ -37,6 +37,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing import service as approval_service
 from cyo_adventure.utils.logging import get_logger
 
@@ -238,12 +239,19 @@ async def get_review_surface(
     if version_row is None:
         msg = f"version {resolved} of storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
+    # #ASSUME: security: floor denoises the ADMIN review view only; admin_surfaces
+    # guarantees FLAG/BLOCK/unscored findings always surface (bright-line 0.0
+    # blocks are never hidden). This is the only call site build_review_surface
+    # receives a floor from; guardian reuse paths keep passing None.
+    # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
+    floor = await load_admin_noise_floor(ctx.session)
     return build_review_surface(
         status=book.status,
         storybook_id=storybook_id,
         version=resolved,
         blob=version_row.blob,
         moderation_report=version_row.moderation_report,
+        admin_noise_floor=floor,
     )
 
 
