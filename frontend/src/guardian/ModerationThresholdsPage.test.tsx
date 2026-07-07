@@ -19,9 +19,24 @@ const LIST_VIEW = {
   rows: [{ age_band: '3-5', category: 'violence', min_verdict: 'advisory', min_score: 0.3 }],
 }
 
+const NOISE_FLOOR_VIEW = { value: 0.05 }
+
+// The initial load fires GET requests to both the threshold list and the
+// noise-floor endpoints (Promise.all in the page); route each mock by path so
+// order does not matter.
+function mockGetByPath(overrides: Record<string, unknown> = {}) {
+  mockGet.mockImplementation((path: string) => {
+    if (path === '/v1/admin/moderation/noise-floor') {
+      return Promise.resolve({ data: overrides.noiseFloor ?? NOISE_FLOOR_VIEW })
+    }
+    return Promise.resolve({ data: overrides.list ?? LIST_VIEW })
+  })
+}
+
 beforeEach(() => {
   localStorage.clear()
-  mockGet.mockReset().mockResolvedValue({ data: LIST_VIEW })
+  mockGet.mockReset()
+  mockGetByPath()
   mockPut.mockReset()
   mockDelete.mockReset()
 })
@@ -35,7 +50,7 @@ describe('ModerationThresholdsPage', () => {
   })
 
   it('shows the empty state when there are no overrides', async () => {
-    mockGet.mockResolvedValue({ data: { ...LIST_VIEW, rows: [] } })
+    mockGetByPath({ list: { ...LIST_VIEW, rows: [] } })
     render(<ModerationThresholdsPage />)
     expect(await screen.findByText(/no overrides yet/i)).toBeInTheDocument()
   })
@@ -69,7 +84,9 @@ describe('ModerationThresholdsPage', () => {
       min_verdict: 'block',
       min_score: null,
     })
-    expect(mockGet).toHaveBeenCalledTimes(2)
+    // Initial load fires 2 GETs (list + noise floor); the post-save refresh
+    // fires 1 more (list only).
+    expect(mockGet).toHaveBeenCalledTimes(3)
   })
 
   it('surfaces a save failure without losing the existing rows', async () => {
@@ -90,9 +107,19 @@ describe('ModerationThresholdsPage', () => {
     mockPut.mockResolvedValue({
       data: { age_band: '5-8', category: 'gore', min_verdict: 'block', min_score: null },
     })
-    // First call (initial load) succeeds; second call (post-save refresh) fails.
+    // Initial load's list + noise-floor GETs succeed; the post-save refresh's
+    // list GET (the second call to the list path) fails.
+    let listCalls = 0
     mockGet.mockReset()
-    mockGet.mockResolvedValueOnce({ data: LIST_VIEW }).mockRejectedValueOnce(new Error('boom'))
+    mockGet.mockImplementation((path: string) => {
+      if (path === '/v1/admin/moderation/noise-floor') {
+        return Promise.resolve({ data: NOISE_FLOOR_VIEW })
+      }
+      listCalls += 1
+      return listCalls === 1
+        ? Promise.resolve({ data: LIST_VIEW })
+        : Promise.reject(new Error('boom'))
+    })
     render(<ModerationThresholdsPage />)
     await screen.findByText(/surface to families at/i)
 
@@ -102,6 +129,43 @@ describe('ModerationThresholdsPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not refresh/i)
     // The table (from the last known-good state) must still be visible, not
     // replaced by the top-level error page.
+    expect(screen.getByText('violence')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Save override/i })).toBeInTheDocument()
+  })
+
+  it('renders the current admin noise floor from the mocked GET', async () => {
+    render(<ModerationThresholdsPage />)
+    await screen.findByText(/surface to families at/i)
+    expect(screen.getByLabelText(/Noise floor/i)).toHaveValue(0.05)
+  })
+
+  it('saves an edited noise floor value with PUT', async () => {
+    const user = userEvent.setup()
+    mockPut.mockResolvedValue({ data: { value: 0.2 } })
+    render(<ModerationThresholdsPage />)
+    await screen.findByText(/surface to families at/i)
+
+    const floorInput = screen.getByLabelText(/Noise floor/i)
+    await user.clear(floorInput)
+    await user.type(floorInput, '0.2')
+    await user.click(screen.getByRole('button', { name: /Save noise floor/i }))
+
+    expect(mockPut).toHaveBeenCalledWith('/v1/admin/moderation/noise-floor', { value: 0.2 })
+  })
+
+  it('surfaces a noise-floor save failure as a scoped alert without wiping the page', async () => {
+    const user = userEvent.setup()
+    mockPut.mockRejectedValue(new Error('boom'))
+    render(<ModerationThresholdsPage />)
+    await screen.findByText(/surface to families at/i)
+
+    const floorInput = screen.getByLabelText(/Noise floor/i)
+    await user.clear(floorInput)
+    await user.type(floorInput, '0.3')
+    await user.click(screen.getByRole('button', { name: /Save noise floor/i }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/could not save the noise floor/i)
+    // The rest of the page (table, override form) must stay visible.
     expect(screen.getByText('violence')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Save override/i })).toBeInTheDocument()
   })

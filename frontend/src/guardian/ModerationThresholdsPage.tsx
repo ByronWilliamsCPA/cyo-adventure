@@ -14,6 +14,8 @@ type LoadState =
   | { kind: 'error'; message: string }
   | { kind: 'ready'; data: ThresholdListView }
 
+const isFloorInRange = (value: number) => value >= 0 && value <= 1
+
 /**
  * Admin-only editor for age-band moderation surfacing thresholds (WS-A Task 7).
  *
@@ -33,6 +35,8 @@ export function ModerationThresholdsPage() {
   const [score, setScore] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [noiseFloorInput, setNoiseFloorInput] = useState('')
+  const [savingFloor, setSavingFloor] = useState(false)
 
   // Mount-time load, matching ReviewDetailPage's cancelled-guard idiom so an
   // unmount before the request resolves never calls setState on a gone
@@ -42,13 +46,22 @@ export function ModerationThresholdsPage() {
   // function directly (react-hooks/set-state-in-effect), so the initial load
   // is inlined here. This initial load is also the only place a failure
   // should replace the whole page with the top-level error state: it is the
-  // only point where there is no ready table/form to preserve yet.
+  // only point where there is no ready table/form to preserve yet. The admin
+  // noise floor is folded into this same load: both requests are part of the
+  // one initial page-readiness check, so a failure of either one is a
+  // top-level load failure, not a scoped action error.
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
-        const data = await thresholdsApi.list()
-        if (!cancelled) setState({ kind: 'ready', data })
+        const [data, floor] = await Promise.all([
+          thresholdsApi.list(),
+          thresholdsApi.getNoiseFloor(),
+        ])
+        if (!cancelled) {
+          setState({ kind: 'ready', data })
+          setNoiseFloorInput(String(floor.value))
+        }
       } catch (err) {
         // Log the message, not the axios error object (its config.headers
         // carries the caller's Authorization bearer token).
@@ -108,6 +121,8 @@ export function ModerationThresholdsPage() {
   const trimmedCategory = category.trim()
   const scoreValid = score === '' || (Number(score) >= 0 && Number(score) <= 1)
   const canSave = trimmedCategory.length > 0 && scoreValid && !submitting
+  const noiseFloorValid = noiseFloorInput !== '' && isFloorInRange(Number(noiseFloorInput))
+  const canSaveFloor = noiseFloorValid && !savingFloor
 
   async function save() {
     if (!canSave) return
@@ -154,6 +169,28 @@ export function ModerationThresholdsPage() {
     }
   }
 
+  // Saves the admin noise floor. A save failure is a scoped actionError, not
+  // a top-level page error: the threshold table and this control both stay
+  // usable, only the attempted edit did not take.
+  async function saveNoiseFloor() {
+    if (!canSaveFloor) return
+    setSavingFloor(true)
+    setActionError(null)
+    try {
+      const floor = await thresholdsApi.setNoiseFloor(Number(noiseFloorInput))
+      setNoiseFloorInput(String(floor.value))
+    } catch (err) {
+      console.error('noise floor save failed:', err instanceof Error ? err.message : err)
+      setActionError(
+        classifyApiError(err, {
+          transient: 'We could not save the noise floor. Please try again.',
+        }).message
+      )
+    } finally {
+      setSavingFloor(false)
+    }
+  }
+
   return (
     <main>
       <h1>Moderation thresholds</h1>
@@ -166,6 +203,28 @@ export function ModerationThresholdsPage() {
           {actionError}
         </p>
       ) : null}
+      <section>
+        <h2>Admin noise floor</h2>
+        <p id="noise-floor-help" className="console__muted">
+          Advisory findings scoring below this value are hidden from the admin review surface.
+          Flag and block findings always show.
+        </p>
+        <label>
+          Noise floor (0-1)
+          <input
+            type="number"
+            min="0"
+            max="1"
+            step="0.01"
+            value={noiseFloorInput}
+            onChange={(e) => setNoiseFloorInput(e.target.value)}
+            aria-describedby="noise-floor-help"
+          />
+        </label>
+        <button type="button" disabled={!canSaveFloor} onClick={() => void saveNoiseFloor()}>
+          Save noise floor
+        </button>
+      </section>
       {data.rows.length === 0 ? (
         <p className="console__muted">
           No overrides yet. Every age band and category uses the default above.

@@ -829,6 +829,30 @@ export type MeResponse = {
 export type NarrativeStyle = 'prose' | 'gamebook';
 
 /**
+ * NoiseFloorUpdateBody
+ *
+ * PUT body for the global admin noise floor.
+ */
+export type NoiseFloorUpdateBody = {
+    /**
+     * Value
+     */
+    value: number;
+};
+
+/**
+ * NoiseFloorView
+ *
+ * The global admin noise floor: the ADVISORY-score cutoff for admin review.
+ */
+export type NoiseFloorView = {
+    /**
+     * Value
+     */
+    value: number;
+};
+
+/**
  * ProfileCreateBody
  *
  * A guardian's request to create a child profile.
@@ -2704,6 +2728,68 @@ export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutRespo
 };
 
 export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponse = UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponses[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponses];
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/noise-floor';
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetError = GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors[keyof GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors];
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: NoiseFloorView;
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponse = GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses[keyof GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses];
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData = {
+    body: NoiseFloorUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/noise-floor';
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutError = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors];
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: NoiseFloorView;
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponse = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses];
 
 export type WhoamiApiV1MeGetData = {
     body?: never;

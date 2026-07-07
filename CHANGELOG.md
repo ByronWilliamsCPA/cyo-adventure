@@ -43,6 +43,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   threshold on all three surfaces. A new admin CRUD editor
   (`/guardian/moderation-thresholds`) lets admins view and adjust thresholds
   per age band and category, with every change written to an audit trail.
+  That same editor now also exposes an admin-configurable global moderation
+  noise floor: ADVISORY findings scoring below the floor are hidden from the
+  admin review surface, while FLAG and BLOCK findings (and unscored findings)
+  always surface, so a genuine low-but-real score is not buried in a wall of
+  near-zero advisories.
 - Landing page at `/` with two doors: Kids (to the profile picker, now at
   `/kids`) and Grown-ups (to the guardian console; admins sign in there too).
   Kid deep links (`/library/...`, `/read/...`) are unchanged; the reader's

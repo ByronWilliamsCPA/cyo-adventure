@@ -10,14 +10,23 @@
 
 import { type AxiosInstance } from 'axios'
 
-import type { ThresholdListView, ThresholdUpsertBody, ThresholdView } from '../client/types.gen'
+import type {
+  NoiseFloorUpdateBody,
+  NoiseFloorView,
+  ThresholdListView,
+  ThresholdUpsertBody,
+  ThresholdView,
+} from '../client/types.gen'
 
 const BASE_PATH = '/v1/admin/moderation-thresholds'
+const NOISE_FLOOR_PATH = '/v1/admin/moderation/noise-floor'
 
 export interface ThresholdsApi {
   list(): Promise<ThresholdListView>
   upsert(ageBand: string, category: string, body: ThresholdUpsertBody): Promise<ThresholdView>
   remove(ageBand: string, category: string): Promise<ThresholdListView>
+  getNoiseFloor(): Promise<NoiseFloorView>
+  setNoiseFloor(value: number): Promise<NoiseFloorView>
 }
 
 export function makeThresholdsApi(api: AxiosInstance): ThresholdsApi {
@@ -41,6 +50,17 @@ export function makeThresholdsApi(api: AxiosInstance): ThresholdsApi {
     // separate list() round-trip is needed after a successful removal.
     async remove(ageBand: string, category: string): Promise<ThresholdListView> {
       const res = await api.delete<ThresholdListView>(`${BASE_PATH}/${ageBand}/${category}`)
+      return res.data
+    },
+    // Admin noise floor (WS-A admin noise-floor addendum, Task A4): the
+    // global ADVISORY-score cutoff that denoises the admin review surface.
+    async getNoiseFloor(): Promise<NoiseFloorView> {
+      const res = await api.get<NoiseFloorView>(NOISE_FLOOR_PATH)
+      return res.data
+    },
+    async setNoiseFloor(value: number): Promise<NoiseFloorView> {
+      const body: NoiseFloorUpdateBody = { value }
+      const res = await api.put<NoiseFloorView>(NOISE_FLOOR_PATH, body)
       return res.data
     },
   }
