@@ -23,6 +23,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     String,
+    UniqueConstraint,
     Uuid,
     func,
 )
@@ -401,6 +402,66 @@ class StoryRequest(Base):
         ForeignKey(_FK_CONCEPT), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+_MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
+
+
+class ModerationThreshold(Base):
+    """Sparse per-(age_band, category) override of the surfacing default.
+
+    Absence of a row means the code default applies
+    (``moderation/thresholds.py::DEFAULT_THRESHOLD``). The table is small
+    (admin-curated), so policy loads read it whole.
+    """
+
+    __tablename__ = "moderation_threshold"
+    __table_args__ = (
+        CheckConstraint(
+            f"min_verdict IN ({_MIN_VERDICT_VALUES})",
+            name="ck_moderation_threshold_min_verdict",
+        ),
+        CheckConstraint(
+            "min_score IS NULL OR (min_score >= 0.0 AND min_score <= 1.0)",
+            name="ck_moderation_threshold_min_score",
+        ),
+        UniqueConstraint(
+            "age_band", "category", name="uq_moderation_threshold_band_category"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    age_band: Mapped[str] = mapped_column(String(16))
+    category: Mapped[str] = mapped_column(String(64))
+    min_verdict: Mapped[str] = mapped_column(String(16))
+    min_score: Mapped[float | None] = mapped_column(default=None)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class ModerationThresholdAudit(Base):
+    """Append-only audit of threshold edits (who changed what, when).
+
+    Deliberately minimal: WS-D's pipeline_event log will subsume this role;
+    keep this table write-only until then.
+    """
+
+    __tablename__ = "moderation_threshold_audit"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    age_band: Mapped[str] = mapped_column(String(16))
+    category: Mapped[str] = mapped_column(String(64))
+    action: Mapped[str] = mapped_column(String(16))  # 'upsert' | 'delete'
+    old_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
+    new_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
+    old_min_score: Mapped[float | None] = mapped_column(default=None)
+    new_min_score: Mapped[float | None] = mapped_column(default=None)
+    changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
 class GenerationJob(Base):
