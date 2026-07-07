@@ -135,15 +135,20 @@ async def _get_row(
     )
 
 
-@router.put("/admin/moderation-thresholds/{age_band}/{category}")
+@router.put("/admin/moderation-thresholds/{age_band}")
 async def upsert_threshold(
     age_band: str, category: str, body: ThresholdUpsertBody, ctx: Context
 ) -> ThresholdView:
     """Create or update one override; write an audit row (admin only).
 
+    ``category`` is a QUERY parameter (FastAPI treats a str param absent
+    from the path template as query), never a path segment: five known
+    categories contain ``/`` (e.g. ``self-harm/instructions``), and a
+    decoded slash in a path segment breaks route matching and 404s.
+
     Args:
-        age_band: The age band half of the natural key.
-        category: The category half of the natural key.
+        age_band: The age band half of the natural key (path).
+        category: The category half of the natural key (query).
         body: The desired min_verdict/min_score.
         ctx: The request context (principal + session).
 
@@ -203,15 +208,18 @@ async def upsert_threshold(
     )
 
 
-@router.delete("/admin/moderation-thresholds/{age_band}/{category}")
+@router.delete("/admin/moderation-thresholds/{age_band}")
 async def delete_threshold(
     age_band: str, category: str, ctx: Context
 ) -> ThresholdListView:
     """Remove one override (reverting to the default); audit it (admin only).
 
+    ``category`` is a QUERY parameter for the same slash-in-category reason
+    as the upsert route.
+
     Args:
-        age_band: The age band half of the natural key.
-        category: The category half of the natural key.
+        age_band: The age band half of the natural key (path).
+        category: The category half of the natural key (query).
         ctx: The request context (principal + session).
 
     Returns:

@@ -2649,7 +2649,7 @@ export type ListThresholdsApiV1AdminModerationThresholdsGetResponses = {
 
 export type ListThresholdsApiV1AdminModerationThresholdsGetResponse = ListThresholdsApiV1AdminModerationThresholdsGetResponses[keyof ListThresholdsApiV1AdminModerationThresholdsGetResponses];
 
-export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteData = {
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData = {
     body?: never;
     headers?: {
         /**
@@ -2662,34 +2662,35 @@ export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteDa
          * Age Band
          */
         age_band: string;
+    };
+    query: {
         /**
          * Category
          */
         category: string;
     };
-    query?: never;
-    url: '/api/v1/admin/moderation-thresholds/{age_band}/{category}';
+    url: '/api/v1/admin/moderation-thresholds/{age_band}';
 };
 
-export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteErrors = {
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteError = DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteErrors[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteErrors];
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteError = DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors];
 
-export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteResponses = {
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses = {
     /**
      * Successful Response
      */
     200: ThresholdListView;
 };
 
-export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteResponse = DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteResponses[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandCategoryDeleteResponses];
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponse = DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses];
 
-export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutData = {
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData = {
     body: ThresholdUpsertBody;
     headers?: {
         /**
@@ -2702,32 +2703,33 @@ export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutData 
          * Age Band
          */
         age_band: string;
+    };
+    query: {
         /**
          * Category
          */
         category: string;
     };
-    query?: never;
-    url: '/api/v1/admin/moderation-thresholds/{age_band}/{category}';
+    url: '/api/v1/admin/moderation-thresholds/{age_band}';
 };
 
-export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutErrors = {
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors = {
     /**
      * Validation Error
      */
     422: HttpValidationError;
 };
 
-export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutError = UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutErrors[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutErrors];
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutError = UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors];
 
-export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponses = {
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses = {
     /**
      * Successful Response
      */
     200: ThresholdView;
 };
 
-export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponse = UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponses[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandCategoryPutResponses];
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponse = UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses];
 
 export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetData = {
     body?: never;

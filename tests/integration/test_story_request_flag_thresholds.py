@@ -137,16 +137,35 @@ async def test_admin_sees_all_flags_guardian_sees_filtered(
     assert admin_categories == {"toxicity", "safety"}
 
 
+def _all_keys(obj: object) -> set[str]:
+    """Collect every dict key (lowercased) in a nested JSON structure."""
+    keys: set[str] = set()
+    if isinstance(obj, dict):
+        for key, value in obj.items():
+            keys.add(str(key).lower())
+            keys |= _all_keys(value)
+    elif isinstance(obj, list):
+        for item in obj:
+            keys |= _all_keys(item)
+    return keys
+
+
 async def test_kid_library_exposes_no_moderation_fields(
     client: AsyncClient, seed: Seed
 ) -> None:
-    """Kid-facing library payloads carry no findings/flags/moderation keys."""
+    """Kid-facing library payloads carry no findings/flags/moderation keys.
+
+    Assert on JSON keys, not raw response text: story titles or prose can
+    legitimately contain words like "verdict", so a substring scan of the
+    whole body would false-positive on clean content.
+    """
     res = await client.get(
         "/api/v1/library",
         params={"profile_id": str(seed.child_profile_id)},
         headers=auth(seed.child_token),
     )
     assert res.status_code == 200
-    text = res.text.lower()
-    for needle in ("moderation", "finding", "verdict", "flagged"):
-        assert needle not in text, f"kid library leaked moderation field: {needle}"
+    keys = _all_keys(res.json())
+    for needle in ("moderation", "finding", "verdict", "flag"):
+        leaked = {key for key in keys if needle in key}
+        assert not leaked, f"kid library leaked moderation keys: {leaked}"

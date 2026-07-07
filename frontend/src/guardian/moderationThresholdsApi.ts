@@ -35,21 +35,25 @@ export function makeThresholdsApi(api: AxiosInstance): ThresholdsApi {
       const res = await api.get<ThresholdListView>(BASE_PATH)
       return res.data
     },
+    // `category` travels as a QUERY parameter, never a path segment: five
+    // known categories contain '/' (e.g. self-harm/instructions), and a
+    // slash in a path segment breaks backend route matching and 404s.
     async upsert(
       ageBand: string,
       category: string,
       body: ThresholdUpsertBody
     ): Promise<ThresholdView> {
-      const res = await api.put<ThresholdView>(
-        `${BASE_PATH}/${ageBand}/${category}`,
-        body
-      )
+      const res = await api.put<ThresholdView>(`${BASE_PATH}/${ageBand}`, body, {
+        params: { category },
+      })
       return res.data
     },
     // The delete endpoint returns the full refreshed list view, so no
     // separate list() round-trip is needed after a successful removal.
     async remove(ageBand: string, category: string): Promise<ThresholdListView> {
-      const res = await api.delete<ThresholdListView>(`${BASE_PATH}/${ageBand}/${category}`)
+      const res = await api.delete<ThresholdListView>(`${BASE_PATH}/${ageBand}`, {
+        params: { category },
+      })
       return res.data
     },
     // Admin noise floor (WS-A admin noise-floor addendum, Task A4): the

@@ -42,13 +42,15 @@ async def test_upsert_creates_then_updates_with_audit(
 ) -> None:
     """PUT creates a row, a second PUT updates it, both write audit rows."""
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": 0.3},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 200
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": 0.5},
         headers=auth(seed.admin_token),
     )
@@ -69,11 +71,16 @@ async def test_delete_removes_row_with_audit(
 ) -> None:
     """DELETE removes the override (falling back to default) and audits it."""
     await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": None},
         headers=auth(seed.admin_token),
     )
-    res = await client.delete(f"{_URL}/3-5/violence", headers=auth(seed.admin_token))
+    res = await client.delete(
+        f"{_URL}/3-5",
+        params={"category": "violence"},
+        headers=auth(seed.admin_token),
+    )
     assert res.status_code == 200
     assert (await client.get(_URL, headers=auth(seed.admin_token))).json()["rows"] == []
     async with AsyncSession(engine) as session:
@@ -83,7 +90,11 @@ async def test_delete_removes_row_with_audit(
 
 async def test_delete_missing_row_404(client: AsyncClient, seed: Seed) -> None:
     """Deleting a non-existent override is a 404, not a silent no-op."""
-    res = await client.delete(f"{_URL}/3-5/never-set", headers=auth(seed.admin_token))
+    res = await client.delete(
+        f"{_URL}/3-5",
+        params={"category": "never-set"},
+        headers=auth(seed.admin_token),
+    )
     assert res.status_code == 404
 
 
@@ -92,14 +103,34 @@ async def test_invalid_band_and_verdict_rejected(
 ) -> None:
     """Unknown age band -> 422; 'pass'/'block-typo' min_verdict -> 422."""
     res = await client.put(
-        f"{_URL}/4-6/violence",
+        f"{_URL}/4-6",
+        params={"category": "violence"},
         json={"min_verdict": "advisory", "min_score": None},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422
     res = await client.put(
-        f"{_URL}/3-5/violence",
+        f"{_URL}/3-5",
+        params={"category": "violence"},
         json={"min_verdict": "pass", "min_score": None},
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422
+
+
+async def test_slash_category_roundtrips(client: AsyncClient, seed: Seed) -> None:
+    """Categories containing '/' (e.g. self-harm/instructions) round-trip.
+
+    ``category`` travels as a QUERY parameter precisely because five known
+    categories contain '/', which a path segment cannot carry (the decoded
+    slash breaks route matching and 404s).
+    """
+    res = await client.put(
+        f"{_URL}/3-5",
+        params={"category": "self-harm/instructions"},
+        json={"min_verdict": "advisory", "min_score": None},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 200
+    rows = (await client.get(_URL, headers=auth(seed.admin_token))).json()["rows"]
+    assert rows[0]["category"] == "self-harm/instructions"

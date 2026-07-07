@@ -80,10 +80,13 @@ describe('ModerationThresholdsPage', () => {
     await user.selectOptions(screen.getByLabelText(/Surfaces at/i), 'block')
     await user.click(screen.getByRole('button', { name: /Save override/i }))
 
-    expect(mockPut).toHaveBeenCalledWith('/v1/admin/moderation-thresholds/5-8/gore', {
-      min_verdict: 'block',
-      min_score: null,
-    })
+    // category rides as a query param (slash-containing categories cannot
+    // travel in a path segment).
+    expect(mockPut).toHaveBeenCalledWith(
+      '/v1/admin/moderation-thresholds/5-8',
+      { min_verdict: 'block', min_score: null },
+      { params: { category: 'gore' } }
+    )
     // Initial load fires 2 GETs (list + noise floor); the post-save refresh
     // fires 1 more (list only).
     expect(mockGet).toHaveBeenCalledTimes(3)
@@ -189,7 +192,9 @@ describe('ModerationThresholdsPage', () => {
 
     await user.click(screen.getByRole('button', { name: /Remove violence override for 3-5/i }))
 
-    expect(mockDelete).toHaveBeenCalledWith('/v1/admin/moderation-thresholds/3-5/violence')
+    expect(mockDelete).toHaveBeenCalledWith('/v1/admin/moderation-thresholds/3-5', {
+      params: { category: 'violence' },
+    })
     expect(await screen.findByText(/no overrides yet/i)).toBeInTheDocument()
   })
 
