@@ -111,6 +111,12 @@ async def load_anchor_context(
     but this runs later (inside _build_concept) and degrades to None or to
     partial context rather than failing the approve on a malformed blob.
     """
+    # #ASSUME: data integrity: the anchor storybook was validated (published,
+    # series-linked, band-matched) at creation and re-validated at approval,
+    # but this read runs later and the stored blob has no DB-level shape
+    # constraint, so every field is re-checked here and degrades to None or a
+    # partial AnchorContext rather than raising on a malformed blob.
+    # #VERIFY: tests/unit/test_anchoring.py::test_malformed_blob_degrades_to_defaults.
     storybook = await session.get(Storybook, anchor_storybook_id)
     if storybook is None or storybook.current_published_version is None:
         return None
@@ -132,10 +138,21 @@ async def _protagonist_names(session: AsyncSession, storybook_id: str) -> list[s
     The document blob carries no character list; the protagonist lives on the
     concept brief the anchor was generated from. Empty on any missing link.
     """
+    # #ASSUME: data integrity: the concept brief is an application-defined
+    # JSONB blob with no DB-level schema constraint, so a missing or
+    # wrong-typed "protagonist"/"name" key must degrade to an empty list
+    # rather than raise.
+    # #VERIFY: tests/unit/test_anchoring.py exercises the malformed-blob path
+    # via anchor_context_from_blob's character_names handling.
+    # #EDGE: data integrity: one storybook can in principle have more than one
+    # GenerationJob row; ordering by created_at makes the pick deterministic
+    # (oldest first) if that ever happens, though one job per storybook is the
+    # current convention.
     brief = await session.scalar(
         select(Concept.brief)
         .join(GenerationJob, GenerationJob.concept_id == Concept.id)
         .where(GenerationJob.storybook_id == storybook_id)
+        .order_by(GenerationJob.created_at)
         .limit(1)
     )
     if not isinstance(brief, dict):
