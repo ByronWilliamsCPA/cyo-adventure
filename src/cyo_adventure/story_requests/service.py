@@ -5,8 +5,11 @@ guardian and admin approvals reuse one path WITHOUT touching the
 guardian-only POST /concepts API gate. It no longer creates a GenerationJob;
 that happens later, when an admin picks an authoring method/mechanism/model
 via POST /story-requests/{id}/authoring-plan (see
-story_requests/authoring_plan.py::build_authoring_plan). The caller (the
-endpoint) is responsible for authorization before invoking these functions.
+story_requests/authoring_plan.py::build_authoring_plan). Authored creation
+(WS-B PR 2) shares the same concept-building tail as approval: a guardian- or
+admin-initiated request skips the pending queue and calls it directly. The
+caller (the endpoint) is responsible for authorization before invoking these
+functions.
 """
 
 from __future__ import annotations
@@ -23,9 +26,12 @@ from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.brief import brief_from_request
 
 if TYPE_CHECKING:
+    import uuid
+
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
+    from cyo_adventure.story_requests.screening import ScreeningResult
     from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # Max pending requests per profile before a new submission is refused (Decision 5).
@@ -134,6 +140,20 @@ async def approve_story_request(
     request.length = confirmation.length.value
     request.narrative_style = confirmation.narrative_style.value
 
+    return await _build_concept(session, principal, request, profile)
+
+
+async def _build_concept(
+    session: AsyncSession,
+    principal: Principal,
+    request: StoryRequest,
+    profile: ChildProfile | None,
+) -> str:
+    """Build the brief, run the PII backstop, persist the Concept, approve.
+
+    Shared tail of guardian approval and authored creation: both end with the
+    request ``approved``, ``reviewed_by`` stamped, and a Concept linked.
+    """
     brief = brief_from_request(request, profile)
     # #CRITICAL: security: belt-and-suspenders PII backstop on the assembled
     # brief before persisting a concept; the raw text was already screened at
@@ -167,6 +187,67 @@ async def approve_story_request(
     request.reviewed_at = datetime.now(UTC)
 
     return str(concept.id)
+
+
+async def create_authored_request(
+    session: AsyncSession,
+    principal: Principal,
+    *,
+    family_id: uuid.UUID,
+    profile: ChildProfile | None,
+    request_text: str,
+    confirmation: ApprovalConfirmation,
+    screening: ScreeningResult,
+) -> tuple[StoryRequest, str | None]:
+    """Create a guardian- or admin-initiated request, pre-approved (WS-B PR 2).
+
+    The caller (the endpoint) has already authorized the principal, resolved
+    the target family, validated the optional profile, and screened the text.
+    A blocked screening persists a ``blocked`` row with no concept; otherwise
+    the row is approved and its Concept built in the same transaction.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        principal: The authoring guardian or admin.
+        family_id: The resolved target family (the principal's own family for
+            guardians; the admin-chosen family for admins, decision B3).
+        profile: The validated target child profile, or None.
+        request_text: The already-screened request text.
+        confirmation: The author's band/length/style, stamped at creation.
+        screening: The screening outcome for ``request_text``.
+
+    Returns:
+        tuple[StoryRequest, str | None]: The persisted row and the new concept
+            id (None when the request was blocked).
+
+    Raises:
+        ValidationError: If the built brief trips the PII backstop (-> 422).
+    """
+    # #CRITICAL: security: initiator_role is derived from the authenticated
+    # principal, never from the request body, so a guardian cannot mint an
+    # admin-attributed row (and vice versa).
+    # #VERIFY: test_story_requests_authored.py asserts the persisted role per
+    # token; api/schemas.py::StoryRequestAuthoredCreateBody forbids the field.
+    request = StoryRequest(
+        family_id=family_id,
+        profile_id=profile.id if profile is not None else None,
+        request_text=request_text,
+        status="blocked" if screening.blocked else "pending",
+        moderation_flags={
+            "blocked": screening.blocked,
+            "flags": [f.model_dump(mode="json") for f in screening.flags],
+        },
+        age_band=confirmation.age_band.value,
+        length=confirmation.length.value,
+        narrative_style=confirmation.narrative_style.value,
+        initiator_role=principal.role.value,
+    )
+    session.add(request)
+    await session.flush()
+    if screening.blocked:
+        return request, None
+    concept_id = await _build_concept(session, principal, request, profile)
+    return request, concept_id
 
 
 def decline_story_request(principal: Principal, request: StoryRequest) -> None:
