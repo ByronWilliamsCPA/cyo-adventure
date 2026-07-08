@@ -119,6 +119,7 @@ MAX_ENDING_COUNT = MAX_TARGET_NODE_COUNT
 __all__ = [
     "MAX_ENDING_COUNT",
     "MAX_TARGET_NODE_COUNT",
+    "AnchorContext",
     "ConceptBrief",
     "Protagonist",
     "StructurePattern",
@@ -164,6 +165,25 @@ class Protagonist(BaseModel):
         max_length=200,
         description="Character's narrative role (e.g. 'young explorer').",
     )
+
+
+class AnchorContext(BaseModel):
+    """Soft-continuation context extracted from a series anchor storybook.
+
+    Deterministic extraction, not an LLM summary (WS-B PR 3, decision B2): the
+    anchor document's title, the protagonist name recovered from the anchor's
+    concept brief, and truncated ending excerpts. Serialized into the Stage A
+    prompt with the rest of the brief (build_structure_prompt injects
+    ``model_dump_json`` wholesale), so the generated book can follow on
+    thematically without embedding document-level Series metadata (SR-1..SR-7
+    stay dormant until WS-G).
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    title: str = Field(min_length=1, max_length=200)
+    character_names: list[_BoundedText] = Field(default_factory=list, max_length=5)
+    ending_summary: str = Field(default="", max_length=600)
 
 
 class ConceptBrief(BaseModel):
@@ -295,4 +315,9 @@ class ConceptBrief(BaseModel):
         default_factory=list,
         max_length=20,
         description="Free-text constraints passed to the generator as guidance.",
+    )
+
+    anchor_context: AnchorContext | None = Field(
+        default=None,
+        description="Soft-continuation context from a series anchor (WS-B PR 3).",
     )

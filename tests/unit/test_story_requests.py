@@ -16,7 +16,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
-from cyo_adventure.generation.concept import ConceptBrief
+from cyo_adventure.generation.concept import AnchorContext, ConceptBrief
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
@@ -143,6 +143,33 @@ def test_brief_from_request_narrative_style_comes_from_request() -> None:
     )
     brief = brief_from_request(request, _profile("13-16"))
     assert brief.narrative_style is NarrativeStyle.GAMEBOOK
+
+
+def test_brief_from_request_surfaces_anchor_context() -> None:
+    """Passing an anchor_context surfaces it unchanged on the brief."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a sequel about the same brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    ctx = AnchorContext(title="The Fox and the Map", character_names=["Robin"])
+    brief = brief_from_request(request, _profile("8-11"), anchor_context=ctx)
+    assert brief.anchor_context is ctx
+
+
+def test_brief_from_request_anchor_context_defaults_to_none() -> None:
+    """Without an anchor_context argument, the brief's field stays None."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.anchor_context is None
 
 
 @pytest.mark.asyncio
