@@ -258,3 +258,24 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
 def auth(token: str) -> dict[str, str]:
     """Build an Authorization header for a bearer token."""
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="module")
+def migration_pg_url() -> Iterator[str]:
+    """Start a fresh Postgres 16 container for the migration round-trip test.
+
+    Skips when Docker is unavailable so developers without Docker are not
+    blocked; CI runners always have Docker.
+
+    Yields:
+        Async DSN string for the containerised Postgres instance.
+    """
+    try:
+        container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
+        container.start()
+    except (DockerException, OSError) as exc:
+        pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
+    try:
+        yield container.get_connection_url()
+    finally:
+        container.stop()
