@@ -21,54 +21,22 @@ from __future__ import annotations
 import importlib
 import importlib.util
 import os
-import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
-from docker.errors import DockerException
-from testcontainers.postgres import PostgresContainer
 
 from cyo_adventure.db.models import Concept, Family, GenerationJob, User
+from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-
-# ---------------------------------------------------------------------------
-# Migration-specific fixture: a second isolated container used only for the
-# alembic upgrade/downgrade test.  A separate container avoids interference
-# with the ORM round-trip fixture which creates schema via Base.metadata.
-# ---------------------------------------------------------------------------
 
 # Pin the round-trip to the concept/generation_job revision explicitly. A
 # relative "head"/"-1" target silently retargets whenever a later migration is
 # added on top, so the round-trip would stop exercising this migration.
 _GEN_HEAD = "78336bfff81e"
 _GEN_PREV = "ddf3f6d1346f"
-
-
-@pytest.fixture(scope="module")
-def _migration_pg_url() -> Iterator[str]:
-    """Start a fresh Postgres 16 container for the migration round-trip test.
-
-    Skips when Docker is unavailable so developers without Docker are not
-    blocked; CI runners always have Docker.
-
-    Yields:
-        Async DSN string for the containerised Postgres instance.
-    """
-    try:
-        container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
-        container.start()
-    except (DockerException, OSError) as exc:
-        pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
-    try:
-        yield container.get_connection_url()
-    finally:
-        container.stop()
 
 
 # ---------------------------------------------------------------------------
@@ -253,7 +221,7 @@ def test_migration_file_imports_and_has_upgrade_downgrade() -> None:
 
 @pytest.mark.integration
 def test_migration_upgrade_downgrade_on_clean_db(
-    _migration_pg_url: str,  # noqa: PT019
+    migration_pg_url: str,
 ) -> None:
     """Run alembic upgrade head then downgrade -1 against a clean Postgres DB.
 
@@ -266,20 +234,13 @@ def test_migration_upgrade_downgrade_on_clean_db(
     This matches the env.py pattern, which reads from settings.database_url.
 
     Args:
-        _migration_pg_url: Async DSN for the testcontainers Postgres DB.
+        migration_pg_url: Async DSN for the testcontainers Postgres DB.
     """
-    project_root = Path(__file__).resolve().parents[2]
-    env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": _migration_pg_url}
+    project_root = PROJECT_ROOT
+    env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": migration_pg_url}
 
     # Apply migrations through the concept/generation_job revision.
-    up = subprocess.run(
-        ["uv", "run", "alembic", "upgrade", _GEN_HEAD],  # noqa: S607
-        capture_output=True,
-        text=True,
-        env=env,
-        cwd=str(project_root),
-        check=False,
-    )
+    up = run_alembic(project_root, env, "upgrade", _GEN_HEAD)
     assert up.returncode == 0, (
         f"alembic upgrade {_GEN_HEAD} failed:\nstdout={up.stdout}\nstderr={up.stderr}"
     )
@@ -288,14 +249,7 @@ def test_migration_upgrade_downgrade_on_clean_db(
     )
 
     # Roll back the concept/generation_job migration to the initial schema.
-    down = subprocess.run(
-        ["uv", "run", "alembic", "downgrade", _GEN_PREV],  # noqa: S607
-        capture_output=True,
-        text=True,
-        env=env,
-        cwd=str(project_root),
-        check=False,
-    )
+    down = run_alembic(project_root, env, "downgrade", _GEN_PREV)
     assert down.returncode == 0, (
         f"alembic downgrade {_GEN_PREV} failed:\nstdout={down.stdout}\nstderr={down.stderr}"
     )
