@@ -115,6 +115,64 @@ As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading t
 - [PYSEC-2026-89](https://osv.dev/vulnerability/PYSEC-2026-89)
 - [GitHub Advisory GHSA-5wmx-573v-2qwq](https://github.com/advisories/GHSA-5wmx-573v-2qwq)
 
+---
+
+## CVE-2026-53615 | libuuid1 (util-linux) | High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-53615 |
+| **Package** | libuuid1 (Debian binary package from the `util-linux` source package) |
+| **Affected Version** | 2.41-5 (Debian 13 "trixie") |
+| **Fixed Version** | No fix available |
+| **Severity** | High (per Trivy/Aqua feed) |
+| **CVSS Score** | Not yet assigned (NVD status RESERVED as of 2026-07-08) |
+| **Discovered** | 2026-07-08 |
+| **Reassessment Due** | 2026-09-06 |
+| **Blocking Release** | No |
+
+### Description
+
+Integer overflow or wraparound in util-linux's libblkid DOS partition-table
+parser (`libblkid/src/partitions/dos.c`). Trivy reports the finding against the
+`libuuid1` binary package because Debian tracks vulnerabilities per source
+package (`util-linux`); the vulnerable code lives in libblkid, not in the UUID
+library itself.
+
+### Impact on This Project
+
+`libuuid1` ships in the production runtime base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13`). The vulnerable code path
+is libblkid's parsing of DOS partition tables on block devices. The application
+container never probes or parses block-device partition tables: it runs a
+FastAPI web service with no raw device access, and libblkid's partition APIs
+are not exercised by any runtime dependency. Exposure through the application
+surface is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/CVE-2026-53615)
+  for a fixed `util-linux` package in trixie
+- [ ] Once a fix ships, let the patched package flow in via the runtime stage's
+  `apt-get upgrade` on the next image rebuild, then remove the `.trivyignore`
+  entry
+- [ ] Reassess by 2026-09-06 whether a fixed Debian package or NVD analysis
+  (CVSS, exploitability detail) is available
+
+### Why Not Fixed Yet
+
+Debian has not released a patched `util-linux` for trixie (Trivy reports an
+empty Fixed Version with status `affected`). The package is provided by the
+hardened base image, not managed by this project's dependency set, so no
+project-side upgrade path exists until Debian ships a fix.
+
+### References
+
+- [Aqua AVD CVE-2026-53615](https://avd.aquasec.com/nvd/cve-2026-53615)
+- [Debian security tracker CVE-2026-53615](https://security-tracker.debian.org/tracker/CVE-2026-53615)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #165](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165)
+
 ## Resolved Entries
 
 | CVE | Package | Resolved Date | Resolution |
@@ -122,6 +180,7 @@ As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading t
 
 ## Review History
 
-| Review Date | Reviewer | Notes |
-|-------------|----------|-------|
-| 2026-MM-DD | Byron Williams | Initial creation. |
+| Review Date | Reviewer       | Notes                                                                 |
+|-------------|----------------|-----------------------------------------------------------------------|
+| 2026-MM-DD  | Byron Williams | Initial creation.                                                     |
+| 2026-07-08  | Byron Williams | Added CVE-2026-53615 (libuuid1, runtime base image; no upstream fix). |
