@@ -336,7 +336,11 @@ def test_to_view_skips_malformed_verdict() -> None:
         created_at=datetime(2026, 7, 4, tzinfo=UTC),
     )
 
-    view = _to_view(request, age_band="10-13", policy=ThresholdPolicy(rows={}))
+    # surface_all=False exercises the filtered guardian view: the malformed
+    # verdict is skipped AND the threshold filter applies.
+    view = _to_view(
+        request, age_band="10-13", policy=ThresholdPolicy(rows={}), surface_all=False
+    )
 
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].verdict is Verdict.FLAG

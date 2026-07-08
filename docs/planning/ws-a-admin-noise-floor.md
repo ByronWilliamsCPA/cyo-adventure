@@ -50,7 +50,7 @@ age-appropriateness gating.
   be reused for the floor (it would hide a bright-line `0.0` BLOCK). A dedicated advisory-only
   helper is required.
 - Router: extend `api/moderation_thresholds.py` (`APIRouter(prefix="/api/v1")`, registered
-  `app.py:177`). Threshold paths are `/admin/moderation/thresholds`; add `/admin/moderation/noise-floor`.
+  `app.py:177`). Threshold paths are `/admin/moderation-thresholds`; add `/admin/moderation/noise-floor`.
 - New migration chains `down_revision = "b8c9d0e1f2a3"` (WS-A's, file
   `migrations/versions/20260706_1600_add_moderation_threshold.py`). Real user table is `"user"`.
 

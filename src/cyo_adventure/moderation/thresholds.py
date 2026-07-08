@@ -189,7 +189,8 @@ def admin_surfaces(
     """
     # #ASSUME: data-integrity: verdicts arrive from unconstrained JSONB, so an
     # out-of-enum string must degrade to "hidden", never raise.
-    # #VERIFY: test_admin_surfaces_unknown_verdict_hidden.
+    # #VERIFY: tests/unit/test_admin_noise_floor.py::
+    # test_unknown_string_verdict_does_not_surface.
     if not isinstance(verdict, Verdict):
         try:
             verdict = Verdict(verdict)
