@@ -2517,6 +2517,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cve-2026-53615-libuuid1-util-linux-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CVE-2026-53615 | libuuid1 (util-linux) | High
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CVE-2026-53615 | libuuid1 (util-linux) | High">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#description_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-this-project_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on This Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-plan_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-fixed-yet_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Fixed Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resolved-entries" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2715,6 +2787,90 @@ As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading t
 <li><a href="https://osv.dev/vulnerability/PYSEC-2026-89">PYSEC-2026-89</a></li>
 <li><a href="https://github.com/advisories/GHSA-5wmx-573v-2qwq">GitHub Advisory GHSA-5wmx-573v-2qwq</a></li>
 </ul>
+<hr />
+<h2 id="cve-2026-53615-libuuid1-util-linux-high">CVE-2026-53615 | libuuid1 (util-linux) | High<a class="headerlink" href="#cve-2026-53615-libuuid1-util-linux-high" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CVE ID</strong></td>
+<td>CVE-2026-53615</td>
+</tr>
+<tr>
+<td><strong>Package</strong></td>
+<td>libuuid1 (Debian binary package from the <code>util-linux</code> source package)</td>
+</tr>
+<tr>
+<td><strong>Affected Version</strong></td>
+<td>2.41-5 (Debian 13 "trixie")</td>
+</tr>
+<tr>
+<td><strong>Fixed Version</strong></td>
+<td>No fix available</td>
+</tr>
+<tr>
+<td><strong>Severity</strong></td>
+<td>High (per Trivy/Aqua feed)</td>
+</tr>
+<tr>
+<td><strong>CVSS Score</strong></td>
+<td>Not yet assigned (NVD status RESERVED as of 2026-07-08)</td>
+</tr>
+<tr>
+<td><strong>Discovered</strong></td>
+<td>2026-07-08</td>
+</tr>
+<tr>
+<td><strong>Reassessment Due</strong></td>
+<td>2026-09-06</td>
+</tr>
+<tr>
+<td><strong>Blocking Release</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="description_2">Description<a class="headerlink" href="#description_2" title="Permanent link">&para;</a></h3>
+<p>Integer overflow or wraparound in util-linux's libblkid DOS partition-table
+parser (<code>libblkid/src/partitions/dos.c</code>). Trivy reports the finding against the
+<code>libuuid1</code> binary package because Debian tracks vulnerabilities per source
+package (<code>util-linux</code>); the vulnerable code lives in libblkid, not in the UUID
+library itself.</p>
+<h3 id="impact-on-this-project_2">Impact on This Project<a class="headerlink" href="#impact-on-this-project_2" title="Permanent link">&para;</a></h3>
+<p><code>libuuid1</code> ships in the production runtime base image
+(<code>ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13</code>). The vulnerable code path
+is libblkid's parsing of DOS partition tables on block devices. The application
+container never probes or parses block-device partition tables: it runs a
+FastAPI web service with no raw device access, and libblkid's partition APIs
+are not exercised by any runtime dependency. Exposure through the application
+surface is negligible.</p>
+<h3 id="remediation-plan_2">Remediation Plan<a class="headerlink" href="#remediation-plan_2" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Monitor the <a href="https://security-tracker.debian.org/tracker/CVE-2026-53615">Debian security tracker</a>
+  for a fixed <code>util-linux</code> package in trixie</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Once a fix ships, let the patched package flow in via the runtime stage's
+  <code>apt-get upgrade</code> on the next image rebuild, then remove the <code>.trivyignore</code>
+  entry</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-09-06 whether a fixed Debian package or NVD analysis
+  (CVSS, exploitability detail) is available</li>
+</ul>
+<h3 id="why-not-fixed-yet_2">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_2" title="Permanent link">&para;</a></h3>
+<p>Debian has not released a patched <code>util-linux</code> for trixie (Trivy reports an
+empty Fixed Version with status <code>affected</code>). The package is provided by the
+hardened base image, not managed by this project's dependency set, so no
+project-side upgrade path exists until Debian ships a fix.</p>
+<h3 id="references_2">References<a class="headerlink" href="#references_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-53615">Aqua AVD CVE-2026-53615</a></li>
+<li><a href="https://security-tracker.debian.org/tracker/CVE-2026-53615">Debian security tracker CVE-2026-53615</a></li>
+<li>Discovered by the Container Security workflow (Trivy) on
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165">PR #165</a></li>
+</ul>
 <h2 id="resolved-entries">Resolved Entries<a class="headerlink" href="#resolved-entries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -2749,6 +2905,11 @@ As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading t
 <td>Byron Williams</td>
 <td>Initial creation.</td>
 </tr>
+<tr>
+<td>2026-07-08</td>
+<td>Byron Williams</td>
+<td>Added CVE-2026-53615 (libuuid1, runtime base image; no upstream fix).</td>
+</tr>
 </tbody>
 </table>
 
@@ -2773,7 +2934,7 @@ As of 2026-05-21, no version in the 3.9+ series resolves this CVE. Downgrading t
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 8, 2026 19:27:35 UTC">July 8, 2026</span>
   </span>
 
     
