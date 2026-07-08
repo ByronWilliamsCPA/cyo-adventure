@@ -92,6 +92,25 @@ describe('RequestStoryForm', () => {
       expect(screen.getByLabelText<HTMLSelectElement>('Story style').value).toBe('prose')
     })
 
+    it('resets the story style to prose when selecting a child moves the band out of the teen set', async () => {
+      mockGuardianLoad()
+      render(<RequestStoryForm mode="guardian" />)
+      const childSelect = await screen.findByLabelText(/child/i)
+      const bandSelect = screen.getByLabelText<HTMLSelectElement>('Age band')
+
+      fireEvent.change(bandSelect, { target: { value: '13-16' } })
+      fireEvent.change(screen.getByLabelText<HTMLSelectElement>('Story style'), {
+        target: { value: 'gamebook' },
+      })
+
+      fireEvent.change(childSelect, { target: { value: 'child-a' } })
+      expect(bandSelect.value).toBe('8-11')
+      expect(screen.queryByLabelText('Story style')).not.toBeInTheDocument()
+
+      fireEvent.change(bandSelect, { target: { value: '13-16' } })
+      expect(screen.getByLabelText<HTMLSelectElement>('Story style').value).toBe('prose')
+    })
+
     it('disables submit until text, band and length are set, then posts the expected body and shows the success notice', async () => {
       mockGuardianLoad()
       mockPost.mockResolvedValue({
@@ -120,6 +139,35 @@ describe('RequestStoryForm', () => {
           profile_id: 'child-a',
         })
       )
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        /approved and sent for authoring/i
+      )
+    })
+
+    it('double-clicking Send request results in exactly one POST call', async () => {
+      mockGuardianLoad()
+      let resolvePost: (value: { data: unknown }) => void = () => {}
+      mockPost.mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            resolvePost = resolve
+          })
+      )
+      render(<RequestStoryForm mode="guardian" />)
+      await screen.findByLabelText(/child/i)
+      fireEvent.change(screen.getByLabelText(/what should the story be about/i), {
+        target: { value: 'A story about a brave fox' },
+      })
+      fireEvent.change(screen.getByLabelText('Age band'), { target: { value: '8-11' } })
+      fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+
+      const submitButton = screen.getByRole('button', { name: /send request/i })
+      fireEvent.click(submitButton)
+      fireEvent.click(submitButton)
+      expect(mockPost).toHaveBeenCalledTimes(1)
+      resolvePost({
+        data: { id: 'req-1', status: 'approved', concept_id: 'concept-1' },
+      })
       expect(await screen.findByRole('status')).toHaveTextContent(
         /approved and sent for authoring/i
       )

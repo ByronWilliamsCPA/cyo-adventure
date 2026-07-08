@@ -91,11 +91,20 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
     }
   }, [mode, requestApi])
 
+  // #ASSUME: data-integrity: selecting a child can move the band out of the
+  // teen set the same way changeBand's manual selection can; a stale
+  // gamebook choice must not resurface if the guardian later re-enters a
+  // teen band via the band select. Same rule as changeBand below.
+  // #VERIFY: RequestStoryForm.test.tsx "resets the story style to prose when
+  // selecting a child moves the band out of the teen set" test.
   function selectChild(id: string) {
     setProfileId(id)
     if (id === UNSELECTED) return
     const profile = profiles.find((p) => p.id === id)
-    if (profile) setBand(profile.age_band)
+    if (profile) {
+      setBand(profile.age_band)
+      if (!TEEN_BANDS.includes(profile.age_band)) setNarrativeStyle('prose')
+    }
   }
 
   // #ASSUME: data-integrity: ADR-011 restricts the gamebook narrative style to
@@ -121,7 +130,8 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
   // in-flight request settles (canSubmit includes !submitting), so a
   // double-click cannot fire a second authored-request POST for the same
   // draft the way RequestsPage.tsx guards its per-row approve/decline.
-  // #VERIFY: RequestStoryForm.test.tsx submit test asserts one POST call.
+  // #VERIFY: RequestStoryForm.test.tsx "double-clicking Send request results
+  // in exactly one POST call" test.
   async function submit() {
     // canSubmit is a `const` alias of a chain that includes `band !== ''`
     // and `length !== ''`; TypeScript's aliased-condition narrowing carries
