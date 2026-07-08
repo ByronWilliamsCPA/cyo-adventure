@@ -311,7 +311,7 @@ known-first-party = ["cyo_adventure"]
 # Module init files
 "__init__.py" = ["F401", "D104"]
 
-# The approval, me, and moderation_thresholds routers import Context (an
+# The approval, me, moderation_thresholds, and families routers import Context (an
 # Annotated[..., Depends()] alias) at runtime; FastAPI resolves the Depends at
 # startup via inspect, so Context must not move into TYPE_CHECKING even when
 # it appears only in annotations. Routers that import Context alongside other

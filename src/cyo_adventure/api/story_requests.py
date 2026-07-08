@@ -1,4 +1,4 @@
-"""Child story-request endpoints: submit, list, approve, decline.
+"""Child and authored story-request endpoints: submit, list, approve, decline.
 
 The kid surface runs under the guardian token in R1, so submission is
 guardian-scoped (the body carries the profile_id and authorize_profile gates it).
@@ -7,7 +7,10 @@ admin. Approve and decline are guardian-own-family or admin-global; a request
 outside the caller's scope returns 404 (existence hiding), which deliberately
 diverges from generation.py's cross-family 403 for this lower-value, child-facing
 resource. Approve builds a ConceptBrief and enqueues generation through the
-service layer, so it never touches the guardian-only POST /concepts gate.
+service layer, so it never touches the guardian-only POST /concepts gate. The
+authored-create endpoint (WS-B PR 2) lets a guardian or admin submit a
+pre-approved request on a child's behalf, targeting their own family (guardian)
+or a family named by id (admin).
 """
 
 from __future__ import annotations
