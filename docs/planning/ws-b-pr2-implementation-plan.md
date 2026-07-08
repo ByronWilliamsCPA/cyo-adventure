@@ -768,8 +768,9 @@ git commit -S -m "feat(api): authored story-request create + admin families list
   run from the worktree root):
 
 ```bash
-uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > /tmp/openapi-pr2.json
-cd frontend && OPENAPI_INPUT=/tmp/openapi-pr2.json npm run generate-client
+schema="$(mktemp --suffix=.json)"
+uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > "$schema"
+cd frontend && OPENAPI_INPUT="$schema" npm run generate-client
 ```
 
 Expected: `frontend/src/client/` diff includes the new
