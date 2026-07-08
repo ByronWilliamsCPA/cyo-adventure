@@ -246,6 +246,7 @@ async def create_story_request(
 
     Raises:
         AuthorizationError: If the caller may not act on the profile (-> 403).
+        ResourceNotFoundError: If the profile no longer exists (-> 404).
         StateTransitionError: If the profile is at its pending cap (-> 409).
         ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
     """
@@ -254,6 +255,15 @@ async def create_story_request(
     # on its own; admin has no profiles so cannot submit. 403 on mismatch.
     # #VERIFY: test_create_rejects_cross_family_profile.
     authorize_profile(ctx.principal, profile_uuid)
+
+    # #CRITICAL: data integrity: age_band has no column default (WS-B); every
+    # creation path must stamp it explicitly from the requesting profile so a
+    # missed path fails loudly at flush rather than persisting a drifted band.
+    # #VERIFY: test_story_requests_api.py create-flow tests flush this row.
+    profile = await ctx.session.get(ChildProfile, profile_uuid)
+    if profile is None:
+        msg = "profile not found"
+        raise ResourceNotFoundError(msg)
 
     # #CRITICAL: concurrency: enforce the per-profile pending cap before insert.
     # A rare off-by-one under concurrent submits is accepted here (see
@@ -283,6 +293,8 @@ async def create_story_request(
         request_text=body.request_text,
         status=status,
         moderation_flags=flags_payload,
+        age_band=profile.age_band,
+        initiator_role="child",
     )
     ctx.session.add(request)
     await ctx.session.flush()

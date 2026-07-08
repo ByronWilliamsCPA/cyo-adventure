@@ -32,6 +32,7 @@ def test_story_request_defaults_to_pending() -> None:
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
         status="pending",
+        age_band="8-11",
     )
     assert req.status == "pending"
     assert req.moderation_flags is None
@@ -166,6 +167,7 @@ def test_ensure_pending_rejects_non_pending() -> None:
         profile_id=uuid.uuid4(),
         request_text="x",
         status="approved",
+        age_band="8-11",
     )
     with pytest.raises(StateTransitionError):
         service.ensure_pending(req)
@@ -246,6 +248,7 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
         profile_id=profile.id,
         request_text=stored_text,
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=profile, child_names=[])
 
@@ -276,6 +279,7 @@ async def test_approve_story_request_pii_backstop_trips() -> None:
         profile_id=profile.id,
         request_text="a story about Amelia and a dragon",
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=profile, child_names=["Amelia"])
 
@@ -293,6 +297,7 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
         profile_id=uuid.uuid4(),
         request_text="a fox",
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=None, child_names=[])
 
@@ -318,6 +323,7 @@ def test_to_view_skips_malformed_verdict() -> None:
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
         status="pending",
+        age_band="10-13",
         moderation_flags={
             "blocked": False,
             "flags": [

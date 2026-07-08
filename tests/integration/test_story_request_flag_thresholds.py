@@ -30,6 +30,7 @@ async def _seed_request(
             profile_id=seed.child_profile_id,
             request_text="a story about a brave turtle",
             status=status,
+            age_band="10-13",
             moderation_flags=flags,
         )
         session.add(row)
