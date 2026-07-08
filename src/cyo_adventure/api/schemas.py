@@ -498,9 +498,10 @@ class StoryRequestView(BaseModel):
     (screened content, same redaction as ``request_text``).
 
     ``series_id``, ``proposed_series_title``, and ``anchor_storybook_id``
-    default to ``None`` rather than being required: the endpoints that
-    populate them from the row land in a later WS-B PR 3 task, so
-    ``_to_view`` does not yet supply these fields.
+    default to ``None`` rather than being required so older tests
+    constructing a view directly need not supply them; ``_to_view``
+    (api/story_requests.py) populates all three from the row for every
+    caller (WS-B PR 3).
     """
 
     id: str
