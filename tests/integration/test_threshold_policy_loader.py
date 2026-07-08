@@ -65,6 +65,21 @@ async def test_bad_min_verdict_insert_rejected_by_check(engine: AsyncEngine) -> 
             await session.commit()
 
 
+async def test_out_of_range_min_score_rejected_by_check(engine: AsyncEngine) -> None:
+    """ck_moderation_threshold_min_score rejects a score outside [0.0, 1.0]."""
+    async with AsyncSession(engine) as session:
+        session.add(
+            ModerationThreshold(
+                age_band="3-5",
+                category="violence",
+                min_verdict="advisory",
+                min_score=1.5,
+            )
+        )
+        with pytest.raises(IntegrityError):
+            await session.commit()
+
+
 async def test_unknown_age_band_insert_rejected_by_check(engine: AsyncEngine) -> None:
     """ck_moderation_threshold_age_band rejects a band outside the AgeBand enum."""
     async with AsyncSession(engine) as session:

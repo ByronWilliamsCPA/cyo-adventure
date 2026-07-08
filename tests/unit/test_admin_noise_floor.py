@@ -13,6 +13,7 @@ import pytest
 from cyo_adventure.moderation.report import Verdict
 from cyo_adventure.moderation.thresholds import (
     ADMIN_NOISE_FLOOR_DEFAULT,
+    ADMIN_NOISE_FLOOR_KEY,
     admin_surfaces,
 )
 
@@ -24,6 +25,16 @@ _FLOOR = 0.05
 def test_admin_noise_floor_default_is_point_zero_five() -> None:
     """Lock the code default so it cannot drift silently from the seed row."""
     assert ADMIN_NOISE_FLOOR_DEFAULT == 0.05
+
+
+def test_admin_noise_floor_key_matches_migration_seed() -> None:
+    """Lock the setting key to the frozen migration literal.
+
+    The seed INSERT in migrations/versions/20260707_1700_add_moderation_setting.py
+    hand-copies this key (migrations must not import live app constants); a
+    rename of either side without the other would silently orphan the seed row.
+    """
+    assert ADMIN_NOISE_FLOOR_KEY == "admin_noise_floor"
 
 
 def test_block_at_zero_score_surfaces() -> None:

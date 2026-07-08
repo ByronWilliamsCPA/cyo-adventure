@@ -197,6 +197,18 @@ async def test_review_queue_flagged_count_respects_admin_noise_floor(
     item = items[story_id]
     assert item["screened"] is True
     assert item["flagged_count"] == 2
+    # The summary block is the pipeline's persisted gate record and is
+    # deliberately NOT floored: it must keep reporting the raw count (3) and
+    # gate booleans even while flagged_count is denoised. A regression that
+    # floored (or dropped) the summary would silently change what the console
+    # gates on.
+    assert item["summary"] == {
+        "count": 3,
+        "hard_block": True,
+        "soft_flag": True,
+        "repaired": False,
+        "reviewer_independent": True,
+    }
 
 
 async def test_guardian_content_summary_unaffected_by_admin_noise_floor(
