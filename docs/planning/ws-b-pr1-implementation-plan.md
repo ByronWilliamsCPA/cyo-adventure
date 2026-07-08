@@ -521,7 +521,7 @@ Expected: PASS (4 new tests; rest of the unit suite unaffected).
 
 ```bash
 git add src/cyo_adventure/api/schemas.py tests/unit/test_schemas_story_request_approve.py
-git commit -S -m "feat(api): approve confirmation body + request view lifecycle fields (WS-B PR1)"
+git commit -S -m "feat(api): add story-request approve confirmation body (WS-B PR1)"
 ```
 
 ---
