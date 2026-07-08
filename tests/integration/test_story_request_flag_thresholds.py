@@ -30,6 +30,9 @@ async def _seed_request(
             profile_id=seed.child_profile_id,
             request_text="a story about a brave turtle",
             status=status,
+            # WS-B: the list endpoint thresholds on THIS row value (request-
+            # sourced band; the profile JOIN is gone), so these tests pin the
+            # request band, not the seeded profile band they happen to match.
             age_band="10-13",
             moderation_flags=flags,
         )
