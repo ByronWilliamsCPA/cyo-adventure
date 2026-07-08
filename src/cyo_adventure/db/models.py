@@ -43,6 +43,7 @@ _FK_USER = "user.id"
 _FK_CHILD_PROFILE = "child_profile.id"
 _FK_STORYBOOK = "storybook.id"
 _FK_CONCEPT = "concept.id"
+_FK_SERIES = "series.id"
 
 # The five storybook lifecycle states, named once for the CHECK constraint.
 _STORYBOOK_STATUS_VALUES = (
@@ -80,6 +81,45 @@ class Family(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(200))
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class Series(Base):
+    """A named, family-owned chain of storybooks (WS-B PR 3, decision B2).
+
+    DB-level linkage only in WS-B: books reference a series via
+    ``storybook.series_id``/``book_index``; the embedded document ``Series``
+    metadata block (storybook/models.py) is NOT written, so the SR-1..SR-7
+    cross-book validator stays dormant until WS-G adds structural chaining.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: Owning family (NOT NULL, decision B3; widening is WS-E).
+        title: Guardian- or admin-ratified series title (screened at intake).
+        age_band: The band every book in the series targets; continuations
+            must match it (approval rejects a mismatch).
+        carries_state: ADR-011 band rule: False (episodic) for '3-5'/'5-8',
+            True for all higher bands.
+        created_by: The ratifying user, or None.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "series"
+    __table_args__ = (
+        CheckConstraint(
+            f"age_band IN ({_AGE_BAND_VALUES})",
+            name="ck_series_age_band",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    title: Mapped[str] = mapped_column(String(120))
+    age_band: Mapped[str] = mapped_column(String(16))
+    carries_state: Mapped[bool] = mapped_column()
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -139,6 +179,17 @@ class Storybook(Base):
             f"status IN ({_STORYBOOK_STATUS_VALUES})",
             name="ck_storybook_status",
         ),
+        UniqueConstraint(
+            "series_id", "book_index", name="uq_storybook_series_book_index"
+        ),
+        CheckConstraint(
+            "book_index IS NULL OR book_index >= 1",
+            name="ck_storybook_book_index",
+        ),
+        CheckConstraint(
+            "(series_id IS NULL) = (book_index IS NULL)",
+            name="ck_storybook_series_index_pairing",
+        ),
     )
 
     id: Mapped[str] = mapped_column(String(120), primary_key=True)
@@ -148,6 +199,10 @@ class Storybook(Base):
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )
+    series_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_SERIES), default=None
+    )
+    book_index: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
@@ -383,6 +438,12 @@ class StoryRequest(Base):
         reviewed_by: The guardian/admin who approved or declined, or ``None``.
         reviewed_at: When the decision was recorded, or ``None``.
         concept_id: The concept created on approval, or ``None``.
+        series_id: The series this request continues, or ``None`` for a
+            standalone request (WS-B PR 3).
+        anchor_storybook_id: The storybook this soft continuation follows on
+            from, or ``None``.
+        proposed_series_title: The kid's unratified series title proposal,
+            cleared once a guardian or admin ratifies it onto ``series_id``.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
     """
 
@@ -423,6 +484,11 @@ class StoryRequest(Base):
             "narrative_style = 'prose' OR age_band IN ('13-16', '16+')",
             name="ck_story_request_style_band",
         ),
+        CheckConstraint(
+            "NOT (proposed_series_title IS NOT NULL "
+            "AND anchor_storybook_id IS NOT NULL)",
+            name="ck_story_request_series_xor",
+        ),
         Index("ix_story_request_family_status", "family_id", "status"),
         Index("ix_story_request_profile_status", "profile_id", "status"),
         Index("ix_story_request_status", "status"),
@@ -458,6 +524,13 @@ class StoryRequest(Base):
     concept_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CONCEPT), default=None
     )
+    series_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_SERIES), default=None
+    )
+    anchor_storybook_id: Mapped[str | None] = mapped_column(
+        String(120), ForeignKey(_FK_STORYBOOK), default=None
+    )
+    proposed_series_title: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
