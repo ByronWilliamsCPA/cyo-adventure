@@ -401,6 +401,34 @@ export type ContentSummaryView = {
 };
 
 /**
+ * FamilyListView
+ *
+ * All families, admin-only (powers the required family selector).
+ */
+export type FamilyListView = {
+    /**
+     * Families
+     */
+    families: Array<FamilyView>;
+};
+
+/**
+ * FamilyView
+ *
+ * A family as listed for the admin authored-request form.
+ */
+export type FamilyView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Name
+     */
+    name: string;
+};
+
+/**
  * FindingView
  *
  * One moderation finding, shaped for the guardian review UI.
@@ -1422,6 +1450,53 @@ export type StoryRequestApprovedView = {
 };
 
 /**
+ * StoryRequestAuthoredCreateBody
+ *
+ * A guardian's or admin's pre-approved story request (WS-B PR 2).
+ *
+ * ``profile_id`` is optional (an authored request need not target a child).
+ * ``family_id`` is admin-only: admins must name the target family (decision
+ * B3); guardians must omit it (their own family is server-derived).
+ */
+export type StoryRequestAuthoredCreateBody = {
+    age_band: AgeBand;
+    length: Length;
+    narrative_style?: NarrativeStyle;
+    /**
+     * Request Text
+     */
+    request_text: string;
+    /**
+     * Profile Id
+     */
+    profile_id?: string | null;
+    /**
+     * Family Id
+     */
+    family_id?: string | null;
+};
+
+/**
+ * StoryRequestAuthoredCreatedView
+ *
+ * The result of an authored create: approved with a concept, or blocked.
+ */
+export type StoryRequestAuthoredCreatedView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Status
+     */
+    status: 'pending' | 'approved' | 'declined' | 'blocked';
+    /**
+     * Concept Id
+     */
+    concept_id: string | null;
+};
+
+/**
  * StoryRequestCreateBody
  *
  * A child's free-text story request (kid surface; guardian-scoped in R1).
@@ -1511,8 +1586,10 @@ export type StoryRequestListView = {
  * redacted StoryRequestFlag list. ``age_band``, ``length``, and
  * ``narrative_style`` are request-sourced (WS-B): for a still-pending
  * request they reflect the profile-stamped defaults from creation; for an
- * approved request they reflect the guardian's approval confirmation. The
- * guardian UI uses these to prefill the approve dialog.
+ * approved request they reflect the guardian's approval confirmation.
+ * ``profile_id`` is ``None`` for an authored request with no target child
+ * (WS-B PR 2); the guardian UI uses these fields to prefill the approve
+ * dialog.
  */
 export type StoryRequestView = {
     /**
@@ -1522,7 +1599,7 @@ export type StoryRequestView = {
     /**
      * Profile Id
      */
-    profile_id: string;
+    profile_id: string | null;
     /**
      * Status
      */
@@ -2220,6 +2297,37 @@ export type UpdateProfileApiV1ProfilesProfileIdPatchResponses = {
 };
 
 export type UpdateProfileApiV1ProfilesProfileIdPatchResponse = UpdateProfileApiV1ProfilesProfileIdPatchResponses[keyof UpdateProfileApiV1ProfilesProfileIdPatchResponses];
+
+export type ListFamiliesApiV1AdminFamiliesGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/families';
+};
+
+export type ListFamiliesApiV1AdminFamiliesGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListFamiliesApiV1AdminFamiliesGetError = ListFamiliesApiV1AdminFamiliesGetErrors[keyof ListFamiliesApiV1AdminFamiliesGetErrors];
+
+export type ListFamiliesApiV1AdminFamiliesGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: FamilyListView;
+};
+
+export type ListFamiliesApiV1AdminFamiliesGetResponse = ListFamiliesApiV1AdminFamiliesGetResponses[keyof ListFamiliesApiV1AdminFamiliesGetResponses];
 
 export type RecordRatingApiV1RatingsPostData = {
     body: RatingBody;
@@ -2919,6 +3027,37 @@ export type CreateStoryRequestApiV1StoryRequestsPostResponses = {
 };
 
 export type CreateStoryRequestApiV1StoryRequestsPostResponse = CreateStoryRequestApiV1StoryRequestsPostResponses[keyof CreateStoryRequestApiV1StoryRequestsPostResponses];
+
+export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData = {
+    body: StoryRequestAuthoredCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/story-requests/authored';
+};
+
+export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostError = CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors[keyof CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors];
+
+export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: StoryRequestAuthoredCreatedView;
+};
+
+export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponse = CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses[keyof CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses];
 
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
     body: StoryRequestApproveBody;
