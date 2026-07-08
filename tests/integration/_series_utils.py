@@ -34,24 +34,30 @@ async def seed_published_anchor(
     age_band: str = "8-11",
     title: str = "Fox Tales",
     book_index: int = 1,
+    approved: bool = True,
 ) -> tuple[Series, Storybook]:
     """Seed a published, series-linked anchor storybook and its series.
 
     Builds a ``Series`` row plus a ``published`` ``Storybook`` (with
     ``current_published_version`` set and ``series_id``/``book_index``
     populated) and a linked ``StorybookVersion`` whose ``approved_by`` is set
-    and whose ``blob`` is a minimal valid story dict (a title and one ending
-    node), so ``resolve_anchor``/``load_anchor_context`` see a fully valid,
+    (unless ``approved`` is ``False``) and whose ``blob`` is a minimal valid
+    story dict (a title and one ending node), so
+    ``resolve_anchor``/``load_anchor_context`` see a fully valid,
     kid-library-visible anchor (mirrors the published/approved predicate in
     api/library.py).
 
     Args:
         session: The request session; the caller flushes or commits.
         family_id: The owning family for both the series and the storybook.
-        approved_by: The user id stamped as the version's approver.
+        approved_by: The user id stamped as the version's approver, and as
+            the series' creator regardless of ``approved``.
         age_band: The series (and anchor) age band.
         title: The series title and the anchor blob's title.
         book_index: The anchor's position in the series (default 1).
+        approved: When ``False``, the ``StorybookVersion.approved_by`` column
+            is left ``None`` so the anchor is published but its current
+            version is not yet approved (default ``True``).
 
     Returns:
         tuple[Series, Storybook]: The flushed series and its anchor storybook.
@@ -103,7 +109,7 @@ async def seed_published_anchor(
                     }
                 ],
             },
-            approved_by=approved_by,
+            approved_by=approved_by if approved else None,
         )
     )
     await session.flush()

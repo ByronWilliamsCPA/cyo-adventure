@@ -182,6 +182,47 @@ async def test_kid_anchor_unpublished_is_422(
     assert res.status_code == 422
 
 
+async def test_kid_anchor_unapproved_version_is_422(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Published with a current version, but that version is not approved.
+
+    Covers the other half of resolve_anchor's published check: a storybook
+    can be status="published" with current_published_version set while the
+    StorybookVersion row it points at has never been approved (approved_by
+    is None). test_kid_anchor_unpublished_is_422 covers the sibling branch
+    (no published version at all).
+    """
+    async with sessions() as session:
+        _series, storybook = await seed_published_anchor(
+            session,
+            family_id=seed.family_id,
+            approved_by=seed.admin_user_id,
+            age_band="10-13",
+            approved=False,
+        )
+        await session.commit()
+        anchor_id = storybook.id
+
+    res = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "book two of the fox saga",
+            "anchor_storybook_id": anchor_id,
+        },
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 422
+    async with sessions() as session:
+        persisted = await session.scalar(
+            select(func.count())
+            .select_from(StoryRequest)
+            .where(StoryRequest.anchor_storybook_id == anchor_id)
+        )
+        assert (persisted or 0) == 0
+
+
 async def test_kid_anchor_published_without_series_is_422(
     client: AsyncClient, seed: Seed
 ) -> None:
