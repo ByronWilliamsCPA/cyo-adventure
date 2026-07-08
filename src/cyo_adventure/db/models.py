@@ -387,11 +387,17 @@ class StoryRequest(Base):
     """
 
     __tablename__ = "story_request"
-    # #CRITICAL: data integrity: ``status`` is a closed lifecycle; this CHECK is
-    # the at-rest backstop (mirroring ck_generation_job_status) so no write path
-    # persists a status outside the four values.
-    # #VERIFY: StoryRequestStatus(...) coercion at the API boundary rejects any
-    # other value; see api/schemas.py::StoryRequestStatus.
+    # #CRITICAL: data integrity: ``status``, ``initiator_role``, ``age_band``,
+    # ``length``, and ``narrative_style`` are closed vocabularies; these CHECKs
+    # are the at-rest backstop (mirroring ck_generation_job_status) so no write
+    # path persists a value outside them. ck_story_request_style_band is the
+    # child-safety backstop for ADR-011: gamebook branching is teen-only
+    # ('13-16', '16+'), so no row can pair a gamebook request with a younger
+    # band even if an application bug slips one past the API.
+    # #VERIFY: the API boundary rejects out-of-vocabulary values first:
+    # api/schemas.py::StoryRequestStatus coercion for status, and
+    # StoryRequestApproveBody's AgeBand/Length/NarrativeStyle enums plus its
+    # _style_allowed_for_band validator (which mirrors style_band) at approve.
     __table_args__ = (
         CheckConstraint(
             f"status IN ({_STORY_REQUEST_STATUS_VALUES})",
