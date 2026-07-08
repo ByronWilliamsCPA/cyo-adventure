@@ -375,7 +375,8 @@ async def create_authored_story_request(
         # #CRITICAL: security: profile must belong to the target family; for
         # guardians family_uuid is their own family so this is equivalent to
         # authorize_profile, and it also covers the admin-named family (IDOR).
-        # #VERIFY: test_guardian_rejects_cross_family_profile.
+        # #VERIFY: test_guardian_rejects_cross_family_profile,
+        # test_admin_cross_family_profile_is_403.
         if profile.family_id != family_uuid:
             msg = "profile does not belong to the target family"
             raise AuthorizationError(msg)

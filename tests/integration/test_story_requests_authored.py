@@ -92,6 +92,18 @@ async def test_admin_authored_create_targets_named_family(
         assert row.family_id == seed.family_id
 
 
+async def test_admin_cross_family_profile_is_403(
+    client: AsyncClient, seed: Seed
+) -> None:
+    body = {
+        **BODY,
+        "family_id": str(seed.family_id),
+        "profile_id": str(seed.other_child_profile_id),
+    }
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.admin_token))
+    assert res.status_code == 403
+
+
 async def test_admin_unknown_family_is_404(client: AsyncClient, seed: Seed) -> None:
     body = {**BODY, "family_id": "00000000-0000-0000-0000-000000000000"}
     res = await client.post(AUTHORED, json=body, headers=auth(seed.admin_token))
