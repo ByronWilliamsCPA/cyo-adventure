@@ -74,6 +74,15 @@ def test_min_score_floor_applies_to_scored_findings_only() -> None:
     )
 
 
+def test_min_score_exactly_at_floor_surfaces() -> None:
+    """The min_score comparison is >=: a score equal to the floor surfaces."""
+    rows = {("3-5", "violence"): Threshold(min_verdict=Verdict.ADVISORY, min_score=0.3)}
+    policy = _policy(rows)
+    assert policy.surfaces(
+        age_band="3-5", category="violence", verdict=Verdict.ADVISORY, score=0.3
+    )
+
+
 def test_string_verdict_is_coerced() -> None:
     """Callers holding serialized verdict strings get the same behavior."""
     assert _policy().surfaces(

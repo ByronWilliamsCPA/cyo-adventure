@@ -14,11 +14,14 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+_logger = get_logger(__name__)
 
 # Severity ordering for surfacing decisions. PASS is deliberately absent: a
 # pass finding never surfaces regardless of thresholds.
@@ -145,7 +148,20 @@ async def load_threshold_policy(
         try:
             verdict = Verdict(row.min_verdict)
         except ValueError:
-            continue  # CHECK constraint should prevent this; skip defensively.
+            # #EDGE: data-integrity: the ck_moderation_threshold_min_verdict
+            # CHECK should make this unreachable; a row that still lands here
+            # (constraint dropped, pre-constraint backfill) silently reverts
+            # its (band, category) to the code default, so log it loudly
+            # rather than skipping in silence.
+            # #VERIFY: malformed-row case in
+            # tests/integration/test_threshold_policy_loader.py.
+            _logger.warning(
+                "moderation_threshold_row_malformed",
+                age_band=row.age_band,
+                category=row.category,
+                min_verdict=row.min_verdict,
+            )
+            continue
         rows[(row.age_band, row.category)] = Threshold(
             min_verdict=verdict, min_score=row.min_score
         )
@@ -212,8 +228,9 @@ async def load_admin_noise_floor(session: AsyncSession) -> float:
     Returns:
         float: The stored ``admin_noise_floor`` value, or
         ``ADMIN_NOISE_FLOOR_DEFAULT`` when the row is absent (a test schema
-        built from ORM metadata with no seed migration applied, or a
-        not-yet-migrated deployment).
+        built from ORM metadata with no seed migration applied). A deployment
+        whose ``moderation_setting`` table does not exist yet raises from the
+        driver; the fallback covers a missing row, not a missing table.
     """
     # #ASSUME: external-resources: one small primary-key lookup per admin
     # review request; this is a single scalar row, so no request-scope

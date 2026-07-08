@@ -69,3 +69,18 @@ def test_string_verdict_is_coerced() -> None:
 def test_advisory_score_exactly_at_floor_surfaces() -> None:
     """The floor comparison is strict-less-than: a score equal to the floor surfaces."""
     assert admin_surfaces(Verdict.ADVISORY, 0.05, noise_floor=_FLOOR)
+
+
+def test_noise_floor_zero_surfaces_all_scored_advisory() -> None:
+    """A 0.0 floor denoises nothing: every scored ADVISORY surfaces."""
+    assert admin_surfaces(Verdict.ADVISORY, 0.0, noise_floor=0.0)
+    assert admin_surfaces(Verdict.ADVISORY, 0.5, noise_floor=0.0)
+
+
+def test_noise_floor_one_hides_all_scored_advisory_but_not_others() -> None:
+    """A 1.0 floor hides every scored ADVISORY, but never FLAG/BLOCK/unscored."""
+    assert not admin_surfaces(Verdict.ADVISORY, 0.99, noise_floor=1.0)
+    assert not admin_surfaces(Verdict.ADVISORY, 0.0, noise_floor=1.0)
+    assert admin_surfaces(Verdict.ADVISORY, None, noise_floor=1.0)
+    assert admin_surfaces(Verdict.FLAG, 0.0, noise_floor=1.0)
+    assert admin_surfaces(Verdict.BLOCK, 0.0, noise_floor=1.0)

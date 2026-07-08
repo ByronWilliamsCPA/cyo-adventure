@@ -405,6 +405,57 @@ def test_content_summary_null_report_is_unscreened() -> None:
 
 
 @pytest.mark.unit
+def test_queue_item_flagged_count_respects_noise_floor() -> None:
+    """The queue's flagged_count is denoised exactly like the detail view.
+
+    A report whose only finding is a below-floor ADVISORY yields
+    flagged_count == 0 when a noise floor is supplied, but flagged_count > 0
+    when the floor is skipped (admin_noise_floor=None), since the raw finding
+    still exists and is not otherwise filtered.
+    """
+    noisy_only: dict[str, object] = {
+        "findings": [
+            {
+                "stage": 0,
+                "source": "openai",
+                "category": "toxicity",
+                "node_id": None,
+                "verdict": "advisory",
+                "score": 0.02,
+                "message": "near-zero advisory noise",
+            }
+        ],
+        "summary": {
+            "count": 1,
+            "hard_block": False,
+            "soft_flag": False,
+            "repaired": False,
+            "reviewer_independent": True,
+        },
+    }
+    floored = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=noisy_only,
+        admin_noise_floor=0.05,
+    )
+    assert floored.screened is True
+    assert floored.flagged_count == 0
+
+    unfloored = build_review_queue_item(
+        storybook_id="s1",
+        status="in_review",
+        version=1,
+        blob={"nodes": []},
+        moderation_report=noisy_only,
+        admin_noise_floor=None,
+    )
+    assert unfloored.flagged_count == 1
+
+
+@pytest.mark.unit
 def test_content_summary_rejects_corrupt_report() -> None:
     corrupt = {
         "findings": [

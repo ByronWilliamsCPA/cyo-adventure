@@ -241,8 +241,9 @@ async def get_review_surface(
         raise ResourceNotFoundError(msg)
     # #ASSUME: security: floor denoises the ADMIN review view only; admin_surfaces
     # guarantees FLAG/BLOCK/unscored findings always surface (bright-line 0.0
-    # blocks are never hidden). This is the only call site build_review_surface
-    # receives a floor from; guardian reuse paths keep passing None.
+    # blocks are never hidden). The floor reaches build_review_surface from two
+    # admin call sites (this detail view and get_review_queue below); guardian
+    # reuse paths keep passing None.
     # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
     floor = await load_admin_noise_floor(ctx.session)
     return build_review_surface(
@@ -331,6 +332,14 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
         )
     ).all()
     by_key = {(row.storybook_id, row.version): row for row in version_rows}
+    # #ASSUME: security: the queue is admin-only (gated above), so the admin
+    # noise floor applies here exactly as on the detail view: a noise-only
+    # story must not land in the console's Flagged bucket while its detail
+    # view (floored) shows nothing. Loaded once for the whole listing, never
+    # per row.
+    # #VERIFY: tests/integration/test_review_surface_noise_floor.py queue case;
+    # admin_surfaces guarantees FLAG/BLOCK/unscored findings always surface.
+    floor = await load_admin_noise_floor(ctx.session)
     items: list[ReviewQueueItem] = []
     for book in books:
         version = latest.get(book.id)
@@ -358,6 +367,7 @@ async def get_review_queue(ctx: Context) -> ReviewQueueView:
                     version=version,
                     blob=row.blob,
                     moderation_report=row.moderation_report,
+                    admin_noise_floor=floor,
                 )
             )
         except ValidationError as exc:

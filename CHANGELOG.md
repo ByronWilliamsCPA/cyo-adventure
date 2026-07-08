@@ -36,14 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Age-band moderation thresholds: the moderation pipeline now records every
   advisory finding, and a per-`(age_band, category)` threshold determines
-  which findings surface on guardian and kid-facing content summaries, as well
-  as on the guardian-facing story-request list. Findings below the configured
+  which findings surface on the two guardian-facing surfaces: the story
+  content summary and the story-request list. Findings below the configured
   floor for a story's age band are recorded for audit but filtered out at the
-  serialization boundary; admins continue to see every finding regardless of
-  this per-age-band threshold on all three surfaces (the guardian and
-  kid-facing content summaries and the guardian-facing story-request list); a
-  separate, admin-only noise floor on the admin review surface itself is
-  described below and does not affect this guarantee. A new admin CRUD editor
+  serialization boundary; admins continue to see every finding on both
+  surfaces regardless of this per-age-band threshold; a separate, admin-only
+  noise floor on the admin review surface itself is described below and does
+  not affect this guarantee. A new admin CRUD editor
   (`/guardian/moderation-thresholds`) lets admins view and adjust thresholds
   per age band and category, with every change written to an audit trail.
   That same editor now also exposes an admin-configurable global moderation

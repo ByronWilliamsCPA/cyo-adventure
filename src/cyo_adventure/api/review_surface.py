@@ -46,11 +46,14 @@ def build_review_surface(
         blob: The stored story blob (source of node prose).
         moderation_report: The stored report, or ``None`` if unmoderated.
         admin_noise_floor: The admin-configured global noise floor, or
-            ``None`` to skip floor filtering entirely. Only the admin review
-            call site (``api/approval.py``) passes a floor; guardian reuse
-            call sites in this module (``build_content_summary``,
-            ``build_review_queue_item``) must keep passing ``None`` since
-            they already filter by ``min_verdict=FLAG`` and must not change.
+            ``None`` to skip floor filtering entirely. The two ADMIN call
+            paths pass a floor: the review detail endpoint
+            (``api/approval.py::get_review_surface``) and the review queue
+            (via ``build_review_queue_item``). The guardian reuse path
+            (``build_content_summary``) must keep passing ``None``: guardian
+            surfaces are gated by the age-band ``ThresholdPolicy`` instead
+            (default ``min_verdict=FLAG``), and the floor is an admin-only
+            denoise, never a guardian filter.
 
     Returns:
         ReviewSurfaceView: Blob plus summary, flagged passages, and story-level
@@ -244,6 +247,7 @@ def build_review_queue_item(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None = None,
 ) -> ReviewQueueItem:
     """Project one storybook version into a review-queue item.
 
@@ -256,6 +260,11 @@ def build_review_queue_item(
         version: The version under review (latest).
         blob: The stored story blob (source of the title).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        admin_noise_floor: The admin-configured global noise floor, or
+            ``None`` to skip floor filtering. The queue is admin-only, so
+            passing the floor here keeps the console's "N flagged" badge and
+            Flagged bucket consistent with the denoised detail view; a
+            noise-only story no longer reads as flagged.
 
     Returns:
         ReviewQueueItem: Title, status, version, screened flag, flagged count,
@@ -274,12 +283,19 @@ def build_review_queue_item(
     # ValidationError; tests/unit/test_review_surface.py covers the malformed
     # case, and tests/integration/test_approval_api.py covers the per-row queue
     # isolation (one corrupt row does not fail the whole queue).
+    # #ASSUME: security: the floor denoises ADMIN surfaces only; the queue is
+    # admin-only (approval.py::get_review_queue gates on is_admin), and
+    # flagged_count must count exactly the findings the floored detail view
+    # will show, or the badge contradicts the list the admin clicks into.
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_queue_item_flagged_count_respects_noise_floor.
     surface = build_review_surface(
         status=status,
         storybook_id=storybook_id,
         version=version,
         blob=blob,
         moderation_report=moderation_report,
+        admin_noise_floor=admin_noise_floor,
     )
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages

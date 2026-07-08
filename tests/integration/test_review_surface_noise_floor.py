@@ -150,6 +150,55 @@ async def test_admin_review_never_hides_bright_line_block(
     assert "safety" in categories
 
 
+async def _seed_in_review_with_noisy_report(
+    sessions: async_sessionmaker[AsyncSession],
+) -> str:
+    """Seed a family and an ``in_review`` story carrying ``_NOISY_REPORT``."""
+    async with sessions() as session:
+        fam = Family(name="NoiseFloorQueueFamily")
+        session.add(fam)
+        await session.flush()
+        admin = User(family_id=fam.id, role="admin", authn_subject="admin-nf-queue")
+        session.add(admin)
+        await session.flush()
+        story_id = "noise-floor-queue-story"
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={
+                    "id": story_id,
+                    "title": "Queue Story",
+                    "metadata": {"age_band": "8-11"},
+                    "nodes": [{"id": "n1", "body": "Prose."}],
+                },
+                moderation_report=_NOISY_REPORT,
+            )
+        )
+        await session.commit()
+        return story_id
+
+
+async def test_review_queue_flagged_count_respects_admin_noise_floor(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The queue's flagged_count is denoised exactly like the detail view.
+
+    The near-zero (0.02) toxicity advisory is hidden by the 0.05 default
+    floor; the above-floor (0.09) advisory and the bright-line BLOCK both
+    still count, so the badge the console shows matches what the floored
+    detail view will render.
+    """
+    story_id = await _seed_in_review_with_noisy_report(sessions)
+    res = await client.get("/api/v1/review-queue", headers=auth("admin-nf-queue"))
+    assert res.status_code == 200
+    items = {item["storybook_id"]: item for item in res.json()["items"]}
+    item = items[story_id]
+    assert item["screened"] is True
+    assert item["flagged_count"] == 2
+
+
 async def test_guardian_content_summary_unaffected_by_admin_noise_floor(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

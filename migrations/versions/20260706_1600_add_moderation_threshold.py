@@ -34,6 +34,10 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.CheckConstraint(
+            "age_band IN ('3-5', '5-8', '8-11', '10-13', '13-16', '16+')",
+            name="ck_moderation_threshold_age_band",
+        ),
+        sa.CheckConstraint(
             "min_verdict IN ('advisory', 'flag', 'block')",
             name="ck_moderation_threshold_min_verdict",
         ),
@@ -63,6 +67,10 @@ def upgrade() -> None:
             postgresql.TIMESTAMP(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,
+        ),
+        sa.CheckConstraint(
+            "action IN ('upsert', 'delete')",
+            name="ck_moderation_threshold_audit_action",
         ),
         sa.ForeignKeyConstraint(["changed_by"], ["user.id"]),
         sa.PrimaryKeyConstraint("id"),

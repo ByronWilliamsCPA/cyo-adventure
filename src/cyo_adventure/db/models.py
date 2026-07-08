@@ -32,6 +32,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from cyo_adventure.core.database import Base
 from cyo_adventure.storybook.evaluator import VarState
+from cyo_adventure.storybook.models import AgeBand
 
 # All timestamps are stored timezone-aware (TIMESTAMP WITH TIME ZONE).
 _TS = DateTime(timezone=True)
@@ -405,6 +406,10 @@ class StoryRequest(Base):
 
 
 _MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
+# Derived from the AgeBand enum so the at-rest CHECK can never drift from the
+# application vocabulary; adding a band changes this SQL and thereby forces a
+# migration (alembic autogenerate flags the constraint difference).
+_AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
 
 
 class ModerationThreshold(Base):
@@ -430,13 +435,19 @@ class ModerationThreshold(Base):
     # #CRITICAL: data integrity / security: these overrides gate which
     # moderation findings surface for review by age band; a row persisted with
     # an unknown min_verdict or an out-of-range min_score could silently relax
-    # what content reaches children. The ck_moderation_threshold_min_verdict
-    # and ck_moderation_threshold_min_score CHECKs are the at-rest backstop
-    # against any non-API write path (admin script, backfill, raw SQL).
+    # what content reaches children, and an unknown age_band would be a dead
+    # row the loader silently skips. The ck_moderation_threshold_age_band,
+    # ck_moderation_threshold_min_verdict, and ck_moderation_threshold_min_score
+    # CHECKs are the at-rest backstop against any non-API write path (admin
+    # script, backfill, raw SQL).
     # #VERIFY: moderation/thresholds.py validates at the application boundary;
     # tests/integration/test_moderation_threshold_migration.py round-trips the
     # migration that creates both CHECKs.
     __table_args__ = (
+        CheckConstraint(
+            f"age_band IN ({_AGE_BAND_VALUES})",
+            name="ck_moderation_threshold_age_band",
+        ),
         CheckConstraint(
             f"min_verdict IN ({_MIN_VERDICT_VALUES})",
             name="ck_moderation_threshold_min_verdict",
@@ -483,6 +494,20 @@ class ModerationThresholdAudit(Base):
     """
 
     __tablename__ = "moderation_threshold_audit"
+    # #ASSUME: data integrity: the audit trail is only trustworthy if every row
+    # names a known action; a typo'd action written by a non-API path (script,
+    # raw SQL) would silently corrupt the "who changed what" record. No age_band
+    # CHECK here on purpose: audit rows are history, and retiring a band must
+    # not invalidate old records.
+    # #VERIFY: the WS-A admin API writes only 'upsert'/'delete';
+    # tests/integration/test_moderation_threshold_migration.py round-trips the
+    # migration that creates this CHECK.
+    __table_args__ = (
+        CheckConstraint(
+            "action IN ('upsert', 'delete')",
+            name="ck_moderation_threshold_audit_action",
+        ),
+    )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     age_band: Mapped[str] = mapped_column(String(16))
