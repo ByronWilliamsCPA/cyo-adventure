@@ -13,6 +13,7 @@ service layer, so it never touches the guardian-only POST /concepts gate.
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast, get_args
 
 from fastapi import APIRouter, BackgroundTasks
@@ -42,6 +43,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
@@ -92,14 +94,115 @@ async def _family_child_names(ctx: Context, family_id: uuid.UUID) -> frozenset[s
     return frozenset(rows.all())
 
 
-def _to_view(request: StoryRequest) -> StoryRequestView:
-    """Project a row to the guardian view; hide raw text for blocked rows.
+@dataclass(frozen=True, slots=True)
+class _FlagContext:
+    """Per-request state needed to parse and threshold-filter one flag.
+
+    Bundles the four call-site-invariant values that :func:`_parse_flag`
+    would otherwise need as separate keyword arguments, keeping it under the
+    project's max-args lint limit.
+
+    Attributes:
+        request_id: The owning story request's id, used only for the
+            out-of-enum-verdict warning log.
+        age_band: The requesting child profile's age band, used to resolve
+            the surfacing threshold for each flag.
+        policy: The loaded threshold policy (surfaces flag+above by default).
+        surface_all: When True (admin caller), every well-formed flag is
+            returned regardless of the age-band/category threshold: admins
+            see every finding, per the design invariant that thresholds only
+            filter what guardians see. When False (guardian caller), a flag
+            below the resolved threshold is dropped.
+    """
+
+    request_id: uuid.UUID
+    age_band: str
+    policy: ThresholdPolicy
+    surface_all: bool
+
+
+def _parse_flag(item: object, ctx: _FlagContext) -> StoryRequestFlag | None:
+    """Parse and threshold-filter one raw moderation-flag entry.
+
+    Args:
+        item: One raw entry from ``moderation_flags["flags"]`` (untyped
+            JSONB), expected to be a dict with string ``verdict``,
+            ``category``, and ``message`` keys.
+        ctx: The owning request's id, age band, threshold policy, and
+            admin-bypass flag; see :class:`_FlagContext`.
+
+    Returns:
+        StoryRequestFlag | None: The parsed flag, or None if the entry is
+        malformed, carries a verdict outside the Verdict enum, or is dropped
+        by the threshold filter.
+    """
+    if not isinstance(item, dict):
+        return None
+    verdict = item.get("verdict")
+    category = item.get("category")
+    message = item.get("message")
+    if not (
+        isinstance(verdict, str)
+        and isinstance(category, str)
+        and isinstance(message, str)
+    ):
+        return None
+    # #ASSUME: data-integrity: moderation_flags is unconstrained JSONB, so
+    # a stored verdict outside the Verdict enum (legacy row or manual edit)
+    # must not 500 the whole list; skip the malformed flag and log.
+    # #VERIFY: test_to_view_skips_malformed_verdict.
+    try:
+        parsed_verdict = Verdict(verdict)
+    except ValueError:
+        _log.warning(
+            "story_request %s has out-of-enum verdict %r; skipping flag",
+            ctx.request_id,
+            verdict,
+        )
+        return None
+    # Stored request flags carry no score, so an admin-configured
+    # min_score override never gates story-request flags (only
+    # storybook flags carry real classifier scores); verdict-level
+    # filtering only.
+    # #CRITICAL: security: thresholds filter what a GUARDIAN sees;
+    # an admin bypasses this check (surface_all) and sees every
+    # well-formed flag, per the design invariant "admins see every
+    # finding regardless of threshold."
+    # #VERIFY: test_admin_sees_all_flags_guardian_sees_filtered.
+    if not ctx.surface_all and not ctx.policy.surfaces(
+        age_band=ctx.age_band,
+        category=category,
+        verdict=parsed_verdict,
+        score=None,
+    ):
+        return None
+    return StoryRequestFlag(category=category, verdict=parsed_verdict, message=message)
+
+
+def _to_view(
+    request: StoryRequest,
+    *,
+    age_band: str,
+    policy: ThresholdPolicy,
+    surface_all: bool,
+) -> StoryRequestView:
+    """Project a row to the caller's view; hide raw text for blocked rows.
 
     Args:
         request: The story request row.
+        age_band: The requesting child profile's age band, used to resolve
+            the surfacing threshold for each stored flag.
+        policy: The loaded threshold policy (surfaces flag+above by default).
+        surface_all: When True (admin caller), every well-formed flag is
+            included regardless of the age-band/category threshold: admins
+            see every finding, per the design invariant that thresholds only
+            filter what guardians see. When False (guardian caller), flags
+            below the resolved threshold are dropped.
 
     Returns:
-        StoryRequestView: The guardian-facing projection.
+        StoryRequestView: The caller-facing projection. For a guardian,
+        filtered to flags that meet the age-band/category threshold; for an
+        admin, unfiltered.
     """
     # #CRITICAL: security: the raw text of a blocked (bright-line) request is
     # never surfaced; only the redacted flags cross the boundary.
@@ -108,38 +211,16 @@ def _to_view(request: StoryRequest) -> StoryRequestView:
     flags_raw = raw.get("flags")
     flags: list[StoryRequestFlag] = []
     if isinstance(flags_raw, list):
+        ctx = _FlagContext(
+            request_id=request.id,
+            age_band=age_band,
+            policy=policy,
+            surface_all=surface_all,
+        )
         for item in flags_raw:
-            if not isinstance(item, dict):
-                continue
-            verdict = item.get("verdict")
-            category = item.get("category")
-            message = item.get("message")
-            if not (
-                isinstance(verdict, str)
-                and isinstance(category, str)
-                and isinstance(message, str)
-            ):
-                continue
-            # #ASSUME: data-integrity: moderation_flags is unconstrained JSONB, so
-            # a stored verdict outside the Verdict enum (legacy row or manual edit)
-            # must not 500 the whole list; skip the malformed flag and log.
-            # #VERIFY: test_to_view_skips_malformed_verdict.
-            try:
-                parsed_verdict = Verdict(verdict)
-            except ValueError:
-                _log.warning(
-                    "story_request %s has out-of-enum verdict %r; skipping flag",
-                    request.id,
-                    verdict,
-                )
-                continue
-            flags.append(
-                StoryRequestFlag(
-                    category=category,
-                    verdict=parsed_verdict,
-                    message=message,
-                )
-            )
+            flag = _parse_flag(item, ctx)
+            if flag is not None:
+                flags.append(flag)
     return StoryRequestView(
         id=str(request.id),
         profile_id=str(request.profile_id),
@@ -230,7 +311,15 @@ async def list_story_requests(
         AuthorizationError: If a guardian filters on an inaccessible profile.
         ValidationError: If ``status`` or ``profile_id`` is malformed (-> 422).
     """
-    stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
+    stmt = (
+        select(StoryRequest, ChildProfile.age_band)
+        # #EDGE: data-integrity: INNER JOIN assumes every StoryRequest.profile_id
+        # resolves to a live ChildProfile (non-nullable FK, no soft-delete today).
+        # #VERIFY: switch to LEFT OUTER JOIN with an age-band default fallback if
+        # ChildProfile ever gains a soft-delete path.
+        .join(ChildProfile, StoryRequest.profile_id == ChildProfile.id)
+        .order_by(StoryRequest.created_at.desc())
+    )
     # #CRITICAL: security: admin is global; a guardian is family-scoped. A child
     # token (used directly) would also be family-scoped via family_id.
     # #VERIFY: test_guardian_lists_family_requests.
@@ -247,8 +336,18 @@ async def list_story_requests(
         if not ctx.principal.is_admin:
             authorize_profile(ctx.principal, profile_uuid)
         stmt = stmt.where(StoryRequest.profile_id == profile_uuid)
-    rows = (await ctx.session.scalars(stmt)).all()
-    return StoryRequestListView(requests=[_to_view(r) for r in rows])
+    rows = (await ctx.session.execute(stmt)).all()
+    policy = await load_threshold_policy(ctx.session)
+    requests = [
+        _to_view(
+            request,
+            age_band=age_band,
+            policy=policy,
+            surface_all=ctx.principal.is_admin,
+        )
+        for request, age_band in rows
+    ]
+    return StoryRequestListView(requests=requests)
 
 
 async def _load_scoped_request(

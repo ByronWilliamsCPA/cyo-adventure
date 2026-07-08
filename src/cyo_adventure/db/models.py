@@ -23,6 +23,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     String,
+    UniqueConstraint,
     Uuid,
     func,
 )
@@ -31,6 +32,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from cyo_adventure.core.database import Base
 from cyo_adventure.storybook.evaluator import VarState
+from cyo_adventure.storybook.models import AgeBand
 
 # All timestamps are stored timezone-aware (TIMESTAMP WITH TIME ZONE).
 _TS = DateTime(timezone=True)
@@ -401,6 +403,173 @@ class StoryRequest(Base):
         ForeignKey(_FK_CONCEPT), default=None
     )
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+_MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
+# Derived from the AgeBand enum so the at-rest CHECK can never drift from the
+# application vocabulary; adding a band changes this SQL and thereby forces a
+# migration (alembic autogenerate flags the constraint difference).
+_AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
+
+
+class ModerationThreshold(Base):
+    """Sparse per-(age_band, category) override of the surfacing default.
+
+    Absence of a row means the code default applies
+    (``moderation/thresholds.py::DEFAULT_THRESHOLD``). The table is small
+    (admin-curated), so policy loads read it whole.
+
+    Attributes:
+        id: Surrogate primary key.
+        age_band: The reader age band this override applies to.
+        category: The moderation category this override applies to.
+        min_verdict: Minimum verdict severity that surfaces to review
+            (one of ``advisory``, ``flag``, ``block``).
+        min_score: Optional classifier-score floor in [0.0, 1.0], or
+            ``None`` to use the verdict gate alone.
+        updated_by: The admin who last edited this override, or ``None``.
+        updated_at: Last edit time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "moderation_threshold"
+    # #CRITICAL: data integrity / security: these overrides gate which
+    # moderation findings surface for review by age band; a row persisted with
+    # an unknown min_verdict or an out-of-range min_score could silently relax
+    # what content reaches children, and an unknown age_band would be a dead
+    # row the loader silently skips. The ck_moderation_threshold_age_band,
+    # ck_moderation_threshold_min_verdict, and ck_moderation_threshold_min_score
+    # CHECKs are the at-rest backstop against any non-API write path (admin
+    # script, backfill, raw SQL).
+    # #VERIFY: moderation/thresholds.py validates at the application boundary;
+    # tests/integration/test_moderation_threshold_migration.py round-trips the
+    # migration that creates both CHECKs.
+    __table_args__ = (
+        CheckConstraint(
+            f"age_band IN ({_AGE_BAND_VALUES})",
+            name="ck_moderation_threshold_age_band",
+        ),
+        CheckConstraint(
+            f"min_verdict IN ({_MIN_VERDICT_VALUES})",
+            name="ck_moderation_threshold_min_verdict",
+        ),
+        CheckConstraint(
+            "min_score IS NULL OR (min_score >= 0.0 AND min_score <= 1.0)",
+            name="ck_moderation_threshold_min_score",
+        ),
+        UniqueConstraint(
+            "age_band", "category", name="uq_moderation_threshold_band_category"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    age_band: Mapped[str] = mapped_column(String(16))
+    category: Mapped[str] = mapped_column(String(64))
+    min_verdict: Mapped[str] = mapped_column(String(16))
+    min_score: Mapped[float | None] = mapped_column(default=None)
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+
+class ModerationThresholdAudit(Base):
+    """Append-only audit of threshold edits (who changed what, when).
+
+    Deliberately minimal: WS-D's pipeline_event log will subsume this role;
+    keep this table write-only until then.
+
+    Attributes:
+        id: Surrogate primary key.
+        age_band: The age band of the edited override.
+        category: The moderation category of the edited override.
+        action: What happened, either ``upsert`` or ``delete``.
+        old_min_verdict: Verdict floor before the edit, or ``None`` on insert.
+        new_min_verdict: Verdict floor after the edit, or ``None`` on delete.
+        old_min_score: Score floor before the edit, or ``None``.
+        new_min_score: Score floor after the edit, or ``None``.
+        changed_by: The admin who made the edit (required; see RAD tag).
+        changed_at: When the edit was recorded (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "moderation_threshold_audit"
+    # #ASSUME: data integrity: the audit trail is only trustworthy if every row
+    # names a known action; a typo'd action written by a non-API path (script,
+    # raw SQL) would silently corrupt the "who changed what" record. No age_band
+    # CHECK here on purpose: audit rows are history, and retiring a band must
+    # not invalidate old records.
+    # #VERIFY: the WS-A admin API writes only 'upsert'/'delete';
+    # tests/integration/test_moderation_threshold_migration.py round-trips the
+    # migration that creates this CHECK.
+    __table_args__ = (
+        CheckConstraint(
+            "action IN ('upsert', 'delete')",
+            name="ck_moderation_threshold_audit_action",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    age_band: Mapped[str] = mapped_column(String(16))
+    category: Mapped[str] = mapped_column(String(64))
+    action: Mapped[str] = mapped_column(String(16))  # 'upsert' | 'delete'
+    old_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
+    new_min_verdict: Mapped[str | None] = mapped_column(String(16), default=None)
+    old_min_score: Mapped[float | None] = mapped_column(default=None)
+    new_min_score: Mapped[float | None] = mapped_column(default=None)
+    # #CRITICAL: security / data integrity: every threshold edit must be
+    # attributable; ``changed_by`` is a NOT NULL FK to user.id so an anonymous
+    # or dangling edit record cannot be persisted. Rows are append-only by
+    # convention (no update/delete path in the application layer) until WS-D's
+    # pipeline_event log subsumes this table.
+    # #VERIFY: the round-trip test in
+    # tests/integration/test_moderation_threshold_migration.py covers the
+    # migration that creates this FK; the WS-A admin API must write one audit
+    # row per upsert/delete and never mutate existing rows.
+    changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class ModerationSetting(Base):
+    """A single named global moderation scalar (WS-A admin noise-floor addendum).
+
+    Distinct from ``ModerationThreshold``: this table holds global scalars
+    (currently one row, key ``admin_noise_floor``) rather than sparse
+    per-(age_band, category) overrides. No append-only audit table backs this
+    one; see the module-level design note in
+    ``docs/planning/ws-a-admin-noise-floor.md`` ("Design decision") for the
+    deliberate YAGNI call.
+
+    Attributes:
+        key: The setting's unique name (e.g. ``admin_noise_floor``).
+        value: The scalar value, constrained to [0.0, 1.0].
+        updated_by: The admin who last edited this setting, or ``None``.
+        updated_at: Last edit time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "moderation_setting"
+    # #ASSUME: security: admin_noise_floor controls which ADVISORY findings
+    # surface on the admin moderation review surface; a row persisted with an
+    # out-of-range value could hide real signal behind an over-wide floor (or
+    # defeat the denoise with a floor of 0). The ck_moderation_setting_value
+    # CHECK is the at-rest backstop against any non-API write path.
+    # #VERIFY: the application boundary (Task A3's PUT endpoint) validates
+    # to [0, 1] before writing; tests/integration/test_moderation_setting_migration.py
+    # round-trips the migration that creates this CHECK.
+    __table_args__ = (
+        CheckConstraint(
+            "value >= 0 AND value <= 1", name="ck_moderation_setting_value"
+        ),
+    )
+
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    value: Mapped[float] = mapped_column()
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
 
 
 class GenerationJob(Base):

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateConceptApiV1ConceptsPostData, CreateConceptApiV1ConceptsPostErrors, CreateConceptApiV1ConceptsPostResponses, CreateProfileApiV1ProfilesPostData, CreateProfileApiV1ProfilesPostErrors, CreateProfileApiV1ProfilesPostResponses, CreateStoryRequestApiV1StoryRequestsPostData, CreateStoryRequestApiV1StoryRequestsPostErrors, CreateStoryRequestApiV1StoryRequestsPostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetData, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReviewQueueApiV1ReviewQueueGetData, GetReviewQueueApiV1ReviewQueueGetErrors, GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListGenerationJobsApiV1GenerationJobsGetData, ListGenerationJobsApiV1GenerationJobsGetErrors, ListGenerationJobsApiV1GenerationJobsGetResponses, ListGuardianBooksApiV1GuardianBooksGetData, ListGuardianBooksApiV1GuardianBooksGetErrors, ListGuardianBooksApiV1GuardianBooksGetResponses, ListLibraryApiV1LibraryGetData, ListLibraryApiV1LibraryGetErrors, ListLibraryApiV1LibraryGetResponses, ListProfilesApiV1ProfilesGetData, ListProfilesApiV1ProfilesGetErrors, ListProfilesApiV1ProfilesGetResponses, ListRatingsApiV1RatingsProfileIdGetData, ListRatingsApiV1RatingsProfileIdGetErrors, ListRatingsApiV1RatingsProfileIdGetResponses, ListStoryRequestsApiV1StoryRequestsGetData, ListStoryRequestsApiV1StoryRequestsGetErrors, ListStoryRequestsApiV1StoryRequestsGetResponses, LivenessHealthLiveGetData, LivenessHealthLiveGetResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, ReadinessHealthReadyGetData, ReadinessHealthReadyGetErrors, ReadinessHealthReadyGetResponses, RecordCompletionApiV1CompletionsPostData, RecordCompletionApiV1CompletionsPostErrors, RecordCompletionApiV1CompletionsPostResponses, RecordRatingApiV1RatingsPostData, RecordRatingApiV1RatingsPostErrors, RecordRatingApiV1RatingsPostResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, StartupHealthStartupGetData, StartupHealthStartupGetResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, UpdateProfileApiV1ProfilesProfileIdPatchData, UpdateProfileApiV1ProfilesProfileIdPatchErrors, UpdateProfileApiV1ProfilesProfileIdPatchResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, WhoamiApiV1MeGetData, WhoamiApiV1MeGetErrors, WhoamiApiV1MeGetResponses } from './types.gen';
+import type { ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateConceptApiV1ConceptsPostData, CreateConceptApiV1ConceptsPostErrors, CreateConceptApiV1ConceptsPostResponses, CreateProfileApiV1ProfilesPostData, CreateProfileApiV1ProfilesPostErrors, CreateProfileApiV1ProfilesPostResponses, CreateStoryRequestApiV1StoryRequestsPostData, CreateStoryRequestApiV1StoryRequestsPostErrors, CreateStoryRequestApiV1StoryRequestsPostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetData, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetData, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReviewQueueApiV1ReviewQueueGetData, GetReviewQueueApiV1ReviewQueueGetErrors, GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListGenerationJobsApiV1GenerationJobsGetData, ListGenerationJobsApiV1GenerationJobsGetErrors, ListGenerationJobsApiV1GenerationJobsGetResponses, ListGuardianBooksApiV1GuardianBooksGetData, ListGuardianBooksApiV1GuardianBooksGetErrors, ListGuardianBooksApiV1GuardianBooksGetResponses, ListLibraryApiV1LibraryGetData, ListLibraryApiV1LibraryGetErrors, ListLibraryApiV1LibraryGetResponses, ListProfilesApiV1ProfilesGetData, ListProfilesApiV1ProfilesGetErrors, ListProfilesApiV1ProfilesGetResponses, ListRatingsApiV1RatingsProfileIdGetData, ListRatingsApiV1RatingsProfileIdGetErrors, ListRatingsApiV1RatingsProfileIdGetResponses, ListStoryRequestsApiV1StoryRequestsGetData, ListStoryRequestsApiV1StoryRequestsGetErrors, ListStoryRequestsApiV1StoryRequestsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetData, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ListThresholdsApiV1AdminModerationThresholdsGetResponses, LivenessHealthLiveGetData, LivenessHealthLiveGetResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, ReadinessHealthReadyGetData, ReadinessHealthReadyGetErrors, ReadinessHealthReadyGetResponses, RecordCompletionApiV1CompletionsPostData, RecordCompletionApiV1CompletionsPostErrors, RecordCompletionApiV1CompletionsPostResponses, RecordRatingApiV1RatingsPostData, RecordRatingApiV1RatingsPostErrors, RecordRatingApiV1RatingsPostResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, StartupHealthStartupGetData, StartupHealthStartupGetResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateProfileApiV1ProfilesProfileIdPatchData, UpdateProfileApiV1ProfilesProfileIdPatchErrors, UpdateProfileApiV1ProfilesProfileIdPatchResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, WhoamiApiV1MeGetData, WhoamiApiV1MeGetErrors, WhoamiApiV1MeGetResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -636,6 +636,134 @@ export const getReviewQueueApiV1ReviewQueueGet = <ThrowOnError extends boolean =
     responseType: 'json',
     url: '/api/v1/review-queue',
     ...options
+});
+
+/**
+ * List Thresholds
+ *
+ * List all overrides plus the code default (admin only).
+ *
+ * Args:
+ * ctx: The request context (principal + session).
+ *
+ * Returns:
+ * ThresholdListView: The code default, known categories, and all
+ * stored override rows.
+ *
+ * Raises:
+ * AuthorizationError: If the caller is not an admin (403).
+ */
+export const listThresholdsApiV1AdminModerationThresholdsGet = <ThrowOnError extends boolean = false>(options?: Options<ListThresholdsApiV1AdminModerationThresholdsGetData, ThrowOnError>): RequestResult<ListThresholdsApiV1AdminModerationThresholdsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListThresholdsApiV1AdminModerationThresholdsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/admin/moderation-thresholds',
+    ...options
+});
+
+/**
+ * Delete Threshold
+ *
+ * Remove one override (reverting to the default); audit it (admin only).
+ *
+ * ``category`` is a QUERY parameter for the same slash-in-category reason
+ * as the upsert route.
+ *
+ * Args:
+ * age_band: The age band half of the natural key (path).
+ * category: The category half of the natural key (query).
+ * ctx: The request context (principal + session).
+ *
+ * Returns:
+ * ThresholdListView: The full list view after the delete.
+ *
+ * Raises:
+ * AuthorizationError: If the caller is not an admin (403).
+ * ValidationError: If ``age_band`` is not a known band (422).
+ * ResourceNotFoundError: If no override exists for the key (404).
+ */
+export const deleteThresholdApiV1AdminModerationThresholdsAgeBandDelete = <ThrowOnError extends boolean = false>(options: Options<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData, ThrowOnError>): RequestResult<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, ThrowOnError> => (options.client ?? client).delete<DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/admin/moderation-thresholds/{age_band}',
+    ...options
+});
+
+/**
+ * Upsert Threshold
+ *
+ * Create or update one override; write an audit row (admin only).
+ *
+ * ``category`` is a QUERY parameter (FastAPI treats a str param absent
+ * from the path template as query), never a path segment: five known
+ * categories contain ``/`` (e.g. ``self-harm/instructions``), and a
+ * decoded slash in a path segment breaks route matching and 404s.
+ *
+ * Args:
+ * age_band: The age band half of the natural key (path).
+ * category: The category half of the natural key (query).
+ * body: The desired min_verdict/min_score.
+ * ctx: The request context (principal + session).
+ *
+ * Returns:
+ * ThresholdView: The stored override after the write.
+ *
+ * Raises:
+ * AuthorizationError: If the caller is not an admin (403).
+ * ValidationError: If ``age_band`` is not a known band (422).
+ */
+export const upsertThresholdApiV1AdminModerationThresholdsAgeBandPut = <ThrowOnError extends boolean = false>(options: Options<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData, ThrowOnError>): RequestResult<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, ThrowOnError> => (options.client ?? client).put<UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/admin/moderation-thresholds/{age_band}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get Noise Floor
+ *
+ * Return the global admin noise floor (admin only).
+ *
+ * Args:
+ * ctx: The request context (principal + session).
+ *
+ * Returns:
+ * NoiseFloorView: The stored floor, or the code default when no row
+ * has been persisted yet.
+ *
+ * Raises:
+ * AuthorizationError: If the caller is not an admin (403).
+ */
+export const getNoiseFloorApiV1AdminModerationNoiseFloorGet = <ThrowOnError extends boolean = false>(options?: Options<GetNoiseFloorApiV1AdminModerationNoiseFloorGetData, ThrowOnError>): RequestResult<GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, ThrowOnError> => (options?.client ?? client).get<GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/admin/moderation/noise-floor',
+    ...options
+});
+
+/**
+ * Update Noise Floor
+ *
+ * Create or update the global admin noise floor (admin only).
+ *
+ * Args:
+ * body: The desired floor value, already bounded to [0, 1] by the
+ * schema (out-of-range values 422 before this runs).
+ * ctx: The request context (principal + session).
+ *
+ * Returns:
+ * NoiseFloorView: The stored floor after the write.
+ *
+ * Raises:
+ * AuthorizationError: If the caller is not an admin (403).
+ */
+export const updateNoiseFloorApiV1AdminModerationNoiseFloorPut = <ThrowOnError extends boolean = false>(options: Options<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData, ThrowOnError>): RequestResult<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, ThrowOnError> => (options.client ?? client).put<UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/admin/moderation/noise-floor',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

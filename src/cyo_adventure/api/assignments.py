@@ -41,6 +41,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
+from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -174,11 +175,14 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
         ValidationError: If the stored moderation report is corrupt at rest.
     """
     version_row, version = await _authorize_content_summary(ctx, storybook_id)
+    policy = await load_threshold_policy(ctx.session)
     return build_content_summary(
         storybook_id=storybook_id,
         version=version,
         blob=version_row.blob,
         moderation_report=version_row.moderation_report,
+        age_band=_book_age_band(version_row.blob),
+        policy=policy,
     )
 
 
@@ -290,6 +294,8 @@ def _guardian_book_item(
     book: Storybook,
     version_row: StorybookVersion,
     assigned_profile_ids: list[str],
+    *,
+    policy: ThresholdPolicy,
 ) -> GuardianBookItem:
     """Project one published version into a guardian browse row.
 
@@ -302,6 +308,7 @@ def _guardian_book_item(
         book: The published storybook row.
         version_row: Its current published version (blob + moderation report).
         assigned_profile_ids: The child profiles this book is assigned to.
+        policy: The resolved threshold policy shared across the whole listing.
 
     Returns:
         GuardianBookItem: The browse row with title, content badge, and the
@@ -323,6 +330,8 @@ def _guardian_book_item(
             version=version,
             blob=version_row.blob,
             moderation_report=version_row.moderation_report,
+            age_band=_book_age_band(version_row.blob),
+            policy=policy,
         )
         screened = summary.screened
         flagged_count = summary.flagged_count
@@ -422,8 +431,13 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
         assigned.setdefault(assignment.storybook_id, []).append(
             str(assignment.child_profile_id)
         )
+    # #ASSUME: external-resources: one threshold-policy load for the whole
+    # listing, not per-row, so the per-row query count stays fixed regardless
+    # of library size (mirrors the two-query assumption above).
+    # #VERIFY: no per-row policy load; tests/integration/test_guardian_books_api.py.
+    policy = await load_threshold_policy(ctx.session)
     books = [
-        _guardian_book_item(book, version_row, assigned.get(book.id, []))
+        _guardian_book_item(book, version_row, assigned.get(book.id, []), policy=policy)
         for book, version_row in rows
     ]
     return GuardianBooksView(books=books)

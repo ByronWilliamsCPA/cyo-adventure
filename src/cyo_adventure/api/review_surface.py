@@ -7,7 +7,7 @@ to per-node findings) and whole-story findings.
 
 from __future__ import annotations
 
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
 
@@ -22,6 +22,10 @@ from cyo_adventure.api.schemas import (
 )
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.moderation.report import Source, Verdict
+from cyo_adventure.moderation.thresholds import admin_surfaces
+
+if TYPE_CHECKING:
+    from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
 
 def build_review_surface(
@@ -31,6 +35,7 @@ def build_review_surface(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None = None,
 ) -> ReviewSurfaceView:
     """Build the guardian review surface for one story version.
 
@@ -40,6 +45,15 @@ def build_review_surface(
         version: The version being reviewed.
         blob: The stored story blob (source of node prose).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        admin_noise_floor: The admin-configured global noise floor, or
+            ``None`` to skip floor filtering entirely. The two ADMIN call
+            paths pass a floor: the review detail endpoint
+            (``api/approval.py::get_review_surface``) and the review queue
+            (via ``build_review_queue_item``). The guardian reuse path
+            (``build_content_summary``) must keep passing ``None``: guardian
+            surfaces are gated by the age-band ``ThresholdPolicy`` instead
+            (default ``min_verdict=FLAG``), and the floor is an admin-only
+            denoise, never a guardian filter.
 
     Returns:
         ReviewSurfaceView: Blob plus summary, flagged passages, and story-level
@@ -63,6 +77,15 @@ def build_review_surface(
         for finding in _findings(moderation_report):
             view = _finding_view(finding)
             if view.verdict is Verdict.PASS:
+                continue
+            # #ASSUME: security: the floor denoises the ADMIN review view only
+            # (opt-in via admin_noise_floor); admin_surfaces guarantees
+            # FLAG/BLOCK/unscored findings always surface, so a bright-line
+            # 0.0 BLOCK is never hidden.
+            # #VERIFY: tests/integration/test_review_surface_noise_floor.py.
+            if admin_noise_floor is not None and not admin_surfaces(
+                view.verdict, view.score, noise_floor=admin_noise_floor
+            ):
                 continue
             if view.node_id is None:
                 story_level.append(view)
@@ -224,6 +247,7 @@ def build_review_queue_item(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    admin_noise_floor: float | None = None,
 ) -> ReviewQueueItem:
     """Project one storybook version into a review-queue item.
 
@@ -236,6 +260,11 @@ def build_review_queue_item(
         version: The version under review (latest).
         blob: The stored story blob (source of the title).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        admin_noise_floor: The admin-configured global noise floor, or
+            ``None`` to skip floor filtering. The queue is admin-only, so
+            passing the floor here keeps the console's "N flagged" badge and
+            Flagged bucket consistent with the denoised detail view; a
+            noise-only story no longer reads as flagged.
 
     Returns:
         ReviewQueueItem: Title, status, version, screened flag, flagged count,
@@ -254,12 +283,19 @@ def build_review_queue_item(
     # ValidationError; tests/unit/test_review_surface.py covers the malformed
     # case, and tests/integration/test_approval_api.py covers the per-row queue
     # isolation (one corrupt row does not fail the whole queue).
+    # #ASSUME: security: the floor denoises ADMIN surfaces only; the queue is
+    # admin-only (approval.py::get_review_queue gates on is_admin), and
+    # flagged_count must count exactly the findings the floored detail view
+    # will show, or the badge contradicts the list the admin clicks into.
+    # #VERIFY: tests/unit/test_review_surface.py::
+    # test_queue_item_flagged_count_respects_noise_floor.
     surface = build_review_surface(
         status=status,
         storybook_id=storybook_id,
         version=version,
         blob=blob,
         moderation_report=moderation_report,
+        admin_noise_floor=admin_noise_floor,
     )
     flagged_count = sum(
         len(passage.findings) for passage in surface.flagged_passages
@@ -287,26 +323,32 @@ def build_content_summary(
     version: int,
     blob: dict[str, object],
     moderation_report: dict[str, object] | None,
+    age_band: str,
+    policy: ThresholdPolicy,
 ) -> ContentSummaryView:
     """Build the redacted guardian content summary for a published story version.
 
     Reuses build_review_surface so Verdict.PASS filtering, the screened-versus-
     unscreened rule, and corrupt-report rejection are defined in exactly one
     place. It then projects the admin surface down to a guardian-safe view: the
-    gating summary, the total flagged count (per-node plus story-level), and the
-    story-level findings only. Per-node flagged passages are intentionally
-    dropped: a guardian is the assigner, not the safety reviewer, and passage
-    prose can spoil content and leak generation internals.
+    gating summary, the total flagged count (per-node plus story-level, filtered
+    by the age-band threshold policy), and the story-level findings that clear
+    the threshold. Per-node flagged passages are intentionally dropped: a
+    guardian is the assigner, not the safety reviewer, and passage prose can
+    spoil content and leak generation internals.
 
     Args:
         storybook_id: The story id.
         version: The published version being summarized.
         blob: The stored story blob (source of node prose for the surface).
         moderation_report: The stored report, or ``None`` if unmoderated.
+        age_band: The story's age band, used to resolve the surfacing threshold.
+        policy: The resolved threshold policy (code default plus DB overrides).
 
     Returns:
         ContentSummaryView: Screened flag, gating summary, flagged count, and
-            story-level findings (category, verdict, message).
+            story-level findings (category, verdict, message) that meet the
+            age-band threshold.
 
     Raises:
         ValidationError: If the stored moderation report is corrupt at rest
@@ -319,9 +361,26 @@ def build_content_summary(
         blob=blob,
         moderation_report=moderation_report,
     )
+
+    def _surfaces(category: str, verdict: Verdict, score: float | None) -> bool:
+        return policy.surfaces(
+            age_band=age_band, category=category, verdict=verdict, score=score
+        )
+
+    # #CRITICAL: security: guardian/kid surfaces filter by threshold; the admin
+    # review surface (build_review_surface) never does. flagged_count MUST count
+    # only surfaced findings or the badge contradicts the visible list.
+    # #VERIFY: test_guardian_summary_hides_below_threshold_advisory.
     flagged_count = sum(
-        len(passage.findings) for passage in surface.flagged_passages
-    ) + len(surface.story_level_findings)
+        1
+        for passage in surface.flagged_passages
+        for finding in passage.findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
+    ) + sum(
+        1
+        for finding in surface.story_level_findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
+    )
     findings = [
         GuardianFinding(
             category=finding.category,
@@ -329,6 +388,7 @@ def build_content_summary(
             message=finding.message,
         )
         for finding in surface.story_level_findings
+        if _surfaces(finding.category, finding.verdict, finding.score)
     ]
     return ContentSummaryView(
         storybook_id=storybook_id,

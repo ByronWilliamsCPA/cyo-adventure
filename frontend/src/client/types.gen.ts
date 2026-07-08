@@ -829,6 +829,30 @@ export type MeResponse = {
 export type NarrativeStyle = 'prose' | 'gamebook';
 
 /**
+ * NoiseFloorUpdateBody
+ *
+ * PUT body for the global admin noise floor.
+ */
+export type NoiseFloorUpdateBody = {
+    /**
+     * Value
+     */
+    value: number;
+};
+
+/**
+ * NoiseFloorView
+ *
+ * The global admin noise floor: the ADVISORY-score cutoff for admin review.
+ */
+export type NoiseFloorView = {
+    /**
+     * Value
+     */
+    value: number;
+};
+
+/**
  * ProfileCreateBody
  *
  * A guardian's request to create a child profile.
@@ -1527,6 +1551,70 @@ export type SubmittedView = {
      * Current Published Version
      */
     current_published_version: number | null;
+};
+
+/**
+ * ThresholdListView
+ *
+ * All overrides plus the code default and the category suggestion list.
+ */
+export type ThresholdListView = {
+    /**
+     * Default Min Verdict
+     */
+    default_min_verdict: 'advisory' | 'flag' | 'block';
+    /**
+     * Default Min Score
+     */
+    default_min_score: number | null;
+    /**
+     * Known Categories
+     */
+    known_categories: Array<string>;
+    /**
+     * Rows
+     */
+    rows: Array<ThresholdView>;
+};
+
+/**
+ * ThresholdUpsertBody
+ *
+ * PUT body for a threshold override.
+ */
+export type ThresholdUpsertBody = {
+    /**
+     * Min Verdict
+     */
+    min_verdict: 'advisory' | 'flag' | 'block';
+    /**
+     * Min Score
+     */
+    min_score?: number | null;
+};
+
+/**
+ * ThresholdView
+ *
+ * One stored (age_band, category) surfacing override.
+ */
+export type ThresholdView = {
+    /**
+     * Age Band
+     */
+    age_band: string;
+    /**
+     * Category
+     */
+    category: string;
+    /**
+     * Min Verdict
+     */
+    min_verdict: 'advisory' | 'flag' | 'block';
+    /**
+     * Min Score
+     */
+    min_score: number | null;
 };
 
 /**
@@ -2529,6 +2617,181 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type ListThresholdsApiV1AdminModerationThresholdsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation-thresholds';
+};
+
+export type ListThresholdsApiV1AdminModerationThresholdsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListThresholdsApiV1AdminModerationThresholdsGetError = ListThresholdsApiV1AdminModerationThresholdsGetErrors[keyof ListThresholdsApiV1AdminModerationThresholdsGetErrors];
+
+export type ListThresholdsApiV1AdminModerationThresholdsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ThresholdListView;
+};
+
+export type ListThresholdsApiV1AdminModerationThresholdsGetResponse = ListThresholdsApiV1AdminModerationThresholdsGetResponses[keyof ListThresholdsApiV1AdminModerationThresholdsGetResponses];
+
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Age Band
+         */
+        age_band: string;
+    };
+    query: {
+        /**
+         * Category
+         */
+        category: string;
+    };
+    url: '/api/v1/admin/moderation-thresholds/{age_band}';
+};
+
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteError = DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors];
+
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: ThresholdListView;
+};
+
+export type DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponse = DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses[keyof DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses];
+
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData = {
+    body: ThresholdUpsertBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Age Band
+         */
+        age_band: string;
+    };
+    query: {
+        /**
+         * Category
+         */
+        category: string;
+    };
+    url: '/api/v1/admin/moderation-thresholds/{age_band}';
+};
+
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutError = UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors];
+
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: ThresholdView;
+};
+
+export type UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponse = UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses[keyof UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses];
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/noise-floor';
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetError = GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors[keyof GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors];
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: NoiseFloorView;
+};
+
+export type GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponse = GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses[keyof GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses];
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData = {
+    body: NoiseFloorUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/noise-floor';
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutError = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors];
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: NoiseFloorView;
+};
+
+export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponse = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses];
 
 export type WhoamiApiV1MeGetData = {
     body?: never;

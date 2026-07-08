@@ -371,10 +371,16 @@ async def test_review_surface_returns_view_for_admin() -> None:
             },
         },
     )
-    # _load_admin_story loads via execute() (locked); the version row still
-    # loads via the plain session.get() in get_review_surface itself.
+
+    # _load_admin_story loads via execute() (locked); the version row loads
+    # via session.get(StorybookVersion, ...), and load_admin_noise_floor loads
+    # via session.get(ModerationSetting, ...); disambiguate by model class
+    # since a single AsyncMock return_value cannot serve both call shapes.
+    async def _fake_get(model: object, _key: object) -> object | None:
+        return version if model is StorybookVersion else None
+
     session.execute = AsyncMock(return_value=_execute_result(book))
-    session.get = AsyncMock(return_value=version)
+    session.get = AsyncMock(side_effect=_fake_get)
     ctx = _ctx("admin", session)
     view = await approval.get_review_surface(book.id, ctx, version=1)
     assert view.version == 1
@@ -479,10 +485,11 @@ class _Rows:
 class _QueueSession:
     """Session double for get_review_queue that counts DB round trips.
 
-    The handler makes two scalars() calls (storybooks, then version rows) and
-    one execute() call (the grouped max-version query). This double returns the
-    seeded rows in that order and records call counts so a test can prove the
-    handler is O(1) queries, not O(stories).
+    The handler makes two scalars() calls (storybooks, then version rows), one
+    execute() call (the grouped max-version query), and one get() call (the
+    admin noise-floor setting, loaded once for the whole listing). This double
+    returns the seeded rows in that order and records call counts so a test
+    can prove the handler is O(1) queries, not O(stories).
     """
 
     def __init__(
@@ -497,6 +504,7 @@ class _QueueSession:
         self._versions = versions
         self.scalars_calls = 0
         self.execute_calls = 0
+        self.get_calls = 0
 
     async def scalars(self, _stmt: object) -> _Rows:
         """Return storybooks on the first call, version rows on the second."""
@@ -509,6 +517,10 @@ class _QueueSession:
         """Return the seeded (storybook_id, max_version) tuples."""
         self.execute_calls += 1
         return _Rows(self._latest)
+
+    async def get(self, _entity: object, _key: object) -> None:
+        """Return None (no moderation_setting row; code default floor applies)."""
+        self.get_calls += 1
 
 
 @pytest.mark.unit
@@ -540,7 +552,7 @@ async def test_review_queue_empty_returns_no_items() -> None:
 
 @pytest.mark.unit
 async def test_review_queue_is_bulk_not_n_plus_one() -> None:
-    """Two in_review stories still cost exactly three DB round trips."""
+    """Two in_review stories still cost exactly four DB round trips."""
     book_a = _story("in_review")
     book_a.id = "a"
     book_b = _story("in_review")
@@ -564,3 +576,5 @@ async def test_review_queue_is_bulk_not_n_plus_one() -> None:
     assert {item.version for item in view.items} == {1, 3}
     assert session.scalars_calls == 2
     assert session.execute_calls == 1
+    # The admin noise floor is loaded once for the listing, never per story.
+    assert session.get_calls == 1
