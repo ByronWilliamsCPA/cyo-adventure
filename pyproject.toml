@@ -321,6 +321,12 @@ known-first-party = ["cyo_adventure"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
 
+# ApprovalConfirmation is a frozen, slotted dataclass; AgeBand/Length/
+# NarrativeStyle are its field types. A slotted dataclass is rebuilt as a new
+# class object at definition time, so its field types must be real runtime
+# names, not TYPE_CHECKING-only imports.
+"**/story_requests/service.py" = ["TC001"]
+
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
 
@@ -383,14 +389,6 @@ known-first-party = ["cyo_adventure"]
 # the five); each is a distinct concern and a config object would obscure
 # which fields are document content vs. review-backend configuration.
 "**/generation/fidelity_gate.py" = ["PLR0913"]
-
-# approve_story_request carries session, principal, and request (the call's
-# identity/authorization/subject) plus the mandatory keyword-only
-# age_band/length/narrative_style guardian confirmation (WS-B derivation
-# flip); each is a distinct concern with no sensible default, so a config
-# object would obscure which fields are transaction plumbing vs. the
-# confirmed story-scale values being stamped onto the request.
-"**/story_requests/service.py" = ["PLR0913"]
 
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [

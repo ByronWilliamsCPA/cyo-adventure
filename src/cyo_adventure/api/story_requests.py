@@ -47,6 +47,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
+from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 if TYPE_CHECKING:
@@ -444,9 +445,11 @@ async def approve_story_request_endpoint(
         ctx.session,
         ctx.principal,
         request,
-        age_band=AgeBand(request.age_band),
-        length=Length.MEDIUM,
-        narrative_style=NarrativeStyle.PROSE,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand(request.age_band),
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
     )
     return StoryRequestApprovedView(
         id=str(request.id),

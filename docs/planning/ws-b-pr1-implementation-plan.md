@@ -827,9 +827,11 @@ and the service call becomes:
         ctx.session,
         ctx.principal,
         request,
-        age_band=body.age_band,
-        length=body.length,
-        narrative_style=body.narrative_style,
+        confirmation=service.ApprovalConfirmation(
+            age_band=body.age_band,
+            length=body.length,
+            narrative_style=body.narrative_style,
+        ),
     )
 ```
 

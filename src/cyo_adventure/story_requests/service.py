@@ -11,6 +11,7 @@ endpoint) is responsible for authorization before invoking these functions.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
@@ -20,15 +21,29 @@ from cyo_adventure.core.exceptions import ResourceNotFoundError, StateTransition
 from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.brief import brief_from_request
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
-    from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # Max pending requests per profile before a new submission is refused (Decision 5).
 MAX_PENDING_PER_PROFILE = 5
+
+
+@dataclass(frozen=True, slots=True)
+class ApprovalConfirmation:
+    """The guardian's band/length/style confirmation captured at approval.
+
+    One value object because the three fields are a single decision made
+    together at approve time (WS-B); they are stamped onto the request as a
+    unit before the brief builds.
+    """
+
+    age_band: AgeBand
+    length: Length
+    narrative_style: NarrativeStyle
 
 
 def ensure_pending(request: StoryRequest) -> None:
@@ -76,9 +91,7 @@ async def approve_story_request(
     principal: Principal,
     request: StoryRequest,
     *,
-    age_band: AgeBand,
-    length: Length,
-    narrative_style: NarrativeStyle,
+    confirmation: ApprovalConfirmation,
 ) -> str:
     """Approve a pending request: build a concept (no job created yet).
 
@@ -86,12 +99,8 @@ async def approve_story_request(
         session: The request session (caller owns the transaction).
         principal: The approving guardian or admin.
         request: The pending story request.
-        age_band: The guardian-confirmed age band, stamped onto the request
-            before the brief builds (WS-B derivation flip).
-        length: The guardian-confirmed story-scale length, stamped onto the
-            request before the brief builds.
-        narrative_style: The guardian-confirmed narrative style, stamped onto
-            the request before the brief builds.
+        confirmation: The guardian's band/length/style confirmation, stamped
+            onto the request before the brief builds (WS-B derivation flip).
 
     Returns:
         str: The new concept id.
@@ -121,9 +130,9 @@ async def approve_story_request(
 
     # WS-B: the guardian's confirmation is stamped onto the request BEFORE the
     # brief builds, keeping the request the single source of truth from here on.
-    request.age_band = age_band.value
-    request.length = length.value
-    request.narrative_style = narrative_style.value
+    request.age_band = confirmation.age_band.value
+    request.length = confirmation.length.value
+    request.narrative_style = confirmation.narrative_style.value
 
     brief = brief_from_request(request, profile)
     # #CRITICAL: security: belt-and-suspenders PII backstop on the assembled

@@ -22,6 +22,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.story_requests.screening import screen_request_text
+from cyo_adventure.story_requests.service import ApprovalConfirmation
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 
@@ -107,6 +108,41 @@ def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
     )
     brief = brief_from_request(request, _profile("5-8", cap=2.5))
     assert brief.reading_level_target == 2.5
+
+
+def test_brief_from_request_null_length_stays_null() -> None:
+    """A request with no stored length yields a brief with length=None.
+
+    ConceptBrief.length is genuinely optional (no repo-wide default), unlike
+    narrative_style, which falls back to prose; this isolates that distinction.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.length is None
+
+
+def test_brief_from_request_narrative_style_comes_from_request() -> None:
+    """A non-default narrative_style on the request flows into the brief.
+
+    Proves the value comes from the request itself, not the NarrativeStyle.PROSE
+    fallback that applies only when the request's narrative_style is unset.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a choose-your-path mystery",
+        status="pending",
+        age_band="13-16",
+        narrative_style="gamebook",
+    )
+    brief = brief_from_request(request, _profile("13-16"))
+    assert brief.narrative_style is NarrativeStyle.GAMEBOOK
 
 
 @pytest.mark.asyncio
@@ -241,10 +277,11 @@ class _FakeSession:
         self._get_result = get_result
         self._child_names = child_names or []
         self.added: list[object] = []
+        self.get_calls: list[tuple[type[object], object]] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
-        """Return the seeded profile row (or None), ignoring the key."""
-        _ = (model, key)
+        """Record the call and return the seeded profile row (or None)."""
+        self.get_calls.append((model, key))
         return self._get_result
 
     async def scalars(self, statement: object) -> _FakeScalars:
@@ -298,9 +335,11 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
         session,
         principal,
         request,
-        age_band=AgeBand.BAND_8_11,
-        length=Length.MEDIUM,
-        narrative_style=NarrativeStyle.PROSE,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
     )
 
     assert request.status == "approved"
@@ -340,9 +379,11 @@ async def test_approve_story_request_pii_backstop_trips() -> None:
             session,
             principal,
             request,
-            age_band=AgeBand.BAND_8_11,
-            length=Length.MEDIUM,
-            narrative_style=NarrativeStyle.PROSE,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
         )
 
 
@@ -365,10 +406,48 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
             session,
             principal,
             request,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
+        )
+
+
+@pytest.mark.asyncio
+async def test_approve_story_request_without_profile_skips_profile_lookup() -> None:
+    """A profile-less request (guardian/admin initiated) approves cleanly.
+
+    ``request.profile_id`` is None, so the profile-existence branch must never
+    call ``session.get``; only the family-scoped child-names query runs.
+    """
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=ApprovalConfirmation(
             age_band=AgeBand.BAND_8_11,
             length=Length.MEDIUM,
             narrative_style=NarrativeStyle.PROSE,
-        )
+        ),
+    )
+
+    assert request.status == "approved"
+    assert request.age_band == "8-11"
+    assert request.length == "medium"
+    assert request.narrative_style == "prose"
+    assert concept_id == str(request.concept_id)
+    assert session.get_calls == []
 
 
 def test_to_view_skips_malformed_verdict() -> None:
