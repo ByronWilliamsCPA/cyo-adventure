@@ -89,6 +89,10 @@ async def list_thresholds(ctx: Context) -> ThresholdListView:
         AuthorizationError: If the caller is not an admin (403).
     """
     _require_admin(ctx)
+    # #ASSUME: external-resources: a whole-table read per request is deliberate;
+    # the table is admin-curated and small, mirroring load_threshold_policy's
+    # no-cache stance. Revisit only if it grows past a few hundred rows.
+    # #VERIFY: tests/integration/test_moderation_thresholds_api.py.
     rows = (
         await ctx.session.scalars(
             select(ModerationThreshold).order_by(
@@ -127,6 +131,11 @@ async def _get_row(
     Returns:
         ModerationThreshold | None: The row, or ``None`` if no override exists.
     """
+    # #ASSUME: data-integrity: scalar() is unambiguous only because
+    # uq_moderation_threshold_band_category guarantees at most one row per
+    # (age_band, category) natural key.
+    # #VERIFY: tests/integration/test_threshold_policy_loader.py::
+    # test_duplicate_band_category_rejected_by_unique_constraint.
     return await ctx.session.scalar(
         select(ModerationThreshold).where(
             ModerationThreshold.age_band == age_band,
@@ -232,10 +241,20 @@ async def delete_threshold(
     """
     _require_admin(ctx)
     _validate_band(age_band)
+    # #ASSUME: concurrency: check-then-act on the natural key is unlocked,
+    # accepting the same benign race as upsert_threshold (two admins deleting
+    # the same row concurrently; one gets a 404-after-check failure at flush).
+    # #VERIFY: acceptable for an admin-curated table; revisit if the console
+    # ever automates edits.
     row = await _get_row(ctx, age_band, category)
     if row is None:
         msg = f"no threshold override for ({age_band}, {category})"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: data-integrity: the audit row and the delete share one
+    # transaction, so the trail can never record a delete that did not happen
+    # (or miss one that did).
+    # #VERIFY: tests/integration/test_moderation_thresholds_api.py::
+    # test_audit_rows_capture_changed_by_and_old_new_values.
     ctx.session.add(
         ModerationThresholdAudit(
             age_band=age_band,
@@ -273,6 +292,10 @@ async def get_noise_floor(ctx: Context) -> NoiseFloorView:
         AuthorizationError: If the caller is not an admin (403).
     """
     _require_admin(ctx)
+    # #ASSUME: external-resources: one primary-key lookup with a code-default
+    # fallback when the seed row is absent; see load_admin_noise_floor for the
+    # missing-row-versus-missing-table boundary.
+    # #VERIFY: tests/integration/test_moderation_noise_floor_api.py.
     value = await load_admin_noise_floor(ctx.session)
     return NoiseFloorView(value=value)
 
