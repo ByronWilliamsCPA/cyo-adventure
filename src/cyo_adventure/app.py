@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse
 from cyo_adventure.api import (
     approval,
     assignments,
+    families,
     generation,
     health,
     library,
@@ -171,6 +172,7 @@ def create_app() -> FastAPI:
     app.include_router(reading.router)
     app.include_router(generation.router)
     app.include_router(profiles.router)
+    app.include_router(families.router)
     app.include_router(ratings.router)
     app.include_router(assignments.router)
     app.include_router(approval.router)

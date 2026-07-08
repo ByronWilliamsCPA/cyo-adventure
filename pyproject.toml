@@ -320,6 +320,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/approval.py" = ["TC001"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
+"**/api/families.py" = ["TC001"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
