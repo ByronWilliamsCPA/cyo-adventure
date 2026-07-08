@@ -40,11 +40,13 @@ MAX_PENDING_PER_PROFILE = 5
 
 @dataclass(frozen=True, slots=True)
 class ApprovalConfirmation:
-    """The guardian's band/length/style confirmation captured at approval.
+    """The author's band/length/style choice, stamped onto the request.
 
     One value object because the three fields are a single decision made
-    together at approve time (WS-B); they are stamped onto the request as a
-    unit before the brief builds.
+    together (WS-B); they are stamped onto the request as a unit before the
+    brief builds. Captured at approve time for the guardian-approval flow,
+    and at creation time for authored requests (WS-B PR 2), which are
+    pre-approved and never pass through the pending queue.
     """
 
     age_band: AgeBand
@@ -228,6 +230,16 @@ async def create_authored_request(
     # admin-attributed row (and vice versa).
     # #VERIFY: test_story_requests_authored.py asserts the persisted role per
     # token; api/schemas.py::StoryRequestAuthoredCreateBody forbids the field.
+    # #ASSUME: concurrency: two concurrent authored submits (a retry, a second
+    # tab, or a direct API call) can each persist an approved row plus Concept;
+    # there is no idempotency key, and MAX_PENDING_PER_PROFILE does not apply
+    # because authored rows never rest in "pending". Accepted for trusted
+    # guardian/admin actors: the blast radius is duplicate admin-queue rows and
+    # duplicate screening calls, not duplicate story generation (generation is
+    # enqueued by the separate authoring-plan step).
+    # #VERIFY: RequestStoryForm.tsx's submit guard is the only client-side
+    # mitigation; add a server-side idempotency key before exposing this path
+    # to less-trusted roles or higher volumes.
     request = StoryRequest(
         family_id=family_id,
         profile_id=profile.id if profile is not None else None,

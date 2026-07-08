@@ -9,8 +9,8 @@ diverges from generation.py's cross-family 403 for this lower-value, child-facin
 resource. Approve builds a ConceptBrief and enqueues generation through the
 service layer, so it never touches the guardian-only POST /concepts gate. The
 authored-create endpoint (WS-B PR 2) lets a guardian or admin submit a
-pre-approved request on a child's behalf, targeting their own family (guardian)
-or a family named by id (admin).
+pre-approved request, optionally on a child's behalf (profile_id may be null),
+targeting their own family (guardian) or a family named by id (admin).
 """
 
 from __future__ import annotations
@@ -338,7 +338,8 @@ async def create_authored_story_request(
             belong to the target family (-> 403).
         ResourceNotFoundError: If the named family or profile is missing (-> 404).
         ValidationError: If a guardian supplies ``family_id``, an admin omits
-            it, or a UUID is malformed (-> 422).
+            it, a UUID is malformed, or the built brief trips the PII backstop
+            in ``_build_concept`` (-> 422).
     """
     # #CRITICAL: security: children cannot author pre-approved requests; the
     # authored path bypasses guardian review by design, so the role gate is the
@@ -371,18 +372,25 @@ async def create_authored_story_request(
     profile: ChildProfile | None = None
     if body.profile_id is not None:
         profile_uuid = parse_uuid(body.profile_id, "profile_id")
+        # #CRITICAL: security: guardians are checked against their own profile
+        # set BEFORE any lookup (authorize_profile), so a guardian cannot use
+        # this endpoint to distinguish "exists in another family" (403) from
+        # "does not exist" (404); a nonexistent id and another family's id are
+        # both 403 for guardians. Admins have global visibility, so the
+        # existence-then-membership order below is not an oracle for them, and
+        # the family check also covers the admin-named family (IDOR).
+        # #VERIFY: test_guardian_rejects_cross_family_profile,
+        # test_guardian_unknown_profile_is_403,
+        # test_admin_cross_family_profile_is_403.
+        if not ctx.principal.is_admin:
+            authorize_profile(ctx.principal, profile_uuid)
         profile = await ctx.session.get(ChildProfile, profile_uuid)
         if profile is None:
             msg = "profile not found"
             raise ResourceNotFoundError(msg)
-        # #CRITICAL: security: profile must belong to the target family; for
-        # guardians family_uuid is their own family so this is equivalent to
-        # authorize_profile, and it also covers the admin-named family (IDOR).
-        # #VERIFY: test_guardian_rejects_cross_family_profile,
-        # test_admin_cross_family_profile_is_403.
         if profile.family_id != family_uuid:
             msg = "profile does not belong to the target family"
-            raise AuthorizationError(msg)
+            raise AuthorizationError(msg, resource=str(profile_uuid))
 
     child_names = await _family_child_names(ctx, family_uuid)
     result = await screen_request_text(

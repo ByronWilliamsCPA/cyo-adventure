@@ -42,7 +42,9 @@ function QueueRow({ item }: { item: ReviewQueueItem }) {
  * queue. Flagged stories sort to the top, then ready-to-review, then still
  * processing. The queue endpoint is admin-only; a plain-guardian token gets a
  * 403 and sees a notice rather than a broken page (ADR-005: the approver is the
- * global safety reviewer, not any guardian).
+ * global safety reviewer, not any guardian). Admins also get an embedded
+ * RequestStoryForm (WS-B PR 2) for authoring a pre-approved request against a
+ * chosen family.
  */
 export function ConsolePage() {
   const api = useApi()

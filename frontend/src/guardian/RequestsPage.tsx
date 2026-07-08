@@ -22,6 +22,8 @@ type RowDecision = { age_band: string; length: string; narrative_style: string }
  * Guardian/admin story-request review (Task 3.0). Lists pending child requests
  * with the (screened) text and redacted moderation flags; Approve builds a
  * concept and enqueues generation server-side, Decline dismisses the request.
+ * Guardians also get an embedded RequestStoryForm (WS-B PR 2) above the queue
+ * for authoring a pre-approved request of their own.
  */
 export function RequestsPage() {
   const api = useApi()

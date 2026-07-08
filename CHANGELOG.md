@@ -43,7 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   guardian-approval step; the request still goes through moderation
   screening and can be blocked by it. The endpoint is role-gated (child
   tokens get a 403) and admin-authored requests require a family
-  (`profile_id` is optional for guardians, required for admins). A new
+  (`family_id` is forbidden for guardians, required for admins; `profile_id`
+  is optional for both roles). A new
   `GET /api/v1/admin/families` endpoint lists families (id and name only)
   to back the admin family selector. `StoryRequestView.profile_id` is now
   nullable to represent authored requests with no linked child profile. The

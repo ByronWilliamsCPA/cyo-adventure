@@ -32,6 +32,12 @@ interface RequestStoryFormProps {
 // string reads unambiguously as "nothing chosen yet" for either field.
 const UNSELECTED = ''
 
+// Mirrors the backend RequestText cap (api/schemas.py, max_length=500, same
+// as the story_request.request_text column) and the kid-facing form
+// (library/RequestStory.tsx). A looser client cap would let the author type
+// past the contract and hit a 422 the form can only render generically.
+const REQUEST_TEXT_MAX = 500
+
 /**
  * Guardian/admin "authored" story request (WS-B PR2): a pre-approved request
  * that skips the child free-text moderation queue (RequestsPage.tsx). A
@@ -63,8 +69,10 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
   // #ASSUME: external-resources: the child/family list backing this form can
   // fail to load (network, session expiry, server error). Degrade to a clear
   // error notice rather than a form that silently offers zero options.
-  // #VERIFY: manual QA; the six RequestStoryForm.test.tsx cases cover the
-  // happy path, not this branch (mirrors RequestsPage.tsx's own load effect).
+  // #VERIFY: RequestStoryForm.test.tsx "shows a reload notice when the child
+  // list fails to load" test covers the guardian-mode branch (mirrors
+  // RequestsPage.tsx's own load effect); admin mode's symmetric
+  // listFamilies failure is not separately covered and remains manual QA.
   useEffect(() => {
     let cancelled = false
     async function load() {
@@ -78,10 +86,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         }
         if (!cancelled) setLoadState({ kind: 'ready' })
       } catch (err) {
-        console.error(
-          'request-story-form load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('request-story-form load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setLoadState({ kind: 'error' })
       }
     }
@@ -173,11 +178,10 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
       // #ASSUME: external-resources: the create call can fail (network,
       // session expiry, server error). Log the message, not the axios error
       // object (its config.headers carries the caller's bearer token).
-      // #VERIFY: manual QA; classifyApiError itself is unit-tested.
-      console.error(
-        'authored story request failed:',
-        err instanceof Error ? err.message : err
-      )
+      // #VERIFY: RequestStoryForm.test.tsx "shows a transient error alert and
+      // re-enables submit when the create call rejects" test; classifyApiError
+      // itself is unit-tested in classifyApiError.test.ts.
+      console.error('authored story request failed:', err instanceof Error ? err.message : err)
       setResult({
         kind: 'error',
         message: classifyApiError(err, {
@@ -271,7 +275,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
           value={requestText}
           onChange={(e) => setRequestText(e.target.value)}
           rows={4}
-          maxLength={2000}
+          maxLength={REQUEST_TEXT_MAX}
           required
         />
       </label>
