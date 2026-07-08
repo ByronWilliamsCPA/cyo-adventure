@@ -125,8 +125,10 @@ embedding it when structural chaining arrives.
 - `brief_from_request()` takes the `StoryRequest` row and reads `age_band`, `length`, and
   `narrative_style` from it. The `ChildProfile` parameter becomes optional, kept only for
   non-band personalization; profile-less requests pass None and get a neutral brief.
-- `GenerationBrief` gains `length` and `narrative_style` fields (recorded, not yet used for
-  skeleton selection; see Non-goals).
+- `ConceptBrief` (generation/concept.py) already carries optional `length` and
+  `narrative_style` fields from the ADR-011 scale-placement work; the flip populates them from
+  the request instead of leaving them at defaults (recorded, not yet used for skeleton
+  selection; see Non-goals). There is no separate GenerationBrief class.
 - The moderation flag context switches from the joined `ChildProfile.age_band` to
   `StoryRequest.age_band`. The PR 1 backfill copies from that same join, so the switch is
   behavior-identical for existing data; WS-A threshold surfaces cannot shift retroactively.
