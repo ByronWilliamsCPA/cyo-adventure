@@ -385,13 +385,13 @@ export const updateProfileApiV1ProfilesProfileIdPatch = <ThrowOnError extends bo
 /**
  * List Families
  *
- * List every family, for the admin authored-request form.
+ * List families (name order, capped) for the admin authored-request form.
  *
  * Args:
  * ctx: The request context (principal and session).
  *
  * Returns:
- * FamilyListView: All families ordered by name.
+ * FamilyListView: Up to ``_FAMILY_LIST_LIMIT`` families ordered by name.
  *
  * Raises:
  * AuthorizationError: If the caller is not an admin (-> 403).
@@ -877,7 +877,8 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  * belong to the target family (-> 403).
  * ResourceNotFoundError: If the named family or profile is missing (-> 404).
  * ValidationError: If a guardian supplies ``family_id``, an admin omits
- * it, or a UUID is malformed (-> 422).
+ * it, a UUID is malformed, or the built brief trips the PII backstop
+ * in ``_build_concept`` (-> 422).
  */
 export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, ThrowOnError>): RequestResult<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError>({
     responseType: 'json',

@@ -1586,10 +1586,10 @@ export type StoryRequestListView = {
  * redacted StoryRequestFlag list. ``age_band``, ``length``, and
  * ``narrative_style`` are request-sourced (WS-B): for a still-pending
  * request they reflect the profile-stamped defaults from creation; for an
- * approved request they reflect the guardian's approval confirmation.
- * ``profile_id`` is ``None`` for an authored request with no target child
- * (WS-B PR 2); the guardian UI uses these fields to prefill the approve
- * dialog.
+ * approved request they reflect the guardian's approval confirmation, and
+ * the guardian UI uses the band/length/style trio to prefill the approve
+ * dialog. ``profile_id`` is ``None`` for an authored request with no target
+ * child (WS-B PR 2).
  */
 export type StoryRequestView = {
     /**
