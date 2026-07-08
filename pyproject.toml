@@ -384,6 +384,14 @@ known-first-party = ["cyo_adventure"]
 # which fields are document content vs. review-backend configuration.
 "**/generation/fidelity_gate.py" = ["PLR0913"]
 
+# approve_story_request carries session, principal, and request (the call's
+# identity/authorization/subject) plus the mandatory keyword-only
+# age_band/length/narrative_style guardian confirmation (WS-B derivation
+# flip); each is a distinct concern with no sensible default, so a config
+# object would obscure which fields are transaction plumbing vs. the
+# confirmed story-scale values being stamped onto the request.
+"**/story_requests/service.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

@@ -47,6 +47,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 if TYPE_CHECKING:
     import uuid
@@ -435,8 +436,17 @@ async def approve_story_request_endpoint(
         msg = "guardian or admin role required"
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
+    # TODO(WS-B Task 4): the confirmation body (age_band/length/narrative_style)
+    # is not wired through this endpoint yet; interim values are derived from
+    # the request's own stored age_band plus repo defaults so the endpoint
+    # keeps working until Task 4 threads StoryRequestApproveBody through.
     concept_id = await service.approve_story_request(
-        ctx.session, ctx.principal, request
+        ctx.session,
+        ctx.principal,
+        request,
+        age_band=AgeBand(request.age_band),
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
     )
     return StoryRequestApprovedView(
         id=str(request.id),

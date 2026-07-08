@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
+    from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # Max pending requests per profile before a new submission is refused (Decision 5).
 MAX_PENDING_PER_PROFILE = 5
@@ -71,7 +72,13 @@ async def count_pending_for_profile(session: AsyncSession, profile_id: object) -
 
 
 async def approve_story_request(
-    session: AsyncSession, principal: Principal, request: StoryRequest
+    session: AsyncSession,
+    principal: Principal,
+    request: StoryRequest,
+    *,
+    age_band: AgeBand,
+    length: Length,
+    narrative_style: NarrativeStyle,
 ) -> str:
     """Approve a pending request: build a concept (no job created yet).
 
@@ -79,6 +86,12 @@ async def approve_story_request(
         session: The request session (caller owns the transaction).
         principal: The approving guardian or admin.
         request: The pending story request.
+        age_band: The guardian-confirmed age band, stamped onto the request
+            before the brief builds (WS-B derivation flip).
+        length: The guardian-confirmed story-scale length, stamped onto the
+            request before the brief builds.
+        narrative_style: The guardian-confirmed narrative style, stamped onto
+            the request before the brief builds.
 
     Returns:
         str: The new concept id.
@@ -99,12 +112,20 @@ async def approve_story_request(
     # transaction commits (making its ensure_pending see the now-"approved"
     # status). Any other caller of this function must hold an equivalent lock.
     ensure_pending(request)
-    profile = await session.get(ChildProfile, request.profile_id)
-    if profile is None:
-        msg = "requesting profile no longer exists"
-        raise ResourceNotFoundError(msg)
+    profile: ChildProfile | None = None
+    if request.profile_id is not None:
+        profile = await session.get(ChildProfile, request.profile_id)
+        if profile is None:
+            msg = "requesting profile no longer exists"
+            raise ResourceNotFoundError(msg)
 
-    brief = brief_from_request(request.request_text, profile)
+    # WS-B: the guardian's confirmation is stamped onto the request BEFORE the
+    # brief builds, keeping the request the single source of truth from here on.
+    request.age_band = age_band.value
+    request.length = length.value
+    request.narrative_style = narrative_style.value
+
+    brief = brief_from_request(request, profile)
     # #CRITICAL: security: belt-and-suspenders PII backstop on the assembled
     # brief before persisting a concept; the raw text was already screened at
     # submission, so this only trips on a defect.

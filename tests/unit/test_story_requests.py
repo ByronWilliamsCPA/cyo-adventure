@@ -22,7 +22,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.story_requests.screening import screen_request_text
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 
 def test_story_request_defaults_to_pending() -> None:
@@ -51,19 +51,61 @@ def _profile(age_band: str = "8-11", cap: float = 99.0) -> ChildProfile:
 
 def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     """The brief inherits band node/ending budgets and a generic protagonist."""
-    brief = brief_from_request("a story about a brave fox", _profile("8-11"))
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+        length="short",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
     assert isinstance(brief, ConceptBrief)
     assert brief.premise == "a story about a brave fox"
     assert brief.age_band == AgeBand.BAND_8_11
+    assert brief.length == Length.SHORT
+    assert brief.narrative_style == NarrativeStyle.PROSE
     assert brief.target_node_count == 15  # band_profile 8-11 min_nodes
     assert brief.ending_count == 3  # band_profile 8-11 min_endings
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 
 
+def test_brief_from_request_band_comes_from_request_not_profile() -> None:
+    """The flip: a request band different from the profile band wins."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a mystery",
+        status="pending",
+        age_band="10-13",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.age_band == AgeBand.BAND_10_13
+
+
+def test_brief_from_request_without_profile_uses_band_reading_target() -> None:
+    """A profile-less request (PR 2 flows) gets the band FK target."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, None)
+    assert brief.reading_level_target == 4.0  # _BAND_FK_TARGET[8-11]
+
+
 def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
     """A concrete reading_level_cap (below 99) becomes the FK target."""
-    brief = brief_from_request("a gentle tale", _profile("5-8", cap=2.5))
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a gentle tale",
+        status="pending",
+        age_band="5-8",
+    )
+    brief = brief_from_request(request, _profile("5-8", cap=2.5))
     assert brief.reading_level_target == 2.5
 
 
@@ -252,9 +294,19 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
     )
     session = _FakeSession(get_result=profile, child_names=[])
 
-    concept_id = await service.approve_story_request(session, principal, request)
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        age_band=AgeBand.BAND_8_11,
+        length=Length.MEDIUM,
+        narrative_style=NarrativeStyle.PROSE,
+    )
 
     assert request.status == "approved"
+    assert request.age_band == "8-11"
+    assert request.length == "medium"
+    assert request.narrative_style == "prose"
     assert request.reviewed_by == principal.user_id
     assert request.reviewed_at is not None
     assert request.concept_id is not None
@@ -284,7 +336,14 @@ async def test_approve_story_request_pii_backstop_trips() -> None:
     session = _FakeSession(get_result=profile, child_names=["Amelia"])
 
     with pytest.raises(ValidationError):
-        await service.approve_story_request(session, principal, request)
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
 
 
 @pytest.mark.asyncio
@@ -302,7 +361,14 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
     session = _FakeSession(get_result=None, child_names=[])
 
     with pytest.raises(ResourceNotFoundError):
-        await service.approve_story_request(session, principal, request)
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        )
 
 
 def test_to_view_skips_malformed_verdict() -> None:
