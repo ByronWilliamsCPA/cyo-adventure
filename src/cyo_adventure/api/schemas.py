@@ -141,6 +141,8 @@ class LibraryItem(BaseModel):
     node_count: int = 0
     rating: int | None = None
     progress: LibraryProgress | None = None
+    series_id: str | None = None
+    book_index: int | None = None
 
 
 class LibraryView(BaseModel):
@@ -368,14 +370,39 @@ RequestText = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)
 ]
 
+SeriesTitle = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
+
+AnchorId = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+]
+
 
 class StoryRequestCreateBody(BaseModel):
-    """A child's free-text story request (kid surface; guardian-scoped in R1)."""
+    """A child's free-text story request (kid surface; guardian-scoped in R1).
+
+    ``proposed_series_title`` and ``anchor_storybook_id`` are mutually
+    exclusive: the former proposes a brand-new, unratified series name; the
+    latter asks for a soft continuation anchored to an existing storybook.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     profile_id: str
     request_text: RequestText
+    proposed_series_title: SeriesTitle | None = None
+    anchor_storybook_id: AnchorId | None = None
+
+    @model_validator(mode="after")
+    def _proposal_xor_anchor(self) -> StoryRequestCreateBody:
+        if (
+            self.proposed_series_title is not None
+            and self.anchor_storybook_id is not None
+        ):
+            msg = "a request may propose a new series or continue one, not both"
+            raise ValueError(msg)
+        return self
 
 
 _TEEN_BANDS = frozenset({AgeBand.BAND_13_16, AgeBand.BAND_16_PLUS})
@@ -411,7 +438,12 @@ class StoryRequestApproveBody(StoryRequestSpecBody):
 
     The request becomes the source of truth for band and length at approval;
     ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+    ``series_title`` ratifies or edits the kid's proposed series title;
+    omitting it declines the proposal (the anchored-plus-title conflict is a
+    service-layer check because it needs the row).
     """
+
+    series_title: SeriesTitle | None = None
 
 
 class StoryRequestAuthoredCreateBody(StoryRequestSpecBody):
@@ -420,11 +452,23 @@ class StoryRequestAuthoredCreateBody(StoryRequestSpecBody):
     ``profile_id`` is optional (an authored request need not target a child).
     ``family_id`` is admin-only: admins must name the target family (decision
     B3); guardians must omit it (their own family is server-derived).
+    ``series_title`` and ``anchor_storybook_id`` are mutually exclusive: the
+    former creates a new series immediately (no ratification step), the
+    latter continues an existing one.
     """
 
     request_text: RequestText
     profile_id: str | None = None
     family_id: str | None = None
+    series_title: SeriesTitle | None = None
+    anchor_storybook_id: AnchorId | None = None
+
+    @model_validator(mode="after")
+    def _series_xor_anchor(self) -> StoryRequestAuthoredCreateBody:
+        if self.series_title is not None and self.anchor_storybook_id is not None:
+            msg = "a request may create a new series or continue one, not both"
+            raise ValueError(msg)
+        return self
 
 
 class StoryRequestFlag(BaseModel):
@@ -450,7 +494,13 @@ class StoryRequestView(BaseModel):
     approved request they reflect the guardian's approval confirmation, and
     the guardian UI uses the band/length/style trio to prefill the approve
     dialog. ``profile_id`` is ``None`` for an authored request with no target
-    child (WS-B PR 2).
+    child (WS-B PR 2). ``proposed_series_title`` is ``None`` for blocked rows
+    (screened content, same redaction as ``request_text``).
+
+    ``series_id``, ``proposed_series_title``, and ``anchor_storybook_id``
+    default to ``None`` rather than being required: the endpoints that
+    populate them from the row land in a later WS-B PR 3 task, so
+    ``_to_view`` does not yet supply these fields.
     """
 
     id: str
@@ -463,6 +513,9 @@ class StoryRequestView(BaseModel):
     age_band: AgeBand
     length: Length | None
     narrative_style: NarrativeStyle
+    series_id: str | None = None
+    proposed_series_title: str | None = None
+    anchor_storybook_id: str | None = None
 
 
 class StoryRequestListView(BaseModel):
