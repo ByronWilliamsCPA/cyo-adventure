@@ -20,9 +20,14 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import func, select
 
-from cyo_adventure.core.exceptions import ResourceNotFoundError, StateTransitionError
-from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
+from cyo_adventure.core.exceptions import (
+    ResourceNotFoundError,
+    StateTransitionError,
+    ValidationError,
+)
+from cyo_adventure.db.models import ChildProfile, Concept, Series, StoryRequest
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
+from cyo_adventure.story_requests.anchoring import load_anchor_context, resolve_anchor
 from cyo_adventure.story_requests.brief import brief_from_request
 
 if TYPE_CHECKING:
@@ -36,6 +41,9 @@ if TYPE_CHECKING:
 
 # Max pending requests per profile before a new submission is refused (Decision 5).
 MAX_PENDING_PER_PROFILE = 5
+
+# ADR-011 band rule: young bands run episodic series that carry no state.
+_EPISODIC_BANDS = frozenset({"3-5", "5-8"})
 
 
 @dataclass(frozen=True, slots=True)
@@ -94,12 +102,47 @@ async def count_pending_for_profile(session: AsyncSession, profile_id: object) -
     return int(total or 0)
 
 
+async def create_series(
+    session: AsyncSession,
+    principal: Principal,
+    *,
+    title: str,
+    family_id: uuid.UUID,
+    age_band: str,
+) -> Series:
+    """Create a series row (guardian ratification or authored creation).
+
+    Args:
+        session: The request session (caller owns the transaction).
+        principal: The ratifying guardian or admin.
+        title: The screened series title.
+        family_id: The owning family (NOT NULL, decision B3).
+        age_band: The band every book in the series will target;
+            ``carries_state`` derives from it (ADR-011: episodic for 3-5 and
+            5-8, state-carry for higher bands).
+
+    Returns:
+        Series: The flushed row (id assigned).
+    """
+    series = Series(
+        family_id=family_id,
+        title=title,
+        age_band=age_band,
+        carries_state=age_band not in _EPISODIC_BANDS,
+        created_by=principal.user_id,
+    )
+    session.add(series)
+    await session.flush()
+    return series
+
+
 async def approve_story_request(
     session: AsyncSession,
     principal: Principal,
     request: StoryRequest,
     *,
     confirmation: ApprovalConfirmation,
+    series_title: str | None = None,
 ) -> str:
     """Approve a pending request: build a concept (no job created yet).
 
@@ -109,14 +152,23 @@ async def approve_story_request(
         request: The pending story request.
         confirmation: The guardian's band/length/style confirmation, stamped
             onto the request before the brief builds (WS-B derivation flip).
+        series_title: A guardian-ratified series title for a non-anchored
+            request (WS-B PR 3), or None to leave the request standalone.
+            Ignored (and rejected, see Raises) for an anchored (continuation)
+            request, which already carries its series. The endpoint screens
+            this text before calling this function.
 
     Returns:
         str: The new concept id.
 
     Raises:
         StateTransitionError: If the request is not pending (-> 409).
-        ResourceNotFoundError: If the requesting profile is missing (-> 404).
-        ValidationError: If the built brief still trips the PII guard (-> 422).
+        ResourceNotFoundError: If the requesting profile is missing, or the
+            anchor storybook is missing or outside the family (-> 404).
+        ValidationError: If the built brief still trips the PII guard; if an
+            anchored request also carries a ``series_title``; if the anchor
+            storybook is no longer published; or if the confirmed age band
+            does not match the anchor's series band (-> 422).
     """
     # #CRITICAL: concurrency: ensure_pending's guard is an in-memory read of the
     # ``request`` object passed in by the caller; it is not itself a lock. Two
@@ -136,6 +188,30 @@ async def approve_story_request(
             msg = "requesting profile no longer exists"
             raise ResourceNotFoundError(msg)
 
+    # WS-B PR 3: series ratification. An anchored (continuation) request
+    # already carries its series; the guardian's confirmed band must match the
+    # series band (a mismatch would silently fork the series). A non-anchored
+    # request may ratify the kid's proposal, or any guardian-chosen title.
+    if request.anchor_storybook_id is not None:
+        if series_title is not None:
+            msg = "a continuation request cannot also create a new series"
+            raise ValidationError(msg, field="series_title", value=series_title)
+        await resolve_anchor(
+            session,
+            request.anchor_storybook_id,
+            family_id=request.family_id,
+            expected_band=confirmation.age_band.value,
+        )
+    elif series_title is not None:
+        series = await create_series(
+            session,
+            principal,
+            title=series_title,
+            family_id=request.family_id,
+            age_band=confirmation.age_band.value,
+        )
+        request.series_id = series.id
+
     # WS-B: the guardian's confirmation is stamped onto the request BEFORE the
     # brief builds, keeping the request the single source of truth from here on.
     request.age_band = confirmation.age_band.value
@@ -154,9 +230,14 @@ async def _build_concept(
     """Build the brief, run the PII backstop, persist the Concept, approve.
 
     Shared tail of guardian approval and authored creation: both end with the
-    request ``approved``, ``reviewed_by`` stamped, and a Concept linked.
+    request ``approved``, ``reviewed_by`` stamped, and a Concept linked. An
+    anchored request gets its soft-continuation context loaded here too, so
+    both entry points produce the same anchor-aware brief.
     """
-    brief = brief_from_request(request, profile)
+    anchor_context = None
+    if request.anchor_storybook_id is not None:
+        anchor_context = await load_anchor_context(session, request.anchor_storybook_id)
+    brief = brief_from_request(request, profile, anchor_context=anchor_context)
     # #CRITICAL: security: belt-and-suspenders PII backstop on the assembled
     # brief before persisting a concept; the raw text was already screened at
     # submission, so this only trips on a defect.
@@ -200,6 +281,8 @@ async def create_authored_request(
     request_text: str,
     confirmation: ApprovalConfirmation,
     screening: ScreeningResult,
+    series_id: uuid.UUID | None = None,
+    anchor_storybook_id: str | None = None,
 ) -> tuple[StoryRequest, str | None]:
     """Create a guardian- or admin-initiated request, pre-approved (WS-B PR 2).
 
@@ -217,6 +300,11 @@ async def create_authored_request(
         request_text: The already-screened request text.
         confirmation: The author's band/length/style, stamped at creation.
         screening: The screening outcome for ``request_text``.
+        series_id: The series this authored request joins, or None (WS-B
+            PR 3). Endpoint-resolved: the endpoint validates the anchor and
+            creates the series row only for non-blocked outcomes.
+        anchor_storybook_id: The continuation anchor, or None. Also
+            endpoint-resolved, for the same reason.
 
     Returns:
         tuple[StoryRequest, str | None]: The persisted row and the new concept
@@ -253,6 +341,8 @@ async def create_authored_request(
         length=confirmation.length.value,
         narrative_style=confirmation.narrative_style.value,
         initiator_role=principal.role.value,
+        series_id=series_id,
+        anchor_storybook_id=anchor_storybook_id,
     )
     session.add(request)
     await session.flush()

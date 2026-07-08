@@ -15,7 +15,13 @@ from cyo_adventure.core.exceptions import (
     StateTransitionError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob, StoryRequest
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Concept,
+    GenerationJob,
+    Series,
+    StoryRequest,
+)
 from cyo_adventure.generation.concept import AnchorContext, ConceptBrief
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
@@ -475,6 +481,134 @@ async def test_approve_story_request_without_profile_skips_profile_lookup() -> N
     assert request.narrative_style == "prose"
     assert concept_id == str(request.concept_id)
     assert session.get_calls == []
+
+
+@pytest.mark.asyncio
+async def test_create_series_derives_carries_state_episodic() -> None:
+    """A '5-8' (episodic) band series does not carry state (ADR-011)."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    session = _FakeSession()
+
+    series = await service.create_series(
+        session, principal, title="Fox Tales", family_id=family_id, age_band="5-8"
+    )
+
+    assert isinstance(series, Series)
+    assert series.title == "Fox Tales"
+    assert series.age_band == "5-8"
+    assert series.carries_state is False
+    assert series.family_id == family_id
+    assert series.created_by == principal.user_id
+    assert series in session.added
+
+
+@pytest.mark.asyncio
+async def test_create_series_derives_carries_state_state_carrying() -> None:
+    """A '13-16' (older) band series carries state (ADR-011)."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    session = _FakeSession()
+
+    series = await service.create_series(
+        session, principal, title="Fox Tales", family_id=family_id, age_band="13-16"
+    )
+
+    assert series.carries_state is True
+
+
+@pytest.mark.asyncio
+async def test_approve_with_series_title_creates_series_and_sets_request() -> None:
+    """Approving a non-anchored pending request with ``series_title`` ratifies
+    a new Series row, links it onto the request, and still returns a concept
+    id (the series ratification does not short-circuit the normal approval
+    tail)."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        request_text="a story about a clever fox",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+        series_title="Fox Tales",
+    )
+
+    series = next(o for o in session.added if isinstance(o, Series))
+    assert series.title == "Fox Tales"
+    assert series.age_band == "8-11"
+    assert request.series_id == series.id
+    assert concept_id == str(request.concept_id)
+
+
+@pytest.mark.asyncio
+async def test_approve_without_series_title_creates_no_series() -> None:
+    """Approving with ``series_title=None`` (the default) never adds a Series
+    row and leaves the request standalone."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        request_text="a standalone tale",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
+
+    assert not any(isinstance(o, Series) for o in session.added)
+    assert request.series_id is None
+
+
+@pytest.mark.asyncio
+async def test_approve_anchored_request_with_series_title_raises() -> None:
+    """An anchored (continuation) request cannot also ratify a new series;
+    the guard fires before any anchor lookup, so a fake session with no
+    Storybook/Series support still exercises the real code path."""
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        request_text="book two of the fox saga",
+        status="pending",
+        age_band="8-11",
+        anchor_storybook_id="s_anchor123",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    with pytest.raises(ValidationError):
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
+            series_title="A New Series",
+        )
 
 
 def test_to_view_skips_malformed_verdict() -> None:
