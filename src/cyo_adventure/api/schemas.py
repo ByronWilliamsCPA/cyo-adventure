@@ -422,7 +422,11 @@ class StoryRequestView(BaseModel):
 
     ``request_text`` is ``None`` for a ``blocked`` row: the raw text of a
     bright-line request is never surfaced. ``moderation_flags`` carries only the
-    redacted StoryRequestFlag list.
+    redacted StoryRequestFlag list. ``age_band``, ``length``, and
+    ``narrative_style`` are request-sourced (WS-B): for a still-pending
+    request they reflect the profile-stamped defaults from creation; for an
+    approved request they reflect the guardian's approval confirmation. The
+    guardian UI uses these to prefill the approve dialog.
     """
 
     id: str
@@ -431,6 +435,10 @@ class StoryRequestView(BaseModel):
     request_text: str | None
     moderation_flags: list[StoryRequestFlag]
     created_at: datetime
+    initiator_role: Literal["child", "guardian", "admin"]
+    age_band: AgeBand
+    length: Length | None
+    narrative_style: NarrativeStyle
 
 
 class StoryRequestListView(BaseModel):

@@ -468,7 +468,9 @@ def test_to_view_skips_malformed_verdict() -> None:
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
         status="pending",
+        initiator_role="child",
         age_band="10-13",
+        narrative_style="prose",
         moderation_flags={
             "blocked": False,
             "flags": [
@@ -489,9 +491,7 @@ def test_to_view_skips_malformed_verdict() -> None:
 
     # surface_all=False exercises the filtered guardian view: the malformed
     # verdict is skipped AND the threshold filter applies.
-    view = _to_view(
-        request, age_band="10-13", policy=ThresholdPolicy(rows={}), surface_all=False
-    )
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
 
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].verdict is Verdict.FLAG
