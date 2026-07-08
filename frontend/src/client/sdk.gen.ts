@@ -820,6 +820,7 @@ export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends bool
  *
  * Raises:
  * AuthorizationError: If the caller may not act on the profile (-> 403).
+ * ResourceNotFoundError: If the profile no longer exists (-> 404).
  * StateTransitionError: If the profile is at its pending cap (-> 409).
  * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
  */
@@ -844,6 +845,11 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  *
  * Args:
  * request_id: The request id from the path.
+ * body: The guardian's band/length/style confirmation (WS-B); this
+ * becomes the request's stored band and length, overriding
+ * whatever was stamped at creation. A gamebook style below the
+ * teen bands (13-16, 16+) is rejected here with a 422 before the
+ * service layer runs.
  * ctx: The request context.
  *
  * Returns:
@@ -857,7 +863,11 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
 export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost = <ThrowOnError extends boolean = false>(options: Options<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ThrowOnError>): RequestResult<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError> => (options.client ?? client).post<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/story-requests/{request_id}/approve',
-    ...options
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**

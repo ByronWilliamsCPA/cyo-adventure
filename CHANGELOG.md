@@ -34,6 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   moderation screening, mirroring the existing `approve()` check (closes #57).
 
 ### Added
+- Story requests carry `initiator_role`, `age_band`, `length`, and
+  `narrative_style`; guardians confirm band and length at approval (the
+  approve endpoint now requires them), and generation reads them from the
+  request instead of the child profile (WS-B PR 1).
 - Age-band moderation thresholds: the moderation pipeline now records every
   advisory finding, and a per-`(age_band, category)` threshold determines
   which findings surface on the two guardian-facing surfaces: the story

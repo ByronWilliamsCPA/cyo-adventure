@@ -19,6 +19,25 @@ pytestmark = pytest.mark.asyncio
 
 _CREATE = "/api/v1/story-requests"
 
+# WS-B: approve requires a confirmation body. This mirrors the seeded
+# profile's own age band (see conftest.Seed's profile_a, age_band="10-13")
+# so existing behavioral tests that were not exercising the confirmation
+# contract keep passing unchanged.
+_CONFIRMATION = {"age_band": "10-13", "length": "medium", "narrative_style": "prose"}
+
+
+async def _create_pending_request(
+    client: AsyncClient, seed: Seed, *, request_text: str = "a fox"
+) -> str:
+    """Submit a pending request for the seeded child profile; return its id."""
+    res = await client.post(
+        _CREATE,
+        json={"profile_id": str(seed.child_profile_id), "request_text": request_text},
+        headers=auth(seed.guardian_token),
+    )
+    assert res.status_code == 201, res.text
+    return str(res.json()["id"])
+
 
 async def test_guardian_creates_pending_request(
     client: AsyncClient, seed: Seed
@@ -150,7 +169,9 @@ async def test_admin_approve_creates_concept_but_no_job(
     )
     req_id = created.json()["id"]
     res = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.admin_token),
+        json=_CONFIRMATION,
     )
     assert res.status_code == 200, res.text
     body = res.json()
@@ -189,7 +210,9 @@ async def test_admin_approve_is_global_across_families(
     assert created.status_code == 201, created.text
     req_id = created.json()["id"]
     res = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.admin_token),
+        json=_CONFIRMATION,
     )
     assert res.status_code == 200, res.text
     body = res.json()
@@ -225,7 +248,9 @@ async def test_approve_stamps_reviewer_and_builds_brief_from_stored_text(
     )
     req_id = created.json()["id"]
     res = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.admin_token),
+        json=_CONFIRMATION,
     )
     assert res.status_code == 200, res.text
     concept_id = res.json()["concept_id"]
@@ -252,7 +277,9 @@ async def test_approve_cross_family_is_404(client: AsyncClient, seed: Seed) -> N
     )
     req_id = created.json()["id"]
     res = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.other_guardian_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.other_guardian_token),
+        json=_CONFIRMATION,
     )
     assert res.status_code == 404
 
@@ -266,7 +293,9 @@ async def test_child_cannot_approve(client: AsyncClient, seed: Seed) -> None:
     )
     req_id = created.json()["id"]
     res = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.child_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.child_token),
+        json=_CONFIRMATION,
     )
     assert res.status_code == 403
 
@@ -300,7 +329,9 @@ async def test_decline_then_reapprove_conflicts(
     )
     assert dec.status_code == 200
     again = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.guardian_token),
+        json=_CONFIRMATION,
     )
     assert again.status_code == 409
 
@@ -318,12 +349,16 @@ async def test_approve_twice_conflicts(
     )
     req_id = created.json()["id"]
     first = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.guardian_token),
+        json=_CONFIRMATION,
     )
     assert first.status_code == 200
     concept_id = first.json()["concept_id"]
     second = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.guardian_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.guardian_token),
+        json=_CONFIRMATION,
     )
     assert second.status_code == 409
 
@@ -360,3 +395,65 @@ async def test_blocked_request_hides_raw_text(client: AsyncClient, seed: Seed) -
     row = res.json()["requests"][0]
     assert row["request_text"] is None
     assert row["moderation_flags"][0]["category"] == "personal_information"
+
+
+async def test_approve_without_body_returns_422(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """WS-B strict contract: approval requires band and length."""
+    request_id = await _create_pending_request(client, seed)
+    res = await client.post(
+        f"{_CREATE}/{request_id}/approve",
+        headers=auth(seed.guardian_token),
+        json={},
+    )
+    assert res.status_code == 422
+
+
+async def test_approve_with_confirmation_stamps_request(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The approval confirmation becomes the request's stored band/length,
+    overriding whatever band the create endpoint stamped from the profile
+    (the request is the source of truth for band/length from approval on)."""
+    request_id = await _create_pending_request(client, seed)
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/approve",
+        headers=auth(seed.guardian_token),
+        json={"age_band": "8-11", "length": "medium", "narrative_style": "prose"},
+    )
+    assert resp.status_code == 200, resp.text
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(request_id))
+        assert row is not None
+        assert row.age_band == "8-11"
+        assert row.length == "medium"
+
+
+async def test_gamebook_below_teen_band_rejected_at_approve(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A gamebook style is rejected for a band below 13-16/16+ (422)."""
+    request_id = await _create_pending_request(client, seed)
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/approve",
+        headers=auth(seed.guardian_token),
+        json={"age_band": "8-11", "length": "short", "narrative_style": "gamebook"},
+    )
+    assert resp.status_code == 422
+
+
+async def test_create_stamps_band_from_profile_and_child_role(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """The create endpoint stamps age_band from the profile and
+    initiator_role='child' (the kid surface runs under the guardian token in
+    R1, but the request always records 'child' as the initiating role)."""
+    request_id = await _create_pending_request(client, seed)
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(request_id))
+        assert row is not None
+        profile = await session.get(ChildProfile, seed.child_profile_id)
+        assert profile is not None
+        assert row.age_band == profile.age_band
+        assert row.initiator_role == "child"

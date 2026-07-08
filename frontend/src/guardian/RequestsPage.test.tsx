@@ -19,6 +19,10 @@ const DRAGON_REQUEST = {
   request_text: 'A story about a friendly dragon',
   moderation_flags: [],
   created_at: '2026-07-04T10:00:00Z',
+  initiator_role: 'child',
+  age_band: '8-11',
+  length: null,
+  narrative_style: 'prose',
 }
 
 const FLAGGED_REQUEST = {
@@ -28,6 +32,10 @@ const FLAGGED_REQUEST = {
   request_text: 'A pirate adventure',
   moderation_flags: [{ category: 'violence', verdict: 'flag', message: 'Mild peril' }],
   created_at: '2026-07-04T10:05:00Z',
+  initiator_role: 'child',
+  age_band: '8-11',
+  length: null,
+  narrative_style: 'prose',
 }
 
 const BLOCKED_REQUEST = {
@@ -37,6 +45,10 @@ const BLOCKED_REQUEST = {
   request_text: null,
   moderation_flags: [{ category: 'unsafe', verdict: 'block', message: 'Hard block' }],
   created_at: '2026-07-04T10:10:00Z',
+  initiator_role: 'child',
+  age_band: '8-11',
+  length: null,
+  narrative_style: 'prose',
 }
 
 function mockPending(requests: unknown[]) {
@@ -75,11 +87,48 @@ describe('RequestsPage', () => {
     })
     render(<RequestsPage />)
     const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
     await waitFor(() =>
-      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/approve')
+      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/approve', {
+        age_band: '8-11',
+        length: 'medium',
+        narrative_style: 'prose',
+      })
     )
     await waitFor(() => expect(title).not.toBeInTheDocument())
+  })
+
+  it('approve is disabled until a length is chosen, then sends the confirmation body', async () => {
+    mockPost.mockResolvedValue({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1' },
+    })
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    const approveButton = screen.getByRole('button', { name: 'Approve' })
+    expect(approveButton).toBeDisabled()
+    expect(screen.queryByLabelText('Story style')).not.toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
+    expect(approveButton).toBeEnabled()
+    fireEvent.click(approveButton)
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/approve', {
+        age_band: '8-11',
+        length: 'medium',
+        narrative_style: 'prose',
+      })
+    )
+  })
+
+  it('style select renders only for teen bands', async () => {
+    mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    expect(screen.getByLabelText('Story style')).toBeInTheDocument()
   })
 
   it('decline calls the adapter and removes the row', async () => {
@@ -87,9 +136,7 @@ describe('RequestsPage', () => {
     render(<RequestsPage />)
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
-    await waitFor(() =>
-      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/decline')
-    )
+    await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/decline'))
     await waitFor(() => expect(title).not.toBeInTheDocument())
   })
 
@@ -121,6 +168,9 @@ describe('RequestsPage', () => {
     )
     render(<RequestsPage />)
     await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
     const approveButton = screen.getByRole('button', { name: 'Approve' })
     fireEvent.click(approveButton)
     fireEvent.click(approveButton)
@@ -141,6 +191,9 @@ describe('RequestsPage', () => {
     )
     render(<RequestsPage />)
     await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
     const approveButton = screen.getByRole('button', { name: 'Approve' })
     const declineButton = screen.getByRole('button', { name: 'Decline' })
     fireEvent.click(approveButton)
@@ -156,6 +209,9 @@ describe('RequestsPage', () => {
     mockPost.mockRejectedValueOnce(new Error('boom'))
     render(<RequestsPage />)
     const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
     fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not update/i)
     expect(title).toBeInTheDocument()

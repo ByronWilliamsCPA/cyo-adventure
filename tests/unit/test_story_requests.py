@@ -22,7 +22,8 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.brief import brief_from_request
 from cyo_adventure.story_requests.screening import screen_request_text
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.story_requests.service import ApprovalConfirmation
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 
 def test_story_request_defaults_to_pending() -> None:
@@ -32,6 +33,7 @@ def test_story_request_defaults_to_pending() -> None:
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
         status="pending",
+        age_band="8-11",
     )
     assert req.status == "pending"
     assert req.moderation_flags is None
@@ -50,20 +52,97 @@ def _profile(age_band: str = "8-11", cap: float = 99.0) -> ChildProfile:
 
 def test_brief_from_request_uses_band_budget_and_generic_protagonist() -> None:
     """The brief inherits band node/ending budgets and a generic protagonist."""
-    brief = brief_from_request("a story about a brave fox", _profile("8-11"))
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+        length="short",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
     assert isinstance(brief, ConceptBrief)
     assert brief.premise == "a story about a brave fox"
     assert brief.age_band == AgeBand.BAND_8_11
+    assert brief.length == Length.SHORT
+    assert brief.narrative_style == NarrativeStyle.PROSE
     assert brief.target_node_count == 15  # band_profile 8-11 min_nodes
     assert brief.ending_count == 3  # band_profile 8-11 min_endings
     assert brief.protagonist.name == "Explorer"  # never a real child name
     assert brief.tier == 1
 
 
+def test_brief_from_request_band_comes_from_request_not_profile() -> None:
+    """The flip: a request band different from the profile band wins."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a mystery",
+        status="pending",
+        age_band="10-13",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.age_band == AgeBand.BAND_10_13
+
+
+def test_brief_from_request_without_profile_uses_band_reading_target() -> None:
+    """A profile-less request (PR 2 flows) gets the band FK target."""
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, None)
+    assert brief.reading_level_target == 4.0  # _BAND_FK_TARGET[8-11]
+
+
 def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
     """A concrete reading_level_cap (below 99) becomes the FK target."""
-    brief = brief_from_request("a gentle tale", _profile("5-8", cap=2.5))
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a gentle tale",
+        status="pending",
+        age_band="5-8",
+    )
+    brief = brief_from_request(request, _profile("5-8", cap=2.5))
     assert brief.reading_level_target == 2.5
+
+
+def test_brief_from_request_null_length_stays_null() -> None:
+    """A request with no stored length yields a brief with length=None.
+
+    ConceptBrief.length is genuinely optional (no repo-wide default), unlike
+    narrative_style, which falls back to prose; this isolates that distinction.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        age_band="8-11",
+    )
+    brief = brief_from_request(request, _profile("8-11"))
+    assert brief.length is None
+
+
+def test_brief_from_request_narrative_style_comes_from_request() -> None:
+    """A non-default narrative_style on the request flows into the brief.
+
+    Proves the value comes from the request itself, not the NarrativeStyle.PROSE
+    fallback that applies only when the request's narrative_style is unset.
+    """
+    request = StoryRequest(
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a choose-your-path mystery",
+        status="pending",
+        age_band="13-16",
+        narrative_style="gamebook",
+    )
+    brief = brief_from_request(request, _profile("13-16"))
+    assert brief.narrative_style is NarrativeStyle.GAMEBOOK
 
 
 @pytest.mark.asyncio
@@ -166,6 +245,7 @@ def test_ensure_pending_rejects_non_pending() -> None:
         profile_id=uuid.uuid4(),
         request_text="x",
         status="approved",
+        age_band="8-11",
     )
     with pytest.raises(StateTransitionError):
         service.ensure_pending(req)
@@ -197,10 +277,11 @@ class _FakeSession:
         self._get_result = get_result
         self._child_names = child_names or []
         self.added: list[object] = []
+        self.get_calls: list[tuple[type[object], object]] = []
 
     async def get(self, model: type[object], key: object) -> object | None:
-        """Return the seeded profile row (or None), ignoring the key."""
-        _ = (model, key)
+        """Record the call and return the seeded profile row (or None)."""
+        self.get_calls.append((model, key))
         return self._get_result
 
     async def scalars(self, statement: object) -> _FakeScalars:
@@ -246,12 +327,25 @@ async def test_approve_stamps_and_builds_brief_from_stored_text() -> None:
         profile_id=profile.id,
         request_text=stored_text,
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=profile, child_names=[])
 
-    concept_id = await service.approve_story_request(session, principal, request)
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
 
     assert request.status == "approved"
+    assert request.age_band == "8-11"
+    assert request.length == "medium"
+    assert request.narrative_style == "prose"
     assert request.reviewed_by == principal.user_id
     assert request.reviewed_at is not None
     assert request.concept_id is not None
@@ -276,11 +370,21 @@ async def test_approve_story_request_pii_backstop_trips() -> None:
         profile_id=profile.id,
         request_text="a story about Amelia and a dragon",
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=profile, child_names=["Amelia"])
 
     with pytest.raises(ValidationError):
-        await service.approve_story_request(session, principal, request)
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
+        )
 
 
 @pytest.mark.asyncio
@@ -293,11 +397,57 @@ async def test_approve_story_request_missing_profile_is_not_found() -> None:
         profile_id=uuid.uuid4(),
         request_text="a fox",
         status="pending",
+        age_band="8-11",
     )
     session = _FakeSession(get_result=None, child_names=[])
 
     with pytest.raises(ResourceNotFoundError):
-        await service.approve_story_request(session, principal, request)
+        await service.approve_story_request(
+            session,
+            principal,
+            request,
+            confirmation=ApprovalConfirmation(
+                age_band=AgeBand.BAND_8_11,
+                length=Length.MEDIUM,
+                narrative_style=NarrativeStyle.PROSE,
+            ),
+        )
+
+
+@pytest.mark.asyncio
+async def test_approve_story_request_without_profile_skips_profile_lookup() -> None:
+    """A profile-less request (guardian/admin initiated) approves cleanly.
+
+    ``request.profile_id`` is None, so the profile-existence branch must never
+    call ``session.get``; only the family-scoped child-names query runs.
+    """
+    family_id = uuid.uuid4()
+    principal = _guardian(family_id)
+    request = StoryRequest(
+        family_id=family_id,
+        request_text="a space story",
+        status="pending",
+        age_band="8-11",
+    )
+    session = _FakeSession(get_result=None, child_names=[])
+
+    concept_id = await service.approve_story_request(
+        session,
+        principal,
+        request,
+        confirmation=ApprovalConfirmation(
+            age_band=AgeBand.BAND_8_11,
+            length=Length.MEDIUM,
+            narrative_style=NarrativeStyle.PROSE,
+        ),
+    )
+
+    assert request.status == "approved"
+    assert request.age_band == "8-11"
+    assert request.length == "medium"
+    assert request.narrative_style == "prose"
+    assert concept_id == str(request.concept_id)
+    assert session.get_calls == []
 
 
 def test_to_view_skips_malformed_verdict() -> None:
@@ -318,6 +468,9 @@ def test_to_view_skips_malformed_verdict() -> None:
         profile_id=uuid.uuid4(),
         request_text="a story about a brave fox",
         status="pending",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
         moderation_flags={
             "blocked": False,
             "flags": [
@@ -338,9 +491,7 @@ def test_to_view_skips_malformed_verdict() -> None:
 
     # surface_all=False exercises the filtered guardian view: the malformed
     # verdict is skipped AND the threshold filter applies.
-    view = _to_view(
-        request, age_band="10-13", policy=ThresholdPolicy(rows={}), surface_all=False
-    )
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
 
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].verdict is Verdict.FLAG

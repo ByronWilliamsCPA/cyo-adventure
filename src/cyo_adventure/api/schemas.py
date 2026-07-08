@@ -16,7 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # ---------------------------------------------------------------------------
 # Reading-state resource bounds (audit Finding 8)
@@ -378,6 +378,33 @@ class StoryRequestCreateBody(BaseModel):
     request_text: RequestText
 
 
+_TEEN_BANDS = frozenset({AgeBand.BAND_13_16, AgeBand.BAND_16_PLUS})
+
+
+class StoryRequestApproveBody(BaseModel):
+    """Guardian confirmation required to approve a request (WS-B).
+
+    The request becomes the source of truth for band and length at approval;
+    ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    age_band: AgeBand
+    length: Length
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE
+
+    @model_validator(mode="after")
+    def _style_allowed_for_band(self) -> StoryRequestApproveBody:
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.age_band not in _TEEN_BANDS
+        ):
+            msg = "narrative_style 'gamebook' requires age band 13-16 or 16+"
+            raise ValueError(msg)
+        return self
+
+
 class StoryRequestFlag(BaseModel):
     """A redacted screening flag shown to a guardian.
 
@@ -395,7 +422,11 @@ class StoryRequestView(BaseModel):
 
     ``request_text`` is ``None`` for a ``blocked`` row: the raw text of a
     bright-line request is never surfaced. ``moderation_flags`` carries only the
-    redacted StoryRequestFlag list.
+    redacted StoryRequestFlag list. ``age_band``, ``length``, and
+    ``narrative_style`` are request-sourced (WS-B): for a still-pending
+    request they reflect the profile-stamped defaults from creation; for an
+    approved request they reflect the guardian's approval confirmation. The
+    guardian UI uses these to prefill the approve dialog.
     """
 
     id: str
@@ -404,6 +435,10 @@ class StoryRequestView(BaseModel):
     request_text: str | None
     moderation_flags: list[StoryRequestFlag]
     created_at: datetime
+    initiator_role: Literal["child", "guardian", "admin"]
+    age_band: AgeBand
+    length: Length | None
+    narrative_style: NarrativeStyle
 
 
 class StoryRequestListView(BaseModel):

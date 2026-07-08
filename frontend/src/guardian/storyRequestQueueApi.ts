@@ -24,6 +24,10 @@ export interface StoryRequestView {
   request_text: string | null
   moderation_flags: StoryRequestFlag[]
   created_at: string
+  initiator_role: 'child' | 'guardian' | 'admin'
+  age_band: string
+  length: string | null
+  narrative_style: string
 }
 
 export interface StoryRequestApproved {
@@ -38,9 +42,15 @@ export interface StoryRequestDeclined {
   status: 'declined'
 }
 
+export type StoryRequestApproveBody = {
+  age_band: string
+  length: string
+  narrative_style: string
+}
+
 export interface StoryRequestQueueApi {
   listPending(): Promise<StoryRequestView[]>
-  approve(id: string): Promise<StoryRequestApproved>
+  approve(id: string, body: StoryRequestApproveBody): Promise<StoryRequestApproved>
   decline(id: string): Promise<StoryRequestDeclined>
 }
 
@@ -52,16 +62,12 @@ export function makeStoryRequestQueueApi(api: AxiosInstance): StoryRequestQueueA
       )
       return res.data.requests
     },
-    async approve(id: string): Promise<StoryRequestApproved> {
-      const res = await api.post<StoryRequestApproved>(
-        `/v1/story-requests/${id}/approve`
-      )
+    async approve(id: string, body: StoryRequestApproveBody): Promise<StoryRequestApproved> {
+      const res = await api.post<StoryRequestApproved>(`/v1/story-requests/${id}/approve`, body)
       return res.data
     },
     async decline(id: string): Promise<StoryRequestDeclined> {
-      const res = await api.post<StoryRequestDeclined>(
-        `/v1/story-requests/${id}/decline`
-      )
+      const res = await api.post<StoryRequestDeclined>(`/v1/story-requests/${id}/decline`)
       return res.data
     },
   }

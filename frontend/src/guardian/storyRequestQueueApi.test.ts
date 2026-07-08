@@ -29,16 +29,21 @@ describe('makeStoryRequestQueueApi', () => {
     expect(result).toEqual(requestData.requests)
   })
 
-  it('approve posts to the approve endpoint and returns the body', async () => {
+  it('approve posts the decision body to the approve endpoint and returns the body', async () => {
     const approveData = {
       id: 'req1',
       status: 'approved',
       concept_id: 'concept1',
       job_id: 'job123',
     }
+    const decisionBody = {
+      age_band: '8-11',
+      length: 'medium',
+      narrative_style: 'prose',
+    }
     const { api, post } = fakeAxios(approveData)
-    const result = await makeStoryRequestQueueApi(api).approve('req1')
-    expect(post).toHaveBeenCalledWith('/v1/story-requests/req1/approve')
+    const result = await makeStoryRequestQueueApi(api).approve('req1', decisionBody)
+    expect(post).toHaveBeenCalledWith('/v1/story-requests/req1/approve', decisionBody)
     expect(result).toEqual(approveData)
   })
 

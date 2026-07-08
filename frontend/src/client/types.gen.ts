@@ -1384,6 +1384,20 @@ export type SentBackView = {
 export type Source = 'openai' | 'perspective' | 'llm_safety' | 'llm_readability' | 'llm_coherence' | 'llm_engagement' | 'pipeline';
 
 /**
+ * StoryRequestApproveBody
+ *
+ * Guardian confirmation required to approve a request (WS-B).
+ *
+ * The request becomes the source of truth for band and length at approval;
+ * ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+ */
+export type StoryRequestApproveBody = {
+    age_band: AgeBand;
+    length: Length;
+    narrative_style?: NarrativeStyle;
+};
+
+/**
  * StoryRequestApprovedView
  *
  * The result of approving a request: the linked concept.
@@ -1494,7 +1508,11 @@ export type StoryRequestListView = {
  *
  * ``request_text`` is ``None`` for a ``blocked`` row: the raw text of a
  * bright-line request is never surfaced. ``moderation_flags`` carries only the
- * redacted StoryRequestFlag list.
+ * redacted StoryRequestFlag list. ``age_band``, ``length``, and
+ * ``narrative_style`` are request-sourced (WS-B): for a still-pending
+ * request they reflect the profile-stamped defaults from creation; for an
+ * approved request they reflect the guardian's approval confirmation. The
+ * guardian UI uses these to prefill the approve dialog.
  */
 export type StoryRequestView = {
     /**
@@ -1521,6 +1539,13 @@ export type StoryRequestView = {
      * Created At
      */
     created_at: string;
+    /**
+     * Initiator Role
+     */
+    initiator_role: 'child' | 'guardian' | 'admin';
+    age_band: AgeBand;
+    length: Length | null;
+    narrative_style: NarrativeStyle;
 };
 
 /**
@@ -2896,7 +2921,7 @@ export type CreateStoryRequestApiV1StoryRequestsPostResponses = {
 export type CreateStoryRequestApiV1StoryRequestsPostResponse = CreateStoryRequestApiV1StoryRequestsPostResponses[keyof CreateStoryRequestApiV1StoryRequestsPostResponses];
 
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
-    body?: never;
+    body: StoryRequestApproveBody;
     headers?: {
         /**
          * Authorization

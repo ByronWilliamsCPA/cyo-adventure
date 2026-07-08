@@ -5,16 +5,19 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
-import {
-  makeStoryRequestQueueApi,
-  type StoryRequestView,
-} from './storyRequestQueueApi'
+import { makeStoryRequestQueueApi, type StoryRequestView } from './storyRequestQueueApi'
 
 type LoadState =
   | { kind: 'loading' }
   | { kind: 'forbidden' }
   | { kind: 'error' }
   | { kind: 'ready'; requests: StoryRequestView[] }
+
+type RowDecision = { age_band: string; length: string; narrative_style: string }
+
+const TEEN_BANDS = ['13-16', '16+']
+const AGE_BANDS = ['3-5', '5-8', '8-11', '10-13', '13-16', '16+']
+const LENGTHS = ['short', 'medium', 'long']
 
 /**
  * Guardian/admin story-request review (Task 3.0). Lists pending child requests
@@ -27,6 +30,34 @@ export function RequestsPage() {
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
   const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
+  const [decisions, setDecisions] = useState<Record<string, RowDecision>>({})
+
+  function decisionFor(req: StoryRequestView): RowDecision {
+    return (
+      decisions[req.id] ?? {
+        age_band: req.age_band,
+        length: '',
+        narrative_style: 'prose',
+      }
+    )
+  }
+
+  // #ASSUME: data-integrity: ADR-011 restricts the gamebook narrative style to
+  // teen bands (13-16, 16+); a reviewer switching a row's age band away from a
+  // teen band must not leave a stale gamebook selection behind.
+  // #VERIFY: RequestsPage.test.tsx style-select-teen-only test.
+  function setDecision(req: StoryRequestView, patch: Partial<RowDecision>) {
+    setDecisions((prev) => {
+      const current = prev[req.id] ?? {
+        age_band: req.age_band,
+        length: '',
+        narrative_style: 'prose',
+      }
+      const next = { ...current, ...patch }
+      if (!TEEN_BANDS.includes(next.age_band)) next.narrative_style = 'prose'
+      return { ...prev, [req.id]: next }
+    })
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -51,10 +82,7 @@ export function RequestsPage() {
         // token), and degrade to a visible error state rather than a silent
         // empty list.
         // #VERIFY: RequestsPage.test.tsx generic-error test.
-        console.error(
-          'story-request queue load failed:',
-          err instanceof Error ? err.message : err
-        )
+        console.error('story-request queue load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) setState({ kind: 'error' })
       }
     }
@@ -103,10 +131,7 @@ export function RequestsPage() {
       // discarding the guardian's action.
       // #VERIFY: RequestsPage.test.tsx rejected-approve test asserts the
       // visible alert and that the row remains in the list.
-      console.error(
-        'story-request action failed:',
-        err instanceof Error ? err.message : err
-      )
+      console.error('story-request action failed:', err instanceof Error ? err.message : err)
       setRowErrors((prev) => ({ ...prev, [id]: true }))
     } finally {
       setPendingIds((prev) => {
@@ -117,8 +142,9 @@ export function RequestsPage() {
     }
   }
 
-  async function approve(id: string) {
-    await runRowAction(id, () => queueApi.approve(id))
+  async function approve(req: StoryRequestView) {
+    const decision = decisionFor(req)
+    await runRowAction(req.id, () => queueApi.approve(req.id, decision))
   }
 
   async function decline(id: string) {
@@ -172,6 +198,7 @@ export function RequestsPage() {
           // but gate the actions on status anyway so the state machine holds if
           // the fetch ever widens.
           const isActionable = req.status === 'pending'
+          const decision = decisionFor(req)
           return (
             <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
               <div className="console-row__body">
@@ -199,9 +226,48 @@ export function RequestsPage() {
                 ) : null}
               </div>
               <div className="console-row__actions">
+                <label>
+                  Age band
+                  <select
+                    value={decision.age_band}
+                    onChange={(e) => setDecision(req, { age_band: e.target.value })}
+                  >
+                    {AGE_BANDS.map((b) => (
+                      <option key={b} value={b}>
+                        {b}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  Story length
+                  <select
+                    value={decision.length}
+                    onChange={(e) => setDecision(req, { length: e.target.value })}
+                  >
+                    <option value="">Choose…</option>
+                    {LENGTHS.map((l) => (
+                      <option key={l} value={l}>
+                        {l}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {TEEN_BANDS.includes(decision.age_band) ? (
+                  <label>
+                    Story style
+                    <select
+                      value={decision.narrative_style}
+                      onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
+                    >
+                      <option value="prose">prose</option>
+                      <option value="gamebook">gamebook</option>
+                    </select>
+                  </label>
+                ) : null}
                 <Button
-                  disabled={isInFlight || !isActionable}
-                  onClick={() => void approve(req.id)}
+                  disabled={isInFlight || !isActionable || decision.length === ''}
+                  onClick={() => void approve(req)}
                 >
                   Approve
                 </Button>

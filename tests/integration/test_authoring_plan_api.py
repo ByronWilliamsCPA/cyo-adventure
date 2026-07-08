@@ -30,7 +30,11 @@ async def _approved_request_id(client: AsyncClient, seed: Seed, text: str) -> st
     )
     req_id = created.json()["id"]
     approved = await client.post(
-        f"{_CREATE}/{req_id}/approve", headers=auth(seed.admin_token)
+        f"{_CREATE}/{req_id}/approve",
+        headers=auth(seed.admin_token),
+        # WS-B: approve requires a confirmation body; band matches the
+        # seeded profile's own band (conftest.Seed's profile_a, "10-13").
+        json={"age_band": "10-13", "length": "medium", "narrative_style": "prose"},
     )
     assert approved.status_code == 200, approved.text
     return req_id

@@ -61,6 +61,17 @@ _GENERATION_JOB_STATUS_VALUES = (
 # The four story-request lifecycle states, named once for the CHECK constraint.
 _STORY_REQUEST_STATUS_VALUES = "'pending', 'approved', 'declined', 'blocked'"
 
+# Derived from the AgeBand enum so the at-rest CHECK can never drift from the
+# application vocabulary; adding a band changes this SQL and thereby forces a
+# migration (alembic autogenerate flags the constraint difference).
+_AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
+
+# The three story-request initiator roles, length bands, and narrative styles
+# (WS-B), named once for their CHECK constraints.
+_STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
+_STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
+_STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
+
 
 class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
@@ -354,9 +365,18 @@ class StoryRequest(Base):
     Attributes:
         id: Surrogate primary key.
         family_id: Owning family; all guardian access is scoped to this.
-        profile_id: The requesting child profile.
+        profile_id: The requesting child profile, or ``None`` for a
+            profile-less request (WS-B PR 2).
         request_text: The child's short free-text idea (<= 500 chars).
         status: Lifecycle state (pending, approved, declined, blocked).
+        initiator_role: Who submitted the request (child, guardian, admin).
+        age_band: The reading band the request targets. Required at flush
+            with no default: every creation path must set it explicitly (from
+            the requesting profile, or from the guardian's confirmation), so a
+            missed path fails loudly instead of silently drifting.
+        length: The requested story length (short, medium, long), or ``None``
+            before a guardian confirms it.
+        narrative_style: The requested narrative style (prose, gamebook).
         moderation_flags: Redacted screening findings (category/verdict/message
             plus a blocked flag), or ``None`` before screening. Never raw
             classifier score/source.
@@ -367,15 +387,41 @@ class StoryRequest(Base):
     """
 
     __tablename__ = "story_request"
-    # #CRITICAL: data integrity: ``status`` is a closed lifecycle; this CHECK is
-    # the at-rest backstop (mirroring ck_generation_job_status) so no write path
-    # persists a status outside the four values.
-    # #VERIFY: StoryRequestStatus(...) coercion at the API boundary rejects any
-    # other value; see api/schemas.py::StoryRequestStatus.
+    # #CRITICAL: data integrity: ``status``, ``initiator_role``, ``age_band``,
+    # ``length``, and ``narrative_style`` are closed vocabularies; these CHECKs
+    # are the at-rest backstop (mirroring ck_generation_job_status) so no write
+    # path persists a value outside them. ck_story_request_style_band is the
+    # child-safety backstop for ADR-011: gamebook branching is teen-only
+    # ('13-16', '16+'), so no row can pair a gamebook request with a younger
+    # band even if an application bug slips one past the API.
+    # #VERIFY: the API boundary rejects out-of-vocabulary values first:
+    # api/schemas.py::StoryRequestStatus coercion for status, and
+    # StoryRequestApproveBody's AgeBand/Length/NarrativeStyle enums plus its
+    # _style_allowed_for_band validator (which mirrors style_band) at approve.
     __table_args__ = (
         CheckConstraint(
             f"status IN ({_STORY_REQUEST_STATUS_VALUES})",
             name="ck_story_request_status",
+        ),
+        CheckConstraint(
+            f"initiator_role IN ({_STORY_REQUEST_INITIATOR_VALUES})",
+            name="ck_story_request_initiator_role",
+        ),
+        CheckConstraint(
+            f"age_band IN ({_AGE_BAND_VALUES})",
+            name="ck_story_request_age_band",
+        ),
+        CheckConstraint(
+            f"length IS NULL OR length IN ({_STORY_REQUEST_LENGTH_VALUES})",
+            name="ck_story_request_length",
+        ),
+        CheckConstraint(
+            f"narrative_style IN ({_STORY_REQUEST_STYLE_VALUES})",
+            name="ck_story_request_narrative_style",
+        ),
+        CheckConstraint(
+            "narrative_style = 'prose' OR age_band IN ('13-16', '16+')",
+            name="ck_story_request_style_band",
         ),
         Index("ix_story_request_family_status", "family_id", "status"),
         Index("ix_story_request_profile_status", "profile_id", "status"),
@@ -384,9 +430,19 @@ class StoryRequest(Base):
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY))
-    profile_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_CHILD_PROFILE))
+    profile_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_CHILD_PROFILE), default=None
+    )
     request_text: Mapped[str] = mapped_column(String(500))
     status: Mapped[str] = mapped_column(String(16), default="pending")
+    initiator_role: Mapped[str] = mapped_column(
+        String(16), default="child", server_default="child"
+    )
+    age_band: Mapped[str] = mapped_column(String(16))
+    length: Mapped[str | None] = mapped_column(String(16), default=None)
+    narrative_style: Mapped[str] = mapped_column(
+        String(16), default="prose", server_default="prose"
+    )
     # #CRITICAL: security: redacted findings only (category/verdict/message +
     # blocked flag); raw classifier score/source and the child's raw text of a
     # blocked request are NEVER stored here or surfaced to a guardian.
@@ -406,10 +462,6 @@ class StoryRequest(Base):
 
 
 _MIN_VERDICT_VALUES = "'advisory', 'flag', 'block'"
-# Derived from the AgeBand enum so the at-rest CHECK can never drift from the
-# application vocabulary; adding a band changes this SQL and thereby forces a
-# migration (alembic autogenerate flags the constraint difference).
-_AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
 
 
 class ModerationThreshold(Base):

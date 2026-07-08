@@ -24,6 +24,7 @@ from cyo_adventure.api.schemas import (
     AuthoringPlanRequest,
     AuthoringPlanResponse,
     JobStatusLiteral,
+    StoryRequestApproveBody,
     StoryRequestApprovedView,
     StoryRequestCreateBody,
     StoryRequestCreatedView,
@@ -47,6 +48,7 @@ from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_
 from cyo_adventure.story_requests import service
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 if TYPE_CHECKING:
     import uuid
@@ -105,8 +107,9 @@ class _FlagContext:
     Attributes:
         request_id: The owning story request's id, used only for the
             out-of-enum-verdict warning log.
-        age_band: The requesting child profile's age band, used to resolve
-            the surfacing threshold for each flag.
+        age_band: The request's age band (WS-B: request-sourced, backfilled
+            for historical rows), used to resolve the surfacing threshold
+            for each flag.
         policy: The loaded threshold policy (surfaces flag+above by default).
         surface_all: When True (admin caller), every well-formed flag is
             returned regardless of the age-band/category threshold: admins
@@ -182,7 +185,6 @@ def _parse_flag(item: object, ctx: _FlagContext) -> StoryRequestFlag | None:
 def _to_view(
     request: StoryRequest,
     *,
-    age_band: str,
     policy: ThresholdPolicy,
     surface_all: bool,
 ) -> StoryRequestView:
@@ -190,8 +192,6 @@ def _to_view(
 
     Args:
         request: The story request row.
-        age_band: The requesting child profile's age band, used to resolve
-            the surfacing threshold for each stored flag.
         policy: The loaded threshold policy (surfaces flag+above by default).
         surface_all: When True (admin caller), every well-formed flag is
             included regardless of the age-band/category threshold: admins
@@ -213,7 +213,7 @@ def _to_view(
     if isinstance(flags_raw, list):
         ctx = _FlagContext(
             request_id=request.id,
-            age_band=age_band,
+            age_band=request.age_band,
             policy=policy,
             surface_all=surface_all,
         )
@@ -223,11 +223,17 @@ def _to_view(
                 flags.append(flag)
     return StoryRequestView(
         id=str(request.id),
-        profile_id=str(request.profile_id),
+        profile_id=str(request.profile_id) if request.profile_id is not None else "",
         status=cast("StoryRequestStatus", request.status),
         request_text=None if request.status == "blocked" else request.request_text,
         moderation_flags=flags,
         created_at=request.created_at,
+        initiator_role=cast(
+            "Literal['child', 'guardian', 'admin']", request.initiator_role
+        ),
+        age_band=AgeBand(request.age_band),
+        length=Length(request.length) if request.length is not None else None,
+        narrative_style=NarrativeStyle(request.narrative_style),
     )
 
 
@@ -246,6 +252,7 @@ async def create_story_request(
 
     Raises:
         AuthorizationError: If the caller may not act on the profile (-> 403).
+        ResourceNotFoundError: If the profile no longer exists (-> 404).
         StateTransitionError: If the profile is at its pending cap (-> 409).
         ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
     """
@@ -254,6 +261,15 @@ async def create_story_request(
     # on its own; admin has no profiles so cannot submit. 403 on mismatch.
     # #VERIFY: test_create_rejects_cross_family_profile.
     authorize_profile(ctx.principal, profile_uuid)
+
+    # #CRITICAL: data integrity: age_band has no column default (WS-B); every
+    # creation path must stamp it explicitly from the requesting profile so a
+    # missed path fails loudly at flush rather than persisting a drifted band.
+    # #VERIFY: test_story_requests_api.py create-flow tests flush this row.
+    profile = await ctx.session.get(ChildProfile, profile_uuid)
+    if profile is None:
+        msg = "profile not found"
+        raise ResourceNotFoundError(msg)
 
     # #CRITICAL: concurrency: enforce the per-profile pending cap before insert.
     # A rare off-by-one under concurrent submits is accepted here (see
@@ -283,6 +299,8 @@ async def create_story_request(
         request_text=body.request_text,
         status=status,
         moderation_flags=flags_payload,
+        age_band=profile.age_band,
+        initiator_role="child",
     )
     ctx.session.add(request)
     await ctx.session.flush()
@@ -311,15 +329,7 @@ async def list_story_requests(
         AuthorizationError: If a guardian filters on an inaccessible profile.
         ValidationError: If ``status`` or ``profile_id`` is malformed (-> 422).
     """
-    stmt = (
-        select(StoryRequest, ChildProfile.age_band)
-        # #EDGE: data-integrity: INNER JOIN assumes every StoryRequest.profile_id
-        # resolves to a live ChildProfile (non-nullable FK, no soft-delete today).
-        # #VERIFY: switch to LEFT OUTER JOIN with an age-band default fallback if
-        # ChildProfile ever gains a soft-delete path.
-        .join(ChildProfile, StoryRequest.profile_id == ChildProfile.id)
-        .order_by(StoryRequest.created_at.desc())
-    )
+    stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
     # #CRITICAL: security: admin is global; a guardian is family-scoped. A child
     # token (used directly) would also be family-scoped via family_id.
     # #VERIFY: test_guardian_lists_family_requests.
@@ -336,16 +346,11 @@ async def list_story_requests(
         if not ctx.principal.is_admin:
             authorize_profile(ctx.principal, profile_uuid)
         stmt = stmt.where(StoryRequest.profile_id == profile_uuid)
-    rows = (await ctx.session.execute(stmt)).all()
+    rows = (await ctx.session.scalars(stmt)).all()
     policy = await load_threshold_policy(ctx.session)
     requests = [
-        _to_view(
-            request,
-            age_band=age_band,
-            policy=policy,
-            surface_all=ctx.principal.is_admin,
-        )
-        for request, age_band in rows
+        _to_view(request, policy=policy, surface_all=ctx.principal.is_admin)
+        for request in rows
     ]
     return StoryRequestListView(requests=requests)
 
@@ -396,7 +401,7 @@ async def _load_scoped_request(
 
 @router.post("/story-requests/{request_id}/approve")
 async def approve_story_request_endpoint(
-    request_id: str, ctx: Context
+    request_id: str, body: StoryRequestApproveBody, ctx: Context
 ) -> StoryRequestApprovedView:
     """Approve a pending request, creating its concept (guardian or admin).
 
@@ -406,6 +411,11 @@ async def approve_story_request_endpoint(
 
     Args:
         request_id: The request id from the path.
+        body: The guardian's band/length/style confirmation (WS-B); this
+            becomes the request's stored band and length, overriding
+            whatever was stamped at creation. A gamebook style below the
+            teen bands (13-16, 16+) is rejected here with a 422 before the
+            service layer runs.
         ctx: The request context.
 
     Returns:
@@ -424,7 +434,14 @@ async def approve_story_request_endpoint(
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
     concept_id = await service.approve_story_request(
-        ctx.session, ctx.principal, request
+        ctx.session,
+        ctx.principal,
+        request,
+        confirmation=service.ApprovalConfirmation(
+            age_band=body.age_band,
+            length=body.length,
+            narrative_style=body.narrative_style,
+        ),
     )
     return StoryRequestApprovedView(
         id=str(request.id),

@@ -49,6 +49,10 @@ const DRAGON_REQUEST = {
   request_text: 'A story about a friendly dragon',
   moderation_flags: [],
   created_at: '2026-07-04T10:00:00Z',
+  initiator_role: 'child',
+  age_band: '5-8',
+  length: null,
+  narrative_style: 'prose',
 }
 
 const PIRATE_REQUEST = {
@@ -58,6 +62,10 @@ const PIRATE_REQUEST = {
   request_text: 'A pirate adventure',
   moderation_flags: [],
   created_at: '2026-07-04T10:05:00Z',
+  initiator_role: 'child',
+  age_band: '8-11',
+  length: null,
+  narrative_style: 'prose',
 }
 
 test.beforeEach(async ({ context }) => {
@@ -81,8 +89,10 @@ test('approve removes the approved row, then decline empties the list', async ({
   )
 
   let approveCalls = 0
+  let approveBody: unknown = null
   await page.route('**/api/v1/story-requests/req-1/approve', (route) => {
     approveCalls += 1
+    approveBody = route.request().postDataJSON()
     requests = requests.filter((r) => r.id !== 'req-1')
     return route.fulfill({
       json: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
@@ -99,9 +109,11 @@ test('approve removes the approved row, then decline empties the list', async ({
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 
   const dragonRow = page.getByTestId('request-req-1')
+  await dragonRow.getByLabel('Story length').selectOption('medium')
   await dragonRow.getByRole('button', { name: 'Approve' }).click()
 
   await expect.poll(() => approveCalls).toBe(1)
+  expect(approveBody).toEqual({ age_band: '5-8', length: 'medium', narrative_style: 'prose' })
   await expect(page.getByText('A story about a friendly dragon')).toHaveCount(0)
   await expect(page.getByText('A pirate adventure')).toBeVisible()
 
