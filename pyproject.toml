@@ -321,12 +321,6 @@ known-first-party = ["cyo_adventure"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
 
-# ApprovalConfirmation is a frozen, slotted dataclass; AgeBand/Length/
-# NarrativeStyle are its field types. A slotted dataclass is rebuilt as a new
-# class object at definition time, so its field types must be real runtime
-# names, not TYPE_CHECKING-only imports.
-"**/story_requests/service.py" = ["TC001"]
-
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
 

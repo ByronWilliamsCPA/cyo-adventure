@@ -21,12 +21,12 @@ from cyo_adventure.core.exceptions import ResourceNotFoundError, StateTransition
 from cyo_adventure.db.models import ChildProfile, Concept, StoryRequest
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.brief import brief_from_request
-from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
+    from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # Max pending requests per profile before a new submission is refused (Decision 5).
 MAX_PENDING_PER_PROFILE = 5
