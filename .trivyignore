@@ -15,7 +15,7 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-06-21
+# Last reviewed: 2026-07-08
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496
@@ -30,3 +30,8 @@ CVE-2026-11824
 
 # --- ncurses family: libncursesw6, libtinfo6, ncurses-base, ncurses-bin; no Debian fix yet ---
 CVE-2025-69720
+
+# --- libuuid1 (util-linux source pkg; libblkid dos.c integer overflow); no Debian fix yet ---
+# Confirmed via the PR #165 Container Security run (empty Fixed Version, status
+# "affected"). Documented in docs/known-vulnerabilities.md; reassess 2026-09-06.
+CVE-2026-53615
