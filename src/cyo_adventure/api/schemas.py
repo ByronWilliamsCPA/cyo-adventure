@@ -16,7 +16,7 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_vali
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.storybook.evaluator import VarState
-from cyo_adventure.storybook.models import AgeBand
+from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 
 # ---------------------------------------------------------------------------
 # Reading-state resource bounds (audit Finding 8)
@@ -376,6 +376,33 @@ class StoryRequestCreateBody(BaseModel):
 
     profile_id: str
     request_text: RequestText
+
+
+_TEEN_BANDS = frozenset({AgeBand.BAND_13_16, AgeBand.BAND_16_PLUS})
+
+
+class StoryRequestApproveBody(BaseModel):
+    """Guardian confirmation required to approve a request (WS-B).
+
+    The request becomes the source of truth for band and length at approval;
+    ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    age_band: AgeBand
+    length: Length
+    narrative_style: NarrativeStyle = NarrativeStyle.PROSE
+
+    @model_validator(mode="after")
+    def _style_allowed_for_band(self) -> StoryRequestApproveBody:
+        if (
+            self.narrative_style is NarrativeStyle.GAMEBOOK
+            and self.age_band not in _TEEN_BANDS
+        ):
+            msg = "narrative_style 'gamebook' requires age band 13-16 or 16+"
+            raise ValueError(msg)
+        return self
 
 
 class StoryRequestFlag(BaseModel):
