@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Concept, StoryRequest
+from cyo_adventure.api.families import _FAMILY_LIST_LIMIT
+from cyo_adventure.db.models import Concept, Family, StoryRequest
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -174,3 +175,73 @@ async def test_admin_lists_families_guardian_forbidden(
         "/api/v1/admin/families", headers=auth(seed.guardian_token)
     )
     assert forbidden.status_code == 403
+
+
+async def test_blocked_authored_row_is_terminal(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A blocked authored row rejects approve, decline, and authoring-plan (409)."""
+    async with sessions() as session:
+        from cyo_adventure.db.models import ChildProfile
+
+        profile = await session.get(ChildProfile, seed.child_profile_id)
+        assert profile is not None
+        child_name = profile.display_name
+    body = {**BODY, "request_text": f"a story starring {child_name} the brave"}
+    created = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
+    assert created.status_code == 201
+    request_id = created.json()["id"]
+    assert created.json()["status"] == "blocked"
+
+    confirmation = {"age_band": "5-8", "length": "short", "narrative_style": "prose"}
+    approve = await client.post(
+        f"/api/v1/story-requests/{request_id}/approve",
+        json=confirmation,
+        headers=auth(seed.admin_token),
+    )
+    assert approve.status_code == 409
+
+    decline = await client.post(
+        f"/api/v1/story-requests/{request_id}/decline",
+        headers=auth(seed.admin_token),
+    )
+    assert decline.status_code == 409
+
+    plan = await client.post(
+        f"/api/v1/story-requests/{request_id}/authoring-plan",
+        json={
+            "method": "fresh_generation",
+            "mechanism": "automated_provider",
+            "prep_model": "openrouter/some-model",
+        },
+        headers=auth(seed.admin_token),
+    )
+    assert plan.status_code == 409
+
+
+async def test_guardian_unknown_profile_is_403(client: AsyncClient, seed: Seed) -> None:
+    """A guardian posting a nonexistent profile_id gets 403, not 404."""
+    body = {**BODY, "profile_id": str(uuid.uuid4())}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
+    assert res.status_code == 403
+
+
+async def test_admin_families_list_is_name_ordered_and_capped(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """The admin family list is name-ascending; the list cap is documented."""
+    async with sessions() as session:
+        session.add_all([Family(name="Aardvark Family"), Family(name="Zzyxx Family")])
+        await session.commit()
+
+    res = await client.get("/api/v1/admin/families", headers=auth(seed.admin_token))
+    assert res.status_code == 200
+    families = res.json()["families"]
+    names = [f["name"] for f in families]
+    assert names == sorted(names)
+    assert "Aardvark Family" in names
+    assert "Zzyxx Family" in names
+
+    # Documents the cap contract without seeding _FAMILY_LIST_LIMIT + 1 rows.
+    assert _FAMILY_LIST_LIMIT == 50
+    assert len(families) <= _FAMILY_LIST_LIMIT

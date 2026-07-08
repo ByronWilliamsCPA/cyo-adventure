@@ -79,6 +79,16 @@ def test_authored_body_forbids_unknown_fields() -> None:
         )
 
 
+def test_authored_body_rejects_whitespace_only_request_text() -> None:
+    """Whitespace-only request_text strips to empty and fails min_length."""
+    with pytest.raises(PydanticValidationError):
+        StoryRequestAuthoredCreateBody(
+            request_text="   ",
+            age_band=AgeBand.BAND_5_8,
+            length=Length.SHORT,
+        )
+
+
 def test_story_request_view_allows_null_profile_id() -> None:
     view = StoryRequestView.model_validate(
         {

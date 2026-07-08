@@ -63,6 +63,19 @@ describe('RequestStoryForm', () => {
       expect(screen.queryByLabelText(/family/i)).not.toBeInTheDocument()
     })
 
+    it('caps the request text textarea at 500 characters', async () => {
+      mockGuardianLoad()
+      render(<RequestStoryForm mode="guardian" />)
+      const textarea = await screen.findByLabelText(/what should the story be about/i)
+      expect(textarea).toHaveAttribute('maxLength', '500')
+    })
+
+    it('shows a reload notice when the child list fails to load', async () => {
+      mockGet.mockRejectedValue(new Error('network down'))
+      render(<RequestStoryForm mode="guardian" />)
+      expect(await screen.findByRole('alert')).toHaveTextContent(/could not load your children/i)
+    })
+
     it('prefills the band select from the chosen child and keeps it editable', async () => {
       mockGuardianLoad()
       render(<RequestStoryForm mode="guardian" />)
@@ -186,6 +199,26 @@ describe('RequestStoryForm', () => {
       fireEvent.click(screen.getByRole('button', { name: /send request/i }))
       expect(await screen.findByRole('alert')).toHaveTextContent(/did not pass/i)
       expect(screen.queryByText(/approved and sent for authoring/i)).not.toBeInTheDocument()
+    })
+
+    it('shows a transient error alert and re-enables submit when the create call rejects', async () => {
+      mockGuardianLoad()
+      mockPost.mockRejectedValueOnce(new Error('network down'))
+      render(<RequestStoryForm mode="guardian" />)
+      await screen.findByLabelText(/child/i)
+      fireEvent.change(screen.getByLabelText(/what should the story be about/i), {
+        target: { value: 'A story about a brave fox' },
+      })
+      fireEvent.change(screen.getByLabelText('Age band'), { target: { value: '8-11' } })
+      fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+
+      const submitButton = screen.getByRole('button', { name: /send request/i })
+      fireEvent.click(submitButton)
+
+      expect(await screen.findByRole('alert')).toHaveTextContent(
+        'We could not send this request. Please try again.'
+      )
+      expect(submitButton).toBeEnabled()
     })
   })
 
