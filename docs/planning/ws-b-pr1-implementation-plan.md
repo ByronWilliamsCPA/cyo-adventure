@@ -509,21 +509,13 @@ class StoryRequestApproveBody(BaseModel):
         return self
 ```
 
-Also extend `StoryRequestView` (line ~393) with the new read fields so the guardian UI can
-prefill:
-
-```python
-    initiator_role: Literal["child", "guardian", "admin"]
-    age_band: AgeBand
-    length: Length | None
-    narrative_style: NarrativeStyle
-```
+Do NOT extend `StoryRequestView` in this task; its new read fields land in Task 4 together
+with the `_to_view` projection change, so every commit keeps the full suite green.
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `uv run pytest tests/unit/test_schemas_story_request_approve.py -v`
-Expected: PASS (4 tests). Other suites now fail on `StoryRequestView` construction; Task 3
-fixes the projection before this lands, so run only this file here.
+Run: `uv run pytest tests/unit/test_schemas_story_request_approve.py tests/unit/ -v`
+Expected: PASS (4 new tests; rest of the unit suite unaffected).
 
 - [ ] **Step 5: Commit**
 
@@ -876,7 +868,18 @@ becomes `select(StoryRequest).order_by(StoryRequest.created_at.desc())`, iterati
 `rows = (await ctx.session.scalars(stmt)).all()`, and the projection call becomes
 `_to_view(request, policy=policy, surface_all=ctx.principal.is_admin)`.
 
-4. `_FlagContext.age_band` docstring changes to "The request's age band (WS-B: request-sourced,
+4. Extend `StoryRequestView` in `api/schemas.py` (line ~393) with the new read fields so the
+guardian UI can prefill (moved here from Task 2 so the suite stays green between tasks; add the
+`AgeBand, Length, NarrativeStyle` import to schemas.py if Task 2 did not already):
+
+```python
+    initiator_role: Literal["child", "guardian", "admin"]
+    age_band: AgeBand
+    length: Length | None
+    narrative_style: NarrativeStyle
+```
+
+5. `_FlagContext.age_band` docstring changes to "The request's age band (WS-B: request-sourced,
 backfilled for historical rows)". `_to_view` drops its `age_band` parameter and uses
 `request.age_band` when building `_FlagContext`, and the returned view gains the new fields:
 
