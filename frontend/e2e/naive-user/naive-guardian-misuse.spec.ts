@@ -37,6 +37,10 @@ test('two guardian sessions approving the same request: the second gets 409, not
                 request_text: 'A story about a friendly dragon',
                 moderation_flags: [],
                 created_at: '2026-07-04T10:00:00Z',
+                initiator_role: 'child',
+                age_band: '5-8',
+                length: null,
+                narrative_style: 'prose',
               },
             ],
           },
@@ -59,6 +63,9 @@ test('two guardian sessions approving the same request: the second gets 409, not
 
     await pageA.goto('/guardian/requests')
     await pageB.goto('/guardian/requests')
+
+    await pageA.getByTestId('request-req-1').getByLabel('Story length').selectOption('medium')
+    await pageB.getByTestId('request-req-1').getByLabel('Story length').selectOption('medium')
 
     await Promise.all([
       pageA.getByTestId('request-req-1').getByRole('button', { name: 'Approve' }).click(),

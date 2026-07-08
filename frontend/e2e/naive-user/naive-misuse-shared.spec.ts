@@ -26,6 +26,10 @@ test('double-clicking Approve on a guardian request only approves once', async (
       request_text: 'A story about a friendly dragon',
       moderation_flags: [],
       created_at: '2026-07-04T10:00:00Z',
+      initiator_role: 'child',
+      age_band: '5-8',
+      length: null,
+      narrative_style: 'prose',
     },
   ]
   await page.route('**/api/v1/story-requests?status=pending', (route) =>
@@ -48,7 +52,9 @@ test('double-clicking Approve on a guardian request only approves once', async (
   })
 
   await page.goto('/guardian/requests')
-  const approveButton = page.getByTestId('request-req-1').getByRole('button', { name: 'Approve' })
+  const requestRow = page.getByTestId('request-req-1')
+  await requestRow.getByLabel('Story length').selectOption('medium')
+  const approveButton = requestRow.getByRole('button', { name: 'Approve' })
   await approveButton.click()
   await approveButton.click({ force: true })
 
