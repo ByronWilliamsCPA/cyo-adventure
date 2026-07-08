@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactElement } from 'react'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { useAuth } from '../auth/useAuth'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
+import { RequestStoryForm } from './RequestStoryForm'
+import { AGE_BANDS, LENGTHS, TEEN_BANDS } from './storyRequestOptions'
 import { makeStoryRequestQueueApi, type StoryRequestView } from './storyRequestQueueApi'
 
 type LoadState =
@@ -15,17 +18,16 @@ type LoadState =
 
 type RowDecision = { age_band: string; length: string; narrative_style: string }
 
-const TEEN_BANDS = ['13-16', '16+']
-const AGE_BANDS = ['3-5', '5-8', '8-11', '10-13', '13-16', '16+']
-const LENGTHS = ['short', 'medium', 'long']
-
 /**
  * Guardian/admin story-request review (Task 3.0). Lists pending child requests
  * with the (screened) text and redacted moderation flags; Approve builds a
  * concept and enqueues generation server-side, Decline dismisses the request.
+ * Guardians also get an embedded RequestStoryForm (WS-B PR 2) above the queue
+ * for authoring a pre-approved request of their own.
  */
 export function RequestsPage() {
   const api = useApi()
+  const { principal } = useAuth()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
@@ -151,15 +153,15 @@ export function RequestsPage() {
     await runRowAction(id, () => queueApi.decline(id))
   }
 
+  let content: ReactElement
   if (state.kind === 'loading') {
-    return (
+    content = (
       <div role="status" aria-live="polite">
         Loading story requests…
       </div>
     )
-  }
-  if (state.kind === 'forbidden') {
-    return (
+  } else if (state.kind === 'forbidden') {
+    content = (
       <section className="console">
         <h1>Story requests</h1>
         <p className="console__notice">
@@ -167,16 +169,14 @@ export function RequestsPage() {
         </p>
       </section>
     )
-  }
-  if (state.kind === 'error') {
-    return (
+  } else if (state.kind === 'error') {
+    content = (
       <p role="alert" className="console__error">
         We could not load story requests. Please reload.
       </p>
     )
-  }
-  if (state.requests.length === 0) {
-    return (
+  } else if (state.requests.length === 0) {
+    content = (
       <section className="console">
         <h1>Story requests</h1>
         <EmptyState
@@ -185,104 +185,114 @@ export function RequestsPage() {
         />
       </section>
     )
-  }
-  return (
-    <section className="console">
-      <h1>Story requests</h1>
-      <ul className="console-list">
-        {state.requests.map((req) => {
-          const isInFlight = pendingIds.has(req.id)
-          // Approve/Decline only transition a pending request; the backend
-          // rejects the action for any other status. The queue is fetched with
-          // ?status=pending so non-pending rows do not occur here in practice,
-          // but gate the actions on status anyway so the state machine holds if
-          // the fetch ever widens.
-          const isActionable = req.status === 'pending'
-          const decision = decisionFor(req)
-          return (
-            <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
-              <div className="console-row__body">
-                {/* request_text is nulled server-side only for blocked rows,
-                    which the pending queue never returns; the fallback is
-                    defensive so a null still renders a safe placeholder. */}
-                <p className="console-row__title">
-                  {req.request_text ?? 'Idea hidden by content check'}
-                </p>
-                {req.moderation_flags.length > 0 ? (
-                  <div className="console-row__flags">
-                    {req.moderation_flags.map((flag, i) => (
-                      <FlagBadge
-                        key={`${req.id}-${i}`}
-                        tone={verdictTone(flag.verdict)}
-                        label={flag.category}
-                      />
-                    ))}
-                  </div>
-                ) : null}
-                {rowErrors[req.id] ? (
-                  <p role="alert" className="console-row__error">
-                    Could not update the request. Try again.
+  } else {
+    content = (
+      <section className="console">
+        <h1>Story requests</h1>
+        <ul className="console-list">
+          {state.requests.map((req) => {
+            const isInFlight = pendingIds.has(req.id)
+            // Approve/Decline only transition a pending request; the backend
+            // rejects the action for any other status. The queue is fetched
+            // with ?status=pending so non-pending rows do not occur here in
+            // practice, but gate the actions on status anyway so the state
+            // machine holds if the fetch ever widens.
+            const isActionable = req.status === 'pending'
+            const decision = decisionFor(req)
+            return (
+              <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
+                <div className="console-row__body">
+                  {/* request_text is nulled server-side only for blocked rows,
+                      which the pending queue never returns; the fallback is
+                      defensive so a null still renders a safe placeholder. */}
+                  <p className="console-row__title">
+                    {req.request_text ?? 'Idea hidden by content check'}
                   </p>
-                ) : null}
-              </div>
-              <div className="console-row__actions">
-                <label>
-                  Age band
-                  <select
-                    value={decision.age_band}
-                    onChange={(e) => setDecision(req, { age_band: e.target.value })}
-                  >
-                    {AGE_BANDS.map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label>
-                  Story length
-                  <select
-                    value={decision.length}
-                    onChange={(e) => setDecision(req, { length: e.target.value })}
-                  >
-                    <option value="">Choose…</option>
-                    {LENGTHS.map((l) => (
-                      <option key={l} value={l}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                {TEEN_BANDS.includes(decision.age_band) ? (
+                  {req.moderation_flags.length > 0 ? (
+                    <div className="console-row__flags">
+                      {req.moderation_flags.map((flag, i) => (
+                        <FlagBadge
+                          key={`${req.id}-${i}`}
+                          tone={verdictTone(flag.verdict)}
+                          label={flag.category}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+                  {rowErrors[req.id] ? (
+                    <p role="alert" className="console-row__error">
+                      Could not update the request. Try again.
+                    </p>
+                  ) : null}
+                </div>
+                <div className="console-row__actions">
                   <label>
-                    Story style
+                    Age band
                     <select
-                      value={decision.narrative_style}
-                      onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
+                      value={decision.age_band}
+                      onChange={(e) => setDecision(req, { age_band: e.target.value })}
                     >
-                      <option value="prose">prose</option>
-                      <option value="gamebook">gamebook</option>
+                      {AGE_BANDS.map((b) => (
+                        <option key={b} value={b}>
+                          {b}
+                        </option>
+                      ))}
                     </select>
                   </label>
-                ) : null}
-                <Button
-                  disabled={isInFlight || !isActionable || decision.length === ''}
-                  onClick={() => void approve(req)}
-                >
-                  Approve
-                </Button>
-                <Button
-                  variant="danger"
-                  disabled={isInFlight || !isActionable}
-                  onClick={() => void decline(req.id)}
-                >
-                  Decline
-                </Button>
-              </div>
-            </li>
-          )
-        })}
-      </ul>
-    </section>
+                  <label>
+                    Story length
+                    <select
+                      value={decision.length}
+                      onChange={(e) => setDecision(req, { length: e.target.value })}
+                    >
+                      <option value="">Choose…</option>
+                      {LENGTHS.map((l) => (
+                        <option key={l} value={l}>
+                          {l}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  {TEEN_BANDS.includes(decision.age_band) ? (
+                    <label>
+                      Story style
+                      <select
+                        value={decision.narrative_style}
+                        onChange={(e) =>
+                          setDecision(req, { narrative_style: e.target.value })
+                        }
+                      >
+                        <option value="prose">prose</option>
+                        <option value="gamebook">gamebook</option>
+                      </select>
+                    </label>
+                  ) : null}
+                  <Button
+                    disabled={isInFlight || !isActionable || decision.length === ''}
+                    onClick={() => void approve(req)}
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    variant="danger"
+                    disabled={isInFlight || !isActionable}
+                    onClick={() => void decline(req.id)}
+                  >
+                    Decline
+                  </Button>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </section>
+    )
+  }
+
+  return (
+    <>
+      {principal?.role === 'guardian' ? <RequestStoryForm mode="guardian" /> : null}
+      {content}
+    </>
   )
 }

@@ -11,6 +11,21 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+// Default every pre-existing case to a guardian principal: this page's own
+// content (the review queue) is admin-only and does not depend on the
+// mocked role, but the admin-only RequestStoryForm embed (WS-B PR2) does, so
+// defaulting to guardian gates it out of every case below except the two
+// dedicated admin-embed tests, matching its own isolated coverage in
+// RequestStoryForm.test.tsx.
+const mockUseAuth = vi.fn()
+vi.mock('../auth/useAuth', () => ({
+  useAuth: (): unknown => mockUseAuth(),
+}))
+
+function principal(role: 'guardian' | 'admin') {
+  return { principal: { subject: 's', role, familyId: 'f', profileIds: [] } }
+}
+
 const FLAGGED = {
   storybook_id: 'flag-1',
   title: 'Scary Tale',
@@ -44,14 +59,17 @@ function renderPage() {
 function mockQueue(
   items: unknown[],
   jobs: unknown[] = [],
-  profiles: unknown[] = [{ id: 'p1' }]
+  profiles: unknown[] = [{ id: 'p1' }],
+  families: unknown[] = []
 ) {
   mockGet.mockImplementation((url: string) =>
     url === '/v1/generation-jobs'
       ? Promise.resolve({ data: { jobs } })
       : url === '/v1/profiles'
         ? Promise.resolve({ data: { profiles } })
-        : Promise.resolve({ data: { items } })
+        : url === '/v1/admin/families'
+          ? Promise.resolve({ data: { families } })
+          : Promise.resolve({ data: { items } })
   )
 }
 
@@ -59,6 +77,8 @@ beforeEach(() => {
   mockGet.mockReset()
   mockQueue([FLAGGED, READY])
   mockPost.mockReset()
+  mockUseAuth.mockReset()
+  mockUseAuth.mockReturnValue(principal('guardian'))
 })
 
 describe('ConsolePage', () => {
@@ -146,5 +166,19 @@ describe('ConsolePage', () => {
     mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
     renderPage()
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not load/i)
+  })
+
+  it('renders the admin request-a-story form for an admin principal', async () => {
+    mockUseAuth.mockReturnValue(principal('admin'))
+    mockQueue([FLAGGED, READY], [], [{ id: 'p1' }], [{ id: 'fam-1', name: 'The Ambers' }])
+    renderPage()
+    expect(await screen.findByLabelText(/what should the story be about/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/family/i)).toBeInTheDocument()
+  })
+
+  it('does not render the request-a-story form for a guardian principal', async () => {
+    renderPage()
+    await screen.findByText('Scary Tale')
+    expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })
 })

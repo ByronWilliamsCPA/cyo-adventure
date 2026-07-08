@@ -10,6 +10,20 @@ vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
 
+// This page's queue is admin-only (a plain guardian gets 403, see the
+// forbidden-notice test below), so the existing queue-review cases run as the
+// admin principal by default; that also gates the guardian-only
+// RequestStoryForm embed (WS-B PR2) out of every pre-existing test, matching
+// its own isolated coverage in RequestStoryForm.test.tsx.
+const mockUseAuth = vi.fn()
+vi.mock('../auth/useAuth', () => ({
+  useAuth: (): unknown => mockUseAuth(),
+}))
+
+function principal(role: 'guardian' | 'admin') {
+  return { principal: { subject: 's', role, familyId: 'f', profileIds: [] } }
+}
+
 const PENDING_URL = '/v1/story-requests?status=pending'
 
 const DRAGON_REQUEST = {
@@ -63,6 +77,8 @@ beforeEach(() => {
   mockGet.mockReset()
   mockPost.mockReset()
   mockPending([DRAGON_REQUEST])
+  mockUseAuth.mockReset()
+  mockUseAuth.mockReturnValue(principal('admin'))
 })
 
 describe('RequestsPage', () => {
@@ -217,5 +233,24 @@ describe('RequestsPage', () => {
     expect(title).toBeInTheDocument()
     const approveButton = screen.getByRole('button', { name: 'Approve' })
     expect(approveButton).not.toBeDisabled()
+  })
+
+  it('renders the guardian request-a-story form above the queue for a guardian principal', async () => {
+    mockUseAuth.mockReturnValue(principal('guardian'))
+    mockGet.mockImplementation((url: string) =>
+      url === PENDING_URL
+        ? Promise.resolve({ data: { requests: [] } })
+        : url === '/v1/profiles'
+          ? Promise.resolve({ data: { profiles: [] } })
+          : Promise.reject(new Error(`unexpected GET ${url}`))
+    )
+    render(<RequestsPage />)
+    expect(await screen.findByLabelText(/what should the story be about/i)).toBeInTheDocument()
+  })
+
+  it('does not render the request-a-story form for an admin principal', async () => {
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })
 })

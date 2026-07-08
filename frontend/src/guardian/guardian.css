@@ -531,6 +531,45 @@
 }
 
 /* ============================================================================
+   Guardian/admin authored story request form (WS-B PR2): embedded above the
+   pending queue (RequestsPage) or the review queue (ConsolePage).
+   ============================================================================ */
+.request-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 32rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgb(44 26 14 / 12%);
+}
+
+.request-form__heading {
+  font-size: var(--text-base, 1.125rem);
+  color: var(--color-ink-secondary, #5a3e28);
+  margin: 0;
+}
+
+.request-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: 600;
+}
+
+.request-form__notice {
+  color: var(--color-forest, #2d5a3d);
+}
+
+.request-form__notice--blocked {
+  color: var(--color-error, #9b2c2c);
+}
+
+.request-form__error {
+  color: var(--color-error, #9b2c2c);
+}
+
+/* ============================================================================
    Guardian books page (Task 2.2): browse published family library and assign
    ============================================================================ */
 .books__list {

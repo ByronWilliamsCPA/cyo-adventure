@@ -1,10 +1,12 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactElement } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { useAuth } from '../auth/useAuth'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { FlagBadge } from './FlagBadge'
+import { RequestStoryForm } from './RequestStoryForm'
 import { makeReviewApi, type ReviewQueueItem, type StillProcessingItem } from './reviewApi'
 
 type LoadState =
@@ -40,10 +42,13 @@ function QueueRow({ item }: { item: ReviewQueueItem }) {
  * queue. Flagged stories sort to the top, then ready-to-review, then still
  * processing. The queue endpoint is admin-only; a plain-guardian token gets a
  * 403 and sees a notice rather than a broken page (ADR-005: the approver is the
- * global safety reviewer, not any guardian).
+ * global safety reviewer, not any guardian). Admins also get an embedded
+ * RequestStoryForm (WS-B PR 2) for authoring a pre-approved request against a
+ * chosen family.
  */
 export function ConsolePage() {
   const api = useApi()
+  const { principal } = useAuth()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   // #ASSUME: data integrity: /v1/profiles returns { profiles: [...] }. On any
@@ -102,16 +107,15 @@ export function ConsolePage() {
     }
   }, [api])
 
+  let content: ReactElement
   if (state.kind === 'loading') {
-    return (
+    content = (
       <div role="status" aria-live="polite">
         Loading review queue…
       </div>
     )
-  }
-
-  if (state.kind === 'forbidden') {
-    return (
+  } else if (state.kind === 'forbidden') {
+    content = (
       <section className="console">
         <h1>Review queue</h1>
         <p className="console__notice">
@@ -120,75 +124,79 @@ export function ConsolePage() {
         </p>
       </section>
     )
-  }
-
-  if (state.kind === 'error') {
-    return (
+  } else if (state.kind === 'error') {
+    content = (
       <p role="alert" className="console__error">
         We could not load the review queue. Please reload.
       </p>
     )
+  } else {
+    const flagged = state.items.filter(isFlagged)
+    const ready = state.items.filter((item) => item.screened && item.flagged_count === 0)
+    const nothingPending = state.items.length === 0 && state.processing.length === 0
+
+    content = (
+      <section className="console">
+        <h1>Review queue</h1>
+        {nothingPending ? (
+          <EmptyState
+            title="Nothing to review"
+            description="New stories appear here once they finish generating."
+            actions={
+              childCount === 0 ? (
+                <Link className="console__cta" to="/guardian/profiles">
+                  Add a child profile to get started
+                </Link>
+              ) : undefined
+            }
+          />
+        ) : (
+          <>
+            {flagged.length > 0 ? (
+              <div className="console-group">
+                <h2 className="console-group__heading">Flagged (review carefully)</h2>
+                <ul className="console-list">
+                  {flagged.map((item) => (
+                    <QueueRow key={item.storybook_id} item={item} />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {ready.length > 0 ? (
+              <div className="console-group">
+                <h2 className="console-group__heading">Ready to review</h2>
+                <ul className="console-list">
+                  {ready.map((item) => (
+                    <QueueRow key={item.storybook_id} item={item} />
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            <div className="console-group">
+              <h2 className="console-group__heading">Still processing</h2>
+              {state.processing.length === 0 ? (
+                <p className="console__muted">No stories are generating right now.</p>
+              ) : (
+                <ul className="console-list">
+                  {state.processing.map((job) => (
+                    <li key={job.job_id} className="console-row">
+                      <span className="console-row__title">{job.title}</span>
+                      <FlagBadge tone="processing" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </>
+        )}
+      </section>
+    )
   }
 
-  const flagged = state.items.filter(isFlagged)
-  const ready = state.items.filter((item) => item.screened && item.flagged_count === 0)
-  const nothingPending =
-    state.items.length === 0 && state.processing.length === 0
-
   return (
-    <section className="console">
-      <h1>Review queue</h1>
-      {nothingPending ? (
-        <EmptyState
-          title="Nothing to review"
-          description="New stories appear here once they finish generating."
-          actions={
-            childCount === 0 ? (
-              <Link className="console__cta" to="/guardian/profiles">
-                Add a child profile to get started
-              </Link>
-            ) : undefined
-          }
-        />
-      ) : (
-        <>
-          {flagged.length > 0 ? (
-            <div className="console-group">
-              <h2 className="console-group__heading">Flagged (review carefully)</h2>
-              <ul className="console-list">
-                {flagged.map((item) => (
-                  <QueueRow key={item.storybook_id} item={item} />
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          {ready.length > 0 ? (
-            <div className="console-group">
-              <h2 className="console-group__heading">Ready to review</h2>
-              <ul className="console-list">
-                {ready.map((item) => (
-                  <QueueRow key={item.storybook_id} item={item} />
-                ))}
-              </ul>
-            </div>
-          ) : null}
-          <div className="console-group">
-            <h2 className="console-group__heading">Still processing</h2>
-            {state.processing.length === 0 ? (
-              <p className="console__muted">No stories are generating right now.</p>
-            ) : (
-              <ul className="console-list">
-                {state.processing.map((job) => (
-                  <li key={job.job_id} className="console-row">
-                    <span className="console-row__title">{job.title}</span>
-                    <FlagBadge tone="processing" />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </>
-      )}
-    </section>
+    <>
+      {principal?.role === 'admin' ? <RequestStoryForm mode="admin" /> : null}
+      {content}
+    </>
   )
 }

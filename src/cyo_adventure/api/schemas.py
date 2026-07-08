@@ -381,11 +381,12 @@ class StoryRequestCreateBody(BaseModel):
 _TEEN_BANDS = frozenset({AgeBand.BAND_13_16, AgeBand.BAND_16_PLUS})
 
 
-class StoryRequestApproveBody(BaseModel):
-    """Guardian confirmation required to approve a request (WS-B).
+class StoryRequestSpecBody(BaseModel):
+    """The band/length/style trio shared by approve and authored-create bodies.
 
-    The request becomes the source of truth for band and length at approval;
-    ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+    One base class because ADR-011's teen-only gamebook rule must hold at every
+    entry point that sets ``narrative_style``; subclassing keeps the validator
+    in one place (mirroring the ck_story_request_style_band CHECK at rest).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -395,7 +396,7 @@ class StoryRequestApproveBody(BaseModel):
     narrative_style: NarrativeStyle = NarrativeStyle.PROSE
 
     @model_validator(mode="after")
-    def _style_allowed_for_band(self) -> StoryRequestApproveBody:
+    def _style_allowed_for_band(self) -> StoryRequestSpecBody:
         if (
             self.narrative_style is NarrativeStyle.GAMEBOOK
             and self.age_band not in _TEEN_BANDS
@@ -403,6 +404,27 @@ class StoryRequestApproveBody(BaseModel):
             msg = "narrative_style 'gamebook' requires age band 13-16 or 16+"
             raise ValueError(msg)
         return self
+
+
+class StoryRequestApproveBody(StoryRequestSpecBody):
+    """Guardian confirmation required to approve a request (WS-B).
+
+    The request becomes the source of truth for band and length at approval;
+    ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+    """
+
+
+class StoryRequestAuthoredCreateBody(StoryRequestSpecBody):
+    """A guardian's or admin's pre-approved story request (WS-B PR 2).
+
+    ``profile_id`` is optional (an authored request need not target a child).
+    ``family_id`` is admin-only: admins must name the target family (decision
+    B3); guardians must omit it (their own family is server-derived).
+    """
+
+    request_text: RequestText
+    profile_id: str | None = None
+    family_id: str | None = None
 
 
 class StoryRequestFlag(BaseModel):
@@ -425,12 +447,14 @@ class StoryRequestView(BaseModel):
     redacted StoryRequestFlag list. ``age_band``, ``length``, and
     ``narrative_style`` are request-sourced (WS-B): for a still-pending
     request they reflect the profile-stamped defaults from creation; for an
-    approved request they reflect the guardian's approval confirmation. The
-    guardian UI uses these to prefill the approve dialog.
+    approved request they reflect the guardian's approval confirmation, and
+    the guardian UI uses the band/length/style trio to prefill the approve
+    dialog. ``profile_id`` is ``None`` for an authored request with no target
+    child (WS-B PR 2).
     """
 
     id: str
-    profile_id: str
+    profile_id: str | None
     status: StoryRequestStatus
     request_text: str | None
     moderation_flags: list[StoryRequestFlag]
@@ -465,6 +489,27 @@ class StoryRequestApprovedView(BaseModel):
     id: str
     status: Literal["approved"]
     concept_id: str
+
+
+class StoryRequestAuthoredCreatedView(BaseModel):
+    """The result of an authored create: approved with a concept, or blocked."""
+
+    id: str
+    status: StoryRequestStatus
+    concept_id: str | None
+
+
+class FamilyView(BaseModel):
+    """A family as listed for the admin authored-request form."""
+
+    id: str
+    name: str
+
+
+class FamilyListView(BaseModel):
+    """All families, admin-only (powers the required family selector)."""
+
+    families: list[FamilyView]
 
 
 AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]

@@ -19,7 +19,7 @@ export interface StoryRequestFlag {
 
 export interface StoryRequestView {
   id: string
-  profile_id: string
+  profile_id: string | null
   status: StoryRequestStatus
   request_text: string | null
   moderation_flags: StoryRequestFlag[]

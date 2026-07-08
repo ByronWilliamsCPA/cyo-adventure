@@ -38,6 +38,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `narrative_style`; guardians confirm band and length at approval (the
   approve endpoint now requires them), and generation reads them from the
   request instead of the child profile (WS-B PR 1).
+- Guardians and admins can now create a story request directly in
+  `approved` status via `POST /api/v1/story-requests/authored`, skipping the
+  guardian-approval step; the request still goes through moderation
+  screening and can be blocked by it. The endpoint is role-gated (child
+  tokens get a 403) and admin-authored requests require a family
+  (`family_id` is forbidden for guardians, required for admins; `profile_id`
+  is optional for both roles). A new
+  `GET /api/v1/admin/families` endpoint lists families (id and name only)
+  to back the admin family selector. `StoryRequestView.profile_id` is now
+  nullable to represent authored requests with no linked child profile. The
+  request-a-story page gained a guardian variant (optional child selector,
+  band/length/style at creation) and the admin console gained an admin
+  variant (required family selector) of `RequestStoryForm` (WS-B PR 2).
 - Age-band moderation thresholds: the moderation pipeline now records every
   advisory finding, and a per-`(age_band, category)` threshold determines
   which findings surface on the two guardian-facing surfaces: the story

@@ -311,7 +311,7 @@ known-first-party = ["cyo_adventure"]
 # Module init files
 "__init__.py" = ["F401", "D104"]
 
-# The approval, me, and moderation_thresholds routers import Context (an
+# The approval, me, moderation_thresholds, and families routers import Context (an
 # Annotated[..., Depends()] alias) at runtime; FastAPI resolves the Depends at
 # startup via inspect, so Context must not move into TYPE_CHECKING even when
 # it appears only in annotations. Routers that import Context alongside other
@@ -320,6 +320,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/approval.py" = ["TC001"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
+"**/api/families.py" = ["TC001"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
@@ -383,6 +384,13 @@ known-first-party = ["cyo_adventure"]
 # the five); each is a distinct concern and a config object would obscure
 # which fields are document content vs. review-backend configuration.
 "**/generation/fidelity_gate.py" = ["PLR0913"]
+
+# create_authored_request carries session, principal, family_id, profile,
+# request_text, confirmation, and screening; the last five are mandatory and
+# keyword-only, each a distinct concern (target family, target profile,
+# screened text, author's band/length/style spec, screening outcome) with no
+# sensible default. A config object would obscure the contract.
+"**/story_requests/service.py" = ["PLR0913"]
 
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
