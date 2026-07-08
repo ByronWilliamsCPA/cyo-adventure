@@ -279,4 +279,3 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
 def auth(token: str) -> dict[str, str]:
     """Build an Authorization header for a bearer token."""
     return {"Authorization": f"Bearer {token}"}
-
