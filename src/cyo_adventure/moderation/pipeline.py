@@ -15,6 +15,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.guarded import PiiGuardedProvider
 from cyo_adventure.moderation.classifiers import run_classifiers
 from cyo_adventure.moderation.repair import attempt_repair
@@ -179,6 +180,21 @@ async def run_moderation_pipeline(
                 repaired_report.repaired = True
                 report = repaired_report
                 version_row.blob = revised
+                # #ASSUME: data-integrity: the event log must record a repair
+                # the moment the revised blob is adopted, before moderation_report
+                # is overwritten below, so repair_applied always precedes
+                # moderation_completed in occurred_at order for this version.
+                # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+                # test_repaired_moderation_writes_repair_applied_then_completed
+                # asserts exactly one repair_applied row when repair occurs.
+                await record_event(
+                    session,
+                    Actor.system(),
+                    entity_type="storybook_version",
+                    entity_id=f"{story_id}:{version}",
+                    event_type=EventType.REPAIR_APPLIED,
+                    payload={"stage": "moderation"},
+                )
 
     version_row.moderation_report = report.to_dict()
 
@@ -190,6 +206,73 @@ async def run_moderation_pipeline(
         await service.auto_reject(session, storybook)
     else:
         await service.submit(session, storybook)
+
+    # #CRITICAL: data-integrity: this is the durable audit-trail record of the
+    # moderation outcome (spec D3); the payload is restricted to enum verdicts,
+    # a bool, and integer counts by record_event's allowlist, never finding
+    # messages or story prose, so the append-only log cannot leak PII.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_clean_moderation_writes_moderation_completed and
+    # ::test_repaired_moderation_writes_repair_applied_then_completed assert a
+    # single moderation_completed row with the resulting to_state and a
+    # PII-free counts payload.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="storybook_version",
+        entity_id=f"{story_id}:{version}",
+        event_type=EventType.MODERATION_COMPLETED,
+        to_state=storybook.status,
+        payload={
+            "overall_verdict": _overall_verdict(report),
+            "repaired": report.repaired,
+            "counts": _verdict_counts(report),
+        },
+    )
+
+
+def _overall_verdict(report: ModerationReport) -> str:
+    """Return the report's single gating verdict for the event payload.
+
+    Derived from the report's own gating properties (``has_hard_block`` /
+    ``has_soft_flag``), not a stored field: ``ModerationReport`` has no
+    ``overall_verdict`` attribute of its own, only per-finding verdicts.
+
+    Args:
+        report: The final report driving the submit/auto_reject routing.
+
+    Returns:
+        ``"block"`` when any finding hard-blocks, ``"flag"`` when any finding
+        soft-flags (and none blocks), otherwise ``"pass"``.
+    """
+    if report.has_hard_block:
+        return Verdict.BLOCK.value
+    if report.has_soft_flag:
+        return Verdict.FLAG.value
+    return Verdict.PASS.value
+
+
+# #CRITICAL: security: _verdict_counts is the only aggregate that reaches the
+# durable event log payload; it MUST stay a verdict-name -> int mapping (a
+# small closed vocabulary: block/flag/advisory/pass) and never include a
+# finding's ``category``, ``message``, or ``node_id``, any of which could
+# carry story-derived text.
+# #VERIFY: values are plain ints from a fixed StrEnum key set below; no string
+# field from Finding other than the enum's own ``.value`` is read here.
+def _verdict_counts(report: ModerationReport) -> dict[str, int]:
+    """Return a PII-free count of findings per verdict.
+
+    Args:
+        report: The report whose findings are tallied.
+
+    Returns:
+        A mapping of verdict value (for example ``"flag"``) to occurrence count.
+    """
+    counts: dict[str, int] = {}
+    for finding in report.findings:
+        key = finding.verdict.value
+        counts[key] = counts.get(key, 0) + 1
+    return counts
 
 
 async def _run_all_stages(
