@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
@@ -6,6 +6,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { makeCoverApi, type CoverStatusView } from './coverApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { makeReviewApi, type FindingView, type ReviewSurface } from './reviewApi'
 
@@ -68,6 +69,7 @@ export function ReviewDetailPage() {
   const { storybookId = '' } = useParams()
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
+  const coverApi = useMemo(() => makeCoverApi(api), [api])
   const navigate = useNavigate()
 
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
@@ -75,6 +77,21 @@ export function ReviewDetailPage() {
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
+  const [coverStatus, setCoverStatus] = useState<CoverStatusView['cover_status']>('none')
+  const [coverBusy, setCoverBusy] = useState(false)
+
+  // #ASSUME: timing dependencies: the cover-generation poll loop sleeps 2s up
+  // to 30 times (~60s); a reviewer can navigate away mid-poll.
+  // #VERIFY: generateCover checks isMountedRef after every await before
+  // calling setState, so a late poll response never writes into an unmounted
+  // component.
+  const isMountedRef = useRef(true)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -101,6 +118,34 @@ export function ReviewDetailPage() {
       cancelled = true
     }
   }, [reviewApi, storybookId])
+
+  // #ASSUME: external resources: cover generation runs async on an RQ worker;
+  // the 10s axios timeout in useApi rules out waiting on the POST itself, so
+  // this fires the POST then polls the GET status endpoint until it leaves
+  // 'generating' (or the poll cap is hit).
+  // #VERIFY: coverApi.test.ts covers the request shapes; the isMountedRef
+  // guard above stops the loop from writing state after unmount.
+  const generateCover = useCallback(async () => {
+    const surface = state.kind === 'ready' ? state.surface : null
+    if (!surface) return
+    const version = surface.version
+    setCoverBusy(true)
+    try {
+      const started = await coverApi.generate(storybookId, version)
+      if (!isMountedRef.current) return
+      setCoverStatus(started.cover_status)
+      for (let i = 0; i < 30; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        if (!isMountedRef.current) return
+        const polled = await coverApi.status(storybookId, version)
+        if (!isMountedRef.current) return
+        setCoverStatus(polled.cover_status)
+        if (polled.cover_status !== 'generating') break
+      }
+    } finally {
+      if (isMountedRef.current) setCoverBusy(false)
+    }
+  }, [coverApi, state, storybookId])
 
   async function runAction(action: () => Promise<unknown>) {
     setSubmitting(true)
@@ -219,6 +264,18 @@ export function ReviewDetailPage() {
         enabled-for-in-review tests.
       */}
       <div className="review-actionbar">
+        <Button
+          variant="ghost"
+          onClick={() => void generateCover()}
+          disabled={coverBusy || coverStatus === 'generating'}
+        >
+          {coverStatus === 'generating' ? 'Generating cover…' : 'Generate cover'}
+        </Button>
+        {coverStatus === 'failed' ? (
+          <span className="review-cover-error" role="alert">
+            Cover failed; try again.
+          </span>
+        ) : null}
         <Button
           variant="danger"
           onClick={() => openDialog('sendback')}
