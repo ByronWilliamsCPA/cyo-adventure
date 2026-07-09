@@ -310,7 +310,8 @@ async def load_version_records(session: AsyncSession) -> list[VersionModerationR
         # #EDGE: data-integrity: a composite id that does not parse is
         # skipped, never a crash; that version falls back to created_at
         # ordering below.
-        # #VERIFY: covered by the loader integration tests seeding valid ids.
+        # #VERIFY: tests/integration/test_moderation_dashboard_api.py::
+        # TestLoadVersionRecords::test_loader_skips_malformed_moderation_event_entity_ids.
         if not storybook_id or not version_text.isdigit():
             continue
         key = (storybook_id, int(version_text))
