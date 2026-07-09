@@ -547,3 +547,56 @@ async def test_catalog_assignment_listing_is_family_scoped(
         headers=auth(seed.other_guardian_token),
     )
     assert theirs.json()["profile_ids"] == [str(seed.other_child_profile_id)]
+
+
+# ---------------------------------------------------------------------------
+# Cross-family content-summary reads for catalog books (WS-E, Task 6)
+# ---------------------------------------------------------------------------
+
+
+async def test_guardian_reads_catalog_book_content_summary(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """The assign dialog's summary fetch works for another family's catalog book."""
+    async with sessions() as session:
+        other_fam = Family(name="Catalog Owner 3")
+        session.add(other_fam)
+        await session.flush()
+        session.add(
+            Storybook(
+                id="catalog-summary",
+                family_id=other_fam.id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="catalog-summary",
+                version=1,
+                blob={"id": "catalog-summary", "title": "Shared"},
+                moderation_report=make_clean_moderation_report(),
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+    resp = await client.get(
+        "/api/v1/storybooks/catalog-summary/content-summary",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+
+
+async def test_guardian_cannot_read_private_cross_family_summary(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A cross-family visibility=family book's summary stays 403."""
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/content-summary",
+        headers=auth(seed.other_guardian_token),
+    )
+    assert resp.status_code == 403, resp.text

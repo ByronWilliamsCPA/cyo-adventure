@@ -150,18 +150,21 @@ async def _authorize_content_summary(
             version number.
 
     Raises:
-        AuthorizationError: If the caller is a child, or a guardian from another
-            family (403).
+        AuthorizationError: If the caller is a child, or a guardian from
+            another family reading a non-catalog (family-visibility) book
+            (403).
         ResourceNotFoundError: If the story does not exist, is not published,
             its current published version row is missing, or that row lacks
             approved_by (defense-in-depth; the sole publish path is expected
             to stamp it) (404).
     """
-    # #CRITICAL: security: guardian-or-admin only; a child token can never read a
-    # content summary. A guardian is family-scoped (cross-family -> 403); an admin
-    # is global and skips the family check (mirrors library.py's is_admin bypass).
-    # Missing OR unpublished -> 404 (not 403) so an unpublished story's existence
-    # is not revealed, matching get_storybook_version's information-hiding rule.
+    # #CRITICAL: security: a guardian may read a cross-family summary ONLY for a
+    # catalog-shared book (WS-E E3: the assign dialog needs the badge detail for
+    # anything assignable); a family-visibility book keeps the family gate. An
+    # admin remains global. #VERIFY: catalog summary 200 / private cross-family 403.
+    # A child token can never read a content summary. Missing OR unpublished ->
+    # 404 (not 403) so an unpublished story's existence is not revealed, matching
+    # get_storybook_version's information-hiding rule.
     # #VERIFY: child -> 403; cross-family guardian -> 403; missing/unpublished -> 404.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = "only a guardian or admin may read a content summary"
@@ -170,7 +173,7 @@ async def _authorize_content_summary(
     if book is None or book.status != _PUBLISHED:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    if not ctx.principal.is_admin:
+    if not ctx.principal.is_admin and book.visibility != Visibility.CATALOG.value:
         authorize_family(ctx.principal, book.family_id)
     version = book.current_published_version
     if version is None:
@@ -210,7 +213,8 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
         ContentSummaryView: The redacted guardian content summary.
 
     Raises:
-        AuthorizationError: Child caller or cross-family guardian (403).
+        AuthorizationError: Child caller, or a guardian from another family
+            reading a non-catalog (family-visibility) book (403).
         ResourceNotFoundError: Unknown or unpublished story, or a missing
             published version row (404).
         ValidationError: If the stored moderation report is corrupt at rest.
