@@ -382,3 +382,22 @@ class TestDashboardEndpoint:
             "/api/v1/admin/moderation/dashboard", headers=auth(seed.guardian_token)
         )
         assert res.status_code == 403
+
+    async def test_dashboard_shows_recent_noise_floor_change(
+        self, client: AsyncClient, seed: Seed
+    ) -> None:
+        put = await client.put(
+            "/api/v1/admin/moderation/noise-floor",
+            json={"value": 0.1},
+            headers=auth(seed.admin_token),
+        )
+        assert put.status_code == 200
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        changes = res.json()["recent_changes"]
+        assert changes, "expected the noise_floor_changed event to appear"
+        assert changes[0]["event_type"] == "noise_floor_changed"
+        assert changes[0]["entity_id"] == "admin_noise_floor"
