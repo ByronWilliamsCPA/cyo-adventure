@@ -112,8 +112,7 @@ def skeleton_matches_cell(
     """
     if metadata.age_band != band:
         return False
-    metadata_length = metadata.length if metadata.length is not None else None
-    if metadata_length != length:
+    if metadata.length != length:
         return False
     return band not in _STYLE_AWARE_BANDS or metadata.narrative_style == style
 
