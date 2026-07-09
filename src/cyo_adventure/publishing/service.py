@@ -1,11 +1,13 @@
 """Storybook approval service: transitions that stamp provenance.
 
-Each function wraps a state-machine transition and mutates ORM rows, then
-``await session.flush()``. The request unit-of-work (api/deps.py) commits once
-at request end; these never commit. ``approve`` is the ONLY path that may set
-``status="published"``, and it always stamps ``approved_by`` in the same
-operation, which is the single-write-path leg of the no-unapproved-publish
-invariant.
+Each function wraps a state-machine transition and mutates ORM rows, and the
+transaction is flushed before it returns: either directly via
+``await session.flush()`` or indirectly through ``record_event``, which
+flushes as part of writing the pipeline event row. The request unit-of-work
+(api/deps.py) commits once at request end; these never commit. ``approve`` is
+the ONLY path that may set ``status="published"``, and it always stamps
+``approved_by`` in the same operation, which is the single-write-path leg of
+the no-unapproved-publish invariant.
 """
 
 from __future__ import annotations
