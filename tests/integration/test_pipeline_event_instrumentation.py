@@ -8,7 +8,13 @@ from unittest.mock import AsyncMock
 import pytest
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.db.models import Family, GenerationJob, Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    Family,
+    GenerationJob,
+    Storybook,
+    StorybookVersion,
+    User,
+)
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import (
     _CANNED_STORY,
@@ -18,6 +24,7 @@ from cyo_adventure.generation.provider import (
 from cyo_adventure.generation.worker import run_generation_job
 from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
+from tests.conftest import make_clean_moderation_report
 from tests.integration._event_assertions import assert_single_event, fetch_events
 from tests.integration.conftest import Seed, auth
 from tests.integration.test_generation_worker import (
@@ -70,6 +77,77 @@ async def _seed_draft_storybook(
             )
         )
         await session.commit()
+
+
+async def _seed_in_review_storybook(
+    sessions: async_sessionmaker[AsyncSession], story_id: str
+) -> None:
+    """Seed Family + admin user + an in-review, moderation-screened single-version story.
+
+    Mirrors tests/integration/test_approval_api.py::_seed_in_review (a clean
+    moderation_report is required: approve() and send_back() both operate on
+    an already-screened in_review version).
+    """
+    async with sessions() as session:
+        fam = Family(name="Publishing Event Test Family")
+        session.add(fam)
+        await session.flush()
+        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+
+
+async def test_approve_writes_released_event(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Admin approve on an in-review story writes exactly one released event."""
+    story_id = "s_release_event"
+    await _seed_in_review_storybook(sessions, story_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+
+    await assert_single_event(
+        sessions,
+        event_type="released",
+        entity_type="storybook",
+        to_state="published",
+        actor_role="admin",
+    )
+
+
+async def test_send_back_writes_sent_back_event(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Admin send-back on an in-review story writes exactly one sent_back event."""
+    story_id = "s_send_back_event"
+    await _seed_in_review_storybook(sessions, story_id)
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/send-back",
+        headers=auth("admin-a"),
+        json={"reason": "too scary for 6yo"},
+    )
+    assert resp.status_code == 200, resp.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="sent_back",
+        entity_type="storybook",
+        to_state="needs_revision",
+        actor_role="admin",
+    )
+    assert event.payload == {}
 
 
 async def test_kid_create_writes_request_created(

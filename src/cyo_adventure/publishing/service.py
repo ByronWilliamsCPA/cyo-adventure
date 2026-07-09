@@ -17,6 +17,7 @@ from sqlalchemy import func, select
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
 from cyo_adventure.db.models import StorybookVersion
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import Action, Status, assert_transition
 from cyo_adventure.utils.logging import get_logger
 
@@ -168,7 +169,22 @@ async def approve(
     storybook.current_published_version = version
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
-    await session.flush()
+    # #CRITICAL: data-integrity: this is the WS-D event-log record of the
+    # publish transition; record_event's internal flush lands it in the same
+    # pending transaction as the status/approved_by/published_at writes above,
+    # so the event and the state change are atomic (both commit or both roll
+    # back with the caller's unit of work).
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_approve_writes_released_event asserts exactly one "released" row.
+    await record_event(
+        session,
+        Actor.from_principal(principal),
+        entity_type="storybook",
+        entity_id=storybook.id,
+        event_type=EventType.RELEASED,
+        from_state="in_review",
+        to_state="published",
+    )
     return version_row
 
 
@@ -201,7 +217,22 @@ async def send_back(
         reason=reason,
         actor=str(principal.user_id),
     )
-    await session.flush()
+    # #ASSUME: data-integrity: the send-back reason is logged above (structured
+    # log, not persisted) but deliberately NOT copied into the event payload;
+    # SENT_BACK's allowlist is empty (spec D3, PII-free payload contract), so
+    # the storybook/version entity_id is the only durable reference to this
+    # transition.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_send_back_writes_sent_back_event asserts payload == {}.
+    await record_event(
+        session,
+        Actor.from_principal(principal),
+        entity_type="storybook",
+        entity_id=storybook.id,
+        event_type=EventType.SENT_BACK,
+        from_state="in_review",
+        to_state="needs_revision",
+    )
 
 
 async def archive(
