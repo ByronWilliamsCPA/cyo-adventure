@@ -731,3 +731,79 @@ class TestEffectiveProviderPerJobOverride:
 
         assert captured["provider_override"] == "anthropic"
         assert captured["model_override"] == "claude-opus-4-8"
+
+    @pytest.mark.asyncio
+    async def test_effective_provider_config_error_does_not_crash_finally(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A ConfigurationError raised DURING provider resolution must not turn the
+        finally guard into an UnboundLocalError.
+
+        This pins the exact invariant the ``#CRITICAL: concurrency`` comment in
+        run_generation_job claims: ``effective_provider`` is bound to the
+        injected ``provider`` arg (None in production) BEFORE the ``try``, so
+        when ``build_provider`` raises while resolving the live adapter (after
+        the job row loads, while ``effective_provider`` is still None), the
+        top-level ``finally`` guard can still call
+        ``_record_failure(..., provider=effective_provider)`` without an
+        ``UnboundLocalError``. If the binding were moved inside the ``try``
+        (after the ``build_provider`` call), that call would raise before the
+        assignment, the ``finally`` would reference an unbound local, and the
+        ``UnboundLocalError`` would replace the ConfigurationError, failing the
+        ``pytest.raises(ConfigurationError)`` below.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        def raising_build_provider(
+            settings: object,
+            *,
+            provider_override: str | None,
+            model_override: str | None,
+        ) -> object:
+            msg = "no such provider"
+            raise ConfigurationError(msg)
+
+        monkeypatch.setattr(worker_module, "build_provider", raising_build_provider)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata=None,
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief={"age_band": "8-11"}
+        )
+        session_ctx = _FakeOverrideSession(job, concept)
+
+        def factory() -> object:
+            class _Ctx:
+                async def __aenter__(self) -> _FakeOverrideSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        # No injected provider -> effective_provider is None when build_provider
+        # runs. build_provider raises ConfigurationError DURING resolution. The
+        # function has no `except`, so that error re-propagates out of the
+        # try/finally AFTER the finally guard runs. The guard's _record_failure
+        # call must succeed (effective_provider bound to the pre-try None), so
+        # what surfaces is the ConfigurationError, never an UnboundLocalError.
+        with pytest.raises(ConfigurationError):
+            await worker_module.run_generation_job(job_id, session_factory=factory)
+
+        # Finally-guard side effect reached: the still-"running" row was
+        # force-failed via _record_failure (which tolerates provider=None).
+        # This proves the guard ran to completion rather than dying on an
+        # UnboundLocalError before recording anything.
+        assert job.status == "failed"
+        assert job.error == "interrupted"
