@@ -8,7 +8,6 @@ cyo-author Claude Code authoring skill.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -20,11 +19,16 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, GenerationJob
+from cyo_adventure.generation.authoring_metadata import (
+    SKELETON_BAND_KEY,
+    SKELETON_SLUG_KEY,
+)
 from cyo_adventure.generation.fidelity_gate import run_stage1_gate
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.moderation import run_moderation_pipeline
 from cyo_adventure.validator.gate import run_gate
 
@@ -206,7 +210,7 @@ def _resolve_resume_band(job: GenerationJob, concept: Concept) -> str:
     #VERIFY: cross-band resume test asserting the stored band is used to
     build skeletons/<band>/<slug>.json.
     """
-    stored_band = _str_meta(job.authoring_metadata, "skeleton_band")
+    stored_band = _str_meta(job.authoring_metadata, SKELETON_BAND_KEY)
     if stored_band is not None:
         return stored_band
     band = concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
@@ -234,7 +238,7 @@ def _load_resume_skeleton(band: str, skeleton_slug: str) -> dict[str, object]:
     # so import_cli's top-level handler reports a clean "import failed" instead
     # of a raw traceback; the caller still rolls back cleanly (no orphaned job).
     # #VERIFY: test_resume_missing_skeleton_file_is_clean_error.
-    skeleton_path = Path("skeletons") / band / f"{skeleton_slug}.json"
+    skeleton_path = resolve_skeleton_path(band, skeleton_slug)
     try:
         return load_skeleton(skeleton_path)
     except FileNotFoundError as exc:
@@ -343,7 +347,7 @@ async def resume_manual_fill(
     # #VERIFY: integration test test_resume_survives_skeleton_file_deleted_after_persist
     # in tests/integration/test_resume_manual_fill.py exercises a real missing
     # file, not a monkeypatched load_skeleton.
-    skeleton_slug = _str_meta(job.authoring_metadata, "skeleton_slug")
+    skeleton_slug = _str_meta(job.authoring_metadata, SKELETON_SLUG_KEY)
     original_skeleton: dict[str, object] | None = None
     skeleton_load_error: str | None = None
     if skeleton_slug is not None:
