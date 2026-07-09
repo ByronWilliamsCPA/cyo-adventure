@@ -23,7 +23,15 @@ _URL = "/api/v1/admin/provider-allowlist"
 async def test_guardian_gets_403_on_every_verb(
     client: AsyncClient, seed: Seed, engine: AsyncEngine
 ) -> None:
-    """Non-admin callers are rejected before any read or write."""
+    """Non-admin callers are rejected before any read or write.
+
+    Covers all four verbs. The PUT and DELETE calls target an arbitrary
+    entry_id: the admin guard runs before the row is looked up, so a
+    non-admin gets 403 whether or not the id exists. That ordering is
+    exactly what this asserts, guarding against a regression that moved
+    the guard after the DB read in the PUT/DELETE handlers.
+    """
+    missing_id = "00000000-0000-0000-0000-000000000000"
     get_res = await client.get(_URL, headers=auth(seed.guardian_token))
     assert get_res.status_code == 403
     post_res = await client.post(
@@ -32,6 +40,16 @@ async def test_guardian_gets_403_on_every_verb(
         headers=auth(seed.guardian_token),
     )
     assert post_res.status_code == 403
+    put_res = await client.put(
+        f"{_URL}/{missing_id}",
+        json={"enabled": False},
+        headers=auth(seed.guardian_token),
+    )
+    assert put_res.status_code == 403
+    delete_res = await client.delete(
+        f"{_URL}/{missing_id}", headers=auth(seed.guardian_token)
+    )
+    assert delete_res.status_code == 403
     async with AsyncSession(engine) as session:
         rows = (await session.scalars(select(ProviderModelAllowlist))).all()
         audits = (await session.scalars(select(ProviderModelAllowlistAudit))).all()

@@ -99,6 +99,13 @@ async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> Allowl
         StateTransitionError: If the pair already exists (409).
     """
     _require_admin(ctx)
+    # #ASSUME: concurrency: check-then-act on (provider, model_id) is unlocked;
+    # two concurrent admin POSTs for the same pair can both miss the row and race
+    # to INSERT. Admin-only and rare; the
+    # uq_provider_model_allowlist_provider_model UniqueConstraint is the backstop
+    # (the loser gets a 500, not a duplicate row), same accepted tradeoff as
+    # moderation_thresholds.py::upsert_threshold.
+    # #VERIFY: switch to INSERT ... ON CONFLICT DO NOTHING if this ever recurs.
     existing = await ctx.session.scalar(
         select(ProviderModelAllowlist).where(
             ProviderModelAllowlist.provider == body.provider,
