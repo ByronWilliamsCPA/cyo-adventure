@@ -791,6 +791,16 @@ class SubmittedView(BaseModel):
     current_published_version: int | None
 
 
+class ApproveBody(BaseModel):
+    """Optional approve-time release options (WS-E decision E2).
+
+    ``visibility`` defaults to ``family`` so an approve with no body keeps the
+    pre-WS-E behavior; ``catalog`` shares the book with every family.
+    """
+
+    visibility: Literal["family", "catalog"] = "family"
+
+
 class ApprovedView(BaseModel):
     """The response to a successful approve action.
 
@@ -804,6 +814,7 @@ class ApprovedView(BaseModel):
     current_published_version: int
     approved_by: str
     published_at: datetime
+    visibility: Literal["family", "catalog"]
 
 
 class SentBackView(BaseModel):

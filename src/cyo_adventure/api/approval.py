@@ -21,6 +21,7 @@ from cyo_adventure.api.review_surface import (
     build_review_surface,
 )
 from cyo_adventure.api.schemas import (
+    ApproveBody,
     ApprovedView,
     ArchivedView,
     ReviewQueueItem,
@@ -39,6 +40,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.moderation.thresholds import load_admin_noise_floor
 from cyo_adventure.publishing import service as approval_service
+from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -117,12 +119,18 @@ async def submit_storybook(storybook_id: str, ctx: Context) -> SubmittedView:
 
 
 @router.post("/storybooks/{storybook_id}/approve")
-async def approve_storybook(storybook_id: str, ctx: Context) -> ApprovedView:
+async def approve_storybook(
+    storybook_id: str, ctx: Context, body: ApproveBody | None = None
+) -> ApprovedView:
     """Approve and publish the latest version of an in-review story (admin only)."""
     book = await _load_admin_story(ctx, storybook_id)
     version = await _latest_version(ctx.session, storybook_id)
+    # #ASSUME: data integrity: a missing body means visibility=family (the
+    # pre-WS-E contract); ApproveBody's Literal rejects unmodeled values at 422.
+    # #VERIFY: test_approve_rejects_unknown_visibility.
+    visibility = Visibility(body.visibility) if body is not None else Visibility.FAMILY
     version_row = await approval_service.approve(
-        ctx.session, ctx.principal, book, version
+        ctx.session, ctx.principal, book, version, visibility=visibility
     )
     # #CRITICAL: security: a successful approve is the SOLE published path and the
     # service stamps approved_by + published_at in the same operation, so both are
@@ -138,6 +146,7 @@ async def approve_storybook(storybook_id: str, ctx: Context) -> ApprovedView:
         current_published_version=version,
         approved_by=str(version_row.approved_by),
         published_at=version_row.published_at,
+        visibility=cast("Literal['family', 'catalog']", book.visibility),
     )
 
 
