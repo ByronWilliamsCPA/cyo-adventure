@@ -27,6 +27,7 @@ from sqlalchemy import (
     Uuid,
     func,
 )
+from sqlalchemy import text as sa_text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -668,6 +669,39 @@ class ModerationThresholdAudit(Base):
     # row per upsert/delete and never mutate existing rows.
     changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class PipelineEvent(Base):
+    """Append-only log of every story-lifecycle transition (WS-D capture layer).
+
+    Written from the transaction performing the transition (spec decision D1). Rows
+    are enforced append-only by a DB trigger created in the migration; the ORM never
+    updates or deletes them. ``actor_id`` is NULL for system transitions (worker,
+    moderation), which carry ``actor_role='system'`` (spec decision D2). ``payload``
+    is PII-free by contract, gated by events/writer.py::_PAYLOAD_ALLOWLIST (D3).
+    """
+
+    __tablename__ = "pipeline_event"
+    __table_args__ = (
+        Index("ix_pipeline_event_entity", "entity_type", "entity_id"),
+        Index("ix_pipeline_event_event_type", "event_type"),
+        Index("ix_pipeline_event_occurred_at", "occurred_at"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    occurred_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), nullable=True
+    )
+    actor_role: Mapped[str] = mapped_column(String(16))
+    entity_type: Mapped[str] = mapped_column(String(32))
+    entity_id: Mapped[str] = mapped_column(String(120))
+    event_type: Mapped[str] = mapped_column(String(48))
+    from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    payload: Mapped[dict[str, object]] = mapped_column(
+        JSONB, nullable=False, server_default=sa_text("'{}'::jsonb")
+    )
 
 
 class ModerationSetting(Base):
