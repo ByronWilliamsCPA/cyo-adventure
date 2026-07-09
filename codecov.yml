@@ -7,8 +7,10 @@ codecov:
   require_ci_to_pass: true
   max_report_age: 12h
   notify:
-    # Wait for all 4 coverage uploads (unit + integration + security + combined)
-    # before firing statuses/comments. Prevents premature failure on first upload.
+    # Coverage uploads that gate statuses/comments: unit, integration, frontend,
+    # design-system (security is a bonus 5th when security-marked tests exist).
+    # Keep this at or below the reliably-produced count, or the comment/status
+    # deadlocks waiting for an upload that never arrives.
     after_n_builds: 4
     wait_for_ci: true
 
@@ -38,47 +40,48 @@ coverage:
         # Pass gracefully when well-tested code is deleted (avoids penalizing cleanup PRs)
         removed_code_behavior: fully_covered_patch
 
-# Multi-flag tracking for test types
-# See: https://docs.codecov.com/docs/flags
+# Flags (single axis: one report -> one flag). See standards/testing.md 16.2.
+#
+# Backend is flagged by TEST TYPE: the reusable python-ci workflow runs the
+# unit, integration, and security buckets separately and emits
+# coverage-{unit,integration,security}.xml + junit-{...}.xml; ci.yml's
+# coverage-upload job uploads each under its own flag.
+#
+# Frontend + design-system are flagged by SURFACE: Vitest runs all component
+# tests in one pass and cannot split by test type, so a surface flag is used
+# per the standard's full-stack exception. The code-area split (frontend vs
+# backend modules) is carried by components (below), which are orthogonal to
+# flags. `api` is a dormant Test Analytics flag (newman JUnit) with no coverage
+# status; it activates when a Postman collection + api CI job exist (follow-up).
 flags:
   unit:
-    # Unit tests should have highest coverage target
     carryforward: true
     paths:
       - src/cyo_adventure/
-
   integration:
-    # Integration tests may have lower coverage
     carryforward: true
     paths:
       - src/cyo_adventure/
-
   security:
-    # Security-focused tests
     carryforward: true
     paths:
       - src/cyo_adventure/
-
-  # Python version flags (CI workflow uploads)
-  python-3.10:
+  frontend:
     carryforward: true
-  python-3.11:
+    paths:
+      - frontend/src/
+  design-system:
     carryforward: true
-  python-3.12:
-    carryforward: true
-  python-3.13:
-    carryforward: true
-  python-3.14:
+    paths:
+      - frontend/design-system/src/
+  api:
     carryforward: true
 
-# Flag-specific coverage targets
-# Enables different thresholds per test type
 flag_management:
   default_rules:
     carryforward: true
-    # Don't create a failing status for flags not uploaded in this PR/commit.
-    # Prevents false failures when only some test types run (e.g., fast-path CI).
-    flag_coverage_not_uploaded_behavior: exclude
+    # if_not_found: success keeps a flag that uploaded no report this run (e.g.
+    # api while dormant, or security when no security tests exist) from blocking.
     statuses:
       - type: project
         target: auto
@@ -87,7 +90,6 @@ flag_management:
 
   individual_flags:
     - name: unit
-      behavior: default
       statuses:
         - type: project
           target: 85%
@@ -100,7 +102,29 @@ flag_management:
           if_not_found: success
 
     - name: integration
-      behavior: default
+      statuses:
+        - type: project
+          target: 75%
+          threshold: 3%
+          if_ci_failed: error
+          if_not_found: success
+        - type: patch
+          target: 70%
+          threshold: 5%
+          if_not_found: success
+
+    - name: security
+      statuses:
+        - type: project
+          target: auto
+          threshold: 2%
+          if_not_found: success
+        - type: patch
+          target: 80%
+          threshold: 5%
+          if_not_found: success
+
+    - name: frontend
       statuses:
         - type: project
           target: 70%
@@ -112,26 +136,83 @@ flag_management:
           threshold: 5%
           if_not_found: success
 
-    - name: security
-      behavior: default
+    - name: design-system
       statuses:
         - type: project
-          target: auto
+          target: 75%
           threshold: 2%
+          if_ci_failed: error
           if_not_found: success
         - type: patch
-          target: 80%
+          target: 75%
           threshold: 5%
           if_not_found: success
 
-# Component-based coverage tracking
+# Components carry the "which code area" axis (orthogonal to flags). Critical
+# modules for a kids' reading app get 90/95 overrides per standards section 16.3:
+# content moderation/safety and the generation pipeline are the outsized-blast
+# -radius areas. component_id values are immutable once created.
 component_management:
+  default_rules:
+    statuses:
+      - type: project
+        target: auto
+        threshold: 2%
+        if_not_found: success
+
   individual_components:
-    # Core module
-    - component_id: core
-      name: Core Module
+    - component_id: backend
+      name: Backend (all)
       paths:
         - src/cyo_adventure/**
+
+    - component_id: safety-critical
+      name: Safety & Security Critical
+      # Content moderation is the safety gate for a children's app; the
+      # security middleware + core plumbing carry every request.
+      paths:
+        - src/cyo_adventure/moderation/**
+        - src/cyo_adventure/middleware/**
+        - src/cyo_adventure/core/**
+      statuses:
+        - type: project
+          target: 90%
+          threshold: 2%
+          if_ci_failed: error
+          if_not_found: success
+        - type: patch
+          target: 95%
+          threshold: 2%
+          if_not_found: success
+
+    - component_id: generation-pipeline
+      name: Story Generation Pipeline
+      # Data-processing pipeline (LLM generation -> validation -> publish).
+      # External-LLM code is hard to fully cover, so 85/90 rather than 90/95.
+      paths:
+        - src/cyo_adventure/generation/**
+        - src/cyo_adventure/validator/**
+        - src/cyo_adventure/publishing/**
+      statuses:
+        - type: project
+          target: 85%
+          threshold: 2%
+          if_ci_failed: error
+          if_not_found: success
+        - type: patch
+          target: 90%
+          threshold: 5%
+          if_not_found: success
+
+    - component_id: frontend
+      name: Frontend (React app)
+      paths:
+        - frontend/src/**
+
+    - component_id: design-system
+      name: Design System
+      paths:
+        - frontend/design-system/src/**
 
 # Paths to ignore from coverage
 ignore:
@@ -222,8 +303,10 @@ ignore:
 
 # Pull request comment configuration
 comment:
-  # testcase = Test Analytics panel; components = per-component coverage breakdown
-  layout: "reach, diff, flags, components, files, testcase"
+  # components = per-component coverage breakdown. ("testcase" is NOT a valid
+  # layout token; it made Codecov reject the whole config. Test Analytics
+  # results surface in the Tests tab and their own PR comment, not via layout.)
+  layout: "reach, diff, flags, components, files"
   behavior: default
   require_changes: true
   require_base: true

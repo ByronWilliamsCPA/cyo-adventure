@@ -42,6 +42,14 @@ jobs:
     with:
       python-version: "3.12"
       coverage-threshold: 80
+      # Run the integration and security buckets as separate pytest passes so
+      # they produce coverage-integration.xml / coverage-security.xml (and the
+      # matching junit files) for per-test-type Codecov flags. Without these,
+      # the reusable's unit step excludes `-m integration`/`-m security`, so
+      # those 39 integration-marked and 3 security-marked test files never run
+      # in CI at all.
+      run-integration-tests: true
+      run-security-tests: true
       # cyo_adventure is an installable package with a build backend; the shared
       # workflow defaults no-build: true, which would block the editable install.
       no-build: false
@@ -261,6 +269,202 @@ jobs:
       - name: Fail on generated client drift
         run: |
           git diff --exit-code -- frontend/src/client || (echo "::error::Generated OpenAPI client is out of date. Run 'npm run generate-client' against a live backend (see frontend/README.md) and commit the result." && exit 1)
+
+  # Uploads the backend's per-test-type coverage + JUnit to Codecov, INLINE so
+  # it runs on PRs (the old workflow_run codecov.yml only ran on main). The
+  # reusable `ci` job publishes coverage-{unit,integration,security}.xml and
+  # junit-{...}.xml as the `coverage-reports` artifact; each uploads under its
+  # own flag (single axis: one report -> one flag). Non-fatal (fail_ci_if_error
+  # false) and deliberately NOT in ci-gate's needs: a Codecov hiccup must not
+  # block merges. Frontend/design-system coverage upload from their own jobs.
+  coverage-upload:
+    name: Upload backend coverage to Codecov
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: ci
+    if: ${{ !cancelled() && needs.ci.result == 'success' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Download backend coverage artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: coverage-reports
+          path: coverage-reports
+
+      - name: Upload unit coverage
+        if: ${{ hashFiles('coverage-reports/coverage-unit.xml') != '' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: coverage-reports/coverage-unit.xml
+          disable_search: true
+          flags: unit
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload integration coverage
+        if: ${{ hashFiles('coverage-reports/coverage-integration.xml') != '' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: coverage-reports/coverage-integration.xml
+          disable_search: true
+          flags: integration
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload security coverage
+        if: ${{ hashFiles('coverage-reports/coverage-security.xml') != '' }}
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
+        with:
+          files: coverage-reports/coverage-security.xml
+          disable_search: true
+          flags: security
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload unit test results
+        if: ${{ !cancelled() && hashFiles('coverage-reports/junit-unit.xml') != '' }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: coverage-reports/junit-unit.xml
+          disable_search: true
+          flags: unit
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload integration test results
+        if: ${{ !cancelled() && hashFiles('coverage-reports/junit-integration.xml') != '' }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: coverage-reports/junit-integration.xml
+          disable_search: true
+          flags: integration
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload security test results
+        if: ${{ !cancelled() && hashFiles('coverage-reports/junit-security.xml') != '' }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: coverage-reports/junit-security.xml
+          disable_search: true
+          flags: security
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  # Guards the api-tests job on a Postman collection existing. The check runs in
+  # a STEP (job-level `if: hashFiles(...)` is not permitted and fails the whole
+  # workflow at startup), exposing the result as an output the api-tests job
+  # gates on. Cheap (checkout + one file test).
+  detect-api-collection:
+    name: Detect API collection
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    outputs:
+      present: ${{ steps.check.outputs.present }}
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Check for Postman collection
+        id: check
+        run: |
+          if [ -f docs/api/postman-collection.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  # API-level tests (Postman/newman) -> Codecov Test Analytics under the `api`
+  # flag (standards/testing.md 16.2). DORMANT until docs/api/postman-collection
+  # .json is authored (generate it with the postman-test-designer agent): the
+  # job is skipped, not failed, while absent. Intentionally NOT in ci-gate's
+  # needs while it can be skipped; add it there once the collection lands and
+  # the `api` gate should block merges.
+  api-tests:
+    name: API Tests (newman)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: detect-api-collection
+    if: ${{ needs.detect-api-collection.outputs.present == 'true' }}
+    permissions:
+      contents: read
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: '22'
+
+      - name: Install newman
+        run: npm install -g --ignore-scripts newman@6.2.1
+
+      # Brings up the API (port 8000, /health/live) plus Postgres from the repo
+      # compose stack. Enabling this for real may require the app's runtime env
+      # (see docker-compose.yml); dormant today via detect-api-collection.
+      - name: Start API stack
+        run: docker compose up -d --build app db
+
+      - name: Wait for API readiness
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health/live >/dev/null 2>&1; then
+              echo "API ready"; exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::API did not become ready in time"; exit 1
+
+      - name: Run newman (JUnit for Test Analytics)
+        run: |
+          newman run docs/api/postman-collection.json \
+            --env-var "base_url=http://localhost:8000" \
+            --reporters cli,junit \
+            --reporter-junit-export newman-junit.xml \
+            --bail
+
+      - name: Upload API test results to Codecov
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: ./newman-junit.xml
+          disable_search: true
+          flags: api
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Tear down API stack
+        if: ${{ always() }}
+        run: docker compose down -v
 
   ci-gate:
     name: CI Gate
