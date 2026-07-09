@@ -502,6 +502,11 @@ known-first-party = ["cyo_adventure"]
     "SIM102",  # Nested if is more readable for security checks
 ]
 
+# Cover generation worker - RQ entrypoint with intentional deferred imports
+"src/*/covers/worker.py" = [
+    "PLC0415", # Local imports to avoid circular dependencies
+]
+
 # Financial utilities - Template documentation style
 "src/*/utils/financial.py" = [
     "D200",    # Multi-line docstring for template documentation
