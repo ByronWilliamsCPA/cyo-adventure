@@ -394,6 +394,13 @@ known-first-party = ["cyo_adventure"]
 # sensible default. A config object would obscure the contract.
 "**/story_requests/service.py" = ["PLR0913"]
 
+# generate_cover carries storybook_id, version, session, settings, and three
+# keyword-only pipeline-stage overrides (generate/optimize/upload) used to
+# inject fakes in tests; each is a distinct concern (target row, unit of
+# work, config, and the three pluggable stages) with no sensible default.
+# A config object would obscure which stage a caller is overriding.
+"**/covers/service.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
