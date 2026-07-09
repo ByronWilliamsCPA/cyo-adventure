@@ -115,6 +115,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   an admin override to any skeleton on disk (with a non-blocking warning on a non-production or
   out-of-cell pick). `AuthoringPlanResponse` now returns every in-cell alternative, and
   `storybook_version.skeleton_slug` records which skeleton produced each version.
+  The admin override slug is charset- and length-bounded at the request boundary
+  (`^[a-z0-9][a-z0-9-]*$`, max 120), and every skeleton-fill path resolves the on-disk
+  file through a shared containment check that rejects any band or slug escaping the
+  skeleton root, so an untrusted override cannot traverse the filesystem. An override
+  now resolves before the empty-cell guard, so a cross-cell override succeeds even when
+  the request's own cell has no eligible skeleton; unreadable, schema-invalid, and
+  band-ambiguous skeletons are logged and surfaced as distinct errors rather than
+  silently treated as absent.
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
