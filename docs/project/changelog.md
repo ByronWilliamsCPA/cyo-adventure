@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured logging with structlog and rich
 - Comprehensive test infrastructure
 - Documentation with MkDocs Material
+- Admin-generated story book covers: illustrated portrait covers created on demand from a published story version via Gemini image generation, run in an async worker, optimized to a small WebP within the Supabase Storage budget, and rendered on the kid library's BookCard
 
 ### Changed
 
