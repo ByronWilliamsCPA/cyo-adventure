@@ -28,6 +28,7 @@ from cyo_adventure.generation.provider import (
     build_provider,
 )
 from cyo_adventure.generation.providers import (
+    AnthropicProvider,
     FallbackProvider,
     ModalProvider,
     OllamaProvider,
@@ -81,13 +82,28 @@ class TestBuildProviderMock:
 class TestBuildProviderLive:
     """build_provider assembles the live cascade and isolated legs from settings."""
 
-    def test_anthropic_is_deferred(self) -> None:
-        """The direct-Anthropic ('anthropic') adapter is deferred and raises."""
-        settings = Settings(generation_provider="anthropic")  # type: ignore[call-arg]
+    def test_anthropic_without_key_raises(self) -> None:
+        """anthropic without a credential raises ConfigurationError by key name."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
             build_provider(settings)
-        # Points the operator at the supported OpenRouter path.
-        assert "openrouter" in str(exc_info.value)
+        assert "ANTHROPIC_API_KEY" in str(exc_info.value)
+
+    def test_anthropic_key_value_not_leaked_in_error(self) -> None:
+        """A missing-key error never echoes any key value."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings)
+        assert "Bearer" not in str(exc_info.value)
+
+    def test_anthropic_with_key_builds_bare_leg(self) -> None:
+        """anthropic + key builds a single AnthropicProvider (no cascade)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, AnthropicProvider)
+        assert provider.model == settings.anthropic_model
 
     def test_openrouter_without_key_raises(self) -> None:
         """openrouter without a credential raises ConfigurationError by key name."""
@@ -253,6 +269,69 @@ class TestBuildProviderLive:
         )
         with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
             build_provider(settings)
+
+
+class TestBuildProviderOverrides:
+    """build_provider's keyword-only provider_override/model_override (WS-C PR1)."""
+
+    def test_no_override_matches_prior_behavior_openrouter(self) -> None:
+        """Calling with no overrides is identical to today's positional-only call."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter", openrouter_api_key="test-key"
+        )
+        without_kwargs = build_provider(settings)
+        with_no_overrides = build_provider(
+            settings, provider_override=None, model_override=None
+        )
+        assert isinstance(without_kwargs, FallbackProvider)
+        assert isinstance(with_no_overrides, FallbackProvider)
+        names_a = [leg.name for leg in without_kwargs.legs]  # type: ignore[attr-defined]
+        names_b = [leg.name for leg in with_no_overrides.legs]  # type: ignore[attr-defined]
+        assert names_a == names_b
+
+    def test_provider_override_wins_over_global_setting(self) -> None:
+        """provider_override picks the leg even when settings.generation_provider differs."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="mock", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings, provider_override="anthropic")
+        assert isinstance(provider, AnthropicProvider)
+
+    def test_model_override_replaces_openrouter_primary_only(self) -> None:
+        """model_override replaces the primary leg's model; the fallback leg is untouched."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            openrouter_fallback_model="anthropic/claude-sonnet-4.6",
+        )
+        provider = build_provider(settings, model_override="anthropic/claude-opus-4.8")
+        assert isinstance(provider, FallbackProvider)
+        names = [leg.name for leg in provider.legs]  # type: ignore[attr-defined]
+        assert names[0] == "openrouter:anthropic/claude-opus-4.8"
+        assert names[1] == "openrouter:anthropic/claude-sonnet-4.6"
+
+    def test_model_override_threads_through_ollama(self) -> None:
+        """model_override replaces the ollama leg's model (build_ollama_leg already supports it)."""
+        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
+        provider = build_provider(settings, model_override="qwen3:30b")
+        assert isinstance(provider, OllamaProvider)
+        assert provider.name == "ollama:qwen3:30b"
+
+    def test_model_override_replaces_anthropic_model(self) -> None:
+        """model_override replaces the single anthropic leg's model."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings, model_override="claude-opus-4-8")
+        assert isinstance(provider, AnthropicProvider)
+        assert provider.model == "claude-opus-4-8"
+
+    def test_unknown_provider_override_raises_configuration_error(self) -> None:
+        """A provider_override outside the known branches raises, naming the value."""
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="not-a-real-provider")
+        assert "not-a-real-provider" in str(exc_info.value)
 
 
 class TestSplitBasicAuth:

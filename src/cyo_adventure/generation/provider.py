@@ -525,38 +525,62 @@ def build_ollama_leg(
     )
 
 
-def build_provider(settings: Settings) -> GenerationProvider:
+def build_provider(
+    settings: Settings,
+    *,
+    provider_override: str | None = None,
+    model_override: str | None = None,
+) -> GenerationProvider:
     """Construct a :class:`GenerationProvider` from application settings.
 
-    Mapping from ``settings.generation_provider``:
+    ``provider_override``/``model_override`` are the per-job factory seam
+    (WS-C PR1): the worker reads them off a job's ``authoring_metadata`` and
+    passes them here. With both ``None`` this reproduces today's behavior
+    exactly for every existing caller.
 
-    - ``"mock"`` (default): a :class:`MockProvider` seeded with the canned story.
-      CI and local runs use this so they never make live calls.
-    - ``"openrouter"``: the primary OpenRouter leg. When
-      ``settings.provider_fallback_enabled`` is ``True`` (default) it is wrapped
-      in a :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
-      cascade ``[openrouter:primary, openrouter:fallback_model, ollama]``; when
-      ``False`` the bare primary leg is returned so a yield/comparison run can
-      measure one leg in isolation.
-    - ``"ollama"``: the local Ollama leg alone (offline path and comparison
-      target).
-    - ``"anthropic"``: a direct-Anthropic adapter is deferred; raises
-      :class:`ConfigurationError`. Reach Anthropic via OpenRouter instead.
+    Mapping from the resolved provider (``provider_override`` if set, else
+    ``settings.generation_provider``):
 
-    Live adapters are constructed only for the provider actually selected, so the
-    default mock path opens no client and validates no credential.
+    - ``"mock"`` (default): a :class:`MockProvider` seeded with the canned
+      story. CI and local runs use this so they never make live calls.
+      ``model_override`` has no effect (mock has no model concept).
+    - ``"ollama"``: the local Ollama leg alone. ``model_override`` replaces
+      ``settings.ollama_model`` for this leg only.
+    - ``"anthropic"``: the direct-Anthropic leg alone (no cascade).
+      ``model_override`` replaces ``settings.anthropic_model``.
+    - ``"openrouter"``: the primary OpenRouter leg, using ``model_override``
+      in place of ``settings.openrouter_model`` when set. When
+      ``settings.provider_fallback_enabled`` is ``True`` (default) it is
+      wrapped in a
+      :class:`~cyo_adventure.generation.providers.fallback.FallbackProvider`
+      cascade ``[primary, openrouter:fallback_model, ollama]`` (the fallback
+      leg's model is never overridden); when ``False`` the bare primary leg
+      is returned so a yield/comparison run can measure one leg in isolation.
+    - ``"modal"``: the experimental Modal leg. ``model_override`` has no
+      effect (the offline Modal leg's model is settings-only in PR1; it is
+      not part of the per-job override seam).
+
+    Live adapters are constructed only for the provider actually selected, so
+    the default mock path opens no client and validates no credential.
 
     Args:
         settings: The application settings instance.
+        provider_override: A per-job provider name (from a job's
+            ``authoring_metadata["provider"]``), or ``None`` to use
+            ``settings.generation_provider``.
+        model_override: A per-job model id (from a job's
+            ``authoring_metadata["model"]``), or ``None`` to use the
+            resolved provider's default model from settings.
 
     Returns:
         A :class:`GenerationProvider` ready for injection into the worker.
 
     Raises:
-        ConfigurationError: For ``"anthropic"`` (deferred) or when the
-            OpenRouter credential is missing.
+        ConfigurationError: For a resolved provider outside the known set, or
+            when a live provider's required credential is missing.
     """
-    provider = settings.generation_provider
+    provider = provider_override or settings.generation_provider
+
     if provider == "mock":
         # Queue enough copies for Stage A + Stage B + up to 3 repairs.
         # Extra copies are safe: MockProvider raises only if the queue is
@@ -564,10 +588,15 @@ def build_provider(settings: Settings) -> GenerationProvider:
         return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
 
     if provider == "ollama":
-        return build_ollama_leg(settings)
+        return build_ollama_leg(settings, model_override)
+
+    if provider == "anthropic":
+        return build_anthropic_leg(settings, model_override or settings.anthropic_model)
 
     if provider == "openrouter":
-        primary = build_openrouter_leg(settings, settings.openrouter_model)
+        primary = build_openrouter_leg(
+            settings, model_override or settings.openrouter_model
+        )
         if not settings.provider_fallback_enabled:
             return primary
         return FallbackProvider(
@@ -581,13 +610,7 @@ def build_provider(settings: Settings) -> GenerationProvider:
     if provider == "modal":
         return build_modal_leg(settings)
 
-    # "anthropic": a direct Anthropic SDK adapter is deferred (ADR-003); the
-    # seam stays so it is a trivial future add. Reach Anthropic via OpenRouter.
-    msg = (
-        "generation_provider='anthropic' (direct Anthropic) is deferred; "
-        "reach Anthropic via generation_provider=openrouter with an "
-        "anthropic/* model"
-    )
+    msg = f"unknown generation_provider '{provider}'"
     raise ConfigurationError(msg)
 
 
