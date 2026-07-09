@@ -20,6 +20,7 @@ from cyo_adventure.api.deps import (
 from cyo_adventure.api.schemas import RatingBody, RatingListView, RatingView
 from cyo_adventure.core.exceptions import ResourceNotFoundError
 from cyo_adventure.db.models import Rating, Storybook
+from cyo_adventure.events import Actor, EventType, record_event
 
 router = APIRouter(prefix="/api/v1", tags=["ratings"])
 
@@ -74,6 +75,7 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     # INSERT ... ON CONFLICT DO UPDATE (true upsert), or SELECT FOR UPDATE as in
     # reading.py's reading-state handler.
     row = await ctx.session.get(Rating, (profile_id, body.storybook_id))
+    is_update = row is not None
     if row is None:
         row = Rating(
             child_profile_id=profile_id,
@@ -83,6 +85,20 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
         ctx.session.add(row)
     else:
         row.value = body.value
+    # #ASSUME: data-integrity: is_update reflects the branch actually taken above
+    # (True when an existing row was overwritten, False on first insert), not a
+    # re-derived guess. value is coerced to a plain int for the append-only log,
+    # since body.value is Pydantic-validated to int already.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_rating_writes_rated_event_with_is_update_transition.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="rating",
+        entity_id=f"{profile_id}:{body.storybook_id}",
+        event_type=EventType.RATED,
+        payload={"value": int(body.value), "is_update": is_update},
+    )
     # The unit-of-work dependency commits on success; flush + refresh to read
     # back server-generated timestamps without an explicit commit here.
     await ctx.session.flush()

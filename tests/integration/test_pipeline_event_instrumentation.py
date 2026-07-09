@@ -573,3 +573,42 @@ async def test_assign_writes_book_assigned_event_per_new_assignment(
     )
     assert event.entity_id == f"{sibling_id}:{seed.storybook_id}"
     assert event.payload == {"child_profile_id": str(sibling_id)}
+
+
+async def test_rating_writes_rated_event_with_is_update_transition(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Rating the same book twice writes two rated events: the first with
+    is_update False (new row), the second with is_update True (overwrite).
+    """
+    first = await client.post(
+        "/api/v1/ratings",
+        headers=auth(seed.child_token),
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "value": 3,
+        },
+    )
+    assert first.status_code == 200, first.text
+    second = await client.post(
+        "/api/v1/ratings",
+        headers=auth(seed.child_token),
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": seed.storybook_id,
+            "value": 5,
+        },
+    )
+    assert second.status_code == 200, second.text
+
+    events = await fetch_events(sessions, "rated")
+    assert len(events) == 2
+    assert [e.payload["is_update"] for e in events] == [False, True]
+    assert [e.payload["value"] for e in events] == [3, 5]
+    for event in events:
+        assert event.entity_type == "rating"
+        assert event.entity_id == f"{seed.child_profile_id}:{seed.storybook_id}"
+        assert event.actor_role == "child"
