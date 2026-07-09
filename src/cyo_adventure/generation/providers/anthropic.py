@@ -150,6 +150,19 @@ class AnthropicProvider:
             raise ProviderError(
                 msg, provider="anthropic", model=self._model, leg_fatal=False
             ) from exc
+        except anthropic.APIResponseValidationError as exc:
+            # #EDGE: external-resources: APIResponseValidationError is a direct
+            # APIError subclass, NOT an APIStatusError, so the clause below would
+            # not catch it. It fires when a 2xx response fails the SDK's strict
+            # checks (e.g. a proxy returning a non-JSON body), raised before the
+            # Message is built, so the content=None guard in _extract_content
+            # never applies. Treat it as transient so it stays inside the
+            # ProviderError-only retry contract instead of escaping raw.
+            # #VERIFY: test_response_validation_error_is_transient.
+            msg = "anthropic response failed SDK validation"
+            raise ProviderError(
+                msg, provider="anthropic", model=self._model, leg_fatal=False
+            ) from exc
         except anthropic.APIStatusError as exc:
             self._raise_for_status(exc)
 

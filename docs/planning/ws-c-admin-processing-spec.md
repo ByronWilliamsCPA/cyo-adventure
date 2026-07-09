@@ -256,8 +256,14 @@ default length; resolved in the plan) so a cell can always be formed.`
 
 ## Migration chain and WS-D coordination
 
+> **Resolved (2026-07-09):** the collision was resolved by merging `main` into the WS-C
+> branch after WS-D (#168) and book-covers (#169) landed. WS-C merged third, so its PR1
+> migration was re-keyed to `revision = "b4c5d6e7f8a9"`, `down_revision = "a3b4c5d6e7f8"`
+> (the book-covers head, which itself chains onto WS-D's `f2a3b4c5d6e7`). The original
+> plan below is retained for history; the live values are in the migration header.
+
 - PR1 migration: `provider_model_allowlist` + `provider_model_allowlist_audit` + seed rows.
-  `down_revision = "e1f2a3b4c5d6"`.
+  Planned `down_revision = "e1f2a3b4c5d6"`; re-keyed to `"a3b4c5d6e7f8"` at merge (see note above).
 - PR2 migration: `skeleton_slug` on `storybook_version`. `down_revision =` PR1's revision.
 - WS-D (sibling session) chains `pipeline_event` onto `e1f2a3b4c5d6` too. Whichever workstream
   merges second rebases and bumps its base migration's `down_revision` to the other's head. WS-C

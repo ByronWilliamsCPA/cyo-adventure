@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import uuid
+
 from cyo_adventure.db.models import ProviderModelAllowlist, ProviderModelAllowlistAudit
 
 
@@ -26,12 +28,15 @@ def test_allowlist_row_defaults_enabled_true() -> None:
     assert ProviderModelAllowlist.__table__.c.enabled.default.arg is True
 
 
-def test_audit_row_requires_changed_by_at_construction_time_type() -> None:
-    """changed_by is typed non-optional; the class does not declare a Python default."""
-    # The real guarantee is the DB NOT NULL FK exercised by the migration
-    # round-trip test in Task 3; this test only pins that the ORM column
-    # itself carries no silently-nullable Python default that would mask a
-    # missing changed_by until the DB constraint fires.
+def test_audit_row_changed_by_column_is_non_nullable() -> None:
+    """changed_by has no silently-nullable Python default, and a row constructed
+    with it holds its fields.
+
+    The real NOT NULL FK guarantee is exercised by the migration round-trip test
+    in Task 3; this test only pins that the ORM column itself carries no
+    Python-side default that would mask a missing changed_by until the DB
+    constraint fires, and that a fully-specified row constructs cleanly.
+    """
     assert ProviderModelAllowlistAudit.__table__.c.changed_by.nullable is False
     audit = ProviderModelAllowlistAudit(
         provider="anthropic",
@@ -39,6 +44,6 @@ def test_audit_row_requires_changed_by_at_construction_time_type() -> None:
         action="create",
         old_enabled=None,
         new_enabled=True,
-        changed_by=__import__("uuid").uuid4(),
+        changed_by=uuid.uuid4(),
     )
     assert audit.action == "create"

@@ -7,6 +7,7 @@ from typing import cast
 
 from fastapi import APIRouter
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.api.deps import Context
 from cyo_adventure.api.schemas import (
@@ -102,10 +103,11 @@ async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> Allowl
     # #ASSUME: concurrency: check-then-act on (provider, model_id) is unlocked;
     # two concurrent admin POSTs for the same pair can both miss the row and race
     # to INSERT. Admin-only and rare; the
-    # uq_provider_model_allowlist_provider_model UniqueConstraint is the backstop
-    # (the loser gets a 500, not a duplicate row), same accepted tradeoff as
-    # moderation_thresholds.py::upsert_threshold.
-    # #VERIFY: switch to INSERT ... ON CONFLICT DO NOTHING if this ever recurs.
+    # uq_provider_model_allowlist_provider_model UniqueConstraint is the backstop,
+    # and the flush below maps its IntegrityError to the same 409 the pre-check
+    # returns, so the race loser gets a conflict status, not a 500.
+    # #VERIFY: test_add_duplicate_pair_is_409 covers the 409 contract; the
+    # IntegrityError guard on flush below extends it to the concurrent race.
     existing = await ctx.session.scalar(
         select(ProviderModelAllowlist).where(
             ProviderModelAllowlist.provider == body.provider,
@@ -138,7 +140,17 @@ async def add_allowlist_entry(body: AllowlistCreateBody, ctx: Context) -> Allowl
             changed_by=ctx.principal.user_id,
         )
     )
-    await ctx.session.flush()
+    # #CRITICAL: concurrency: the pre-check above can be raced; the unique
+    # constraint is the real guard. Map its IntegrityError to a 409 so the loser
+    # of a concurrent insert gets the same conflict status as the pre-check path
+    # rather than a 500. The failed flush aborts the transaction; the request
+    # unit-of-work rolls it back (no further session use here).
+    # #VERIFY: test_add_duplicate_pair_conflicts.
+    try:
+        await ctx.session.flush()
+    except IntegrityError as exc:
+        msg = f"allowlist entry already exists for ({body.provider}, {body.model_id})"
+        raise StateTransitionError(msg) from exc
     return _view(row)
 
 
@@ -161,6 +173,12 @@ async def update_allowlist_entry(
         ResourceNotFoundError: If no row exists for ``entry_id`` (404).
     """
     _require_admin(ctx)
+    # #CRITICAL: security: admin-only mutation of the billing-control allowlist;
+    # the role gate runs first (above) so a non-admin cannot toggle a backend on.
+    # #CRITICAL: data-integrity: the enabled/display_name change and its audit
+    # row are written in one unit-of-work (below), so a toggle and its audit
+    # trail commit or roll back together (changed_by is a NOT NULL FK).
+    # #VERIFY: test_toggle_enabled_with_audit.
     row = await ctx.session.get(ProviderModelAllowlist, entry_id)
     if row is None:
         msg = f"no allowlist entry '{entry_id}'"
@@ -201,6 +219,14 @@ async def delete_allowlist_entry(
         ResourceNotFoundError: If no row exists for ``entry_id`` (404).
     """
     _require_admin(ctx)
+    # #CRITICAL: security: admin-only removal from the billing-control allowlist;
+    # the role gate runs first (above).
+    # #CRITICAL: data-integrity: the audit row is written BEFORE the delete so it
+    # captures the row's provider/model_id/enabled while they still exist; the
+    # audit insert and the delete share one unit-of-work and commit or roll back
+    # together (changed_by is a NOT NULL FK). Reordering them would lose the
+    # deleted row's state from the audit trail.
+    # #VERIFY: test_delete_removes_row_with_audit.
     row = await ctx.session.get(ProviderModelAllowlist, entry_id)
     if row is None:
         msg = f"no allowlist entry '{entry_id}'"

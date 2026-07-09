@@ -1453,6 +1453,42 @@ class TestAnthropicProvider:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
+    @pytest.mark.asyncio
+    async def test_response_validation_error_is_transient(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """APIResponseValidationError maps to a retryable ProviderError.
+
+        It is a direct APIError subclass (NOT an APIStatusError), raised when a
+        2xx response fails the SDK's strict checks (e.g. a non-JSON body from a
+        proxy) before the Message is built, so the content=None guard never
+        applies. Without a dedicated except clause it would escape
+        run_with_retries (ProviderError-only) as a raw SDK exception. This pins
+        it to a transient ProviderError: leg_fatal is False.
+        """
+        request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        response = httpx.Response(200, request=request, json=_anthropic_ok_body("x"))
+        exc = anthropic_sdk.APIResponseValidationError(response=response, body=None)
+
+        async def _raise(*_args: object, **_kwargs: object) -> object:
+            raise exc
+
+        monkeypatch.setattr(AsyncMessages, "create", _raise)
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(
+                lambda _r: httpx.Response(200, json=_anthropic_ok_body("x"))
+            ),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
 
 # ---------------------------------------------------------------------------
 # build_anthropic_leg (fail-fast credential check, WS-C PR1)

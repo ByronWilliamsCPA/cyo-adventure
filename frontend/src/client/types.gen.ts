@@ -220,7 +220,7 @@ export type AuthoringPlanRequest = {
     /**
      * Provider
      */
-    provider?: string | null;
+    provider?: 'anthropic' | 'openrouter' | 'modal' | 'ollama' | null;
     /**
      * Model
      */

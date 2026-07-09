@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.db.models import ProviderModelAllowlist, ProviderModelAllowlistAudit
@@ -180,3 +181,42 @@ async def test_update_missing_row_is_404(client: AsyncClient, seed: Seed) -> Non
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 404
+
+
+async def test_db_check_constraints_reject_invalid_values(
+    seed: Seed, engine: AsyncEngine
+) -> None:
+    """The at-rest CHECK constraints reject a bad provider and a bad audit action.
+
+    The API tests above cover the 422 boundary; this pins the DB backstop
+    (``ck_provider_model_allowlist_provider`` and
+    ``ck_provider_model_allowlist_audit_action``) so a direct ORM write that
+    bypasses schema validation fails with IntegrityError instead of persisting a
+    value the app can never have produced.
+    """
+    async with AsyncSession(engine) as session:
+        session.add(
+            ProviderModelAllowlist(
+                provider="not-a-provider", model_id="x", enabled=True
+            )
+        )
+        with pytest.raises(IntegrityError):
+            await session.flush()
+        await session.rollback()
+
+    # A valid changed_by (real user FK) isolates the action CHECK from the
+    # NOT NULL FK, so the IntegrityError below is unambiguously the action guard.
+    async with AsyncSession(engine) as session:
+        session.add(
+            ProviderModelAllowlistAudit(
+                provider="anthropic",
+                model_id="x",
+                action="not-an-action",
+                old_enabled=None,
+                new_enabled=True,
+                changed_by=seed.admin_user_id,
+            )
+        )
+        with pytest.raises(IntegrityError):
+            await session.flush()
+        await session.rollback()

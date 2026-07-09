@@ -365,4 +365,4 @@ async def test_automated_provider_unallowlisted_model_is_422(
         },
         headers=auth(seed.admin_token),
     )
-    assert res.status_code == 422
+    assert res.status_code == 422, res.text

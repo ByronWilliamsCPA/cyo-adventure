@@ -569,6 +569,12 @@ class FamilyListView(BaseModel):
 
 AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
 AuthoringMechanism = Literal["skill", "automated_provider"]
+# The generation backends an admin may name. Mirrors the
+# ck_provider_model_allowlist_provider CHECK constraint and
+# generation.allowlist.ALLOWLIST_PROVIDERS (mock is a CI-only double, never
+# allowlistable). Typed here so AuthoringPlanRequest.provider rejects an
+# unknown backend at the schema boundary (422) instead of at the DB query.
+ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
 
 
 class AuthoringPlanRequest(BaseModel):
@@ -588,9 +594,7 @@ class AuthoringPlanRequest(BaseModel):
     method: AuthoringMethod
     mechanism: AuthoringMechanism
     prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
-    provider: (
-        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
-    ) = None
+    provider: ProviderName | None = None
     model: (
         Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
     ) = None
@@ -1000,8 +1004,8 @@ class NoiseFloorUpdateBody(BaseModel):
 # ---------------------------------------------------------------------------
 # Provider/model allowlist schemas (WS-C PR1)
 # ---------------------------------------------------------------------------
-
-ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
+# ``ProviderName`` is defined near the authoring aliases above (it is used by
+# AuthoringPlanRequest.provider, which precedes this section).
 
 
 class AllowlistView(BaseModel):

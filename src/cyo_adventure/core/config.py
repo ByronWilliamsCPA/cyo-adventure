@@ -297,7 +297,8 @@ class Settings(BaseSettings):
     # --- Slice-2 moderation review pipeline ---
     # Which backend the moderation LLM stages use. "mock" (default) runs no real
     # review and requires no classifier key. "modal" is deferred to slice 2b and
-    # raises at build time, mirroring the deferred "anthropic" generation provider.
+    # raises at build time. (The "anthropic" generation provider, once similarly
+    # deferred, now ships as a real backend via WS-C PR1.)
     review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
     review_ollama_model: str = "qwen2.5:14b"
