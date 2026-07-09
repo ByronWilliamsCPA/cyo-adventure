@@ -207,3 +207,22 @@ class TestSuggestThresholds:
         )
         insights = [_insight(decided=10, released=10)]
         assert suggest_thresholds(insights, policy) == []
+
+    def test_override_rate_exactly_at_gate_produces_a_suggestion(self) -> None:
+        policy = ThresholdPolicy(rows={})
+        insights = [_insight(decided=SUGGESTION_MIN_DECIDED, released=4)]
+        suggestions = suggest_thresholds(insights, policy)
+        assert len(suggestions) == 1
+        assert suggestions[0].override_rate == 0.8
+
+    def test_suggestions_preserve_insight_order(self) -> None:
+        policy = ThresholdPolicy(rows={})
+        insights = [
+            _insight(decided=6, released=6, age_band="8-11", category="violence"),
+            _insight(decided=6, released=6, age_band="5-8", category="fear"),
+        ]
+        suggestions = suggest_thresholds(insights, policy)
+        assert [(s.age_band, s.category) for s in suggestions] == [
+            ("8-11", "violence"),
+            ("5-8", "fear"),
+        ]
