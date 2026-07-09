@@ -43,13 +43,33 @@ async def request_cover(
     # doomed job is never queued.
     # #VERIFY: is_admin check + ConfigurationError when credentials are unset.
     _require_admin(principal)
-    if not settings.gemini_api_key or not settings.supabase_service_key:
+    if (
+        not settings.gemini_api_key
+        or not settings.supabase_service_key
+        or not settings.supabase_url
+    ):
         msg = "cover generation is not configured"
         raise ConfigurationError(msg)
     row = await session.get(StorybookVersion, (storybook_id, version))
     if row is None:
         msg = "storybook version not found"
         raise ResourceNotFoundError(msg)
+    # #CRITICAL: timing dependencies: the console starts polling ~2s after this
+    # response, but the shared "generation" queue can sit busy for 10-30s
+    # before a worker dequeues the job and sets cover_status itself. Persist
+    # "generating" here, before enqueueing, so the first poll never reads a
+    # stale status (which would break the poll loop and invite a duplicate
+    # click -> duplicate job). This intentionally deviates from the
+    # handlers-never-commit unit-of-work convention (see deps.get_db_session):
+    # committing here, before enqueue_cover, guarantees the worker's DB
+    # connection can see "generating" the instant it dequeues. Enqueueing
+    # before this commit would risk an orphaned job if the commit then failed;
+    # committing first and letting enqueue fail after is the safer order,
+    # tolerated by the 60s poll cap in ReviewDetailPage.
+    # #VERIFY: test_admin_enqueues asserts the persisted row, not just the
+    # response body.
+    row.cover_status = "generating"
+    await session.commit()
     enqueue_cover(storybook_id, version, settings)
     return CoverStatusView(cover_status="generating", cover_url=row.cover_image_url)
 
