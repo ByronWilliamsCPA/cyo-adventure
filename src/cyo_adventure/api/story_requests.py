@@ -773,7 +773,9 @@ async def create_authoring_plan(
         msg = f"concept for story request '{request_id}' not found"
         raise ResourceNotFoundError(msg)
 
-    result = await build_authoring_plan(ctx.session, request, concept, body)
+    result = await build_authoring_plan(
+        ctx.session, request, concept, body, actor=Actor.from_principal(ctx.principal)
+    )
 
     if result.job.status == "queued":
         background_tasks.add_task(_enqueue_safely, str(result.job.id))

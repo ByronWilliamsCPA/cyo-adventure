@@ -17,6 +17,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.skeleton_match import select_skeleton_for_band
 
 if TYPE_CHECKING:
@@ -127,6 +128,7 @@ async def build_authoring_plan(
     request: StoryRequest,
     concept: Concept,
     plan: AuthoringPlanRequest,
+    actor: Actor,
 ) -> AuthoringPlanResult:
     """Validate an authoring-plan choice and create the GenerationJob row.
 
@@ -135,6 +137,7 @@ async def build_authoring_plan(
         request: The approved story request (status already checked by the caller).
         concept: The request's linked concept.
         plan: The admin's method/mechanism/prep_model choice.
+        actor: The admin assigning the plan, recorded on the pipeline event.
 
     Returns:
         AuthoringPlanResult: The created job, matched skeleton slug (if any),
@@ -197,4 +200,19 @@ async def build_authoring_plan(
 
     session.add(job)
     await session.flush()
+
+    # #CRITICAL: external-resources: this writes a PipelineEvent row inside the
+    # caller's transaction; a failure here must roll the job creation back, not
+    # be swallowed (mirrors record_event's own contract).
+    # #VERIFY: no try/except around this call; failures propagate to the
+    # unit-of-work started by api/story_requests.py::create_authoring_plan.
+    await record_event(
+        session,
+        actor,
+        entity_type="generation_job",
+        entity_id=str(job.id),
+        event_type=EventType.PLAN_ASSIGNED,
+        to_state=job.status,
+        payload={"job_status": job.status, "plan_kind": plan.method},
+    )
     return AuthoringPlanResult(job=job, skeleton_slug=skeleton_slug, warnings=warnings)

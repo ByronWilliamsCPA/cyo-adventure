@@ -399,6 +399,12 @@ known-first-party = ["cyo_adventure"]
 # config object would obscure the contract.
 "**/events/writer.py" = ["PLR0913"]
 
+# build_authoring_plan carries session, request, concept, plan, and actor;
+# each a distinct mandatory concern (unit-of-work, the approved request, its
+# concept, the admin's method/mechanism choice, and who is assigning the
+# plan for the pipeline event). A config object would obscure the contract.
+"**/story_requests/authoring_plan.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
