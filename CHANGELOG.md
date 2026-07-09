@@ -144,6 +144,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   neither had any remaining import. Closes F22.
 
 ### Fixed
+- Codecov configuration was silently invalid (a `testcase` comment-layout
+  token, a misplaced `flag_coverage_not_uploaded_behavior`, and a `behavior`
+  field on individual flags), which made Codecov discard the whole file and
+  fall back to defaults, ignoring every declared flag and component. The file
+  now passes `codecov.io/validate`. Flags were reworked to a single surface
+  axis (`backend`, `frontend`, `design-system`, plus an `api` Test Analytics
+  flag) with the code-area split moved to components, including safety-critical
+  (moderation + security + core, 90/95) and generation-pipeline (85/90). CI
+  uploads backend coverage under the `backend` flag and adds a guarded newman
+  `api` Test Analytics job (dormant until a Postman collection exists).
 - OpenAI Moderation's `_run_openai` now logs `openai_moderation_malformed`
   when the response's `categories` field degrades to an empty map (missing or
   non-dict shape), matching the sibling shape-check log lines instead of
