@@ -37,7 +37,12 @@ test.describe('double-submitting a story request', () => {
 
     await page.goto('/library/p1')
     await page.getByRole('button', { name: 'Request a story' }).click()
-    await page.getByRole('textbox').fill('A brave fox who solves mysteries')
+    // WS-B PR 3: RequestStory.tsx now also renders an optional series-name
+    // text input while the form is open with no continuation anchor, so an
+    // unscoped textbox locator is ambiguous; name the idea textarea.
+    await page
+      .getByLabel('What should your story be about?')
+      .fill('A brave fox who solves mysteries')
 
     const sendButton = page.getByRole('button', { name: /send/i })
     await sendButton.click()
