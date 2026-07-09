@@ -392,6 +392,13 @@ known-first-party = ["cyo_adventure"]
 # sensible default. A config object would obscure the contract.
 "**/story_requests/service.py" = ["PLR0913"]
 
+# record_event carries session, actor, entity_type, entity_id, event_type,
+# from_state, to_state, and payload; all but the last two are mandatory and
+# keyword-only, each a distinct concern (unit-of-work, who, what entity, what
+# transition, and the PII-free detail payload) with no sensible default. A
+# config object would obscure the contract.
+"**/events/writer.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests
