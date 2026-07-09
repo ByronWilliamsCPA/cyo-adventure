@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -636,6 +637,76 @@ class _FakeOverrideSession:
         pass
 
 
+# A valid ConceptBrief payload (mirrors tests/unit/test_worker_persistence.py's
+# seed) so generate_story can run the full pipeline to a terminal status.
+_FRESHGEN_BRIEF: dict[str, object] = {
+    "premise": "A brave explorer discovers a hidden garden.",
+    "protagonist": {"name": "Captain Rosa", "age": 9, "role": "young explorer"},
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.0,
+    "tier": 1,
+    "tone": "adventurous",
+    "themes_allowed": ["exploration", "nature"],
+    "content_nogo": [],
+    "target_node_count": 4,
+    "ending_count": 1,
+    "structure_pattern": "time_cave",
+    "desired_variables": [],
+    "special_constraints": [],
+}
+
+
+class _FreshGenResult:
+    """SQLAlchemy Result double yielding no child-name rows (empty PII)."""
+
+    def all(self) -> list[tuple[str]]:
+        return []
+
+
+class _FreshGenSession:
+    """Full-pipeline session double: enough surface for generate_story +
+    persist + moderation to run a fresh_generation job to a terminal status.
+
+    Unlike _FakeOverrideSession (which deliberately fails downstream), this
+    supports the whole happy path so the routing assertion sees a real
+    terminal status rather than the skeleton_slug ResourceNotFoundError.
+    """
+
+    def __init__(self, job: object, concept: object) -> None:
+        self.job = job
+        self.concept = concept
+        self.added: list[object] = []
+
+    async def get(self, model: type, ident: object) -> object | None:
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        if model is GenerationJob and getattr(self.job, "id", None) == ident:
+            return self.job
+        if model is Concept and getattr(self.concept, "id", None) == ident:
+            return self.concept
+        return None
+
+    async def execute(self, *_args: object, **_kwargs: object) -> _FreshGenResult:
+        return _FreshGenResult()
+
+    async def scalar(self, *_args: object, **_kwargs: object) -> None:
+        # No owning StoryRequest -> link_series_position takes its no-op path.
+        return None
+
+    def add(self, obj: object) -> None:
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        pass
+
+    async def commit(self) -> None:
+        pass
+
+    async def rollback(self) -> None:
+        pass
+
+
 class TestEffectiveProviderPerJobOverride:
     """run_generation_job reads a per-job provider/model override off the job row (WS-C PR1)."""
 
@@ -807,3 +878,75 @@ class TestEffectiveProviderPerJobOverride:
         # UnboundLocalError before recording anything.
         assert job.status == "failed"
         assert job.error == "interrupted"
+
+    @pytest.mark.asyncio
+    async def test_fresh_generation_with_provider_override_routes_to_generate_story(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A fresh_generation job whose authoring_metadata carries only
+        provider/model (NO skeleton_slug) must route to generate_story, not
+        skeleton fill.
+
+        Regression guard for the routing discriminator: build_authoring_plan
+        now stamps ``{"provider", "model"}`` on EVERY automated_provider job,
+        including fresh_generation. If the worker routed on ``authoring is not
+        None`` (the pre-fix signal), this job would be misrouted into
+        _run_skeleton_fill and die with
+        ``ResourceNotFoundError("authoring_metadata.skeleton_slug is missing or
+        not a string")`` on every run. Routing on a string ``skeleton_slug``
+        instead sends it to generate_story, which reaches a terminal status.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        # Moderation is not the unit under test; stub it so a passed outcome
+        # can commit terminally (mirrors the persistence-test pattern).
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        # Sentinel so a misroute is loud: if the worker ever calls skeleton
+        # fill for this job, fail with a clear message instead of the opaque
+        # ResourceNotFoundError.
+        async def _no_skeleton_fill(*_args: object, **_kwargs: object) -> object:
+            pytest.fail("fresh_generation job was misrouted to _run_skeleton_fill")
+
+        monkeypatch.setattr(worker_module, "_run_skeleton_fill", _no_skeleton_fill)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata={"provider": "anthropic", "model": "claude-opus-4-8"},
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF
+        )
+        concept.created_by = uuid_mod.uuid4()
+        session_ctx = _FreshGenSession(job, concept)
+
+        def factory() -> object:
+            class _Ctx:
+                async def __aenter__(self) -> _FreshGenSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        # Inject a mock provider so generate_story never makes a live call; the
+        # canned story drives the pipeline to a clean terminal status.
+        await worker_module.run_generation_job(
+            job_id,
+            provider=MockProvider(responses=[_CANNED_STORY_JSON] * 8),
+            session_factory=factory,
+        )
+
+        # Reached a real terminal status via generate_story, NOT the
+        # skeleton_slug ResourceNotFoundError (the misroute would have tripped
+        # the _no_skeleton_fill sentinel above and failed the test first).
+        assert job.status in {"passed", "needs_review", "failed"}

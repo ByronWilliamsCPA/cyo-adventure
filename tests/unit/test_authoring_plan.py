@@ -92,6 +92,13 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
     assert result.job.concept_id == concept.id
     assert result.skeleton_slug is None
     assert result.warnings == []
+    # Pin the metadata SHAPE: a fresh_generation automated_provider job carries
+    # ONLY provider/model (no skeleton_slug), which is exactly what keeps the
+    # worker routing it to generate_story rather than skeleton fill.
+    assert result.job.authoring_metadata == {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
+    }
 
 
 async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:

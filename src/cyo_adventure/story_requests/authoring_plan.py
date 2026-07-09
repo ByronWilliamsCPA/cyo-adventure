@@ -184,7 +184,8 @@ async def build_authoring_plan(
         # they name a real, enabled backend; this is the check that keeps a
         # free-string model id out of billing, run BEFORE anything is
         # persisted to authoring_metadata or reaches a provider.
-        # #VERIFY: test_unallowlisted_provider_model_is_rejected.
+        # #VERIFY: test_unallowlisted_provider_model_is_rejected and
+        # test_automated_provider_unallowlisted_model_is_422.
         if not await is_enabled_allowlist_pair(session, plan.provider, plan.model):
             msg = (
                 f"provider '{plan.provider}' / model '{plan.model}' is not an "

@@ -766,7 +766,20 @@ async def run_generation_job(
             # Run the generation pipeline. Wrap to persist failures.
             # ------------------------------------------------------------------
             try:
-                if authoring is not None:
+                # Route on the presence of a string skeleton_slug, NOT on the
+                # dict being non-None. A fresh_generation automated_provider job
+                # legitimately carries authoring_metadata = {"provider",
+                # "model"} (no skeleton_slug) so the worker can resolve the
+                # per-job provider override above; only true skeleton-fill jobs
+                # (which always carry a string skeleton_slug) route to
+                # _run_skeleton_fill. Everything else generates from scratch.
+                # #CRITICAL: data-integrity: routing on `authoring is not None`
+                # misroutes fresh_generation jobs into skeleton fill, which then
+                # raises ResourceNotFoundError on the absent skeleton_slug.
+                # #VERIFY: test_fresh_generation_with_provider_override_routes_to_generate_story.
+                if authoring is not None and isinstance(
+                    authoring.get("skeleton_slug"), str
+                ):
                     outcome = await _run_skeleton_fill(
                         _SkeletonFillContext(
                             authoring=authoring,
