@@ -26,6 +26,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, Series, StoryRequest
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.pii import PiiContext, assert_prompt_pii_safe
 from cyo_adventure.story_requests.anchoring import load_anchor_context, resolve_anchor
 from cyo_adventure.story_requests.brief import brief_from_request
@@ -192,6 +193,8 @@ async def approve_story_request(
     # already carries its series; the guardian's confirmed band must match the
     # series band (a mismatch would silently fork the series). A non-anchored
     # request may ratify the kid's proposal, or any guardian-chosen title.
+    series_created = False
+    anchor_resolved = False
     if request.anchor_storybook_id is not None:
         if series_title is not None:
             msg = "a continuation request cannot also create a new series"
@@ -207,6 +210,7 @@ async def approve_story_request(
         # value set at create time (which a data fix or future bug could drift
         # from the anchor's actual series). series_link uses request.series_id.
         request.series_id = series.id
+        anchor_resolved = True
     elif series_title is not None:
         series = await create_series(
             session,
@@ -216,6 +220,7 @@ async def approve_story_request(
             age_band=confirmation.age_band.value,
         )
         request.series_id = series.id
+        series_created = True
 
     # WS-B: the guardian's confirmation is stamped onto the request BEFORE the
     # brief builds, keeping the request the single source of truth from here on.
@@ -223,7 +228,15 @@ async def approve_story_request(
     request.length = confirmation.length.value
     request.narrative_style = confirmation.narrative_style.value
 
-    return await _build_concept(session, principal, request, profile)
+    return await _build_concept(
+        session,
+        principal,
+        request,
+        profile,
+        emit_approved_event=True,
+        series_created=series_created,
+        anchor_resolved=anchor_resolved,
+    )
 
 
 async def _build_concept(
@@ -231,6 +244,10 @@ async def _build_concept(
     principal: Principal,
     request: StoryRequest,
     profile: ChildProfile | None,
+    *,
+    emit_approved_event: bool = False,
+    series_created: bool = False,
+    anchor_resolved: bool = False,
 ) -> str:
     """Build the brief, run the PII backstop, persist the Concept, approve.
 
@@ -238,6 +255,12 @@ async def _build_concept(
     request ``approved``, ``reviewed_by`` stamped, and a Concept linked. An
     anchored request gets its soft-continuation context loaded here too, so
     both entry points produce the same anchor-aware brief.
+
+    ``emit_approved_event`` is True only for the guardian/admin approval path
+    (``approve_story_request``): an authored request is pre-approved at
+    creation and never makes a pending-to-approved transition, so it emits a
+    ``request_created`` event only (see ``create_authored_request``), not a
+    second ``request_approved`` event for the same row.
     """
     anchor_context = None
     if request.anchor_storybook_id is not None:
@@ -273,6 +296,22 @@ async def _build_concept(
     request.status = "approved"
     request.reviewed_by = principal.user_id
     request.reviewed_at = datetime.now(UTC)
+
+    if emit_approved_event:
+        await record_event(
+            session,
+            Actor.from_principal(principal),
+            entity_type="story_request",
+            entity_id=str(request.id),
+            event_type=EventType.REQUEST_APPROVED,
+            from_state="pending",
+            to_state="approved",
+            payload={
+                "series_created": series_created,
+                "anchor_resolved": anchor_resolved,
+                "series_id": str(request.series_id) if request.series_id else None,
+            },
+        )
 
     return str(concept.id)
 
@@ -351,23 +390,47 @@ async def create_authored_request(
     )
     session.add(request)
     await session.flush()
+    await record_event(
+        session,
+        Actor.from_principal(principal),
+        entity_type="story_request",
+        entity_id=str(request.id),
+        event_type=EventType.REQUEST_CREATED,
+        to_state=request.status,
+        payload={"initiator_role": request.initiator_role},
+    )
     if screening.blocked:
         return request, None
     concept_id = await _build_concept(session, principal, request, profile)
     return request, concept_id
 
 
-def decline_story_request(principal: Principal, request: StoryRequest) -> None:
-    """Decline a pending request (records the reviewer and timestamp).
+async def decline_story_request(
+    session: AsyncSession, principal: Principal, request: StoryRequest
+) -> None:
+    """Decline a pending request and record the transition.
 
     Args:
+        session: The request session (caller owns the transaction).
         principal: The declining guardian or admin.
         request: The pending story request.
 
     Raises:
         StateTransitionError: If the request is not pending (-> 409).
     """
+    # #CRITICAL: security: only the guardian's own family or an admin may decline;
+    # the endpoint enforces this before calling (api/story_requests.py).
+    # #VERIFY: covered by existing decline authorization tests.
     ensure_pending(request)
     request.status = "declined"
     request.reviewed_by = principal.user_id
     request.reviewed_at = datetime.now(UTC)
+    await record_event(
+        session,
+        Actor.from_principal(principal),
+        entity_type="story_request",
+        entity_id=str(request.id),
+        event_type=EventType.REQUEST_DECLINED,
+        from_state="pending",
+        to_state="declined",
+    )

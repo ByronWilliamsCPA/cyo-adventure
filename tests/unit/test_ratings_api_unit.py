@@ -136,7 +136,8 @@ async def test_record_rating_overwrites_existing() -> None:
     )
 
     assert view.value == 5
-    assert session.added == []
+    added_ratings = [obj for obj in session.added if isinstance(obj, Rating)]
+    assert added_ratings == []
     assert existing.value == 5
 
 

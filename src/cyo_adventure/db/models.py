@@ -27,6 +27,7 @@ from sqlalchemy import (
     Uuid,
     func,
 )
+from sqlalchemy import text as sa_text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -72,6 +73,26 @@ _AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
 _STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
 _STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
 _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
+
+# The append-only pipeline_event vocabularies, named once for their CHECK
+# constraints. event_type would ideally be derived from the EventType enum
+# (see _AGE_BAND_VALUES for that pattern), but cyo_adventure.events.__init__
+# imports events.writer, which imports db.models, so importing
+# cyo_adventure.events.models from here creates a circular import; the
+# fourteen values are listed verbatim instead and must be kept in sync with
+# cyo_adventure.events.models.EventType by hand.
+_PIPELINE_EVENT_TYPE_VALUES = (
+    "'request_created', 'request_approved', 'request_declined', "
+    "'plan_assigned', 'generation_started', 'generation_finished', "
+    "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
+    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated'"
+)
+_PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin'"
+_PIPELINE_ENTITY_TYPE_VALUES = (
+    "'story_request', 'generation_job', 'storybook', 'storybook_version', "
+    "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
+    "'moderation_setting'"
+)
 
 
 class Family(Base):
@@ -668,6 +689,63 @@ class ModerationThresholdAudit(Base):
     # row per upsert/delete and never mutate existing rows.
     changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
     changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+
+
+class PipelineEvent(Base):
+    """Append-only log of every story-lifecycle transition (WS-D capture layer).
+
+    Written from the transaction performing the transition (spec decision D1). Rows
+    are enforced append-only by a DB trigger created in the migration; the ORM never
+    updates or deletes them. ``actor_id`` is NULL for system transitions (worker,
+    moderation), which carry ``actor_role='system'`` (spec decision D2). ``payload``
+    is PII-free by contract, gated by events/writer.py::_PAYLOAD_ALLOWLIST (D3).
+    """
+
+    __tablename__ = "pipeline_event"
+    __table_args__ = (
+        CheckConstraint(
+            f"event_type IN ({_PIPELINE_EVENT_TYPE_VALUES})",
+            name="ck_pipeline_event_event_type",
+        ),
+        CheckConstraint(
+            f"actor_role IN ({_PIPELINE_ACTOR_ROLE_VALUES})",
+            name="ck_pipeline_event_actor_role",
+        ),
+        CheckConstraint(
+            f"entity_type IN ({_PIPELINE_ENTITY_TYPE_VALUES})",
+            name="ck_pipeline_event_entity_type",
+        ),
+        # Spec D2 coupling: system transitions carry no user id; user
+        # transitions always do. Enforced at the durable layer so a bad
+        # writer (backfill, raw insert, or a future call site) cannot store a
+        # contradictory row that the Actor value type alone would not catch.
+        CheckConstraint(
+            "(actor_role = 'system') = (actor_id IS NULL)",
+            name="ck_pipeline_event_system_actor_null",
+        ),
+        Index("ix_pipeline_event_entity", "entity_type", "entity_id"),
+        Index("ix_pipeline_event_event_type", "event_type"),
+        Index("ix_pipeline_event_occurred_at", "occurred_at"),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    occurred_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    actor_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), nullable=True
+    )
+    actor_role: Mapped[str] = mapped_column(String(16))
+    entity_type: Mapped[str] = mapped_column(String(32))
+    # Composite entity_ids (e.g. f"{profile_id}:{storybook_id}") concatenate a
+    # UUID with a String(120) Storybook.id, so the value can reach ~157 chars;
+    # 255 keeps the append-only write from aborting the shared transition
+    # transaction (spec D1) on a long storybook id.
+    entity_id: Mapped[str] = mapped_column(String(255))
+    event_type: Mapped[str] = mapped_column(String(48))
+    from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    payload: Mapped[dict[str, object]] = mapped_column(
+        JSONB, nullable=False, server_default=sa_text("'{}'::jsonb")
+    )
 
 
 class ModerationSetting(Base):
