@@ -8,19 +8,31 @@ the WS-F flow is the reused, audited threshold upsert in
 
 from __future__ import annotations
 
+from typing import cast
+
 from fastapi import APIRouter
 from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context
 from cyo_adventure.api.schemas import (
     CategoryInsightView,
+    MinVerdict,
     ModerationDashboardView,
+    SuggestionListView,
     ThresholdChangeView,
+    ThresholdSuggestionView,
 )
 from cyo_adventure.core.exceptions import AuthorizationError
 from cyo_adventure.db.models import PipelineEvent
 from cyo_adventure.events import EventType
-from cyo_adventure.moderation.insights import aggregate_insights, load_version_records
+from cyo_adventure.moderation.insights import (
+    SUGGESTION_MIN_DECIDED,
+    SUGGESTION_MIN_OVERRIDE_RATE,
+    aggregate_insights,
+    load_version_records,
+    suggest_thresholds,
+)
+from cyo_adventure.moderation.thresholds import load_threshold_policy
 
 router = APIRouter(prefix="/api/v1", tags=["moderation-dashboard"])
 
@@ -86,5 +98,39 @@ async def moderation_dashboard(ctx: Context) -> ModerationDashboardView:
                 payload=event.payload,
             )
             for event in recent
+        ],
+    )
+
+
+@router.get("/admin/moderation/suggestions")
+async def moderation_suggestions(ctx: Context) -> SuggestionListView:
+    """Computed threshold proposals awaiting admin ratification.
+
+    Never applied automatically (umbrella decision 3); the apply control on
+    the dashboard calls the existing audited threshold upsert (F3), and a
+    raised threshold retires its own suggestion (F2).
+    """
+    _require_admin(ctx)
+    records = await load_version_records(ctx.session)
+    insights = aggregate_insights(records)
+    policy = await load_threshold_policy(ctx.session)
+    suggestions = suggest_thresholds(insights, policy)
+    return SuggestionListView(
+        min_decided_versions=SUGGESTION_MIN_DECIDED,
+        min_override_rate=SUGGESTION_MIN_OVERRIDE_RATE,
+        suggestions=[
+            ThresholdSuggestionView(
+                age_band=suggestion.age_band,
+                category=suggestion.category,
+                current_min_verdict=cast("MinVerdict", suggestion.current_min_verdict),
+                current_min_score=suggestion.current_min_score,
+                suggested_min_verdict=cast(
+                    "MinVerdict", suggestion.suggested_min_verdict
+                ),
+                override_rate=suggestion.override_rate,
+                decided_versions=suggestion.decided_versions,
+                released_versions=suggestion.released_versions,
+            )
+            for suggestion in suggestions
         ],
     )

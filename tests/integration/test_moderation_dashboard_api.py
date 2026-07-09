@@ -401,3 +401,97 @@ class TestDashboardEndpoint:
         assert changes, "expected the noise_floor_changed event to appear"
         assert changes[0]["event_type"] == "noise_floor_changed"
         assert changes[0]["entity_id"] == "admin_noise_floor"
+
+
+async def _seed_high_override_corpus(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Six released versions with a violence flag in band 8-11 (rate 1.0)."""
+    async with sessions() as session:
+        for index in range(6):
+            await _seed_moderated_version(
+                session,
+                seed,
+                storybook_id=f"s_corpus_{index}",
+                findings=[_finding("violence", "flag")],
+                decision=EventType.RELEASED,
+                moderated_at=_T0 + timedelta(hours=index),
+            )
+        await session.commit()
+
+
+class TestSuggestionsEndpoint:
+    async def test_suggestion_appears_above_gates(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        await _seed_high_override_corpus(sessions, seed)
+
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        body = res.json()
+        assert body["min_decided_versions"] == 5
+        assert body["min_override_rate"] == 0.8
+        assert len(body["suggestions"]) == 1
+        suggestion = body["suggestions"][0]
+        assert suggestion["age_band"] == "8-11"
+        assert suggestion["category"] == "violence"
+        assert suggestion["current_min_verdict"] == "flag"
+        assert suggestion["suggested_min_verdict"] == "block"
+        assert suggestion["override_rate"] == 1.0
+        assert suggestion["decided_versions"] == 6
+
+    async def test_no_suggestion_below_volume(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        async with sessions() as session:
+            await _seed_moderated_version(
+                session,
+                seed,
+                storybook_id="s_lone",
+                findings=[_finding("violence", "flag")],
+                decision=EventType.RELEASED,
+            )
+            await session.commit()
+
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        assert res.json()["suggestions"] == []
+
+    async def test_applying_a_suggestion_retires_it(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """The F3 ratify loop: apply via the WS-A PUT, suggestion disappears."""
+        await _seed_high_override_corpus(sessions, seed)
+
+        put = await client.put(
+            "/api/v1/admin/moderation-thresholds/8-11",
+            params={"category": "violence"},
+            json={"min_verdict": "block", "min_score": None},
+            headers=auth(seed.admin_token),
+        )
+        assert put.status_code == 200
+
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        assert res.json()["suggestions"] == []
+
+    async def test_guardian_gets_403(self, client: AsyncClient, seed: Seed) -> None:
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.guardian_token)
+        )
+        assert res.status_code == 403
