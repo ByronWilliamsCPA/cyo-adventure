@@ -2,10 +2,10 @@
 
 Calls the Anthropic Messages API directly via the official ``anthropic`` SDK
 and returns the model text. Mirrors OpenRouterProvider's Layer-1 contract:
-retries TRANSIENT failures (connection error, timeout, HTTP 429, HTTP 529
-overloaded, HTTP 5xx) against the same model with exponential backoff, and
-maps leg-fatal failures (invalid request, authentication, permission, not
-found, and any other non-retryable 4xx) to
+retries TRANSIENT failures (connection error, timeout, HTTP 408, HTTP 409,
+HTTP 425, HTTP 429, HTTP 529 overloaded, HTTP 5xx) against the same model
+with exponential backoff, and maps leg-fatal failures (invalid request,
+authentication, permission, not found, and any other non-retryable 4xx) to
 :class:`~cyo_adventure.core.exceptions.ProviderError` immediately.
 
 This adapter owns Layer-1 retries exclusively: the internal ``AsyncAnthropic``
@@ -162,8 +162,8 @@ class AnthropicProvider:
             exc: The status error raised by the SDK.
 
         Raises:
-            ProviderError: Transient for 429/529/5xx; leg-fatal for every
-                other 4xx.
+            ProviderError: Transient for 408/409/425/429/529/5xx; leg-fatal
+                for every other 4xx.
         """
         status = exc.status_code
         if status in _TRANSIENT_STATUS or status >= 500:
