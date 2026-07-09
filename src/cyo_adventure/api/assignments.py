@@ -242,15 +242,15 @@ async def assign_storybook(
         AssignmentListView: The full current set of assigned profile ids.
 
     Raises:
-        AuthorizationError: Non-guardian caller, a cross-family storybook, or a
-            profile outside the family.
+        AuthorizationError: Non-guardian caller, a storybook that is neither
+            own-family nor catalog, or a profile outside the family.
         ResourceNotFoundError: Unknown storybook id.
         BusinessLogicError: The story is not published.
         ValidationError: A profile id is not a UUID.
     """
     # #CRITICAL: security: validate role/family/profile scope BEFORE any write so
     # a guardian cannot assign a non-published story or a foreign profile.
-    # #VERIFY: order is guardian(403) -> missing book(404) -> cross-family(403)
+    # #VERIFY: order is guardian(403) -> missing book(404) -> not-visible(403)
     # -> non-published(400) -> foreign profile(403).
     book = await _require_guardian_visible_book(ctx, storybook_id)
     if book.status != _PUBLISHED:
@@ -310,7 +310,8 @@ async def list_assignments(storybook_id: str, ctx: Context) -> AssignmentListVie
         AssignmentListView: The current assigned profile ids.
 
     Raises:
-        AuthorizationError: Non-guardian caller or cross-family storybook.
+        AuthorizationError: Non-guardian caller, or a storybook that is
+            neither own-family nor catalog.
         ResourceNotFoundError: Unknown storybook id.
     """
     # #CRITICAL: security: same guardian-only/visibility gate as the POST path.
