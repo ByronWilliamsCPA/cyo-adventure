@@ -446,6 +446,29 @@ def upgrade() -> None:
             server_default=sa.text("'{}'::jsonb"),
             nullable=False,
         ),
+        # Closed-vocabulary CHECKs (literal lists, self-contained per migration
+        # convention). These must match the PipelineEvent model's constraints
+        # (ck_pipeline_event_* added in Task 2's fix). If the EventType enum or
+        # the entity/role vocab changes, both this migration's successor and the
+        # model change together.
+        sa.CheckConstraint(
+            "event_type IN ('request_created', 'request_approved', "
+            "'request_declined', 'plan_assigned', 'generation_started', "
+            "'generation_finished', 'moderation_completed', 'repair_applied', "
+            "'sent_back', 'released', 'threshold_changed', 'noise_floor_changed', "
+            "'book_assigned', 'rated')",
+            name="ck_pipeline_event_event_type",
+        ),
+        sa.CheckConstraint(
+            "actor_role IN ('system', 'guardian', 'child', 'admin')",
+            name="ck_pipeline_event_actor_role",
+        ),
+        sa.CheckConstraint(
+            "entity_type IN ('story_request', 'generation_job', 'storybook', "
+            "'storybook_version', 'series', 'storybook_assignment', 'rating', "
+            "'moderation_threshold', 'moderation_setting')",
+            name="ck_pipeline_event_entity_type",
+        ),
     )
     op.create_index(
         "ix_pipeline_event_entity", "pipeline_event", ["entity_type", "entity_id"]
