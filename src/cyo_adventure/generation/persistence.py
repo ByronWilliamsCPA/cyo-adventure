@@ -46,6 +46,8 @@ class StorybookParams:
         provider: Optional provider identifier recorded on the version (e.g.
             "mock", "anthropic"), or the "import" sentinel for the offline
             authoring import path.
+        skeleton_slug: The production skeleton this version was filled from,
+            or None for fresh_generation/import (WS-C PR2).
         validation_report: Optional gate report stored on the version.
         status: Storybook lifecycle status (default ``"draft"``).
         version: Version number (default 1).
@@ -58,6 +60,7 @@ class StorybookParams:
     model: str | None = None
     prompt_version: str | None = None
     provider: str | None = None
+    skeleton_slug: str | None = None
     validation_report: dict[str, object] | None = None
     status: str = "draft"
     version: int = _FIRST_VERSION
@@ -115,6 +118,7 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
         model=params.model,
         prompt_version=params.prompt_version,
         provider=params.provider,
+        skeleton_slug=params.skeleton_slug,
     )
     session.add(version_row)
     await session.flush()

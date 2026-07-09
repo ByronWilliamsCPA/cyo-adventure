@@ -150,3 +150,36 @@ async def test_persist_accepts_validation_report_at_byte_limit() -> None:
     result = await persist_storybook(session, params)
 
     assert result == "s_report_ok"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_stamps_skeleton_slug_when_provided() -> None:
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_demo2",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+        skeleton_slug="the-cave-of-echoes",
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].skeleton_slug == "the-cave-of-echoes"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_persist_skeleton_slug_defaults_to_none() -> None:
+    session = _FakeSession()
+    params = StorybookParams(
+        story_id="s_demo3",
+        blob={"id": "ignored", "title": "T", "nodes": []},
+        family_id=uuid.uuid4(),
+        provider="mock",
+    )
+    await persist_storybook(session, params)
+
+    versions = _added(session, StorybookVersion)
+    assert versions[0].skeleton_slug is None

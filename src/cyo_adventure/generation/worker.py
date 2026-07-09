@@ -394,6 +394,24 @@ def _authoring_model_override(authoring: dict[str, object] | None) -> str | None
     return value if isinstance(value, str) else None
 
 
+def _skeleton_slug_of(authoring: dict[str, object] | None) -> str | None:
+    """Return the skeleton slug recorded on the job, if any.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict, or ``None`` for a
+            fresh (non-skeleton) generation that carries no skeleton.
+
+    Returns:
+        The skeleton slug when ``authoring`` carries a string
+        ``skeleton_slug``; otherwise ``None`` (fresh_generation, or a
+        skeleton_fill job somehow missing the key).
+    """
+    if authoring is None:
+        return None
+    value = authoring.get("skeleton_slug")
+    return value if isinstance(value, str) else None
+
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class _PersistContext:
     """The per-job context :func:`_persist_and_moderate` needs to persist + moderate.
@@ -475,6 +493,7 @@ async def _persist_and_moderate(
             model=ctx.job_row.model,
             prompt_version=_PROMPT_VERSION,
             provider=_provider_label(ctx.effective_provider),
+            skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
             version=_FIRST_VERSION,
         ),

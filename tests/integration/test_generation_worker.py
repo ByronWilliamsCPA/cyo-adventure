@@ -342,6 +342,14 @@ async def test_passing_run_creates_storybook_version(
         # F18/#63: the version's provider matches the job's, stamped at
         # persist time from the same effective_provider.
         assert sv.provider == job.provider
+        # WS-C PR2: gen_seed's job carries no authoring_metadata (fresh
+        # generation), so the threaded skeleton_slug is None. The real
+        # slug-threading case (a skeleton_fill job, whose authoring_metadata
+        # carries skeleton_slug) is covered deterministically by
+        # test_stage1_downgraded_needs_review_still_persists_storybook below,
+        # which persists via gen_seed_authoring without MockProvider response
+        # non-determinism.
+        assert sv.skeleton_slug is None
 
 
 # ---------------------------------------------------------------------------
@@ -546,6 +554,13 @@ async def test_stage1_downgraded_needs_review_still_persists_storybook(
         sv = await session.get(StorybookVersion, (job.storybook_id, 1))
         assert sv is not None
         assert sv.blob is not None
+        # WS-C PR2: the version's skeleton_slug matches the job's
+        # authoring_metadata (gen_seed_authoring), threaded through at
+        # persist time. This is a deterministic skeleton_fill persist path
+        # (fill_skeleton is monkeypatched above), unlike
+        # test_worker_runs_fill_skeleton_for_authoring_metadata_jobs whose
+        # passed/needs_review outcome is ambiguous by design.
+        assert sv.skeleton_slug == _SKELETON_SLUG
 
 
 @pytest.mark.asyncio
