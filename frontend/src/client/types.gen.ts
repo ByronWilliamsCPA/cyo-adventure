@@ -433,6 +433,22 @@ export type ContentSummaryView = {
 };
 
 /**
+ * CoverStatusView
+ *
+ * Cover generation status for one story version.
+ */
+export type CoverStatusView = {
+    /**
+     * Cover Status
+     */
+    cover_status: string;
+    /**
+     * Cover Url
+     */
+    cover_url?: string | null;
+};
+
+/**
  * FamilyListView
  *
  * All families, admin-only (powers the required family selector).
@@ -818,6 +834,10 @@ export type LibraryItem = {
      * Book Index
      */
     book_index?: number | null;
+    /**
+     * Cover Url
+     */
+    cover_url?: string | null;
 };
 
 /**
@@ -2839,6 +2859,86 @@ export type GetReviewQueueApiV1ReviewQueueGetResponses = {
 };
 
 export type GetReviewQueueApiV1ReviewQueueGetResponse = GetReviewQueueApiV1ReviewQueueGetResponses[keyof GetReviewQueueApiV1ReviewQueueGetResponses];
+
+export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover';
+};
+
+export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetError = CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors[keyof CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors];
+
+export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: CoverStatusView;
+};
+
+export type CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponse = CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses[keyof CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses];
+
+export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+        /**
+         * Version
+         */
+        version: number;
+    };
+    query?: never;
+    url: '/api/v1/storybooks/{storybook_id}/versions/{version}/cover';
+};
+
+export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostError = RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors[keyof RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors];
+
+export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: CoverStatusView;
+};
+
+export type RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponse = RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses[keyof RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses];
 
 export type ListThresholdsApiV1AdminModerationThresholdsGetData = {
     body?: never;
