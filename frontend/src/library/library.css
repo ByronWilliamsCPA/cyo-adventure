@@ -159,6 +159,30 @@
   outline-offset: 2px;
 }
 
+.request-story__label input[type='text'] {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  border: 2px solid var(--color-parchment-deeper);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+}
+
+.request-story__label input[type='text']:focus-visible {
+  outline: 3px solid var(--color-amber);
+  outline-offset: 2px;
+}
+
+.request-story__continuing {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .request-story__error {
   font-family: var(--font-sans);
   font-size: var(--text-sm);

@@ -23,6 +23,8 @@ export interface LibraryItemView {
   node_count: number
   rating: number | null
   progress: LibraryProgressView | null
+  series_id: string | null
+  book_index: number | null
 }
 
 export interface RatingView {

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LibraryPage } from './LibraryPage'
@@ -37,6 +37,8 @@ const IN_PROGRESS = {
   node_count: 10,
   rating: null,
   progress: { current_node: 'n2', nodes_visited: 5, updated_at: '2026-07-01T10:00:00Z' },
+  series_id: null,
+  book_index: null,
 }
 const OLDER_IN_PROGRESS = {
   ...IN_PROGRESS,
@@ -49,6 +51,14 @@ const NOT_STARTED = {
   id: 's3',
   title: 'Acorn Detectives',
   rating: 3,
+  progress: null,
+}
+const SERIES_BOOK = {
+  ...IN_PROGRESS,
+  id: 's4',
+  title: 'The Fox Returns',
+  series_id: 'ser1',
+  book_index: 2,
   progress: null,
 }
 
@@ -129,10 +139,7 @@ describe('LibraryPage', () => {
     })
     const five = await screen.findByRole('button', { name: /5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'false')
-    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute(
-      'aria-pressed',
-      'true'
-    )
+    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
   })
 
   it('renders the shelf non-hero started book with a plain progress bar and no pages-explored label', async () => {
@@ -142,6 +149,30 @@ describe('LibraryPage', () => {
     const progressbars = within(shelf).getAllByRole('progressbar')
     expect(progressbars.length).toBeGreaterThan(0)
     expect(within(shelf).queryByText(/of \d+ pages explored/i)).not.toBeInTheDocument()
+  })
+
+  it('tapping Continue this story on a series book opens the request form anchored to it', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, SERIES_BOOK] } })
+    mockPost.mockResolvedValue({ data: { id: 'req1', status: 'pending' } })
+    renderLibrary()
+
+    const shelf = await screen.findByRole('region', { name: /more to explore/i })
+    fireEvent.click(within(shelf).getByRole('button', { name: /continue this story/i }))
+
+    expect(await screen.findByText(/continuing: the fox returns/i)).toBeInTheDocument()
+    // Anchor mode replaces the series-name input with the continuing chip.
+    expect(screen.queryByLabelText(/part of a series\? give it a name!/i)).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'More fox adventures' } })
+    fireEvent.click(screen.getByRole('button', { name: /^send$/i }))
+
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests', {
+        profile_id: 'p1',
+        request_text: 'More fox adventures',
+        anchor_storybook_id: 's4',
+      })
+    )
   })
 })
 

@@ -6,7 +6,7 @@ import { useApi } from '../hooks/useApi'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView } from './libraryApi'
 import { pickHero } from './pickHero'
-import { RequestStory } from './RequestStory'
+import { RequestStory, type ContinueAnchor } from './RequestStory'
 import './library.css'
 
 type LibraryState =
@@ -24,6 +24,13 @@ export function LibraryPage() {
   const api = useApi()
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
+  const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
+
+  const continueThisStory = useCallback(
+    (item: LibraryItemView) => setContinueAnchor({ id: item.id, title: item.title }),
+    []
+  )
+  const clearContinueAnchor = useCallback(() => setContinueAnchor(null), [])
 
   // #ASSUME: timing dependencies: the "Try again" button calls `load()`
   // directly and discards its cleanup, so `cancelled` alone cannot stop a
@@ -130,10 +137,20 @@ export function LibraryPage() {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
-      <RequestStory profileId={profileId} />
+      <RequestStory
+        profileId={profileId}
+        anchor={continueAnchor}
+        onClearAnchor={clearContinueAnchor}
+      />
       {hero ? (
         <section aria-label="Continue Reading">
-          <BookCard item={hero} profileId={profileId} hero onRate={rate} />
+          <BookCard
+            item={hero}
+            profileId={profileId}
+            hero
+            onRate={rate}
+            onContinue={continueThisStory}
+          />
         </section>
       ) : null}
       {shelf.length > 0 ? (
@@ -142,7 +159,12 @@ export function LibraryPage() {
           <ul className="library__shelf">
             {shelf.map((item) => (
               <li key={item.id}>
-                <BookCard item={item} profileId={profileId} onRate={rate} />
+                <BookCard
+                  item={item}
+                  profileId={profileId}
+                  onRate={rate}
+                  onContinue={continueThisStory}
+                />
               </li>
             ))}
           </ul>

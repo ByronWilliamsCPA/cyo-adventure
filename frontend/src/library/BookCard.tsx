@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { Button } from '@ds/components/Button'
 import { ProgressBar } from '@ds/components/ProgressBar'
 import type { LibraryItemView } from './libraryApi'
 import { StarRating } from './StarRating'
@@ -10,9 +11,10 @@ export interface BookCardProps {
   /** Hero variant: full-width card with a labelled progress bar (wireframe 4.2). */
   hero?: boolean
   onRate: (storybookId: string, value: number) => void
+  onContinue?: (item: LibraryItemView) => void
 }
 
-export function BookCard({ item, profileId, hero = false, onRate }: BookCardProps) {
+export function BookCard({ item, profileId, hero = false, onRate, onContinue }: BookCardProps) {
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   const pct = percentComplete(item)
   const started = item.progress !== null
@@ -47,6 +49,11 @@ export function BookCard({ item, profileId, hero = false, onRate }: BookCardProp
         onRate={(value) => onRate(item.id, value)}
         bookTitle={item.title}
       />
+      {item.series_id !== null && onContinue ? (
+        <Button variant="ghost" onClick={() => onContinue(item)}>
+          Continue this story
+        </Button>
+      ) : null}
     </div>
   )
 }

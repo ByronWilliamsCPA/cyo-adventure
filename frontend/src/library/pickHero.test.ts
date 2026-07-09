@@ -13,6 +13,8 @@ function item(overrides: Partial<LibraryItemView>): LibraryItemView {
     node_count: 10,
     rating: null,
     progress: null,
+    series_id: null,
+    book_index: null,
     ...overrides,
   }
 }
