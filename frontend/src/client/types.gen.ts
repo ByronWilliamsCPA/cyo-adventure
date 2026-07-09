@@ -128,6 +128,21 @@ export type AnchorContext = {
 };
 
 /**
+ * ApproveBody
+ *
+ * Optional approve-time release options (WS-E decision E2).
+ *
+ * ``visibility`` defaults to ``family`` so an approve with no body keeps the
+ * pre-WS-E behavior; ``catalog`` shares the book with every family.
+ */
+export type ApproveBody = {
+    /**
+     * Visibility
+     */
+    visibility?: 'family' | 'catalog';
+};
+
+/**
  * ApprovedView
  *
  * The response to a successful approve action.
@@ -157,6 +172,10 @@ export type ApprovedView = {
      * Published At
      */
     published_at: string;
+    /**
+     * Visibility
+     */
+    visibility: 'family' | 'catalog';
 };
 
 /**
@@ -836,6 +855,10 @@ export type GuardianBookItem = {
      * Age Band
      */
     age_band: string;
+    /**
+     * Visibility
+     */
+    visibility: 'family' | 'catalog';
     /**
      * Screened
      */
@@ -2938,7 +2961,10 @@ export type SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses = {
 export type SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponse = SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses[keyof SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses];
 
 export type ApproveStorybookApiV1StorybooksStorybookIdApprovePostData = {
-    body?: never;
+    /**
+     * Body
+     */
+    body?: ApproveBody | null;
     headers?: {
         /**
          * Authorization

@@ -469,7 +469,8 @@ export const listRatingsApiV1RatingsProfileIdGet = <ThrowOnError extends boolean
  * ContentSummaryView: The redacted guardian content summary.
  *
  * Raises:
- * AuthorizationError: Child caller or cross-family guardian (403).
+ * AuthorizationError: Child caller, or a guardian from another family
+ * reading a non-catalog (family-visibility) book (403).
  * ResourceNotFoundError: Unknown or unpublished story, or a missing
  * published version row (404).
  * ValidationError: If the stored moderation report is corrupt at rest.
@@ -493,7 +494,8 @@ export const getContentSummaryApiV1StorybooksStorybookIdContentSummaryGet = <Thr
  * AssignmentListView: The current assigned profile ids.
  *
  * Raises:
- * AuthorizationError: Non-guardian caller or cross-family storybook.
+ * AuthorizationError: Non-guardian caller, or a storybook that is
+ * neither own-family nor catalog.
  * ResourceNotFoundError: Unknown storybook id.
  */
 export const listAssignmentsApiV1StorybooksStorybookIdAssignmentsGet = <ThrowOnError extends boolean = false>(options: Options<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ThrowOnError>): RequestResult<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ThrowOnError> => (options.client ?? client).get<ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ThrowOnError>({
@@ -516,8 +518,8 @@ export const listAssignmentsApiV1StorybooksStorybookIdAssignmentsGet = <ThrowOnE
  * AssignmentListView: The full current set of assigned profile ids.
  *
  * Raises:
- * AuthorizationError: Non-guardian caller, a cross-family storybook, or a
- * profile outside the family.
+ * AuthorizationError: Non-guardian caller, a storybook that is neither
+ * own-family nor catalog, or a profile outside the family.
  * ResourceNotFoundError: Unknown storybook id.
  * BusinessLogicError: The story is not published.
  * ValidationError: A profile id is not a UUID.
@@ -581,7 +583,11 @@ export const submitStorybookApiV1StorybooksStorybookIdSubmitPost = <ThrowOnError
 export const approveStorybookApiV1StorybooksStorybookIdApprovePost = <ThrowOnError extends boolean = false>(options: Options<ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ThrowOnError>): RequestResult<ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ThrowOnError> => (options.client ?? client).post<ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ThrowOnError>({
     responseType: 'json',
     url: '/api/v1/storybooks/{storybook_id}/approve',
-    ...options
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
 });
 
 /**
