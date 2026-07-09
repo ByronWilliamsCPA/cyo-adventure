@@ -17,14 +17,18 @@ from typing import TYPE_CHECKING, cast
 from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import select
 
+from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.storybook.models import StoryMetadata
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import random
     import uuid
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = get_logger(__name__)
 
 # #ASSUME: external-resources: the skeleton library is read cwd-relative
 # ("skeletons/<band>/*.json"), matching the existing discovery convention in
@@ -43,10 +47,33 @@ _STYLE_AWARE_BANDS = frozenset({"13-16", "16+"})
 
 @dataclass(frozen=True, slots=True)
 class Selection:
-    """A weighted-random skeleton pick plus the full in-cell candidate list."""
+    """A weighted-random skeleton pick plus the full in-cell candidate list.
+
+    Invariants (finding H):
+        - ``alternatives`` is always non-empty. Every Selection is produced from
+          at least one candidate, so an empty alternatives list is an
+          internal-invariant violation rejected at construction.
+        - ``slug`` need NOT appear in ``alternatives``: an admin out-of-cell
+          override legitimately picks a slug that is not in the in-cell list.
+
+    Attributes:
+        slug: The chosen skeleton slug (may be an out-of-cell override).
+        alternatives: Every in-cell candidate slug, as an immutable tuple.
+    """
 
     slug: str
-    alternatives: list[str]
+    alternatives: tuple[str, ...]
+
+    def __post_init__(self) -> None:
+        """Reject an empty alternatives tuple.
+
+        Raises:
+            ValidationError: If ``alternatives`` is empty (a Selection must
+                carry at least one candidate).
+        """
+        if not self.alternatives:
+            msg = "Selection.alternatives requires at least one candidate"
+            raise ValidationError(msg, field="alternatives", value=None)
 
 
 def _load_metadata(path: Path) -> StoryMetadata | None:
@@ -66,14 +93,17 @@ def _load_metadata(path: Path) -> StoryMetadata | None:
     try:
         raw = path.read_text(encoding="utf-8")
         data = cast("dict[str, object]", json.loads(raw))
-    except (OSError, json.JSONDecodeError):
+    except (OSError, json.JSONDecodeError) as exc:
+        logger.warning("skeleton.unreadable", path=str(path), error=str(exc))
         return None
     meta = data.get("metadata") if isinstance(data, dict) else None
     if not isinstance(meta, dict):
+        logger.warning("skeleton.missing_metadata_block", path=str(path))
         return None
     try:
         return StoryMetadata.model_validate(meta)
-    except PydanticValidationError:
+    except PydanticValidationError as exc:
+        logger.warning("skeleton.schema_invalid", path=str(path), error=str(exc))
         return None
 
 
@@ -105,7 +135,9 @@ def skeleton_matches_cell(
     """Return whether a skeleton's metadata matches a (band, length, style) cell.
 
     Args:
-        metadata: The skeleton's typed metadata.
+        metadata: The skeleton's typed metadata. A skeleton whose ``length`` is
+            None is length-less (a documented valid backward-compat state on
+            StoryMetadata.length: Length | None) and matches any request length.
         band: The request's age band.
         length: The request's length ("short"/"medium"/"long"); a null
             request length must already be collapsed to a default by the
@@ -115,12 +147,14 @@ def skeleton_matches_cell(
             teen bands).
 
     Returns:
-        True if age_band and length match, and (for the two teen bands only)
-        narrative_style also matches.
+        True if age_band matches, the skeleton's length matches (or the
+        skeleton declares no length, which is a wildcard that matches any
+        request length), and (for the two teen bands only) narrative_style
+        also matches.
     """
     if metadata.age_band != band:
         return False
-    if metadata.length != length:
+    if metadata.length is not None and metadata.length != length:
         return False
     return band not in _STYLE_AWARE_BANDS or metadata.narrative_style == style
 
@@ -146,29 +180,90 @@ def candidates_for_cell(band: str, length: str, style: str) -> list[str]:
     ]
 
 
+def resolve_skeleton_path(band: str, slug: str) -> Path:
+    """Return the validated ``skeletons/<band>/<slug>.json`` path.
+
+    Resolves the candidate path and confirms it stays inside the skeleton root
+    before returning it, so an admin-supplied slug cannot escape the library
+    tree via path traversal.
+
+    Args:
+        band: The age band directory name (e.g. "8-11").
+        slug: The skeleton's filename stem, as supplied by the admin (untrusted).
+
+    Returns:
+        The resolved, containment-checked path (it may or may not exist on
+        disk; the caller checks ``is_file()``).
+
+    Raises:
+        ValidationError: If the resolved path escapes the skeleton root (a
+            path-traversal attempt via ``band`` or ``slug``).
+    """
+    # #CRITICAL: security: ``slug`` is untrusted admin-override input
+    # (decision C-6, unconstrained skeleton_slug). A slug such as
+    # "../../etc/passwd" would otherwise resolve outside skeletons/ and let a
+    # crafted request read or fill an arbitrary file. Reject any resolved path
+    # that is not contained in the skeleton root.
+    # #VERIFY: test_resolve_skeleton_path_rejects_traversing_slug and
+    # test_find_skeleton_metadata_rejects_traversing_slug assert the
+    # ValidationError; worker.py and import_story.py resolve through this helper.
+    root = _SKELETON_ROOT.resolve()
+    candidate = (_SKELETON_ROOT / band / f"{slug}.json").resolve()
+    if not candidate.is_relative_to(root):
+        msg = (
+            f"skeleton path for band '{band}', slug '{slug}' escapes the skeleton root"
+        )
+        raise ValidationError(msg, field="skeleton_slug", value=slug)
+    return candidate
+
+
 def find_skeleton_metadata(slug: str) -> StoryMetadata | None:
     """Return a skeleton's typed metadata by scanning every band directory.
 
     Used for the admin's unconstrained skeleton_slug override (decision C-6),
     which may name a skeleton outside the request's own band directory (an
-    explicitly out-of-cell pick), or a non-production-eligible one.
+    explicitly out-of-cell pick), or a non-production-eligible one. Every
+    candidate path is routed through :func:`resolve_skeleton_path` so a
+    traversing slug is rejected rather than read.
+
+    A genuinely-absent slug (no band has "<slug>.json") returns None so the
+    caller can surface the standard "does not exist" 422. A slug that exists
+    but is corrupt, or exists in more than one band, raises so the caller does
+    not misreport a real, distinct failure as "does not exist".
 
     Args:
         slug: The skeleton's filename stem, as supplied by the admin.
 
     Returns:
         The typed metadata, or None if no band directory has a file named
-        "<slug>.json" (or that file is unreadable/malformed).
+        "<slug>.json".
+
+    Raises:
+        ValidationError: If ``slug`` traverses outside the skeleton root
+            (via :func:`resolve_skeleton_path`); if the same "<slug>.json"
+            exists in two or more bands (ambiguous); or if exactly one exists
+            but is unreadable or has invalid metadata (present-but-corrupt).
     """
     if not _SKELETON_ROOT.is_dir():
         return None
+    matches: list[tuple[str, Path]] = []
     for band_dir in sorted(_SKELETON_ROOT.iterdir()):
         if not band_dir.is_dir():
             continue
-        path = band_dir / f"{slug}.json"
+        path = resolve_skeleton_path(band_dir.name, slug)
         if path.is_file():
-            return _load_metadata(path)
-    return None
+            matches.append((band_dir.name, path))
+    if len(matches) > 1:
+        bands = ", ".join(sorted(band for band, _ in matches))
+        msg = f"ambiguous skeleton_slug '{slug}' present in multiple bands: {bands}"
+        raise ValidationError(msg, field="skeleton_slug", value=slug)
+    if not matches:
+        return None
+    metadata = _load_metadata(matches[0][1])
+    if metadata is None:
+        msg = f"skeleton_slug '{slug}' exists but is unreadable or has invalid metadata"
+        raise ValidationError(msg, field="skeleton_slug", value=slug)
+    return metadata
 
 
 def _weight(recent_count: int) -> float:
@@ -208,19 +303,21 @@ def select_skeleton_for_cell(
 
     Returns:
         Selection: the weighted pick, plus every in-cell candidate as
-        `alternatives` (so the admin sees every option, including the ones
-        not drawn).
+        `alternatives` (an immutable tuple, so the admin sees every option,
+        including the ones not drawn).
 
     Raises:
-        ValueError: If candidates is empty (an internal-invariant
+        ValidationError: If candidates is empty (an internal-invariant
             violation; callers must check candidates_for_cell(...) first).
+            Built-in exceptions are disallowed in this service module per
+            src/CLAUDE.md, so this raises the project ValidationError.
     """
     if not candidates:
         msg = "select_skeleton_for_cell requires at least one candidate"
-        raise ValueError(msg)
+        raise ValidationError(msg, field="candidates", value=None)
     weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
     pick = rng.choices(candidates, weights=weights, k=1)[0]
-    return Selection(slug=pick, alternatives=list(candidates))
+    return Selection(slug=pick, alternatives=tuple(candidates))
 
 
 # How many of the family's most recent storybook_version rows to weight
@@ -250,6 +347,20 @@ async def recent_skeleton_usage(
     # caller in authoring_plan.py) is expected to hold an open async session.
     # #VERIFY: a session that is closed or out of a transaction context raises
     # before this function runs; no defensive re-open is attempted here.
+    #
+    # #ASSUME: data-integrity: the recency window counts EVERY authored
+    # storybook_version row (all statuses, and multiple versions of the same
+    # storybook count separately) as "recently used". StorybookVersion has no
+    # per-version delivered/approved status column; a version's delivered state
+    # is only inferrable from the parent Storybook.status or approved_by. The
+    # deliberate choice here is that skeleton diversity should reflect authoring
+    # activity, not delivery: a skeleton the family just authored against is
+    # "recently used" whether or not that version shipped. Narrowing this to
+    # approved-only or distinct-storybook counting is a product decision, not a
+    # bug, and is intentionally NOT done here.
+    # #VERIFY: tests/unit/test_skeleton_recency.py pins the exact query and the
+    # returned counts; any status filter or dedupe would break those and must be
+    # a deliberate, tested product change.
     if family_id is None:
         return {}
     stmt = (
