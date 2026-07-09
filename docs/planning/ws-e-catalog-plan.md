@@ -1439,6 +1439,102 @@ git commit -S -m "docs(changelog): WS-E catalog and guardian assignment entry"
 
 ---
 
+### Task 13: Child read paths honor catalog visibility (added post-final-review, owner-ratified)
+
+`depends-on: Task5 [completion]`
+
+**Files:**
+
+- Modify: `src/cyo_adventure/api/library.py` (`list_library` WHERE ~line 288; `get_storybook_version` family check ~line 388)
+- Modify: `src/cyo_adventure/api/ratings.py` (`record_rating` family check ~line 69)
+- Test: the integration files covering library and ratings (locate with `grep -rln "list_library\|/library\|record_rating\|/ratings" tests/integration/`)
+
+**Why:** the final whole-branch review confirmed an assigned cross-family catalog book was
+invisible to the child (family filter alongside the assignment gate). Owner ratified fixing in
+WS-E. The `StorybookAssignment` gate stays REQUIRED for child reads; only the family filters
+widen.
+
+- [ ] **Step 1: Write the failing tests** (adapt seeding to each file's local helpers; the
+      behavioral assertions are verbatim requirements):
+
+  - Child of family A, assigned a family-B `visibility='catalog'` published+approved book:
+    the book appears in `GET /api/v1/library/{profile_id}` AND
+    `GET /api/v1/storybooks/{id}/versions/{v}` returns the blob (200) AND
+    `POST /api/v1/ratings` for it returns 200.
+  - Same child, UNASSIGNED family-B catalog book: absent from the listing, blob fetch 404
+    (existence hidden), rating 403.
+  - Cross-family `family`-visibility book: still absent / 403-or-404 exactly as before
+    (regression guard; do not weaken existing tests).
+
+- [ ] **Step 2: Run to verify failure** (listing missing / blob 403 / rating 403)
+
+- [ ] **Step 3: `list_library`**: replace the family filter (library.py:288) with
+
+```python
+            or_(
+                Storybook.family_id == principal.family_id,
+                Storybook.visibility == Visibility.CATALOG.value,
+            ),
+```
+
+(add `or_` to the sqlalchemy import and `Visibility` to the state-machine import), and update
+the adjacent #CRITICAL/#VERIFY comment: catalog books are listable when assigned; the EXISTS
+assignment clause is unchanged and remains the gate.
+
+- [ ] **Step 4: `get_storybook_version`**: the family check (library.py:388-389) becomes
+
+```python
+    if not principal.is_admin and book.visibility != Visibility.CATALOG.value:
+        authorize_family(principal, book.family_id)
+```
+
+The non-admin published/approved/current 404 gate and the child assignment gate below it stay
+untouched (they already apply to catalog books). Update the #CRITICAL comment: a catalog book is
+readable cross-family (guardian preview parity with content-summary; child still needs the
+assignment row).
+
+- [ ] **Step 5: `record_rating`**: replace `authorize_family(ctx.principal, book.family_id)`
+      (ratings.py:69) with
+
+```python
+    if book.family_id != ctx.principal.family_id:
+        # #CRITICAL: security: cross-family rating is allowed ONLY for a catalog
+        # book that is actually assigned to this profile; an unassigned catalog
+        # book is not ratable (prevents drive-by ratings polluting suggestion
+        # data), and a family-visibility book stays fully blocked (IDOR guard).
+        # #VERIFY: catalog+assigned -> 200; catalog+unassigned -> 403;
+        # cross-family family-visibility -> 403.
+        if book.visibility != Visibility.CATALOG.value:
+            authorize_family(ctx.principal, book.family_id)
+        else:
+            assigned = await ctx.session.scalar(
+                select(StorybookAssignment.storybook_id).where(
+                    StorybookAssignment.storybook_id == book.id,
+                    StorybookAssignment.child_profile_id == profile_id,
+                )
+            )
+            if assigned is None:
+                msg = "storybook is not accessible to this profile"
+                raise AuthorizationError(msg, resource=book.id)
+```
+
+(imports: `select` if absent, `StorybookAssignment`, `Visibility`.)
+
+- [ ] **Step 6: Run the touched test files plus**
+      `uv run pytest tests/integration/test_assignments_api.py tests/integration/test_guardian_books_api.py -q`
+      Expected: ALL PASS
+
+- [ ] **Step 7: CHANGELOG amendment**: extend the WS-E Unreleased entry's final sentence
+      (before "Admin-initiated") with: "Children can read and rate an assigned catalog book
+      from another family; unassigned catalog books stay hidden from child accounts."
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/cyo_adventure/api/library.py src/cyo_adventure/api/ratings.py CHANGELOG.md <test files>
+git commit -S -m "fix(api): child read and rating paths honor catalog visibility (WS-E E5 amendment)"
+```
+
 ## Post-plan process (not tasks)
 
 Per the ratified process: subagent-driven development with per-task reviews, then an Opus

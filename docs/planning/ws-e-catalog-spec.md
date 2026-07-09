@@ -41,6 +41,15 @@ tracked as issue #173 (make `StoryRequest.family_id` nullable for catalog-origin
 
 One additional coordination decision was ratified at kickoff:
 
+- **E5 amendment (ratified 2026-07-09, post-review)**: the final whole-branch review found that
+  "the child read gate (`StorybookAssignment`) is unchanged" was an incomplete premise: the child
+  read paths carry an own-family filter IN ADDITION to the assignment gate
+  (`api/library.py` listing and direct fetch, `api/ratings.py`), so an assigned cross-family
+  catalog book was unreachable by the child. The owner ratified fixing this inside WS-E (plan
+  Task 13): the family filters widen to own-family OR catalog on those three paths, while the
+  `StorybookAssignment` gate itself stays required for child reads, and catalog ratings
+  additionally require an assignment for the rating profile. Cross-family `family`-visibility
+  books remain blocked everywhere.
 - **E-mig (migration chaining)**: WS-C PR2 is concurrently in flight (branch
   `feat/ws-c-skeleton-matching`) with migration revision `228c68e8f1e7`
   (`20260709_0900_add_storybook_version_skeleton_slug.py`, `down_revision=b4c5d6e7f8a9`). The owner
