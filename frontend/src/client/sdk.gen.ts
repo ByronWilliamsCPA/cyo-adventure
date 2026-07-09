@@ -1095,8 +1095,9 @@ export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost =
  * fires after commit.
  *
  * Returns:
- * AuthoringPlanResponse: The created job id, status, matched skeleton
- * (if any), and any non-blocking eligibility warnings.
+ * AuthoringPlanResponse: The created job id, status, matched or
+ * overridden skeleton (if any), every in-cell skeleton_alternatives,
+ * and any non-blocking eligibility/override warnings.
  *
  * Raises:
  * AuthorizationError: If the caller is not an admin (-> 403).
@@ -1105,8 +1106,8 @@ export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost =
  * StateTransitionError: If the request is not approved, or a job
  * already exists for its concept (-> 409).
  * ValidationError: On an invalid method/mechanism combination, an
- * unrecognized skill-mechanism model, or no matching skeleton
- * (-> 422).
+ * unrecognized skill-mechanism model, no matching skeleton, or an
+ * unknown skeleton_slug override (-> 422).
  */
 export const createAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, ThrowOnError>): RequestResult<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, ThrowOnError>({
     responseType: 'json',

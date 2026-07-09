@@ -688,3 +688,32 @@ to assert all directives are present, so every newly generated project ships the
 from day one.
 
 **Affected Files**: template `src/{{package}}/middleware/security.py`, its unit test
+
+---
+
+### Template CLAUDE.md documents a `bandit -r src` quick-start that ignores the repo's own skip list
+
+- **Priority**: Low
+- **Category**: Tooling
+- **Discovered**: 2026-07-09
+
+**Issue**: The template's `CLAUDE.md` documents the security scan quick-start command as
+`uv run bandit -r src` (both in the "Before commit" block and the "Project Requirements"
+section). That bare form does not load the project's `[tool.bandit]` configuration in
+`pyproject.toml`, so it re-reports findings the project has already triaged and skip-listed
+(for example B101 assert-used and B104 hardcoded-bind-all-interfaces), exiting non-zero. The
+pre-commit hook and CI both invoke bandit as `bandit -c pyproject.toml -r src`, which honors
+the skip list and passes cleanly. A developer who runs the documented command verbatim sees a
+false failure that does not match the actual gate, and may either waste time chasing accepted
+findings or, worse, add `# nosec` suppressions the project did not want.
+
+**Context**: Found during WS-C PR2 (cell-aware skeleton matching) while running the full local
+gate. The bare `uv run bandit -r src` flagged two findings identical to `main`'s already-accepted
+set; switching to `uv run bandit -c pyproject.toml -r src` (the pre-commit form) returned clean.
+
+**Suggested Fix**: Update the template's `CLAUDE.md` to document the config-aware form
+`uv run bandit -c pyproject.toml -r src` everywhere the quick-start command appears, so the
+documented command matches the enforced pre-commit/CI invocation and never produces a false
+failure on a freshly generated project.
+
+**Affected Files**: template `CLAUDE.md` (Quick Start Commands and Project Requirements sections)
