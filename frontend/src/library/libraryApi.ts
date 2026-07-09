@@ -25,6 +25,7 @@ export interface LibraryItemView {
   progress: LibraryProgressView | null
   series_id: string | null
   book_index: number | null
+  cover_url: string | null
 }
 
 export interface RatingView {

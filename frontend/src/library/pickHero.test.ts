@@ -15,6 +15,7 @@ function item(overrides: Partial<LibraryItemView>): LibraryItemView {
     progress: null,
     series_id: null,
     book_index: null,
+    cover_url: null,
     ...overrides,
   }
 }

@@ -22,7 +22,13 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
     <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
       <Link className="book-card__link" to={readTo}>
         <div className="book-card__tile" aria-hidden="true">
-          {item.title.charAt(0).toUpperCase()}
+          {item.cover_url ? (
+            <img className="book-card__cover" src={item.cover_url} alt="" />
+          ) : (
+            <span className="book-card__letter">
+              {item.title.charAt(0).toUpperCase()}
+            </span>
+          )}
         </div>
         <h3 className="book-card__title">{item.title}</h3>
         {hero ? (
