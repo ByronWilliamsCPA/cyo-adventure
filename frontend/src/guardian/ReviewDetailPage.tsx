@@ -142,6 +142,11 @@ export function ReviewDetailPage() {
         setCoverStatus(polled.cover_status)
         if (polled.cover_status !== 'generating') break
       }
+    } catch (err) {
+      // Log the message, not the axios error object (its config.headers
+      // carries the caller's Authorization bearer token).
+      console.error('cover generation failed:', err instanceof Error ? err.message : err)
+      if (isMountedRef.current) setCoverStatus('failed')
     } finally {
       if (isMountedRef.current) setCoverBusy(false)
     }

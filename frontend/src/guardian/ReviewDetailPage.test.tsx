@@ -115,6 +115,16 @@ describe('ReviewDetailPage', () => {
     expect(screen.queryByText('CONSOLE HOME')).not.toBeInTheDocument()
   })
 
+  it('surfaces a failed alert when cover generation errors, and re-enables the button', async () => {
+    const user = userEvent.setup()
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+    renderAt('s1')
+    const generateButton = await screen.findByRole('button', { name: /Generate cover/i })
+    await user.click(generateButton)
+    expect(await screen.findByRole('alert')).toHaveTextContent(/cover failed; try again/i)
+    expect(generateButton).toBeEnabled()
+  })
+
   it.each(['published', 'draft'] as const)(
     'disables Approve and Send Back for a %s story while keeping their labels',
     async (status) => {
