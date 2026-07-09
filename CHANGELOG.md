@@ -159,6 +159,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   job (per test type) instead of a `main`-only `workflow_run` workflow, so
   backend coverage and patch coverage are visible on pull requests for the
   first time; the redundant `.github/workflows/codecov.yml` was removed.
+- The `coverage-upload` job now checks out the repository before uploading.
+  pytest-cov emits two `<source>` roots (`src` and `src/cyo_adventure`), which
+  Codecov disambiguates against the git file tree; without a checkout every
+  report was rejected server-side as "source code unavailability / path
+  mismatch", so the first main run after the config fix showed 0% with ten
+  upload errors despite healthy 91%+ reports in the artifact.
 - The integration and security test buckets now run in CI
   (`run-integration-tests` / `run-security-tests`); previously the reusable
   workflow's unit step excluded `-m integration`/`-m security`, so those
