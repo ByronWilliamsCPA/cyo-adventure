@@ -589,3 +589,145 @@ async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
     assert captured["settings"] is config_settings
     assert captured["review_stage1_model"] == "admin-chosen-reviewer"
     assert captured["prep_model"] == "the-prep-model"
+
+
+class _FakeOverrideResult:
+    """Minimal ``session.scalars()`` return double: no rows, every time."""
+
+    def scalar_one_or_none(self) -> None:
+        return None
+
+
+class _FakeOverrideSession:
+    """Minimal session double for test_effective_provider_reads_job_authoring_override.
+
+    Module-level (not nested in the test body) so the test function's own
+    control flow stays simple; only the job/concept it was built with are
+    ever returned.
+    """
+
+    def __init__(self, job: object, concept: object) -> None:
+        self.job = job
+        self.concept = concept
+
+    async def get(self, model: type, ident: object) -> object:
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        if model is GenerationJob and getattr(self.job, "id", None) == ident:
+            return self.job
+        if model is Concept and getattr(self.concept, "id", None) == ident:
+            return self.concept
+        return None
+
+    async def scalars(self, *_args: object, **_kwargs: object) -> _FakeOverrideResult:
+        return _FakeOverrideResult()
+
+    async def flush(self) -> None:
+        # _load_and_start_job flushes the "running" status write before
+        # build_provider is ever reached; without this the fake session
+        # would raise AttributeError too early to exercise the override
+        # read this test is checking.
+        pass
+
+    async def commit(self) -> None:
+        pass
+
+    async def rollback(self) -> None:
+        pass
+
+
+class TestEffectiveProviderPerJobOverride:
+    """run_generation_job reads a per-job provider/model override off the job row (WS-C PR1)."""
+
+    def test_authoring_provider_override_reads_string_only(self) -> None:
+        """A non-string 'provider' value in authoring_metadata is ignored, not trusted."""
+        from cyo_adventure.generation.worker import _authoring_provider_override
+
+        assert _authoring_provider_override(None) is None
+        assert _authoring_provider_override({"provider": "anthropic"}) == "anthropic"
+        assert _authoring_provider_override({"provider": 123}) is None
+        assert _authoring_provider_override({}) is None
+
+    def test_authoring_model_override_reads_string_only(self) -> None:
+        """A non-string 'model' value in authoring_metadata is ignored, not trusted."""
+        from cyo_adventure.generation.worker import _authoring_model_override
+
+        assert _authoring_model_override(None) is None
+        assert (
+            _authoring_model_override({"model": "claude-opus-4-8"}) == "claude-opus-4-8"
+        )
+        assert _authoring_model_override({"model": None}) is None
+
+    @pytest.mark.asyncio
+    async def test_effective_provider_reads_job_authoring_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """run_generation_job builds the provider AFTER the job row loads, honoring
+        the job's authoring_metadata provider/model override over global settings.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        captured: dict[str, object] = {}
+
+        def fake_build_provider(
+            settings: object,
+            *,
+            provider_override: str | None,
+            model_override: str | None,
+        ) -> MockProvider:
+            captured["provider_override"] = provider_override
+            captured["model_override"] = model_override
+            return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+        monkeypatch.setattr(worker_module, "build_provider", fake_build_provider)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata={"provider": "anthropic", "model": "claude-opus-4-8"},
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief={"age_band": "8-11"}
+        )
+
+        # This test asserts only that build_provider is CALLED with the job's
+        # override before the pipeline runs. It does not drive the full
+        # pipeline (the existing end-to-end worker tests cover that): the fake
+        # session cannot satisfy the pipeline's downstream queries, so the run
+        # raises after build_provider has already recorded the overrides into
+        # `captured`. The real assertion is on `captured`, reached before that
+        # failure; the surrounding pytest.raises tolerates the downstream error.
+        session_ctx = _FakeOverrideSession(job, concept)
+
+        def factory() -> object:
+            # session_factory must be a plain (sync) callable returning an
+            # async context manager directly, matching get_session()'s
+            # signature; an `async def` here would return an unawaited
+            # coroutine instead of the context manager `async with` needs.
+            class _Ctx:
+                async def __aenter__(self) -> _FakeOverrideSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        with pytest.raises(Exception):  # noqa: B017, PT011
+            # The fake session cannot satisfy the full pipeline's downstream
+            # queries; the test's assertion is on `captured`, reached before
+            # that failure, not on a clean run. This test is itself an async
+            # test running inside pytest-asyncio's event loop, so the
+            # coroutine is awaited directly rather than via asyncio.run
+            # (asyncio.run cannot be called from a running event loop).
+            await worker_module.run_generation_job(job_id, session_factory=factory)
+
+        assert captured["provider_override"] == "anthropic"
+        assert captured["model_override"] == "claude-opus-4-8"

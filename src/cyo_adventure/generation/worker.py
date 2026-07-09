@@ -83,7 +83,7 @@ _MOCK_MODEL_LABEL = "mock"
 logger = get_logger(__name__)
 
 
-def _model_label(provider: GenerationProvider) -> str:
+def _model_label(provider: GenerationProvider | None) -> str:
     """Return the model identifier for the provider that actually ran.
 
     The mock provider has no real model name, so it falls back to a stable
@@ -99,7 +99,7 @@ def _model_label(provider: GenerationProvider) -> str:
     return getattr(provider, "model", None) or _MOCK_MODEL_LABEL
 
 
-def _provider_label(provider: GenerationProvider) -> str:
+def _provider_label(provider: GenerationProvider | None) -> str:
     """Return the provider name for the provider that actually ran.
 
     Prefers a ``name`` attribute on the provider so an injected non-default
@@ -120,7 +120,7 @@ async def _record_failure(
     job: GenerationJob,
     exc: Exception,
     *,
-    provider: GenerationProvider,
+    provider: GenerationProvider | None,
 ) -> None:
     """Mark ``job`` failed, record the truncated error, and commit.
 
@@ -325,6 +325,41 @@ def _review_stage2_override(authoring: dict[str, object] | None) -> str | None:
     if authoring is None:
         return None
     value = authoring.get("review_stage2_model")
+    return value if isinstance(value, str) else None
+
+
+def _authoring_provider_override(authoring: dict[str, object] | None) -> str | None:
+    """Return the per-job provider override recorded on the job, if valid.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict, or ``None`` for a
+            fresh (non-skeleton, non-automated_provider) generation.
+
+    Returns:
+        The override provider name when ``authoring`` carries a string
+        ``provider`` key; otherwise ``None`` (build_provider then falls back
+        to ``settings.generation_provider``).
+    """
+    if authoring is None:
+        return None
+    value = authoring.get("provider")
+    return value if isinstance(value, str) else None
+
+
+def _authoring_model_override(authoring: dict[str, object] | None) -> str | None:
+    """Return the per-job model override recorded on the job, if valid.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict, or ``None``.
+
+    Returns:
+        The override model id when ``authoring`` carries a string ``model``
+        key; otherwise ``None`` (build_provider then falls back to the
+        resolved provider's default model from settings).
+    """
+    if authoring is None:
+        return None
+    value = authoring.get("model")
     return value if isinstance(value, str) else None
 
 
@@ -687,8 +722,6 @@ async def run_generation_job(
     # before jobs are dispatched.
     _factory = session_factory or get_session
 
-    effective_provider = provider or build_provider(_default_settings)
-
     async with _factory() as session:  # type: ignore[attr-defined]
         # #CRITICAL: concurrency: tracks whether the terminal commit below
         # actually landed. Only set True immediately after that commit; every
@@ -696,8 +729,35 @@ async def run_generation_job(
         # it must verify the row's true committed state rather than trust an
         # in-memory attribute. See the finally block for the full rationale.
         completed = False
+        # #CRITICAL: concurrency: declared here (not inside the try) so a
+        # ConfigurationError raised while resolving the live adapter below
+        # still leaves this name bound to the injected `provider` arg (often
+        # None in production) for the finally guard's _record_failure call;
+        # _provider_label/_model_label/_record_failure all tolerate None.
+        # #VERIFY: see test_effective_provider_config_error_does_not_crash_finally
+        # (added alongside this change) interrupts inside the resolution step.
+        effective_provider: GenerationProvider | None = provider
         try:
             job_row = await _load_and_start_job(session, job_id)
+            # #CRITICAL: security: provider/model on a job's authoring_metadata
+            # were already validated against the enabled allowlist at the
+            # authoring-plan endpoint (story_requests/authoring_plan.py) before
+            # the job was ever created; this only reads them back, it does not
+            # re-validate, so no new unvalidated string can reach a live
+            # provider from here.
+            # #VERIFY: TestEffectiveProviderPerJobOverride and
+            # test_worker.py::test_effective_provider_reads_job_authoring_override.
+            authoring = (
+                job_row.authoring_metadata
+                if isinstance(job_row.authoring_metadata, dict)
+                else None
+            )
+            if effective_provider is None:
+                effective_provider = build_provider(
+                    _default_settings,
+                    provider_override=_authoring_provider_override(authoring),
+                    model_override=_authoring_model_override(authoring),
+                )
             concept_row, brief, pii = await _load_concept_and_pii(
                 session, job_row, effective_provider=effective_provider
             )
@@ -705,11 +765,6 @@ async def run_generation_job(
             # ------------------------------------------------------------------
             # Run the generation pipeline. Wrap to persist failures.
             # ------------------------------------------------------------------
-            authoring = (
-                job_row.authoring_metadata
-                if isinstance(job_row.authoring_metadata, dict)
-                else None
-            )
             try:
                 if authoring is not None:
                     outcome = await _run_skeleton_fill(
