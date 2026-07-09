@@ -133,8 +133,8 @@ class AnthropicProvider:
 
         Raises:
             ProviderError: Transient (``leg_fatal=False``) on connection
-                error/timeout/HTTP 429/529/5xx; leg-fatal (``leg_fatal=True``)
-                on any other 4xx.
+                error/timeout/HTTP 408/409/425/429/529/5xx; leg-fatal
+                (``leg_fatal=True``) on any other 4xx.
         """
         try:
             message = await self._client.messages.create(

@@ -327,10 +327,8 @@ def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
 def build_anthropic_leg(settings: Settings, model: str) -> GenerationProvider:
     """Construct a single direct-Anthropic leg for ``model`` from settings.
 
-    This builder is a standalone unit (WS-C PR1 Task 7): it is not yet wired
-    into :func:`build_provider`'s dispatch, which still raises
-    ``ConfigurationError`` for ``generation_provider=anthropic`` pending the
-    per-job override plumbing in a later task.
+    Dispatched by :func:`build_provider` when the resolved provider is
+    ``anthropic`` (WS-C PR1).
 
     Args:
         settings: The application settings instance.
