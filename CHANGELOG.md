@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Postman/newman API test suite (`docs/api/postman-collection.json`): 69
+  requests across 15 resource folders with status, JSON Schema, and
+  auth-negative assertions, run end to end in CI by the `api-tests` job
+  against the compose stack (migrated + seeded Postgres, dev-auth mode) and
+  reported to Codecov Test Analytics under the `api` flag. The job now
+  applies the alembic chain and seeds dev data before newman runs; the suite
+  and its local run loop are documented in `docs/api/README.md`.
+
 ### Security
 - The backend now trusts proxy headers only from an explicit boundary:
   uvicorn's `forwarded_allow_ips` is threaded through Settings, the dev

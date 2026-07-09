@@ -1,0 +1,3191 @@
+{
+  "info": {
+    "_postman_id": "b970ea61-ad12-4774-b6f3-378dc2f17486",
+    "name": "CYO Adventure API",
+    "description": "Sequential API test suite for CYO Adventure, run against a freshly migrated and seeded dev database (scripts/seed_dev_data.py). Folders run in an order that tells one coherent scenario; run with --bail so the first failing assertion stops the suite.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "var _throttleStart = Date.now();",
+          "while (Date.now() - _throttleStart < 1100) { /* stay under the app's 60 req/min sliding-window limiter */ }"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "guardian_token",
+      "value": "dev-guardian",
+      "type": "string"
+    },
+    {
+      "key": "child_token",
+      "value": "dev-child",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "dev-admin",
+      "type": "string"
+    },
+    {
+      "key": "unknown_token",
+      "value": "no-such-user",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "health",
+      "item": [
+        {
+          "name": "Liveness probe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"status\": {\"type\": \"string\"}, \"timestamp\": {\"type\": \"number\"}, \"uptime_seconds\": {\"type\": \"number\"}, \"version\": {\"type\": \"string\", \"default\": \"0.1.0\"}, \"python_version\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"status\", \"uptime_seconds\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is ok\", function () { pm.expect(pm.response.json().status).to.eql(\"ok\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/live",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health",
+                "live"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Readiness probe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"status\": {\"type\": \"string\"}, \"timestamp\": {\"type\": \"number\"}, \"uptime_seconds\": {\"type\": \"number\"}, \"version\": {\"type\": \"string\", \"default\": \"0.1.0\"}, \"python_version\": {\"type\": \"string\"}, \"checks\": {\"additionalProperties\": {\"properties\": {\"name\": {\"type\": \"string\"}, \"status\": {\"type\": \"boolean\"}, \"latency_ms\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"error\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"name\", \"status\"]}, \"type\": \"object\"}}, \"type\": \"object\", \"required\": [\"status\", \"uptime_seconds\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"database check passed\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"ok\"); pm.expect(body.checks.database.status).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/ready",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health",
+                "ready"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Startup probe",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"status\": {\"type\": \"string\"}, \"timestamp\": {\"type\": \"number\"}, \"uptime_seconds\": {\"type\": \"number\"}, \"version\": {\"type\": \"string\", \"default\": \"0.1.0\"}, \"python_version\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"status\", \"uptime_seconds\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is started\", function () { pm.expect(pm.response.json().status).to.eql(\"started\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health/startup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "health",
+                "startup"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "auth-negative",
+      "item": [
+        {
+          "name": "GET /me with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me with unknown subject -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{unknown_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/families with child token (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "me",
+      "item": [
+        {
+          "name": "GET /me as guardian",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"subject\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"subject\", \"role\", \"family_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"identity matches dev-guardian\", function () { var body = pm.response.json(); pm.expect(body.subject).to.eql(\"dev-guardian\"); pm.expect(body.role).to.eql(\"guardian\"); });",
+                  "pm.collectionVariables.set(\"family_id\", pm.response.json().family_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me as child",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"subject\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"subject\", \"role\", \"family_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"identity matches dev-child\", function () { var body = pm.response.json(); pm.expect(body.subject).to.eql(\"dev-child\"); pm.expect(body.role).to.eql(\"child\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /me as admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"subject\": {\"type\": \"string\"}, \"role\": {\"type\": \"string\"}, \"family_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"subject\", \"role\", \"family_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"identity matches dev-admin\", function () { var body = pm.response.json(); pm.expect(body.subject).to.eql(\"dev-admin\"); pm.expect(body.role).to.eql(\"admin\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "me"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "profiles",
+      "item": [
+        {
+          "name": "GET /profiles as guardian (seeded dev profile)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"dev profile is present\", function () { var body = pm.response.json(); pm.expect(body.profiles.length).to.be.above(0); var dev = body.profiles.find(function (p) { return p.display_name === \"Dev Reader\"; }); pm.expect(dev).to.not.be.undefined; pm.expect(dev.age_band).to.eql(\"10-13\"); pm.collectionVariables.set(\"profile_id\", dev.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /profiles creates a sibling profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"echoes the created profile\", function () { var body = pm.response.json(); pm.expect(body.display_name).to.eql(\"Newman Sibling\"); pm.expect(body.age_band).to.eql(\"5-8\"); pm.collectionVariables.set(\"new_profile_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Newman Sibling\",\n  \"age_band\": \"5-8\",\n  \"reading_level_cap\": 99.0,\n  \"tts_enabled\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /profiles/{id} renames the sibling profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"created_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"display_name updated\", function () { var body = pm.response.json(); pm.expect(body.display_name).to.eql(\"Newman Sibling Updated\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles/{{new_profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles",
+                "{{new_profile_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Newman Sibling Updated\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /profiles as child (scoped to own profile only)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"profiles\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"display_name\": {\"type\": \"string\"}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"reading_level_cap\": {\"type\": \"number\"}, \"avatar\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"tts_enabled\": {\"type\": \"boolean\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"display_name\", \"age_band\", \"reading_level_cap\", \"avatar\", \"tts_enabled\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"profiles\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"child sees exactly its own profile\", function () { var body = pm.response.json(); pm.expect(body.profiles.length).to.eql(1); pm.expect(body.profiles[0].id).to.eql(pm.collectionVariables.get(\"profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /profiles as child (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/profiles",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "profiles"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"display_name\": \"Should Not Be Created\",\n  \"age_band\": \"5-8\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "families",
+      "item": [
+        {
+          "name": "GET /admin/families as admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"families\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"name\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"families\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"families are present and name-ordered\", function () { var body = pm.response.json(); pm.expect(body.families.length).to.be.above(0); pm.expect(body.families[0].name).to.eql(\"Dev Family\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /admin/families as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/families",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "families"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "library",
+      "item": [
+        {
+          "name": "GET /library as guardian (two seeded published stories)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"stories\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"tier\": {\"type\": \"integer\"}, \"reading_level_target\": {\"type\": \"number\"}, \"node_count\": {\"type\": \"integer\", \"default\": 0}, \"rating\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"progress\": {\"anyOf\": [{\"properties\": {\"current_node\": {\"type\": \"string\"}, \"nodes_visited\": {\"type\": \"integer\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"current_node\", \"nodes_visited\", \"updated_at\"]}, {\"type\": \"null\"}]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"book_index\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"cover_url\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"title\", \"version\", \"age_band\", \"tier\", \"reading_level_target\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"stories\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"both seeded published stories are present\", function () { var body = pm.response.json(); var tide = body.stories.find(function (s) { return s.title === \"The Tide Pool Mystery\"; }); var clockwork = body.stories.find(function (s) { return s.title === \"The Clockwork Garden\"; }); pm.expect(tide).to.not.be.undefined; pm.expect(clockwork).to.not.be.undefined; pm.expect(body.stories.length).to.eql(2); pm.collectionVariables.set(\"storybook_id_1\", tide.id); pm.collectionVariables.set(\"storybook_id_2\", clockwork.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/library?profile_id={{profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "library"
+              ],
+              "query": [
+                {
+                  "key": "profile_id",
+                  "value": "{{profile_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /storybooks/{id}/versions/1 as guardian (blob fetch)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"type\": \"object\", \"additionalProperties\": true};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"blob title matches\", function () { var body = pm.response.json(); pm.expect(body.title).to.eql(\"The Tide Pool Mystery\"); pm.expect(body.id).to.eql(\"s_tide_pools\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /library with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/library?profile_id={{profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "library"
+              ],
+              "query": [
+                {
+                  "key": "profile_id",
+                  "value": "{{profile_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "reading",
+      "item": [
+        {
+          "name": "GET reading-state before any save -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reading-state/{{profile_id}}/{{storybook_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reading-state",
+                "{{profile_id}}",
+                "{{storybook_id_1}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT reading-state creates the first save",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"child_profile_id\": {\"type\": \"string\"}, \"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"current_node\": {\"type\": \"string\"}, \"var_state\": {\"additionalProperties\": {\"anyOf\": [{\"type\": \"boolean\"}, {\"type\": \"integer\"}, {\"type\": \"string\"}]}, \"type\": \"object\"}, \"path\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"visit_set\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"save_slots\": {\"additionalProperties\": true, \"type\": \"object\"}, \"state_revision\": {\"type\": \"integer\"}, \"updated_by_device_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"last_synced_at\": {\"anyOf\": [{\"type\": \"string\", \"format\": \"date-time\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"child_profile_id\", \"storybook_id\", \"version\", \"current_node\", \"var_state\", \"path\", \"visit_set\", \"save_slots\", \"state_revision\", \"updated_by_device_id\", \"last_synced_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"server-owned revision counter incremented\", function () { var body = pm.response.json(); pm.expect(body.state_revision).to.eql(1); pm.expect(body.current_node).to.eql(\"n_start\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reading-state/{{profile_id}}/{{storybook_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reading-state",
+                "{{profile_id}}",
+                "{{storybook_id_1}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": 1,\n  \"current_node\": \"n_start\",\n  \"var_state\": {},\n  \"path\": [\n    \"n_start\"\n  ],\n  \"visit_set\": [\n    \"n_start\"\n  ],\n  \"save_slots\": {},\n  \"state_revision\": 0,\n  \"device_id\": \"newman-device\",\n  \"event_id\": \"newman-evt-1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET reading-state after the save",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"child_profile_id\": {\"type\": \"string\"}, \"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"current_node\": {\"type\": \"string\"}, \"var_state\": {\"additionalProperties\": {\"anyOf\": [{\"type\": \"boolean\"}, {\"type\": \"integer\"}, {\"type\": \"string\"}]}, \"type\": \"object\"}, \"path\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"visit_set\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"save_slots\": {\"additionalProperties\": true, \"type\": \"object\"}, \"state_revision\": {\"type\": \"integer\"}, \"updated_by_device_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"last_synced_at\": {\"anyOf\": [{\"type\": \"string\", \"format\": \"date-time\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"child_profile_id\", \"storybook_id\", \"version\", \"current_node\", \"var_state\", \"path\", \"visit_set\", \"save_slots\", \"state_revision\", \"updated_by_device_id\", \"last_synced_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"saved state is returned\", function () { var body = pm.response.json(); pm.expect(body.state_revision).to.eql(1); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reading-state/{{profile_id}}/{{storybook_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reading-state",
+                "{{profile_id}}",
+                "{{storybook_id_1}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST completions records an ending",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"child_profile_id\": {\"type\": \"string\"}, \"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"ending_id\": {\"type\": \"string\"}, \"found_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"child_profile_id\", \"storybook_id\", \"version\", \"ending_id\", \"found_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"ending recorded matches request\", function () { var body = pm.response.json(); pm.expect(body.ending_id).to.eql(\"e_treasure\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/completions",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "completions"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\",\n  \"storybook_id\": \"{{storybook_id_1}}\",\n  \"version\": 1,\n  \"ending_id\": \"e_treasure\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT reading-state with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/reading-state/{{profile_id}}/{{storybook_id_1}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reading-state",
+                "{{profile_id}}",
+                "{{storybook_id_1}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"version\": 1,\n  \"current_node\": \"n_start\",\n  \"state_revision\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "ratings",
+      "item": [
+        {
+          "name": "POST /ratings sets a rating",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"child_profile_id\": {\"type\": \"string\"}, \"storybook_id\": {\"type\": \"string\"}, \"value\": {\"type\": \"integer\"}, \"rated_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"child_profile_id\", \"storybook_id\", \"value\", \"rated_at\", \"updated_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"rating value echoed\", function () { var body = pm.response.json(); pm.expect(body.value).to.eql(5); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ratings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\",\n  \"storybook_id\": \"{{storybook_id_1}}\",\n  \"value\": 5\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /ratings/{profile_id} lists the rating",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"ratings\": {\"items\": {\"properties\": {\"child_profile_id\": {\"type\": \"string\"}, \"storybook_id\": {\"type\": \"string\"}, \"value\": {\"type\": \"integer\"}, \"rated_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"child_profile_id\", \"storybook_id\", \"value\", \"rated_at\", \"updated_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"ratings\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"at least one rating is present\", function () { var body = pm.response.json(); pm.expect(body.ratings.length).to.be.above(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/ratings/{{profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ratings",
+                "{{profile_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /ratings with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/ratings",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "ratings"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\",\n  \"storybook_id\": \"{{storybook_id_1}}\",\n  \"value\": 3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "assignments",
+      "item": [
+        {
+          "name": "GET assignments for storybook 1 (already assigned by seed)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"dev profile is already assigned\", function () { var body = pm.response.json(); pm.expect(body.profile_ids).to.include(pm.collectionVariables.get(\"profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "assignments"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET content-summary for storybook 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"screened\": {\"type\": \"boolean\"}, \"summary\": {\"anyOf\": [{\"properties\": {\"count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"hard_block\": {\"type\": \"boolean\"}, \"soft_flag\": {\"type\": \"boolean\"}, \"repaired\": {\"type\": \"boolean\"}, \"reviewer_independent\": {\"type\": \"boolean\"}}, \"type\": \"object\", \"required\": [\"count\", \"hard_block\", \"soft_flag\", \"repaired\", \"reviewer_independent\"]}, {\"type\": \"null\"}]}, \"flagged_count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"findings\": {\"items\": {\"properties\": {\"category\": {\"type\": \"string\"}, \"verdict\": {\"type\": \"string\", \"enum\": [\"block\", \"flag\", \"advisory\", \"pass\"]}, \"message\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"category\", \"verdict\", \"message\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"version\", \"screened\", \"summary\", \"flagged_count\", \"findings\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/content-summary",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "content-summary"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET guardian/books lists both published books",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"books\": {\"items\": {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"screened\": {\"type\": \"boolean\"}, \"flagged_count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"assigned_profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"title\", \"version\", \"age_band\", \"screened\", \"flagged_count\", \"assigned_profile_ids\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"books\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"both published books are listed\", function () { var body = pm.response.json(); pm.expect(body.books.length).to.eql(2); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/guardian/books",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "guardian",
+                "books"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST assignments grants storybook 1 to the sibling profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"profile_ids\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"both profiles now assigned\", function () { var body = pm.response.json(); pm.expect(body.profile_ids).to.include(pm.collectionVariables.get(\"profile_id\")); pm.expect(body.profile_ids).to.include(pm.collectionVariables.get(\"new_profile_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "assignments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_ids\": [\n    \"{{new_profile_id}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST assignments as child (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/assignments",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "assignments"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_ids\": [\n    \"{{profile_id}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "story-requests",
+      "item": [
+        {
+          "name": "POST story-requests submits a kid request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"approved\", \"declined\", \"blocked\"]}}, \"type\": \"object\", \"required\": [\"id\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"request is pending\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"pending\"); pm.collectionVariables.set(\"request_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\",\n  \"request_text\": \"I want a story about a puppy who finds a treasure map.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET story-requests?status=pending includes the new request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"requests\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"profile_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"approved\", \"declined\", \"blocked\"]}, \"request_text\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"moderation_flags\": {\"items\": {\"properties\": {\"category\": {\"type\": \"string\"}, \"verdict\": {\"type\": \"string\", \"enum\": [\"block\", \"flag\", \"advisory\", \"pass\"]}, \"message\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"category\", \"verdict\", \"message\"]}, \"type\": \"array\"}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}, \"initiator_role\": {\"type\": \"string\", \"enum\": [\"child\", \"guardian\", \"admin\"]}, \"age_band\": {\"type\": \"string\", \"enum\": [\"3-5\", \"5-8\", \"8-11\", \"10-13\", \"13-16\", \"16+\"]}, \"length\": {\"anyOf\": [{\"type\": \"string\", \"enum\": [\"short\", \"medium\", \"long\"]}, {\"type\": \"null\"}]}, \"narrative_style\": {\"type\": \"string\", \"enum\": [\"prose\", \"gamebook\"]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"proposed_series_title\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"anchor_storybook_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"profile_id\", \"status\", \"request_text\", \"moderation_flags\", \"created_at\", \"initiator_role\", \"age_band\", \"length\", \"narrative_style\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"requests\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the new pending request is listed\", function () { var body = pm.response.json(); var mine = body.requests.find(function (r) { return r.id === pm.collectionVariables.get(\"request_id\"); }); pm.expect(mine).to.not.be.undefined; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests?status=pending",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST story-requests/{id}/decline declines the request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"declined\"}}, \"type\": \"object\", \"required\": [\"id\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is declined\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"declined\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id}}/decline",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id}}",
+                "decline"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST story-requests submits a second kid request for approval",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"approved\", \"declined\", \"blocked\"]}}, \"type\": \"object\", \"required\": [\"id\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"second request is pending\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"pending\"); pm.collectionVariables.set(\"request_id_2\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"profile_id\": \"{{profile_id}}\",\n  \"request_text\": \"I want a story about a robot who paints murals.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST approve as child (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id_2}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id_2}}",
+                "approve"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age_band\": \"10-13\",\n  \"length\": \"short\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST story-requests/{id}/approve approves the second request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"approved\"}, \"concept_id\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"concept_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"request approved with a linked concept\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"approved\"); pm.expect(body.concept_id).to.be.a(\"string\").and.not.empty; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id_2}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id_2}}",
+                "approve"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age_band\": \"10-13\",\n  \"length\": \"short\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST story-requests/authored creates a pre-approved request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"pending\", \"approved\", \"declined\", \"blocked\"]}, \"concept_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"concept_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"authored request is approved with a concept\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"approved\"); pm.expect(body.concept_id).to.be.a(\"string\").and.not.empty; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/authored",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "authored"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age_band\": \"10-13\",\n  \"length\": \"short\",\n  \"request_text\": \"A story about twin explorers mapping a cave system.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST authoring-plan as guardian (admin-only) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id_2}}/authoring-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id_2}}",
+                "authoring-plan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"skeleton_fill\",\n  \"mechanism\": \"skill\",\n  \"prep_model\": \"newman-test-model\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "approval",
+      "item": [
+        {
+          "name": "GET review-queue lists the in-review story",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"items\": {\"items\": {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"screened\": {\"type\": \"boolean\"}, \"flagged_count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"summary\": {\"anyOf\": [{\"properties\": {\"count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"hard_block\": {\"type\": \"boolean\"}, \"soft_flag\": {\"type\": \"boolean\"}, \"repaired\": {\"type\": \"boolean\"}, \"reviewer_independent\": {\"type\": \"boolean\"}}, \"type\": \"object\", \"required\": [\"count\", \"hard_block\", \"soft_flag\", \"repaired\", \"reviewer_independent\"]}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"title\", \"status\", \"version\", \"screened\", \"flagged_count\", \"summary\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"items\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the seeded flagged story is in the queue\", function () { var body = pm.response.json(); pm.expect(body.items.length).to.be.above(0); var item = body.items.find(function (i) { return i.status === \"in_review\"; }); pm.expect(item).to.not.be.undefined; pm.expect(item.flagged_count).to.be.above(0); pm.collectionVariables.set(\"storybook_id_review\", item.storybook_id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/review-queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "review-queue"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET review surface for the flagged story",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"status\": {\"type\": \"string\"}, \"blob\": {\"additionalProperties\": true, \"type\": \"object\"}, \"screened\": {\"type\": \"boolean\"}, \"summary\": {\"anyOf\": [{\"properties\": {\"count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"hard_block\": {\"type\": \"boolean\"}, \"soft_flag\": {\"type\": \"boolean\"}, \"repaired\": {\"type\": \"boolean\"}, \"reviewer_independent\": {\"type\": \"boolean\"}}, \"type\": \"object\", \"required\": [\"count\", \"hard_block\", \"soft_flag\", \"repaired\", \"reviewer_independent\"]}, {\"type\": \"null\"}]}, \"flagged_passages\": {\"items\": {\"properties\": {\"node_id\": {\"type\": \"string\"}, \"prose\": {\"type\": \"string\"}, \"findings\": {\"items\": {\"properties\": {\"stage\": {\"type\": \"integer\", \"maximum\": 4.0, \"minimum\": 0.0}, \"source\": {\"type\": \"string\", \"enum\": [\"openai\", \"perspective\", \"llm_safety\", \"llm_readability\", \"llm_coherence\", \"llm_engagement\", \"pipeline\"]}, \"category\": {\"type\": \"string\"}, \"node_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"verdict\": {\"type\": \"string\", \"enum\": [\"block\", \"flag\", \"advisory\", \"pass\"]}, \"score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"message\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"stage\", \"source\", \"category\", \"node_id\", \"verdict\", \"score\", \"message\"]}, \"type\": \"array\", \"minItems\": 1}}, \"type\": \"object\", \"required\": [\"node_id\", \"prose\", \"findings\"]}, \"type\": \"array\"}, \"story_level_findings\": {\"items\": {\"properties\": {\"stage\": {\"type\": \"integer\", \"maximum\": 4.0, \"minimum\": 0.0}, \"source\": {\"type\": \"string\", \"enum\": [\"openai\", \"perspective\", \"llm_safety\", \"llm_readability\", \"llm_coherence\", \"llm_engagement\", \"pipeline\"]}, \"category\": {\"type\": \"string\"}, \"node_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"verdict\": {\"type\": \"string\", \"enum\": [\"block\", \"flag\", \"advisory\", \"pass\"]}, \"score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"message\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"stage\", \"source\", \"category\", \"node_id\", \"verdict\", \"score\", \"message\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"version\", \"status\", \"blob\", \"screened\", \"summary\", \"flagged_passages\", \"story_level_findings\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"flagged passage is present\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"in_review\"); pm.expect(body.flagged_passages.length).to.be.above(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_review}}/review",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_review}}",
+                "review"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST send-back returns the story for revision",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"needs_revision\"}, \"reason\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"reason\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is needs_revision\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"needs_revision\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_review}}/send-back",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_review}}",
+                "send-back"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Needs another look at chapter pacing.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST submit resubmits for review",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"in_review\"}, \"current_published_version\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"current_published_version\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is in_review again\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"in_review\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_review}}/submit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_review}}",
+                "submit"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST approve publishes the story",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"published\"}, \"current_published_version\": {\"type\": \"integer\"}, \"approved_by\": {\"type\": \"string\"}, \"published_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"current_published_version\", \"approved_by\", \"published_at\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"status is published with an approver\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"published\"); pm.expect(body.approved_by).to.be.a(\"string\").and.not.empty; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_review}}/approve",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_review}}",
+                "approve"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET review-queue as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/review-queue",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "review-queue"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "generation",
+      "item": [
+        {
+          "name": "POST /concepts creates a concept brief",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"concept_id\": {\"type\": \"string\"}}, \"type\": \"object\", \"required\": [\"concept_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.collectionVariables.set(\"concept_id\", pm.response.json().concept_id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/concepts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "concepts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brief\": {\n    \"premise\": \"A quiet lighthouse keeper's cat discovers a hidden cove full of glowing shells.\",\n    \"protagonist\": {\n      \"name\": \"Zara\",\n      \"age\": 10,\n      \"role\": \"curious apprentice keeper\"\n    },\n    \"age_band\": \"10-13\",\n    \"reading_level_target\": 5.0,\n    \"tier\": 2,\n    \"tone\": \"adventurous\",\n    \"target_node_count\": 10,\n    \"ending_count\": 2,\n    \"structure_pattern\": \"quest\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /concepts/{id}/generate enqueues a generation job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 202\", function () { pm.response.to.have.status(202); });",
+                  "var schema = {\"properties\": {\"job_id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"queued\", \"default\": \"queued\"}}, \"type\": \"object\", \"required\": [\"job_id\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"job is queued\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"queued\"); pm.collectionVariables.set(\"job_id\", body.job_id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/concepts/{{concept_id}}/generate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "concepts",
+                "{{concept_id}}",
+                "generate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /generation-jobs lists the new job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"jobs\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"queued\", \"running\", \"passed\", \"needs_review\", \"failed\", \"awaiting_manual_fill\"]}, \"storybook_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"storybook_status\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"version\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"error\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"title\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"premise_snippet\": {\"type\": \"string\", \"default\": \"\"}, \"age_band\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"created_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"id\", \"status\", \"created_at\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"jobs\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"the family job list is non-empty\", function () { var body = pm.response.json(); pm.expect(body.jobs.length).to.be.above(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/generation-jobs",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "generation-jobs"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /generation-jobs/{id} returns the job detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"enum\": [\"queued\", \"running\", \"passed\", \"needs_review\", \"failed\", \"awaiting_manual_fill\"]}, \"report\": {\"anyOf\": [{\"additionalProperties\": true, \"type\": \"object\"}, {\"type\": \"null\"}]}, \"storybook_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"version\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"error\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"skeleton_slug\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"theme_brief\": {\"anyOf\": [{\"additionalProperties\": true, \"type\": \"object\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"job id matches\", function () { var body = pm.response.json(); pm.expect(body.id).to.eql(pm.collectionVariables.get(\"job_id\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/generation-jobs/{{job_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "generation-jobs",
+                "{{job_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST validate re-runs the gate on a published version",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"blocked\": {\"type\": \"boolean\"}, \"report\": {\"additionalProperties\": true, \"type\": \"object\"}}, \"type\": \"object\", \"required\": [\"blocked\", \"report\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"a published version is not blocked\", function () { var body = pm.response.json(); pm.expect(body.blocked).to.eql(false); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/validate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "validate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST /concepts as child (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/concepts",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "concepts"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brief\": {\n    \"premise\": \"A short test premise for the auth-negative check.\",\n    \"protagonist\": {\n      \"name\": \"Milo\",\n      \"age\": 9,\n      \"role\": \"explorer\"\n    },\n    \"age_band\": \"10-13\",\n    \"reading_level_target\": 5.0,\n    \"tier\": 1,\n    \"tone\": \"cosy\",\n    \"target_node_count\": 5,\n    \"ending_count\": 1,\n    \"structure_pattern\": \"gauntlet\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "moderation-thresholds",
+      "item": [
+        {
+          "name": "GET moderation-thresholds as admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"default_min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"default_min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"known_categories\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"rows\": {\"items\": {\"properties\": {\"age_band\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"age_band\", \"category\", \"min_verdict\", \"min_score\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"default_min_verdict\", \"default_min_score\", \"known_categories\", \"rows\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"known categories are listed\", function () { var body = pm.response.json(); pm.expect(body.known_categories.length).to.be.above(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation-thresholds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation-thresholds"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT moderation-thresholds/{age_band} upserts an override",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"age_band\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"age_band\", \"category\", \"min_verdict\", \"min_score\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"override echoed back\", function () { var body = pm.response.json(); pm.expect(body.min_verdict).to.eql(\"flag\"); pm.expect(body.min_score).to.eql(0.3); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation-thresholds/10-13?category=newman-test-category",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation-thresholds",
+                "10-13"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "newman-test-category"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"min_verdict\": \"flag\",\n  \"min_score\": 0.3\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE moderation-thresholds/{age_band} removes the override",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"default_min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"default_min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}, \"known_categories\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}, \"rows\": {\"items\": {\"properties\": {\"age_band\": {\"type\": \"string\"}, \"category\": {\"type\": \"string\"}, \"min_verdict\": {\"type\": \"string\", \"enum\": [\"advisory\", \"flag\", \"block\"]}, \"min_score\": {\"anyOf\": [{\"type\": \"number\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"age_band\", \"category\", \"min_verdict\", \"min_score\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"default_min_verdict\", \"default_min_score\", \"known_categories\", \"rows\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"override no longer listed\", function () { var body = pm.response.json(); var row = body.rows.find(function (r) { return r.age_band === \"10-13\" && r.category === \"newman-test-category\"; }); pm.expect(row).to.be.undefined; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation-thresholds/10-13?category=newman-test-category",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation-thresholds",
+                "10-13"
+              ],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "newman-test-category"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET noise-floor as admin (migration-seeded default)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"value\": {\"type\": \"number\"}}, \"type\": \"object\", \"required\": [\"value\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"seeded default is 0.05\", function () { var body = pm.response.json(); pm.expect(body.value).to.eql(0.05); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/noise-floor",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "noise-floor"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT noise-floor as admin updates the value",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"value\": {\"type\": \"number\"}}, \"type\": \"object\", \"required\": [\"value\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"value updated\", function () { var body = pm.response.json(); pm.expect(body.value).to.eql(0.1); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation/noise-floor",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation",
+                "noise-floor"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 0.1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET moderation-thresholds as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/moderation-thresholds",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "moderation-thresholds"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "provider-allowlist",
+      "item": [
+        {
+          "name": "GET provider-allowlist as admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/provider-allowlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "provider-allowlist"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST provider-allowlist adds an entry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"entry created enabled\", function () { var body = pm.response.json(); pm.expect(body.provider).to.eql(\"anthropic\"); pm.expect(body.enabled).to.eql(true); pm.collectionVariables.set(\"allowlist_entry_id\", body.id); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/provider-allowlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "provider-allowlist"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"anthropic\",\n  \"model_id\": \"newman-test-model\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT provider-allowlist/{id} disables the entry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"entry disabled\", function () { var body = pm.response.json(); pm.expect(body.enabled).to.eql(false); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/provider-allowlist/{{allowlist_entry_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "provider-allowlist",
+                "{{allowlist_entry_id}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": false,\n  \"display_name\": \"Newman Test Model\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE provider-allowlist/{id} removes the entry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"rows\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"provider\": {\"type\": \"string\", \"enum\": [\"anthropic\", \"openrouter\", \"modal\", \"ollama\"]}, \"model_id\": {\"type\": \"string\"}, \"enabled\": {\"type\": \"boolean\"}, \"display_name\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"provider\", \"model_id\", \"enabled\", \"display_name\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"rows\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"entry no longer listed\", function () { var body = pm.response.json(); var row = body.rows.find(function (r) { return r.id === pm.collectionVariables.get(\"allowlist_entry_id\"); }); pm.expect(row).to.be.undefined; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/provider-allowlist/{{allowlist_entry_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "provider-allowlist",
+                "{{allowlist_entry_id}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST provider-allowlist as guardian (wrong role) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/admin/provider-allowlist",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "admin",
+                "provider-allowlist"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"provider\": \"anthropic\",\n  \"model_id\": \"should-not-be-created\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "covers",
+      "item": [
+        {
+          "name": "GET cover with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET cover as child (admin-only) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{child_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET cover as admin (DB-only status read)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"properties\": {\"cover_status\": {\"type\": \"string\"}, \"cover_url\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"cover_status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"no cover has been generated yet\", function () { var body = pm.response.json(); pm.expect(body.cover_status).to.eql(\"none\"); pm.expect(body.cover_url).to.be.null; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET cover for a nonexistent version -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 404\", function () { pm.response.to.have.status(404); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names ResourceNotFoundError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"ResourceNotFoundError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/999/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "999",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST cover with no Authorization -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 401\", function () { pm.response.to.have.status(401); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthenticationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthenticationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST cover as guardian (admin-only) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_1}}/versions/1/cover",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_1}}",
+                "versions",
+                "1",
+                "cover"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

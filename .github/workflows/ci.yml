@@ -443,6 +443,38 @@ jobs:
           done
           echo "::error::API did not become ready in time"; exit 1
 
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      # The `api` extra (FastAPI, SQLAlchemy, alembic) is enough to migrate and
+      # seed the compose db; no `dev` extra test/lint tooling is needed here.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      # Runs the real alembic chain against the compose db (not
+      # Base.metadata.create_all): the collection exercises the migrated
+      # schema, matching what production deploys actually run.
+      - name: Apply database migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run alembic upgrade head
+
+      # Seeds the family/profiles/published+in-review stories the collection
+      # asserts on. Idempotent (scripts/seed_dev_data.py), and runs AFTER the
+      # migration so it inserts into the migrated schema, not a schema built
+      # ad hoc from ORM metadata.
+      - name: Seed dev data
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run python scripts/seed_dev_data.py
+
       - name: Run newman (JUnit for Test Analytics)
         run: |
           newman run docs/api/postman-collection.json \
