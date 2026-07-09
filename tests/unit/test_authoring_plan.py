@@ -437,3 +437,91 @@ async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> Non
     )
     # 13-16/medium/prose has exactly one production skeleton on disk today.
     assert result.skeleton_slug == "the-signal-in-the-static"
+
+
+async def test_skeleton_fill_empty_cell_override_succeeds() -> None:
+    """B1 headline: a valid admin override for a request whose OWN cell is empty
+    must NOT hit the empty-cell 422 (decision C-6, unconstrained override).
+
+    The request's cell ("99-100" has no skeleton directory at all) is empty, so
+    the auto-pick path would 422; but a valid override slug names a real
+    skeleton in another band and is accepted. The same empty cell WITHOUT an
+    override still 422s.
+    """
+    concept = _concept("99-100")
+    result = await build_authoring_plan(
+        _FakeSession(),
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill",
+            mechanism="skill",
+            prep_model="sonnet",
+            skeleton_slug="the-cave-of-echoes",  # a real 8-11 skeleton
+        ),
+        actor=_admin_actor(),
+    )
+    assert result.skeleton_slug == "the-cave-of-echoes"
+    assert result.job.authoring_metadata is not None
+    # The override's REAL band (8-11) is persisted, not the request's empty cell.
+    assert result.job.authoring_metadata["skeleton_band"] == "8-11"
+    # The in-cell candidate list stays empty: the override is out-of-cell.
+    assert result.skeleton_alternatives == []
+    assert any("outside the request's cell" in w for w in result.warnings)
+
+    # Same empty cell, NO override -> the empty-cell 422 still fires.
+    with pytest.raises(ValidationError):
+        await build_authoring_plan(
+            _FakeSession(),
+            _request(),
+            _concept("99-100"),
+            AuthoringPlanRequest(
+                method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+            ),
+            actor=_admin_actor(),
+        )
+
+
+async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
+    """F6: coercing an absent request length to a default surfaces a
+    non-blocking warning (warn, never block)."""
+    concept = Concept(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        brief={"age_band": "13-16", "premise": "a teen finds a signal"},
+    )
+    result = await build_authoring_plan(
+        _FakeSession(),
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    assert any("defaulted to 'medium'" in w for w in result.warnings)
+    assert result.skeleton_slug == "the-signal-in-the-static"
+
+
+async def test_skeleton_fill_specified_length_no_default_warning() -> None:
+    """F6 inverse: an explicit request length adds no defaulted-length warning."""
+    concept = Concept(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        brief={
+            "age_band": "8-11",
+            "length": "short",
+            "premise": "a fox finds a lantern",
+        },
+    )
+    result = await build_authoring_plan(
+        _FakeSession(),
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    assert not any("defaulted to" in w for w in result.warnings)
+    assert result.skeleton_slug == "the-cave-of-echoes"
