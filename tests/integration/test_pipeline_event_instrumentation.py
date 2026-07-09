@@ -434,6 +434,7 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     # repair_applied precedes moderation_completed for this version (WS-D task
     # brief order requirement): the adoption point fires before the report's
     # outcome is persisted and the completion event is recorded.
+    assert repair_event.occurred_at <= completed_event.occurred_at
 
 
 _THRESHOLD_URL = "/api/v1/admin/moderation-thresholds"
