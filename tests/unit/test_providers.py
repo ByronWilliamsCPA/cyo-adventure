@@ -1398,6 +1398,61 @@ class TestAnthropicProvider:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [500, 503, 529])
+    async def test_transient_5xx_and_529_retry_then_succeed(self, status: int) -> None:
+        """5xx and the 529 overloaded signal are transient via the >= 500 branch.
+
+        _TRANSIENT_STATUS does not enumerate 529 (or any 5xx); they rely on the
+        ``status >= 500`` check in _raise_for_status. This asserts that path:
+        one 5xx/529 then a 200 retries against the same model and succeeds.
+        """
+        calls = {"n": 0}
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return httpx.Response(
+                    status, json=_anthropic_error_body("api_error", "overloaded")
+                )
+            return httpx.Response(200, json=_anthropic_ok_body("ok"))
+
+        provider = self._provider(handler)
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert result == "ok"
+        assert calls["n"] == 2
+
+    @pytest.mark.asyncio
+    async def test_null_content_is_transient(self) -> None:
+        """A 200 with content=null is a retryable malformed success, not a raw escape.
+
+        The SDK's Message model is permissive (all fields optional), so a
+        malformed success body does NOT raise APIResponseValidationError; it
+        builds a Message whose `content` is None. Without a guard,
+        _extract_content iterates None and raises a raw TypeError that escapes
+        run_with_retries (which catches only ProviderError). This asserts the
+        null-content case maps to a retryable ProviderError instead of raising
+        a raw TypeError: leg_fatal is False.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            body = _anthropic_ok_body("x")
+            body["content"] = None
+            return httpx.Response(200, json=body)
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
 
 # ---------------------------------------------------------------------------
 # build_anthropic_leg (fail-fast credential check, WS-C PR1)

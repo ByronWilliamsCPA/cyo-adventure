@@ -195,10 +195,18 @@ class AnthropicProvider:
             wrapping markdown code fence stripped.
 
         Raises:
-            ProviderError: Transient if the message carries no text content
-                (a malformed/empty success is treated as retryable).
+            ProviderError: Transient if the message carries no usable text
+                content (a null, empty, or text-less success is retryable).
         """
-        text = "".join(block.text for block in message.content if block.type == "text")
+        # #CRITICAL: data-integrity: the SDK's Message model is permissive (all
+        # fields optional), so a malformed 200 does NOT raise
+        # APIResponseValidationError; it yields a Message whose `content` is
+        # None or empty. `message.content or []` guards the None case so a
+        # malformed success becomes a retryable ProviderError rather than a raw
+        # TypeError escaping run_with_retries' ProviderError-only contract.
+        # #VERIFY: test_null_content_is_transient, test_empty_content_is_transient.
+        content = message.content or []
+        text = "".join(block.text for block in content if block.type == "text")
         if not text:
             msg = "anthropic response had no text content"
             raise ProviderError(

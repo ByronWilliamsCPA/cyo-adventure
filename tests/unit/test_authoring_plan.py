@@ -240,6 +240,20 @@ def test_automated_provider_requires_both_provider_and_model() -> None:
         )
 
 
+def test_provider_model_rejected_when_mechanism_not_automated_provider() -> None:
+    """provider/model set on a mechanism='skill' request is rejected, not
+    silently dropped: the inverse of the required-together rule so no invalid
+    combination is representable at the boundary."""
+    with pytest.raises(PydanticValidationError):
+        AuthoringPlanRequest(
+            method="skeleton_fill",
+            mechanism="skill",
+            prep_model="sonnet",
+            provider="anthropic",
+            model="claude-sonnet-4-6",
+        )
+
+
 async def test_unallowlisted_provider_model_is_rejected() -> None:
     """A provider/model pair that is not an enabled allowlist row is a 422."""
     session = _FakeSession(allowlisted=False)

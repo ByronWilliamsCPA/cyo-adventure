@@ -123,6 +123,54 @@ def eligibility_warnings(
     return warnings
 
 
+async def _automated_provider_metadata(
+    session: AsyncSession, plan: AuthoringPlanRequest
+) -> dict[str, object] | None:
+    """Validate an automated_provider choice and return its authoring_metadata.
+
+    Returns ``None`` for any non-automated_provider mechanism (nothing to
+    persist). For ``automated_provider``, validates the admin-chosen
+    provider/model against the enabled allowlist and returns the metadata dict
+    to store on the job. Extracted from ``build_authoring_plan`` to keep that
+    function's cognitive complexity within budget.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        plan: The admin's authoring-plan choice.
+
+    Returns:
+        The ``{provider, model}`` metadata for an automated_provider job, or
+        ``None`` when the mechanism is not automated_provider.
+
+    Raises:
+        ValidationError: If provider/model are absent, or name a pair that is
+            not an enabled allowlist entry (-> 422).
+    """
+    if plan.mechanism != "automated_provider":
+        return None
+    if plan.provider is None or plan.model is None:
+        # Unreachable given AuthoringPlanRequest's own model_validator; this
+        # narrows the type for BasedPyright without a bare `assert` (a
+        # security-critical invariant should never rely on a statement `-O`
+        # can strip).
+        msg = "provider and model are both required when mechanism='automated_provider'"
+        raise ValidationError(msg, field="provider", value=plan.provider)
+    # #CRITICAL: security: provider/model are untrusted admin input. The schema
+    # validator only guarantees both fields are PRESENT, not that they name a
+    # real, enabled backend; this is the check that keeps a free-string model
+    # id out of billing, run BEFORE anything is persisted to authoring_metadata
+    # or reaches a provider.
+    # #VERIFY: test_unallowlisted_provider_model_is_rejected and
+    # test_automated_provider_unallowlisted_model_is_422.
+    if not await is_enabled_allowlist_pair(session, plan.provider, plan.model):
+        msg = (
+            f"provider '{plan.provider}' / model '{plan.model}' is not an "
+            "enabled allowlist entry"
+        )
+        raise ValidationError(msg, field="model", value=plan.model)
+    return {"provider": plan.provider, "model": plan.model}
+
+
 async def build_authoring_plan(
     session: AsyncSession,
     request: StoryRequest,
@@ -170,29 +218,7 @@ async def build_authoring_plan(
         msg = f"prep_model '{prep_model}' is not a recognized Claude Code session model"
         raise ValidationError(msg, field="prep_model", value=prep_model)
 
-    authoring_metadata: dict[str, object] | None = None
-    if mechanism == "automated_provider":
-        if plan.provider is None or plan.model is None:
-            # Unreachable given AuthoringPlanRequest's own model_validator;
-            # this narrows the type for BasedPyright without a bare `assert`
-            # (a security-critical invariant should never rely on a statement
-            # `-O` can strip).
-            msg = "provider and model are both required when mechanism='automated_provider'"
-            raise ValidationError(msg, field="provider", value=plan.provider)
-        # #CRITICAL: security: provider/model are untrusted admin input. The
-        # schema validator only guarantees both fields are PRESENT, not that
-        # they name a real, enabled backend; this is the check that keeps a
-        # free-string model id out of billing, run BEFORE anything is
-        # persisted to authoring_metadata or reaches a provider.
-        # #VERIFY: test_unallowlisted_provider_model_is_rejected and
-        # test_automated_provider_unallowlisted_model_is_422.
-        if not await is_enabled_allowlist_pair(session, plan.provider, plan.model):
-            msg = (
-                f"provider '{plan.provider}' / model '{plan.model}' is not an "
-                "enabled allowlist entry"
-            )
-            raise ValidationError(msg, field="model", value=plan.model)
-        authoring_metadata = {"provider": plan.provider, "model": plan.model}
+    authoring_metadata = await _automated_provider_metadata(session, plan)
 
     band = _band_of(concept)
     skeleton_slug: str | None = None

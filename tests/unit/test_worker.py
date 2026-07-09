@@ -599,6 +599,16 @@ class _FakeOverrideResult:
         return None
 
 
+class _OverrideCapturedError(Exception):
+    """Sentinel raised by the fake build_provider once it records the overrides.
+
+    Lets test_effective_provider_reads_job_authoring_override stop the run
+    deterministically right after the override is captured, so it can assert
+    on a specific exception type instead of a broad ``Exception`` and does not
+    depend on the fake session's downstream query behavior.
+    """
+
+
 class _FakeOverrideSession:
     """Minimal session double for test_effective_provider_reads_job_authoring_override.
 
@@ -751,7 +761,11 @@ class TestEffectiveProviderPerJobOverride:
         ) -> MockProvider:
             captured["provider_override"] = provider_override
             captured["model_override"] = model_override
-            return MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+            # Stop the run right here: this test only checks that
+            # build_provider was called with the job's override, so raise a
+            # specific sentinel rather than letting the run fail later with an
+            # unpredictable downstream error.
+            raise _OverrideCapturedError
 
         monkeypatch.setattr(worker_module, "build_provider", fake_build_provider)
 
@@ -771,10 +785,9 @@ class TestEffectiveProviderPerJobOverride:
         # This test asserts only that build_provider is CALLED with the job's
         # override before the pipeline runs. It does not drive the full
         # pipeline (the existing end-to-end worker tests cover that): the fake
-        # session cannot satisfy the pipeline's downstream queries, so the run
-        # raises after build_provider has already recorded the overrides into
-        # `captured`. The real assertion is on `captured`, reached before that
-        # failure; the surrounding pytest.raises tolerates the downstream error.
+        # build_provider records the overrides into `captured` and then raises
+        # _OverrideCapturedError to stop the run immediately. The real assertion is
+        # on `captured`.
         session_ctx = _FakeOverrideSession(job, concept)
 
         def factory() -> object:
@@ -791,13 +804,12 @@ class TestEffectiveProviderPerJobOverride:
 
             return _Ctx()
 
-        with pytest.raises(Exception):  # noqa: B017, PT011
-            # The fake session cannot satisfy the full pipeline's downstream
-            # queries; the test's assertion is on `captured`, reached before
-            # that failure, not on a clean run. This test is itself an async
-            # test running inside pytest-asyncio's event loop, so the
-            # coroutine is awaited directly rather than via asyncio.run
-            # (asyncio.run cannot be called from a running event loop).
+        # The sentinel raised by the fake build_provider propagates out of
+        # run_generation_job after _record_failure records the failure (the
+        # worker re-raises unexpected exceptions so RQ marks the job failed).
+        # This is an async test inside pytest-asyncio's event loop, so the
+        # coroutine is awaited directly rather than via asyncio.run.
+        with pytest.raises(_OverrideCapturedError):
             await worker_module.run_generation_job(job_id, session_factory=factory)
 
         assert captured["provider_override"] == "anthropic"

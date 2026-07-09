@@ -613,22 +613,31 @@ class AuthoringPlanRequest(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def _automated_provider_requires_provider_and_model(self) -> AuthoringPlanRequest:
-        """Require provider+model together whenever a real backend must run.
+    def _provider_model_match_mechanism(self) -> AuthoringPlanRequest:
+        """Bind provider/model presence to mechanism='automated_provider'.
 
         mechanism='skill' means a human runs the cyo-author skill; no
         GenerationProvider is ever constructed for that job, so provider/model
         are meaningless there. mechanism='automated_provider' always drives
         the worker's build_provider() call (fresh_generation always pairs with
         automated_provider per the validator above; skeleton_fill may pair
-        with either), so both fields must be present together. This makes the
-        illegal "automated_provider with no chosen backend" state
-        unrepresentable, mirroring ``_skill_requires_skeleton_fill``.
+        with either), so both fields must be present together.
+
+        Both directions are enforced so no invalid combination is
+        representable: automated_provider without both fields is rejected, and
+        (the inverse) a non-automated_provider request carrying provider/model
+        is rejected rather than silently dropping the admin's inert choice in
+        build_authoring_plan. Mirrors ``_skill_requires_skeleton_fill``.
         """
-        if self.mechanism == "automated_provider" and (
-            self.provider is None or self.model is None
-        ):
-            msg = "provider and model are both required when mechanism='automated_provider'"
+        if self.mechanism == "automated_provider":
+            if self.provider is None or self.model is None:
+                msg = (
+                    "provider and model are both required when "
+                    "mechanism='automated_provider'"
+                )
+                raise ValueError(msg)
+        elif self.provider is not None or self.model is not None:
+            msg = "provider/model are only valid when mechanism='automated_provider'"
             raise ValueError(msg)
         return self
 
