@@ -18,7 +18,6 @@ pytestmark = pytest.mark.asyncio
 _CREATE = "/api/v1/story-requests"
 
 
-@pytest.mark.asyncio
 async def test_kid_create_writes_request_created(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
@@ -39,7 +38,6 @@ async def test_kid_create_writes_request_created(
     )
 
 
-@pytest.mark.asyncio
 async def test_decline_writes_request_declined(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:
@@ -66,7 +64,6 @@ async def test_decline_writes_request_declined(
     )
 
 
-@pytest.mark.asyncio
 async def test_approve_writes_request_approved(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
 ) -> None:

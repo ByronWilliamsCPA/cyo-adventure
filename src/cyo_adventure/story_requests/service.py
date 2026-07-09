@@ -417,11 +417,10 @@ async def decline_story_request(
 
     Raises:
         StateTransitionError: If the request is not pending (-> 409).
-
-    # #CRITICAL: security: only the guardian's own family or an admin may decline;
-    #   the endpoint enforces this before calling (api/story_requests.py).
-    # #VERIFY: covered by existing decline authorization tests.
     """
+    # #CRITICAL: security: only the guardian's own family or an admin may decline;
+    # the endpoint enforces this before calling (api/story_requests.py).
+    # #VERIFY: covered by existing decline authorization tests.
     ensure_pending(request)
     request.status = "declined"
     request.reviewed_by = principal.user_id
