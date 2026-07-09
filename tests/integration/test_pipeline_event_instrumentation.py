@@ -9,6 +9,7 @@ import pytest
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import (
+    ChildProfile,
     Family,
     GenerationJob,
     Storybook,
@@ -532,3 +533,43 @@ async def test_noise_floor_update_emits_noise_floor_changed_event(
     )
     assert event.entity_id == "admin_noise_floor"
     assert event.payload == {"value": 0.2}
+
+
+async def test_assign_writes_book_assigned_event_per_new_assignment(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Assigning a published book to a NEW profile writes exactly one
+    book_assigned event, attributed to the guardian.
+
+    The ``seed`` fixture already assigns ``seed.storybook_id`` to
+    ``seed.child_profile_id`` (profile_a), so this test adds a second Family A
+    child profile and assigns the same book to that new profile instead. This
+    keeps the new-event count at exactly one and, together with the assertion
+    below, pins that the idempotent skip branch (an already-assigned profile)
+    does not also emit an event.
+    """
+    async with sessions() as session:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Reader A2", age_band="8-11"
+        )
+        session.add(sibling)
+        await session.commit()
+        sibling_id = sibling.id
+
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/assignments",
+        headers=auth(seed.guardian_token),
+        json={"profile_ids": [str(seed.child_profile_id), str(sibling_id)]},
+    )
+    assert resp.status_code == 200, resp.text
+
+    event = await assert_single_event(
+        sessions,
+        event_type="book_assigned",
+        entity_type="storybook_assignment",
+        actor_role="guardian",
+    )
+    assert event.entity_id == f"{sibling_id}:{seed.storybook_id}"
+    assert event.payload == {"child_profile_id": str(sibling_id)}
