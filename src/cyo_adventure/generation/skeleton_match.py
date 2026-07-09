@@ -15,11 +15,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
+from sqlalchemy import select
+
+from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.storybook.models import StoryMetadata
 
 if TYPE_CHECKING:
     import random
+    import uuid
 
-from cyo_adventure.storybook.models import StoryMetadata
+    from sqlalchemy.ext.asyncio import AsyncSession
 
 # #ASSUME: external-resources: the skeleton library is read cwd-relative
 # ("skeletons/<band>/*.json"), matching the existing discovery convention in
@@ -216,3 +221,48 @@ def select_skeleton_for_cell(
     weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
     pick = rng.choices(candidates, weights=weights, k=1)[0]
     return Selection(slug=pick, alternatives=list(candidates))
+
+
+# How many of the family's most recent storybook_version rows to weight
+# selection against (decision C-4: "proposed 20", ratified as the final
+# value for WS-C PR2). A module constant, not configurable, so behavior is
+# stable across restarts and does not need a settings round trip.
+_RECENT_WINDOW = 20
+
+
+async def recent_skeleton_usage(
+    session: AsyncSession, family_id: uuid.UUID | None
+) -> dict[str, int]:
+    """Return {slug: count} of skeleton usage over the family's recent history.
+
+    Args:
+        session: An open async session.
+        family_id: The request's owning family, or None for a family-less
+            (admin/catalog) request.
+
+    Returns:
+        A recency-window usage count per slug; empty when family_id is None,
+        the family has no storybook_version history, or every recent version
+        has a null skeleton_slug (fresh_generation/import versions).
+    """
+    # #ASSUME: external-resources: this issues a live database query against
+    # storybook_version joined to storybook; the caller (select_skeleton_for_cell's
+    # caller in authoring_plan.py) is expected to hold an open async session.
+    # #VERIFY: a session that is closed or out of a transaction context raises
+    # before this function runs; no defensive re-open is attempted here.
+    if family_id is None:
+        return {}
+    stmt = (
+        select(StorybookVersion.skeleton_slug)
+        .join(Storybook, Storybook.id == StorybookVersion.storybook_id)
+        .where(Storybook.family_id == family_id)
+        .order_by(StorybookVersion.created_at.desc())
+        .limit(_RECENT_WINDOW)
+    )
+    result = await session.execute(stmt)
+    counts: dict[str, int] = {}
+    for (slug,) in result.all():
+        if slug is None:
+            continue
+        counts[slug] = counts.get(slug, 0) + 1
+    return counts
