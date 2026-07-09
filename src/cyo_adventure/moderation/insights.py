@@ -160,11 +160,12 @@ def aggregate_insights(
             if accumulator is None:
                 accumulator = _CategoryAccumulator(last_seen=record.moderated_at)
                 accumulators[key] = accumulator
+            else:
+                accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
             if verdict == Verdict.ADVISORY.value:
                 accumulator.advisory_findings += 1
             else:
                 accumulator.flag_findings += 1
-            accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
             if category in seen_categories:
                 continue
             seen_categories.add(category)
