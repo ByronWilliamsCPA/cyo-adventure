@@ -105,8 +105,19 @@ export default defineConfig({
     outputFile: { junit: './junit.xml' },
     coverage: {
       provider: 'v8',
+      // Scope coverage to app source. Without an explicit include, the v8
+      // provider reports every file the run touches (node_modules, dist, e2e
+      // specs, design-system, even paths above frontend/), and those unmappable
+      // paths made Codecov reject the whole lcov as an "unusable report".
+      include: ['src/**'],
       reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: ['node_modules/', 'src/test/', 'src/client/', '**/*.d.ts', '**/*.config.*'],
+      exclude: [
+        'src/test/',
+        'src/client/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/*.{test,spec}.{ts,tsx}',
+      ],
     },
   },
 })
