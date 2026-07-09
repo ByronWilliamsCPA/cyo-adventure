@@ -148,12 +148,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   token, a misplaced `flag_coverage_not_uploaded_behavior`, and a `behavior`
   field on individual flags), which made Codecov discard the whole file and
   fall back to defaults, ignoring every declared flag and component. The file
-  now passes `codecov.io/validate`. Flags were reworked to a single surface
-  axis (`backend`, `frontend`, `design-system`, plus an `api` Test Analytics
-  flag) with the code-area split moved to components, including safety-critical
-  (moderation + security + core, 90/95) and generation-pipeline (85/90). CI
-  uploads backend coverage under the `backend` flag and adds a guarded newman
-  `api` Test Analytics job (dormant until a Postman collection exists).
+  now passes `codecov.io/validate`. Flags are now test-type on the backend
+  (`unit`, `integration`, `security`, each uploaded from its own
+  `coverage-<type>.xml`) and surface on the frontend (`frontend`,
+  `design-system`, which cannot split by type), plus a dormant `api` Test
+  Analytics flag; the code-area split moved to components, including
+  safety-critical (moderation + security + core, 90/95) and generation-pipeline
+  (85/90).
+- Backend coverage now uploads to Codecov from an inline `coverage-upload` CI
+  job (per test type) instead of a `main`-only `workflow_run` workflow, so
+  backend coverage and patch coverage are visible on pull requests for the
+  first time; the redundant `.github/workflows/codecov.yml` was removed.
+- The integration and security test buckets now run in CI
+  (`run-integration-tests` / `run-security-tests`); previously the reusable
+  workflow's unit step excluded `-m integration`/`-m security`, so those
+  test files never executed in CI.
 - OpenAI Moderation's `_run_openai` now logs `openai_moderation_malformed`
   when the response's `categories` field degrades to an empty map (missing or
   non-dict shape), matching the sibling shape-check log lines instead of

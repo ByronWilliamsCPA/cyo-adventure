@@ -7,11 +7,11 @@ codecov:
   require_ci_to_pass: true
   max_report_age: 12h
   notify:
-    # Three coverage uploads gate statuses/comments: backend (coverage.xml),
-    # frontend (lcov), and design-system (lcov). Test Analytics uploads
-    # (junit, flags frontend/api) do not count here. Keep this equal to the
-    # number of COVERAGE uploads, or the comment/status deadlocks waiting.
-    after_n_builds: 3
+    # Coverage uploads that gate statuses/comments: unit, integration, frontend,
+    # design-system (security is a bonus 5th when security-marked tests exist).
+    # Keep this at or below the reliably-produced count, or the comment/status
+    # deadlocks waiting for an upload that never arrives.
+    after_n_builds: 4
     wait_for_ci: true
 
 # Coverage targets and thresholds
@@ -40,26 +40,29 @@ coverage:
         # Pass gracefully when well-tested code is deleted (avoids penalizing cleanup PRs)
         removed_code_behavior: fully_covered_patch
 
-# Flags (single axis). See standards/testing.md section 16.2.
+# Flags (single axis: one report -> one flag). See standards/testing.md 16.2.
 #
-# CYO is full-stack and its runners cannot split by test type in one pass:
-#   - backend runs the whole pytest suite (unit + integration + security
-#     markers) in one reusable-workflow invocation -> one coverage.xml.
-#   - each Vitest package runs all its component tests in one pass -> one lcov.
-# Per the standard's full-stack exception, we therefore flag by SURFACE, not
-# by test type, and carry the code-area split in components (below). Only
-# flags that an uploader actually produces are declared, so the Codecov Flags
-# tab shows live data instead of "No report uploaded" placeholders.
+# Backend is flagged by TEST TYPE: the reusable python-ci workflow runs the
+# unit, integration, and security buckets separately and emits
+# coverage-{unit,integration,security}.xml + junit-{...}.xml; ci.yml's
+# coverage-upload job uploads each under its own flag.
 #
-# Test-type coverage flags (unit/integration/security/e2e/contract) are a
-# FOLLOW-UP: promote them by splitting the backend into nox-session-per-type
-# uploads (`nox -s unit`, `-s integration`, ...), each uploaded with `-F <type>`.
-# Until then: contract is enforced by the OpenAPI drift CI job, security by
-# bandit + `-m security` inside the backend gate, e2e by the mocked Playwright
-# CI job. `api` is a Test Analytics flag (newman JUnit; see ci.yml, guarded on
-# a Postman collection existing).
+# Frontend + design-system are flagged by SURFACE: Vitest runs all component
+# tests in one pass and cannot split by test type, so a surface flag is used
+# per the standard's full-stack exception. The code-area split (frontend vs
+# backend modules) is carried by components (below), which are orthogonal to
+# flags. `api` is a dormant Test Analytics flag (newman JUnit) with no coverage
+# status; it activates when a Postman collection + api CI job exist (follow-up).
 flags:
-  backend:
+  unit:
+    carryforward: true
+    paths:
+      - src/cyo_adventure/
+  integration:
+    carryforward: true
+    paths:
+      - src/cyo_adventure/
+  security:
     carryforward: true
     paths:
       - src/cyo_adventure/
@@ -72,15 +75,13 @@ flags:
     paths:
       - frontend/design-system/src/
   api:
-    # Test Analytics only (newman produces no code coverage); no coverage
-    # status is set on this flag.
     carryforward: true
 
 flag_management:
   default_rules:
     carryforward: true
-    # if_not_found: success on each status keeps dormant flags (e.g. api before
-    # a Postman collection exists) from blocking when they upload no report.
+    # if_not_found: success keeps a flag that uploaded no report this run (e.g.
+    # api while dormant, or security when no security tests exist) from blocking.
     statuses:
       - type: project
         target: auto
@@ -88,15 +89,38 @@ flag_management:
         if_not_found: success
 
   individual_flags:
-    - name: backend
+    - name: unit
       statuses:
         - type: project
-          target: 80%
+          target: 85%
           threshold: 2%
           if_ci_failed: error
           if_not_found: success
         - type: patch
           target: 90%
+          threshold: 5%
+          if_not_found: success
+
+    - name: integration
+      statuses:
+        - type: project
+          target: 75%
+          threshold: 3%
+          if_ci_failed: error
+          if_not_found: success
+        - type: patch
+          target: 70%
+          threshold: 5%
+          if_not_found: success
+
+    - name: security
+      statuses:
+        - type: project
+          target: auto
+          threshold: 2%
+          if_not_found: success
+        - type: patch
+          target: 80%
           threshold: 5%
           if_not_found: success
 
