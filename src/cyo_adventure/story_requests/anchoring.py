@@ -21,12 +21,15 @@ from cyo_adventure.db.models import (
     StorybookVersion,
 )
 from cyo_adventure.generation.concept import AnchorContext
+from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
     import uuid
     from collections.abc import Mapping
 
     from sqlalchemy.ext.asyncio import AsyncSession
+
+logger = get_logger(__name__)
 
 _MAX_ENDING_EXCERPTS = 3
 _EXCERPT_CHARS = 150
@@ -119,6 +122,11 @@ async def load_anchor_context(
     # #VERIFY: tests/unit/test_anchoring.py::test_malformed_blob_degrades_to_defaults.
     storybook = await session.get(Storybook, anchor_storybook_id)
     if storybook is None or storybook.current_published_version is None:
+        logger.warning(
+            "anchor.context_unavailable",
+            anchor_storybook_id=anchor_storybook_id,
+            reason="missing_or_unpublished",
+        )
         return None
     version = await session.scalar(
         select(StorybookVersion).where(
@@ -127,6 +135,14 @@ async def load_anchor_context(
         )
     )
     if version is None or not isinstance(version.blob, dict):
+        # A validated anchor with no usable blob is a silent quality regression:
+        # the continuation generates with no reference to the prior book. Log it
+        # so the degradation is observable rather than invisible.
+        logger.warning(
+            "anchor.context_unavailable",
+            anchor_storybook_id=anchor_storybook_id,
+            reason="missing_or_malformed_blob",
+        )
         return None
     names = await _protagonist_names(session, anchor_storybook_id)
     return anchor_context_from_blob(version.blob, character_names=names)
@@ -142,8 +158,10 @@ async def _protagonist_names(session: AsyncSession, storybook_id: str) -> list[s
     # JSONB blob with no DB-level schema constraint, so a missing or
     # wrong-typed "protagonist"/"name" key must degrade to an empty list
     # rather than raise.
-    # #VERIFY: tests/unit/test_anchoring.py exercises the malformed-blob path
-    # via anchor_context_from_blob's character_names handling.
+    # #VERIFY: each defensive branch below (brief not a dict, protagonist not a
+    # dict, name not a non-empty str) returns [] in-line. This is distinct from
+    # anchor_context_from_blob, which caps an already-built character_names list;
+    # these branches are not yet exercised by a dedicated unit test (follow-up).
     # #EDGE: data integrity: one storybook can in principle have more than one
     # GenerationJob row; ordering by created_at makes the pick deterministic
     # (oldest first) if that ever happens, though one job per storybook is the

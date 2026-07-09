@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 _MAX_ATTEMPTS = 2
+_UNIQUE_CONSTRAINT = "uq_storybook_series_book_index"
 
 
 async def link_series_position(
@@ -38,6 +39,11 @@ async def link_series_position(
     request = await session.scalar(
         select(StoryRequest).where(StoryRequest.concept_id == concept_id)
     )
+    # #ASSUME: data-integrity: a concept with no owning request, or a request
+    # with no series, is a legitimate non-series generation and is skipped. An
+    # anchored request always has series_id (ck_story_request_anchor_requires_series),
+    # so this no-op cannot silently drop a continuation out of its series.
+    # #VERIFY: test_series_link covers the direct/non-series no-op path.
     if request is None or request.series_id is None:
         return
     index = await assign_book_index(
@@ -93,6 +99,12 @@ async def assign_book_index(
                 storybook.book_index = next_index
                 await session.flush()
         except IntegrityError as exc:
+            # Only the (series_id, book_index) unique conflict is a retryable
+            # race. An FK or check violation is a non-transient logic/data error
+            # that a retry cannot resolve; re-raise it immediately rather than
+            # mislabeling it as a book_index conflict and retrying pointlessly.
+            if _UNIQUE_CONSTRAINT not in str(exc.orig):
+                raise
             last_error = exc
             logger.warning(
                 "storybook.book_index_conflict",

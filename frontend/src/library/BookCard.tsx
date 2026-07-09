@@ -50,7 +50,11 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
         bookTitle={item.title}
       />
       {item.series_id !== null && onContinue ? (
-        <Button variant="ghost" onClick={() => onContinue(item)}>
+        <Button
+          variant="ghost"
+          aria-label={`Continue this story: ${item.title}`}
+          onClick={() => onContinue(item)}
+        >
           Continue this story
         </Button>
       ) : null}

@@ -484,10 +484,25 @@ class StoryRequest(Base):
             "narrative_style = 'prose' OR age_band IN ('13-16', '16+')",
             name="ck_story_request_style_band",
         ),
+        # A request may propose a NEW series title or continue an existing
+        # series via an anchor, never both. The name reflects the two columns
+        # actually constrained (proposed_series_title, anchor_storybook_id);
+        # ``series_id`` is guarded separately below.
         CheckConstraint(
             "NOT (proposed_series_title IS NOT NULL "
             "AND anchor_storybook_id IS NOT NULL)",
-            name="ck_story_request_series_xor",
+            name="ck_story_request_title_anchor_mutex",
+        ),
+        # #ASSUME: data-integrity: an anchored (continuation) request always
+        # carries the anchor's series id; generation.series_link relies on it
+        # to assign book_index, so a null series_id on an anchored row would
+        # silently drop the storybook out of its series.
+        # #VERIFY: every anchored-insert path sets series_id from resolve_anchor
+        # (api/story_requests.py kid + authored create); this constraint blocks
+        # a drifted row from a manual edit or a future code path.
+        CheckConstraint(
+            "anchor_storybook_id IS NULL OR series_id IS NOT NULL",
+            name="ck_story_request_anchor_requires_series",
         ),
         Index("ix_story_request_family_status", "family_id", "status"),
         Index("ix_story_request_profile_status", "profile_id", "status"),

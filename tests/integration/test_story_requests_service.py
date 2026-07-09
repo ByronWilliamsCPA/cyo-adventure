@@ -94,7 +94,7 @@ async def test_build_concept_anchored_request_includes_anchor_context(
         guardian = User(family_id=fam.id, role="guardian", authn_subject="g")
         session.add(guardian)
         await session.flush()
-        _series, storybook = await seed_published_anchor(
+        series, storybook = await seed_published_anchor(
             session,
             family_id=fam.id,
             approved_by=guardian.id,
@@ -107,6 +107,10 @@ async def test_build_concept_anchored_request_includes_anchor_context(
             request_text="book two of the fox saga",
             status="pending",
             age_band="8-11",
+            # An anchored request always carries its series id (set from
+            # resolve_anchor on the real create paths); the DB guard
+            # ck_story_request_anchor_requires_series enforces it.
+            series_id=series.id,
             anchor_storybook_id=storybook.id,
         )
         session.add(request)

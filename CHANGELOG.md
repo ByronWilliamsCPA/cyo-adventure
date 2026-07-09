@@ -87,7 +87,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   or edit the series title (or clear it) at approval, guardians and admins can
   create an authored request directly in a series via anchor storybook id, and
   book numbering within a series is assigned race-safely at generation
-  completion rather than at request time (WS-B PR 3).
+  completion rather than at request time (WS-B PR 3). A DB check constraint
+  enforces that an anchored (continuation) request always carries its series
+  id, the approve path re-syncs that id from the resolved anchor, and the
+  book_index retry loop only retries the genuine unique-index conflict
+  (WS-B PR 3 review hardening).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from

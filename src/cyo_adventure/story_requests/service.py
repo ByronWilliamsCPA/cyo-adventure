@@ -196,12 +196,17 @@ async def approve_story_request(
         if series_title is not None:
             msg = "a continuation request cannot also create a new series"
             raise ValidationError(msg, field="series_title", value=series_title)
-        await resolve_anchor(
+        series = await resolve_anchor(
             session,
             request.anchor_storybook_id,
             family_id=request.family_id,
             expected_band=confirmation.age_band.value,
         )
+        # Keep the request authoritative for downstream generation: re-sync
+        # series_id from the freshly resolved anchor rather than trusting a
+        # value set at create time (which a data fix or future bug could drift
+        # from the anchor's actual series). series_link uses request.series_id.
+        request.series_id = series.id
     elif series_title is not None:
         series = await create_series(
             session,

@@ -25,12 +25,28 @@ export function LibraryPage() {
   const libraryApi = useMemo(() => makeLibraryApi(api), [api])
   const [state, setState] = useState<LibraryState>({ status: 'loading' })
   const [continueAnchor, setContinueAnchor] = useState<ContinueAnchor | null>(null)
+  const requestStoryRef = useRef<HTMLDivElement>(null)
 
   const continueThisStory = useCallback(
     (item: LibraryItemView) => setContinueAnchor({ id: item.id, title: item.title }),
     []
   )
   const clearContinueAnchor = useCallback(() => setContinueAnchor(null), [])
+
+  // #ASSUME: UI state: tapping "Continue this story" opens the RequestStory
+  // form at the top of the page with no visual cue near the tapped card;
+  // without moving focus/scroll, a keyboard or low-vision user has no way to
+  // notice the form appeared.
+  // #VERIFY: whenever continueAnchor becomes non-null, the form container is
+  // scrolled into view and receives focus.
+  useEffect(() => {
+    if (continueAnchor !== null) {
+      // Optional-call scrollIntoView: it is absent under jsdom (test env) and
+      // guarding keeps the focus move working there without a test shim.
+      requestStoryRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'start' })
+      requestStoryRef.current?.focus()
+    }
+  }, [continueAnchor])
 
   // #ASSUME: timing dependencies: the "Try again" button calls `load()`
   // directly and discards its cleanup, so `cancelled` alone cannot stop a
@@ -137,11 +153,13 @@ export function LibraryPage() {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
-      <RequestStory
-        profileId={profileId}
-        anchor={continueAnchor}
-        onClearAnchor={clearContinueAnchor}
-      />
+      <div ref={requestStoryRef} tabIndex={-1}>
+        <RequestStory
+          profileId={profileId}
+          anchor={continueAnchor}
+          onClearAnchor={clearContinueAnchor}
+        />
+      </div>
       {hero ? (
         <section aria-label="Continue Reading">
           <BookCard

@@ -64,10 +64,20 @@ def upgrade() -> None:
         ["anchor_storybook_id"],
         ["id"],
     )
+    # A request proposes a NEW series title or continues an existing series via
+    # an anchor, never both. Name reflects the two columns constrained.
     op.create_check_constraint(
-        "ck_story_request_series_xor",
+        "ck_story_request_title_anchor_mutex",
         "story_request",
         "NOT (proposed_series_title IS NOT NULL AND anchor_storybook_id IS NOT NULL)",
+    )
+    # An anchored (continuation) request must carry its series id; series_link
+    # relies on it to assign book_index. Every anchored-insert path already sets
+    # series_id from resolve_anchor; this blocks a drifted row.
+    op.create_check_constraint(
+        "ck_story_request_anchor_requires_series",
+        "story_request",
+        "anchor_storybook_id IS NULL OR series_id IS NOT NULL",
     )
 
     op.add_column("storybook", sa.Column("series_id", sa.Uuid(), nullable=True))
@@ -102,7 +112,12 @@ def downgrade() -> None:
     op.drop_constraint("fk_storybook_series_id_series", "storybook", type_="foreignkey")
     op.drop_column("storybook", "book_index")
     op.drop_column("storybook", "series_id")
-    op.drop_constraint("ck_story_request_series_xor", "story_request", type_="check")
+    op.drop_constraint(
+        "ck_story_request_anchor_requires_series", "story_request", type_="check"
+    )
+    op.drop_constraint(
+        "ck_story_request_title_anchor_mutex", "story_request", type_="check"
+    )
     op.drop_constraint(
         "fk_story_request_anchor_storybook_id_storybook",
         "story_request",

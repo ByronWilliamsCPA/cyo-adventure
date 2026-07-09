@@ -245,6 +245,9 @@ export function RequestsPage() {
                     <select
                       value={decision.age_band}
                       disabled={req.anchor_storybook_id !== null}
+                      aria-describedby={
+                        req.anchor_storybook_id !== null ? `series-note-${req.id}` : undefined
+                      }
                       onChange={(e) => setDecision(req, { age_band: e.target.value })}
                     >
                       {AGE_BANDS.map((b) => (
@@ -291,7 +294,9 @@ export function RequestsPage() {
                       />
                     </label>
                   ) : (
-                    <p className="console-row__series-note">Continues an existing series</p>
+                    <p id={`series-note-${req.id}`} className="console-row__series-note">
+                      Continues an existing series
+                    </p>
                   )}
                   <Button
                     disabled={isInFlight || !isActionable || decision.length === ''}

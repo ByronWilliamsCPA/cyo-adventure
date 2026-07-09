@@ -1767,9 +1767,12 @@ depends-on: Task5 [completion], Task6 [completion]
 Run (from the worktree root; same recipe as PR 1/PR 2 and the CI drift gate):
 
 ```bash
+# Write the schema to a scratch path of your choosing (any writable temp dir);
+# it is a throwaway intermediate the generator consumes, not a committed file.
+SCHEMA_JSON="$(mktemp -t openapi-pr3.XXXXXX.json)"
 uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" \
-  > /tmp/claude-1000/-home-byron-dev-CYO-Adventure/94ba09fb-ad7f-4e4b-a4d8-8e5454331cad/scratchpad/openapi-pr3.json
-cd frontend && OPENAPI_INPUT=/tmp/claude-1000/-home-byron-dev-CYO-Adventure/94ba09fb-ad7f-4e4b-a4d8-8e5454331cad/scratchpad/openapi-pr3.json npm run generate-client
+  > "$SCHEMA_JSON"
+cd frontend && OPENAPI_INPUT="$SCHEMA_JSON" npm run generate-client
 ```
 
 Expected: `git status` shows only `frontend/src/client/` changes; `types.gen.ts` now carries

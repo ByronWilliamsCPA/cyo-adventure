@@ -16,7 +16,7 @@ const STATUS_COPY: Record<StoryRequestStatus, string> = {
   blocked: "Let's try a different idea!",
 }
 
-type SendError = 'busy' | 'generic'
+type SendError = 'busy' | 'generic' | 'anchor'
 
 export interface ContinueAnchor {
   id: string
@@ -55,16 +55,22 @@ export function RequestStory({
   // #ASSUME: UI state: the child can tap "Continue this story" on the library
   // page while this form is closed (or already open on a different idea);
   // the parent hands a fresh anchor object on every tap, including a repeat
-  // tap on the same book.
+  // tap on the same book. A title typed before the anchor was set (or after
+  // it was cleared) must not silently survive the switch into continuation
+  // mode and get submitted as an unintended proposed_series_title.
   // #VERIFY: comparing against the previous anchor reference during render
-  // (React's documented "adjusting state" escape hatch) opens the form on
-  // every new anchor without a setState-in-effect cascade; a fresh object
-  // reference from the parent, not a fresh book id, is what drives this, so
-  // tapping the same book twice in a row still reopens a closed form.
+  // (React's documented "adjusting state" escape hatch) opens the form and
+  // clears any pending seriesTitle on every new non-null anchor, without a
+  // setState-in-effect cascade; a fresh object reference from the parent, not
+  // a fresh book id, is what drives this, so tapping the same book twice in a
+  // row still reopens a closed form.
   const [lastAnchor, setLastAnchor] = useState<ContinueAnchor | null>(null)
   if (anchor !== lastAnchor) {
     setLastAnchor(anchor)
-    if (anchor !== null) setOpen(true)
+    if (anchor !== null) {
+      setOpen(true)
+      setSeriesTitle('')
+    }
   }
 
   // #ASSUME: timing dependencies: this component can unmount while a fetch or
@@ -144,8 +150,19 @@ export function RequestStory({
       await refreshAfterSend()
     } catch (err) {
       console.error('story request failed', err instanceof Error ? err.message : err)
-      const isCapReached = isAxiosError(err) && err.response?.status === 409
-      if (isMountedRef.current) setError(isCapReached ? 'busy' : 'generic')
+      const status = isAxiosError(err) ? err.response?.status : undefined
+      const isCapReached = status === 409
+      // #ASSUME: external resources: an anchored submit can fail because the
+      // anchor storybook is gone or no longer eligible (404/422) by the time
+      // the request lands, not just from a generic backend error.
+      // #VERIFY: the anchor is cleared on that failure so a retry sends a
+      // fresh (anchor-less) request instead of resending the same anchor and
+      // guaranteeing another failure.
+      const isStaleAnchor = anchor !== null && (status === 404 || status === 422)
+      if (isMountedRef.current) {
+        setError(isCapReached ? 'busy' : isStaleAnchor ? 'anchor' : 'generic')
+      }
+      if (isStaleAnchor) onClearAnchor?.()
     } finally {
       if (isMountedRef.current) setSaving(false)
     }
@@ -194,6 +211,10 @@ export function RequestStory({
             <p role="alert" className="request-story__error">
               You have lots of ideas waiting already! Wait for a few to be looked at before sending
               more.
+            </p>
+          ) : error === 'anchor' ? (
+            <p role="alert" className="request-story__error">
+              That story can&apos;t be continued right now. Pick another one, or send a new idea!
             </p>
           ) : error === 'generic' ? (
             <p role="alert" className="request-story__error">

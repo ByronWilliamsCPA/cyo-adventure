@@ -146,6 +146,18 @@ def test_storybook_rejects_unpaired_series_fields(
         conn.rollback()
 
 
+def test_storybook_rejects_index_without_series(
+    upgraded_engine: sa.engine.Engine,
+) -> None:
+    """The pairing constraint is symmetric: book_index set with series_id NULL."""
+    with upgraded_engine.connect() as conn:
+        family_id = _family_id(conn)
+        conn.rollback()
+        with pytest.raises(IntegrityError, match="ck_storybook_series_index_pairing"):
+            _seed_storybook(conn, family_id, series_id=None, book_index=1)
+        conn.rollback()
+
+
 def test_story_request_rejects_proposal_and_anchor(
     upgraded_engine: sa.engine.Engine,
 ) -> None:
@@ -153,14 +165,46 @@ def test_story_request_rejects_proposal_and_anchor(
         family_id = _family_id(conn)
         conn.rollback()
         with upgraded_engine.begin() as seed:
+            # A valid series_id keeps ck_story_request_anchor_requires_series
+            # satisfied so the title-XOR-anchor mutex is the only violation.
+            series_id = _seed_series(seed, family_id)
             anchor_id = _seed_storybook(seed, family_id)
-        with pytest.raises(IntegrityError, match="ck_story_request_series_xor"):
+        with pytest.raises(IntegrityError, match="ck_story_request_title_anchor_mutex"):
             conn.execute(
                 sa.text(
                     "INSERT INTO story_request (id, family_id, request_text, "
-                    "status, age_band, proposed_series_title, anchor_storybook_id) "
-                    "VALUES (:id, :family_id, 'x', 'pending', '8-11', "
+                    "status, age_band, series_id, proposed_series_title, "
+                    "anchor_storybook_id) "
+                    "VALUES (:id, :family_id, 'x', 'pending', '8-11', :series_id, "
                     "'Fox Tales', :anchor)"
+                ),
+                {
+                    "id": str(uuid.uuid4()),
+                    "family_id": family_id,
+                    "series_id": series_id,
+                    "anchor": anchor_id,
+                },
+            )
+        conn.rollback()
+
+
+def test_story_request_rejects_anchor_without_series(
+    upgraded_engine: sa.engine.Engine,
+) -> None:
+    """An anchored request must carry a series_id (series_link relies on it)."""
+    with upgraded_engine.connect() as conn:
+        family_id = _family_id(conn)
+        conn.rollback()
+        with upgraded_engine.begin() as seed:
+            anchor_id = _seed_storybook(seed, family_id)
+        with pytest.raises(
+            IntegrityError, match="ck_story_request_anchor_requires_series"
+        ):
+            conn.execute(
+                sa.text(
+                    "INSERT INTO story_request (id, family_id, request_text, "
+                    "status, age_band, series_id, anchor_storybook_id) "
+                    "VALUES (:id, :family_id, 'x', 'pending', '8-11', NULL, :anchor)"
                 ),
                 {
                     "id": str(uuid.uuid4()),
@@ -190,6 +234,26 @@ def test_downgrade_round_trip(upgraded_engine: sa.engine.Engine) -> None:
                 )
             )
         }
+
+        def _columns(table: str) -> set[str]:
+            return {
+                r[0]
+                for r in conn.execute(
+                    sa.text(
+                        "SELECT column_name FROM information_schema.columns "
+                        "WHERE table_schema = 'public' AND table_name = :t"
+                    ),
+                    {"t": table},
+                )
+            }
+
+        story_request_cols = _columns("story_request")
+        storybook_cols = _columns("storybook")
     assert "series" not in tables
+    # The soft-continuation columns must be dropped too, not just the table.
+    assert {"series_id", "anchor_storybook_id", "proposed_series_title"}.isdisjoint(
+        story_request_cols
+    )
+    assert {"series_id", "book_index"}.isdisjoint(storybook_cols)
     up = run_alembic(PROJECT_ROOT, env, "upgrade", REVISION)
     assert up.returncode == 0, up.stderr
