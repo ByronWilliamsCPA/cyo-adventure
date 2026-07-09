@@ -12,9 +12,12 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
 from pydantic import ValidationError as PydanticValidationError
+
+if TYPE_CHECKING:
+    import random
 
 from cyo_adventure.storybook.models import StoryMetadata
 
@@ -161,3 +164,55 @@ def find_skeleton_metadata(slug: str) -> StoryMetadata | None:
         if path.is_file():
             return _load_metadata(path)
     return None
+
+
+def _weight(recent_count: int) -> float:
+    """Return the inverse-frequency weight for a candidate's recent-use count.
+
+    Args:
+        recent_count: How many times this slug appeared in the family's
+            recent storybook_version history (0 if never, or no history).
+
+    Returns:
+        1 / (1 + recent_count): 1.0 for an unused candidate, strictly
+        decreasing but never zero as recent_count grows (the "implicit
+        nonzero floor" from decision C-4: nothing is ever fully excluded).
+    """
+    return 1.0 / (1 + recent_count)
+
+
+def select_skeleton_for_cell(
+    candidates: list[str],
+    recent_usage: dict[str, int],
+    rng: random.Random,
+) -> Selection:
+    """Weighted-random pick from an in-cell candidate list.
+
+    Args:
+        candidates: Production-eligible skeleton slugs whose metadata matches
+            the request's cell (from candidates_for_cell); must be
+            non-empty. The caller is responsible for the "no matching
+            skeleton" 422 before ever calling this.
+        recent_usage: {slug: count} of how many times each slug was recently
+            used by the family (from recent_skeleton_usage); an empty map
+            (no family, or no history) yields a uniform pick.
+        rng: An injected random.Random, so callers get deterministic
+            behavior under a seeded instance (tests) and real randomness in
+            production (see story_requests/authoring_plan.py, which passes a
+            random.SystemRandom() rather than random.Random()).
+
+    Returns:
+        Selection: the weighted pick, plus every in-cell candidate as
+        `alternatives` (so the admin sees every option, including the ones
+        not drawn).
+
+    Raises:
+        ValueError: If candidates is empty (an internal-invariant
+            violation; callers must check candidates_for_cell(...) first).
+    """
+    if not candidates:
+        msg = "select_skeleton_for_cell requires at least one candidate"
+        raise ValueError(msg)
+    weights = [_weight(recent_usage.get(slug, 0)) for slug in candidates]
+    pick = rng.choices(candidates, weights=weights, k=1)[0]
+    return Selection(slug=pick, alternatives=list(candidates))

@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import random
 from typing import TYPE_CHECKING
+
+import pytest
 
 from cyo_adventure.generation import skeleton_match
 from cyo_adventure.generation.skeleton_match import (
@@ -15,8 +18,6 @@ from cyo_adventure.storybook.models import AgeBand, NarrativeStyle, StoryMetadat
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    import pytest
 
 
 def test_candidates_for_cell_matches_real_library_singleton_cell() -> None:
@@ -142,3 +143,54 @@ def test_skeleton_matches_cell_ignores_style_below_teen_band() -> None:
     assert skeleton_matches_cell(
         metadata, band="8-11", length="short", style="gamebook"
     )
+
+
+def test_weight_never_reaches_zero() -> None:
+    """The inverse-frequency floor: however often a slug was used, its weight
+    stays strictly positive, so it is never fully excluded from the draw."""
+    assert skeleton_match._weight(0) == 1.0
+    assert skeleton_match._weight(1) == 0.5
+    assert skeleton_match._weight(1000) == 1.0 / 1001
+
+
+def test_select_skeleton_for_cell_is_deterministic_under_seeded_rng() -> None:
+    """The same seed and inputs always produce the same pick."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    recent_usage = {
+        "cave-of-echoes": 5,
+        "clockwork-menagerie": 0,
+        "sky-ship-stowaway": 0,
+    }
+    first = skeleton_match.select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42)
+    )
+    second = skeleton_match.select_skeleton_for_cell(
+        candidates, recent_usage, random.Random(42)
+    )
+    assert first.slug == second.slug == "sky-ship-stowaway"
+    assert first.alternatives == candidates
+
+
+def test_select_skeleton_for_cell_uniform_fallback_when_recent_usage_empty() -> None:
+    """No recency history (new family, or no family at all) is a uniform draw."""
+    candidates = ["cave-of-echoes", "clockwork-menagerie", "sky-ship-stowaway"]
+    selection = skeleton_match.select_skeleton_for_cell(
+        candidates, {}, random.Random(7)
+    )
+    assert selection.slug == "cave-of-echoes"
+
+
+def test_select_skeleton_for_cell_returns_full_candidate_list_as_alternatives() -> None:
+    candidates = ["a", "b", "c"]
+    selection = skeleton_match.select_skeleton_for_cell(
+        candidates, {"a": 2}, random.Random(1)
+    )
+    assert selection.alternatives == ["a", "b", "c"]
+    assert selection.slug in candidates
+
+
+def test_select_skeleton_for_cell_raises_on_empty_candidates() -> None:
+    """An internal-invariant guard: the caller must check candidates_for_cell(...)
+    for emptiness before calling this (mirrors the old None-check contract)."""
+    with pytest.raises(ValueError, match="at least one candidate"):
+        skeleton_match.select_skeleton_for_cell([], {}, random.Random(0))
