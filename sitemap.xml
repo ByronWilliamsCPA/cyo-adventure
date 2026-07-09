@@ -233,6 +233,14 @@
          <lastmod>2026-07-09</lastmod>
     </url>
     <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws-d-pipeline-event-log-plan/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/ws-d-pipeline-event-log-spec/</loc>
+         <lastmod>2026-07-09</lastmod>
+    </url>
+    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/adr/</loc>
          <lastmod>2026-07-09</lastmod>
     </url>
