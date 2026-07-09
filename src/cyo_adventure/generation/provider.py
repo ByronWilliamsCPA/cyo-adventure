@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ConfigurationError
 from cyo_adventure.generation.providers import (
+    AnthropicProvider,
     FallbackProvider,
     ModalProvider,
     OllamaProvider,
@@ -320,6 +321,43 @@ def build_openrouter_leg(settings: Settings, model: str) -> GenerationProvider:
         base_url=settings.openrouter_base_url,
         timeout_seconds=settings.llm_timeout_seconds,
         effort=settings.llm_effort,
+    )
+
+
+def build_anthropic_leg(settings: Settings, model: str) -> GenerationProvider:
+    """Construct a single direct-Anthropic leg for ``model`` from settings.
+
+    This builder is a standalone unit (WS-C PR1 Task 7): it is not yet wired
+    into :func:`build_provider`'s dispatch, which still raises
+    ``ConfigurationError`` for ``generation_provider=anthropic`` pending the
+    per-job override plumbing in a later task.
+
+    Args:
+        settings: The application settings instance.
+        model: The Anthropic model id this leg targets.
+
+    Returns:
+        A direct-Anthropic ``GenerationProvider`` adapter.
+
+    Raises:
+        ConfigurationError: If ``ANTHROPIC_API_KEY`` is not configured. The
+            message names the key only, never its value.
+    """
+    # #CRITICAL: security: fail fast (and by name only) when the credential is
+    # absent, rather than sending an unauthenticated request that leaks the
+    # prompt to a 401 round-trip.
+    # #VERIFY: test_build_anthropic_leg_missing_key_raises and
+    # test_anthropic_key_value_not_leaked_in_error assert ConfigurationError
+    # when the key is None, and that no error message ever contains a key value.
+    if not settings.anthropic_api_key:
+        msg = "ANTHROPIC_API_KEY is not set; required for generation_provider=anthropic"
+        raise ConfigurationError(msg)
+
+    return AnthropicProvider(
+        api_key=settings.anthropic_api_key,
+        model=model,
+        base_url=settings.anthropic_base_url,
+        timeout_seconds=settings.llm_timeout_seconds,
     )
 
 

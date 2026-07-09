@@ -14,12 +14,14 @@ adapters into an ordered cascade with cross-leg failover.
 
 from __future__ import annotations
 
+from cyo_adventure.generation.providers.anthropic import AnthropicProvider
 from cyo_adventure.generation.providers.fallback import FallbackProvider
 from cyo_adventure.generation.providers.modal import ModalProvider
 from cyo_adventure.generation.providers.ollama import OllamaProvider
 from cyo_adventure.generation.providers.openrouter import OpenRouterProvider
 
 __all__ = [
+    "AnthropicProvider",
     "FallbackProvider",
     "ModalProvider",
     "OllamaProvider",
