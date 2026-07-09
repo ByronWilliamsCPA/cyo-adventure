@@ -955,3 +955,57 @@ class NoiseFloorUpdateBody(BaseModel):
 
     # The global admin noise floor, bounded to [0, 1]; out-of-range values 422.
     value: float = Field(ge=0.0, le=1.0)
+
+
+# ---------------------------------------------------------------------------
+# Provider/model allowlist schemas (WS-C PR1)
+# ---------------------------------------------------------------------------
+
+ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
+
+
+class AllowlistView(BaseModel):
+    """One provider/model allowlist row."""
+
+    id: str
+    provider: ProviderName
+    model_id: str
+    enabled: bool
+    display_name: str | None
+
+
+class AllowlistListView(BaseModel):
+    """The whole allowlist table, ordered by (provider, model_id)."""
+
+    rows: list[AllowlistView]
+
+
+class AllowlistCreateBody(BaseModel):
+    """POST body to add a new allowlist row."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: ProviderName
+    model_id: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+    ]
+    display_name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+        ]
+        | None
+    ) = None
+
+
+class AllowlistUpdateBody(BaseModel):
+    """PUT body: full replace of the mutable fields (mirrors ThresholdUpsertBody)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+    display_name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+        ]
+        | None
+    ) = None
