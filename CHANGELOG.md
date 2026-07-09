@@ -159,6 +159,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   job (per test type) instead of a `main`-only `workflow_run` workflow, so
   backend coverage and patch coverage are visible on pull requests for the
   first time; the redundant `.github/workflows/codecov.yml` was removed.
+- The `coverage-upload` job now checks out the repository before uploading.
+  pytest-cov emits two `<source>` roots (`src` and `src/cyo_adventure`), which
+  Codecov disambiguates against the git file tree; without a checkout every
+  report was rejected server-side as "source code unavailability / path
+  mismatch", so the first main run after the config fix showed 0% with ten
+  upload errors despite healthy 91%+ reports in the artifact.
+- Frontend and design-system coverage now reach Codecov and aggregate with the
+  backend into one commit total. Two fixes were needed: (1) an explicit
+  `coverage.include: ['src/**']` in both Vitest configs, since without it the v8
+  provider reported every file the run touched (`node_modules`, `dist`, e2e
+  specs, paths above the package root); and (2) rewriting the lcov `SF:` paths
+  to be repo-root-relative (`frontend/src/...`,
+  `frontend/design-system/src/...`) before upload, because Vitest emits them
+  relative to the package root and Codecov matches against the repo tree. Until
+  both were in place the reports uploaded but were dropped server-side as "path
+  mismatch", so only the backend sessions merged and the `frontend` /
+  `design-system` flags stayed empty.
 - The integration and security test buckets now run in CI
   (`run-integration-tests` / `run-security-tests`); previously the reusable
   workflow's unit step excluded `-m integration`/`-m security`, so those
