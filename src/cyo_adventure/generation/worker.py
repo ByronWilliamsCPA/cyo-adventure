@@ -122,6 +122,7 @@ async def _record_failure(
     exc: Exception,
     *,
     provider: GenerationProvider,
+    from_state: str = "running",
 ) -> None:
     """Mark ``job`` failed, record the truncated error, and commit.
 
@@ -144,6 +145,13 @@ async def _record_failure(
         job: The GenerationJob row to mark failed (mutated in place).
         exc: The exception whose message becomes ``job.error`` (truncated to
             512 chars to match the column width).
+        from_state: The last durably-committed job status the transition
+            leaves from. Defaults to ``"running"`` for paths where the running
+            status was committed before the failure. Callers that rolled back
+            an uncommitted ``running`` write (moderation-failure, interrupt
+            finally-guard) re-fetch the row and pass its actual status so the
+            event records the true prior state (e.g. ``"queued"``) rather than
+            a phantom ``running`` transition.
         provider: The provider in effect for this run. Every call site
             resolves ``effective_provider`` before it can reach any failure
             path (including the top-level finally guard), so this is
@@ -173,7 +181,7 @@ async def _record_failure(
         entity_type="generation_job",
         entity_id=str(job.id),
         event_type=EventType.GENERATION_FINISHED,
-        from_state="running",
+        from_state=from_state,
         to_state="failed",
         payload={"outcome": "failed"},
     )
@@ -478,7 +486,11 @@ async def _persist_and_moderate(
         failed_row = await session.get(GenerationJob, job_id)
         if failed_row is not None:
             await _record_failure(
-                session, failed_row, exc, provider=ctx.effective_provider
+                session,
+                failed_row,
+                exc,
+                provider=ctx.effective_provider,
+                from_state=failed_row.status,
             )
         else:
             # The "record failed" half of the invariant could not run: the row
@@ -836,6 +848,7 @@ async def run_generation_job(
                         stranded,
                         RuntimeError("interrupted"),
                         provider=effective_provider,
+                        from_state=stranded.status,
                     )
 
 

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from cyo_adventure.core.exceptions import ValidationError
 from cyo_adventure.db.models import PipelineEvent
@@ -40,12 +40,47 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
 }
 
 
+# Longest legitimate payload string value is a provider/model identifier or a
+# str(uuid) (36 chars); a controlled-vocabulary value never approaches this.
+# The bound turns a free-text value (story prose, a child name mistakenly
+# routed under an allowlisted key) into a hard rejection.
+_MAX_PAYLOAD_STR_LEN = 200
+
+
+def _validate_payload_value(event_type: EventType, key: str, value: object) -> None:
+    """Reject payload values that are not PII-safe scalars, counts, or ids.
+
+    Key-level allowlisting (below) guarantees only expected keys are present;
+    this guards the VALUES under those keys so the PII-free contract (spec D3)
+    does not rest on caller discipline alone. Permitted: None, bool, int,
+    float, a bounded str, or a dict of str->int (moderation verdict counts).
+    """
+    if value is None or isinstance(value, (bool, int, float)):
+        return
+    if isinstance(value, str):
+        if len(value) > _MAX_PAYLOAD_STR_LEN:
+            msg = (
+                f"payload value for {event_type}.{key} exceeds "
+                f"{_MAX_PAYLOAD_STR_LEN} chars; free text is not permitted (D3)"
+            )
+            raise ValidationError(msg, field=key, value=len(value))
+        return
+    if isinstance(value, dict):
+        pairs = cast("dict[object, object]", value)
+        if all(isinstance(k, str) and isinstance(v, int) for k, v in pairs.items()):
+            return
+    msg = f"payload value for {event_type}.{key} is not a PII-safe scalar or count (D3)"
+    raise ValidationError(msg, field=key, value=type(value).__name__)
+
+
 def _validate_payload(event_type: EventType, payload: dict[str, object]) -> None:
     allowed = _PAYLOAD_ALLOWLIST[event_type]
     extra = set(payload) - allowed
     if extra:
         msg = f"payload for {event_type} has disallowed keys: {sorted(extra)}"
         raise ValidationError(msg, field="payload", value=sorted(extra))
+    for key, value in payload.items():
+        _validate_payload_value(event_type, key, value)
 
 
 async def record_event(

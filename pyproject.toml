@@ -405,6 +405,12 @@ known-first-party = ["cyo_adventure"]
 # plan for the pipeline event). A config object would obscure the contract.
 "**/story_requests/authoring_plan.py" = ["PLR0913"]
 
+# _record_failure carries session, job, exc, provider, and from_state; each a
+# distinct concern (unit-of-work, the row, the failure cause, the provider to
+# re-stamp after rollback, and the true prior state for the pipeline event).
+# A config object would obscure the failure-recording contract.
+"**/generation/worker.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

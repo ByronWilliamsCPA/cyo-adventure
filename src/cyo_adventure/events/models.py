@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from enum import StrEnum
 from typing import TYPE_CHECKING, Protocol
 
+from cyo_adventure.core.exceptions import ValidationError
+
 if TYPE_CHECKING:
     import uuid
 
@@ -64,6 +66,24 @@ class Actor:
 
     actor_id: uuid.UUID | None
     actor_role: str
+
+    def __post_init__(self) -> None:
+        """Enforce spec D2: system actors carry no user id; user actors always do.
+
+        # #CRITICAL: data-integrity: a mismatched actor_id/actor_role pair would
+        # write a contradictory row into the append-only audit log. This makes the
+        # illegal pairing unconstructible in the type layer; the DB CHECK
+        # ``ck_pipeline_event_system_actor_null`` is the backstop for non-ORM writers.
+        # #VERIFY: raises ValidationError on any mismatch; covered by
+        # tests/unit/test_pipeline_event_writer.py.
+        """
+        is_system = self.actor_role == SYSTEM_ACTOR_ROLE
+        if is_system != (self.actor_id is None):
+            msg = (
+                "system actor requires actor_id=None; "
+                "user actor requires a non-null actor_id"
+            )
+            raise ValidationError(msg, field="actor_id", value=self.actor_id)
 
     @classmethod
     def from_principal(cls, principal: _PrincipalLike) -> Actor:

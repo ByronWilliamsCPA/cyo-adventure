@@ -46,7 +46,7 @@ def upgrade() -> None:
         sa.Column("actor_id", sa.Uuid(), sa.ForeignKey("user.id"), nullable=True),
         sa.Column("actor_role", sa.String(length=16), nullable=False),
         sa.Column("entity_type", sa.String(length=32), nullable=False),
-        sa.Column("entity_id", sa.String(length=120), nullable=False),
+        sa.Column("entity_id", sa.String(length=255), nullable=False),
         sa.Column("event_type", sa.String(length=48), nullable=False),
         sa.Column("from_state", sa.String(length=32), nullable=True),
         sa.Column("to_state", sa.String(length=32), nullable=True),
@@ -78,6 +78,12 @@ def upgrade() -> None:
             "'storybook_version', 'series', 'storybook_assignment', 'rating', "
             "'moderation_threshold', 'moderation_setting')",
             name="ck_pipeline_event_entity_type",
+        ),
+        # Spec D2 coupling: system actor <=> NULL actor_id (see PipelineEvent
+        # model constraint of the same name).
+        sa.CheckConstraint(
+            "(actor_role = 'system') = (actor_id IS NULL)",
+            name="ck_pipeline_event_system_actor_null",
         ),
     )
     op.create_index(

@@ -715,6 +715,14 @@ class PipelineEvent(Base):
             f"entity_type IN ({_PIPELINE_ENTITY_TYPE_VALUES})",
             name="ck_pipeline_event_entity_type",
         ),
+        # Spec D2 coupling: system transitions carry no user id; user
+        # transitions always do. Enforced at the durable layer so a bad
+        # writer (backfill, raw insert, or a future call site) cannot store a
+        # contradictory row that the Actor value type alone would not catch.
+        CheckConstraint(
+            "(actor_role = 'system') = (actor_id IS NULL)",
+            name="ck_pipeline_event_system_actor_null",
+        ),
         Index("ix_pipeline_event_entity", "entity_type", "entity_id"),
         Index("ix_pipeline_event_event_type", "event_type"),
         Index("ix_pipeline_event_occurred_at", "occurred_at"),
@@ -727,7 +735,11 @@ class PipelineEvent(Base):
     )
     actor_role: Mapped[str] = mapped_column(String(16))
     entity_type: Mapped[str] = mapped_column(String(32))
-    entity_id: Mapped[str] = mapped_column(String(120))
+    # Composite entity_ids (e.g. f"{profile_id}:{storybook_id}") concatenate a
+    # UUID with a String(120) Storybook.id, so the value can reach ~157 chars;
+    # 255 keeps the append-only write from aborting the shared transition
+    # transaction (spec D1) on a long storybook id.
+    entity_id: Mapped[str] = mapped_column(String(255))
     event_type: Mapped[str] = mapped_column(String(48))
     from_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
     to_state: Mapped[str | None] = mapped_column(String(32), nullable=True)
