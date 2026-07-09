@@ -164,7 +164,9 @@ async def _record_failure(
     # would let a crash between the two calls leave the transition committed
     # with no corresponding event.
     # #VERIFY: test_generation_finished_event_precedes_failure_commit in
-    # tests/integration/test_pipeline_event_instrumentation.py.
+    # tests/integration/test_pipeline_event_instrumentation.py (asserts the
+    # event and the failed status are only ever visible together, and that
+    # neither is visible if the shared commit fails).
     await record_event(
         session,
         Actor.system(),

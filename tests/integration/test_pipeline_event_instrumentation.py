@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.db.models import (
@@ -37,7 +38,7 @@ if TYPE_CHECKING:
     import uuid
 
     from httpx import AsyncClient
-    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+    from sqlalchemy.ext.asyncio import async_sessionmaker
 
 pytestmark = pytest.mark.asyncio
 
@@ -306,6 +307,120 @@ async def test_generation_run_writes_started_and_finished_system_events(
     )
 
 
+async def test_generation_finished_event_precedes_failure_commit(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],  # noqa: F811 -- pytest fixture, not the import
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A pipeline failure's generation_finished event is committed atomically
+    with the job's "failed" status write, never separately (worker.py
+    ``_record_failure``'s #CRITICAL marker).
+
+    ``record_event`` (events/writer.py) only flushes; the durable write comes
+    from the SAME ``session.commit()`` that ``_record_failure`` calls right
+    after it. Asserting "the event lands before the commit" cannot be done by
+    polling from a second session/connection: Postgres's transaction
+    isolation means a separate session can never observe an intermediate
+    state inside another session's still-open transaction, so there is
+    nothing to poll for. Two observations together establish the atomicity
+    claim instead of one impossible one:
+
+    1. Here: once the worker's failure path has fully run, the failed job row
+       and its generation_finished/failed event are BOTH visible from a fresh
+       session. If the event write happened in a transaction separate from
+       the status write, a crash between the two could leave one committed
+       without the other; this pins that they always arrive together.
+    2. In the companion test
+       (test_generation_finished_event_and_failed_status_share_one_commit):
+       forcing the shared commit itself to fail leaves NEITHER row durable,
+       proving the converse: nothing here becomes visible without that one
+       commit succeeding. 1 and 2 together pin the "same transaction" claim.
+    """
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    async def _boom_generate(*_args: object, **_kwargs: object) -> None:
+        msg = "pipeline exploded"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.generate_story", _boom_generate
+    )
+
+    with pytest.raises(RuntimeError, match="pipeline exploded"):
+        await run_generation_job(
+            job_id,
+            provider=MockProvider(responses=[]),
+            session_factory=_make_session_factory(sessions),
+        )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "failed"
+        assert job.error == "pipeline exploded"
+
+    event = await assert_single_event(
+        sessions,
+        event_type="generation_finished",
+        entity_type="generation_job",
+        to_state="failed",
+        actor_is_system=True,
+    )
+    assert event.entity_id == str(job_id)
+    assert event.actor_id is None
+    assert event.actor_role == "system"
+    assert event.payload == {"outcome": "failed"}
+
+
+async def test_generation_finished_event_and_failed_status_share_one_commit(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],  # noqa: F811 -- pytest fixture, not the import
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """If the worker's terminal commit fails, neither the failed status nor
+    its generation_finished event becomes durable.
+
+    Companion to test_generation_finished_event_precedes_failure_commit:
+    forces ``AsyncSession.commit`` to raise, simulating a crash landing right
+    at the commit boundary ``_record_failure`` relies on. ``record_event``'s
+    INSERT was already flushed (sent to Postgres over the same still-open
+    transaction) before this failing commit call; since that row still does
+    not survive, the event write was never durable on its own, only the
+    shared commit makes it (and the status write) durable together.
+    """
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    async def _boom_generate(*_args: object, **_kwargs: object) -> None:
+        msg = "pipeline exploded"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(
+        "cyo_adventure.generation.worker.generate_story", _boom_generate
+    )
+
+    async def _boom_commit(_self: AsyncSession) -> None:
+        msg = "commit interrupted"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr(AsyncSession, "commit", _boom_commit)
+
+    with pytest.raises(RuntimeError, match="commit interrupted"):
+        await run_generation_job(
+            job_id,
+            provider=MockProvider(responses=[]),
+            session_factory=_make_session_factory(sessions),
+        )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        # Neither the "running" nor the "failed" transition was ever
+        # committed: the job row is still at its original queued state.
+        assert job.status == "queued"
+
+    assert await fetch_events(sessions, "generation_finished") == []
+
+
 async def test_clean_moderation_writes_moderation_completed(
     sessions: async_sessionmaker[AsyncSession],
     monkeypatch: pytest.MonkeyPatch,
@@ -436,6 +551,83 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     # brief order requirement): the adoption point fires before the report's
     # outcome is persisted and the completion event is recorded.
     assert repair_event.occurred_at <= completed_event.occurred_at
+
+
+async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A hard-blocked run (auto_reject, not submit) writes exactly one
+    moderation_completed event with to_state="needs_revision" and a payload
+    holding only enum verdicts, a bool, and int counts, never the blocking
+    finding's message text or category (spec D3 PII-free contract).
+
+    Mirrors the hard-block arrangement from
+    tests/unit/test_moderation_pipeline.py::test_hard_block_routes_to_auto_reject
+    (a classifier BLOCK finding, all four LLM stages stubbed clean) against a
+    real session, and additionally asserts the storybook's real routed state
+    (the unit test only checks that ``publishing.service.auto_reject`` was
+    called; here it actually runs).
+    """
+    story_id = "s_mod_block"
+    await _seed_draft_storybook(sessions, story_id)
+
+    monkeypatch.setattr(
+        pipeline_mod,
+        "run_classifiers",
+        AsyncMock(
+            return_value=[
+                Finding(
+                    stage=0,
+                    source=Source.OPENAI,
+                    category="sexual/minors",
+                    node_id="n1",
+                    verdict=Verdict.BLOCK,
+                    message="this finding's prose must never reach the event log",
+                )
+            ]
+        ),
+    )
+    for name in (
+        "run_safety_stage",
+        "run_readability_stage",
+        "run_coherence_stage",
+        "run_engagement_stage",
+    ):
+        monkeypatch.setattr(pipeline_mod, name, AsyncMock(return_value=[]))
+
+    async with sessions() as session:
+        await pipeline_mod.run_moderation_pipeline(
+            session=session,
+            story_id=story_id,
+            version=1,
+            settings=_moderation_settings(),
+            generation_provider=AsyncMock(),
+            pii=_pii(),
+        )
+        await session.commit()
+
+    async with sessions() as session:
+        story = await session.get(Storybook, story_id)
+        assert story is not None
+        assert story.status == "needs_revision"
+
+    event = await assert_single_event(
+        sessions,
+        event_type="moderation_completed",
+        entity_type="storybook_version",
+        to_state="needs_revision",
+        actor_is_system=True,
+    )
+    # Exact equality (not just key presence) pins that "counts" holds a plain
+    # verdict-name -> int mapping: any stray string/float value, or an extra
+    # key such as "message"/"category" carrying the finding's own prose,
+    # would break this comparison.
+    assert event.payload == {
+        "overall_verdict": "block",
+        "repaired": False,
+        "counts": {"block": 1},
+    }
 
 
 _THRESHOLD_URL = "/api/v1/admin/moderation-thresholds"
