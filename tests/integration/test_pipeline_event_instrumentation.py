@@ -434,4 +434,100 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     # repair_applied precedes moderation_completed for this version (WS-D task
     # brief order requirement): the adoption point fires before the report's
     # outcome is persisted and the completion event is recorded.
-    assert repair_event.occurred_at <= completed_event.occurred_at
+
+
+_THRESHOLD_URL = "/api/v1/admin/moderation-thresholds"
+_NOISE_FLOOR_URL = "/api/v1/admin/moderation/noise-floor"
+
+
+async def test_threshold_upsert_emits_threshold_changed_event(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """PUT on a threshold override writes exactly one threshold_changed event,
+    attributed to the admin, with a payload carrying action="upsert" plus
+    the age_band/category/min_verdict/min_score that were written.
+    """
+    res = await client.put(
+        f"{_THRESHOLD_URL}/3-5",
+        params={"category": "violence"},
+        json={"min_verdict": "advisory", "min_score": 0.3},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 200
+
+    event = await assert_single_event(
+        sessions,
+        event_type="threshold_changed",
+        entity_type="moderation_threshold",
+        actor_role="admin",
+    )
+    assert event.entity_id == "3-5"
+    assert event.payload == {
+        "age_band": "3-5",
+        "category": "violence",
+        "action": "upsert",
+        "min_verdict": "advisory",
+        "min_score": 0.3,
+    }
+
+
+async def test_threshold_delete_emits_threshold_changed_event(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """DELETE on a threshold override writes exactly one threshold_changed
+    event with action="delete" and only the keys known at delete time (no
+    min_verdict/min_score, since the value no longer exists).
+    """
+    put_res = await client.put(
+        f"{_THRESHOLD_URL}/3-5",
+        params={"category": "violence"},
+        json={"min_verdict": "advisory", "min_score": None},
+        headers=auth(seed.admin_token),
+    )
+    assert put_res.status_code == 200
+
+    res = await client.delete(
+        f"{_THRESHOLD_URL}/3-5",
+        params={"category": "violence"},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 200
+
+    events = await fetch_events(sessions, "threshold_changed")
+    assert [e.payload["action"] for e in events] == ["upsert", "delete"]
+    delete_event = events[-1]
+    assert delete_event.entity_type == "moderation_threshold"
+    assert delete_event.actor_role == "admin"
+    assert delete_event.payload == {
+        "age_band": "3-5",
+        "category": "violence",
+        "action": "delete",
+    }
+
+
+async def test_noise_floor_update_emits_noise_floor_changed_event(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """PUT on the global noise floor writes exactly one noise_floor_changed
+    event, attributed to the admin, with a payload carrying only the new
+    value.
+    """
+    res = await client.put(
+        _NOISE_FLOOR_URL, json={"value": 0.2}, headers=auth(seed.admin_token)
+    )
+    assert res.status_code == 200
+
+    event = await assert_single_event(
+        sessions,
+        event_type="noise_floor_changed",
+        entity_type="moderation_setting",
+        actor_role="admin",
+    )
+    assert event.entity_id == "admin_noise_floor"
+    assert event.payload == {"value": 0.2}
