@@ -12,14 +12,19 @@ This module never writes (umbrella decision 3: no auto-calibration).
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
+from sqlalchemy import func, select
+
+from cyo_adventure.db.models import PipelineEvent, StorybookVersion
 from cyo_adventure.events import EventType
 from cyo_adventure.moderation.report import Verdict
 
 if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
     from datetime import datetime
+
+    from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
@@ -256,3 +261,122 @@ def suggest_thresholds(
             )
         )
     return suggestions
+
+
+async def load_version_records(session: AsyncSession) -> list[VersionModerationRecord]:
+    """Load every moderated version with its band, findings, and outcome.
+
+    Three reads: version rows carrying a moderation report (band extracted
+    from the blob's typed metadata in SQL, so blobs are never fetched),
+    ``moderation_completed`` timestamps, and per-storybook decision events.
+
+    Args:
+        session: The request-scoped async session.
+
+    Returns:
+        One record per version whose report and band are both present.
+    """
+    # #ASSUME: external-resources: whole-corpus reads per request are
+    # deliberate at v1 volumes, mirroring list_thresholds' no-cache stance;
+    # revisit with an occurred_at window if the corpus grows past a few
+    # thousand versions.
+    # #VERIFY: tests/integration/test_moderation_dashboard_api.py.
+    version_rows = (
+        await session.execute(
+            select(
+                StorybookVersion.storybook_id,
+                StorybookVersion.version,
+                StorybookVersion.moderation_report,
+                StorybookVersion.created_at,
+                StorybookVersion.approved_by,
+                func.jsonb_extract_path_text(
+                    StorybookVersion.blob, "metadata", "age_band"
+                ).label("age_band"),
+            ).where(StorybookVersion.moderation_report.is_not(None))
+        )
+    ).all()
+
+    moderated_at_by_version: dict[tuple[str, int], datetime] = {}
+    moderation_events = (
+        await session.execute(
+            select(PipelineEvent.entity_id, PipelineEvent.occurred_at).where(
+                PipelineEvent.entity_type == "storybook_version",
+                PipelineEvent.event_type == EventType.MODERATION_COMPLETED.value,
+            )
+        )
+    ).all()
+    for entity_id, occurred_at in moderation_events:
+        storybook_id, _, version_text = entity_id.rpartition(":")
+        # #EDGE: data-integrity: a composite id that does not parse is
+        # skipped, never a crash; that version falls back to created_at
+        # ordering below.
+        # #VERIFY: covered by the loader integration tests seeding valid ids.
+        if not storybook_id or not version_text.isdigit():
+            continue
+        key = (storybook_id, int(version_text))
+        existing = moderated_at_by_version.get(key)
+        if existing is None or occurred_at > existing:
+            moderated_at_by_version[key] = occurred_at
+
+    decisions_by_storybook: dict[str, list[tuple[datetime, str]]] = {}
+    decision_events = (
+        await session.execute(
+            select(
+                PipelineEvent.entity_id,
+                PipelineEvent.occurred_at,
+                PipelineEvent.event_type,
+            )
+            .where(
+                PipelineEvent.entity_type == "storybook",
+                PipelineEvent.event_type.in_(
+                    [EventType.RELEASED.value, EventType.SENT_BACK.value]
+                ),
+            )
+            .order_by(PipelineEvent.occurred_at)
+        )
+    ).all()
+    for entity_id, occurred_at, event_type in decision_events:
+        decisions_by_storybook.setdefault(entity_id, []).append(
+            (occurred_at, event_type)
+        )
+
+    records: list[VersionModerationRecord] = []
+    for (
+        storybook_id,
+        version,
+        report,
+        created_at,
+        approved_by,
+        age_band,
+    ) in version_rows:
+        if not age_band:
+            # #EDGE: data-integrity: imported or legacy blobs may lack
+            # metadata.age_band; such versions cannot be attributed to a
+            # band and are excluded rather than mis-bucketed.
+            # #VERIFY: tests/integration/test_moderation_dashboard_api.py::
+            # TestLoadVersionRecords::test_loader_skips_versions_without_band
+            continue
+        raw_findings = report.get("findings") if isinstance(report, dict) else None
+        findings = (
+            cast("list[Mapping[str, object]]", raw_findings)
+            if isinstance(raw_findings, list)
+            else []
+        )
+        moderated_at: datetime = moderated_at_by_version.get(
+            (storybook_id, version), cast("datetime", created_at)
+        )
+        records.append(
+            VersionModerationRecord(
+                storybook_id=storybook_id,
+                version=version,
+                age_band=age_band,
+                findings=findings,
+                moderated_at=moderated_at,
+                outcome=attribute_outcome(
+                    moderated_at,
+                    decisions_by_storybook.get(storybook_id, ()),
+                    approved=approved_by is not None,
+                ),
+            )
+        )
+    return records
