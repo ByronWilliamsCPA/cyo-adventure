@@ -620,6 +620,7 @@ class _FakeOverrideSession:
     def __init__(self, job: object, concept: object) -> None:
         self.job = job
         self.concept = concept
+        self.added: list[object] = []
 
     async def get(self, model: type, ident: object) -> object:
         from cyo_adventure.db.models import Concept, GenerationJob
@@ -632,6 +633,14 @@ class _FakeOverrideSession:
 
     async def scalars(self, *_args: object, **_kwargs: object) -> _FakeOverrideResult:
         return _FakeOverrideResult()
+
+    def add(self, obj: object) -> None:
+        # WS-D instruments the failure path: _record_failure writes a
+        # generation_failed PipelineEvent via record_event, which calls
+        # session.add. Capture it so the failure path runs to completion
+        # instead of raising AttributeError before the override read this
+        # test is checking.
+        self.added.append(obj)
 
     async def flush(self) -> None:
         # _load_and_start_job flushes the "running" status write before

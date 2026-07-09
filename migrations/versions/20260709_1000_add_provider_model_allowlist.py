@@ -1,7 +1,7 @@
 """add provider_model_allowlist and its audit table, seeded (WS-C PR1)
 
-Revision ID: f2a3b4c5d6e7
-Revises: e1f2a3b4c5d6
+Revision ID: b4c5d6e7f8a9
+Revises: a3b4c5d6e7f8
 Create Date: 2026-07-09 10:00:00.000000
 """
 
@@ -11,8 +11,8 @@ import sqlalchemy as sa
 from alembic import op
 from sqlalchemy.dialects import postgresql
 
-revision: str = "f2a3b4c5d6e7"
-down_revision: Union[str, Sequence[str], None] = "e1f2a3b4c5d6"
+revision: str = "b4c5d6e7f8a9"
+down_revision: Union[str, Sequence[str], None] = "a3b4c5d6e7f8"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

@@ -34,6 +34,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   moderation screening, mirroring the existing `approve()` check (closes #57).
 
 ### Added
+- Admin-generated story book covers: from a published story version an admin
+  can trigger cover generation, which builds a textless-art prompt from the
+  story content, calls Gemini image generation ("nano banana" Pro) in an async
+  worker, optimizes the result to a small WebP within the 500MB Supabase
+  Storage budget, uploads it to a public `covers` bucket, and renders a portrait
+  cover on the kid library's `BookCard` (with a first-letter tile fallback). New
+  `cover_image_url` + `cover_status` columns on `StorybookVersion`, admin-only
+  cover endpoints, and `cover_url` on `LibraryItem`.
 - Story requests carry `initiator_role`, `age_band`, `length`, and
   `narrative_style`; guardians confirm band and length at approval (the
   approve endpoint now requires them), and generation reads them from the
@@ -98,6 +106,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   dead `claude` literal); `build_provider()` is now a per-job factory so an
   admin's chosen provider/model on the authoring-plan step overrides the
   global default (WS-C PR 1).
+- Append-only `pipeline_event` log capturing every story-lifecycle transition
+  (request, plan, generation, moderation, release, threshold, assignment, rating),
+  the capture layer for the learning loop (WS-D).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from

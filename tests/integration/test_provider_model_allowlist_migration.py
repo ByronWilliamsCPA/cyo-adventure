@@ -15,8 +15,8 @@ from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
 
 # Pin the round-trip to explicit revision ids rather than "head"/"-1" (lesson
 # from PR #108; see test_moderation_threshold_migration.py for the same note).
-_PREV_HEAD = "e1f2a3b4c5d6"
-_ALLOWLIST_HEAD = "f2a3b4c5d6e7"
+_PREV_HEAD = "a3b4c5d6e7f8"
+_ALLOWLIST_HEAD = "b4c5d6e7f8a9"
 
 
 @pytest.mark.integration

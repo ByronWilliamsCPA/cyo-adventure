@@ -39,6 +39,7 @@ from cyo_adventure.db.models import (
     Concept,
     GenerationJob,
 )
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
@@ -121,6 +122,7 @@ async def _record_failure(
     exc: Exception,
     *,
     provider: GenerationProvider | None,
+    from_state: str = "running",
 ) -> None:
     """Mark ``job`` failed, record the truncated error, and commit.
 
@@ -143,10 +145,18 @@ async def _record_failure(
         job: The GenerationJob row to mark failed (mutated in place).
         exc: The exception whose message becomes ``job.error`` (truncated to
             512 chars to match the column width).
-        provider: The provider in effect for this run. Every call site
-            resolves ``effective_provider`` before it can reach any failure
-            path (including the top-level finally guard), so this is
-            required, not optional; stamping ``job.provider``/
+        from_state: The last durably-committed job status the transition
+            leaves from. Defaults to ``"running"`` for paths where the running
+            status was committed before the failure. Callers that rolled back
+            an uncommitted ``running`` write (moderation-failure, interrupt
+            finally-guard) re-fetch the row and pass its actual status so the
+            event records the true prior state (e.g. ``"queued"``) rather than
+            a phantom ``running`` transition.
+        provider: The provider in effect for this run, or ``None`` when a
+            failure interrupts before ``effective_provider`` is resolved (e.g.
+            a ConfigurationError raised while building the adapter reaches the
+            finally guard). ``_provider_label`` tolerates ``None`` and falls
+            back to the configured default label. Stamping ``job.provider``/
             ``job.prompt_version`` here means a job that fails before or
             during generation still records which provider/prompt version it
             was attempted under (matching the success path).
@@ -155,6 +165,27 @@ async def _record_failure(
     job.error = str(exc)[:512]
     job.provider = _provider_label(provider)
     job.prompt_version = _PROMPT_VERSION
+
+    # #CRITICAL: data-integrity: this event must land in the SAME transaction
+    # as the "failed" status write below (spec D1: event atomic with the
+    # transition). record_event only flushes, it never commits, so it rides
+    # the explicit commit() immediately after; placing it after that commit
+    # would let a crash between the two calls leave the transition committed
+    # with no corresponding event.
+    # #VERIFY: test_generation_finished_event_precedes_failure_commit in
+    # tests/integration/test_pipeline_event_instrumentation.py (asserts the
+    # event and the failed status are only ever visible together, and that
+    # neither is visible if the shared commit fails).
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state=from_state,
+        to_state="failed",
+        payload={"outcome": "failed"},
+    )
     await session.commit()
 
 
@@ -491,7 +522,11 @@ async def _persist_and_moderate(
         failed_row = await session.get(GenerationJob, job_id)
         if failed_row is not None:
             await _record_failure(
-                session, failed_row, exc, provider=ctx.effective_provider
+                session,
+                failed_row,
+                exc,
+                provider=ctx.effective_provider,
+                from_state=failed_row.status,
             )
         else:
             # The "record failed" half of the invariant could not run: the row
@@ -540,6 +575,22 @@ async def _load_and_start_job(
 
     job_row.status = "running"
     await session.flush()
+
+    # #ASSUME: data-integrity: this is a SYSTEM transition (no request
+    # principal reaches the worker), so the actor is always Actor.system();
+    # never thread a request-scoped principal into this function.
+    # #VERIFY: test_generation_started_event_is_system_actor in
+    # tests/integration/test_pipeline_event_instrumentation.py asserts
+    # actor_is_system=True.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job_row.id),
+        event_type=EventType.GENERATION_STARTED,
+        from_state="queued",
+        to_state="running",
+    )
 
     logger.info(
         "generation_job.started",
@@ -624,6 +675,29 @@ async def _persist_passed_outcome(
     # the injected-arg presence recorded None in production (where provider
     # is None but the mock still runs); _model_label reflects the real run.
     ctx.job_row.model = _model_label(ctx.effective_provider)
+
+    # #ASSUME: data-integrity: this is a SYSTEM transition (no request
+    # principal reaches the worker), so the actor is always Actor.system().
+    # to_state mirrors the just-stamped job status ("passed" or
+    # "needs_review"); the terminal "failed" case is recorded separately in
+    # _record_failure, not here.
+    # #VERIFY: test_generation_finished_event_is_system_actor in
+    # tests/integration/test_pipeline_event_instrumentation.py.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(ctx.job_row.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state="running",
+        to_state=ctx.job_row.status,
+        payload={
+            "outcome": ctx.job_row.status,
+            "provider": ctx.job_row.provider,
+            "model": ctx.job_row.model,
+            "prompt_version": ctx.job_row.prompt_version,
+        },
+    )
 
     await _persist_and_moderate(session, ctx, outcome)
 
@@ -843,6 +917,7 @@ async def run_generation_job(
                         stranded,
                         RuntimeError("interrupted"),
                         provider=effective_provider,
+                        from_state=stranded.status,
                     )
 
 

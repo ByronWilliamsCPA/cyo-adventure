@@ -41,6 +41,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.utils.logging import get_logger
 
@@ -240,6 +241,19 @@ async def assign_storybook(
                     storybook_id=storybook_id,
                     assigned_by=ctx.principal.user_id,
                 )
+            )
+            # #ASSUME: data-integrity: emit book_assigned once per NEWLY-created
+            # assignment row only; the idempotent skip branch above (pid already
+            # in existing) must never re-emit for an already-assigned profile.
+            # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+            # test_assign_writes_book_assigned_event_per_new_assignment.
+            await record_event(
+                ctx.session,
+                Actor.from_principal(ctx.principal),
+                entity_type="storybook_assignment",
+                entity_id=f"{pid}:{storybook_id}",
+                event_type=EventType.BOOK_ASSIGNED,
+                payload={"child_profile_id": str(pid)},
             )
             existing.add(pid)
     await ctx.session.flush()

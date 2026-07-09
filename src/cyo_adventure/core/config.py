@@ -361,6 +361,25 @@ class Settings(BaseSettings):
         default="172.16.0.0/12", validation_alias="FORWARDED_ALLOW_IPS"
     )
 
+    # --- Cover generation (nano banana) + Supabase Storage ---
+    # #CRITICAL: security: nano banana + Supabase credentials; never log values.
+    # #VERIFY: only referenced in covers/provider.py and covers/storage.py.
+    gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
+    supabase_url: str | None = Field(default=None, validation_alias="SUPABASE_URL")
+    supabase_service_key: str | None = Field(
+        default=None, validation_alias="SUPABASE_SERVICE_KEY"
+    )
+    covers_bucket: str = "covers"
+    covers_backup_dir: str | None = None
+    # #ASSUME: external resources: the "-preview" alias was retired on the
+    # Gemini API (shutdown 2026-06-25); the stable Nano Banana Pro id is used.
+    # #VERIFY: override via COVER_MODEL if Google renames the stable channel.
+    cover_model: str = "gemini-3-pro-image"
+    cover_max_width: int = 800
+    cover_quality: int = 80
+    cover_max_bytes: int = 256_000
+    cover_job_timeout_seconds: int = 180
+
     @model_validator(mode="after")
     def _reject_dev_database_url_outside_local(self) -> Settings:
         """Fail fast if the dev default DSN leaks into a non-local environment.

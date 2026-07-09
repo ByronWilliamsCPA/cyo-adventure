@@ -75,6 +75,8 @@ dependencies = [
     "redis>=8.0.0",
     "pyjwt[crypto]>=2.13.0",
     "jsonschema>=4.23",
+    "google-genai>=2.10.0",
+    "pillow>=12.3.0",
 ]
 
 # Optional dependency groups
@@ -322,6 +324,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
 "**/api/families.py" = ["TC001"]
+"**/api/covers.py" = ["TC001"]
 
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
@@ -401,6 +404,32 @@ known-first-party = ["cyo_adventure"]
 # screened text, author's band/length/style spec, screening outcome) with no
 # sensible default. A config object would obscure the contract.
 "**/story_requests/service.py" = ["PLR0913"]
+
+# generate_cover carries storybook_id, version, session, settings, and three
+# keyword-only pipeline-stage overrides (generate/optimize/upload) used to
+# inject fakes in tests; each is a distinct concern (target row, unit of
+# work, config, and the three pluggable stages) with no sensible default.
+# A config object would obscure which stage a caller is overriding.
+"**/covers/service.py" = ["PLR0913"]
+
+# record_event carries session, actor, entity_type, entity_id, event_type,
+# from_state, to_state, and payload; all but the last two are mandatory and
+# keyword-only, each a distinct concern (unit-of-work, who, what entity, what
+# transition, and the PII-free detail payload) with no sensible default. A
+# config object would obscure the contract.
+"**/events/writer.py" = ["PLR0913"]
+
+# build_authoring_plan carries session, request, concept, plan, and actor;
+# each a distinct mandatory concern (unit-of-work, the approved request, its
+# concept, the admin's method/mechanism choice, and who is assigning the
+# plan for the pipeline event). A config object would obscure the contract.
+"**/story_requests/authoring_plan.py" = ["PLR0913"]
+
+# _record_failure carries session, job, exc, provider, and from_state; each a
+# distinct concern (unit-of-work, the row, the failure cause, the provider to
+# re-stamp after rollback, and the true prior state for the pipeline event).
+# A config object would obscure the failure-recording contract.
+"**/generation/worker.py" = ["PLR0913"]
 
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
@@ -501,6 +530,11 @@ known-first-party = ["cyo_adventure"]
     "RUF012",  # ClassVar not needed for constants
     "C416",    # Dict comprehension is clearer than dict()
     "SIM102",  # Nested if is more readable for security checks
+]
+
+# Cover generation worker - RQ entrypoint with intentional deferred imports
+"src/*/covers/worker.py" = [
+    "PLC0415", # Local imports to avoid circular dependencies
 ]
 
 # Financial utilities - Template documentation style

@@ -47,6 +47,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, Family, StoryRequest
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
@@ -348,6 +349,15 @@ async def create_story_request(
     )
     ctx.session.add(request)
     await ctx.session.flush()
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="story_request",
+        entity_id=str(request.id),
+        event_type=EventType.REQUEST_CREATED,
+        to_state=request.status,
+        payload={"initiator_role": request.initiator_role},
+    )
     return StoryRequestCreatedView(
         id=str(request.id), status=cast("StoryRequestStatus", status)
     )
@@ -763,7 +773,9 @@ async def create_authoring_plan(
         msg = f"concept for story request '{request_id}' not found"
         raise ResourceNotFoundError(msg)
 
-    result = await build_authoring_plan(ctx.session, request, concept, body)
+    result = await build_authoring_plan(
+        ctx.session, request, concept, body, actor=Actor.from_principal(ctx.principal)
+    )
 
     if result.job.status == "queued":
         background_tasks.add_task(_enqueue_safely, str(result.job.id))
@@ -802,7 +814,7 @@ async def decline_story_request_endpoint(
         msg = "guardian or admin role required"
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
-    service.decline_story_request(ctx.principal, request)
+    await service.decline_story_request(ctx.session, ctx.principal, request)
     return StoryRequestDeclinedView(
         id=str(request.id), status=cast("Literal['declined']", request.status)
     )

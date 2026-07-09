@@ -39,6 +39,7 @@ const IN_PROGRESS = {
   progress: { current_node: 'n2', nodes_visited: 5, updated_at: '2026-07-01T10:00:00Z' },
   series_id: null,
   book_index: null,
+  cover_url: null,
 }
 const OLDER_IN_PROGRESS = {
   ...IN_PROGRESS,

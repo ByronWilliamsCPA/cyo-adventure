@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
@@ -6,6 +6,7 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { makeCoverApi, type CoverStatusView } from './coverApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { makeReviewApi, type FindingView, type ReviewSurface } from './reviewApi'
 
@@ -68,6 +69,7 @@ export function ReviewDetailPage() {
   const { storybookId = '' } = useParams()
   const api = useApi()
   const reviewApi = useMemo(() => makeReviewApi(api), [api])
+  const coverApi = useMemo(() => makeCoverApi(api), [api])
   const navigate = useNavigate()
 
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
@@ -75,6 +77,25 @@ export function ReviewDetailPage() {
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
+  const [coverStatus, setCoverStatus] = useState<CoverStatusView['cover_status']>('none')
+  const [coverBusy, setCoverBusy] = useState(false)
+  // Set when the poll loop hits its cap while the job is still 'generating', so
+  // the reviewer gets a retry affordance instead of a permanently disabled
+  // button with no feedback.
+  const [coverTimedOut, setCoverTimedOut] = useState(false)
+
+  // #ASSUME: timing dependencies: the cover-generation poll loop sleeps 2s up
+  // to 30 times (~60s); a reviewer can navigate away mid-poll.
+  // #VERIFY: generateCover checks isMountedRef after every await before
+  // calling setState, so a late poll response never writes into an unmounted
+  // component.
+  const isMountedRef = useRef(true)
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -101,6 +122,67 @@ export function ReviewDetailPage() {
       cancelled = true
     }
   }, [reviewApi, storybookId])
+
+  // Seed the current server-side cover status once the surface is ready, so an
+  // in-flight job (e.g. one started in another tab) is reflected and the
+  // Generate button is not wrongly enabled. Best-effort: a failure keeps 'none'.
+  const readyVersion = state.kind === 'ready' ? state.surface.version : null
+  useEffect(() => {
+    if (readyVersion === null) return
+    let cancelled = false
+    void (async () => {
+      try {
+        const current = await coverApi.status(storybookId, readyVersion)
+        if (!cancelled && isMountedRef.current) setCoverStatus(current.cover_status)
+      } catch (err) {
+        // Best-effort seed; keep the default status on failure.
+        void err
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [coverApi, storybookId, readyVersion])
+
+  // #ASSUME: external resources: cover generation runs async on an RQ worker;
+  // the 10s axios timeout in useApi rules out waiting on the POST itself, so
+  // this fires the POST then polls the GET status endpoint until it leaves
+  // 'generating' (or the poll cap is hit).
+  // #VERIFY: coverApi.test.ts covers the request shapes; the isMountedRef
+  // guard above stops the loop from writing state after unmount.
+  const generateCover = useCallback(async () => {
+    const surface = state.kind === 'ready' ? state.surface : null
+    if (!surface) return
+    const version = surface.version
+    setCoverBusy(true)
+    setCoverTimedOut(false)
+    try {
+      const started = await coverApi.generate(storybookId, version)
+      if (!isMountedRef.current) return
+      setCoverStatus(started.cover_status)
+      let latest = started.cover_status
+      for (let i = 0; i < 30; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        if (!isMountedRef.current) return
+        const polled = await coverApi.status(storybookId, version)
+        if (!isMountedRef.current) return
+        latest = polled.cover_status
+        setCoverStatus(latest)
+        if (latest !== 'generating') break
+      }
+      // Poll cap reached with the job still generating: surface a retry
+      // affordance rather than a stuck spinner. The backend short-circuits a
+      // re-request while still 'generating', so retry cannot duplicate the job.
+      if (isMountedRef.current && latest === 'generating') setCoverTimedOut(true)
+    } catch (err) {
+      // Log the message, not the axios error object (its config.headers
+      // carries the caller's Authorization bearer token).
+      console.error('cover generation failed:', err instanceof Error ? err.message : err)
+      if (isMountedRef.current) setCoverStatus('failed')
+    } finally {
+      if (isMountedRef.current) setCoverBusy(false)
+    }
+  }, [coverApi, state, storybookId])
 
   async function runAction(action: () => Promise<unknown>) {
     setSubmitting(true)
@@ -219,6 +301,24 @@ export function ReviewDetailPage() {
         enabled-for-in-review tests.
       */}
       <div className="review-actionbar">
+        <Button
+          variant="ghost"
+          onClick={() => void generateCover()}
+          disabled={coverBusy || (coverStatus === 'generating' && !coverTimedOut)}
+        >
+          {coverStatus === 'generating' && !coverTimedOut
+            ? 'Generating cover…'
+            : 'Generate cover'}
+        </Button>
+        {coverStatus === 'failed' ? (
+          <span className="review-cover-error" role="alert">
+            Cover failed; try again.
+          </span>
+        ) : coverTimedOut ? (
+          <span className="review-cover-error" role="status">
+            Still generating; keep waiting or retry.
+          </span>
+        ) : null}
         <Button
           variant="danger"
           onClick={() => openDialog('sendback')}

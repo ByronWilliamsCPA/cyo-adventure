@@ -143,6 +143,7 @@ class LibraryItem(BaseModel):
     progress: LibraryProgress | None = None
     series_id: str | None = None
     book_index: int | None = None
+    cover_url: str | None = None
 
 
 class LibraryView(BaseModel):

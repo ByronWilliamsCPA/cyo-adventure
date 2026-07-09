@@ -10,6 +10,7 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.api.schemas import AuthoringPlanRequest
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import Concept, GenerationJob, StoryRequest
+from cyo_adventure.events import Actor
 from cyo_adventure.story_requests.authoring_plan import (
     build_authoring_plan,
     eligibility_warnings,
@@ -72,6 +73,11 @@ def _request() -> StoryRequest:
     )
 
 
+def _admin_actor() -> Actor:
+    """Build the admin Actor that assigns the authoring plan in these tests."""
+    return Actor(actor_id=uuid.uuid4(), actor_role="admin")
+
+
 async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
     """The unchanged path: a queued job, no skeleton, no warnings."""
     session = _FakeSession()
@@ -87,6 +93,7 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
             provider="anthropic",
             model="claude-sonnet-4-6",
         ),
+        actor=_admin_actor(),
     )
     assert result.job.status == "queued"
     assert result.job.concept_id == concept.id
@@ -112,6 +119,7 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
         AuthoringPlanRequest(
             method="skeleton_fill", mechanism="skill", prep_model="sonnet"
         ),
+        actor=_admin_actor(),
     )
     assert result.job.status == "awaiting_manual_fill"
     assert result.skeleton_slug == "the-cave-of-echoes"
@@ -149,7 +157,9 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         provider="anthropic",
         model="claude-sonnet-4-6",
     )
-    result = await build_authoring_plan(session, _request(), concept, plan)
+    result = await build_authoring_plan(
+        session, _request(), concept, plan, actor=_admin_actor()
+    )
     assert result.job.status == "queued"
     assert result.skeleton_slug == "the-cave-of-echoes"
     assert result.job.authoring_metadata == {
@@ -173,6 +183,7 @@ async def test_unrecognized_skill_model_is_rejected() -> None:
             AuthoringPlanRequest(
                 method="skeleton_fill", mechanism="skill", prep_model="gpt-4o"
             ),
+            actor=_admin_actor(),
         )
 
 
@@ -193,6 +204,7 @@ async def test_existing_job_for_concept_is_conflict() -> None:
                 provider="anthropic",
                 model="claude-sonnet-4-6",
             ),
+            actor=_admin_actor(),
         )
 
 
@@ -207,6 +219,7 @@ async def test_no_matching_skeleton_for_band_is_rejected() -> None:
             AuthoringPlanRequest(
                 method="skeleton_fill", mechanism="skill", prep_model="sonnet"
             ),
+            actor=_admin_actor(),
         )
 
 
@@ -269,4 +282,5 @@ async def test_unallowlisted_provider_model_is_rejected() -> None:
                 provider="anthropic",
                 model="not-a-real-model",
             ),
+            actor=_admin_actor(),
         )

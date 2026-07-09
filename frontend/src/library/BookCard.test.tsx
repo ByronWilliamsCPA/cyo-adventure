@@ -17,6 +17,7 @@ const BASE_ITEM: LibraryItemView = {
   progress: null,
   series_id: null,
   book_index: null,
+  cover_url: null,
 }
 
 function renderCard(item: LibraryItemView, onContinue?: (item: LibraryItemView) => void) {
@@ -45,5 +46,19 @@ describe('BookCard', () => {
     const button = screen.getByRole('button', { name: /continue this story/i })
     fireEvent.click(button)
     expect(onContinue).toHaveBeenCalledWith(item)
+  })
+
+  it('renders the cover image when cover_url is set', () => {
+    renderCard({ ...BASE_ITEM, cover_url: 'https://cdn/x.webp' })
+    // <img alt=""> has the implicit accessibility role "presentation", not
+    // "img" (HTML-AAM); the `hidden` query option does not change that.
+    const img = screen.getByRole<HTMLImageElement>('presentation', { hidden: true })
+    expect(img.src).toContain('https://cdn/x.webp')
+  })
+
+  it('falls back to the first-letter tile when cover_url is null', () => {
+    renderCard({ ...BASE_ITEM, title: 'Zephyr', cover_url: null })
+    expect(screen.getByText('Z')).toBeInTheDocument()
+    expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument()
   })
 })

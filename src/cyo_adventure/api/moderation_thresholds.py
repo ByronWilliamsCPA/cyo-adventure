@@ -26,6 +26,7 @@ from cyo_adventure.db.models import (
     ModerationThreshold,
     ModerationThresholdAudit,
 )
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import (
     ADMIN_NOISE_FLOOR_KEY,
     DEFAULT_THRESHOLD,
@@ -209,6 +210,25 @@ async def upsert_threshold(
         )
     )
     await ctx.session.flush()
+    # #CRITICAL: data-integrity: the pipeline event log is the durable record of
+    # who changed surfacing policy and when; it must land in the same
+    # transaction as the threshold write and its audit row.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_threshold_upsert_emits_threshold_changed_event.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="moderation_threshold",
+        entity_id=age_band,
+        event_type=EventType.THRESHOLD_CHANGED,
+        payload={
+            "age_band": age_band,
+            "category": category,
+            "action": "upsert",
+            "min_verdict": body.min_verdict,
+            "min_score": body.min_score,
+        },
+    )
     return ThresholdView(
         age_band=age_band,
         category=category,
@@ -269,6 +289,19 @@ async def delete_threshold(
     )
     await ctx.session.delete(row)
     await ctx.session.flush()
+    # #CRITICAL: data-integrity: same durability requirement as the upsert
+    # path; only the keys known at delete time go into the payload, no
+    # min_verdict/min_score (those describe a value that no longer exists).
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_threshold_delete_emits_threshold_changed_event.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="moderation_threshold",
+        entity_id=age_band,
+        event_type=EventType.THRESHOLD_CHANGED,
+        payload={"age_band": age_band, "category": category, "action": "delete"},
+    )
     return await list_thresholds(ctx)
 
 
@@ -336,4 +369,17 @@ async def update_noise_floor(
         row.value = body.value
         row.updated_by = ctx.principal.user_id
     await ctx.session.flush()
+    # #CRITICAL: data-integrity: the noise floor governs what surfaces on the
+    # admin review queue for every family; the event must land in the same
+    # transaction as the setting write.
+    # #VERIFY: tests/integration/test_pipeline_event_instrumentation.py::
+    # test_noise_floor_update_emits_noise_floor_changed_event.
+    await record_event(
+        ctx.session,
+        Actor.from_principal(ctx.principal),
+        entity_type="moderation_setting",
+        entity_id="admin_noise_floor",
+        event_type=EventType.NOISE_FLOOR_CHANGED,
+        payload={"value": row.value},
+    )
     return NoiseFloorView(value=row.value)
