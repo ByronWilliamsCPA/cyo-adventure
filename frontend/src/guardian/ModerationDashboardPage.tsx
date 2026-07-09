@@ -34,7 +34,13 @@ export function ModerationDashboardPage() {
   const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [actionError, setActionError] = useState<string | null>(null)
-  const [applying, setApplying] = useState<string | null>(null)
+  // #ASSUME: concurrency: multiple suggestion applies can be in flight at
+  // once, so the in-flight guard is tracked per suggestion key, never as one
+  // shared value (a shared value would re-enable A's button when B starts and
+  // clear B's guard when A settles).
+  // #VERIFY: covered by the "keeps per-suggestion apply buttons independent"
+  // test in ModerationDashboardPage.test.tsx.
+  const [applying, setApplying] = useState<ReadonlySet<string>>(new Set())
   const [reloadKey, setReloadKey] = useState(0)
 
   // Mount-time (and post-apply) load, matching ModerationThresholdsPage's
@@ -71,7 +77,10 @@ export function ModerationDashboardPage() {
 
   async function applySuggestion(suggestion: ThresholdSuggestionView) {
     const key = `${suggestion.age_band}:${suggestion.category}`
-    setApplying(key)
+    // Build a new Set on every update (never mutate state in place) and add
+    // or remove exactly this suggestion's key, so concurrent applies on other
+    // suggestions keep their own in-flight guards.
+    setApplying((prev) => new Set(prev).add(key))
     setActionError(null)
     try {
       await thresholdsApi.upsert(suggestion.age_band, suggestion.category, {
@@ -87,7 +96,11 @@ export function ModerationDashboardPage() {
         }).message
       )
     } finally {
-      setApplying(null)
+      setApplying((prev) => {
+        const next = new Set(prev)
+        next.delete(key)
+        return next
+      })
     }
   }
 
@@ -140,10 +153,10 @@ export function ModerationDashboardPage() {
                   {suggestion.current_min_verdict}).
                   <button
                     type="button"
-                    disabled={applying === key}
+                    disabled={applying.has(key)}
                     onClick={() => void applySuggestion(suggestion)}
                   >
-                    {applying === key
+                    {applying.has(key)
                       ? 'Applying…'
                       : `Apply: raise to ${suggestion.suggested_min_verdict}`}
                   </button>
