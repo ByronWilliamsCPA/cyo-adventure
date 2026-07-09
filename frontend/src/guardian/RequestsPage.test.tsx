@@ -37,6 +37,9 @@ const DRAGON_REQUEST = {
   age_band: '8-11',
   length: null,
   narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
 }
 
 const FLAGGED_REQUEST = {
@@ -50,6 +53,9 @@ const FLAGGED_REQUEST = {
   age_band: '8-11',
   length: null,
   narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
 }
 
 const BLOCKED_REQUEST = {
@@ -63,6 +69,9 @@ const BLOCKED_REQUEST = {
   age_band: '8-11',
   length: null,
   narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
 }
 
 function mockPending(requests: unknown[]) {
@@ -145,6 +154,61 @@ describe('RequestsPage', () => {
     render(<RequestsPage />)
     await screen.findByText('A story about a friendly dragon')
     expect(screen.getByLabelText('Story style')).toBeInTheDocument()
+  })
+
+  it('prefills the series input from proposed_series_title and includes it in the approve body', async () => {
+    mockPending([{ ...DRAGON_REQUEST, proposed_series_title: 'Fox Tales' }])
+    mockPost.mockResolvedValue({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+    })
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    const seriesInput = screen.getByLabelText<HTMLInputElement>('Series title (optional)')
+    expect(seriesInput.value).toBe('Fox Tales')
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/approve', {
+        age_band: '8-11',
+        length: 'medium',
+        narrative_style: 'prose',
+        series_title: 'Fox Tales',
+      })
+    )
+  })
+
+  it('sends a body without series_title when the prefilled series input is cleared', async () => {
+    mockPending([{ ...DRAGON_REQUEST, proposed_series_title: 'Fox Tales' }])
+    mockPost.mockResolvedValue({
+      data: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
+    })
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.change(screen.getByLabelText('Series title (optional)'), {
+      target: { value: '' },
+    })
+    fireEvent.change(screen.getByLabelText('Story length'), {
+      target: { value: 'medium' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Approve' }))
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/approve', {
+        age_band: '8-11',
+        length: 'medium',
+        narrative_style: 'prose',
+      })
+    )
+  })
+
+  it('shows a continuation note and disables the band select for an anchored row', async () => {
+    mockPending([{ ...DRAGON_REQUEST, anchor_storybook_id: 's_1' }])
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    expect(screen.getByText('Continues an existing series')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Series title (optional)')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Age band')).toBeDisabled()
   })
 
   it('decline calls the adapter and removes the row', async () => {

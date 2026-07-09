@@ -62,6 +62,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
   const [length, setLength] = useState<Length | ''>('')
   const [narrativeStyle, setNarrativeStyle] = useState<NarrativeStyle>('prose')
   const [requestText, setRequestText] = useState('')
+  const [seriesTitle, setSeriesTitle] = useState('')
 
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<SubmitResult>({ kind: 'idle' })
@@ -154,6 +155,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
               length,
               narrative_style: isTeenBand ? narrativeStyle : 'prose',
               ...(profileId !== UNSELECTED ? { profile_id: profileId } : {}),
+              ...(seriesTitle.trim().length > 0 ? { series_title: seriesTitle.trim() } : {}),
             }
           : {
               request_text: requestText.trim(),
@@ -161,6 +163,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
               length,
               narrative_style: isTeenBand ? narrativeStyle : 'prose',
               family_id: familyId,
+              ...(seriesTitle.trim().length > 0 ? { series_title: seriesTitle.trim() } : {}),
             }
       const created = await requestApi.createAuthored(body)
       if (created.status === 'blocked') {
@@ -173,6 +176,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         setBand('')
         setLength('')
         setNarrativeStyle('prose')
+        setSeriesTitle('')
       }
     } catch (err) {
       // #ASSUME: external-resources: the create call can fail (network,
@@ -327,6 +331,17 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
           </select>
         </label>
       ) : null}
+
+      <label className="request-form__field" htmlFor="request-form-series-title">
+        Series title (optional)
+        <input
+          id="request-form-series-title"
+          type="text"
+          value={seriesTitle}
+          maxLength={120}
+          onChange={(e) => setSeriesTitle(e.target.value)}
+        />
+      </label>
 
       <Button type="submit" disabled={!canSubmit}>
         {submitting ? 'Sending…' : 'Send request'}

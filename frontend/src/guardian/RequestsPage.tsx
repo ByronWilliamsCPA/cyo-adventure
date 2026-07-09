@@ -16,7 +16,12 @@ type LoadState =
   | { kind: 'error' }
   | { kind: 'ready'; requests: StoryRequestView[] }
 
-type RowDecision = { age_band: string; length: string; narrative_style: string }
+type RowDecision = {
+  age_band: string
+  length: string
+  narrative_style: string
+  series_title: string
+}
 
 /**
  * Guardian/admin story-request review (Task 3.0). Lists pending child requests
@@ -40,6 +45,7 @@ export function RequestsPage() {
         age_band: req.age_band,
         length: '',
         narrative_style: 'prose',
+        series_title: req.proposed_series_title ?? '',
       }
     )
   }
@@ -54,6 +60,7 @@ export function RequestsPage() {
         age_band: req.age_band,
         length: '',
         narrative_style: 'prose',
+        series_title: req.proposed_series_title ?? '',
       }
       const next = { ...current, ...patch }
       if (!TEEN_BANDS.includes(next.age_band)) next.narrative_style = 'prose'
@@ -146,7 +153,14 @@ export function RequestsPage() {
 
   async function approve(req: StoryRequestView) {
     const decision = decisionFor(req)
-    await runRowAction(req.id, () => queueApi.approve(req.id, decision))
+    const title = decision.series_title.trim()
+    const payload = {
+      age_band: decision.age_band,
+      length: decision.length,
+      narrative_style: decision.narrative_style,
+      ...(title.length > 0 ? { series_title: title } : {}),
+    }
+    await runRowAction(req.id, () => queueApi.approve(req.id, payload))
   }
 
   async function decline(id: string) {
@@ -230,6 +244,7 @@ export function RequestsPage() {
                     Age band
                     <select
                       value={decision.age_band}
+                      disabled={req.anchor_storybook_id !== null}
                       onChange={(e) => setDecision(req, { age_band: e.target.value })}
                     >
                       {AGE_BANDS.map((b) => (
@@ -258,15 +273,26 @@ export function RequestsPage() {
                       Story style
                       <select
                         value={decision.narrative_style}
-                        onChange={(e) =>
-                          setDecision(req, { narrative_style: e.target.value })
-                        }
+                        onChange={(e) => setDecision(req, { narrative_style: e.target.value })}
                       >
                         <option value="prose">prose</option>
                         <option value="gamebook">gamebook</option>
                       </select>
                     </label>
                   ) : null}
+                  {req.anchor_storybook_id === null ? (
+                    <label>
+                      Series title (optional)
+                      <input
+                        type="text"
+                        value={decision.series_title}
+                        maxLength={120}
+                        onChange={(e) => setDecision(req, { series_title: e.target.value })}
+                      />
+                    </label>
+                  ) : (
+                    <p className="console-row__series-note">Continues an existing series</p>
+                  )}
                   <Button
                     disabled={isInFlight || !isActionable || decision.length === ''}
                     onClick={() => void approve(req)}
