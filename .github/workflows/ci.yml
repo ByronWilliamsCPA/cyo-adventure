@@ -85,6 +85,22 @@ jobs:
       - name: Test
         run: npm run test:run -- --coverage
 
+      - name: Upload frontend test results to Codecov
+        # Feeds Codecov Test Analytics (the "Tests" tab). Vitest writes junit.xml
+        # in CI (CI-gated reporter in vite.config.ts). Runs even when tests fail
+        # (!cancelled) because failing runs are the most useful to surface.
+        # Unlike codecov-action, test-results-action has no working-directory
+        # input, so the path is given from the repo root, not ./ under frontend.
+        if: ${{ !cancelled() }}
+        uses: codecov/test-results-action@0fa95f0e1eeaafde2c782583b36b28ad0d8c77d3 # v1.2.1
+        with:
+          files: ./frontend/junit.xml
+          disable_search: true
+          flags: frontend
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
       - name: Build
         run: npm run build
 

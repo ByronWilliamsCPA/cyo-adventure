@@ -27,6 +27,9 @@ yarn-error.log*
 # Test coverage
 coverage/
 
+# Vitest JUnit report (CI-only artifact, uploaded to Codecov Test Analytics)
+junit.xml
+
 # Playwright E2E artifacts
 playwright-report/
 test-results/
