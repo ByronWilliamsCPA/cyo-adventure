@@ -149,6 +149,89 @@ class TestLoadVersionRecords:
         assert by_id["s_sent_back"].outcome.released is False
         assert by_id["s_pending"].outcome.decided is False
 
+    async def test_loader_attributes_decisions_across_a_storybooks_versions(
+        self,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """Two moderated versions of one storybook, decided by two separate
+        decision events on the shared storybook-level stream: each version
+        attributes to the first decision at or after its own moderation
+        completed, splitting the stream by time order.
+        """
+        storybook_id = "s_multi_version"
+        t1 = _T0
+        t2 = _T0 + timedelta(hours=1)
+        t3 = _T0 + timedelta(hours=2)
+        t4 = _T0 + timedelta(hours=3)
+
+        async with sessions() as session:
+            session.add(
+                Storybook(id=storybook_id, family_id=seed.family_id, status="in_review")
+            )
+            session.add(
+                StorybookVersion(
+                    storybook_id=storybook_id,
+                    version=1,
+                    blob={"metadata": {"age_band": "8-11"}},
+                    moderation_report=_report(_finding("violence", "advisory")),
+                )
+            )
+            session.add(
+                StorybookVersion(
+                    storybook_id=storybook_id,
+                    version=2,
+                    blob={"metadata": {"age_band": "8-11"}},
+                    moderation_report=_report(_finding("violence", "advisory")),
+                )
+            )
+            session.add(
+                _event(
+                    entity_type="storybook_version",
+                    entity_id=f"{storybook_id}:1",
+                    event_type=EventType.MODERATION_COMPLETED,
+                    occurred_at=t1,
+                )
+            )
+            session.add(
+                _event(
+                    entity_type="storybook",
+                    entity_id=storybook_id,
+                    event_type=EventType.SENT_BACK,
+                    occurred_at=t2,
+                )
+            )
+            session.add(
+                _event(
+                    entity_type="storybook_version",
+                    entity_id=f"{storybook_id}:2",
+                    event_type=EventType.MODERATION_COMPLETED,
+                    occurred_at=t3,
+                )
+            )
+            session.add(
+                _event(
+                    entity_type="storybook",
+                    entity_id=storybook_id,
+                    event_type=EventType.RELEASED,
+                    occurred_at=t4,
+                )
+            )
+            await session.commit()
+
+        async with sessions() as session:
+            records = await load_version_records(session)
+
+        by_version = {
+            record.version: record
+            for record in records
+            if record.storybook_id == storybook_id
+        }
+        assert by_version[1].outcome.decided is True
+        assert by_version[1].outcome.released is False
+        assert by_version[2].outcome.decided is True
+        assert by_version[2].outcome.released is True
+
     async def test_loader_skips_versions_without_band(
         self,
         sessions: async_sessionmaker[AsyncSession],

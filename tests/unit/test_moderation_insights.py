@@ -112,6 +112,23 @@ class TestAggregateInsights:
         assert row.decided_versions == 1
         assert row.released_versions == 1
 
+    def test_credits_all_categories_on_a_single_version(self) -> None:
+        records = [
+            _record(
+                findings=[
+                    _finding("violence", "advisory"),
+                    _finding("fear", "advisory"),
+                ],
+                outcome=VersionOutcome(decided=True, released=True),
+            )
+        ]
+        insights = aggregate_insights(records)
+        rows = {(row.age_band, row.category): row for row in insights}
+        assert set(rows) == {("8-11", "violence"), ("8-11", "fear")}
+        for row in rows.values():
+            assert row.decided_versions == 1
+            assert row.released_versions == 1
+
     def test_undecided_versions_do_not_enter_the_denominator(self) -> None:
         records = [
             _record(

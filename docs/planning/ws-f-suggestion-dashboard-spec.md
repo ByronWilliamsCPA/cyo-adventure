@@ -114,7 +114,9 @@ Read-only queries over `storybook_version` (per-finding report and band) correla
   `released` (not `sent_back`) in the event log, attributed per version by event-time ordering
   (undecided versions excluded from the denominator). A high rate suggests the advisory
   threshold for (B, C) is too aggressive and is a candidate to raise. Accepted coarseness: a
-  release counts as an override for every advisory on that version.
+  release counts as an override for every advisory on that version. The same coarseness extends
+  across versions: if an intermediate version has no decision event of its own, the first later
+  decision on the storybook (typically the eventual release) is attributed to it as well.
 - **Volume and recency**: counts and last-seen per (band, category) so a suggestion carries a
   confidence signal and is not proposed on a handful of samples.
 - **Threshold-change history**: recent `threshold_changed` / `noise_floor_changed` events, so the
