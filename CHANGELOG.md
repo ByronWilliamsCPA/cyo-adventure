@@ -92,6 +92,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   id, the approve path re-syncs that id from the resolved anchor, and the
   book_index retry loop only retries the genuine unique-index conflict
   (WS-B PR 3 review hardening).
+- Append-only `pipeline_event` log capturing every story-lifecycle transition
+  (request, plan, generation, moderation, release, threshold, assignment, rating),
+  the capture layer for the learning loop (WS-D).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
