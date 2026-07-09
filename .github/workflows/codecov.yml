@@ -27,6 +27,10 @@ jobs:
     with:
       artifact-name: 'coverage-reports'
       coverage-files: '*.xml'
+      # Backend coverage.xml is the whole pytest suite in one report; per the
+      # full-stack surface-flag rule (standards/testing.md 16.2) it uploads
+      # under the `backend` surface flag, matching the codecov.yml flag/component.
+      flags: 'backend'
       name: 'CYO Adventure Coverage'
       workflow-run-id: ${{ github.event.workflow_run.id }}
       commit-sha: ${{ github.event.workflow_run.head_sha }}
