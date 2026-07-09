@@ -577,6 +577,12 @@ AuthoringMechanism = Literal["skill", "automated_provider"]
 ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
 
 
+class AlternativeView(BaseModel):
+    """One in-cell, production-eligible skeleton the admin could pick instead."""
+
+    slug: str
+
+
 class AuthoringPlanRequest(BaseModel):
     """Admin's choice of authoring method, mechanism, and prep model.
 
@@ -586,7 +592,10 @@ class AuthoringPlanRequest(BaseModel):
     generation backend when ``mechanism='automated_provider'``; both are
     required together in that case and are validated against the enabled
     provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
-    the schema layer cannot perform).
+    the schema layer cannot perform). ``skeleton_slug`` is an optional,
+    unconstrained admin override (decision C-6): any slug on disk is
+    accepted, including a non-production-eligible or out-of-cell one, with a
+    warning surfaced on mismatch rather than a rejection.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -600,6 +609,7 @@ class AuthoringPlanRequest(BaseModel):
     ) = None
     review_stage1_model: str | None = None
     review_stage2_model: str | None = None
+    skeleton_slug: str | None = None
 
     @model_validator(mode="after")
     def _skill_requires_skeleton_fill(self) -> AuthoringPlanRequest:
@@ -657,6 +667,7 @@ class AuthoringPlanResponse(BaseModel):
     mechanism: AuthoringMechanism
     status: JobStatusLiteral
     skeleton_slug: str | None = None
+    skeleton_alternatives: list[AlternativeView] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
 
 

@@ -366,3 +366,57 @@ async def test_automated_provider_unallowlisted_model_is_422(
         headers=auth(seed.admin_token),
     )
     assert res.status_code == 422, res.text
+
+
+async def test_skeleton_fill_response_includes_alternatives(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """10-13/medium/prose has exactly one production skeleton on disk today."""
+    req_id = await _approved_request_id(client, seed, "a lighthouse keeper returns")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={"method": "skeleton_fill", "mechanism": "skill", "prep_model": "sonnet"},
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 201, res.text
+    body = res.json()
+    assert body["skeleton_slug"] == "the-hollow-lighthouse"
+    assert body["skeleton_alternatives"] == [{"slug": "the-hollow-lighthouse"}]
+
+
+async def test_skeleton_fill_override_out_of_cell_warns(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin override outside the request's cell is accepted, with a warning."""
+    req_id = await _approved_request_id(client, seed, "a lantern in the fog")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={
+            "method": "skeleton_fill",
+            "mechanism": "skill",
+            "prep_model": "sonnet",
+            "skeleton_slug": "the-cave-of-echoes",  # a real 8-11 skeleton, not 10-13
+        },
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 201, res.text
+    body = res.json()
+    assert body["skeleton_slug"] == "the-cave-of-echoes"
+    assert any("outside the request's cell" in w for w in body["warnings"])
+
+
+async def test_skeleton_fill_override_unknown_slug_is_422(
+    client: AsyncClient, seed: Seed
+) -> None:
+    req_id = await _approved_request_id(client, seed, "a raincloud named gus")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={
+            "method": "skeleton_fill",
+            "mechanism": "skill",
+            "prep_model": "sonnet",
+            "skeleton_slug": "does-not-exist-anywhere",
+        },
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 422, res.text

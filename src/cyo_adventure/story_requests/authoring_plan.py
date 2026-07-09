@@ -10,7 +10,8 @@ mechanism (resumed later via generation/import_cli.py --job).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import random
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -19,7 +20,13 @@ from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
-from cyo_adventure.generation.skeleton_match import candidates_for_cell
+from cyo_adventure.generation.skeleton_match import (
+    candidates_for_cell,
+    find_skeleton_metadata,
+    recent_skeleton_usage,
+    select_skeleton_for_cell,
+    skeleton_matches_cell,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,13 +75,17 @@ class AuthoringPlanResult:
 
     Attributes:
         job: The newly created (and flushed) GenerationJob row.
-        skeleton_slug: The matched skeleton's slug, or None for fresh_generation.
-        warnings: Non-blocking eligibility warnings for the admin to read.
+        skeleton_slug: The matched or overridden skeleton's slug, or None
+            for fresh_generation.
+        warnings: Non-blocking eligibility and override-mismatch warnings.
+        skeleton_alternatives: Every in-cell production-eligible skeleton
+            slug (WS-C PR2), or an empty list for fresh_generation.
     """
 
     job: GenerationJob
     skeleton_slug: str | None
     warnings: list[str]
+    skeleton_alternatives: list[str] = field(default_factory=list)
 
 
 def _band_of(concept: Concept) -> str:
@@ -93,6 +104,41 @@ def _band_of(concept: Concept) -> str:
     # ChildProfile.age_band (story_requests/brief.py).
     band = concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
     return band if isinstance(band, str) else ""
+
+
+_DEFAULT_LENGTH = "short"
+_DEFAULT_STYLE = "prose"
+
+
+def _length_of(concept: Concept) -> str:
+    """Return the concept brief's length, defaulting to "short" when null/absent.
+
+    #ASSUME: data-integrity: request.length is nullable (WS-B #164);
+    brief_from_request carries that null straight onto ConceptBrief.length,
+    so concept.brief["length"] may be a literal JSON null, or the key may be
+    absent entirely for a pre-length-field concept (both observed in
+    existing test fixtures). Cell formation must always have a length axis
+    to match against, so either case collapses to the band's default rather
+    than failing to form a cell.
+    #VERIFY: test_skeleton_fill_null_length_falls_back_to_short.
+    """
+    value = concept.brief.get("length") if isinstance(concept.brief, dict) else None
+    return value if isinstance(value, str) else _DEFAULT_LENGTH
+
+
+def _style_of(concept: Concept) -> str:
+    """Return the concept brief's narrative_style, defaulting to "prose".
+
+    ConceptBrief.narrative_style itself defaults to NarrativeStyle.PROSE, so
+    a missing/malformed value here mirrors that same default rather than
+    inventing a new one.
+    """
+    value = (
+        concept.brief.get("narrative_style")
+        if isinstance(concept.brief, dict)
+        else None
+    )
+    return value if isinstance(value, str) else _DEFAULT_STYLE
 
 
 def eligibility_warnings(
@@ -189,19 +235,21 @@ async def build_authoring_plan(
         actor: The admin assigning the plan, recorded on the pipeline event.
 
     Returns:
-        AuthoringPlanResult: The created job, matched skeleton slug (if any),
-        and any non-blocking eligibility warnings.
+        AuthoringPlanResult: The created job, matched or overridden skeleton
+        slug (if any), every in-cell skeleton_alternatives, and any
+        non-blocking eligibility/override warnings.
 
     Raises:
-        ValidationError: On an unrecognized skill-mechanism model (-> 422) or
-            no matching production skeleton for the concept's band (-> 422).
-            The illegal fresh_generation + skill pairing is rejected earlier, at
-            the schema boundary (AuthoringPlanRequest._skill_requires_skeleton_fill),
-            so it never reaches this function.
+        ValidationError: On an unrecognized skill-mechanism model (-> 422),
+            no matching production skeleton for the concept's cell (-> 422),
+            or an admin skeleton_slug override that names a skeleton not
+            present on disk (-> 422). The illegal fresh_generation + skill
+            pairing is rejected earlier, at the schema boundary
+            (AuthoringPlanRequest._skill_requires_skeleton_fill), so it never
+            reaches this function.
         StateTransitionError: If a GenerationJob already exists for this
             concept (-> 409, idempotency guard).
     """
-    _ = request  # reserved for future request-level checks; status is caller-verified
     method, mechanism, prep_model = plan.method, plan.mechanism, plan.prep_model
 
     # #CRITICAL: concurrency: relies on the caller holding a FOR UPDATE lock on
@@ -225,14 +273,52 @@ async def build_authoring_plan(
 
     band = _band_of(concept)
     skeleton_slug: str | None = None
+    skeleton_alternatives: list[str] = []
+    override_warnings: list[str] = []
     if method == "skeleton_fill":
-        _candidates = candidates_for_cell(band, "short", "prose")
-        skeleton_slug = _candidates[0] if _candidates else None
-        if skeleton_slug is None:
-            msg = f"no production-eligible skeleton available for band '{band}'"
+        length = _length_of(concept)
+        style = _style_of(concept)
+        skeleton_alternatives = candidates_for_cell(band, length, style)
+        if not skeleton_alternatives:
+            msg = (
+                f"no production-eligible skeleton available for band '{band}', "
+                f"length '{length}', style '{style}'"
+            )
             raise ValidationError(msg, field="band", value=band)
+        if plan.skeleton_slug is not None:
+            # #CRITICAL: security: the override is unconstrained (decision
+            # C-6), but only among skeletons that actually exist on disk; an
+            # unknown slug never silently proceeds as if it had matched.
+            # #VERIFY: test_skeleton_fill_override_unknown_slug_is_rejected.
+            override_metadata = find_skeleton_metadata(plan.skeleton_slug)
+            if override_metadata is None:
+                msg = f"skeleton_slug '{plan.skeleton_slug}' does not exist"
+                raise ValidationError(
+                    msg, field="skeleton_slug", value=plan.skeleton_slug
+                )
+            skeleton_slug = plan.skeleton_slug
+            if not override_metadata.production_eligible:
+                override_warnings.append(
+                    f"skeleton_slug override '{skeleton_slug}' is not "
+                    "production-eligible."
+                )
+            elif not skeleton_matches_cell(
+                override_metadata, band=band, length=length, style=style
+            ):
+                override_warnings.append(
+                    f"skeleton_slug override '{skeleton_slug}' is outside the "
+                    f"request's cell (band='{band}', length='{length}', "
+                    f"style='{style}')."
+                )
+        else:
+            recent_usage = await recent_skeleton_usage(session, request.family_id)
+            selection = select_skeleton_for_cell(
+                skeleton_alternatives, recent_usage, random.SystemRandom()
+            )
+            skeleton_slug = selection.slug
 
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
+    warnings.extend(override_warnings)
 
     if method == "skeleton_fill":
         status = "awaiting_manual_fill" if mechanism == "skill" else "queued"
@@ -274,4 +360,9 @@ async def build_authoring_plan(
         to_state=job.status,
         payload={"job_status": job.status, "plan_kind": plan.method},
     )
-    return AuthoringPlanResult(job=job, skeleton_slug=skeleton_slug, warnings=warnings)
+    return AuthoringPlanResult(
+        job=job,
+        skeleton_slug=skeleton_slug,
+        warnings=warnings,
+        skeleton_alternatives=skeleton_alternatives,
+    )
