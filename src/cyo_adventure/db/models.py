@@ -26,6 +26,7 @@ from sqlalchemy import (
     UniqueConstraint,
     Uuid,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
@@ -710,6 +711,135 @@ class ModerationSetting(Base):
     updated_at: Mapped[datetime] = mapped_column(
         _TS, server_default=func.now(), onupdate=func.now()
     )
+
+
+_ALLOWLIST_PROVIDER_VALUES = "'anthropic', 'openrouter', 'modal', 'ollama'"
+
+
+class ProviderModelAllowlist(Base):
+    """Admin-editable allowlist of (provider, model_id) pairs eligible for generation.
+
+    Providers are a code-fixed enum (the CHECK below); only the model id
+    within a provider is admin-managed. ``mock`` is never allowlisted: it is
+    a CI-only test double, never a real generation backend.
+
+    Attributes:
+        id: Surrogate primary key.
+        provider: One of the fixed provider names (see the CHECK constraint).
+        model_id: The provider-native model id (e.g. ``claude-sonnet-4-6``,
+            ``anthropic/claude-sonnet-4.6``).
+        enabled: Whether this pair is currently selectable. Disabling a row
+            (rather than deleting it) preserves audit history.
+        display_name: Optional human label for a future admin UI.
+        created_by: The admin who added this row, or ``None``.
+        updated_by: The admin who last edited this row, or ``None``.
+        created_at: Insert time (UTC, TIMESTAMPTZ).
+        updated_at: Last edit time (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "provider_model_allowlist"
+    # #CRITICAL: security: this is the control that keeps free-string model
+    # ids out of billing; the ck_provider_model_allowlist_provider CHECK is
+    # the at-rest backstop against any non-API write path (admin script,
+    # backfill, raw SQL) introducing an unrecognized billing backend.
+    # #VERIFY: generation/allowlist.py::is_enabled_allowlist_pair is the
+    # single read path the authoring-plan endpoint trusts; both this CHECK and
+    # that helper are round-tripped by
+    # tests/integration/test_provider_model_allowlist_migration.py and
+    # tests/integration/test_allowlist.py.
+    __table_args__ = (
+        CheckConstraint(
+            f"provider IN ({_ALLOWLIST_PROVIDER_VALUES})",
+            name="ck_provider_model_allowlist_provider",
+        ),
+        UniqueConstraint(
+            "provider", "model_id", name="uq_provider_model_allowlist_provider_model"
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    provider: Mapped[str] = mapped_column(String(32))
+    model_id: Mapped[str] = mapped_column(String(120))
+    enabled: Mapped[bool] = mapped_column(default=True, server_default=text("true"))
+    display_name: Mapped[str | None] = mapped_column(String(120), default=None)
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    updated_by: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey(_FK_USER), default=None
+    )
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        _TS, server_default=func.now(), onupdate=func.now()
+    )
+
+    def __init__(  # noqa: PLR0913
+        self,
+        *,
+        provider: str,
+        model_id: str,
+        enabled: bool = True,
+        display_name: str | None = None,
+        created_by: uuid.UUID | None = None,
+        updated_by: uuid.UUID | None = None,
+    ) -> None:
+        """Initialize a ProviderModelAllowlist row with proper defaults."""
+        self.id = uuid.uuid4()
+        self.provider = provider
+        self.model_id = model_id
+        self.enabled = enabled
+        self.display_name = display_name
+        self.created_by = created_by
+        self.updated_by = updated_by
+
+
+class ProviderModelAllowlistAudit(Base):
+    """Append-only audit of allowlist edits (who changed what, when).
+
+    Deliberately minimal, mirroring ``ModerationThresholdAudit``: WS-D's
+    pipeline_event log will subsume this role; keep this table write-only
+    until then.
+
+    Attributes:
+        id: Surrogate primary key.
+        provider: The affected row's provider (natural-key half).
+        model_id: The affected row's model id (natural-key half).
+        action: What happened: ``create``, ``update``, or ``delete``.
+        old_enabled: The ``enabled`` value before the edit, or ``None`` on create.
+        new_enabled: The ``enabled`` value after the edit, or ``None`` on delete.
+        changed_by: The admin who made the edit (required; see RAD tag).
+        changed_at: When the edit was recorded (UTC, TIMESTAMPTZ).
+    """
+
+    __tablename__ = "provider_model_allowlist_audit"
+    # #ASSUME: data integrity: the audit trail is only trustworthy if every
+    # row names a known action; a typo'd action written by a non-API path
+    # would silently corrupt the "who changed what" record.
+    # #VERIFY: api/provider_allowlist.py writes only 'create'/'update'/'delete';
+    # tests/integration/test_provider_model_allowlist_migration.py round-trips
+    # the migration that creates this CHECK.
+    __table_args__ = (
+        CheckConstraint(
+            "action IN ('create', 'update', 'delete')",
+            name="ck_provider_model_allowlist_audit_action",
+        ),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    provider: Mapped[str] = mapped_column(String(32))
+    model_id: Mapped[str] = mapped_column(String(120))
+    action: Mapped[str] = mapped_column(String(16))
+    old_enabled: Mapped[bool | None] = mapped_column(default=None)
+    new_enabled: Mapped[bool | None] = mapped_column(default=None)
+    # #CRITICAL: security / data integrity: every allowlist edit must be
+    # attributable; changed_by is a NOT NULL FK to user.id so an anonymous or
+    # dangling edit record cannot be persisted. Rows are append-only by
+    # convention (no update/delete path in the application layer).
+    # #VERIFY: tests/integration/test_provider_allowlist_api.py asserts one
+    # audit row per POST/PUT/DELETE with the correct changed_by and
+    # old/new_enabled pairing.
+    changed_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    changed_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 
 class GenerationJob(Base):
