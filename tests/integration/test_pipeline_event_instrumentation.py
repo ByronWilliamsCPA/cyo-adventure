@@ -13,6 +13,7 @@ from cyo_adventure.db.models import (
     ChildProfile,
     Family,
     GenerationJob,
+    ProviderModelAllowlist,
     Storybook,
     StorybookVersion,
     User,
@@ -247,6 +248,17 @@ async def test_authoring_plan_writes_plan_assigned(
         json={"age_band": "10-13", "length": "medium", "narrative_style": "prose"},
     )
     assert approved.status_code == 200, approved.text
+    # WS-C PR1: automated_provider now requires a provider/model pair validated
+    # against the enabled allowlist. The integration schema is built via
+    # create_all, which does not run the migration's seed rows, so insert one
+    # enabled pair here (mirrors tests/integration/test_authoring_plan_api.py).
+    async with sessions() as session:
+        session.add(
+            ProviderModelAllowlist(
+                provider="anthropic", model_id="claude-sonnet-4-6", enabled=True
+            )
+        )
+        await session.commit()
     resp = await client.post(
         f"{_CREATE}/{request_id}/authoring-plan",
         headers=auth(seed.admin_token),
@@ -254,6 +266,10 @@ async def test_authoring_plan_writes_plan_assigned(
             "method": "fresh_generation",
             "mechanism": "automated_provider",
             "prep_model": "openrouter/some-model",
+            # Use the seeded-enabled pair so the plan is accepted and the
+            # plan_assigned event is written.
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
         },
     )
     assert resp.status_code == 201, resp.text

@@ -569,6 +569,12 @@ class FamilyListView(BaseModel):
 
 AuthoringMethod = Literal["skeleton_fill", "fresh_generation"]
 AuthoringMechanism = Literal["skill", "automated_provider"]
+# The generation backends an admin may name. Mirrors the
+# ck_provider_model_allowlist_provider CHECK constraint and
+# generation.allowlist.ALLOWLIST_PROVIDERS (mock is a CI-only double, never
+# allowlistable). Typed here so AuthoringPlanRequest.provider rejects an
+# unknown backend at the schema boundary (422) instead of at the DB query.
+ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
 
 
 class AuthoringPlanRequest(BaseModel):
@@ -576,7 +582,11 @@ class AuthoringPlanRequest(BaseModel):
 
     ``review_stage1_model`` / ``review_stage2_model`` are optional overrides
     for the Stage 1 fidelity review and Stage 2 model, used only when
-    method='skeleton_fill'.
+    method='skeleton_fill'. ``provider``/``model`` (WS-C PR1) select the
+    generation backend when ``mechanism='automated_provider'``; both are
+    required together in that case and are validated against the enabled
+    provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
+    the schema layer cannot perform).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -584,6 +594,10 @@ class AuthoringPlanRequest(BaseModel):
     method: AuthoringMethod
     mechanism: AuthoringMechanism
     prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    provider: ProviderName | None = None
+    model: (
+        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
+    ) = None
     review_stage1_model: str | None = None
     review_stage2_model: str | None = None
 
@@ -600,6 +614,35 @@ class AuthoringPlanRequest(BaseModel):
         """
         if self.method == "fresh_generation" and self.mechanism == "skill":
             msg = "mechanism='skill' requires method='skeleton_fill'"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _provider_model_match_mechanism(self) -> AuthoringPlanRequest:
+        """Bind provider/model presence to mechanism='automated_provider'.
+
+        mechanism='skill' means a human runs the cyo-author skill; no
+        GenerationProvider is ever constructed for that job, so provider/model
+        are meaningless there. mechanism='automated_provider' always drives
+        the worker's build_provider() call (fresh_generation always pairs with
+        automated_provider per the validator above; skeleton_fill may pair
+        with either), so both fields must be present together.
+
+        Both directions are enforced so no invalid combination is
+        representable: automated_provider without both fields is rejected, and
+        (the inverse) a non-automated_provider request carrying provider/model
+        is rejected rather than silently dropping the admin's inert choice in
+        build_authoring_plan. Mirrors ``_skill_requires_skeleton_fill``.
+        """
+        if self.mechanism == "automated_provider":
+            if self.provider is None or self.model is None:
+                msg = (
+                    "provider and model are both required when "
+                    "mechanism='automated_provider'"
+                )
+                raise ValueError(msg)
+        elif self.provider is not None or self.model is not None:
+            msg = "provider/model are only valid when mechanism='automated_provider'"
             raise ValueError(msg)
         return self
 
@@ -956,3 +999,57 @@ class NoiseFloorUpdateBody(BaseModel):
 
     # The global admin noise floor, bounded to [0, 1]; out-of-range values 422.
     value: float = Field(ge=0.0, le=1.0)
+
+
+# ---------------------------------------------------------------------------
+# Provider/model allowlist schemas (WS-C PR1)
+# ---------------------------------------------------------------------------
+# ``ProviderName`` is defined near the authoring aliases above (it is used by
+# AuthoringPlanRequest.provider, which precedes this section).
+
+
+class AllowlistView(BaseModel):
+    """One provider/model allowlist row."""
+
+    id: str
+    provider: ProviderName
+    model_id: str
+    enabled: bool
+    display_name: str | None
+
+
+class AllowlistListView(BaseModel):
+    """The whole allowlist table, ordered by (provider, model_id)."""
+
+    rows: list[AllowlistView]
+
+
+class AllowlistCreateBody(BaseModel):
+    """POST body to add a new allowlist row."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    provider: ProviderName
+    model_id: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+    ]
+    display_name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+        ]
+        | None
+    ) = None
+
+
+class AllowlistUpdateBody(BaseModel):
+    """PUT body: full replace of the mutable fields (mirrors ThresholdUpsertBody)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    enabled: bool
+    display_name: (
+        Annotated[
+            str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
+        ]
+        | None
+    ) = None

@@ -18,11 +18,20 @@ import json
 import os
 from typing import TYPE_CHECKING, Literal
 
+import anthropic as anthropic_sdk
 import httpx
 import pytest
+from anthropic.resources.messages.messages import AsyncMessages
 
-from cyo_adventure.core.exceptions import ProviderError, ValidationError
+from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import (
+    ConfigurationError,
+    ProviderError,
+    ValidationError,
+)
+from cyo_adventure.generation.provider import build_anthropic_leg
 from cyo_adventure.generation.providers import (
+    AnthropicProvider,
     FallbackProvider,
     ModalProvider,
     OllamaProvider,
@@ -46,6 +55,40 @@ def _client(handler: Callable[[httpx.Request], httpx.Response]) -> httpx.AsyncCl
 def _openrouter_ok_body(content: str) -> dict[str, object]:
     """Return a minimal OpenRouter chat-completions success payload."""
     return {"choices": [{"message": {"role": "assistant", "content": content}}]}
+
+
+def _anthropic_client(
+    handler: Callable[[httpx.Request], httpx.Response],
+) -> anthropic_sdk.AsyncAnthropic:
+    """Return an AsyncAnthropic backed by a MockTransport, with SDK retries off.
+
+    max_retries=0 disables the SDK's own built-in retry so AnthropicProvider's
+    Layer-1 run_with_retries loop is the only retry loop exercised in tests.
+    """
+    return anthropic_sdk.AsyncAnthropic(
+        api_key="test-key",
+        max_retries=0,
+        http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+
+
+def _anthropic_ok_body(text: str) -> dict[str, object]:
+    """Return a minimal Anthropic Messages API success payload."""
+    return {
+        "id": "msg_test",
+        "type": "message",
+        "role": "assistant",
+        "model": "claude-sonnet-4-6",
+        "content": [{"type": "text", "text": text}],
+        "stop_reason": "end_turn",
+        "stop_sequence": None,
+        "usage": {"input_tokens": 10, "output_tokens": 5},
+    }
+
+
+def _anthropic_error_body(error_type: str, message: str) -> dict[str, object]:
+    """Return an Anthropic API error payload shape."""
+    return {"type": "error", "error": {"type": error_type, "message": message}}
 
 
 def _ollama_stream(*pieces: str, done: bool = True) -> str:
@@ -1190,3 +1233,331 @@ class TestModalProvider:
 
         provider = _modal(handler, model="openai/gpt-oss-120b")
         assert provider.name == "modal:openai/gpt-oss-120b"
+
+
+# ---------------------------------------------------------------------------
+# AnthropicProvider (direct Anthropic Messages API, WS-C PR1)
+# ---------------------------------------------------------------------------
+
+
+class TestAnthropicProvider:
+    """Unit tests for the direct-Anthropic adapter (WS-C PR1)."""
+
+    def _provider(
+        self, handler: Callable[[httpx.Request], httpx.Response]
+    ) -> AnthropicProvider:
+        return AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+
+    @pytest.mark.asyncio
+    async def test_success_returns_content(self) -> None:
+        """A 200 response returns the text content, stripped of any code fence."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_anthropic_ok_body("```json\n{}\n```"))
+
+        provider = self._provider(handler)
+        result = await provider.complete(system="s", prompt="p", max_tokens=100)
+        assert result == "{}"
+
+    @pytest.mark.asyncio
+    async def test_name_and_model_properties(self) -> None:
+        """name and model both reflect the configured model id."""
+        provider = self._provider(
+            lambda _r: httpx.Response(200, json=_anthropic_ok_body("x"))
+        )
+        assert provider.name == "anthropic:claude-sonnet-4-6"
+        assert provider.model == "claude-sonnet-4-6"
+
+    @pytest.mark.asyncio
+    async def test_transient_429_retries_then_succeeds(self) -> None:
+        """A 429 retries against the same model and succeeds on the next attempt."""
+        calls = {"n": 0}
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return httpx.Response(
+                    429, json=_anthropic_error_body("rate_limit_error", "slow down")
+                )
+            return httpx.Response(200, json=_anthropic_ok_body("ok"))
+
+        provider = self._provider(handler)
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert result == "ok"
+        assert calls["n"] == 2
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [408, 409])
+    async def test_transient_408_409_are_retryable_not_leg_fatal(
+        self, status: int
+    ) -> None:
+        """408 (request timeout) and 409 (conflict/lock timeout) are transient.
+
+        Regression: these were briefly miscategorized as leg-fatal, which would
+        permanently kill the Anthropic leg on a recoverable failure. The
+        Anthropic SDK's own _should_retry retries both, and the sibling
+        OpenRouterProvider classes them transient; this asserts a persistent
+        408/409 exhausts retries into a RETRYABLE (leg_fatal=False) ProviderError.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                status, json=_anthropic_error_body("api_error", "retry me")
+            )
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_leg_fatal_401_raises_immediately(self) -> None:
+        """A 401 (authentication_error) raises ProviderError(leg_fatal=True) with no retry."""
+        calls = {"n": 0}
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            return httpx.Response(
+                401, json=_anthropic_error_body("authentication_error", "bad key")
+            )
+
+        provider = self._provider(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is True
+        assert calls["n"] == 1
+
+    @pytest.mark.asyncio
+    async def test_leg_fatal_404_raises_immediately(self) -> None:
+        """A 404 (not_found_error, e.g. unknown model) is leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                404, json=_anthropic_error_body("not_found_error", "unknown model")
+            )
+
+        provider = self._provider(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is True
+
+    @pytest.mark.asyncio
+    async def test_connection_error_is_transient(self) -> None:
+        """A transport-level connection failure is transient, not leg-fatal."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            raise httpx.ConnectError("connection refused")
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_empty_content_is_transient(self) -> None:
+        """A 200 with no text content block is treated as a retryable malformed success."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            body = _anthropic_ok_body("")
+            body["content"] = []
+            return httpx.Response(200, json=body)
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [500, 503, 529])
+    async def test_transient_5xx_and_529_retry_then_succeed(self, status: int) -> None:
+        """5xx and the 529 overloaded signal are transient via the >= 500 branch.
+
+        _TRANSIENT_STATUS does not enumerate 529 (or any 5xx); they rely on the
+        ``status >= 500`` check in _raise_for_status. This asserts that path:
+        one 5xx/529 then a 200 retries against the same model and succeeds.
+        """
+        calls = {"n": 0}
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            calls["n"] += 1
+            if calls["n"] == 1:
+                return httpx.Response(
+                    status, json=_anthropic_error_body("api_error", "overloaded")
+                )
+            return httpx.Response(200, json=_anthropic_ok_body("ok"))
+
+        provider = self._provider(handler)
+        result = await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert result == "ok"
+        assert calls["n"] == 2
+
+    @pytest.mark.asyncio
+    async def test_null_content_is_transient(self) -> None:
+        """A 200 with content=null is a retryable malformed success, not a raw escape.
+
+        The SDK's Message model is permissive (all fields optional), so a
+        malformed success body does NOT raise APIResponseValidationError; it
+        builds a Message whose `content` is None. Without a guard,
+        _extract_content iterates None and raises a raw TypeError that escapes
+        run_with_retries (which catches only ProviderError). This asserts the
+        null-content case maps to a retryable ProviderError instead of raising
+        a raw TypeError: leg_fatal is False.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            body = _anthropic_ok_body("x")
+            body["content"] = None
+            return httpx.Response(200, json=body)
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_response_validation_error_is_transient(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """APIResponseValidationError maps to a retryable ProviderError.
+
+        It is a direct APIError subclass (NOT an APIStatusError), raised when a
+        2xx response fails the SDK's strict checks (e.g. a non-JSON body from a
+        proxy) before the Message is built, so the content=None guard never
+        applies. Without a dedicated except clause it would escape
+        run_with_retries (ProviderError-only) as a raw SDK exception. This pins
+        it to a transient ProviderError: leg_fatal is False.
+        """
+        request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
+        response = httpx.Response(200, request=request, json=_anthropic_ok_body("x"))
+        exc = anthropic_sdk.APIResponseValidationError(response=response, body=None)
+
+        async def _raise(*_args: object, **_kwargs: object) -> object:
+            raise exc
+
+        monkeypatch.setattr(AsyncMessages, "create", _raise)
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(
+                lambda _r: httpx.Response(200, json=_anthropic_ok_body("x"))
+            ),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+
+# ---------------------------------------------------------------------------
+# build_anthropic_leg (fail-fast credential check, WS-C PR1)
+# ---------------------------------------------------------------------------
+
+
+class TestBuildAnthropicLeg:
+    """build_anthropic_leg's fail-fast-by-name credential check.
+
+    This builder is standalone in Task 7: it is not yet wired into
+    build_provider's dispatch (that is Task 8), so it is exercised directly.
+    """
+
+    def test_missing_key_raises_configuration_error_by_name(self) -> None:
+        """A missing ANTHROPIC_API_KEY raises ConfigurationError naming the key."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_anthropic_leg(settings, settings.anthropic_model)
+        assert "ANTHROPIC_API_KEY" in str(exc_info.value)
+
+    def test_missing_key_error_never_contains_a_key_value(self) -> None:
+        """The fail-fast error names the key only, never a credential value."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_anthropic_leg(settings, settings.anthropic_model)
+        assert "Bearer" not in str(exc_info.value)
+
+    def test_with_key_builds_anthropic_provider(self) -> None:
+        """A configured key builds a live AnthropicProvider for the given model."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key="test-key"
+        )
+        provider = build_anthropic_leg(settings, "claude-sonnet-4-6")
+        assert isinstance(provider, AnthropicProvider)
+        assert provider.model == "claude-sonnet-4-6"
+
+    @pytest.mark.asyncio
+    async def test_anthropic_key_value_not_leaked_in_error(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """Even with the API key set to a real (sentinel) value, a ProviderError
+        raised on a failing request never echoes the key's value in its message
+        or repr. Carried forward from Task 6's config #VERIFY marker: presence
+        is checked by name in the fail-fast tests above, this test guards the
+        VALUE never leaking once a key is actually configured and used to build
+        a live client.
+        """
+        sentinel_key = "sk-ant-sentinel-do-not-leak-9f3c2b7a"
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key=sentinel_key
+        )
+        provider = build_anthropic_leg(settings, settings.anthropic_model)
+        assert isinstance(provider, AnthropicProvider)
+
+        async def _raise_401(*_args: object, **_kwargs: object) -> None:
+            response = httpx.Response(
+                401,
+                request=httpx.Request("POST", "https://api.anthropic.com/v1/messages"),
+            )
+            raise anthropic_sdk.APIStatusError("bad key", response=response, body=None)
+
+        # Patch the SDK's own AsyncMessages.create (a public SDK class), not a
+        # private attribute of AnthropicProvider, so this stays basedpyright
+        # reportPrivateUsage-clean while still exercising the real client the
+        # sentinel key was used to construct.
+        monkeypatch.setattr(AsyncMessages, "create", _raise_401)
+
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+
+        assert sentinel_key not in str(exc_info.value)
+        assert sentinel_key not in repr(exc_info.value)

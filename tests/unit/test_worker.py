@@ -11,6 +11,7 @@ from __future__ import annotations
 import json
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, cast
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -28,6 +29,7 @@ from cyo_adventure.generation.provider import (
     build_provider,
 )
 from cyo_adventure.generation.providers import (
+    AnthropicProvider,
     FallbackProvider,
     ModalProvider,
     OllamaProvider,
@@ -81,13 +83,28 @@ class TestBuildProviderMock:
 class TestBuildProviderLive:
     """build_provider assembles the live cascade and isolated legs from settings."""
 
-    def test_claude_is_deferred(self) -> None:
-        """The direct-Anthropic ('claude') adapter is deferred and raises."""
-        settings = Settings(generation_provider="claude")  # type: ignore[call-arg]
+    def test_anthropic_without_key_raises(self) -> None:
+        """anthropic without a credential raises ConfigurationError by key name."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
             build_provider(settings)
-        # Points the operator at the supported OpenRouter path.
-        assert "openrouter" in str(exc_info.value)
+        assert "ANTHROPIC_API_KEY" in str(exc_info.value)
+
+    def test_anthropic_key_value_not_leaked_in_error(self) -> None:
+        """A missing-key error never echoes any key value."""
+        settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings)
+        assert "Bearer" not in str(exc_info.value)
+
+    def test_anthropic_with_key_builds_bare_leg(self) -> None:
+        """anthropic + key builds a single AnthropicProvider (no cascade)."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings)
+        assert isinstance(provider, AnthropicProvider)
+        assert provider.model == settings.anthropic_model
 
     def test_openrouter_without_key_raises(self) -> None:
         """openrouter without a credential raises ConfigurationError by key name."""
@@ -253,6 +270,69 @@ class TestBuildProviderLive:
         )
         with pytest.raises(ConfigurationError, match="MODAL_PROXY_KEY"):
             build_provider(settings)
+
+
+class TestBuildProviderOverrides:
+    """build_provider's keyword-only provider_override/model_override (WS-C PR1)."""
+
+    def test_no_override_matches_prior_behavior_openrouter(self) -> None:
+        """Calling with no overrides is identical to today's positional-only call."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter", openrouter_api_key="test-key"
+        )
+        without_kwargs = build_provider(settings)
+        with_no_overrides = build_provider(
+            settings, provider_override=None, model_override=None
+        )
+        assert isinstance(without_kwargs, FallbackProvider)
+        assert isinstance(with_no_overrides, FallbackProvider)
+        names_a = [leg.name for leg in without_kwargs.legs]  # type: ignore[attr-defined]
+        names_b = [leg.name for leg in with_no_overrides.legs]  # type: ignore[attr-defined]
+        assert names_a == names_b
+
+    def test_provider_override_wins_over_global_setting(self) -> None:
+        """provider_override picks the leg even when settings.generation_provider differs."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="mock", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings, provider_override="anthropic")
+        assert isinstance(provider, AnthropicProvider)
+
+    def test_model_override_replaces_openrouter_primary_only(self) -> None:
+        """model_override replaces the primary leg's model; the fallback leg is untouched."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="openrouter",
+            openrouter_api_key="test-key",
+            openrouter_fallback_model="anthropic/claude-sonnet-4.6",
+        )
+        provider = build_provider(settings, model_override="anthropic/claude-opus-4.8")
+        assert isinstance(provider, FallbackProvider)
+        names = [leg.name for leg in provider.legs]  # type: ignore[attr-defined]
+        assert names[0] == "openrouter:anthropic/claude-opus-4.8"
+        assert names[1] == "openrouter:anthropic/claude-sonnet-4.6"
+
+    def test_model_override_threads_through_ollama(self) -> None:
+        """model_override replaces the ollama leg's model (build_ollama_leg already supports it)."""
+        settings = Settings(generation_provider="ollama")  # type: ignore[call-arg]
+        provider = build_provider(settings, model_override="qwen3:30b")
+        assert isinstance(provider, OllamaProvider)
+        assert provider.name == "ollama:qwen3:30b"
+
+    def test_model_override_replaces_anthropic_model(self) -> None:
+        """model_override replaces the single anthropic leg's model."""
+        settings = Settings(  # type: ignore[call-arg]
+            generation_provider="anthropic", anthropic_api_key="test-key"
+        )
+        provider = build_provider(settings, model_override="claude-opus-4-8")
+        assert isinstance(provider, AnthropicProvider)
+        assert provider.model == "claude-opus-4-8"
+
+    def test_unknown_provider_override_raises_configuration_error(self) -> None:
+        """A provider_override outside the known branches raises, naming the value."""
+        settings = Settings()  # type: ignore[call-arg]
+        with pytest.raises(ConfigurationError) as exc_info:
+            build_provider(settings, provider_override="not-a-real-provider")
+        assert "not-a-real-provider" in str(exc_info.value)
 
 
 class TestSplitBasicAuth:
@@ -510,3 +590,384 @@ async def test_run_skeleton_fill_threads_stage1_params_into_fill_skeleton(
     assert captured["settings"] is config_settings
     assert captured["review_stage1_model"] == "admin-chosen-reviewer"
     assert captured["prep_model"] == "the-prep-model"
+
+
+class _FakeOverrideResult:
+    """Minimal ``session.scalars()`` return double: no rows, every time."""
+
+    def scalar_one_or_none(self) -> None:
+        return None
+
+
+class _OverrideCapturedError(Exception):
+    """Sentinel raised by the fake build_provider once it records the overrides.
+
+    Lets test_effective_provider_reads_job_authoring_override stop the run
+    deterministically right after the override is captured, so it can assert
+    on a specific exception type instead of a broad ``Exception`` and does not
+    depend on the fake session's downstream query behavior.
+    """
+
+
+class _FakeOverrideSession:
+    """Minimal session double for test_effective_provider_reads_job_authoring_override.
+
+    Module-level (not nested in the test body) so the test function's own
+    control flow stays simple; only the job/concept it was built with are
+    ever returned.
+    """
+
+    def __init__(self, job: object, concept: object) -> None:
+        self.job = job
+        self.concept = concept
+        self.added: list[object] = []
+
+    async def get(self, model: type, ident: object) -> object:
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        if model is GenerationJob and getattr(self.job, "id", None) == ident:
+            return self.job
+        if model is Concept and getattr(self.concept, "id", None) == ident:
+            return self.concept
+        return None
+
+    async def scalars(self, *_args: object, **_kwargs: object) -> _FakeOverrideResult:
+        return _FakeOverrideResult()
+
+    def add(self, obj: object) -> None:
+        # WS-D instruments the failure path: _record_failure writes a
+        # generation_failed PipelineEvent via record_event, which calls
+        # session.add. Capture it so the failure path runs to completion
+        # instead of raising AttributeError before the override read this
+        # test is checking.
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        # _load_and_start_job flushes the "running" status write before
+        # build_provider is ever reached; without this the fake session
+        # would raise AttributeError too early to exercise the override
+        # read this test is checking.
+        pass
+
+    async def commit(self) -> None:
+        pass
+
+    async def rollback(self) -> None:
+        pass
+
+
+# A valid ConceptBrief payload (mirrors tests/unit/test_worker_persistence.py's
+# seed) so generate_story can run the full pipeline to a terminal status.
+_FRESHGEN_BRIEF: dict[str, object] = {
+    "premise": "A brave explorer discovers a hidden garden.",
+    "protagonist": {"name": "Captain Rosa", "age": 9, "role": "young explorer"},
+    "point_of_view": "second",
+    "age_band": "8-11",
+    "reading_level_target": 3.0,
+    "tier": 1,
+    "tone": "adventurous",
+    "themes_allowed": ["exploration", "nature"],
+    "content_nogo": [],
+    "target_node_count": 4,
+    "ending_count": 1,
+    "structure_pattern": "time_cave",
+    "desired_variables": [],
+    "special_constraints": [],
+}
+
+
+class _FreshGenResult:
+    """SQLAlchemy Result double yielding no child-name rows (empty PII)."""
+
+    def all(self) -> list[tuple[str]]:
+        return []
+
+
+class _FreshGenSession:
+    """Full-pipeline session double: enough surface for generate_story +
+    persist + moderation to run a fresh_generation job to a terminal status.
+
+    Unlike _FakeOverrideSession (which deliberately fails downstream), this
+    supports the whole happy path so the routing assertion sees a real
+    terminal status rather than the skeleton_slug ResourceNotFoundError.
+    """
+
+    def __init__(self, job: object, concept: object) -> None:
+        self.job = job
+        self.concept = concept
+        self.added: list[object] = []
+
+    async def get(self, model: type, ident: object) -> object | None:
+        from cyo_adventure.db.models import Concept, GenerationJob
+
+        if model is GenerationJob and getattr(self.job, "id", None) == ident:
+            return self.job
+        if model is Concept and getattr(self.concept, "id", None) == ident:
+            return self.concept
+        return None
+
+    async def execute(self, *_args: object, **_kwargs: object) -> _FreshGenResult:
+        return _FreshGenResult()
+
+    async def scalar(self, *_args: object, **_kwargs: object) -> None:
+        # No owning StoryRequest -> link_series_position takes its no-op path.
+        return None
+
+    def add(self, obj: object) -> None:
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        pass
+
+    async def commit(self) -> None:
+        pass
+
+    async def rollback(self) -> None:
+        pass
+
+
+class TestEffectiveProviderPerJobOverride:
+    """run_generation_job reads a per-job provider/model override off the job row (WS-C PR1)."""
+
+    def test_authoring_provider_override_reads_string_only(self) -> None:
+        """A non-string 'provider' value in authoring_metadata is ignored, not trusted."""
+        from cyo_adventure.generation.worker import _authoring_provider_override
+
+        assert _authoring_provider_override(None) is None
+        assert _authoring_provider_override({"provider": "anthropic"}) == "anthropic"
+        assert _authoring_provider_override({"provider": 123}) is None
+        assert _authoring_provider_override({}) is None
+
+    def test_authoring_model_override_reads_string_only(self) -> None:
+        """A non-string 'model' value in authoring_metadata is ignored, not trusted."""
+        from cyo_adventure.generation.worker import _authoring_model_override
+
+        assert _authoring_model_override(None) is None
+        assert (
+            _authoring_model_override({"model": "claude-opus-4-8"}) == "claude-opus-4-8"
+        )
+        assert _authoring_model_override({"model": None}) is None
+
+    @pytest.mark.asyncio
+    async def test_effective_provider_reads_job_authoring_override(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """run_generation_job builds the provider AFTER the job row loads, honoring
+        the job's authoring_metadata provider/model override over global settings.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        captured: dict[str, object] = {}
+
+        def fake_build_provider(
+            settings: object,
+            *,
+            provider_override: str | None,
+            model_override: str | None,
+        ) -> MockProvider:
+            captured["provider_override"] = provider_override
+            captured["model_override"] = model_override
+            # Stop the run right here: this test only checks that
+            # build_provider was called with the job's override, so raise a
+            # specific sentinel rather than letting the run fail later with an
+            # unpredictable downstream error.
+            raise _OverrideCapturedError
+
+        monkeypatch.setattr(worker_module, "build_provider", fake_build_provider)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata={"provider": "anthropic", "model": "claude-opus-4-8"},
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief={"age_band": "8-11"}
+        )
+
+        # This test asserts only that build_provider is CALLED with the job's
+        # override before the pipeline runs. It does not drive the full
+        # pipeline (the existing end-to-end worker tests cover that): the fake
+        # build_provider records the overrides into `captured` and then raises
+        # _OverrideCapturedError to stop the run immediately. The real assertion is
+        # on `captured`.
+        session_ctx = _FakeOverrideSession(job, concept)
+
+        def factory() -> object:
+            # session_factory must be a plain (sync) callable returning an
+            # async context manager directly, matching get_session()'s
+            # signature; an `async def` here would return an unawaited
+            # coroutine instead of the context manager `async with` needs.
+            class _Ctx:
+                async def __aenter__(self) -> _FakeOverrideSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        # The sentinel raised by the fake build_provider propagates out of
+        # run_generation_job after _record_failure records the failure (the
+        # worker re-raises unexpected exceptions so RQ marks the job failed).
+        # This is an async test inside pytest-asyncio's event loop, so the
+        # coroutine is awaited directly rather than via asyncio.run.
+        with pytest.raises(_OverrideCapturedError):
+            await worker_module.run_generation_job(job_id, session_factory=factory)
+
+        assert captured["provider_override"] == "anthropic"
+        assert captured["model_override"] == "claude-opus-4-8"
+
+    @pytest.mark.asyncio
+    async def test_effective_provider_config_error_does_not_crash_finally(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A ConfigurationError raised DURING provider resolution must not turn the
+        finally guard into an UnboundLocalError.
+
+        This pins the exact invariant the ``#CRITICAL: concurrency`` comment in
+        run_generation_job claims: ``effective_provider`` is bound to the
+        injected ``provider`` arg (None in production) BEFORE the ``try``, so
+        when ``build_provider`` raises while resolving the live adapter (after
+        the job row loads, while ``effective_provider`` is still None), the
+        top-level ``finally`` guard can still call
+        ``_record_failure(..., provider=effective_provider)`` without an
+        ``UnboundLocalError``. If the binding were moved inside the ``try``
+        (after the ``build_provider`` call), that call would raise before the
+        assignment, the ``finally`` would reference an unbound local, and the
+        ``UnboundLocalError`` would replace the ConfigurationError, failing the
+        ``pytest.raises(ConfigurationError)`` below.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        def raising_build_provider(
+            settings: object,
+            *,
+            provider_override: str | None,
+            model_override: str | None,
+        ) -> object:
+            msg = "no such provider"
+            raise ConfigurationError(msg)
+
+        monkeypatch.setattr(worker_module, "build_provider", raising_build_provider)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata=None,
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief={"age_band": "8-11"}
+        )
+        session_ctx = _FakeOverrideSession(job, concept)
+
+        def factory() -> object:
+            class _Ctx:
+                async def __aenter__(self) -> _FakeOverrideSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        # No injected provider -> effective_provider is None when build_provider
+        # runs. build_provider raises ConfigurationError DURING resolution. The
+        # function has no `except`, so that error re-propagates out of the
+        # try/finally AFTER the finally guard runs. The guard's _record_failure
+        # call must succeed (effective_provider bound to the pre-try None), so
+        # what surfaces is the ConfigurationError, never an UnboundLocalError.
+        with pytest.raises(ConfigurationError):
+            await worker_module.run_generation_job(job_id, session_factory=factory)
+
+        # Finally-guard side effect reached: the still-"running" row was
+        # force-failed via _record_failure (which tolerates provider=None).
+        # This proves the guard ran to completion rather than dying on an
+        # UnboundLocalError before recording anything.
+        assert job.status == "failed"
+        assert job.error == "interrupted"
+
+    @pytest.mark.asyncio
+    async def test_fresh_generation_with_provider_override_routes_to_generate_story(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A fresh_generation job whose authoring_metadata carries only
+        provider/model (NO skeleton_slug) must route to generate_story, not
+        skeleton fill.
+
+        Regression guard for the routing discriminator: build_authoring_plan
+        now stamps ``{"provider", "model"}`` on EVERY automated_provider job,
+        including fresh_generation. If the worker routed on ``authoring is not
+        None`` (the pre-fix signal), this job would be misrouted into
+        _run_skeleton_fill and die with
+        ``ResourceNotFoundError("authoring_metadata.skeleton_slug is missing or
+        not a string")`` on every run. Routing on a string ``skeleton_slug``
+        instead sends it to generate_story, which reaches a terminal status.
+        """
+        import uuid as uuid_mod
+
+        from cyo_adventure.db.models import Concept, GenerationJob
+        from cyo_adventure.generation import worker as worker_module
+
+        # Moderation is not the unit under test; stub it so a passed outcome
+        # can commit terminally (mirrors the persistence-test pattern).
+        monkeypatch.setattr(worker_module, "run_moderation_pipeline", AsyncMock())
+
+        # Sentinel so a misroute is loud: if the worker ever calls skeleton
+        # fill for this job, fail with a clear message instead of the opaque
+        # ResourceNotFoundError.
+        async def _no_skeleton_fill(*_args: object, **_kwargs: object) -> object:
+            pytest.fail("fresh_generation job was misrouted to _run_skeleton_fill")
+
+        monkeypatch.setattr(worker_module, "_run_skeleton_fill", _no_skeleton_fill)
+
+        job_id = uuid_mod.uuid4()
+        concept_id = uuid_mod.uuid4()
+
+        job = GenerationJob(
+            id=job_id,
+            concept_id=concept_id,
+            status="queued",
+            authoring_metadata={"provider": "anthropic", "model": "claude-opus-4-8"},
+        )
+        concept = Concept(
+            id=concept_id, family_id=uuid_mod.uuid4(), brief=_FRESHGEN_BRIEF
+        )
+        concept.created_by = uuid_mod.uuid4()
+        session_ctx = _FreshGenSession(job, concept)
+
+        def factory() -> object:
+            class _Ctx:
+                async def __aenter__(self) -> _FreshGenSession:
+                    return session_ctx
+
+                async def __aexit__(self, *exc: object) -> None:
+                    return None
+
+            return _Ctx()
+
+        # Inject a mock provider so generate_story never makes a live call; the
+        # canned story drives the pipeline to a clean terminal status.
+        await worker_module.run_generation_job(
+            job_id,
+            provider=MockProvider(responses=[_CANNED_STORY_JSON] * 8),
+            session_factory=factory,
+        )
+
+        # Reached a real terminal status via generate_story, NOT the
+        # skeleton_slug ResourceNotFoundError (the misroute would have tripped
+        # the _no_skeleton_fill sentinel above and failed the test first).
+        assert job.status in {"passed", "needs_review", "failed"}

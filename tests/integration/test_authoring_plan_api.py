@@ -7,8 +7,9 @@ from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING
 
 import pytest
+import pytest_asyncio
 
-from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.db.models import GenerationJob, ProviderModelAllowlist
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
@@ -20,6 +21,25 @@ if TYPE_CHECKING:
 pytestmark = pytest.mark.asyncio
 
 _CREATE = "/api/v1/story-requests"
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def _seed_allowlist(sessions: async_sessionmaker[AsyncSession]) -> None:
+    """Seed one enabled allowlist row so automated_provider requests validate.
+
+    Every test in this module either exercises mechanism='automated_provider'
+    (which now requires an enabled allowlist pair) or is unaffected by the
+    allowlist (mechanism='skill'); seeding one canonical row here keeps every
+    existing test body's literal provider/model working without a per-test
+    insert.
+    """
+    async with sessions() as session:
+        session.add(
+            ProviderModelAllowlist(
+                provider="anthropic", model_id="claude-sonnet-4-6", enabled=True
+            )
+        )
+        await session.commit()
 
 
 async def _approved_request_id(client: AsyncClient, seed: Seed, text: str) -> str:
@@ -77,6 +97,8 @@ async def test_fresh_generation_automated_provider_enqueues(
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -142,6 +164,8 @@ async def test_skeleton_fill_automated_provider_enqueues(
         json={
             "method": "skeleton_fill",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -194,6 +218,8 @@ async def test_not_yet_approved_is_409(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -207,6 +233,8 @@ async def test_duplicate_authoring_plan_is_409(client: AsyncClient, seed: Seed) 
     body = {
         "method": "fresh_generation",
         "mechanism": "automated_provider",
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
         "prep_model": "openrouter/some-model",
     }
     first = await client.post(
@@ -227,6 +255,8 @@ async def test_guardian_forbidden(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.guardian_token),
@@ -242,6 +272,8 @@ async def test_child_forbidden(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.child_token),
@@ -256,6 +288,8 @@ async def test_unknown_request_is_404(client: AsyncClient, seed: Seed) -> None:
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),
@@ -278,6 +312,8 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
         json={
             "method": "skeleton_fill",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "mock",
         },
         headers=auth(seed.admin_token),
@@ -285,19 +321,25 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
     assert res.status_code == 201, res.text
     job_id = res.json()["job_id"]
 
-    # #ASSUME: external-resources: this test relies on settings.generation_provider
-    # defaulting to "mock" in the test environment (see core/config.py), the
-    # same default every other worker-path integration test in this project
-    # relies on; a mock provider cannot produce a schema-valid filled skeleton
-    # from a real prompt, so this test only asserts the job REACHES a terminal
-    # status (passed/needs_review/failed), not that it passes cleanly.
-    # #VERIFY: if this assumption ever breaks, this test starts hanging or
-    # erroring on a real network call instead of reaching a terminal status.
+    # #ASSUME: external-resources: this test runs the worker against an
+    # explicitly-injected mock provider so it stays hermetic (no network). The
+    # request body sets provider="anthropic", and the worker now honors that
+    # per-job override over the settings default; passing a non-None provider
+    # here intentionally bypasses that override so the test does not need a real
+    # ANTHROPIC_API_KEY. The override-read path itself is unit-tested in
+    # test_worker.py::test_effective_provider_reads_job_authoring_override. A
+    # mock provider cannot produce a schema-valid filled skeleton from a real
+    # prompt, so this test only asserts the job REACHES a terminal status
+    # (passed/needs_review/failed), not that it passes cleanly.
+    # #VERIFY: if the injected provider is ever removed, this test starts making
+    # a real network call instead of reaching a terminal status hermetically.
+    from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
     from cyo_adventure.generation.worker import run_generation_job
 
     await run_generation_job(
         uuid.UUID(job_id),
         session_factory=_make_session_factory(sessions),
+        provider=MockProvider(responses=[_CANNED_STORY_JSON] * 8),
     )
 
     res = await client.get(
@@ -305,3 +347,22 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
     )
     assert res.status_code == 200, res.text
     assert res.json()["status"] in {"passed", "needs_review", "failed"}
+
+
+async def test_automated_provider_unallowlisted_model_is_422(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A provider/model pair with no enabled allowlist row is rejected."""
+    req_id = await _approved_request_id(client, seed, "a stray comet")
+    res = await client.post(
+        f"{_CREATE}/{req_id}/authoring-plan",
+        json={
+            "method": "fresh_generation",
+            "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "not-a-real-model",
+            "prep_model": "openrouter/some-model",
+        },
+        headers=auth(seed.admin_token),
+    )
+    assert res.status_code == 422, res.text

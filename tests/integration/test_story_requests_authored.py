@@ -212,6 +212,8 @@ async def test_blocked_authored_row_is_terminal(
         json={
             "method": "fresh_generation",
             "mechanism": "automated_provider",
+            "provider": "anthropic",
+            "model": "claude-sonnet-4-6",
             "prep_model": "openrouter/some-model",
         },
         headers=auth(seed.admin_token),

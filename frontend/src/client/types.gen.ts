@@ -12,6 +12,82 @@ export type ClientOptions = {
 export type AgeBand = '3-5' | '5-8' | '8-11' | '10-13' | '13-16' | '16+';
 
 /**
+ * AllowlistCreateBody
+ *
+ * POST body to add a new allowlist row.
+ */
+export type AllowlistCreateBody = {
+    /**
+     * Provider
+     */
+    provider: 'anthropic' | 'openrouter' | 'modal' | 'ollama';
+    /**
+     * Model Id
+     */
+    model_id: string;
+    /**
+     * Display Name
+     */
+    display_name?: string | null;
+};
+
+/**
+ * AllowlistListView
+ *
+ * The whole allowlist table, ordered by (provider, model_id).
+ */
+export type AllowlistListView = {
+    /**
+     * Rows
+     */
+    rows: Array<AllowlistView>;
+};
+
+/**
+ * AllowlistUpdateBody
+ *
+ * PUT body: full replace of the mutable fields (mirrors ThresholdUpsertBody).
+ */
+export type AllowlistUpdateBody = {
+    /**
+     * Enabled
+     */
+    enabled: boolean;
+    /**
+     * Display Name
+     */
+    display_name?: string | null;
+};
+
+/**
+ * AllowlistView
+ *
+ * One provider/model allowlist row.
+ */
+export type AllowlistView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Provider
+     */
+    provider: 'anthropic' | 'openrouter' | 'modal' | 'ollama';
+    /**
+     * Model Id
+     */
+    model_id: string;
+    /**
+     * Enabled
+     */
+    enabled: boolean;
+    /**
+     * Display Name
+     */
+    display_name: string | null;
+};
+
+/**
  * AnchorContext
  *
  * Soft-continuation context extracted from a series anchor storybook.
@@ -122,7 +198,11 @@ export type AssignmentListView = {
  *
  * ``review_stage1_model`` / ``review_stage2_model`` are optional overrides
  * for the Stage 1 fidelity review and Stage 2 model, used only when
- * method='skeleton_fill'.
+ * method='skeleton_fill'. ``provider``/``model`` (WS-C PR1) select the
+ * generation backend when ``mechanism='automated_provider'``; both are
+ * required together in that case and are validated against the enabled
+ * provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
+ * the schema layer cannot perform).
  */
 export type AuthoringPlanRequest = {
     /**
@@ -137,6 +217,14 @@ export type AuthoringPlanRequest = {
      * Prep Model
      */
     prep_model: string;
+    /**
+     * Provider
+     */
+    provider?: 'anthropic' | 'openrouter' | 'modal' | 'ollama' | null;
+    /**
+     * Model
+     */
+    model?: string | null;
     /**
      * Review Stage1 Model
      */
@@ -3114,6 +3202,140 @@ export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses = {
 };
 
 export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponse = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses];
+
+export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/provider-allowlist';
+};
+
+export type ListAllowlistApiV1AdminProviderAllowlistGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListAllowlistApiV1AdminProviderAllowlistGetError = ListAllowlistApiV1AdminProviderAllowlistGetErrors[keyof ListAllowlistApiV1AdminProviderAllowlistGetErrors];
+
+export type ListAllowlistApiV1AdminProviderAllowlistGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: AllowlistListView;
+};
+
+export type ListAllowlistApiV1AdminProviderAllowlistGetResponse = ListAllowlistApiV1AdminProviderAllowlistGetResponses[keyof ListAllowlistApiV1AdminProviderAllowlistGetResponses];
+
+export type AddAllowlistEntryApiV1AdminProviderAllowlistPostData = {
+    body: AllowlistCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/provider-allowlist';
+};
+
+export type AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type AddAllowlistEntryApiV1AdminProviderAllowlistPostError = AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors[keyof AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors];
+
+export type AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: AllowlistView;
+};
+
+export type AddAllowlistEntryApiV1AdminProviderAllowlistPostResponse = AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses[keyof AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses];
+
+export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Entry Id
+         */
+        entry_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/provider-allowlist/{entry_id}';
+};
+
+export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteError = DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors[keyof DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors];
+
+export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    200: AllowlistListView;
+};
+
+export type DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponse = DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses[keyof DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses];
+
+export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData = {
+    body: AllowlistUpdateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Entry Id
+         */
+        entry_id: string;
+    };
+    query?: never;
+    url: '/api/v1/admin/provider-allowlist/{entry_id}';
+};
+
+export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutError = UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors[keyof UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors];
+
+export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses = {
+    /**
+     * Successful Response
+     */
+    200: AllowlistView;
+};
+
+export type UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponse = UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses[keyof UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses];
 
 export type WhoamiApiV1MeGetData = {
     body?: never;

@@ -100,6 +100,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   id, the approve path re-syncs that id from the resolved anchor, and the
   book_index retry loop only retries the genuine unique-index conflict
   (WS-B PR 3 review hardening).
+- A DB-backed, admin-editable provider/model allowlist with a full audit
+  trail (`/api/v1/admin/provider-allowlist`); a direct-Anthropic generation
+  provider via the official SDK (canonical name `anthropic`, replacing the
+  dead `claude` literal); `build_provider()` is now a per-job factory so an
+  admin's chosen provider/model on the authoring-plan step overrides the
+  global default (WS-C PR 1).
 - Append-only `pipeline_event` log capturing every story-lifecycle transition
   (request, plan, generation, moderation, release, threshold, assignment, rating),
   the capture layer for the learning loop (WS-D).
