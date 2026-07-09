@@ -82,6 +82,11 @@ export const ModerationThresholdsPage = lazy(() =>
     default: m.ModerationThresholdsPage,
   }))
 )
+export const ModerationDashboardPage = lazy(() =>
+  import('./guardian/ModerationDashboardPage').then((m) => ({
+    default: m.ModerationDashboardPage,
+  }))
+)
 export const ReaderRoute = lazy(() =>
   import('./reader/ReaderRoute').then((m) => ({ default: m.ReaderRoute }))
 )
