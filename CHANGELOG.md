@@ -109,6 +109,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Append-only `pipeline_event` log capturing every story-lifecycle transition
   (request, plan, generation, moderation, release, threshold, assignment, rating),
   the capture layer for the learning loop (WS-D).
+- Admin moderation suggestion dashboard (WS-F): override evidence per
+  (age band, category) aggregated from persisted moderation reports and the
+  pipeline event log, computed threshold suggestions behind volume and rate
+  gates, and an apply control that ratifies a suggestion through the existing
+  audited threshold upsert. Two new admin-only GET endpoints under
+  `/api/v1/admin/moderation/`; no migration, no new event type, no
+  auto-calibration.
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
