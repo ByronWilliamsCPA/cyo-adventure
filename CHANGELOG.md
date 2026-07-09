@@ -92,6 +92,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   id, the approve path re-syncs that id from the resolved anchor, and the
   book_index retry loop only retries the genuine unique-index conflict
   (WS-B PR 3 review hardening).
+- A DB-backed, admin-editable provider/model allowlist with a full audit
+  trail (`/api/v1/admin/provider-allowlist`); a direct-Anthropic generation
+  provider via the official SDK (canonical name `anthropic`, replacing the
+  dead `claude` literal); `build_provider()` is now a per-job factory so an
+  admin's chosen provider/model on the authoring-plan step overrides the
+  global default (WS-C PR 1).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
