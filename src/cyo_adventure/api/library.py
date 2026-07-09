@@ -1,14 +1,16 @@
 """Library and story-fetch endpoints.
 
-A child sees only published stories in their own family. Per-profile age-band and
-reading-level cap filtering is a Phase 4a concern; Phase 1 lists every published
-story in the family and enforces profile/family access. Listing additionally
-requires admin approval: only versions whose ``approved_by IS NOT NULL`` (the
-recorded human approver) are returned. Story fetch returns the immutable
-Storybook JSON blob for a specific version: a global admin may read any version
-cross-family (to review drafts), while a guardian or child receives 404 (not
-403, so a draft's existence is not revealed) for any unpublished, unapproved, or
-non-current version.
+A child sees only published stories in their own family, plus any
+visibility='catalog' story assigned to their profile (WS-E Task 13). Per-profile
+age-band and reading-level cap filtering is a Phase 4a concern; Phase 1 lists
+every published story in the family (or the catalog) and enforces
+profile/family/assignment access. Listing additionally requires admin approval:
+only versions whose ``approved_by IS NOT NULL`` (the recorded human approver)
+are returned. Story fetch returns the immutable Storybook JSON blob for a
+specific version: a global admin may read any version cross-family (to review
+drafts), a visibility='catalog' book is readable cross-family too, while a
+guardian or child otherwise receives 404 (not 403, so a draft's existence is not
+revealed) for any unpublished, unapproved, or non-current version.
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ import uuid
 from typing import TYPE_CHECKING, TypeGuard
 
 from fastapi import APIRouter
-from sqlalchemy import and_, exists, select, tuple_
+from sqlalchemy import and_, exists, or_, select, tuple_
 
 from cyo_adventure.api.deps import (
     CurrentPrincipal,
@@ -36,6 +38,7 @@ from cyo_adventure.db.models import (
     StorybookAssignment,
     StorybookVersion,
 )
+from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -267,10 +270,13 @@ async def list_library(
     Returns:
         LibraryView: The published stories in the profile's family.
     """
-    # #CRITICAL: security: the library is scoped to the principal's own family,
-    # the requested profile is authorized, only APPROVED published versions are
-    # listed, AND the story must be assigned to this profile (the read-path leg
-    # of the no-unpermitted-story invariant).
+    # #CRITICAL: security: the library includes the principal's own family AND
+    # any visibility='catalog' book (WS-E Task 13: a cross-family catalog book
+    # must be listable once assigned), the requested profile is authorized,
+    # only APPROVED published versions are listed, AND the story must be
+    # assigned to this profile (the read-path leg of the no-unpermitted-story
+    # invariant); the assignment EXISTS clause is the gate for catalog books
+    # too, unchanged by this widening.
     # #VERIFY: the join requires approved_by IS NOT NULL; the EXISTS requires a
     # storybook_assignment row for (this story, this profile).
     parsed = _parse_profile_id(profile_id)
@@ -285,7 +291,10 @@ async def list_library(
             ),
         )
         .where(
-            Storybook.family_id == principal.family_id,
+            or_(
+                Storybook.family_id == principal.family_id,
+                Storybook.visibility == Visibility.CATALOG.value,
+            ),
             Storybook.status == _PUBLISHED,
             Storybook.current_published_version.is_not(None),
             StorybookVersion.approved_by.is_not(None),
@@ -380,12 +389,15 @@ async def get_storybook_version(
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
     # #CRITICAL: security: a global admin may read any version of any family (to
-    # review drafts). A guardian or child is scoped to their own family and may
-    # read ONLY the approved, published, current version; 404 (not 403) so a
-    # draft's existence is not revealed.
-    # #VERIFY: non-admin cross-family -> 403; non-admin + (unpublished |
-    # non-current | unapproved) -> 404; admin -> any blob.
-    if not principal.is_admin:
+    # review drafts). A visibility='catalog' book is readable cross-family too
+    # (WS-E Task 13: guardian preview parity with the content-summary endpoint;
+    # a child still needs the StorybookAssignment row checked below). Otherwise
+    # a guardian or child is scoped to their own family and may read ONLY the
+    # approved, published, current version; 404 (not 403) so a draft's
+    # existence is not revealed.
+    # #VERIFY: non-admin, non-catalog, cross-family -> 403; non-admin +
+    # (unpublished | non-current | unapproved) -> 404; admin -> any blob.
+    if not principal.is_admin and book.visibility != Visibility.CATALOG.value:
         authorize_family(principal, book.family_id)
     version_row = await session.get(StorybookVersion, (storybook_id, version))
     if version_row is None:
