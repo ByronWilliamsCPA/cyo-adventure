@@ -101,7 +101,7 @@ identity.
 ### `covers/provider.py` - nano banana call
 
 **Purpose:** call Gemini image generation and return raw image bytes. Mirrors
-the convention in `/home/byron/dev/python-libs/packages/gemini-image` but is
+the convention in the `gemini-image` package but is
 self-contained so CYO does not depend on that monorepo.
 
 **Interface:** `generate_cover_image(prompt: str, settings: Settings) -> bytes`

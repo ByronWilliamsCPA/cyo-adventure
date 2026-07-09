@@ -87,3 +87,99 @@ async def test_missing_config_returns_400(
         headers=auth(seed.admin_token),
     )
     assert resp.status_code == 400
+
+
+async def test_request_cover_not_found_returns_404(
+    client: AsyncClient, seed: Seed, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("cyo_adventure.api.covers.settings", _CONFIGURED)
+    resp = await client.post(
+        "/api/v1/storybooks/does-not-exist/versions/1/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 404
+
+
+async def test_request_cover_already_generating_is_noop(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("cyo_adventure.api.covers.settings", _CONFIGURED)
+    calls: list[object] = []
+
+    def _fake_enqueue(*args: object, **_kwargs: object) -> str:
+        calls.append(args)
+        return "job"
+
+    monkeypatch.setattr("cyo_adventure.api.covers.enqueue_cover", _fake_enqueue)
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        row.cover_status = "generating"
+        await s.commit()
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["cover_status"] == "generating"
+    # An in-flight cover must not enqueue a second (billable) job.
+    assert calls == []
+
+
+async def test_request_cover_enqueue_failure_marks_failed(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr("cyo_adventure.api.covers.settings", _CONFIGURED)
+
+    def _boom(*_args: object, **_kwargs: object) -> str:
+        msg = "redis down"
+        raise RuntimeError(msg)
+
+    monkeypatch.setattr("cyo_adventure.api.covers.enqueue_cover", _boom)
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code >= 400
+    # The row must not be stranded in 'generating' when the enqueue fails.
+    async with sessions() as s:
+        row = await s.get(StorybookVersion, (seed.storybook_id, seed.version))
+        assert row is not None
+        assert row.cover_status == "failed"
+
+
+async def test_cover_status_admin_returns_status(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 200
+    assert resp.json()["cover_status"] == "none"
+
+
+async def test_cover_status_non_admin_forbidden(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.get(
+        f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403
+
+
+async def test_cover_status_not_found_returns_404(
+    client: AsyncClient, seed: Seed
+) -> None:
+    resp = await client.get(
+        "/api/v1/storybooks/does-not-exist/versions/1/cover",
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 404

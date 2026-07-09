@@ -355,7 +355,10 @@ class Settings(BaseSettings):
     )
     covers_bucket: str = "covers"
     covers_backup_dir: str | None = None
-    cover_model: str = "gemini-3-pro-image-preview"
+    # #ASSUME: external resources: the "-preview" alias was retired on the
+    # Gemini API (shutdown 2026-06-25); the stable Nano Banana Pro id is used.
+    # #VERIFY: override via COVER_MODEL if Google renames the stable channel.
+    cover_model: str = "gemini-3-pro-image"
     cover_max_width: int = 800
     cover_quality: int = 80
     cover_max_bytes: int = 256_000

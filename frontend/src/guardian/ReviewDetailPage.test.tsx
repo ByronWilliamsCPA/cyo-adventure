@@ -125,6 +125,21 @@ describe('ReviewDetailPage', () => {
     expect(generateButton).toBeEnabled()
   })
 
+  it('reflects an in-flight cover job on mount by seeding status from the server', async () => {
+    // The review surface load and the cover-status seed are both GETs; return
+    // an in-flight cover for the cover endpoint and the surface for the rest.
+    mockGet.mockImplementation((url: string) =>
+      typeof url === 'string' && url.endsWith('/cover')
+        ? Promise.resolve({ data: { cover_status: 'generating', cover_url: null } })
+        : Promise.resolve({ data: SURFACE })
+    )
+    renderAt('s1')
+    // Without any click, the button reflects the in-flight job and is disabled,
+    // so the reviewer cannot trigger a duplicate enqueue.
+    const generating = await screen.findByRole('button', { name: /Generating cover/i })
+    expect(generating).toBeDisabled()
+  })
+
   it.each(['published', 'draft'] as const)(
     'disables Approve and Send Back for a %s story while keeping their labels',
     async (status) => {

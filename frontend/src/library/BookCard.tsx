@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { ProgressBar } from '@ds/components/ProgressBar'
@@ -18,12 +19,20 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
   const readTo = `/read/${profileId}/${item.id}/${item.version}`
   const pct = percentComplete(item)
   const started = item.progress !== null
+  // A broken or expired cover URL falls back to the letter tile instead of
+  // rendering a broken-image icon.
+  const [coverError, setCoverError] = useState(false)
   return (
     <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
       <Link className="book-card__link" to={readTo}>
         <div className="book-card__tile" aria-hidden="true">
-          {item.cover_url ? (
-            <img className="book-card__cover" src={item.cover_url} alt="" />
+          {item.cover_url && !coverError ? (
+            <img
+              className="book-card__cover"
+              src={item.cover_url}
+              alt=""
+              onError={() => setCoverError(true)}
+            />
           ) : (
             <span className="book-card__letter">
               {item.title.charAt(0).toUpperCase()}

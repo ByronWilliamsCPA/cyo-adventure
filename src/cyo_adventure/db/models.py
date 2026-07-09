@@ -245,7 +245,9 @@ class StorybookVersion(Base):
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
-    cover_status: Mapped[str] = mapped_column(String(20), default="none")
+    cover_status: Mapped[str] = mapped_column(
+        String(20), default="none", server_default="none"
+    )
 
     __table_args__ = (
         CheckConstraint(

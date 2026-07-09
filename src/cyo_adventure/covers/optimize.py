@@ -45,7 +45,7 @@ def optimize_cover(
         img = src.convert("RGB")
     if img.width > max_width:
         height = max(1, round(img.height * (max_width / img.width)))
-        img = img.resize((max_width, height))
+        img = img.resize((max_width, height), Image.Resampling.LANCZOS)
     q = quality
     while True:
         save_quality = max(q, 0)
