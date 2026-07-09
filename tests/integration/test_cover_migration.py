@@ -16,8 +16,8 @@ from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
 # relative target silently retargets whenever a later migration lands on top,
 # which is the lesson from PR #108 (see test_storybook_version_provider_migration.py
 # for the same pattern).
-_PREV_HEAD = "e1f2a3b4c5d6"
-_COVER_HEAD = "f2a3b4c5d6e7"
+_PREV_HEAD = "f2a3b4c5d6e7"
+_COVER_HEAD = "a3b4c5d6e7f8"
 
 
 @pytest.mark.integration

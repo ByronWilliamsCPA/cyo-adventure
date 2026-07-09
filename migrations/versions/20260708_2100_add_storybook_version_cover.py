@@ -1,7 +1,7 @@
 """Add storybook_version cover columns (book-cover feature, Task 2).
 
-Revision ID: f2a3b4c5d6e7
-Revises: e1f2a3b4c5d6
+Revision ID: a3b4c5d6e7f8
+Revises: f2a3b4c5d6e7
 Create Date: 2026-07-08 21:00:00
 """
 
@@ -10,8 +10,8 @@ from __future__ import annotations
 import sqlalchemy as sa
 from alembic import op
 
-revision = "f2a3b4c5d6e7"
-down_revision = "e1f2a3b4c5d6"
+revision = "a3b4c5d6e7f8"
+down_revision = "f2a3b4c5d6e7"
 branch_labels = None
 depends_on = None
 

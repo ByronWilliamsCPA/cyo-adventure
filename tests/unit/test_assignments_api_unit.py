@@ -130,6 +130,7 @@ class TestAssignStorybook:
     @pytest.mark.asyncio
     async def test_guardian_assigns_returns_sorted_ids(self) -> None:
         from cyo_adventure.api.assignments import assign_storybook
+        from cyo_adventure.db.models import StorybookAssignment
 
         fam = uuid.uuid4()
         p1, p2 = uuid.uuid4(), uuid.uuid4()
@@ -140,7 +141,10 @@ class TestAssignStorybook:
         )
         assert view.storybook_id == "s1"
         assert view.profile_ids == sorted([str(p1), str(p2)])
-        assert len(session.added) == 2
+        added_assignments = [
+            obj for obj in session.added if isinstance(obj, StorybookAssignment)
+        ]
+        assert len(added_assignments) == 2
         assert session.flushed
 
     @pytest.mark.unit
@@ -161,13 +165,17 @@ class TestAssignStorybook:
     async def test_duplicate_profile_ids_insert_once(self) -> None:
         """Duplicate ids in one request must not double-insert."""
         from cyo_adventure.api.assignments import assign_storybook
+        from cyo_adventure.db.models import StorybookAssignment
 
         fam = uuid.uuid4()
         p1 = uuid.uuid4()
         session = _FakeSession(book=_book("s1", fam))
         body = AssignmentCreateBody(profile_ids=[str(p1), str(p1)])
         view = await assign_storybook("s1", body, _ctx(_guardian(fam, {p1}), session))
-        assert len(session.added) == 1
+        added_assignments = [
+            obj for obj in session.added if isinstance(obj, StorybookAssignment)
+        ]
+        assert len(added_assignments) == 1
         assert view.profile_ids == [str(p1)]
 
     @pytest.mark.unit
