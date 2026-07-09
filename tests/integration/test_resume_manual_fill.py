@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, cast
 import pytest
 
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.db.models import Concept, GenerationJob
+from cyo_adventure.db.models import Concept, GenerationJob, StorybookVersion
 from cyo_adventure.generation import import_story as import_story_module
 from cyo_adventure.generation.fidelity import parse_fill_directive
 from cyo_adventure.generation.import_story import resume_manual_fill
@@ -40,9 +40,20 @@ _SKELETON_PATH = (
     / f"{_SKELETON_SLUG}.json"
 )
 
+# A real 13-16 skeleton (a different band from _SKELETON_AGE_BAND above), used
+# by the cross-band override tests below (WS-C PR2 final review C1).
+_CROSS_BAND_SKELETON_SLUG = "the-sunspire-ascent"
+_CROSS_BAND_SKELETON_BAND = "13-16"
+_CROSS_BAND_SKELETON_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "skeletons"
+    / _CROSS_BAND_SKELETON_BAND
+    / f"{_CROSS_BAND_SKELETON_SLUG}.json"
+)
 
-def _filled_skeleton_blob() -> dict[str, object]:
-    """Return the real skeleton with every FILL body replaced by placeholder prose.
+
+def _filled_blob_for(skeleton_path: Path) -> dict[str, object]:
+    """Return the given skeleton with every FILL body replaced by placeholder prose.
 
     Each node's FILL directive is swapped for text sized to the directive's
     declared word target; every other field (id, choices minus label,
@@ -51,7 +62,7 @@ def _filled_skeleton_blob() -> dict[str, object]:
     This keeps the blob's top-level "id" identical to the skeleton's, which
     the Stage 1 structural check requires.
     """
-    skeleton = load_skeleton(_SKELETON_PATH)
+    skeleton = load_skeleton(skeleton_path)
     filled = copy.deepcopy(skeleton)
     for node in cast("list[dict[str, object]]", filled["nodes"]):
         body = node.get("body")
@@ -60,6 +71,11 @@ def _filled_skeleton_blob() -> dict[str, object]:
             words = max(int(directive["words"]), 1)
             node["body"] = " ".join(["word"] * words)
     return filled
+
+
+def _filled_skeleton_blob() -> dict[str, object]:
+    """Return the real 8-11 skeleton with every FILL body replaced by placeholder prose."""
+    return _filled_blob_for(_SKELETON_PATH)
 
 
 async def _parked_job(
@@ -248,3 +264,77 @@ async def test_resume_survives_skeleton_file_deleted_after_persist(
             assert job.version == 1
     finally:
         test_skeleton_path.unlink(missing_ok=True)
+
+
+async def test_resume_cross_band_override_loads_stored_band(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """C1: a cross-band override resumes using the STORED skeleton_band, not
+    the concept's own request band.
+
+    The concept's brief carries age_band="8-11" (the request's own band), but
+    the parked job's authoring_metadata carries a 13-16 override
+    (skeleton_slug="the-sunspire-ascent", skeleton_band="13-16"). Before the
+    C1 fix, resume_manual_fill built the path from the concept's band
+    ("8-11"), which does not contain this skeleton, and the Stage 1 gate
+    degraded to "needs_review" with a missing-skeleton error instead of
+    actually verifying the fill. This test's blob is filled against the REAL
+    13-16 skeleton, so it only reaches "passed" if the fill path resolved
+    skeletons/13-16/the-sunspire-ascent.json -- i.e. only if C1.3 is intact.
+    """
+    async with sessions() as session:
+        concept = Concept(
+            family_id=seed.family_id, brief={"age_band": "8-11", "premise": "x"}
+        )
+        session.add(concept)
+        await session.flush()
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="awaiting_manual_fill",
+            model="sonnet",
+            authoring_metadata={
+                "skeleton_slug": _CROSS_BAND_SKELETON_SLUG,
+                "skeleton_band": _CROSS_BAND_SKELETON_BAND,
+                "theme_brief": {},
+            },
+        )
+        session.add(job)
+        await session.commit()
+        job_id = job.id
+
+    blob = _filled_blob_for(_CROSS_BAND_SKELETON_PATH)
+
+    async with sessions() as session:
+        story_id, status = await resume_manual_fill(session, job_id, blob)
+        await session.commit()
+    assert story_id
+    assert status == "passed"
+
+    async with sessions() as session:
+        refreshed = await session.get(GenerationJob, job_id)
+        assert refreshed is not None
+        assert refreshed.status == "passed"
+        assert refreshed.storybook_id == story_id
+
+
+async def test_resume_persists_skeleton_slug_provenance(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """I1: the resumed StorybookVersion carries the job's matched skeleton_slug.
+
+    Before this fix, resume_manual_fill's ImportRequest never set
+    skeleton_slug, so a skill-authored version's provenance column was always
+    NULL and the recency-weighted skeleton pick (skeleton_match.py) never saw
+    skill-authored history for the family.
+    """
+    job_id, blob = await _parked_job(sessions, seed)
+
+    async with sessions() as session:
+        story_id, status = await resume_manual_fill(session, uuid.UUID(job_id), blob)
+        await session.commit()
+    assert status == "passed"
+
+    async with sessions() as session:
+        version = await session.get(StorybookVersion, (story_id, 1))
+        assert version is not None
+        assert version.skeleton_slug == _SKELETON_SLUG

@@ -139,6 +139,7 @@ async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     assert result.skeleton_slug == "the-cave-of-echoes"
     assert result.job.authoring_metadata == {
         "skeleton_slug": "the-cave-of-echoes",
+        "skeleton_band": "8-11",
         "theme_brief": concept.brief,
         "review_stage1_model": None,
         "review_stage2_model": None,
@@ -180,6 +181,7 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         "provider": "anthropic",
         "model": "claude-sonnet-4-6",
         "skeleton_slug": "the-cave-of-echoes",
+        "skeleton_band": "8-11",
         "theme_brief": concept.brief,
         "review_stage1_model": None,
         "review_stage2_model": None,
@@ -351,6 +353,27 @@ async def test_skeleton_fill_honors_unconstrained_override() -> None:
     )
     assert result.skeleton_slug == "the-sunspire-ascent"
     assert any("outside the request's cell" in w for w in result.warnings)
+    # C1: the override's REAL band (13-16), not the request's band (8-11), is
+    # persisted, so the fill paths later look for skeletons/13-16/... .
+    assert result.job.authoring_metadata is not None
+    assert result.job.authoring_metadata["skeleton_band"] == "13-16"
+
+
+async def test_skeleton_fill_weighted_pick_persists_request_band() -> None:
+    """The non-override (weighted) path stores the request's own band."""
+    session = _FakeSession()
+    concept = _concept("8-11")
+    result = await build_authoring_plan(
+        session,
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    assert result.job.authoring_metadata is not None
+    assert result.job.authoring_metadata["skeleton_band"] == "8-11"
 
 
 async def test_skeleton_fill_override_unknown_slug_is_rejected() -> None:
@@ -388,3 +411,29 @@ async def test_skeleton_fill_null_length_falls_back_to_short() -> None:
         actor=_admin_actor(),
     )
     assert result.skeleton_slug == "the-cave-of-echoes"
+
+
+async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> None:
+    """M1: a teen-band request with no length matches a real medium skeleton.
+
+    13-16 has no "short" production skeleton, so the pre-fix default ("short")
+    hits the empty-cell 422 for every null-length teen request; "medium" does
+    not, and picks a real skeleton for the cell.
+    """
+    session = _FakeSession()
+    concept = Concept(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        brief={"age_band": "13-16", "premise": "a teen finds a signal"},
+    )
+    result = await build_authoring_plan(
+        session,
+        _request(),
+        concept,
+        AuthoringPlanRequest(
+            method="skeleton_fill", mechanism="skill", prep_model="sonnet"
+        ),
+        actor=_admin_actor(),
+    )
+    # 13-16/medium/prose has exactly one production skeleton on disk today.
+    assert result.skeleton_slug == "the-signal-in-the-static"

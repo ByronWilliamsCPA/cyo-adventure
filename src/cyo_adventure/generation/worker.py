@@ -274,9 +274,19 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     if not isinstance(skeleton_slug, str):
         msg = "authoring_metadata.skeleton_slug is missing or not a string"
         raise ResourceNotFoundError(msg)
-    skeleton_path = (
-        Path("skeletons") / ctx.brief.age_band.value / f"{skeleton_slug}.json"
+    # #ASSUME: data-integrity: prefer the stored skeleton_band (the
+    # OVERRIDE skeleton's real band, WS-C PR2 final review C1) over the
+    # request's own brief.age_band, which is wrong for a cross-band admin
+    # override; fall back to the request band only for a pre-fix job whose
+    # authoring_metadata predates this key.
+    # #VERIFY: cross-band skeleton_fill test in
+    # tests/integration/test_generation_worker.py that a job carrying
+    # skeleton_band="13-16" on an 8-11 request loads the 13-16 file.
+    skeleton_band = authoring.get("skeleton_band")
+    fill_band = (
+        skeleton_band if isinstance(skeleton_band, str) else ctx.brief.age_band.value
     )
+    skeleton_path = Path("skeletons") / fill_band / f"{skeleton_slug}.json"
     skeleton = load_skeleton(skeleton_path)
     theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
     review_stage1_model = authoring.get("review_stage1_model")

@@ -153,6 +153,34 @@ async def test_import_persists_a_valid_filled_story(
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_import_persists_skeleton_slug_provenance(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """I1: ImportRequest.skeleton_slug reaches the persisted StorybookVersion.
+
+    Before this fix, the skill/import path never set StorybookParams.
+    skeleton_slug, so every skill-authored version recorded NULL provenance
+    and the recency-weighted skeleton pick (skeleton_match.py) silently
+    ignored skill-authored history for the family.
+    """
+    moderation = AsyncMock()
+    monkeypatch.setattr(
+        "cyo_adventure.generation.import_story.run_moderation_pipeline", moderation
+    )
+    session = _FakeSession()
+    request = ImportRequest(
+        blob=_filled_story(),
+        family_id=uuid.uuid4(),
+        skeleton_slug="the-cave-of-echoes",
+    )
+    await import_filled_story(session, request)
+    versions = [r for r in session.added if isinstance(r, StorybookVersion)]
+    assert len(versions) == 1
+    assert versions[0].skeleton_slug == "the-cave-of-echoes"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_import_screens_the_persisted_story(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

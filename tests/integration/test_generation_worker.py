@@ -106,9 +106,20 @@ _SKELETON_PATH = (
     / f"{_SKELETON_SLUG}.json"
 )
 
+# A real 13-16 skeleton (a different band from _SKELETON_AGE_BAND above), used
+# by the cross-band override test below (WS-C PR2 final review C1).
+_CROSS_BAND_SKELETON_SLUG = "the-sunspire-ascent"
+_CROSS_BAND_SKELETON_BAND = "13-16"
+_CROSS_BAND_SKELETON_PATH = (
+    Path(__file__).resolve().parents[2]
+    / "skeletons"
+    / _CROSS_BAND_SKELETON_BAND
+    / f"{_CROSS_BAND_SKELETON_SLUG}.json"
+)
 
-def _filled_skeleton_json() -> str:
-    """Return a JSON string: the real skeleton with every FILL body replaced.
+
+def _filled_skeleton_json_for(skeleton_path: Path) -> str:
+    """Return a JSON string: the given skeleton with every FILL body replaced.
 
     Each node's FILL directive is swapped for placeholder prose sized to the
     directive's declared word target; every other field (ids, choices minus
@@ -117,7 +128,7 @@ def _filled_skeleton_json() -> str:
     fidelity pure-code checks (generation/fidelity.py::structure_violations,
     has_unfilled_directives, word-count tolerance) the worker runs afterward.
     """
-    skeleton = load_skeleton(_SKELETON_PATH)
+    skeleton = load_skeleton(skeleton_path)
     filled = copy.deepcopy(skeleton)
     for node in cast("list[dict[str, object]]", filled["nodes"]):
         body = node.get("body")
@@ -126,6 +137,11 @@ def _filled_skeleton_json() -> str:
             words = max(int(directive["words"]), 1)
             node["body"] = " ".join(["word"] * words)
     return json.dumps(filled)
+
+
+def _filled_skeleton_json() -> str:
+    """Return a JSON string: the real 8-11 skeleton with every FILL body replaced."""
+    return _filled_skeleton_json_for(_SKELETON_PATH)
 
 
 @asynccontextmanager
@@ -295,6 +311,81 @@ async def gen_seed_authoring(
         }
 
 
+@pytest_asyncio.fixture
+async def gen_seed_cross_band_authoring(
+    sessions: async_sessionmaker[AsyncSession],
+) -> dict[str, object]:
+    """Seed a skeleton_fill job whose concept is 8-11 but whose authoring_metadata
+    carries a CROSS-BAND override (WS-C PR2 final review C1): skeleton_slug
+    names a real 13-16 skeleton, and skeleton_band records that skeleton's
+    real band. The concept's own brief.age_band stays "8-11" (the request's
+    own band) so this fixture only passes if the fill path resolves the
+    skeleton path from the stored skeleton_band, not the concept's band.
+    """
+    async with sessions() as session:
+        fam = Family(name="Test Family")
+        session.add(fam)
+        await session.flush()
+
+        guardian = User(
+            family_id=fam.id,
+            role="guardian",
+            authn_subject="guardian-gen-test-cross-band",
+        )
+        child_profile = ChildProfile(
+            family_id=fam.id,
+            display_name="TestKid",
+            age_band="8-11",
+        )
+        session.add_all([guardian, child_profile])
+        await session.flush()
+
+        concept = Concept(
+            family_id=fam.id,
+            created_by=guardian.id,
+            brief={
+                "premise": "A young astronomer maps a sunspire.",
+                "protagonist": {
+                    "name": "Jules",
+                    "age": 9,
+                    "role": "young astronomer",
+                },
+                "point_of_view": "second",
+                "age_band": "8-11",
+                "reading_level_target": 3.0,
+                "tier": 1,
+                "tone": "adventurous",
+                "themes_allowed": ["exploration"],
+                "content_nogo": [],
+                "target_node_count": 4,
+                "ending_count": 1,
+                "structure_pattern": "time_cave",
+                "desired_variables": [],
+                "special_constraints": [],
+            },
+        )
+        session.add(concept)
+        await session.flush()
+
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="queued",
+            authoring_metadata={
+                "skeleton_slug": _CROSS_BAND_SKELETON_SLUG,
+                "skeleton_band": _CROSS_BAND_SKELETON_BAND,
+                "theme_brief": {"premise": "A young astronomer maps a sunspire."},
+            },
+        )
+        session.add(job)
+        await session.commit()
+
+        return {
+            "job_id": job.id,
+            "concept_id": concept.id,
+            "family_id": fam.id,
+        }
+
+
 # ---------------------------------------------------------------------------
 # Test 4: Passing run produces StorybookVersion
 # ---------------------------------------------------------------------------
@@ -444,6 +535,66 @@ async def test_worker_runs_fill_skeleton_for_authoring_metadata_jobs(
             "passed",
             "needs_review",
         }, f"Expected passed or needs_review, got {job.status}"
+        assert job.report is not None
+
+
+# ---------------------------------------------------------------------------
+# Test 6b: a cross-band override resolves the STORED band, not the request's
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_worker_cross_band_override_loads_stored_band(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed_cross_band_authoring: dict[str, object],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """C1: _run_skeleton_fill builds the skeleton path from the stored
+    ``authoring_metadata["skeleton_band"]`` ("13-16"), not the concept's own
+    request band ("8-11", via ``gen_seed_cross_band_authoring``'s fixture).
+
+    ``load_skeleton`` is wrapped (not replaced) to record every path it is
+    called with; if C1.2 is reverted, the worker builds
+    ``skeletons/8-11/the-sunspire-ascent.json`` (a file that does not exist),
+    ``load_skeleton`` raises ``FileNotFoundError``, and the job ends up
+    "failed" instead of "passed"/"needs_review" -- both assertions below
+    would fail on a revert.
+    """
+    job_id: uuid.UUID = gen_seed_cross_band_authoring["job_id"]  # type: ignore[assignment]
+
+    real_load_skeleton = worker_module.load_skeleton
+    recorded_paths: list[Path] = []
+
+    def _recording_load_skeleton(path: Path) -> dict[str, object]:
+        recorded_paths.append(path)
+        return real_load_skeleton(path)
+
+    monkeypatch.setattr(worker_module, "load_skeleton", _recording_load_skeleton)
+
+    provider = MockProvider(
+        responses=[_filled_skeleton_json_for(_CROSS_BAND_SKELETON_PATH)] * 2
+    )
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    # worker.py builds a cwd-relative path (Path("skeletons") / band / ...),
+    # not the absolute _CROSS_BAND_SKELETON_PATH test constant used to seed
+    # the mock provider's fixture blob above; compare resolved paths so both
+    # forms are equal regardless of which one each side started from.
+    assert len(recorded_paths) == 1
+    assert recorded_paths[0].resolve() == _CROSS_BAND_SKELETON_PATH.resolve()
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status in {
+            "passed",
+            "needs_review",
+        }, f"Expected passed or needs_review, got {job.status} ({job.error})"
         assert job.report is not None
 
 

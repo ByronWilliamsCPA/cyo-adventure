@@ -109,21 +109,30 @@ def _band_of(concept: Concept) -> str:
 _DEFAULT_LENGTH = "short"
 _DEFAULT_STYLE = "prose"
 
+# Bands with no "short" production skeleton (ADR-011); a null-length request
+# in one of these bands must default to "medium" instead, or cell formation
+# hits the empty-cell 422 even though a real skeleton exists for the band.
+_TEEN_BANDS = frozenset({"13-16", "16+"})
 
-def _length_of(concept: Concept) -> str:
-    """Return the concept brief's length, defaulting to "short" when null/absent.
+
+def _length_of(concept: Concept, band: str) -> str:
+    """Return the concept brief's length, band-aware for a null/absent value.
 
     #ASSUME: data-integrity: request.length is nullable (WS-B #164);
     brief_from_request carries that null straight onto ConceptBrief.length,
     so concept.brief["length"] may be a literal JSON null, or the key may be
     absent entirely for a pre-length-field concept (both observed in
     existing test fixtures). Cell formation must always have a length axis
-    to match against, so either case collapses to the band's default rather
-    than failing to form a cell.
-    #VERIFY: test_skeleton_fill_null_length_falls_back_to_short.
+    to match against, so either case collapses to a default rather than
+    failing to form a cell: "medium" for the teen bands (13-16, 16+), which
+    have no "short" skeleton on disk, and "short" for every other band.
+    #VERIFY: test_skeleton_fill_null_length_falls_back_to_short (non-teen)
+    and the teen null-length test in test_authoring_plan.py.
     """
     value = concept.brief.get("length") if isinstance(concept.brief, dict) else None
-    return value if isinstance(value, str) else _DEFAULT_LENGTH
+    if isinstance(value, str):
+        return value
+    return "medium" if band in _TEEN_BANDS else _DEFAULT_LENGTH
 
 
 def _style_of(concept: Concept) -> str:
@@ -273,10 +282,11 @@ async def build_authoring_plan(
 
     band = _band_of(concept)
     skeleton_slug: str | None = None
+    skeleton_band: str | None = None
     skeleton_alternatives: list[str] = []
     override_warnings: list[str] = []
     if method == "skeleton_fill":
-        length = _length_of(concept)
+        length = _length_of(concept, band)
         style = _style_of(concept)
         skeleton_alternatives = candidates_for_cell(band, length, style)
         if not skeleton_alternatives:
@@ -297,6 +307,17 @@ async def build_authoring_plan(
                     msg, field="skeleton_slug", value=plan.skeleton_slug
                 )
             skeleton_slug = plan.skeleton_slug
+            # #ASSUME: data-integrity: records the override skeleton's REAL
+            # band (not the request's band) so the band-scoped fill paths
+            # (worker.py::_run_skeleton_fill, import_story.py::
+            # resume_manual_fill) build skeletons/<band>/<slug>.json from the
+            # skeleton's own directory, not the request's; a cross-band
+            # override otherwise looks for the file under the wrong band and
+            # the fill job fails at runtime.
+            # #VERIFY: test_skeleton_fill_honors_unconstrained_override's
+            # metadata assertion, plus the cross-band worker fill test in
+            # tests/integration/test_generation_worker.py.
+            skeleton_band = str(override_metadata.age_band)
             if not override_metadata.production_eligible:
                 override_warnings.append(
                     f"skeleton_slug override '{skeleton_slug}' is not "
@@ -316,6 +337,7 @@ async def build_authoring_plan(
                 skeleton_alternatives, recent_usage, random.SystemRandom()
             )
             skeleton_slug = selection.slug
+            skeleton_band = band
 
     warnings = eligibility_warnings(method, mechanism, band, prep_model)
     warnings.extend(override_warnings)
@@ -325,6 +347,7 @@ async def build_authoring_plan(
         authoring_metadata = {
             **(authoring_metadata or {}),
             "skeleton_slug": skeleton_slug,
+            "skeleton_band": skeleton_band,
             "theme_brief": concept.brief,
             "review_stage1_model": plan.review_stage1_model,
             "review_stage2_model": plan.review_stage2_model,

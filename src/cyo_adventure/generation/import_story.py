@@ -59,6 +59,12 @@ class ImportRequest:
             ``authoring_metadata.get("review_stage2_model")`` read, so the
             skill-authored resume path (``resume_manual_fill``) honors the
             same per-job override the automated_provider path already does.
+        skeleton_slug: The production skeleton this filled version was
+            authored from, threaded into ``StorybookParams`` so
+            ``storybook_version.skeleton_slug`` provenance is recorded for
+            skill-authored versions too (WS-C PR2 final review I1: the
+            recency-weighted pick reads this column, so a NULL here silently
+            exempts skill-authored families from that weighting).
     """
 
     family_id: uuid.UUID
@@ -67,6 +73,7 @@ class ImportRequest:
     model: str | None = None
     prompt_version: str = "skeleton-fill-v1"
     review_model_override: str | None = None
+    skeleton_slug: str | None = None
 
 
 async def import_filled_story(session: AsyncSession, request: ImportRequest) -> str:
@@ -118,6 +125,7 @@ async def import_filled_story(session: AsyncSession, request: ImportRequest) -> 
         prompt_version=request.prompt_version,
         provider=_IMPORT_PROVIDER,
         validation_report=result.report.to_dict(),
+        skeleton_slug=request.skeleton_slug,
     )
     await persist_storybook(session, params)
 
@@ -177,6 +185,32 @@ def _str_meta(metadata: object, key: str) -> str | None:
         return None
     value = metadata.get(key)
     return value if isinstance(value, str) else None
+
+
+def _resolve_resume_band(job: GenerationJob, concept: Concept) -> str:
+    """Return the age-band directory segment to load a resumed fill's skeleton from.
+
+    Args:
+        job: The parked GenerationJob being resumed.
+        concept: The job's concept, whose brief carries the request's own band.
+
+    Returns:
+        The job's stored ``skeleton_band`` when present (the OVERRIDE
+        skeleton's real band, WS-C PR2 final review C1), otherwise the
+        concept's own brief ``age_band``, or ``""`` if neither is a string.
+
+    #ASSUME: data-integrity: prefer the stored skeleton_band over the
+    concept's own brief age_band, which is wrong for a cross-band admin
+    override; fall back to the concept's band only for a pre-fix job whose
+    authoring_metadata predates this key.
+    #VERIFY: cross-band resume test asserting the stored band is used to
+    build skeletons/<band>/<slug>.json.
+    """
+    stored_band = _str_meta(job.authoring_metadata, "skeleton_band")
+    if stored_band is not None:
+        return stored_band
+    band = concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
+    return band if isinstance(band, str) else ""
 
 
 def _load_resume_skeleton(band: str, skeleton_slug: str) -> dict[str, object]:
@@ -313,10 +347,7 @@ async def resume_manual_fill(
     original_skeleton: dict[str, object] | None = None
     skeleton_load_error: str | None = None
     if skeleton_slug is not None:
-        band = (
-            concept.brief.get("age_band") if isinstance(concept.brief, dict) else None
-        )
-        band = band if isinstance(band, str) else ""
+        band = _resolve_resume_band(job, concept)
         try:
             original_skeleton = _load_resume_skeleton(band, skeleton_slug)
         except (ResourceNotFoundError, ValidationError) as exc:
@@ -328,6 +359,7 @@ async def resume_manual_fill(
         family_id=concept.family_id,
         model=model,
         review_model_override=review_stage2_model,
+        skeleton_slug=skeleton_slug,
     )
     try:
         story_id = await import_filled_story(session, request)
