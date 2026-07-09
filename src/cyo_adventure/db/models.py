@@ -442,8 +442,8 @@ class StoryRequest(Base):
             standalone request (WS-B PR 3).
         anchor_storybook_id: The storybook this soft continuation follows on
             from, or ``None``.
-        proposed_series_title: The kid's unratified series title proposal,
-            cleared once a guardian or admin ratifies it onto ``series_id``.
+        proposed_series_title: The kid's original series title proposal,
+            retained as an audit trail after ratification or request decline.
         created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
     """
 
