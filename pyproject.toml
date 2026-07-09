@@ -75,6 +75,8 @@ dependencies = [
     "redis>=8.0.0",
     "pyjwt[crypto]>=2.13.0",
     "jsonschema>=4.23",
+    "google-genai>=2.10.0",
+    "pillow>=12.3.0",
 ]
 
 # Optional dependency groups
