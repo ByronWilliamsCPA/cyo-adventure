@@ -109,6 +109,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Append-only `pipeline_event` log capturing every story-lifecycle transition
   (request, plan, generation, moderation, release, threshold, assignment, rating),
   the capture layer for the learning loop (WS-D).
+- Cell-aware skeleton matching for skeleton-fill authoring plans (WS-C PR 2): selection now
+  matches the full ADR-011 `(age band, length, narrative style)` cell instead of band-only,
+  weights the pick against the family's recently-used skeletons with a nonzero floor, and lets
+  an admin override to any skeleton on disk (with a non-blocking warning on a non-production or
+  out-of-cell pick). `AuthoringPlanResponse` now returns every in-cell alternative, and
+  `storybook_version.skeleton_slug` records which skeleton produced each version.
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
