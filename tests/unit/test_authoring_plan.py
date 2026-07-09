@@ -21,18 +21,28 @@ pytestmark = pytest.mark.asyncio
 class _FakeSession:
     """Minimal async session double for build_authoring_plan.
 
-    Mirrors the _FakeSession pattern in tests/unit/test_story_requests.py,
-    extended with a singular ``scalar`` for the idempotency lookup.
+    build_authoring_plan now makes up to two scalar() calls in sequence: the
+    idempotency lookup first, then (for mechanism='automated_provider') the
+    allowlist check inside is_enabled_allowlist_pair. This fake dispatches by
+    call order rather than inspecting the statement, mirroring the file's
+    existing "ignore the statement" style.
     """
 
-    def __init__(self, *, existing_job: GenerationJob | None = None) -> None:
+    def __init__(
+        self, *, existing_job: GenerationJob | None = None, allowlisted: bool = True
+    ) -> None:
         self._existing_job = existing_job
+        self._allowlisted = allowlisted
+        self._scalar_calls = 0
         self.added: list[object] = []
 
-    async def scalar(self, statement: object) -> GenerationJob | None:
-        """Return the seeded existing job (or None), ignoring the statement."""
+    async def scalar(self, statement: object) -> object:
+        """Return the existing-job seed first, then the allowlist stub."""
         _ = statement
-        return self._existing_job
+        self._scalar_calls += 1
+        if self._scalar_calls == 1:
+            return self._existing_job
+        return object() if self._allowlisted else None
 
     def add(self, obj: object) -> None:
         """Record an added ORM instance."""
@@ -74,6 +84,8 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
             method="fresh_generation",
             mechanism="automated_provider",
             prep_model="openrouter/some-model",
+            provider="anthropic",
+            model="claude-sonnet-4-6",
         ),
     )
     assert result.job.status == "queued"
@@ -127,11 +139,15 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
         method="skeleton_fill",
         mechanism="automated_provider",
         prep_model="openrouter/some-model",
+        provider="anthropic",
+        model="claude-sonnet-4-6",
     )
     result = await build_authoring_plan(session, _request(), concept, plan)
     assert result.job.status == "queued"
     assert result.skeleton_slug == "the-cave-of-echoes"
     assert result.job.authoring_metadata == {
+        "provider": "anthropic",
+        "model": "claude-sonnet-4-6",
         "skeleton_slug": "the-cave-of-echoes",
         "theme_brief": concept.brief,
         "review_stage1_model": None,
@@ -167,6 +183,8 @@ async def test_existing_job_for_concept_is_conflict() -> None:
                 method="fresh_generation",
                 mechanism="automated_provider",
                 prep_model="openrouter/some-model",
+                provider="anthropic",
+                model="claude-sonnet-4-6",
             ),
         )
 
@@ -200,3 +218,34 @@ def test_eligibility_warnings_silent_for_stronger_model() -> None:
 def test_eligibility_warnings_silent_for_easy_band() -> None:
     """haiku on an easy band (8-11) produces no warning."""
     assert eligibility_warnings("skeleton_fill", "skill", "8-11", "haiku") == []
+
+
+def test_automated_provider_requires_both_provider_and_model() -> None:
+    """provider and model are both required at the schema boundary when
+    mechanism='automated_provider'."""
+    with pytest.raises(PydanticValidationError):
+        AuthoringPlanRequest(
+            method="fresh_generation",
+            mechanism="automated_provider",
+            prep_model="openrouter/some-model",
+            provider="anthropic",
+            # model omitted
+        )
+
+
+async def test_unallowlisted_provider_model_is_rejected() -> None:
+    """A provider/model pair that is not an enabled allowlist row is a 422."""
+    session = _FakeSession(allowlisted=False)
+    with pytest.raises(ValidationError):
+        await build_authoring_plan(
+            session,
+            _request(),
+            _concept(),
+            AuthoringPlanRequest(
+                method="fresh_generation",
+                mechanism="automated_provider",
+                prep_model="openrouter/some-model",
+                provider="anthropic",
+                model="not-a-real-model",
+            ),
+        )

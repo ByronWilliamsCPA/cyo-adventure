@@ -17,6 +17,7 @@ from sqlalchemy import select
 
 from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
 from cyo_adventure.generation.skeleton_match import select_skeleton_for_band
 
 if TYPE_CHECKING:
@@ -169,6 +170,29 @@ async def build_authoring_plan(
         msg = f"prep_model '{prep_model}' is not a recognized Claude Code session model"
         raise ValidationError(msg, field="prep_model", value=prep_model)
 
+    authoring_metadata: dict[str, object] | None = None
+    if mechanism == "automated_provider":
+        if plan.provider is None or plan.model is None:
+            # Unreachable given AuthoringPlanRequest's own model_validator;
+            # this narrows the type for BasedPyright without a bare `assert`
+            # (a security-critical invariant should never rely on a statement
+            # `-O` can strip).
+            msg = "provider and model are both required when mechanism='automated_provider'"
+            raise ValidationError(msg, field="provider", value=plan.provider)
+        # #CRITICAL: security: provider/model are untrusted admin input. The
+        # schema validator only guarantees both fields are PRESENT, not that
+        # they name a real, enabled backend; this is the check that keeps a
+        # free-string model id out of billing, run BEFORE anything is
+        # persisted to authoring_metadata or reaches a provider.
+        # #VERIFY: test_unallowlisted_provider_model_is_rejected.
+        if not await is_enabled_allowlist_pair(session, plan.provider, plan.model):
+            msg = (
+                f"provider '{plan.provider}' / model '{plan.model}' is not an "
+                "enabled allowlist entry"
+            )
+            raise ValidationError(msg, field="model", value=plan.model)
+        authoring_metadata = {"provider": plan.provider, "model": plan.model}
+
     band = _band_of(concept)
     skeleton_slug: str | None = None
     if method == "skeleton_fill":
@@ -181,19 +205,26 @@ async def build_authoring_plan(
 
     if method == "skeleton_fill":
         status = "awaiting_manual_fill" if mechanism == "skill" else "queued"
+        authoring_metadata = {
+            **(authoring_metadata or {}),
+            "skeleton_slug": skeleton_slug,
+            "theme_brief": concept.brief,
+            "review_stage1_model": plan.review_stage1_model,
+            "review_stage2_model": plan.review_stage2_model,
+        }
         job = GenerationJob(
             concept_id=concept.id,
             status=status,
             model=prep_model,
-            authoring_metadata={
-                "skeleton_slug": skeleton_slug,
-                "theme_brief": concept.brief,
-                "review_stage1_model": plan.review_stage1_model,
-                "review_stage2_model": plan.review_stage2_model,
-            },
+            authoring_metadata=authoring_metadata,
         )
     else:
-        job = GenerationJob(concept_id=concept.id, status="queued", model=prep_model)
+        job = GenerationJob(
+            concept_id=concept.id,
+            status="queued",
+            model=prep_model,
+            authoring_metadata=authoring_metadata,
+        )
 
     session.add(job)
     await session.flush()

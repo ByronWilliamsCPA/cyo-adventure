@@ -575,7 +575,11 @@ class AuthoringPlanRequest(BaseModel):
 
     ``review_stage1_model`` / ``review_stage2_model`` are optional overrides
     for the Stage 1 fidelity review and Stage 2 model, used only when
-    method='skeleton_fill'.
+    method='skeleton_fill'. ``provider``/``model`` (WS-C PR1) select the
+    generation backend when ``mechanism='automated_provider'``; both are
+    required together in that case and are validated against the enabled
+    provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
+    the schema layer cannot perform).
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -583,6 +587,12 @@ class AuthoringPlanRequest(BaseModel):
     method: AuthoringMethod
     mechanism: AuthoringMechanism
     prep_model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+    provider: (
+        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
+    ) = None
+    model: (
+        Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)] | None
+    ) = None
     review_stage1_model: str | None = None
     review_stage2_model: str | None = None
 
@@ -599,6 +609,26 @@ class AuthoringPlanRequest(BaseModel):
         """
         if self.method == "fresh_generation" and self.mechanism == "skill":
             msg = "mechanism='skill' requires method='skeleton_fill'"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _automated_provider_requires_provider_and_model(self) -> AuthoringPlanRequest:
+        """Require provider+model together whenever a real backend must run.
+
+        mechanism='skill' means a human runs the cyo-author skill; no
+        GenerationProvider is ever constructed for that job, so provider/model
+        are meaningless there. mechanism='automated_provider' always drives
+        the worker's build_provider() call (fresh_generation always pairs with
+        automated_provider per the validator above; skeleton_fill may pair
+        with either), so both fields must be present together. This makes the
+        illegal "automated_provider with no chosen backend" state
+        unrepresentable, mirroring ``_skill_requires_skeleton_fill``.
+        """
+        if self.mechanism == "automated_provider" and (
+            self.provider is None or self.model is None
+        ):
+            msg = "provider and model are both required when mechanism='automated_provider'"
             raise ValueError(msg)
         return self
 
