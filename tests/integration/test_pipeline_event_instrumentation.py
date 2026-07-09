@@ -6,10 +6,19 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.db.models import GenerationJob
+from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
+from cyo_adventure.generation.worker import run_generation_job
 from tests.integration._event_assertions import assert_single_event
 from tests.integration.conftest import Seed, auth
+from tests.integration.test_generation_worker import (
+    _make_session_factory,
+    gen_seed,  # noqa: F401 -- imported for pytest fixture discovery
+)
 
 if TYPE_CHECKING:
+    import uuid
+
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -128,4 +137,46 @@ async def test_authoring_plan_writes_plan_assigned(
         event_type="plan_assigned",
         entity_type="generation_job",
         actor_role="admin",
+    )
+
+
+async def test_generation_run_writes_started_and_finished_system_events(
+    sessions: async_sessionmaker[AsyncSession],
+    gen_seed: dict[str, object],  # noqa: F811 -- pytest fixture, not the import
+) -> None:
+    """A full worker run writes exactly one generation_started and one
+    generation_finished event, both attributed to the system actor.
+
+    Reuses the ``gen_seed`` fixture and session-factory helper from
+    test_generation_worker.py (seeded queued job + injected MockProvider)
+    rather than building a new worker-test arrangement.
+    """
+    job_id: uuid.UUID = gen_seed["job_id"]  # type: ignore[assignment]
+
+    provider = MockProvider(responses=[_CANNED_STORY_JSON] * 8)
+
+    await run_generation_job(
+        job_id,
+        provider=provider,
+        session_factory=_make_session_factory(sessions),
+    )
+
+    async with sessions() as session:
+        job = await session.get(GenerationJob, job_id)
+        assert job is not None
+        assert job.status == "passed", f"Expected passed, got {job.status}"
+
+    await assert_single_event(
+        sessions,
+        event_type="generation_started",
+        entity_type="generation_job",
+        to_state="running",
+        actor_is_system=True,
+    )
+    await assert_single_event(
+        sessions,
+        event_type="generation_finished",
+        entity_type="generation_job",
+        to_state="passed",
+        actor_is_system=True,
     )

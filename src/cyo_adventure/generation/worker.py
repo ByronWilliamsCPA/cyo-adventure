@@ -39,6 +39,7 @@ from cyo_adventure.db.models import (
     Concept,
     GenerationJob,
 )
+from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
@@ -155,6 +156,25 @@ async def _record_failure(
     job.error = str(exc)[:512]
     job.provider = _provider_label(provider)
     job.prompt_version = _PROMPT_VERSION
+
+    # #CRITICAL: data-integrity: this event must land in the SAME transaction
+    # as the "failed" status write below (spec D1: event atomic with the
+    # transition). record_event only flushes, it never commits, so it rides
+    # the explicit commit() immediately after; placing it after that commit
+    # would let a crash between the two calls leave the transition committed
+    # with no corresponding event.
+    # #VERIFY: test_generation_finished_event_precedes_failure_commit in
+    # tests/integration/test_pipeline_event_instrumentation.py.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state="running",
+        to_state="failed",
+        payload={"outcome": "failed"},
+    )
     await session.commit()
 
 
@@ -506,6 +526,22 @@ async def _load_and_start_job(
     job_row.status = "running"
     await session.flush()
 
+    # #ASSUME: data-integrity: this is a SYSTEM transition (no request
+    # principal reaches the worker), so the actor is always Actor.system();
+    # never thread a request-scoped principal into this function.
+    # #VERIFY: test_generation_started_event_is_system_actor in
+    # tests/integration/test_pipeline_event_instrumentation.py asserts
+    # actor_is_system=True.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(job_row.id),
+        event_type=EventType.GENERATION_STARTED,
+        from_state="queued",
+        to_state="running",
+    )
+
     logger.info(
         "generation_job.started",
         job_id=str(job_id),
@@ -589,6 +625,29 @@ async def _persist_passed_outcome(
     # the injected-arg presence recorded None in production (where provider
     # is None but the mock still runs); _model_label reflects the real run.
     ctx.job_row.model = _model_label(ctx.effective_provider)
+
+    # #ASSUME: data-integrity: this is a SYSTEM transition (no request
+    # principal reaches the worker), so the actor is always Actor.system().
+    # to_state mirrors the just-stamped job status ("passed" or
+    # "needs_review"); the terminal "failed" case is recorded separately in
+    # _record_failure, not here.
+    # #VERIFY: test_generation_finished_event_is_system_actor in
+    # tests/integration/test_pipeline_event_instrumentation.py.
+    await record_event(
+        session,
+        Actor.system(),
+        entity_type="generation_job",
+        entity_id=str(ctx.job_row.id),
+        event_type=EventType.GENERATION_FINISHED,
+        from_state="running",
+        to_state=ctx.job_row.status,
+        payload={
+            "outcome": ctx.job_row.status,
+            "provider": ctx.job_row.provider,
+            "model": ctx.job_row.model,
+            "prompt_version": ctx.job_row.prompt_version,
+        },
+    )
 
     await _persist_and_moderate(session, ctx, outcome)
 
