@@ -98,6 +98,11 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     // Unit/component tests live under src; e2e/ is Playwright's.
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // In CI, also emit JUnit XML so the run can be uploaded to Codecov Test
+    // Analytics (the "Tests" tab). GitHub Actions sets CI=true; locally we keep
+    // just the default reporter so no stray junit.xml is written on every run.
+    reporters: process.env.CI ? ['default', 'junit'] : ['default'],
+    outputFile: { junit: './junit.xml' },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
