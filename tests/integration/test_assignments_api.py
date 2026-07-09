@@ -433,3 +433,117 @@ async def test_admin_reads_content_summary_cross_family(
         f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("admin-b")
     )
     assert resp.status_code == 200
+
+
+# ---------------------------------------------------------------------------
+# Visibility-gated assignment and family-scoped assignment sets (WS-E, Task 5)
+# ---------------------------------------------------------------------------
+
+
+async def test_guardian_assigns_other_family_catalog_book(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A guardian may assign a catalog book owned by another family (E5)."""
+    async with sessions() as session:
+        other_fam = Family(name="Catalog Owner")
+        session.add(other_fam)
+        await session.flush()
+        session.add(
+            Storybook(
+                id="catalog-assignable",
+                family_id=other_fam.id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="catalog-assignable",
+                version=1,
+                blob={"id": "catalog-assignable", "title": "Shared"},
+                moderation_report=make_clean_moderation_report(),
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+    resp = await client.post(
+        "/api/v1/storybooks/catalog-assignable/assignments",
+        headers=auth(seed.guardian_token),
+        json={"profile_ids": [str(seed.child_profile_id)]},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["profile_ids"] == [str(seed.child_profile_id)]
+
+
+async def test_guardian_cannot_assign_other_family_private_book(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Another family's visibility=family book stays 403 (E5 negative arm)."""
+    resp = await client.post(
+        f"/api/v1/storybooks/{seed.storybook_id}/assignments",
+        headers=auth(seed.other_guardian_token),
+        json={"profile_ids": [str(seed.other_child_profile_id)]},
+    )
+    assert resp.status_code == 403, resp.text
+
+
+async def test_catalog_assignment_listing_is_family_scoped(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """GET assignments on a catalog book excludes other families' profile ids.
+
+    #CRITICAL security regression guard for the profile-UUID leak (plan
+    deviation 2): assign from BOTH families, then each family's GET must see
+    only its own children.
+    """
+    async with sessions() as session:
+        other_fam = Family(name="Catalog Owner 2")
+        session.add(other_fam)
+        await session.flush()
+        session.add(
+            Storybook(
+                id="catalog-scoped",
+                family_id=other_fam.id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="catalog-scoped",
+                version=1,
+                blob={"id": "catalog-scoped", "title": "Shared"},
+                moderation_report=make_clean_moderation_report(),
+                approved_by=seed.admin_user_id,
+                published_at=datetime.now(UTC),
+            )
+        )
+        await session.commit()
+    for token, pid in (
+        (seed.guardian_token, seed.child_profile_id),
+        (seed.other_guardian_token, seed.other_child_profile_id),
+    ):
+        resp = await client.post(
+            "/api/v1/storybooks/catalog-scoped/assignments",
+            headers=auth(token),
+            json={"profile_ids": [str(pid)]},
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["profile_ids"] == [str(pid)]  # POST response scoped too
+    mine = await client.get(
+        "/api/v1/storybooks/catalog-scoped/assignments",
+        headers=auth(seed.guardian_token),
+    )
+    assert mine.json()["profile_ids"] == [str(seed.child_profile_id)]
+    theirs = await client.get(
+        "/api/v1/storybooks/catalog-scoped/assignments",
+        headers=auth(seed.other_guardian_token),
+    )
+    assert theirs.json()["profile_ids"] == [str(seed.other_child_profile_id)]
