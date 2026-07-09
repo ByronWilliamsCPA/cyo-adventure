@@ -151,8 +151,11 @@ async def test_seed_matches_default_allowlist(migration_pg_url: str) -> None:
     This is the drift guard the migration's RAD note promises: if someone
     edits the migration's ``_SEED_ROWS`` or
     ``cyo_adventure.generation.allowlist.DEFAULT_ALLOWLIST`` without also
-    updating the other, this test fails. It intentionally depends on the
-    Task 4 constant, unlike the self-contained
+    updating the other, this test fails. The comparison includes
+    ``display_name``: the seed contract is fully hand-synced, so a
+    display_name-only drift (row exists, but with a stale label) must fail
+    this test too, not just a provider/model_id/enabled drift. It
+    intentionally depends on the Task 4 constant, unlike the self-contained
     ``test_seed_rows_present_after_upgrade`` above.
     """
     project_root = PROJECT_ROOT
@@ -166,15 +169,18 @@ async def test_seed_matches_default_allowlist(migration_pg_url: str) -> None:
         async with engine.connect() as conn:
             result = await conn.execute(
                 sa.text(
-                    "SELECT provider, model_id, enabled FROM provider_model_allowlist"
+                    "SELECT provider, model_id, enabled, display_name "
+                    "FROM provider_model_allowlist"
                 )
             )
             seeded_rows = {
-                (row.provider, row.model_id, row.enabled) for row in result.all()
+                (row.provider, row.model_id, row.enabled, row.display_name)
+                for row in result.all()
             }
 
         expected_rows = {
-            (seed.provider, seed.model_id, True) for seed in DEFAULT_ALLOWLIST
+            (seed.provider, seed.model_id, True, seed.display_name)
+            for seed in DEFAULT_ALLOWLIST
         }
         assert seeded_rows == expected_rows
 
