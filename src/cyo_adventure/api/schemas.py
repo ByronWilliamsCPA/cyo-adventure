@@ -580,7 +580,7 @@ ProviderName = Literal["anthropic", "openrouter", "modal", "ollama"]
 class AlternativeView(BaseModel):
     """One in-cell, production-eligible skeleton the admin could pick instead."""
 
-    slug: str
+    slug: Annotated[str, StringConstraints(min_length=1)]
 
 
 class AuthoringPlanRequest(BaseModel):
@@ -592,10 +592,14 @@ class AuthoringPlanRequest(BaseModel):
     generation backend when ``mechanism='automated_provider'``; both are
     required together in that case and are validated against the enabled
     provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
-    the schema layer cannot perform). ``skeleton_slug`` is an optional,
-    unconstrained admin override (decision C-6): any slug on disk is
-    accepted, including a non-production-eligible or out-of-cell one, with a
-    warning surfaced on mismatch rather than a rejection.
+    the schema layer cannot perform). ``skeleton_slug`` is an optional admin
+    override (decision C-6): any slug on disk is accepted, including a
+    non-production-eligible or out-of-cell one, with a warning surfaced on
+    mismatch rather than a rejection. It is "unconstrained" in WHICH skeleton it
+    may name, but the value is charset-bounded to a slug (lowercase, digits,
+    hyphens) so a path-traversal string can never reach the filesystem path
+    builders; the DB provenance column is String(120), so the length is capped
+    to match.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -609,7 +613,18 @@ class AuthoringPlanRequest(BaseModel):
     ) = None
     review_stage1_model: str | None = None
     review_stage2_model: str | None = None
-    skeleton_slug: str | None = None
+    # #CRITICAL: security: admin override input (decision C-6) reaches the
+    # filesystem path builders in skeleton_match/worker/import_story. The slug
+    # charset (lowercase, digits, hyphens) rejects path-traversal segments
+    # (``..``, ``/``) at the boundary; max_length matches the String(120) column.
+    # #VERIFY: test_authoring_plan_api rejects a traversing/oversized slug at 422,
+    # plus skeleton_match.resolve_skeleton_path as defense-in-depth.
+    skeleton_slug: (
+        Annotated[
+            str, StringConstraints(pattern=r"^[a-z0-9][a-z0-9-]*$", max_length=120)
+        ]
+        | None
+    ) = None
 
     @model_validator(mode="after")
     def _skill_requires_skeleton_fill(self) -> AuthoringPlanRequest:
