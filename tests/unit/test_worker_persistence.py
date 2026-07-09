@@ -105,6 +105,18 @@ class _FakeSession:
         _ = statement
         return _FakeResult(self._child_names)
 
+    async def scalar(self, statement: object) -> object | None:
+        """Return ``None`` (no seeded ``StoryRequest`` row).
+
+        These persistence tests do not exercise series linking (WS-B PR 3);
+        returning ``None`` mirrors a concept with no owning request, so
+        ``link_series_position`` takes its no-op path (see
+        ``generation/series_link.py``) and this fake stays a pure double for
+        the persist mechanics under test here.
+        """
+        _ = statement
+        return None
+
     def add(self, obj: object) -> None:
         """Record an added ORM instance."""
         self.added.append(obj)
