@@ -22,7 +22,8 @@ depends_on: Union[str, Sequence[str], None] = None
 # 20260707_1700_add_moderation_setting.py's admin_noise_floor seed), so the
 # two lists are kept in lockstep by hand.
 # #VERIFY: tests/integration/test_provider_model_allowlist_migration.py
-# asserts every one of these 5 rows is present, enabled, after upgrade.
+# asserts the row count equals 5 and spot-checks two representative
+# (provider, model_id) pairs are present and enabled after upgrade.
 _SEED_ROWS = (
     ("anthropic", "claude-sonnet-4-6", "Claude Sonnet 4.6 (direct)"),
     ("anthropic", "claude-haiku-4-5", "Claude Haiku 4.5 (direct)"),
