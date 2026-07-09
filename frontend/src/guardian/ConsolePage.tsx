@@ -196,6 +196,12 @@ export function ConsolePage() {
   return (
     <>
       {principal?.role === 'admin' ? <RequestStoryForm mode="admin" /> : null}
+      {principal?.role === 'admin' ? (
+        <nav aria-label="Moderation admin">
+          <Link to="/guardian/moderation-dashboard">Moderation dashboard</Link>{' '}
+          <Link to="/guardian/moderation-thresholds">Moderation thresholds</Link>
+        </nav>
+      ) : null}
       {content}
     </>
   )
