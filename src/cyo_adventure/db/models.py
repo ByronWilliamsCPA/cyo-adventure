@@ -773,25 +773,6 @@ class ProviderModelAllowlist(Base):
         _TS, server_default=func.now(), onupdate=func.now()
     )
 
-    def __init__(  # noqa: PLR0913
-        self,
-        *,
-        provider: str,
-        model_id: str,
-        enabled: bool = True,
-        display_name: str | None = None,
-        created_by: uuid.UUID | None = None,
-        updated_by: uuid.UUID | None = None,
-    ) -> None:
-        """Initialize a ProviderModelAllowlist row with proper defaults."""
-        self.id = uuid.uuid4()
-        self.provider = provider
-        self.model_id = model_id
-        self.enabled = enabled
-        self.display_name = display_name
-        self.created_by = created_by
-        self.updated_by = updated_by
-
 
 class ProviderModelAllowlistAudit(Base):
     """Append-only audit of allowlist edits (who changed what, when).

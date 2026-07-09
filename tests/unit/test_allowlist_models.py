@@ -16,10 +16,14 @@ def test_provider_model_allowlist_audit_tablename() -> None:
 
 
 def test_allowlist_row_defaults_enabled_true() -> None:
-    """A freshly constructed row defaults to enabled=True (Python-side default)."""
-    row = ProviderModelAllowlist(provider="anthropic", model_id="claude-sonnet-4-6")
-    assert row.enabled is True
-    assert row.display_name is None
+    """The ``enabled`` column declares a client-side default of True.
+
+    SQLAlchemy applies ``mapped_column(default=...)`` at flush/INSERT time,
+    not at Python construction, so this asserts the declared default via
+    column metadata rather than reading the attribute off a freshly
+    constructed (unflushed) instance.
+    """
+    assert ProviderModelAllowlist.__table__.c.enabled.default.arg is True
 
 
 def test_audit_row_requires_changed_by_at_construction_time_type() -> None:
@@ -28,6 +32,7 @@ def test_audit_row_requires_changed_by_at_construction_time_type() -> None:
     # round-trip test in Task 3; this test only pins that the ORM column
     # itself carries no silently-nullable Python default that would mask a
     # missing changed_by until the DB constraint fires.
+    assert ProviderModelAllowlistAudit.__table__.c.changed_by.nullable is False
     audit = ProviderModelAllowlistAudit(
         provider="anthropic",
         model_id="claude-sonnet-4-6",
