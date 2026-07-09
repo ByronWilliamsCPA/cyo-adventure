@@ -74,6 +74,26 @@ _STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
 _STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
 _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
 
+# The append-only pipeline_event vocabularies, named once for their CHECK
+# constraints. event_type would ideally be derived from the EventType enum
+# (see _AGE_BAND_VALUES for that pattern), but cyo_adventure.events.__init__
+# imports events.writer, which imports db.models, so importing
+# cyo_adventure.events.models from here creates a circular import; the
+# fourteen values are listed verbatim instead and must be kept in sync with
+# cyo_adventure.events.models.EventType by hand.
+_PIPELINE_EVENT_TYPE_VALUES = (
+    "'request_created', 'request_approved', 'request_declined', "
+    "'plan_assigned', 'generation_started', 'generation_finished', "
+    "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
+    "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated'"
+)
+_PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin'"
+_PIPELINE_ENTITY_TYPE_VALUES = (
+    "'story_request', 'generation_job', 'storybook', 'storybook_version', "
+    "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
+    "'moderation_setting'"
+)
+
 
 class Family(Base):
     """A family: the ownership root for users, profiles, and stories."""
@@ -683,6 +703,18 @@ class PipelineEvent(Base):
 
     __tablename__ = "pipeline_event"
     __table_args__ = (
+        CheckConstraint(
+            f"event_type IN ({_PIPELINE_EVENT_TYPE_VALUES})",
+            name="ck_pipeline_event_event_type",
+        ),
+        CheckConstraint(
+            f"actor_role IN ({_PIPELINE_ACTOR_ROLE_VALUES})",
+            name="ck_pipeline_event_actor_role",
+        ),
+        CheckConstraint(
+            f"entity_type IN ({_PIPELINE_ENTITY_TYPE_VALUES})",
+            name="ck_pipeline_event_entity_type",
+        ),
         Index("ix_pipeline_event_entity", "entity_type", "entity_id"),
         Index("ix_pipeline_event_event_type", "event_type"),
         Index("ix_pipeline_event_occurred_at", "occurred_at"),
