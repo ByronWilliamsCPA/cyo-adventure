@@ -407,6 +407,11 @@
   color: var(--color-error, #b3261e);
 }
 
+.console-row__series-note {
+  color: var(--color-ink-muted, #8c6f56);
+  font-style: italic;
+}
+
 .review-detail {
   padding-bottom: 5rem; /* room for the pinned action bar */
 }

@@ -13,7 +13,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
+from cyo_adventure.generation.concept import (
+    AnchorContext,
+    ConceptBrief,
+    Protagonist,
+    StructurePattern,
+)
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
 from cyo_adventure.validator.band_profile import profile_for
 
@@ -59,7 +64,9 @@ _FALLBACK_ENDINGS = 2
 
 
 def brief_from_request(
-    request: StoryRequest, profile: ChildProfile | None
+    request: StoryRequest,
+    profile: ChildProfile | None,
+    anchor_context: AnchorContext | None = None,
 ) -> ConceptBrief:
     """Assemble a ConceptBrief for an approved request.
 
@@ -69,6 +76,8 @@ def brief_from_request(
         profile: The requesting child's profile, or None for requests not
             tied to one child (guardian/admin initiated). Contributes only
             the reading-level cap; band never comes from here.
+        anchor_context: Soft-continuation context from the request's anchor,
+            or None.
 
     Returns:
         ConceptBrief: A fully populated brief with a generic fictional
@@ -116,4 +125,5 @@ def brief_from_request(
             is not None
             else NarrativeStyle.PROSE
         ),
+        anchor_context=anchor_context,
     )

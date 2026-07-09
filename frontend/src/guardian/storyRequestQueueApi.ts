@@ -28,6 +28,9 @@ export interface StoryRequestView {
   age_band: string
   length: string | null
   narrative_style: string
+  series_id: string | null
+  proposed_series_title: string | null
+  anchor_storybook_id: string | null
 }
 
 export interface StoryRequestApproved {
@@ -46,6 +49,7 @@ export type StoryRequestApproveBody = {
   age_band: string
   length: string
   narrative_style: string
+  series_title?: string
 }
 
 export interface StoryRequestQueueApi {

@@ -8,6 +8,7 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.api.schemas import (
     StoryRequestApproveBody,
     StoryRequestAuthoredCreateBody,
+    StoryRequestCreateBody,
     StoryRequestView,
 )
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
@@ -105,3 +106,40 @@ def test_story_request_view_allows_null_profile_id() -> None:
         }
     )
     assert view.profile_id is None
+
+
+def test_kid_body_rejects_proposal_and_anchor() -> None:
+    with pytest.raises(PydanticValidationError, match="not both"):
+        StoryRequestCreateBody(
+            profile_id="p1",
+            request_text="a fox story",
+            proposed_series_title="Fox Tales",
+            anchor_storybook_id="s_abc",
+        )
+
+
+def test_authored_body_rejects_series_and_anchor() -> None:
+    with pytest.raises(PydanticValidationError, match="not both"):
+        StoryRequestAuthoredCreateBody(
+            request_text="a fox story",
+            age_band=AgeBand.BAND_8_11,
+            length=Length.SHORT,
+            series_title="Fox Tales",
+            anchor_storybook_id="s_abc",
+        )
+
+
+def test_kid_body_accepts_proposal_alone() -> None:
+    body = StoryRequestCreateBody(
+        profile_id="p1",
+        request_text="a fox story",
+        proposed_series_title="  Fox Tales  ",
+    )
+    assert body.proposed_series_title == "Fox Tales"
+
+
+def test_series_title_over_cap_rejected() -> None:
+    with pytest.raises(PydanticValidationError):
+        StoryRequestCreateBody(
+            profile_id="p1", request_text="x", proposed_series_title="t" * 121
+        )

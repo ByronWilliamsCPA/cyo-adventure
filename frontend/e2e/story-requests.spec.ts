@@ -53,6 +53,9 @@ const DRAGON_REQUEST = {
   age_band: '5-8',
   length: null,
   narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
 }
 
 const PIRATE_REQUEST = {
@@ -66,6 +69,25 @@ const PIRATE_REQUEST = {
   age_band: '8-11',
   length: null,
   narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: null,
+  anchor_storybook_id: null,
+}
+
+const DRAGON_TALES_REQUEST = {
+  id: 'req-3',
+  profile_id: 'p1',
+  status: 'pending',
+  request_text: 'A story about a dragon who collects maps',
+  moderation_flags: [],
+  created_at: '2026-07-04T10:10:00Z',
+  initiator_role: 'child',
+  age_band: '5-8',
+  length: null,
+  narrative_style: 'prose',
+  series_id: null,
+  proposed_series_title: 'Dragon Tales',
+  anchor_storybook_id: null,
 }
 
 test.beforeEach(async ({ context }) => {
@@ -78,9 +100,7 @@ test.beforeEach(async ({ context }) => {
   )
 })
 
-test('approve removes the approved row, then decline empties the list', async ({
-  page,
-}) => {
+test('approve removes the approved row, then decline empties the list', async ({ page }) => {
   await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
 
   let requests = [DRAGON_REQUEST, PIRATE_REQUEST]
@@ -121,4 +141,40 @@ test('approve removes the approved row, then decline empties the list', async ({
   await pirateRow.getByRole('button', { name: 'Decline' }).click()
 
   await expect(page.getByText('No requests to review')).toBeVisible()
+})
+
+test('approving a proposed-series request includes the prefilled series title', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
+
+  const requests = [DRAGON_TALES_REQUEST]
+  await page.route('**/api/v1/story-requests?status=pending', (route) =>
+    route.fulfill({ json: { requests } })
+  )
+
+  let approveCalls = 0
+  let approveBody: unknown = null
+  await page.route('**/api/v1/story-requests/req-3/approve', (route) => {
+    approveCalls += 1
+    approveBody = route.request().postDataJSON()
+    return route.fulfill({
+      json: { id: 'req-3', status: 'approved', concept_id: 'concept-3', job_id: 'job-3' },
+    })
+  })
+
+  await page.goto('/guardian/requests')
+
+  const row = page.getByTestId('request-req-3')
+  await expect(row.getByLabel('Series title (optional)')).toHaveValue('Dragon Tales')
+  await row.getByLabel('Story length').selectOption('medium')
+  await row.getByRole('button', { name: 'Approve' }).click()
+
+  await expect.poll(() => approveCalls).toBe(1)
+  expect(approveBody).toEqual({
+    age_band: '5-8',
+    length: 'medium',
+    narrative_style: 'prose',
+    series_title: 'Dragon Tales',
+  })
 })

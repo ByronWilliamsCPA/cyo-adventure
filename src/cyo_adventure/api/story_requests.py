@@ -51,6 +51,7 @@ from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
 from cyo_adventure.story_requests import service
+from cyo_adventure.story_requests.anchoring import resolve_anchor
 from cyo_adventure.story_requests.authoring_plan import build_authoring_plan
 from cyo_adventure.story_requests.screening import screen_request_text
 from cyo_adventure.storybook.models import AgeBand, Length, NarrativeStyle
@@ -239,6 +240,11 @@ def _to_view(
         age_band=AgeBand(request.age_band),
         length=Length(request.length) if request.length is not None else None,
         narrative_style=NarrativeStyle(request.narrative_style),
+        series_id=str(request.series_id) if request.series_id is not None else None,
+        proposed_series_title=(
+            None if request.status == "blocked" else request.proposed_series_title
+        ),
+        anchor_storybook_id=request.anchor_storybook_id,
     )
 
 
@@ -248,8 +254,16 @@ async def create_story_request(
 ) -> StoryRequestCreatedView:
     """Submit a child's free-text story request (guardian-scoped in R1).
 
+    ``body.proposed_series_title`` and ``body.anchor_storybook_id`` are
+    mutually exclusive (schema XOR): the former proposes a brand-new,
+    unratified series name (screened alongside the request text and stored
+    for a guardian to ratify or decline at approval); the latter asks for a
+    soft continuation anchored to an existing, published, series-linked
+    storybook in the caller's own family and profile band (WS-B PR 3).
+
     Args:
-        body: The profile id and request text.
+        body: The profile id, request text, and optional series proposal or
+            continuation anchor.
         ctx: The request context (principal and session).
 
     Returns:
@@ -257,9 +271,12 @@ async def create_story_request(
 
     Raises:
         AuthorizationError: If the caller may not act on the profile (-> 403).
-        ResourceNotFoundError: If the profile no longer exists (-> 404).
+        ResourceNotFoundError: If the profile no longer exists, or the anchor
+            storybook is missing or outside the caller's family (-> 404).
         StateTransitionError: If the profile is at its pending cap (-> 409).
-        ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
+        ValidationError: If ``profile_id`` is not a valid UUID; if the anchor
+            storybook is not published or not series-linked; or if the
+            profile's age band does not match the anchor's series (-> 422).
     """
     profile_uuid = parse_uuid(body.profile_id, "profile_id")
     # #CRITICAL: security: guardian may act on any family profile, a child only
@@ -286,9 +303,28 @@ async def create_story_request(
         msg = "too many pending requests for this profile"
         raise StateTransitionError(msg)
 
+    series_id: uuid.UUID | None = None
+    if body.anchor_storybook_id is not None:
+        # #CRITICAL: security: the anchor is validated against the caller's own
+        # family and the profile's band before anything persists; a kid cannot
+        # anchor onto another family's book or fork a series onto a new band.
+        # #VERIFY: test_series_requests.py anchor matrix (404/422 cases).
+        series = await resolve_anchor(
+            ctx.session,
+            body.anchor_storybook_id,
+            family_id=ctx.principal.family_id,
+            expected_band=profile.age_band,
+        )
+        series_id = series.id
+
     child_names = await _family_child_names(ctx, ctx.principal.family_id)
+    screen_input = (
+        f"{body.proposed_series_title}\n{body.request_text}"
+        if body.proposed_series_title is not None
+        else body.request_text
+    )
     result = await screen_request_text(
-        body.request_text,
+        screen_input,
         child_names=child_names,
         openai_key=settings.openai_api_key,
         perspective_key=settings.perspective_api_key,
@@ -306,6 +342,9 @@ async def create_story_request(
         moderation_flags=flags_payload,
         age_band=profile.age_band,
         initiator_role="child",
+        series_id=series_id,
+        anchor_storybook_id=body.anchor_storybook_id,
+        proposed_series_title=body.proposed_series_title,
     )
     ctx.session.add(request)
     await ctx.session.flush()
@@ -314,41 +353,24 @@ async def create_story_request(
     )
 
 
-@router.post("/story-requests/authored", status_code=201)
-async def create_authored_story_request(
-    body: StoryRequestAuthoredCreateBody, ctx: Context
-) -> StoryRequestAuthoredCreatedView:
-    """Create a pre-approved request as a guardian or admin (WS-B PR 2).
-
-    The author sets band, length, and style at creation, so the guardian
-    approval step is skipped: the row is created ``approved`` with its Concept
-    built immediately, ready for the admin authoring-plan step. Screening
-    still runs; a blocked outcome persists a ``blocked`` row with no concept.
+async def _resolve_authored_family(
+    ctx: Context, body: StoryRequestAuthoredCreateBody
+) -> uuid.UUID:
+    """Resolve the target family for an authored request (WS-B PR 2).
 
     Args:
-        body: The request text, band/length/style, optional profile, and
-            (admin-only) target family.
         ctx: The request context (principal and session).
+        body: The authored-create body.
 
     Returns:
-        StoryRequestAuthoredCreatedView: Id, post-screening status, concept id.
+        uuid.UUID: The principal's own family for a guardian, or the body's
+        named family for an admin.
 
     Raises:
-        AuthorizationError: If the caller is a child, or the profile does not
-            belong to the target family (-> 403).
-        ResourceNotFoundError: If the named family or profile is missing (-> 404).
+        ResourceNotFoundError: If an admin-named family does not exist.
         ValidationError: If a guardian supplies ``family_id``, an admin omits
-            it, a UUID is malformed, or the built brief trips the PII backstop
-            in ``_build_concept`` (-> 422).
+            it, or the supplied id is malformed.
     """
-    # #CRITICAL: security: children cannot author pre-approved requests; the
-    # authored path bypasses guardian review by design, so the role gate is the
-    # only thing standing between a child token and an unreviewed concept.
-    # #VERIFY: test_story_requests_authored.py::test_child_cannot_author.
-    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
-        raise AuthorizationError(msg)
-
     # #CRITICAL: security: the target family comes from the principal for
     # guardians and from the body for admins (decision B3); a guardian naming
     # any family_id is rejected outright so cross-family authoring is
@@ -363,42 +385,139 @@ async def create_authored_story_request(
         if family is None:
             msg = "family not found"
             raise ResourceNotFoundError(msg)
-    else:
-        if body.family_id is not None:
-            msg = "family_id is server-derived for guardians"
-            raise ValidationError(msg, field="family_id", value=body.family_id)
-        family_uuid = ctx.principal.family_id
+        return family_uuid
+    if body.family_id is not None:
+        msg = "family_id is server-derived for guardians"
+        raise ValidationError(msg, field="family_id", value=body.family_id)
+    return ctx.principal.family_id
 
-    profile: ChildProfile | None = None
-    if body.profile_id is not None:
-        profile_uuid = parse_uuid(body.profile_id, "profile_id")
-        # #CRITICAL: security: guardians are checked against their own profile
-        # set BEFORE any lookup (authorize_profile), so a guardian cannot use
-        # this endpoint to distinguish "exists in another family" (403) from
-        # "does not exist" (404); a nonexistent id and another family's id are
-        # both 403 for guardians. Admins have global visibility, so the
-        # existence-then-membership order below is not an oracle for them, and
-        # the family check also covers the admin-named family (IDOR).
-        # #VERIFY: test_guardian_rejects_cross_family_profile,
-        # test_guardian_unknown_profile_is_403,
-        # test_admin_cross_family_profile_is_403.
-        if not ctx.principal.is_admin:
-            authorize_profile(ctx.principal, profile_uuid)
-        profile = await ctx.session.get(ChildProfile, profile_uuid)
-        if profile is None:
-            msg = "profile not found"
-            raise ResourceNotFoundError(msg)
-        if profile.family_id != family_uuid:
-            msg = "profile does not belong to the target family"
-            raise AuthorizationError(msg, resource=str(profile_uuid))
+
+async def _resolve_authored_profile(
+    ctx: Context, body: StoryRequestAuthoredCreateBody, family_uuid: uuid.UUID
+) -> ChildProfile | None:
+    """Validate and load the optional target profile for an authored request.
+
+    Args:
+        ctx: The request context.
+        body: The authored-create body.
+        family_uuid: The resolved target family.
+
+    Returns:
+        ChildProfile | None: The validated profile, or None for a request
+        with no target child.
+
+    Raises:
+        AuthorizationError: If a guardian names an inaccessible profile, or
+            the profile does not belong to the target family.
+        ResourceNotFoundError: If the named profile does not exist.
+    """
+    if body.profile_id is None:
+        return None
+    profile_uuid = parse_uuid(body.profile_id, "profile_id")
+    # #CRITICAL: security: guardians are checked against their own profile
+    # set BEFORE any lookup (authorize_profile), so a guardian cannot use
+    # this endpoint to distinguish "exists in another family" (403) from
+    # "does not exist" (404); a nonexistent id and another family's id are
+    # both 403 for guardians. Admins have global visibility, so the
+    # existence-then-membership order below is not an oracle for them, and
+    # the family check also covers the admin-named family (IDOR).
+    # #VERIFY: test_guardian_rejects_cross_family_profile,
+    # test_guardian_unknown_profile_is_403,
+    # test_admin_cross_family_profile_is_403.
+    if not ctx.principal.is_admin:
+        authorize_profile(ctx.principal, profile_uuid)
+    profile = await ctx.session.get(ChildProfile, profile_uuid)
+    if profile is None:
+        msg = "profile not found"
+        raise ResourceNotFoundError(msg)
+    if profile.family_id != family_uuid:
+        msg = "profile does not belong to the target family"
+        raise AuthorizationError(msg, resource=str(profile_uuid))
+    return profile
+
+
+@router.post("/story-requests/authored", status_code=201)
+async def create_authored_story_request(
+    body: StoryRequestAuthoredCreateBody, ctx: Context
+) -> StoryRequestAuthoredCreatedView:
+    """Create a pre-approved request as a guardian or admin (WS-B PR 2).
+
+    The author sets band, length, and style at creation, so the guardian
+    approval step is skipped: the row is created ``approved`` with its Concept
+    built immediately, ready for the admin authoring-plan step. Screening
+    still runs; a blocked outcome persists a ``blocked`` row with no concept.
+
+    ``body.series_title`` and ``body.anchor_storybook_id`` are mutually
+    exclusive (schema XOR, WS-B PR 3): the former creates a brand-new series
+    immediately, but only for a non-blocked outcome, so a blocked row never
+    leaves an orphan series; the latter continues an existing, published,
+    series-linked storybook in the target family and body's age band.
+
+    Args:
+        body: The request text, band/length/style, optional profile, and
+            (admin-only) target family, plus an optional series title or
+            continuation anchor.
+        ctx: The request context (principal and session).
+
+    Returns:
+        StoryRequestAuthoredCreatedView: Id, post-screening status, concept id.
+
+    Raises:
+        AuthorizationError: If the caller is a child, or the profile does not
+            belong to the target family (-> 403).
+        ResourceNotFoundError: If the named family, profile, or anchor
+            storybook is missing, or the anchor is outside the target family
+            (-> 404).
+        ValidationError: If a guardian supplies ``family_id``, an admin omits
+            it, a UUID is malformed, the anchor storybook is not published or
+            not series-linked, the body's age band does not match the
+            anchor's series, or the built brief trips the PII backstop in
+            ``_build_concept`` (-> 422).
+    """
+    # #CRITICAL: security: children cannot author pre-approved requests; the
+    # authored path bypasses guardian review by design, so the role gate is the
+    # only thing standing between a child token and an unreviewed concept.
+    # #VERIFY: test_story_requests_authored.py::test_child_cannot_author.
+    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
+        msg = "guardian or admin role required"
+        raise AuthorizationError(msg)
+
+    family_uuid = await _resolve_authored_family(ctx, body)
+    profile = await _resolve_authored_profile(ctx, body, family_uuid)
+
+    series_id: uuid.UUID | None = None
+    if body.anchor_storybook_id is not None:
+        anchor_series = await resolve_anchor(
+            ctx.session,
+            body.anchor_storybook_id,
+            family_id=family_uuid,
+            expected_band=body.age_band.value,
+        )
+        series_id = anchor_series.id
 
     child_names = await _family_child_names(ctx, family_uuid)
+    screen_input = (
+        f"{body.series_title}\n{body.request_text}"
+        if body.series_title is not None
+        else body.request_text
+    )
     result = await screen_request_text(
-        body.request_text,
+        screen_input,
         child_names=child_names,
         openai_key=settings.openai_api_key,
         perspective_key=settings.perspective_api_key,
     )
+
+    if not result.blocked and body.series_title is not None:
+        series = await service.create_series(
+            ctx.session,
+            ctx.principal,
+            title=body.series_title,
+            family_id=family_uuid,
+            age_band=body.age_band.value,
+        )
+        series_id = series.id
+
     request, concept_id = await service.create_authored_request(
         ctx.session,
         ctx.principal,
@@ -411,6 +530,8 @@ async def create_authored_story_request(
             narrative_style=body.narrative_style,
         ),
         screening=result,
+        series_id=series_id,
+        anchor_storybook_id=body.anchor_storybook_id,
     )
     return StoryRequestAuthoredCreatedView(
         id=str(request.id),
@@ -519,13 +640,23 @@ async def approve_story_request_endpoint(
     mechanism, and model afterward via POST .../authoring-plan, which is what
     creates the job (see story_requests/authoring_plan.py).
 
+    ``body.series_title`` ratifies or edits a series for a non-anchored
+    request (WS-B PR 3): supplying it creates a new series row and links the
+    request to it; omitting it declines the kid's proposal (no series is
+    created, and ``proposed_series_title`` remains stored on the request as
+    an audit trail). An anchored (continuation) request is re-validated
+    against the confirmed band and rejects a supplied ``series_title``
+    outright (a continuation cannot also fork a new series).
+
     Args:
         request_id: The request id from the path.
         body: The guardian's band/length/style confirmation (WS-B); this
             becomes the request's stored band and length, overriding
             whatever was stamped at creation. A gamebook style below the
             teen bands (13-16, 16+) is rejected here with a 422 before the
-            service layer runs.
+            service layer runs. ``series_title``, if present, is screened
+            here before the service layer runs, so a blocked title never
+            reaches the row.
         ctx: The request context.
 
     Returns:
@@ -535,6 +666,10 @@ async def approve_story_request_endpoint(
         ResourceNotFoundError: If the request is out of scope (-> 404).
         StateTransitionError: If the request is not pending (-> 409).
         AuthorizationError: If a child token reaches this endpoint (-> 403).
+        ValidationError: If ``series_title`` fails content screening; if an
+            anchored request also carries a ``series_title``; or if the
+            confirmed age band does not match the anchor's series band
+            (-> 422).
     """
     # #CRITICAL: security: only a guardian (own family) or an admin may approve;
     # a child principal must never approve its own request.
@@ -543,6 +678,20 @@ async def approve_story_request_endpoint(
         msg = "guardian or admin role required"
         raise AuthorizationError(msg)
     request = await _load_scoped_request(ctx, request_id, for_update=True)
+    if body.series_title is not None:
+        child_names = await _family_child_names(ctx, request.family_id)
+        title_screen = await screen_request_text(
+            body.series_title,
+            child_names=child_names,
+            openai_key=settings.openai_api_key,
+            perspective_key=settings.perspective_api_key,
+        )
+        if title_screen.blocked:
+            # #CRITICAL: security: never echo blocked content back; the message
+            # and value are both generic (same redaction as blocked requests).
+            # #VERIFY: test_series_requests.py::test_approve_blocked_title_is_422.
+            msg = "series title failed content screening"
+            raise ValidationError(msg, field="series_title", value=None)
     concept_id = await service.approve_story_request(
         ctx.session,
         ctx.principal,
@@ -552,6 +701,7 @@ async def approve_story_request_endpoint(
             length=body.length,
             narrative_style=body.narrative_style,
         ),
+        series_title=body.series_title,
     )
     return StoryRequestApprovedView(
         id=str(request.id),

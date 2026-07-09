@@ -44,6 +44,7 @@ from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
+from cyo_adventure.generation.series_link import link_series_position
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
@@ -415,6 +416,10 @@ async def _persist_and_moderate(
 
     ctx.job_row.storybook_id = story_id
     ctx.job_row.version = _FIRST_VERSION
+
+    await link_series_position(
+        session, story_id=story_id, concept_id=ctx.job_row.concept_id
+    )
 
     logger.info(
         "generation_job.storybook_persisted",

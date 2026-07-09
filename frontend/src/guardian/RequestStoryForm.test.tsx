@@ -157,6 +157,35 @@ describe('RequestStoryForm', () => {
       )
     })
 
+    it('includes series_title in the body when a series title is entered', async () => {
+      mockGuardianLoad()
+      mockPost.mockResolvedValue({
+        data: { id: 'req-1', status: 'approved', concept_id: 'concept-1' },
+      })
+      render(<RequestStoryForm mode="guardian" />)
+      const childSelect = await screen.findByLabelText(/child/i)
+      fireEvent.change(childSelect, { target: { value: 'child-a' } })
+      fireEvent.change(screen.getByLabelText(/what should the story be about/i), {
+        target: { value: 'A story about a brave fox' },
+      })
+      fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+      fireEvent.change(screen.getByLabelText('Series title (optional)'), {
+        target: { value: 'Fox Tales' },
+      })
+
+      fireEvent.click(screen.getByRole('button', { name: /send request/i }))
+      await waitFor(() =>
+        expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/authored', {
+          request_text: 'A story about a brave fox',
+          age_band: '8-11',
+          length: 'medium',
+          narrative_style: 'prose',
+          profile_id: 'child-a',
+          series_title: 'Fox Tales',
+        })
+      )
+    })
+
     it('double-clicking Send request results in exactly one POST call', async () => {
       mockGuardianLoad()
       let resolvePost: (value: { data: unknown }) => void = () => {}
@@ -253,6 +282,36 @@ describe('RequestStoryForm', () => {
           length: 'medium',
           narrative_style: 'prose',
           family_id: 'fam-a',
+        })
+      )
+    })
+
+    it('includes series_title in the body when a series title is entered', async () => {
+      mockAdminLoad()
+      mockPost.mockResolvedValue({
+        data: { id: 'req-2', status: 'approved', concept_id: 'concept-2' },
+      })
+      render(<RequestStoryForm mode="admin" />)
+      const familySelect = await screen.findByLabelText<HTMLSelectElement>(/family/i)
+      fireEvent.change(screen.getByLabelText(/what should the story be about/i), {
+        target: { value: 'A story about a brave fox' },
+      })
+      fireEvent.change(screen.getByLabelText('Age band'), { target: { value: '8-11' } })
+      fireEvent.change(screen.getByLabelText('Story length'), { target: { value: 'medium' } })
+      fireEvent.change(familySelect, { target: { value: 'fam-a' } })
+      fireEvent.change(screen.getByLabelText('Series title (optional)'), {
+        target: { value: 'Fox Tales' },
+      })
+
+      fireEvent.click(screen.getByRole('button', { name: /send request/i }))
+      await waitFor(() =>
+        expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/authored', {
+          request_text: 'A story about a brave fox',
+          age_band: '8-11',
+          length: 'medium',
+          narrative_style: 'prose',
+          family_id: 'fam-a',
+          series_title: 'Fox Tales',
         })
       )
     })

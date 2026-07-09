@@ -831,8 +831,16 @@ export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends bool
  *
  * Submit a child's free-text story request (guardian-scoped in R1).
  *
+ * ``body.proposed_series_title`` and ``body.anchor_storybook_id`` are
+ * mutually exclusive (schema XOR): the former proposes a brand-new,
+ * unratified series name (screened alongside the request text and stored
+ * for a guardian to ratify or decline at approval); the latter asks for a
+ * soft continuation anchored to an existing, published, series-linked
+ * storybook in the caller's own family and profile band (WS-B PR 3).
+ *
  * Args:
- * body: The profile id and request text.
+ * body: The profile id, request text, and optional series proposal or
+ * continuation anchor.
  * ctx: The request context (principal and session).
  *
  * Returns:
@@ -840,9 +848,12 @@ export const listStoryRequestsApiV1StoryRequestsGet = <ThrowOnError extends bool
  *
  * Raises:
  * AuthorizationError: If the caller may not act on the profile (-> 403).
- * ResourceNotFoundError: If the profile no longer exists (-> 404).
+ * ResourceNotFoundError: If the profile no longer exists, or the anchor
+ * storybook is missing or outside the caller's family (-> 404).
  * StateTransitionError: If the profile is at its pending cap (-> 409).
- * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
+ * ValidationError: If ``profile_id`` is not a valid UUID; if the anchor
+ * storybook is not published or not series-linked; or if the
+ * profile's age band does not match the anchor's series (-> 422).
  */
 export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends boolean = false>(options: Options<CreateStoryRequestApiV1StoryRequestsPostData, ThrowOnError>): RequestResult<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateStoryRequestApiV1StoryRequestsPostResponses, CreateStoryRequestApiV1StoryRequestsPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -864,9 +875,16 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  * built immediately, ready for the admin authoring-plan step. Screening
  * still runs; a blocked outcome persists a ``blocked`` row with no concept.
  *
+ * ``body.series_title`` and ``body.anchor_storybook_id`` are mutually
+ * exclusive (schema XOR, WS-B PR 3): the former creates a brand-new series
+ * immediately, but only for a non-blocked outcome, so a blocked row never
+ * leaves an orphan series; the latter continues an existing, published,
+ * series-linked storybook in the target family and body's age band.
+ *
  * Args:
  * body: The request text, band/length/style, optional profile, and
- * (admin-only) target family.
+ * (admin-only) target family, plus an optional series title or
+ * continuation anchor.
  * ctx: The request context (principal and session).
  *
  * Returns:
@@ -875,10 +893,14 @@ export const createStoryRequestApiV1StoryRequestsPost = <ThrowOnError extends bo
  * Raises:
  * AuthorizationError: If the caller is a child, or the profile does not
  * belong to the target family (-> 403).
- * ResourceNotFoundError: If the named family or profile is missing (-> 404).
+ * ResourceNotFoundError: If the named family, profile, or anchor
+ * storybook is missing, or the anchor is outside the target family
+ * (-> 404).
  * ValidationError: If a guardian supplies ``family_id``, an admin omits
- * it, a UUID is malformed, or the built brief trips the PII backstop
- * in ``_build_concept`` (-> 422).
+ * it, a UUID is malformed, the anchor storybook is not published or
+ * not series-linked, the body's age band does not match the
+ * anchor's series, or the built brief trips the PII backstop in
+ * ``_build_concept`` (-> 422).
  */
 export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOnError extends boolean = false>(options: Options<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, ThrowOnError>): RequestResult<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError> => (options.client ?? client).post<CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, ThrowOnError>({
     responseType: 'json',
@@ -899,13 +921,23 @@ export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOn
  * mechanism, and model afterward via POST .../authoring-plan, which is what
  * creates the job (see story_requests/authoring_plan.py).
  *
+ * ``body.series_title`` ratifies or edits a series for a non-anchored
+ * request (WS-B PR 3): supplying it creates a new series row and links the
+ * request to it; omitting it declines the kid's proposal (no series is
+ * created, and ``proposed_series_title`` remains stored on the request as
+ * an audit trail). An anchored (continuation) request is re-validated
+ * against the confirmed band and rejects a supplied ``series_title``
+ * outright (a continuation cannot also fork a new series).
+ *
  * Args:
  * request_id: The request id from the path.
  * body: The guardian's band/length/style confirmation (WS-B); this
  * becomes the request's stored band and length, overriding
  * whatever was stamped at creation. A gamebook style below the
  * teen bands (13-16, 16+) is rejected here with a 422 before the
- * service layer runs.
+ * service layer runs. ``series_title``, if present, is screened
+ * here before the service layer runs, so a blocked title never
+ * reaches the row.
  * ctx: The request context.
  *
  * Returns:
@@ -915,6 +947,10 @@ export const createAuthoredStoryRequestApiV1StoryRequestsAuthoredPost = <ThrowOn
  * ResourceNotFoundError: If the request is out of scope (-> 404).
  * StateTransitionError: If the request is not pending (-> 409).
  * AuthorizationError: If a child token reaches this endpoint (-> 403).
+ * ValidationError: If ``series_title`` fails content screening; if an
+ * anchored request also carries a ``series_title``; or if the
+ * confirmed age band does not match the anchor's series band
+ * (-> 422).
  */
 export const approveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePost = <ThrowOnError extends boolean = false>(options: Options<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ThrowOnError>): RequestResult<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError> => (options.client ?? client).post<ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ThrowOnError>({
     responseType: 'json',

@@ -25,6 +25,8 @@ describe('makeLibraryApi', () => {
               nodes_visited: 3,
               updated_at: '2026-07-01T00:00:00Z',
             },
+            series_id: 'ser1',
+            book_index: 2,
           },
         ],
       },
@@ -34,6 +36,8 @@ describe('makeLibraryApi', () => {
     expect(get).toHaveBeenCalledWith('/v1/library', { params: { profile_id: 'p1' } })
     expect(items[0].title).toBe('The Lantern')
     expect(items[0].progress?.nodes_visited).toBe(3)
+    expect(items[0].series_id).toBe('ser1')
+    expect(items[0].book_index).toBe(2)
   })
 
   it('posts a rating upsert', async () => {

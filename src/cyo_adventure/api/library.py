@@ -173,6 +173,8 @@ def _library_item(
     *,
     rating: int | None = None,
     state: ReadingState | None = None,
+    series_id: str | None = None,
+    book_index: int | None = None,
 ) -> LibraryItem:
     """Build a library item from a stored Storybook blob.
 
@@ -187,6 +189,9 @@ def _library_item(
         version: The published version number.
         rating: The profile's 1-5 rating of this story, if any.
         state: The profile's saved reading state for this story, if any.
+        series_id: The book's series, or None for a standalone story (WS-B
+            PR 3). Sourced from the ``Storybook`` row, not the blob.
+        book_index: The book's 1-based position in its series, or None.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed fields.
@@ -237,6 +242,8 @@ def _library_item(
         node_count=node_count,
         rating=rating,
         progress=progress,
+        series_id=series_id,
+        book_index=book_index,
     )
 
 
@@ -285,7 +292,7 @@ async def list_library(
         )
     )
     books = [
-        (book.id, book.current_published_version)
+        (book.id, book.current_published_version, book.series_id, book.book_index)
         for book in rows.all()
         if book.current_published_version is not None
     ]
@@ -297,11 +304,13 @@ async def list_library(
     # published rows.
     version_rows = await session.scalars(
         select(StorybookVersion).where(
-            tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(books)
+            tuple_(StorybookVersion.storybook_id, StorybookVersion.version).in_(
+                [(b[0], b[1]) for b in books]
+            )
         )
     )
     blobs = {(row.storybook_id, row.version): row.blob for row in version_rows}
-    book_ids = [storybook_id for storybook_id, _ in books]
+    book_ids = [b[0] for b in books]
     # #ASSUME: external resources: per-profile state and ratings load in one
     # bulk query each (not per-book) so the listing stays two+2 queries total.
     # #VERIFY: both filters use IN on the published book ids and the single
@@ -327,8 +336,10 @@ async def list_library(
             version,
             rating=ratings.get(storybook_id),
             state=states.get(storybook_id),
+            series_id=str(series_id) if series_id is not None else None,
+            book_index=book_index,
         )
-        for storybook_id, version in books
+        for storybook_id, version, series_id, book_index in books
         if (storybook_id, version) in blobs
     ]
     return LibraryView(stories=items)

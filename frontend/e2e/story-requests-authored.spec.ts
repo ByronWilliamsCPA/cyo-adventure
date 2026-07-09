@@ -46,7 +46,7 @@ test.describe('guardian authored request (RequestsPage)', () => {
     )
   })
 
-  test('submitting with a child selected posts profile_id, the child band, and no family_id', async ({
+  test('submitting with a child selected and a series title posts profile_id, the child band, and the series title', async ({
     page,
   }) => {
     let requestBody: unknown = null
@@ -64,6 +64,7 @@ test.describe('guardian authored request (RequestsPage)', () => {
     await expect(page.getByLabel('Age band')).toHaveValue(CHILD_PROFILE.age_band)
     await page.getByLabel('What should the story be about?').fill('A story about a kind robot')
     await page.getByLabel('Story length').selectOption('medium')
+    await page.getByLabel('Series title (optional)').fill('Kind Robot Chronicles')
     // Tie the wait to the mocked response rather than a bare visibility
     // timeout: under parallel-worker load the round trip can outrun the
     // default 5s expect timeout even though the UI update itself is instant.
@@ -79,16 +80,21 @@ test.describe('guardian authored request (RequestsPage)', () => {
       length: 'medium',
       narrative_style: 'prose',
       profile_id: CHILD_PROFILE.id,
+      series_title: 'Kind Robot Chronicles',
     })
   })
 
-  test('a blocked response shows the blocked notice, not the success notice', async ({ page }) => {
-    await page.route('**/api/v1/story-requests/authored', (route) =>
-      route.fulfill({
+  test('a blocked response shows the blocked notice, not the success notice, and omits the series title key when blank', async ({
+    page,
+  }) => {
+    let requestBody: unknown = null
+    await page.route('**/api/v1/story-requests/authored', (route) => {
+      requestBody = route.request().postDataJSON()
+      return route.fulfill({
         status: 201,
         json: { id: 'req-10', status: 'blocked', concept_id: null },
       })
-    )
+    })
 
     await page.goto('/guardian/requests')
 
@@ -101,6 +107,12 @@ test.describe('guardian authored request (RequestsPage)', () => {
       page.getByRole('alert').filter({ hasText: 'did not pass our content check' })
     ).toBeVisible()
     await expect(page.getByText('Request approved and sent for authoring.')).toHaveCount(0)
+    expect(requestBody).toEqual({
+      request_text: 'A scary story',
+      age_band: '8-11',
+      length: 'medium',
+      narrative_style: 'prose',
+    })
   })
 })
 

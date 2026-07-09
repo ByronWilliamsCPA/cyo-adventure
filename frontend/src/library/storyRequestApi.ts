@@ -29,17 +29,36 @@ interface WireStoryRequest {
   }>
 }
 
+export interface CreateStoryRequestExtras {
+  proposedSeriesTitle?: string
+  anchorStorybookId?: string
+}
+
 export interface KidStoryRequestApi {
-  create(profileId: string, requestText: string): Promise<KidStoryRequest>
+  create(
+    profileId: string,
+    requestText: string,
+    extras?: CreateStoryRequestExtras
+  ): Promise<KidStoryRequest>
   listForProfile(profileId: string): Promise<KidStoryRequest[]>
 }
 
 export function makeKidStoryRequestApi(api: AxiosInstance): KidStoryRequestApi {
   return {
-    async create(profileId: string, requestText: string): Promise<KidStoryRequest> {
+    async create(
+      profileId: string,
+      requestText: string,
+      extras: CreateStoryRequestExtras = {}
+    ): Promise<KidStoryRequest> {
       const res = await api.post<WireStoryRequest>('/v1/story-requests', {
         profile_id: profileId,
         request_text: requestText,
+        ...(extras.proposedSeriesTitle !== undefined
+          ? { proposed_series_title: extras.proposedSeriesTitle }
+          : {}),
+        ...(extras.anchorStorybookId !== undefined
+          ? { anchor_storybook_id: extras.anchorStorybookId }
+          : {}),
       })
       // Explicitly map to the kid-safe subset at runtime (same boundary as
       // listForProfile) so a guardian-facing field on the create response can

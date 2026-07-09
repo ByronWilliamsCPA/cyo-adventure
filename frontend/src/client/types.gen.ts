@@ -12,6 +12,34 @@ export type ClientOptions = {
 export type AgeBand = '3-5' | '5-8' | '8-11' | '10-13' | '13-16' | '16+';
 
 /**
+ * AnchorContext
+ *
+ * Soft-continuation context extracted from a series anchor storybook.
+ *
+ * Deterministic extraction, not an LLM summary (WS-B PR 3, decision B2): the
+ * anchor document's title, the protagonist name recovered from the anchor's
+ * concept brief, and truncated ending excerpts. Serialized into the Stage A
+ * prompt with the rest of the brief (build_structure_prompt injects
+ * ``model_dump_json`` wholesale), so the generated book can follow on
+ * thematically without embedding document-level Series metadata (SR-1..SR-7
+ * stay dormant until WS-G).
+ */
+export type AnchorContext = {
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Character Names
+     */
+    character_names?: Array<string>;
+    /**
+     * Ending Summary
+     */
+    ending_summary?: string;
+};
+
+/**
  * ApprovedView
  *
  * The response to a successful approve action.
@@ -323,6 +351,10 @@ export type ConceptBrief = {
      * Free-text constraints passed to the generator as guidance.
      */
     special_constraints?: Array<string>;
+    /**
+     * Soft-continuation context from a series anchor (WS-B PR 3).
+     */
+    anchor_context?: AnchorContext | null;
 };
 
 /**
@@ -778,6 +810,14 @@ export type LibraryItem = {
      */
     rating?: number | null;
     progress?: LibraryProgress | null;
+    /**
+     * Series Id
+     */
+    series_id?: string | null;
+    /**
+     * Book Index
+     */
+    book_index?: number | null;
 };
 
 /**
@@ -1418,11 +1458,18 @@ export type Source = 'openai' | 'perspective' | 'llm_safety' | 'llm_readability'
  *
  * The request becomes the source of truth for band and length at approval;
  * ``narrative_style`` follows ADR-011: gamebook only for 13-16 and 16+.
+ * ``series_title`` ratifies or edits the kid's proposed series title;
+ * omitting it declines the proposal (the anchored-plus-title conflict is a
+ * service-layer check because it needs the row).
  */
 export type StoryRequestApproveBody = {
     age_band: AgeBand;
     length: Length;
     narrative_style?: NarrativeStyle;
+    /**
+     * Series Title
+     */
+    series_title?: string | null;
 };
 
 /**
@@ -1457,6 +1504,9 @@ export type StoryRequestApprovedView = {
  * ``profile_id`` is optional (an authored request need not target a child).
  * ``family_id`` is admin-only: admins must name the target family (decision
  * B3); guardians must omit it (their own family is server-derived).
+ * ``series_title`` and ``anchor_storybook_id`` are mutually exclusive: the
+ * former creates a new series immediately (no ratification step), the
+ * latter continues an existing one.
  */
 export type StoryRequestAuthoredCreateBody = {
     age_band: AgeBand;
@@ -1474,6 +1524,14 @@ export type StoryRequestAuthoredCreateBody = {
      * Family Id
      */
     family_id?: string | null;
+    /**
+     * Series Title
+     */
+    series_title?: string | null;
+    /**
+     * Anchor Storybook Id
+     */
+    anchor_storybook_id?: string | null;
 };
 
 /**
@@ -1500,6 +1558,10 @@ export type StoryRequestAuthoredCreatedView = {
  * StoryRequestCreateBody
  *
  * A child's free-text story request (kid surface; guardian-scoped in R1).
+ *
+ * ``proposed_series_title`` and ``anchor_storybook_id`` are mutually
+ * exclusive: the former proposes a brand-new, unratified series name; the
+ * latter asks for a soft continuation anchored to an existing storybook.
  */
 export type StoryRequestCreateBody = {
     /**
@@ -1510,6 +1572,14 @@ export type StoryRequestCreateBody = {
      * Request Text
      */
     request_text: string;
+    /**
+     * Proposed Series Title
+     */
+    proposed_series_title?: string | null;
+    /**
+     * Anchor Storybook Id
+     */
+    anchor_storybook_id?: string | null;
 };
 
 /**
@@ -1589,7 +1659,14 @@ export type StoryRequestListView = {
  * approved request they reflect the guardian's approval confirmation, and
  * the guardian UI uses the band/length/style trio to prefill the approve
  * dialog. ``profile_id`` is ``None`` for an authored request with no target
- * child (WS-B PR 2).
+ * child (WS-B PR 2). ``proposed_series_title`` is ``None`` for blocked rows
+ * (screened content, same redaction as ``request_text``).
+ *
+ * ``series_id``, ``proposed_series_title``, and ``anchor_storybook_id``
+ * default to ``None`` rather than being required so older tests
+ * constructing a view directly need not supply them; ``_to_view``
+ * (api/story_requests.py) populates all three from the row for every
+ * caller (WS-B PR 3).
  */
 export type StoryRequestView = {
     /**
@@ -1623,6 +1700,18 @@ export type StoryRequestView = {
     age_band: AgeBand;
     length: Length | null;
     narrative_style: NarrativeStyle;
+    /**
+     * Series Id
+     */
+    series_id?: string | null;
+    /**
+     * Proposed Series Title
+     */
+    proposed_series_title?: string | null;
+    /**
+     * Anchor Storybook Id
+     */
+    anchor_storybook_id?: string | null;
 };
 
 /**
