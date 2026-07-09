@@ -69,14 +69,28 @@ describe('ReviewDetailPage', () => {
     expect(await screen.findByText(/never screened/i)).toBeInTheDocument()
   })
 
-  it('approves after confirmation and returns to the console', async () => {
+  it('approves with family visibility by default', async () => {
     const user = userEvent.setup()
     mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
     renderAt('s1')
     await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
     await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
-    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve')
+    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+      visibility: 'family',
+    })
     expect(await screen.findByText('CONSOLE HOME')).toBeInTheDocument()
+  })
+
+  it('approves to the catalog when the admin selects it', async () => {
+    const user = userEvent.setup()
+    mockPost.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+    renderAt('s1')
+    await user.click(await screen.findByRole('button', { name: /^Approve$/i }))
+    await user.click(await screen.findByRole('radio', { name: /Catalog/i }))
+    await user.click(await screen.findByRole('button', { name: /Confirm approve/i }))
+    expect(mockPost).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+      visibility: 'catalog',
+    })
   })
 
   it('requires a reason before sending back', async () => {
