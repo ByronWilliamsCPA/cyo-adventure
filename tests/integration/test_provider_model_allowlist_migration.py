@@ -10,6 +10,7 @@ import pytest
 import sqlalchemy as sa
 from sqlalchemy.ext.asyncio import create_async_engine
 
+from cyo_adventure.generation.allowlist import DEFAULT_ALLOWLIST
 from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
 
 # Pin the round-trip to explicit revision ids rather than "head"/"-1" (lesson
@@ -135,6 +136,47 @@ async def test_seed_rows_present_after_upgrade(migration_pg_url: str) -> None:
                 assert row.enabled is True, (
                     f"seed row {provider}/{model_id} not enabled"
                 )
+
+        down = run_alembic(project_root, env, "downgrade", _PREV_HEAD)
+        assert down.returncode == 0, f"downgrade failed:\n{down.stdout}\n{down.stderr}"
+    finally:
+        await engine.dispose()
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_seed_matches_default_allowlist(migration_pg_url: str) -> None:
+    """The migration's hand-synced seed literals match DEFAULT_ALLOWLIST exactly.
+
+    This is the drift guard the migration's RAD note promises: if someone
+    edits the migration's ``_SEED_ROWS`` or
+    ``cyo_adventure.generation.allowlist.DEFAULT_ALLOWLIST`` without also
+    updating the other, this test fails. It intentionally depends on the
+    Task 4 constant, unlike the self-contained
+    ``test_seed_rows_present_after_upgrade`` above.
+    """
+    project_root = PROJECT_ROOT
+    env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": migration_pg_url}
+
+    up = run_alembic(project_root, env, "upgrade", _ALLOWLIST_HEAD)
+    assert up.returncode == 0, f"upgrade failed:\n{up.stdout}\n{up.stderr}"
+
+    engine = create_async_engine(migration_pg_url)
+    try:
+        async with engine.connect() as conn:
+            result = await conn.execute(
+                sa.text(
+                    "SELECT provider, model_id, enabled FROM provider_model_allowlist"
+                )
+            )
+            seeded_rows = {
+                (row.provider, row.model_id, row.enabled) for row in result.all()
+            }
+
+        expected_rows = {
+            (seed.provider, seed.model_id, True) for seed in DEFAULT_ALLOWLIST
+        }
+        assert seeded_rows == expected_rows
 
         down = run_alembic(project_root, env, "downgrade", _PREV_HEAD)
         assert down.returncode == 0, f"downgrade failed:\n{down.stdout}\n{down.stderr}"
