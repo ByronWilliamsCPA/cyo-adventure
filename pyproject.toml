@@ -323,6 +323,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/approval.py" = ["TC001"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
+"**/api/moderation_dashboard.py" = ["TC001"]
 "**/api/families.py" = ["TC001"]
 "**/api/covers.py" = ["TC001"]
 

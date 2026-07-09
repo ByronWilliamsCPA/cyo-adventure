@@ -23,6 +23,7 @@ from cyo_adventure.api import (
     health,
     library,
     me,
+    moderation_dashboard,
     moderation_thresholds,
     profiles,
     provider_allowlist,
@@ -180,6 +181,7 @@ def create_app() -> FastAPI:
     app.include_router(approval.router)
     app.include_router(covers.router)
     app.include_router(moderation_thresholds.router)
+    app.include_router(moderation_dashboard.router)
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)

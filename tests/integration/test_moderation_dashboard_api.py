@@ -11,11 +11,11 @@ import pytest
 from cyo_adventure.db.models import PipelineEvent, Storybook, StorybookVersion
 from cyo_adventure.events import EventType
 from cyo_adventure.moderation.insights import load_version_records
+from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
+    from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-    from tests.integration.conftest import Seed
 
 pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
@@ -315,3 +315,70 @@ class TestLoadVersionRecords:
         by_id = {record.storybook_id: record for record in records}
         assert by_id["s_malformed"].moderated_at == expected_created_at
         assert by_id["s_valid_alongside"].moderated_at == _T0
+
+
+class TestDashboardEndpoint:
+    async def test_dashboard_aggregates_override_rate(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        async with sessions() as session:
+            await _seed_moderated_version(
+                session,
+                seed,
+                storybook_id="s_released",
+                findings=[_finding("violence", "advisory")],
+                decision=EventType.RELEASED,
+            )
+            await _seed_moderated_version(
+                session,
+                seed,
+                storybook_id="s_sent_back",
+                findings=[_finding("violence", "flag")],
+                decision=EventType.SENT_BACK,
+            )
+            await session.commit()
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        body = res.json()
+        rows = {(row["age_band"], row["category"]): row for row in body["insights"]}
+        row = rows[("8-11", "violence")]
+        assert row["advisory_findings"] == 1
+        assert row["flag_findings"] == 1
+        assert row["decided_versions"] == 2
+        assert row["released_versions"] == 1
+        assert row["override_rate"] == 0.5
+        assert body["recent_changes"] == []
+
+    async def test_dashboard_shows_recent_threshold_changes(
+        self,
+        client: AsyncClient,
+        seed: Seed,
+    ) -> None:
+        put = await client.put(
+            "/api/v1/admin/moderation-thresholds/8-11",
+            params={"category": "violence"},
+            json={"min_verdict": "block", "min_score": None},
+            headers=auth(seed.admin_token),
+        )
+        assert put.status_code == 200
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        changes = res.json()["recent_changes"]
+        assert changes, "expected the threshold_changed event to appear"
+        assert changes[0]["event_type"] == "threshold_changed"
+        assert changes[0]["entity_id"] == "8-11"
+
+    async def test_guardian_gets_403(self, client: AsyncClient, seed: Seed) -> None:
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.guardian_token)
+        )
+        assert res.status_code == 403

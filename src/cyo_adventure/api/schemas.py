@@ -1053,3 +1053,58 @@ class AllowlistUpdateBody(BaseModel):
         ]
         | None
     ) = None
+
+
+# ---------------------------------------------------------------------------
+# Moderation dashboard schemas (WS-F)
+# ---------------------------------------------------------------------------
+
+
+class CategoryInsightView(BaseModel):
+    """Override evidence for one (age_band, category) pair (WS-F)."""
+
+    age_band: str
+    category: str
+    advisory_findings: int
+    flag_findings: int
+    decided_versions: int
+    released_versions: int
+    override_rate: float | None
+    last_seen: datetime
+
+
+class ThresholdChangeView(BaseModel):
+    """One recent threshold or noise-floor change event (WS-F)."""
+
+    occurred_at: datetime
+    event_type: str
+    entity_id: str
+    payload: dict[str, object]
+
+
+class ModerationDashboardView(BaseModel):
+    """Aggregated moderation evidence for the admin dashboard (WS-F)."""
+
+    insights: list[CategoryInsightView]
+    recent_changes: list[ThresholdChangeView]
+
+
+class ThresholdSuggestionView(BaseModel):
+    """A computed threshold proposal awaiting admin ratification (WS-F)."""
+
+    age_band: str
+    category: str
+    current_min_verdict: MinVerdict
+    current_min_score: float | None
+    suggested_min_verdict: MinVerdict
+    override_rate: float
+    decided_versions: int
+    released_versions: int
+
+
+class SuggestionListView(BaseModel):
+    """Computed proposals plus the gates that produced them (WS-F)."""
+
+    min_decided_versions: int
+    min_override_rate: float
+    suggestions: list[ThresholdSuggestionView]
