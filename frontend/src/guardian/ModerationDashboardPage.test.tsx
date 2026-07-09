@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -75,6 +75,25 @@ describe('ModerationDashboardPage', () => {
     expect((await screen.findAllByText(/violence/i)).length).toBeGreaterThan(0)
     expect(screen.getByText(/raise to block/i)).toBeInTheDocument()
     expect(screen.getByText(/threshold_changed/)).toBeInTheDocument()
+
+    // Locate the 8-11/violence insights row and assert its override-rate and
+    // decided cells render the values the fixture defines, not just that the
+    // word "violence" appears somewhere on the page.
+    const table = screen.getByRole('table')
+    const row = within(table).getByText('violence').closest('tr')
+    if (!row) throw new Error('expected a table row for the violence insight')
+    const cells = within(row).getAllByRole('cell')
+    expect(cells[4]).toHaveTextContent('6') // decided
+    expect(cells[6]).toHaveTextContent('100%') // override rate
+  })
+
+  it('shows empty states for insights and recent changes when there are none', async () => {
+    mockGetByPath({ dashboard: { insights: [], recent_changes: [] } })
+    render(<ModerationDashboardPage />)
+    expect(
+      await screen.findByText('No moderated books with advisory or flag findings yet.')
+    ).toBeInTheDocument()
+    expect(screen.getByText('No threshold changes recorded.')).toBeInTheDocument()
   })
 
   it('applies a suggestion through the thresholds upsert and refreshes', async () => {
