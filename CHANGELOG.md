@@ -82,6 +82,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Shared `classifyApiError` helper distinguishes 401 / 403 / transient failures so
   a permanent permission error (for example an admin creating a child profile) no
   longer reads as a retryable "try again" (naive-UX F1, G2).
+- Series tagging and soft continuation for story requests: kids can propose a
+  series title or continue an existing story from the library, guardians ratify
+  or edit the series title (or clear it) at approval, guardians and admins can
+  create an authored request directly in a series via anchor storybook id, and
+  book numbering within a series is assigned race-safely at generation
+  completion rather than at request time (WS-B PR 3).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
