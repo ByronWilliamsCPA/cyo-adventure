@@ -2553,6 +2553,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#template-claudemd-documents-a-bandit-r-src-quick-start-that-ignores-the-repos-own-skip-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template CLAUDE.md documents a bandit -r src quick-start that ignores the repo's own skip list
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3005,6 +3016,17 @@
     <span class="md-ellipsis">
       
         Template's SecurityHeadersMiddleware ships a CSP missing three injection-relevant directives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#template-claudemd-documents-a-bandit-r-src-quick-start-that-ignores-the-repos-own-skip-list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Template CLAUDE.md documents a bandit -r src quick-start that ignores the repo's own skip list
       
     </span>
   </a>
@@ -3610,6 +3632,30 @@ string the template scaffolds in <code>middleware/security.py</code>, and update
 to assert all directives are present, so every newly generated project ships the fuller policy
 from day one.</p>
 <p><strong>Affected Files</strong>: template <code>src/{{package}}/middleware/security.py</code>, its unit test</p>
+<hr />
+<h3 id="template-claudemd-documents-a-bandit-r-src-quick-start-that-ignores-the-repos-own-skip-list">Template CLAUDE.md documents a <code>bandit -r src</code> quick-start that ignores the repo's own skip list<a class="headerlink" href="#template-claudemd-documents-a-bandit-r-src-quick-start-that-ignores-the-repos-own-skip-list" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Low</li>
+<li><strong>Category</strong>: Tooling</li>
+<li><strong>Discovered</strong>: 2026-07-09</li>
+</ul>
+<p><strong>Issue</strong>: The template's <code>CLAUDE.md</code> documents the security scan quick-start command as
+<code>uv run bandit -r src</code> (both in the "Before commit" block and the "Project Requirements"
+section). That bare form does not load the project's <code>[tool.bandit]</code> configuration in
+<code>pyproject.toml</code>, so it re-reports findings the project has already triaged and skip-listed
+(for example B101 assert-used and B104 hardcoded-bind-all-interfaces), exiting non-zero. The
+pre-commit hook and CI both invoke bandit as <code>bandit -c pyproject.toml -r src</code>, which honors
+the skip list and passes cleanly. A developer who runs the documented command verbatim sees a
+false failure that does not match the actual gate, and may either waste time chasing accepted
+findings or, worse, add <code># nosec</code> suppressions the project did not want.</p>
+<p><strong>Context</strong>: Found during WS-C PR2 (cell-aware skeleton matching) while running the full local
+gate. The bare <code>uv run bandit -r src</code> flagged two findings identical to <code>main</code>'s already-accepted
+set; switching to <code>uv run bandit -c pyproject.toml -r src</code> (the pre-commit form) returned clean.</p>
+<p><strong>Suggested Fix</strong>: Update the template's <code>CLAUDE.md</code> to document the config-aware form
+<code>uv run bandit -c pyproject.toml -r src</code> everywhere the quick-start command appears, so the
+documented command matches the enforced pre-commit/CI invocation and never produces a false
+failure on a freshly generated project.</p>
+<p><strong>Affected Files</strong>: template <code>CLAUDE.md</code> (Quick Start Commands and Project Requirements sections)</p>
 
 
 
@@ -3632,7 +3678,7 @@ from day one.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 7, 2026 02:07:10 UTC">July 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 9, 2026 23:04:52 UTC">July 9, 2026</span>
   </span>
 
     
