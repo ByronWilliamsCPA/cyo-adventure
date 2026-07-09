@@ -502,8 +502,8 @@ def build_provider(settings: Settings) -> GenerationProvider:
       measure one leg in isolation.
     - ``"ollama"``: the local Ollama leg alone (offline path and comparison
       target).
-    - ``"claude"``: a direct-Anthropic adapter is deferred; raises
-      :class:`ConfigurationError`. Reach Claude via OpenRouter instead.
+    - ``"anthropic"``: a direct-Anthropic adapter is deferred; raises
+      :class:`ConfigurationError`. Reach Anthropic via OpenRouter instead.
 
     Live adapters are constructed only for the provider actually selected, so the
     default mock path opens no client and validates no credential.
@@ -515,8 +515,8 @@ def build_provider(settings: Settings) -> GenerationProvider:
         A :class:`GenerationProvider` ready for injection into the worker.
 
     Raises:
-        ConfigurationError: For ``"claude"`` (deferred) or when the OpenRouter
-            credential is missing.
+        ConfigurationError: For ``"anthropic"`` (deferred) or when the
+            OpenRouter credential is missing.
     """
     provider = settings.generation_provider
     if provider == "mock":
@@ -543,11 +543,12 @@ def build_provider(settings: Settings) -> GenerationProvider:
     if provider == "modal":
         return build_modal_leg(settings)
 
-    # "claude": a direct Anthropic SDK adapter is deferred (ADR-003); the seam
-    # stays so it is a trivial future add. Reach Claude via OpenRouter.
+    # "anthropic": a direct Anthropic SDK adapter is deferred (ADR-003); the
+    # seam stays so it is a trivial future add. Reach Anthropic via OpenRouter.
     msg = (
-        "generation_provider='claude' (direct Anthropic) is deferred; reach "
-        "Claude via generation_provider=openrouter with an anthropic/* model"
+        "generation_provider='anthropic' (direct Anthropic) is deferred; "
+        "reach Anthropic via generation_provider=openrouter with an "
+        "anthropic/* model"
     )
     raise ConfigurationError(msg)
 

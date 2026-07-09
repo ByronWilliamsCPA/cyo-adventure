@@ -573,3 +573,47 @@ class TestValidatorRequireOidcConfigOutsideLocal:
         settings = Settings(environment="local")
         assert settings.oidc_issuer is None
         assert settings.oidc_jwks_url is None
+
+
+class TestAnthropicGenerationSettings:
+    """Tests for the direct-Anthropic settings (WS-C PR1)."""
+
+    @pytest.mark.unit
+    def test_generation_provider_accepts_anthropic(self) -> None:
+        """generation_provider accepts the renamed 'anthropic' literal value."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(generation_provider="anthropic")
+        assert settings.generation_provider == "anthropic"
+
+    @pytest.mark.unit
+    def test_generation_provider_rejects_claude(self) -> None:
+        """The dead 'claude' literal is gone; no back-compat shim (spec decision)."""
+        from pydantic import ValidationError as PydanticValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        with pytest.raises(PydanticValidationError):
+            Settings(generation_provider="claude")
+
+    @pytest.mark.unit
+    def test_anthropic_settings_default(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """anthropic_api_key defaults to None; base_url/model have code defaults."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+        settings = Settings()
+        assert settings.anthropic_api_key is None
+        assert settings.anthropic_base_url == "https://api.anthropic.com"
+        assert settings.anthropic_model == "claude-sonnet-4-6"
+
+    @pytest.mark.unit
+    def test_anthropic_api_key_reads_unprefixed_env_var(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """ANTHROPIC_API_KEY (unprefixed) populates anthropic_api_key."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
+        settings = Settings()
+        assert settings.anthropic_api_key == "sk-ant-test"

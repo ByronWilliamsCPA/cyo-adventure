@@ -131,9 +131,9 @@ class Settings(BaseSettings):
     # primary per ADR-003 as amended 2026-06-22). Live adapters are constructed
     # lazily in build_provider(), so an unset live key fails at call time, not
     # startup.
-    generation_provider: Literal["mock", "claude", "ollama", "openrouter", "modal"] = (
-        "mock"
-    )
+    generation_provider: Literal[
+        "mock", "anthropic", "ollama", "openrouter", "modal"
+    ] = "mock"
 
     # Model ids are pinned in config, not code (ADR-003): a model swap is a
     # config change. OpenRouter rosters churn weekly, so pin first-party families
@@ -158,12 +158,28 @@ class Settings(BaseSettings):
     # but produced structurally invalid graphs (over-depth, dangling refs). Override
     # via CYO_ADVENTURE_OLLAMA_MODEL for a locally-pulled tag.
     ollama_model: str = "qwen2.5:14b"
-    # No direct Anthropic SDK setting: Claude is reached via OpenRouter
-    # (both legs are anthropic/* models). A direct-Anthropic adapter
-    # is deferred; the GenerationProvider seam makes it a trivial future add if a
-    # billed Anthropic API account is ever used directly (for Opus 4.8 / prompt
-    # caching without the OpenRouter markup).
-    #
+    # Direct-Anthropic credential and defaults (WS-C PR1). Read from the
+    # UNPREFIXED ANTHROPIC_API_KEY env var, matching the openrouter_api_key
+    # precedent. Optional and None by default: only generation_provider=anthropic
+    # (globally or per-job via build_provider's provider_override) needs it, so a
+    # missing key surfaces as a ConfigurationError in build_anthropic_leg at call
+    # time, not at startup.
+    # #CRITICAL: security: this is a secret; never log its value or echo it in
+    # an error message. build_anthropic_leg checks presence only.
+    # #VERIFY: ConfigurationError messages reference the key by name only,
+    # never by value (test_anthropic_key_value_not_leaked_in_error).
+    anthropic_api_key: str | None = Field(
+        default=None, validation_alias="ANTHROPIC_API_KEY"
+    )
+    # The Anthropic SDK's own built-in default base url; setting it explicitly
+    # (rather than omitting it) keeps build_anthropic_leg's call to
+    # AsyncAnthropic(base_url=...) unconditional and testable.
+    anthropic_base_url: str = "https://api.anthropic.com"
+    # Global default model when generation_provider=anthropic and no per-job
+    # model_override is present (see build_provider). Mirrored in
+    # generation/allowlist.py::DEFAULT_ALLOWLIST's first anthropic row.
+    anthropic_model: str = "claude-sonnet-4-6"
+
     # Reasoning effort for live generation. "off" (default) sends NO `reasoning`
     # param: story generation is structured-JSON output, and a live smoke showed
     # that enabling reasoning on Claude (even "low") spends the whole max_tokens
@@ -281,7 +297,7 @@ class Settings(BaseSettings):
     # --- Slice-2 moderation review pipeline ---
     # Which backend the moderation LLM stages use. "mock" (default) runs no real
     # review and requires no classifier key. "modal" is deferred to slice 2b and
-    # raises at build time, mirroring the deferred "claude" generation provider.
+    # raises at build time, mirroring the deferred "anthropic" generation provider.
     review_provider: Literal["mock", "ollama", "openrouter", "modal"] = "mock"
     review_openrouter_model: str = "anthropic/claude-sonnet-4.6"
     review_ollama_model: str = "qwen2.5:14b"

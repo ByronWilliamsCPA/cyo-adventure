@@ -81,9 +81,9 @@ class TestBuildProviderMock:
 class TestBuildProviderLive:
     """build_provider assembles the live cascade and isolated legs from settings."""
 
-    def test_claude_is_deferred(self) -> None:
-        """The direct-Anthropic ('claude') adapter is deferred and raises."""
-        settings = Settings(generation_provider="claude")  # type: ignore[call-arg]
+    def test_anthropic_is_deferred(self) -> None:
+        """The direct-Anthropic ('anthropic') adapter is deferred and raises."""
+        settings = Settings(generation_provider="anthropic")  # type: ignore[call-arg]
         with pytest.raises(ConfigurationError) as exc_info:
             build_provider(settings)
         # Points the operator at the supported OpenRouter path.
