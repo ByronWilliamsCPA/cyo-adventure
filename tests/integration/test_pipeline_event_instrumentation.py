@@ -120,13 +120,14 @@ async def test_approve_writes_released_event(
     )
     assert resp.status_code == 200, resp.text
 
-    await assert_single_event(
+    event = await assert_single_event(
         sessions,
         event_type="released",
         entity_type="storybook",
         to_state="published",
         actor_role="admin",
     )
+    assert event.payload == {"visibility": "family"}
 
 
 async def test_send_back_writes_sent_back_event(
