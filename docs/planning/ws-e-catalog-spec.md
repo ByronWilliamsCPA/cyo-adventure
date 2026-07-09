@@ -49,7 +49,10 @@ One additional coordination decision was ratified at kickoff:
   Task 13): the family filters widen to own-family OR catalog on those three paths, while the
   `StorybookAssignment` gate itself stays required for child reads, and catalog ratings
   additionally require an assignment for the rating profile. Cross-family `family`-visibility
-  books remain blocked everywhere.
+  books remain blocked everywhere. Under the same ruling, the reading-state and completion
+  paths (`api/reading.py`, all three endpoints behind `_load_readable_storybook`) were widened
+  identically: an assigned cross-family catalog book accepts progress saves and completions,
+  while an unassigned one stays 403.
 - **E-mig (migration chaining)**: WS-C PR2 is concurrently in flight (branch
   `feat/ws-c-skeleton-matching`) with migration revision `228c68e8f1e7`
   (`20260709_0900_add_storybook_version_skeleton_slug.py`, `down_revision=b4c5d6e7f8a9`). The owner

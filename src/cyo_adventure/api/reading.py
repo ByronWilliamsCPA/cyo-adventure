@@ -25,14 +25,20 @@ from cyo_adventure.api.schemas import (
     ReadingStateBody,
     ReadingStateView,
 )
-from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
+from cyo_adventure.core.exceptions import (
+    AuthorizationError,
+    ResourceNotFoundError,
+    ValidationError,
+)
 from cyo_adventure.db.models import (
     Completion,
     ReadingState,
     Storybook,
+    StorybookAssignment,
     StorybookVersion,
 )
 from cyo_adventure.player.replay import validate_reading_state
+from cyo_adventure.publishing.state_machine import Visibility
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -72,17 +78,57 @@ def _conflict(row: ReadingState, detail: str) -> JSONResponse:
     return JSONResponse(status_code=409, content=body.model_dump(mode="json"))
 
 
-async def _load_owned_storybook(ctx: Context, storybook_id: str) -> Storybook:
-    """Load a storybook and assert the principal's family owns it."""
-    # #CRITICAL: security: every reading-state/completion path gates on family
-    # ownership before touching the row, so a valid token for family A cannot
-    # reach family B's stories (authorization-matrix.md).
-    # #VERIFY: authorize_family raises AuthorizationError -> 403 on mismatch.
+async def _load_readable_storybook(
+    ctx: Context, storybook_id: str, profile_id: uuid.UUID
+) -> Storybook:
+    """Load a storybook and assert the given profile may read it.
+
+    Three-way access branch (WS-E Task 13 follow-up, same E5 amendment ruling
+    as the library/ratings paths): an own-family book is always readable; a
+    cross-family family-visibility book is always 403; a cross-family catalog
+    book is readable only when it is assigned to ``profile_id``.
+
+    Args:
+        ctx: The request context (principal + session).
+        storybook_id: The story id from the path or body.
+        profile_id: The already-authorized child profile whose progress or
+            completion is being read or written.
+
+    Returns:
+        Storybook: A story the profile may read.
+
+    Raises:
+        ResourceNotFoundError: If the story does not exist (404).
+        AuthorizationError: If the story is a cross-family family-visibility
+            book, or a cross-family catalog book not assigned to the profile
+            (403).
+    """
+    # #CRITICAL: security: every reading-state/completion path gates here
+    # before touching the row: own-family books pass; a cross-family
+    # visibility='family' book is 403 (authorization-matrix.md, unchanged); a
+    # cross-family visibility='catalog' book requires a StorybookAssignment
+    # row for this profile, so a valid token for family A still cannot reach
+    # family B's private stories or unassigned catalog stories.
+    # #VERIFY: own-family -> pass; cross-family family-visibility -> 403;
+    # catalog+assigned -> pass; catalog+unassigned -> 403 (drive-by progress
+    # writes are blocked like drive-by ratings in ratings.py).
     book = await ctx.session.get(Storybook, storybook_id)
     if book is None:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    authorize_family(ctx.principal, book.family_id)
+    if book.family_id != ctx.principal.family_id:
+        if book.visibility != Visibility.CATALOG.value:
+            authorize_family(ctx.principal, book.family_id)
+        else:
+            assigned = await ctx.session.scalar(
+                select(StorybookAssignment.storybook_id).where(
+                    StorybookAssignment.storybook_id == book.id,
+                    StorybookAssignment.child_profile_id == profile_id,
+                )
+            )
+            if assigned is None:
+                msg = "storybook is not accessible to this profile"
+                raise AuthorizationError(msg, resource=book.id)
     return book
 
 
@@ -143,7 +189,7 @@ async def get_reading_state(
     # tests/integration/test_authorization.py.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
-    await _load_owned_storybook(ctx, storybook_id)
+    await _load_readable_storybook(ctx, storybook_id, parsed)
     row = await ctx.session.get(ReadingState, (parsed, storybook_id))
     if row is None:
         msg = f"no reading state for profile '{profile_id}' on '{storybook_id}'"
@@ -193,7 +239,7 @@ async def put_reading_state(
     # #VERIFY: authorize_profile raises AuthorizationError -> 403.
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
-    await _load_owned_storybook(ctx, storybook_id)
+    await _load_readable_storybook(ctx, storybook_id, parsed)
     # #CRITICAL: concurrency: lock the row for the read-modify-write so two
     # concurrent saves for the same profile/story serialize instead of racing the
     # revision check (optimistic concurrency, tech-spec multi-device sync rules).
@@ -297,14 +343,15 @@ async def record_completion(body: CompletionBody, ctx: Context) -> CompletionVie
         ResourceNotFoundError: If the story or version does not exist.
         ValidationError: If the ending id is not part of the cited version.
     """
-    # #CRITICAL: security: profile access and family ownership are authorized
-    # before the completion is recorded so a child cannot write completions for
-    # another profile or family (IDOR).
-    # #VERIFY: authorize_profile/authorize_family raise -> 403; ending_id is
-    # validated against the cited version's blob (data integrity).
+    # #CRITICAL: security: profile access and story readability (own-family,
+    # or catalog-and-assigned; see _load_readable_storybook) are authorized
+    # before the completion is recorded so a child cannot write completions
+    # for another profile or an inaccessible book (IDOR).
+    # #VERIFY: authorize_profile/_load_readable_storybook raise -> 403;
+    # ending_id is validated against the cited version's blob (data integrity).
     parsed = _parse_uuid(body.profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
-    await _load_owned_storybook(ctx, body.storybook_id)
+    await _load_readable_storybook(ctx, body.storybook_id, parsed)
     version_row = await ctx.session.get(
         StorybookVersion, (body.storybook_id, body.version)
     )

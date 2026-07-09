@@ -2,14 +2,31 @@
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from tests.integration.conftest import Seed, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+_LANTERN = (
+    Path(__file__).resolve().parents[1]
+    / "fixtures"
+    / "storybook"
+    / "valid"
+    / "03_tier2_lantern.json"
+)
 
 
 def _save_body(
@@ -258,3 +275,173 @@ async def test_completion_invalid_ending_422(client: AsyncClient, seed: Seed) ->
         headers=auth(seed.child_token),
     )
     assert resp.status_code == 422
+
+
+# ---------------------------------------------------------------------------
+# Reading-state and completion paths honor catalog visibility (Task 13
+# follow-up, same E5 amendment ruling): an assigned cross-family
+# visibility='catalog' book must accept the child's progress saves and
+# completions; an unassigned one stays 403; a cross-family
+# visibility='family' book stays 403 even with an assignment row (isolating
+# the family filter, not the assignment gate, as the cause of that denial).
+# ---------------------------------------------------------------------------
+
+
+async def _add_cross_family_book(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    story_id: str,
+    *,
+    visibility: str,
+    assign: bool,
+) -> str:
+    """Insert an approved, published book owned by Family B with a real blob.
+
+    The version blob is the lantern fixture so the reading-state structural
+    floor (validate_reading_state) and the completion ending check both pass;
+    only the access gate under test can cause a denial.
+    """
+    blob = json.loads(_LANTERN.read_text(encoding="utf-8"))
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=profile_b.family_id,
+                current_published_version=1,
+                status="published",
+                visibility=visibility,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob=blob,
+                approved_by=seed.admin_user_id,
+            )
+        )
+        if assign:
+            session.add(
+                StorybookAssignment(
+                    child_profile_id=seed.child_profile_id,
+                    storybook_id=story_id,
+                )
+            )
+        await session.commit()
+        return story_id
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_saves_progress_on_assigned_catalog_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An assigned cross-family catalog book accepts save, read-back, and completion.
+
+    The book is Family B's, so it fails a plain own-family filter; the
+    assignment row is what grants access (E5 amendment parity with the read
+    and rating paths fixed in Task 13).
+    """
+    story_id = await _add_cross_family_book(
+        sessions, seed, "catalog-rs-assigned", visibility="catalog", assign=True
+    )
+    put = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert put.status_code == 200, put.text
+    got = await client.get(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        headers=auth(seed.child_token),
+    )
+    assert got.status_code == 200, got.text
+    assert got.json()["current_node"] == "n_cave_fork"
+    done = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert done.status_code == 200, done.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_cannot_save_progress_on_unassigned_catalog_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An unassigned cross-family catalog book is 403 on save, read, and completion.
+
+    Widening the family filter must not widen the assignment gate: without an
+    assignment row for the calling profile, the catalog book stays blocked.
+    """
+    story_id = await _add_cross_family_book(
+        sessions, seed, "catalog-rs-unassigned", visibility="catalog", assign=False
+    )
+    put = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert put.status_code == 403, put.text
+    got = await client.get(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        headers=auth(seed.child_token),
+    )
+    assert got.status_code == 403, got.text
+    done = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert done.status_code == 403, done.text
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_cannot_save_progress_on_cross_family_private_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A cross-family visibility='family' book stays 403 (regression guard).
+
+    An assignment row is added despite the book being private, so the denial
+    is attributable to the family filter alone; the widened catalog gate must
+    not accidentally widen the family-visibility case too.
+    """
+    story_id = await _add_cross_family_book(
+        sessions, seed, "private-rs", visibility="family", assign=True
+    )
+    put = await client.put(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        json=_save_body(1, node="n_cave_fork", revision=0),
+        headers=auth(seed.child_token),
+    )
+    assert put.status_code == 403, put.text
+    got = await client.get(
+        f"/api/v1/reading-state/{seed.child_profile_id}/{story_id}",
+        headers=auth(seed.child_token),
+    )
+    assert got.status_code == 403, got.text
+    done = await client.post(
+        "/api/v1/completions",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "version": 1,
+            "ending_id": "e_treasure_found",
+        },
+        headers=auth(seed.child_token),
+    )
+    assert done.status_code == 403, done.text
