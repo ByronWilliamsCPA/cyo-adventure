@@ -175,6 +175,7 @@ def _library_item(
     state: ReadingState | None = None,
     series_id: str | None = None,
     book_index: int | None = None,
+    cover_url: str | None = None,
 ) -> LibraryItem:
     """Build a library item from a stored Storybook blob.
 
@@ -192,6 +193,8 @@ def _library_item(
         series_id: The book's series, or None for a standalone story (WS-B
             PR 3). Sourced from the ``Storybook`` row, not the blob.
         book_index: The book's 1-based position in its series, or None.
+        cover_url: The generated cover image URL, or None if not yet
+            generated. Sourced from ``StorybookVersion.cover_image_url``.
 
     Returns:
         LibraryItem: The listing item with safe, finite, correctly typed fields.
@@ -244,6 +247,7 @@ def _library_item(
         progress=progress,
         series_id=series_id,
         book_index=book_index,
+        cover_url=cover_url,
     )
 
 
@@ -309,7 +313,11 @@ async def list_library(
             )
         )
     )
-    blobs = {(row.storybook_id, row.version): row.blob for row in version_rows}
+    blobs: dict[tuple[str, int], dict[str, object]] = {}
+    covers: dict[tuple[str, int], str | None] = {}
+    for row in version_rows:
+        blobs[(row.storybook_id, row.version)] = row.blob
+        covers[(row.storybook_id, row.version)] = row.cover_image_url
     book_ids = [b[0] for b in books]
     # #ASSUME: external resources: per-profile state and ratings load in one
     # bulk query each (not per-book) so the listing stays two+2 queries total.
@@ -338,6 +346,7 @@ async def list_library(
             state=states.get(storybook_id),
             series_id=str(series_id) if series_id is not None else None,
             book_index=book_index,
+            cover_url=covers.get((storybook_id, version)),
         )
         for storybook_id, version, series_id, book_index in books
         if (storybook_id, version) in blobs

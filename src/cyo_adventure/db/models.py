@@ -74,6 +74,9 @@ _STORY_REQUEST_INITIATOR_VALUES = "'child', 'guardian', 'admin'"
 _STORY_REQUEST_LENGTH_VALUES = "'short', 'medium', 'long'"
 _STORY_REQUEST_STYLE_VALUES = "'prose', 'gamebook'"
 
+# The four cover-generation lifecycle states, named once for the CHECK constraint.
+_COVER_STATUS_VALUES = "'none', 'generating', 'ready', 'failed'"
+
 # The append-only pipeline_event vocabularies, named once for their CHECK
 # constraints. event_type would ideally be derived from the EventType enum
 # (see _AGE_BAND_VALUES for that pattern), but cyo_adventure.events.__init__
@@ -262,6 +265,17 @@ class StorybookVersion(Base):
     # provenance recorded, which degrades to "unknown" for display, not an error.
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
+    cover_status: Mapped[str] = mapped_column(
+        String(20), default="none", server_default="none"
+    )
+
+    __table_args__ = (
+        CheckConstraint(
+            f"cover_status IN ({_COVER_STATUS_VALUES})",
+            name="ck_storybook_version_cover_status",
+        ),
+    )
 
 
 class ReadingState(Base):

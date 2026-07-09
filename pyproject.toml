@@ -75,6 +75,8 @@ dependencies = [
     "redis>=8.0.0",
     "pyjwt[crypto]>=2.13.0",
     "jsonschema>=4.23",
+    "google-genai>=2.10.0",
+    "pillow>=12.3.0",
 ]
 
 # Optional dependency groups
@@ -321,6 +323,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/me.py" = ["TC001"]
 "**/api/moderation_thresholds.py" = ["TC001"]
 "**/api/families.py" = ["TC001"]
+"**/api/covers.py" = ["TC001"]
 
 # Exception classes legitimately require multiple context parameters in __init__
 "**/core/exceptions.py" = ["PLR0913"]
@@ -391,6 +394,13 @@ known-first-party = ["cyo_adventure"]
 # screened text, author's band/length/style spec, screening outcome) with no
 # sensible default. A config object would obscure the contract.
 "**/story_requests/service.py" = ["PLR0913"]
+
+# generate_cover carries storybook_id, version, session, settings, and three
+# keyword-only pipeline-stage overrides (generate/optimize/upload) used to
+# inject fakes in tests; each is a distinct concern (target row, unit of
+# work, config, and the three pluggable stages) with no sensible default.
+# A config object would obscure which stage a caller is overriding.
+"**/covers/service.py" = ["PLR0913"]
 
 # record_event carries session, actor, entity_type, entity_id, event_type,
 # from_state, to_state, and payload; all but the last two are mandatory and
@@ -510,6 +520,11 @@ known-first-party = ["cyo_adventure"]
     "RUF012",  # ClassVar not needed for constants
     "C416",    # Dict comprehension is clearer than dict()
     "SIM102",  # Nested if is more readable for security checks
+]
+
+# Cover generation worker - RQ entrypoint with intentional deferred imports
+"src/*/covers/worker.py" = [
+    "PLC0415", # Local imports to avoid circular dependencies
 ]
 
 # Financial utilities - Template documentation style
