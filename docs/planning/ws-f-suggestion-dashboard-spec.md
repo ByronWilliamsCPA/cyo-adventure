@@ -46,7 +46,7 @@ corrected current-state facts below). The ten umbrella decisions remain settled.
 
 | # | Decision | Ratified choice | Rationale |
 | --- | --- | --- | --- |
-| F1 | Override signal source | **Hybrid report-plus-events**: per-finding `category`/`verdict`/`score` comes from the persisted final report on `storybook_version.moderation_report`, the age band from the version blob's typed metadata (`metadata.age_band`), and the outcome from the `released` vs `sent_back` events for the same `storybook_version`. "Released despite a category-X advisory in band B" is the override proxy | The originally proposed events-only source assumed the `moderation_completed` payload carries per-category counts; it does not (and by the WS-D D3 PII contract it never can, a `#CRITICAL` marker in `moderation/pipeline.py` forbids `category` in the payload because provider categories are provider-derived strings). The persisted report retains full per-finding granularity, so the hybrid keeps the umbrella's per-(band, category) example, stays compute-on-read, and needs no migration and no new event type. Known coarseness, accepted eyes-open: a release overrides ALL advisories on that version at once, so co-occurring categories share the override credit. A dedicated per-finding override event remains a WS-D follow-up if the proxy proves too coarse. |
+| F1 | Override signal source | **Hybrid report-plus-events**: per-finding `category`/`verdict`/`score` comes from the persisted final report on `storybook_version.moderation_report`, the age band from the version blob's typed metadata (`metadata.age_band`), and the outcome from the storybook's `released` vs `sent_back` events, attributed to a version by event-time ordering (see current-state facts). "Released despite a category-X advisory in band B" is the override proxy | The originally proposed events-only source assumed the `moderation_completed` payload carries per-category counts; it does not (and by the WS-D D3 PII contract it never can, a `#CRITICAL` marker in `moderation/pipeline.py` forbids `category` in the payload because provider categories are provider-derived strings). The persisted report retains full per-finding granularity, so the hybrid keeps the umbrella's per-(band, category) example, stays compute-on-read, and needs no migration and no new event type. Known coarseness, accepted eyes-open: a release overrides ALL advisories on that version at once, so co-occurring categories share the override credit. A dedicated per-finding override event remains a WS-D follow-up if the proxy proves too coarse. |
 | F2 | Suggestion persistence | **Compute-on-read**: suggestions are computed live from events per request; no suggestions/proposals table | v1 data volumes are small; live aggregation avoids a new table, a new lifecycle, and a migration. Persisting proposals (with dismissed/accepted state) is a later concern if the list grows. |
 | F3 | Ratify-apply path | A ratified suggestion calls the **existing** `PUT /api/v1/admin/moderation-thresholds/{age_band}` upsert path; WS-F adds no second write path to the threshold table | Reuses the WS-A audit table (`moderation_threshold_audit`) and the already-instrumented `threshold_changed` event for free; keeps a single source of truth for threshold writes; satisfies "applies without a deploy" and "changes are evented." |
 | F4 | Suggestion scope v1 | **Threshold suggestions only.** Prompt-adjustment suggestions are deferred (umbrella open item: they may need more data) | Matches the umbrella's stated v1 boundary; threshold suggestions have a clean apply target (the threshold table), prompt suggestions do not yet. |
@@ -73,8 +73,16 @@ corrected current-state facts below). The ten umbrella decisions remain settled.
   (`db/models.py:252`, JSONB, nullable) stores the final `ModerationReport.to_dict()` with each
   finding's `category`, `verdict`, and `score`. The age band comes from the version blob's typed
   metadata (`story.metadata.age_band`, see `moderation/pipeline.py:318`), so no request-table join
-  is needed. The `released`/`sent_back` outcome correlates via the event log's
-  `entity_id = f"{story_id}:{version}"`.
+  is needed.
+- **Outcome events are per-storybook, not per-version** (second correction to the original draft):
+  `released` and `sent_back` are emitted with `entity_type="storybook"` and plain
+  `entity_id=storybook.id` (`publishing/service.py`, from_state `in_review`). Only
+  `moderation_completed` uses `entity_type="storybook_version"` with
+  `entity_id = f"{story_id}:{version}"`. Version attribution therefore orders events in time: a
+  version's outcome is the first `released`/`sent_back` event on its storybook at or after that
+  version's `moderation_completed` event. Versions with no subsequent decision event are undecided
+  and excluded from the override-rate denominator (with `approved_by IS NOT NULL` on the version
+  row accepted as a released signal for pre-WS-D history that has no events).
 - **Threshold table + API**: `ModerationThreshold` (`db/models.py:591`; unique `(age_band, category)`,
   `min_verdict`, `min_score`), `ModerationThresholdAudit` (`db/models.py:653`, action
   `upsert`/`delete`, old/new values, `changed_by`), `ModerationSetting` (`db/models.py:766`, single
@@ -102,8 +110,9 @@ Read-only queries over `storybook_version` (per-finding report and band) correla
 
 - **Override rate per (age_band, category)** (F1 hybrid): of the versions whose persisted
   `moderation_report` contains a category-C finding at an advisory verdict for a book in band B
-  (band from the blob's `metadata.age_band`), the fraction whose `storybook_version` subsequently
-  emitted `released` (not `sent_back`) in the event log. A high rate suggests the advisory
+  (band from the blob's `metadata.age_band`), the fraction whose storybook subsequently emitted
+  `released` (not `sent_back`) in the event log, attributed per version by event-time ordering
+  (undecided versions excluded from the denominator). A high rate suggests the advisory
   threshold for (B, C) is too aggressive and is a candidate to raise. Accepted coarseness: a
   release counts as an override for every advisory on that version.
 - **Volume and recency**: counts and last-seen per (band, category) so a suggestion carries a
