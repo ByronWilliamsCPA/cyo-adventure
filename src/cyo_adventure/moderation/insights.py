@@ -21,6 +21,8 @@ if TYPE_CHECKING:
     from collections.abc import Mapping, Sequence
     from datetime import datetime
 
+    from cyo_adventure.moderation.thresholds import ThresholdPolicy
+
 # Suggestion gates: a proposal appears only when at least this many decided
 # versions carry the (band, category) signal and at least this fraction of
 # them were released despite it.
@@ -193,3 +195,64 @@ def aggregate_insights(
             )
         )
     return insights
+
+
+@dataclass(frozen=True, slots=True)
+class ThresholdSuggestion:
+    """A computed proposal to raise one (band, category) surfacing bar."""
+
+    age_band: str
+    category: str
+    current_min_verdict: str
+    current_min_score: float | None
+    suggested_min_verdict: str
+    override_rate: float
+    decided_versions: int
+    released_versions: int
+
+
+def suggest_thresholds(
+    insights: Sequence[CategoryInsight],
+    policy: ThresholdPolicy,
+) -> list[ThresholdSuggestion]:
+    """Derive threshold proposals from override evidence.
+
+    A proposal appears only above the volume and rate gates and only when the
+    effective threshold has a step left to raise; a (band, category) already
+    at ``block`` yields nothing, which also makes an applied suggestion stop
+    reappearing (F2: dismiss is a no-op, the threshold move retires it).
+
+    Args:
+        insights: Output of ``aggregate_insights``.
+        policy: The resolved surfacing policy (rows over the code default).
+
+    Returns:
+        Proposals in the insights' (age_band, category) order.
+    """
+    suggestions: list[ThresholdSuggestion] = []
+    for insight in insights:
+        if insight.decided_versions < SUGGESTION_MIN_DECIDED:
+            continue
+        if (
+            insight.override_rate is None
+            or insight.override_rate < SUGGESTION_MIN_OVERRIDE_RATE
+        ):
+            continue
+        threshold = policy.resolve(insight.age_band, insight.category)
+        current = threshold.min_verdict.value
+        suggested = _VERDICT_RAISE.get(current)
+        if suggested is None:
+            continue
+        suggestions.append(
+            ThresholdSuggestion(
+                age_band=insight.age_band,
+                category=insight.category,
+                current_min_verdict=current,
+                current_min_score=threshold.min_score,
+                suggested_min_verdict=suggested,
+                override_rate=insight.override_rate,
+                decided_versions=insight.decided_versions,
+                released_versions=insight.released_versions,
+            )
+        )
+    return suggestions

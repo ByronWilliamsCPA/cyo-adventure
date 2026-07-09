@@ -6,11 +6,16 @@ from datetime import UTC, datetime, timedelta
 
 from cyo_adventure.events import EventType
 from cyo_adventure.moderation.insights import (
+    SUGGESTION_MIN_DECIDED,
+    CategoryInsight,
     VersionModerationRecord,
     VersionOutcome,
     aggregate_insights,
     attribute_outcome,
+    suggest_thresholds,
 )
+from cyo_adventure.moderation.report import Verdict
+from cyo_adventure.moderation.thresholds import Threshold, ThresholdPolicy
 
 _T0 = datetime(2026, 7, 1, 12, 0, tzinfo=UTC)
 _LATER = _T0 + timedelta(hours=1)
@@ -135,3 +140,70 @@ class TestAggregateInsights:
             )
         ]
         assert aggregate_insights(records) == []
+
+
+def _insight(
+    *,
+    decided: int,
+    released: int,
+    age_band: str = "8-11",
+    category: str = "violence",
+) -> CategoryInsight:
+    return CategoryInsight(
+        age_band=age_band,
+        category=category,
+        advisory_findings=decided,
+        flag_findings=0,
+        decided_versions=decided,
+        released_versions=released,
+        override_rate=(released / decided) if decided else None,
+        last_seen=_T0,
+    )
+
+
+class TestSuggestThresholds:
+    def test_high_override_rate_raises_default_flag_to_block(self) -> None:
+        policy = ThresholdPolicy(rows={})
+        insights = [_insight(decided=SUGGESTION_MIN_DECIDED, released=5)]
+        suggestions = suggest_thresholds(insights, policy)
+        assert len(suggestions) == 1
+        suggestion = suggestions[0]
+        assert suggestion.current_min_verdict == "flag"
+        assert suggestion.suggested_min_verdict == "block"
+        assert suggestion.override_rate == 1.0
+        assert suggestion.current_min_score is None
+
+    def test_override_row_at_advisory_suggests_flag(self) -> None:
+        policy = ThresholdPolicy(
+            rows={
+                ("8-11", "violence"): Threshold(
+                    min_verdict=Verdict.ADVISORY, min_score=0.25
+                )
+            }
+        )
+        insights = [_insight(decided=6, released=6)]
+        suggestion = suggest_thresholds(insights, policy)[0]
+        assert suggestion.current_min_verdict == "advisory"
+        assert suggestion.suggested_min_verdict == "flag"
+        assert suggestion.current_min_score == 0.25
+
+    def test_below_volume_gate_no_suggestion(self) -> None:
+        policy = ThresholdPolicy(rows={})
+        insights = [_insight(decided=SUGGESTION_MIN_DECIDED - 1, released=4)]
+        assert suggest_thresholds(insights, policy) == []
+
+    def test_below_rate_gate_no_suggestion(self) -> None:
+        policy = ThresholdPolicy(rows={})
+        insights = [_insight(decided=10, released=7)]
+        assert suggest_thresholds(insights, policy) == []
+
+    def test_current_block_has_nothing_to_raise(self) -> None:
+        policy = ThresholdPolicy(
+            rows={
+                ("8-11", "violence"): Threshold(
+                    min_verdict=Verdict.BLOCK, min_score=None
+                )
+            }
+        )
+        insights = [_insight(decided=10, released=10)]
+        assert suggest_thresholds(insights, policy) == []
