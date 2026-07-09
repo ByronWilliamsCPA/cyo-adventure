@@ -19,7 +19,7 @@ from cyo_adventure.core.exceptions import StateTransitionError, ValidationError
 from cyo_adventure.db.models import GenerationJob
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.generation.allowlist import is_enabled_allowlist_pair
-from cyo_adventure.generation.skeleton_match import select_skeleton_for_band
+from cyo_adventure.generation.skeleton_match import candidates_for_cell
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -226,7 +226,8 @@ async def build_authoring_plan(
     band = _band_of(concept)
     skeleton_slug: str | None = None
     if method == "skeleton_fill":
-        skeleton_slug = select_skeleton_for_band(band)
+        _candidates = candidates_for_cell(band, "short", "prose")
+        skeleton_slug = _candidates[0] if _candidates else None
         if skeleton_slug is None:
             msg = f"no production-eligible skeleton available for band '{band}'"
             raise ValidationError(msg, field="band", value=band)
