@@ -135,21 +135,24 @@ jobs:
       - name: E2E (Playwright, mocked tier)
         run: npm run test:e2e
 
+      # Vitest writes lcov SF: paths relative to the package root (src/App.tsx),
+      # but Codecov matches against the repo tree where the file is
+      # frontend/src/App.tsx. Rewrite the paths to repo-root-relative so they
+      # match exactly, then upload from the repo root (no working-directory).
+      # This is deterministic: the report path IS the git path, so it merges as
+      # a session instead of being dropped as "path mismatch". Working-directory
+      # here does the opposite (records src/... which cannot resolve).
+      - name: Prefix lcov paths with the package root
+        run: sed -i 's|^SF:|SF:frontend/|' coverage/lcov.info
+
       - name: Upload frontend coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
-          # v6's action.yml has no singular "file" input (only plural "files");
-          # the old key was silently ignored, and lcov.info's SF: paths are
-          # relative to frontend/, so working-directory is required to map
-          # them back to the PR diff correctly.
-          files: ./coverage/lcov.info
-          # Vitest's v8 provider also writes coverage/coverage-final.json,
-          # which Codecov's auto-search picks up as a second report and
-          # merges alongside the explicit lcov.info, diluting/mismapping
-          # per-file results. We already pass the exact file, so disable
-          # search entirely.
+          files: ./frontend/coverage/lcov.info
+          # Vitest's v8 provider also writes coverage/coverage-final.json, which
+          # Codecov's auto-search would pick up as a second, unprefixed report.
+          # We pass the exact file, so disable search entirely.
           disable_search: true
-          working-directory: frontend
           flags: frontend
           fail_ci_if_error: false
         env:
@@ -193,12 +196,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Same repo-root-relative rewrite as the frontend job (see note there):
+      # design-system lcov SF: paths are src/... relative to the package, the
+      # repo path is frontend/design-system/src/..., so prefix then upload from
+      # the repo root.
+      - name: Prefix lcov paths with the package root
+        run: sed -i 's|^SF:|SF:frontend/design-system/|' coverage/lcov.info
+
       - name: Upload design-system coverage
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
-          files: ./coverage/lcov.info
+          files: ./frontend/design-system/coverage/lcov.info
           disable_search: true
-          working-directory: frontend/design-system
           flags: design-system
           fail_ci_if_error: false
         env:
