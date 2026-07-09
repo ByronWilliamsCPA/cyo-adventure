@@ -8,11 +8,16 @@
 name: Codecov Upload
 
 on:
-  # Trigger after CI workflow completes
+  # Trigger after CI workflow completes. Intentionally NOT branch-filtered:
+  # backend coverage.xml must upload for PR-branch CI runs too, or PRs receive
+  # only 2 of the 3 coverage surfaces (frontend + design-system) and Codecov's
+  # after_n_builds: 3 gate (see codecov.yml) deadlocks waiting for the backend
+  # upload that never arrives. This is Codecov's documented secure pattern for
+  # uploading coverage from PR CI runs (workflow_run runs in the base-repo
+  # context and downloads artifacts only; no untrusted checkout).
   workflow_run:
     workflows: ["CI"]
     types: [completed]
-    branches: [main, master, develop]
 
 permissions:
   contents: read
