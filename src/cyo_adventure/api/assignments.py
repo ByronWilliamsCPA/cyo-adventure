@@ -15,10 +15,10 @@ while an EXISTING storybook owned by another family is 403 via
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
-from sqlalchemy import and_, select
+from sqlalchemy import and_, or_, select
 
 from cyo_adventure.api.deps import (
     Context,
@@ -40,9 +40,15 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
-from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
+from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -363,6 +369,7 @@ def _guardian_book_item(
         title=title if isinstance(title, str) and title else book.id,
         version=version,
         age_band=_book_age_band(version_row.blob),
+        visibility=cast("Literal['family', 'catalog']", book.visibility),
         screened=screened,
         flagged_count=flagged_count,
         assigned_profile_ids=sorted(assigned_profile_ids),
@@ -403,12 +410,20 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
     if not ctx.principal.is_guardian:
         msg = "only a guardian may browse the family library"
         raise AuthorizationError(msg)
-    # #CRITICAL: security: match library.py's visibility gate exactly: same
-    # family, status published, a current published version, and approved_by IS
-    # NOT NULL. An unapproved or unpublished version must never surface here.
+    # #CRITICAL: security: match library.py's visibility gate, widened for
+    # catalog books (WS-E decision E3): same family OR globally-browsable
+    # catalog, status published, a current published version, and approved_by
+    # IS NOT NULL. Family isolation for `family`-visibility books is the
+    # `or_` clause's first arm; `catalog` books are globally browsable BY
+    # DESIGN, so the second arm intentionally has no family_id filter. An
+    # unapproved or unpublished version must never surface here regardless of
+    # visibility.
     # #VERIFY: the join pins version == current_published_version and the WHERE
     # requires approved_by IS NOT NULL (test_unapproved_published_book_is_excluded,
-    # test_unpublished_book_is_excluded).
+    # test_unpublished_book_is_excluded); a catalog book from another family is
+    # listed (test_catalog_book_from_other_family_is_listed_with_badge) while a
+    # family-visibility book from another family stays hidden
+    # (test_other_family_private_book_stays_hidden).
     # #ASSUME: external-resources: load every published version's blob and report
     # in ONE join query and all assignments in ONE IN query, so the listing stays
     # two queries total regardless of how large the family library grows.
@@ -424,7 +439,10 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
                 ),
             )
             .where(
-                Storybook.family_id == ctx.principal.family_id,
+                or_(
+                    Storybook.family_id == ctx.principal.family_id,
+                    Storybook.visibility == Visibility.CATALOG.value,
+                ),
                 Storybook.status == _PUBLISHED,
                 Storybook.current_published_version.is_not(None),
                 StorybookVersion.approved_by.is_not(None),
@@ -435,16 +453,27 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
     if not rows:
         return GuardianBooksView(books=[])
     book_ids = [book.id for book, _ in rows]
-    assign_rows = await ctx.session.scalars(
-        select(StorybookAssignment).where(
-            StorybookAssignment.storybook_id.in_(book_ids)
+    # #CRITICAL: security: scope the assignment projection to the CALLER's
+    # family. A catalog book may be assigned by many families; projecting the
+    # global set would leak other families' child profile UUIDs (WS-E plan
+    # deviation 2). #VERIFY: test_catalog_book_assignment_set_is_family_scoped.
+    assign_rows = await ctx.session.execute(
+        select(
+            StorybookAssignment.storybook_id,
+            StorybookAssignment.child_profile_id,
+        )
+        .join(
+            ChildProfile,
+            StorybookAssignment.child_profile_id == ChildProfile.id,
+        )
+        .where(
+            StorybookAssignment.storybook_id.in_(book_ids),
+            ChildProfile.family_id == ctx.principal.family_id,
         )
     )
     assigned: dict[str, list[str]] = {}
-    for assignment in assign_rows:
-        assigned.setdefault(assignment.storybook_id, []).append(
-            str(assignment.child_profile_id)
-        )
+    for assignment_storybook_id, child_profile_id in assign_rows:
+        assigned.setdefault(assignment_storybook_id, []).append(str(child_profile_id))
     # #ASSUME: external-resources: one threshold-policy load for the whole
     # listing, not per-row, so the per-row query count stays fixed regardless
     # of library size (mirrors the two-query assumption above).

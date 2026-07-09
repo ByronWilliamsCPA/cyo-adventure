@@ -330,6 +330,7 @@ class GuardianBookItem(BaseModel):
     title: str
     version: int
     age_band: str
+    visibility: Literal["family", "catalog"]
     screened: bool
     flagged_count: int = Field(ge=0)
     assigned_profile_ids: list[str]
