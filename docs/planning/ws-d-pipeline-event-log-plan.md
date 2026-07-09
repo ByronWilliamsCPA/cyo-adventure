@@ -300,7 +300,7 @@ def test_actor_from_principal_copies_id_and_role() -> None:
 
 - [ ] **Step 5: Run the test, expect failure** (PipelineEvent not yet in models)
 
-Run: `cd /home/byron/dev/CYO_Adventure/.worktrees/ws-d && uv run pytest tests/unit/test_pipeline_event_writer.py -v`
+Run (from the repo root): `uv run pytest tests/unit/test_pipeline_event_writer.py -v`
 Expected: FAIL at import (`cannot import name 'PipelineEvent'`). This is expected; Task 2 adds it.
 
 - [ ] **Step 6: Commit**
@@ -1363,7 +1363,7 @@ Abort if: coverage drops below 80% (add tests for any uncovered new branch).
 
 Run the in-process schema dump and diff against the committed client schema (never sort keys):
 ```bash
-uv run python -c "import json, sys; from cyo_adventure.app import app; json.dump(app.openapi(), sys.stdout)" > /tmp/ws-d-openapi.json
+uv run python -c "import json, sys; from cyo_adventure.app import app; json.dump(app.openapi(), sys.stdout)" > openapi-ws-d.json  # scratch file; delete after diffing
 ```
 Expected: the drift-gate comparison the CI uses is clean (no route/model change). If the CI drift
 gate compares against a committed `openapi.json`, run the repo's documented drift command; WS-D
