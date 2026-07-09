@@ -321,19 +321,25 @@ async def test_skeleton_fill_automated_provider_runs_end_to_end(
     assert res.status_code == 201, res.text
     job_id = res.json()["job_id"]
 
-    # #ASSUME: external-resources: this test relies on settings.generation_provider
-    # defaulting to "mock" in the test environment (see core/config.py), the
-    # same default every other worker-path integration test in this project
-    # relies on; a mock provider cannot produce a schema-valid filled skeleton
-    # from a real prompt, so this test only asserts the job REACHES a terminal
-    # status (passed/needs_review/failed), not that it passes cleanly.
-    # #VERIFY: if this assumption ever breaks, this test starts hanging or
-    # erroring on a real network call instead of reaching a terminal status.
+    # #ASSUME: external-resources: this test runs the worker against an
+    # explicitly-injected mock provider so it stays hermetic (no network). The
+    # request body sets provider="anthropic", and the worker now honors that
+    # per-job override over the settings default; passing a non-None provider
+    # here intentionally bypasses that override so the test does not need a real
+    # ANTHROPIC_API_KEY. The override-read path itself is unit-tested in
+    # test_worker.py::test_effective_provider_reads_job_authoring_override. A
+    # mock provider cannot produce a schema-valid filled skeleton from a real
+    # prompt, so this test only asserts the job REACHES a terminal status
+    # (passed/needs_review/failed), not that it passes cleanly.
+    # #VERIFY: if the injected provider is ever removed, this test starts making
+    # a real network call instead of reaching a terminal status hermetically.
+    from cyo_adventure.generation.provider import _CANNED_STORY_JSON, MockProvider
     from cyo_adventure.generation.worker import run_generation_job
 
     await run_generation_job(
         uuid.UUID(job_id),
         session_factory=_make_session_factory(sessions),
+        provider=MockProvider(responses=[_CANNED_STORY_JSON] * 8),
     )
 
     res = await client.get(
