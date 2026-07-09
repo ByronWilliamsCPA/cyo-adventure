@@ -1294,6 +1294,38 @@ class TestAnthropicProvider:
         assert calls["n"] == 2
 
     @pytest.mark.asyncio
+    @pytest.mark.parametrize("status", [408, 409])
+    async def test_transient_408_409_are_retryable_not_leg_fatal(
+        self, status: int
+    ) -> None:
+        """408 (request timeout) and 409 (conflict/lock timeout) are transient.
+
+        Regression: these were briefly miscategorized as leg-fatal, which would
+        permanently kill the Anthropic leg on a recoverable failure. The
+        Anthropic SDK's own _should_retry retries both, and the sibling
+        OpenRouterProvider classes them transient; this asserts a persistent
+        408/409 exhausts retries into a RETRYABLE (leg_fatal=False) ProviderError.
+        """
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(
+                status, json=_anthropic_error_body("api_error", "retry me")
+            )
+
+        provider = AnthropicProvider(
+            api_key="test-key",
+            model="claude-sonnet-4-6",
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            max_retries=1,
+            backoff_base_seconds=0,
+            client=_anthropic_client(handler),
+        )
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="p", max_tokens=10)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
     async def test_leg_fatal_401_raises_immediately(self) -> None:
         """A 401 (authentication_error) raises ProviderError(leg_fatal=True) with no retry."""
         calls = {"n": 0}

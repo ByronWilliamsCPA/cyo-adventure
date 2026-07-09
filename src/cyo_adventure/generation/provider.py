@@ -346,7 +346,7 @@ def build_anthropic_leg(settings: Settings, model: str) -> GenerationProvider:
     # #CRITICAL: security: fail fast (and by name only) when the credential is
     # absent, rather than sending an unauthenticated request that leaks the
     # prompt to a 401 round-trip.
-    # #VERIFY: test_build_anthropic_leg_missing_key_raises and
+    # #VERIFY: test_missing_key_raises_configuration_error_by_name and
     # test_anthropic_key_value_not_leaked_in_error assert ConfigurationError
     # when the key is None, and that no error message ever contains a key value.
     if not settings.anthropic_api_key:

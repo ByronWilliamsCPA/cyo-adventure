@@ -28,10 +28,13 @@ from cyo_adventure.generation.providers._base import (
     strip_code_fences,
 )
 
-# Anthropic status codes worth retrying against the same model: rate limiting
-# (429) and the overloaded signal (529). Any other 5xx is also treated as
-# transient by the >= 500 check in _raise_for_status.
-_TRANSIENT_STATUS: Final[frozenset[int]] = frozenset({429, 529})
+# Anthropic status codes worth retrying against the same model. Matches the
+# sibling OpenRouterProvider's transient set exactly (openrouter.py) and the
+# Anthropic SDK's own _should_retry, which retries request-timeout (408),
+# conflict/lock-timeout (409), too-early (425), and rate-limit (429). The
+# overloaded signal (529) is a 5xx and stays transient via the >= 500 check in
+# _raise_for_status, so it does not need enumerating here.
+_TRANSIENT_STATUS: Final[frozenset[int]] = frozenset({408, 409, 425, 429})
 
 
 class AnthropicProvider:
