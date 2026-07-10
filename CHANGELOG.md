@@ -27,6 +27,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Generation continuity for series (WS-G PR 3): `AnchorContext` now carries the anchor book's
+  declared variable names, and the structure prompt instructs continuations to reuse those exact
+  names so a reader's state carries across books; stale ending/metadata guidance in the generation
+  prompt templates (`structure.md`, `drafting_guide.md`, `prose.md`) was corrected to the enforced
+  schema (`kind`/`valence`, `topology`), including removal of a false "the validator does not
+  restrict ending types" claim. Worker-path integration tests now drive `_persist_and_moderate`
+  directly, covering the moderation-repair round-trip and the embed-failure rollback (PR #184
+  F11).
 - Postman/newman API test suite (`docs/api/postman-collection.json`): 75
   requests across 16 resource folders with status, JSON Schema, and
   auth-negative assertions, including the admin authoring-plan happy path and

@@ -8,6 +8,7 @@ feeds the concept brief; extraction is deterministic (no LLM call).
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -36,6 +37,10 @@ _EXCERPT_CHARS = 150
 _SUMMARY_CHARS = 600
 _TITLE_CHARS = 200
 _MAX_CHARACTER_NAMES = 5
+_MAX_VARIABLE_NAMES = 10
+_MAX_VARIABLE_ENTRIES = 50  # caps entries examined, independent of names collected
+_VARIABLE_NAME_CHARS = 200  # matches concept._BoundedText's max_length
+_VARIABLE_NAME_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")  # matches Variable.name
 
 
 async def resolve_anchor(
@@ -184,14 +189,50 @@ async def _protagonist_names(session: AsyncSession, storybook_id: str) -> list[s
     return []
 
 
+def _variable_names_from_blob(blob: Mapping[str, object]) -> list[str]:
+    """Collect declared variable names from a blob's ``variables`` array.
+
+    Same defensive contract as the rest of this module: a malformed blob or
+    entry is skipped, an overlong name is truncated, nothing raises. A name
+    that does not match the ``Variable.name`` schema pattern
+    (``^[a-z][a-z0-9_]*$``) is skipped rather than passed through, since this
+    context flows into generation prompts. Both the number of entries
+    examined and the number of names collected are bounded, so a blob with an
+    oversized ``variables`` array cannot make this loop unbounded.
+    """
+    names: list[str] = []
+    if not isinstance(blob, dict):
+        return names
+    variables = blob.get("variables")
+    if not isinstance(variables, list):
+        return names
+    for variable in variables[:_MAX_VARIABLE_ENTRIES]:
+        if len(names) >= _MAX_VARIABLE_NAMES:
+            break
+        if not isinstance(variable, dict):
+            continue
+        name = variable.get("name")
+        if isinstance(name, str) and _VARIABLE_NAME_PATTERN.match(name):
+            names.append(name[:_VARIABLE_NAME_CHARS])
+    return names
+
+
 def anchor_context_from_blob(
     blob: Mapping[str, object], *, character_names: list[str]
 ) -> AnchorContext:
     """Build an AnchorContext from a stored Storybook blob (pure function).
 
     Every field is read defensively (mirroring api/library.py::_library_item):
-    a malformed value degrades to a safe default rather than raising.
+    a malformed value, including a non-mapping ``blob``, degrades to a safe
+    default rather than raising.
     """
+    if not isinstance(blob, dict):
+        return AnchorContext(
+            title="Untitled story",
+            character_names=character_names[:_MAX_CHARACTER_NAMES],
+            ending_summary="",
+            variable_names=[],
+        )
     title = blob.get("title")
     safe_title = title if isinstance(title, str) and title else "Untitled story"
     excerpts: list[str] = []
@@ -218,4 +259,5 @@ def anchor_context_from_blob(
         title=safe_title[:_TITLE_CHARS],
         character_names=character_names[:_MAX_CHARACTER_NAMES],
         ending_summary=summary,
+        variable_names=_variable_names_from_blob(blob),
     )

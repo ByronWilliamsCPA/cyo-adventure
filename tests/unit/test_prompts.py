@@ -22,7 +22,12 @@ import json
 import pytest
 
 from cyo_adventure.core.exceptions import BusinessLogicError
-from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
+from cyo_adventure.generation.concept import (
+    AnchorContext,
+    ConceptBrief,
+    Protagonist,
+    StructurePattern,
+)
 from cyo_adventure.generation.prompts import (
     _USER_MARKER,
     StagePrompt,
@@ -319,6 +324,46 @@ class TestBuildStructurePrompt:
         result = build_structure_prompt(minimal_brief)
         assert "adventurous" in result.user  # tone field
         assert "8-11" in result.user  # age_band value
+
+
+def test_structure_prompt_carries_anchor_variable_names(
+    minimal_brief: ConceptBrief,
+) -> None:
+    """The brief's anchor variable names ride into the user block wholesale."""
+    brief = minimal_brief.model_copy(
+        update={
+            "anchor_context": AnchorContext(
+                title="Book One", variable_names=["courage"]
+            )
+        }
+    )
+    stage = build_structure_prompt(brief)
+    assert '"variable_names"' in stage.user
+    assert '"courage"' in stage.user
+
+
+def test_structure_prompt_instructs_anchor_variable_reuse(
+    minimal_brief: ConceptBrief,
+) -> None:
+    """The static task framing tells the model what to do with variable_names."""
+    stage = build_structure_prompt(minimal_brief)
+    assert "variable_names" in stage.system
+    assert "same name" in stage.system
+
+
+def test_structure_prompt_instructs_valid_ending_shape(
+    minimal_brief: ConceptBrief,
+) -> None:
+    """The ending instruction matches the enforced Ending model (kind + valence).
+
+    Regression pin for the stale `ending.type` instruction: the schema has no
+    `type` field, and the old vocabulary (failure/bittersweet/open) is not in
+    EndingKind. See storybook/models.py:408-416, 89-105.
+    """
+    stage = build_structure_prompt(minimal_brief)
+    assert "`kind`" in stage.system
+    assert "`valence`" in stage.system
+    assert "bittersweet" not in stage.system
 
 
 # ---------------------------------------------------------------------------

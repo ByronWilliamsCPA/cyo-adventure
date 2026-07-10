@@ -18,10 +18,11 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.core.config import Settings
-from cyo_adventure.core.exceptions import BusinessLogicError
+from cyo_adventure.core.exceptions import BusinessLogicError, ValidationError
 from cyo_adventure.db.models import (
     Concept,
     Family,
+    GenerationJob,
     Series,
     Storybook,
     StorybookVersion,
@@ -29,14 +30,17 @@ from cyo_adventure.db.models import (
     User,
 )
 from cyo_adventure.generation import series_link
+from cyo_adventure.generation import worker as worker_mod
+from cyo_adventure.generation.orchestrator import GenerationOutcome
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
-from cyo_adventure.generation.provider import _CANNED_STORY
+from cyo_adventure.generation.provider import _CANNED_STORY, MockProvider
 from cyo_adventure.generation.series_link import (
     assign_book_index,
     embed_series_block,
     link_series_position,
 )
+from cyo_adventure.generation.worker import _persist_and_moderate, _PersistContext
 from cyo_adventure.moderation import pipeline as pipeline_mod
 from cyo_adventure.moderation.report import Finding, Source, Verdict
 
@@ -670,3 +674,204 @@ async def test_assign_book_index_reraises_non_unique_constraint_integrity_error(
             await assign_book_index(session, story_id=book.id, series_id=uuid.uuid4())
 
         assert "uq_storybook_series_book_index" not in str(exc_info.value.orig)
+
+
+def _series_seed_rows(family: Family, series: Series, concept: Concept) -> StoryRequest:
+    """A StoryRequest linking concept to series (the worker's series signal)."""
+    return StoryRequest(
+        family_id=family.id,
+        request_text="a story",
+        age_band="8-11",
+        concept_id=concept.id,
+        series_id=series.id,
+    )
+
+
+def _stub_moderation_stages(
+    monkeypatch: pytest.MonkeyPatch, *, readability: AsyncMock
+) -> None:
+    """All-clean moderation stages except the supplied readability stub."""
+    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
+    monkeypatch.setattr(pipeline_mod, "run_safety_stage", AsyncMock(return_value=[]))
+    monkeypatch.setattr(pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[]))
+    monkeypatch.setattr(
+        pipeline_mod, "run_engagement_stage", AsyncMock(return_value=[])
+    )
+    monkeypatch.setattr(pipeline_mod, "run_readability_stage", readability)
+
+
+async def test_persist_and_moderate_repair_roundtrip_embeds_series_block(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """PR #184 F7/F11: drive the REAL _persist_and_moderate through a soft repair.
+
+    Unlike test_embed_series_block_survives_moderation_repair (which replicates
+    the worker's call sequence), this drives the worker helper itself, so a
+    reorder of persist/link/moderate/embed inside _persist_and_moderate fails
+    THIS test even if each callee still works in isolation.
+    """
+    async with sessions() as session:
+        family = Family(name="Worker Roundtrip Family")
+        session.add(family)
+        await session.flush()
+        user = User(family_id=family.id, role="guardian", authn_subject="g-worker")
+        session.add(user)
+        await session.flush()
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+        session.add(_series_seed_rows(family, series, concept))
+        await session.flush()
+        job = GenerationJob(concept_id=concept.id, status="running")
+        session.add(job)
+        await session.flush()
+
+        flag_finding = Finding(
+            stage=2,
+            source=Source.LLM_READABILITY,
+            category="reading_level",
+            node_id="n_start",
+            verdict=Verdict.FLAG,
+            message="too hard",
+        )
+        _stub_moderation_stages(
+            monkeypatch,
+            readability=AsyncMock(side_effect=[[flag_finding], []]),
+        )
+        story_id = f"s_{job.id}"
+        revised_blob: dict[str, object] = {
+            **dict(_CANNED_STORY),
+            "id": story_id,
+            "title": "The Forest Path (revised)",
+        }
+        monkeypatch.setattr(
+            pipeline_mod, "attempt_repair", AsyncMock(return_value=revised_blob)
+        )
+        monkeypatch.setattr(
+            worker_mod, "_default_settings", Settings(review_provider="mock")
+        )
+
+        outcome = GenerationOutcome(
+            status="passed",
+            storybook=dict(_CANNED_STORY),
+            report={"ok": True},
+            attempts=0,
+            stage_log=["stage_a:gate_ok"],
+        )
+        ctx = _PersistContext(
+            job_id=job.id,
+            job_row=job,
+            concept_row=concept,
+            effective_provider=MockProvider(responses=[]),
+            authoring=None,
+            pii=_pii(),
+        )
+        await _persist_and_moderate(session, ctx, outcome)
+        # The worker's caller owns the happy-path commit (worker.py docstring).
+        await session.commit()
+
+    async with sessions() as session:
+        row = await session.get(StorybookVersion, (story_id, 1))
+        assert row is not None
+        assert row.blob["title"] == "The Forest Path (revised)"
+        meta = row.blob["metadata"]
+        assert isinstance(meta, dict)
+        block = meta["series"]
+        assert isinstance(block, dict)
+        assert block["series_entry_node"] == row.blob["start_node"]
+        assert block["carries_state"] is True
+        refreshed_job = await session.get(GenerationJob, job.id)
+        assert refreshed_job is not None
+        assert refreshed_job.storybook_id == story_id
+
+
+async def test_persist_and_moderate_embed_failure_rolls_back_and_fails_job(
+    sessions: async_sessionmaker[AsyncSession],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """PR #184 F11: an embed_series_block failure rolls back the persist.
+
+    Asserts the invariant the worker's except path promises: the unreviewed
+    storybook persist is discarded (no row survives, so an RQ retry of the
+    same job cannot collide on the per-job story id), the job lands committed
+    as "failed" with the error recorded, and the exception propagates.
+    """
+    async with sessions() as session:
+        family = Family(name="Worker Rollback Family")
+        session.add(family)
+        await session.flush()
+        user = User(family_id=family.id, role="guardian", authn_subject="g-rollback")
+        session.add(user)
+        await session.flush()
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+        session.add(_series_seed_rows(family, series, concept))
+        await session.flush()
+        job = GenerationJob(concept_id=concept.id, status="running")
+        session.add(job)
+        # The rollback in the except path discards flushed-but-uncommitted rows,
+        # so the job row must be durable BEFORE _persist_and_moderate runs (in
+        # production it is: the worker commits the running transition first).
+        await session.commit()
+
+        _stub_moderation_stages(monkeypatch, readability=AsyncMock(return_value=[]))
+        monkeypatch.setattr(
+            worker_mod, "_default_settings", Settings(review_provider="mock")
+        )
+        monkeypatch.setattr(
+            worker_mod,
+            "embed_series_block",
+            AsyncMock(
+                side_effect=ValidationError("embed exploded", field="blob", value=None)
+            ),
+        )
+
+        outcome = GenerationOutcome(
+            status="passed",
+            storybook=dict(_CANNED_STORY),
+            report={"ok": True},
+            attempts=0,
+            stage_log=["stage_a:gate_ok"],
+        )
+        ctx = _PersistContext(
+            job_id=job.id,
+            job_row=job,
+            concept_row=concept,
+            effective_provider=MockProvider(responses=[]),
+            authoring=None,
+            pii=_pii(),
+        )
+        story_id = f"s_{job.id}"
+        with pytest.raises(ValidationError, match="embed exploded"):
+            await _persist_and_moderate(session, ctx, outcome)
+
+    async with sessions() as session:
+        # The persist was rolled back: no storybook row survives.
+        assert await session.get(Storybook, story_id) is None
+        assert await session.get(StorybookVersion, (story_id, 1)) is None
+        # The failure was recorded and committed by _record_failure.
+        refreshed_job = await session.get(GenerationJob, job.id)
+        assert refreshed_job is not None
+        assert refreshed_job.status == "failed"
+        assert refreshed_job.error is not None
+        assert "embed exploded" in refreshed_job.error
