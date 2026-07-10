@@ -390,3 +390,54 @@ async def test_child_cannot_read_cross_family_private_book(
         headers=auth(seed.child_token),
     )
     assert rating.status_code == 403, rating.text
+
+
+async def test_guardian_reads_catalog_blob_but_not_private_cross_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Guardian parity for the visibility branch in ``get_storybook_version``.
+
+    The child-perspective tests above pin the catalog widening through the
+    assignment-gated child surfaces; this pins the other arm asserted only in a
+    comment on ``get_storybook_version`` (``api/library.py``): a guardian of
+    Family A may fetch a published, approved, ``visibility='catalog'`` book
+    owned by Family B with no assignment row at all (the assignment gate is
+    child-only), while a Family B book left at the default ``visibility='family'``
+    still 403s for the same guardian, exactly as the plain family-ownership rule
+    always required.
+    """
+    catalog_id = await _add_cross_family_catalog_book(
+        sessions, seed, "catalog-cross-family-guardian", assign=False
+    )
+    catalog_blob = await client.get(
+        f"/api/v1/storybooks/{catalog_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert catalog_blob.status_code == 200, catalog_blob.text
+
+    private_id = "private-cross-family-guardian"
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id=private_id,
+                family_id=profile_b.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=private_id,
+                version=1,
+                blob={"id": private_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+    private_blob = await client.get(
+        f"/api/v1/storybooks/{private_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert private_blob.status_code == 403, private_blob.text
