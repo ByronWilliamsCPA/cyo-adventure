@@ -12,31 +12,31 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/project/changelog/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/api/">
       
       
-        <link rel="prev" href="../roadmap/">
+        <link rel="prev" href="../development/testing/">
       
       
-        <link rel="next" href="../license/">
+        <link rel="next" href="../development/code-quality/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Changelog - CYO Adventure</title>
+        <title>API Testing (Postman/newman) - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#unreleased" class="md-skip">
+        <a href="#what-is-tested" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +106,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href=".." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Changelog
+              API Testing (Postman/newman)
             
           </span>
         </div>
@@ -239,7 +239,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href=".." class="md-tabs__link">
         
   
   
@@ -260,7 +260,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +282,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +304,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../architecture/" class="md-tabs__link">
           
   
   
@@ -322,11 +322,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../development/architecture/" class="md-tabs__link">
           
   
   
@@ -344,13 +346,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../roadmap/" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -372,7 +372,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../planning/" class="md-tabs__link">
+        <a href="../planning/" class="md-tabs__link">
           
   
   
@@ -394,7 +394,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +416,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +452,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href=".." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -578,7 +578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../guides/overview/" class="md-nav__link">
         
   
   
@@ -613,7 +613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../guides/configuration/" class="md-nav__link">
         
   
   
@@ -648,7 +648,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../guides/usage/" class="md-nav__link">
         
   
   
@@ -748,7 +748,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../api-reference/" class="md-nav__link">
         
   
   
@@ -827,7 +827,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../architecture/" class="md-nav__link ">
               
   
   
@@ -878,7 +878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -913,7 +913,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -948,7 +948,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -983,7 +983,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1018,7 +1018,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1053,7 +1053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1092,6 +1092,8 @@
       
   
   
+    
+  
   
   
     
@@ -1113,22 +1115,23 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="./" class="md-nav__link md-nav__link--active">
               
   
   
@@ -1153,13 +1156,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+              <label class="md-nav__link md-nav__link--active" for="__nav_5" id="__nav_5_label" tabindex="">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1177,7 +1180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../development/architecture/" class="md-nav__link">
         
   
   
@@ -1212,7 +1215,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../development/testing/" class="md-nav__link">
         
   
   
@@ -1249,7 +1252,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1284,7 +1287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../development/contributing/" class="md-nav__link">
         
   
   
@@ -1323,10 +1326,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -1340,22 +1341,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1373,7 +1373,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1391,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1423,42 +1423,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Changelog
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../project/changelog/" class="md-nav__link">
         
   
   
@@ -1481,135 +1449,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Unreleased
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Unreleased">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Added
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Changed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deprecated
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#removed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Removed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fixed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#010-2026" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        0.1.0 - 2026
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="0.1.0 - 2026">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#added_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Added
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1622,7 +1461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../license/" class="md-nav__link">
+      <a href="../project/license/" class="md-nav__link">
         
   
   
@@ -1699,7 +1538,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/" class="md-nav__link ">
+            <a href="../planning/" class="md-nav__link ">
               
   
   
@@ -1750,7 +1589,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/project-vision/" class="md-nav__link">
+      <a href="../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1785,7 +1624,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/tech-spec/" class="md-nav__link">
+      <a href="../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1820,7 +1659,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1855,7 +1694,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/roadmap/" class="md-nav__link">
+      <a href="../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1927,7 +1766,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/adr/" class="md-nav__link ">
+            <a href="../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1978,7 +1817,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2013,7 +1852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2048,7 +1887,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2083,7 +1922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2118,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2153,7 +1992,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2267,7 +2106,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2302,7 +2141,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2337,7 +2176,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2372,7 +2211,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../template_feedback/" class="md-nav__link">
         
   
   
@@ -2441,7 +2280,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../ADRs/" class="md-nav__link ">
               
   
   
@@ -2492,7 +2331,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2552,22 +2391,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
+  <a href="#what-is-tested" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Unreleased
+        What is tested
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Unreleased">
+    <nav class="md-nav" aria-label="What is tested">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#added" class="md-nav__link">
+  <a href="#externals-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Added
+        Externals policy
       
     </span>
   </a>
@@ -2575,10 +2414,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#changed" class="md-nav__link">
+  <a href="#auth-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Changed
+        Auth model
       
     </span>
   </a>
@@ -2586,43 +2425,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#deprecated" class="md-nav__link">
+  <a href="#rate-limit-pacing" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deprecated
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#removed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Removed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#fixed" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fixed
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#security" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Security
+        Rate-limit pacing
       
     </span>
   </a>
@@ -2635,30 +2441,46 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#010-2026" class="md-nav__link">
+  <a href="#running-locally" class="md-nav__link">
     <span class="md-ellipsis">
       
-        0.1.0 - 2026
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="0.1.0 - 2026">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#added_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Added
+        Running locally
       
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
+      
+        <li class="md-nav__item">
+  <a href="#required-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ci-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maintenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maintenance
+      
+    </span>
+  </a>
   
 </li>
       
@@ -2682,46 +2504,155 @@
   
 
 
-  <h1>Changelog</h1>
+  <h1>API Testing</h1>
 
-<p>All notable changes to CYO Adventure will be documented in this file.</p>
-<p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
-and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased"><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.1.0...HEAD">Unreleased</a><a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
-<h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Initial project structure from cookiecutter template</li>
-<li>Core configuration with Pydantic Settings</li>
-<li>Structured logging with structlog and rich</li>
-<li>Comprehensive test infrastructure</li>
-<li>Documentation with MkDocs Material</li>
-</ul>
-<h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
-<ul>
-<li>None</li>
-</ul>
-<h3 id="deprecated">Deprecated<a class="headerlink" href="#deprecated" title="Permanent link">&para;</a></h3>
-<ul>
-<li>None</li>
-</ul>
-<h3 id="removed">Removed<a class="headerlink" href="#removed" title="Permanent link">&para;</a></h3>
-<ul>
-<li>None</li>
-</ul>
-<h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
-<ul>
-<li>None</li>
-</ul>
-<h3 id="security">Security<a class="headerlink" href="#security" title="Permanent link">&para;</a></h3>
-<ul>
-<li>None</li>
-</ul>
-<h2 id="010-2026"><a href="https://github.com/ByronWilliamsCPA/cyo-adventure/releases/tag/v0.1.0">0.1.0</a> - 2026<a class="headerlink" href="#010-2026" title="Permanent link">&para;</a></h2>
-<h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Initial release of CYO Adventure</li>
-</ul>
-<hr />
+<p>The Postman collection at <a href="postman-collection.json"><code>docs/api/postman-collection.json</code></a> exercises the
+FastAPI backend end to end over HTTP: real routing, middleware, authorization, and a migrated PostgreSQL
+schema. CI runs it with <a href="https://github.com/postmanlabs/newman">newman</a> in the <code>api-tests</code> job of
+<code>.github/workflows/ci.yml</code> and uploads the JUnit results to Codecov Test Analytics under the <code>api</code> flag.</p>
+<h2 id="what-is-tested">What is tested<a class="headerlink" href="#what-is-tested" title="Permanent link">&para;</a></h2>
+<p>The collection contains 16 folders (one per resource), 75 requests, and 223 assertions. Every request
+asserts an exact status code and validates the response body against a JSON Schema resolved from the
+app's OpenAPI components; happy-path requests add semantic assertions (state transitions, echoed fields,
+list contents guaranteed by seed data).</p>
+<table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Coverage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>health</td>
+<td>Liveness, readiness, and startup probes</td>
+</tr>
+<tr>
+<td>auth-negative</td>
+<td>Cross-cutting 401 (no token), 403 (wrong role), 401 (unknown subject)</td>
+</tr>
+<tr>
+<td>me, profiles, families</td>
+<td>Identity, profile create/read/update, admin family listing, role gates</td>
+</tr>
+<tr>
+<td>library, reading, ratings</td>
+<td>Published-book discovery, reading-state save/replay, rating creation (the endpoint is an upsert; the update path is not yet re-exercised)</td>
+</tr>
+<tr>
+<td>assignments</td>
+<td>Assign storybooks, guardian book listing, content summary (no unassign endpoint exists)</td>
+</tr>
+<tr>
+<td>story-requests</td>
+<td>Full lifecycle: create, decline, approve, authored create, admin authoring-plan (201 + 409 idempotency)</td>
+</tr>
+<tr>
+<td>approval</td>
+<td>Storybook lifecycle on the seeded in-review story: send-back, resubmit, approve</td>
+</tr>
+<tr>
+<td>generation</td>
+<td>Concept creation and generation-job flow (enqueue is best-effort without Redis)</td>
+</tr>
+<tr>
+<td>moderation-thresholds, provider-allowlist</td>
+<td>Admin CRUD plus role gates</td>
+</tr>
+<tr>
+<td>covers</td>
+<td>Auth negatives and DB-only status reads only (see externals policy below)</td>
+</tr>
+<tr>
+<td>archive</td>
+<td>Archive lifecycle on the second seeded published story; runs last because it removes the book from the library</td>
+</tr>
+</tbody>
+</table>
+<p>All resource IDs are discovered dynamically from prior responses (<code>pm.collectionVariables.set</code>), never
+hardcoded, so the suite is stable across reseeded databases.</p>
+<h3 id="externals-policy">Externals policy<a class="headerlink" href="#externals-policy" title="Permanent link">&para;</a></h3>
+<p>CI runs with no Supabase, Gemini, or LLM credentials and no Redis. Endpoints whose happy path calls an
+external service are covered by auth negatives and side-effect-free reads only: <code>POST
+/storybooks/{id}/versions/{v}/cover</code> (Gemini + Supabase Storage) is never triggered, and generation
+enqueue failures are tolerated by design (the job row is still created).</p>
+<h3 id="auth-model">Auth model<a class="headerlink" href="#auth-model" title="Permanent link">&para;</a></h3>
+<p>The stack runs with <code>ENVIRONMENT=local</code>, which enables the dev-auth path: the bearer token string is
+treated as the verified OIDC subject (no JWT verification), and authorization still resolves real <code>User</code>
+rows, roles, and family scoping from the database. <code>scripts/seed_dev_data.py</code> provisions the three
+subjects the collection uses as collection variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Token</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>guardian_token</code></td>
+<td><code>dev-guardian</code></td>
+<td>guardian</td>
+</tr>
+<tr>
+<td><code>child_token</code></td>
+<td><code>dev-child</code></td>
+<td>child (bound to the seeded profile)</td>
+</tr>
+<tr>
+<td><code>admin_token</code></td>
+<td><code>dev-admin</code></td>
+<td>admin</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rate-limit-pacing">Rate-limit pacing<a class="headerlink" href="#rate-limit-pacing" title="Permanent link">&para;</a></h3>
+<p>The app enforces a 60 requests/minute sliding window (plus a 10 req/s burst cap) via
+<code>RateLimitMiddleware</code>. Pacing is supplied by the runner, not the collection: every newman invocation
+must pass <code>--delay-request 1100</code> (CI does; the local command below does) so any 60-second window stays
+under the limit. A full run takes roughly 90 seconds by design. If you run the collection in the Postman
+desktop Runner instead of newman, set its own Delay setting to 1100 ms; the CLI flag does not apply
+there. If the suite grows enough to hurt CI latency, raise the app's limit for CI instead of shrinking
+the delay.</p>
+<h2 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h2>
+<p>Prerequisites: Docker with the compose plugin, <code>uv</code>, Node.js, and <code>npm install -g newman</code>. From the repo
+root:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>-v<span class="w"> </span>--remove-orphans<span class="w">          </span><span class="c1"># fresh database (this project&#39;s stack only)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>app<span class="w"> </span>db
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">until</span><span class="w"> </span>curl<span class="w"> </span>-fsS<span class="w"> </span>http://localhost:8000/health/live<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>sleep<span class="w"> </span><span class="m">2</span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>uv<span class="w"> </span>run<span class="w"> </span>alembic<span class="w"> </span>upgrade<span class="w"> </span>head<span class="w">                      </span><span class="c1"># real migration chain, not create_all</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/seed_dev_data.py<span class="w">           </span><span class="c1"># idempotent seed (users, stories, assignments)</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>newman<span class="w"> </span>run<span class="w"> </span>docs/api/postman-collection.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span>--env-var<span class="w"> </span><span class="s2">&quot;base_url=http://localhost:8000&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span>--delay-request<span class="w"> </span><span class="m">1100</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span>--reporters<span class="w"> </span>cli,junit<span class="w"> </span>--reporter-junit-export<span class="w"> </span>newman-junit.xml<span class="w"> </span>--bail
+</span></code></pre></div>
+<p>If another compose project already occupies the default ports or the pinned <code>172.25.0.0/16</code> subnet (for
+example a running dev stack), run the suite under an isolated project with remapped ports and point
+<code>base_url</code>/<code>DATABASE_URL</code> at them (<code>docker compose -p cyo-adventure-apitest ...</code>).</p>
+<h2 id="required-environment">Required environment<a class="headerlink" href="#required-environment" title="Permanent link">&para;</a></h2>
+<p>No secrets are required to run the suite. The compose defaults are sufficient: <code>ENVIRONMENT=local</code> (dev
+auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, and no Supabase/Gemini/LLM/Redis
+configuration. The only non-default env used in CI is <code>DATABASE_URL</code> for the runner-side migrate and
+seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
+step uses the repo-level <code>CODECOV_TOKEN</code> secret for optional, non-blocking Test Analytics reporting
+(<code>fail_ci_if_error: false</code>); a missing token degrades reporting only, never test execution.</p>
+<h2 id="ci-integration">CI integration<a class="headerlink" href="#ci-integration" title="Permanent link">&para;</a></h2>
+<p><code>.github/workflows/ci.yml</code> gates the <code>api-tests</code> job on this collection existing
+(<code>detect-api-collection</code>), then: builds and starts <code>app</code> + <code>db</code> from the repo compose file, waits on
+<code>/health/live</code>, installs the backend (<code>uv sync --extra api</code>), runs <code>alembic upgrade head</code> and
+<code>scripts/seed_dev_data.py</code> against the compose database, runs newman with the JUnit reporter, and uploads
+<code>newman-junit.xml</code> via <code>codecov/test-results-action</code> under the <code>api</code> flag (org standard: one report, one
+flag). Results appear in the Codecov Tests tab for the PR.</p>
+<h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
+<p>The OpenAPI schema is the source of truth. After adding or changing a route or response model: update the
+affected requests and their inlined JSON Schemas in the collection, regenerate the frontend client
+(<code>npm run generate-client</code>) so the <code>contract</code> job stays green, and re-run the local loop above before
+pushing.</p>
 
 
 
@@ -2744,7 +2675,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:00:48 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 14:30:22 UTC">July 10, 2026</span>
   </span>
 
     
@@ -2754,7 +2685,7 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 14:30:22 UTC">July 10, 2026</span>
   </span>
 
     
@@ -2831,10 +2762,10 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
