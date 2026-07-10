@@ -26,12 +26,20 @@ must contain:
 
 1. The top-level metadata fields: `schema_version`, `id` (use a UUID v4), `version`
    (set to 1), `title` (propose one if not in the brief), and the `metadata` block
-   (`age_band`, `reading_level`, `tier`, `themes`, `estimated_minutes`,
-   `ending_count`, `content_flags`). Set `metadata.ending_count` to the exact number
-   of endings stated in the Budget section of the user message.
+   (`age_band`, `reading_level` as an object with `scheme` and `target`, `tier`,
+   `themes`, `estimated_minutes`, `ending_count`, `topology`, `content_flags`). Set
+   `metadata.ending_count` to the exact number of endings stated in the Budget
+   section of the user message.
 
 2. A `variables` array (empty for Tier 1; for Tier 2, declare each variable with
    `name`, `type`, `initial`, `min` and `max` for integers, and `description`).
+   If the concept brief includes `anchor_context` with a non-empty
+   `variable_names` list, this story continues an earlier book in a series:
+   wherever the new story tracks the same state as the earlier book (for
+   example a courage or kindness meter), declare that variable with EXACTLY the
+   same name from `variable_names` instead of inventing a renamed duplicate.
+   Reader progress carries across books only when the names match. Do not
+   declare an anchor variable this story never uses.
 
 3. A `start_node` field naming the first node id.
 
@@ -49,8 +57,9 @@ must contain:
      - `condition`: omit if unconditional; include the JSONLogic object if conditional.
      - `effects`: an array (may be empty).
    - `is_ending`: `false` for non-ending nodes; `true` for ending nodes.
-   - `ending`: include on ending nodes only, with `id` (stable slug), `type`
-     (`success`, `failure`, `bittersweet`, or `open`), and `title`.
+   - `ending`: include on ending nodes only, with `id` (a stable slug), `kind`
+     (`success`, `setback`, `death`, `capture`, `completion`, or `discovery`),
+     `valence` (`positive`, `neutral`, or `negative`), and `title`.
    - `tags`: an array (may be empty).
 
 5. Exactly as many ending nodes as the Budget section requires, each with a

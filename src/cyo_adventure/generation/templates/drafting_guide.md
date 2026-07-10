@@ -197,7 +197,8 @@ Each ending node requires an `ending` block:
 ```json
 {
   "id": "ending_sunrise",
-  "type": "success",
+  "kind": "success",
+  "valence": "positive",
   "title": "The sunrise ending"
 }
 ```
@@ -206,9 +207,11 @@ The `id` is stable across prose edits and is the anchor for the ending tracker (
 Use a slug that describes the outcome, not a number ("ending_escape", "ending_captured",
 "ending_befriended"), so it remains meaningful after the prose changes.
 
-Ending types: `success`, `failure`, `bittersweet`, `open`. These are metadata only; the
-validator does not restrict ending types. Use them to give the parent reviewer a quick
-read on the emotional tone of each outcome.
+Each ending is typed on two axes the schema enforces as closed sets: `kind`, what
+mechanically happened (`success`, `setback`, `death`, `capture`, `completion`,
+`discovery`), and `valence`, how it feels (`positive`, `neutral`, `negative`). Both are
+required on every ending block. Choose the pair that best matches the outcome so the
+parent reviewer gets a quick read on each ending.
 
 ---
 
