@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import type {
   ModerationDashboardView,
@@ -34,12 +34,23 @@ export function ModerationDashboardPage() {
   const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [actionError, setActionError] = useState<string | null>(null)
+  // #ASSUME: external resources: the post-apply refresh (reloadKey bump)
+  // reuses the same load() effect as the initial mount load, so a transient
+  // GET failure on that refresh must not wipe an already-rendered dashboard.
+  // hasLoadedRef (not state) tracks "has a load ever succeeded" because state
+  // itself is not, and must not become, a dependency of the load effect: an
+  // effect depending on state would refire every time state changes, turning
+  // every successful load into an infinite refetch loop.
+  // #VERIFY: covered by the "keeps last-good data when a post-apply refresh
+  // fails" test in ModerationDashboardPage.test.tsx.
+  const hasLoadedRef = useRef(false)
+  const [refreshError, setRefreshError] = useState<string | null>(null)
   // #ASSUME: concurrency: multiple suggestion applies can be in flight at
   // once, so the in-flight guard is tracked per suggestion key, never as one
   // shared value (a shared value would re-enable A's button when B starts and
   // clear B's guard when A settles).
-  // #VERIFY: covered by the "keeps per-suggestion apply buttons independent"
-  // test in ModerationDashboardPage.test.tsx.
+  // #VERIFY: covered by the "keeps per-suggestion apply buttons independent
+  // while applies are in flight" test in ModerationDashboardPage.test.tsx.
   const [applying, setApplying] = useState<ReadonlySet<string>>(new Set())
   const [reloadKey, setReloadKey] = useState(0)
 
@@ -56,16 +67,32 @@ export function ModerationDashboardPage() {
           dashboardApi.dashboard(),
           dashboardApi.suggestions(),
         ])
-        if (!cancelled) setState({ kind: 'ready', dashboard, suggestions })
+        if (!cancelled) {
+          hasLoadedRef.current = true
+          setRefreshError(null)
+          setState({ kind: 'ready', dashboard, suggestions })
+        }
       } catch (err) {
         console.error('moderation dashboard load failed:', err instanceof Error ? err.message : err)
         if (!cancelled) {
-          setState({
-            kind: 'error',
-            message: classifyApiError(err, {
-              transient: 'We could not load the moderation dashboard. Please reload.',
-            }).message,
-          })
+          if (hasLoadedRef.current) {
+            // A refresh after a successful apply failed: keep showing the
+            // last-good dashboard/suggestions rather than replacing the whole
+            // page with a full-page error, and surface a dismissible notice
+            // instead.
+            setRefreshError(
+              classifyApiError(err, {
+                transient: 'We could not refresh the dashboard; showing the last loaded data.',
+              }).message
+            )
+          } else {
+            setState({
+              kind: 'error',
+              message: classifyApiError(err, {
+                transient: 'We could not load the moderation dashboard. Please reload.',
+              }).message,
+            })
+          }
         }
       }
     }
@@ -76,7 +103,11 @@ export function ModerationDashboardPage() {
   }, [dashboardApi, reloadKey])
 
   async function applySuggestion(suggestion: ThresholdSuggestionView) {
-    const key = `${suggestion.age_band}:${suggestion.category}`
+    // JSON.stringify (not a plain `${age_band}:${category}` join) because
+    // category is an open-ended, provider-defined string that may itself
+    // contain ':' (or any other single-character delimiter), which would let
+    // two distinct suggestions collide on the same in-flight guard key.
+    const key = JSON.stringify([suggestion.age_band, suggestion.category])
     // Build a new Set on every update (never mutate state in place) and add
     // or remove exactly this suggestion's key, so concurrent applies on other
     // suggestions keep their own in-flight guards.
@@ -92,7 +123,7 @@ export function ModerationDashboardPage() {
       console.error('threshold suggestion apply failed:', err instanceof Error ? err.message : err)
       setActionError(
         classifyApiError(err, {
-          transient: 'We could not apply that suggestion. Please try again.',
+          transient: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
         }).message
       )
     } finally {
@@ -123,6 +154,14 @@ export function ModerationDashboardPage() {
   return (
     <main>
       <h1>Moderation dashboard</h1>
+      {refreshError ? (
+        <p role="alert" className="console__notice">
+          {refreshError}{' '}
+          <button type="button" onClick={() => setRefreshError(null)} aria-label="Dismiss">
+            Dismiss
+          </button>
+        </p>
+      ) : null}
       {actionError ? (
         <p role="alert" className="console__error">
           {actionError}
@@ -141,7 +180,9 @@ export function ModerationDashboardPage() {
         ) : (
           <ul>
             {suggestions.suggestions.map((suggestion) => {
-              const key = `${suggestion.age_band}:${suggestion.category}`
+              // Same JSON.stringify encoding as applySuggestion's in-flight
+              // guard key, so the disabled lookup below always matches.
+              const key = JSON.stringify([suggestion.age_band, suggestion.category])
               return (
                 <li key={key}>
                   <strong>
@@ -154,6 +195,7 @@ export function ModerationDashboardPage() {
                   <button
                     type="button"
                     disabled={applying.has(key)}
+                    aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
                     onClick={() => void applySuggestion(suggestion)}
                   >
                     {applying.has(key)
