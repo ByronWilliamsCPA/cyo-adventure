@@ -263,6 +263,11 @@ async def test_embed_series_block_writes_metadata(
         await embed_series_block(session, story_id=story_id, version=1)
         await session.commit()
 
+    # Re-read in a FRESH session (mirrors test_sequential_assignment_is_contiguous):
+    # the writing session's identity map would satisfy session.get() without a
+    # query, hiding a silently-skipped JSONB UPDATE (the exact regression the
+    # RAD marker in embed_series_block guards against).
+    async with sessions() as session:
         row = await session.get(StorybookVersion, (story_id, 1))
         assert row is not None
         meta = row.blob["metadata"]
@@ -296,7 +301,10 @@ async def test_embed_series_block_noop_for_non_series(
         )
 
         await embed_series_block(session, story_id=story_id, version=1)
+        await session.commit()
 
+    # Fresh session for the same identity-map reason as the test above.
+    async with sessions() as session:
         row = await session.get(StorybookVersion, (story_id, 1))
         assert row is not None
         assert "series" not in row.blob.get("metadata", {})

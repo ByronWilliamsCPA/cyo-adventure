@@ -132,6 +132,10 @@ def ensure_blob_within_budget(blob: dict[str, object]) -> None:
     Public wrapper so callers outside this module (WS-G series embed) do not
     reach into the private ``_check_byte_budget``.
 
+    Args:
+        blob: The updated storybook blob dict about to be written back to
+            ``StorybookVersion.blob``.
+
     Raises:
         ValidationError: If the blob serializes past the budget.
     """

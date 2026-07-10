@@ -141,9 +141,15 @@ async def embed_series_block(
     relaxation); ``carries_state`` copies the series row. No-op for a book
     with no series linkage. Same transaction as linkage; the caller commits.
 
+    Note: ``series_entry_node`` is populated for EVERY series book, including
+    book 1 (ratified WS-G G2). This intentionally differs from the embedded
+    ``Series`` model docstring's "None for the first book" phrasing, which
+    describes the pre-WS-G validator-input convention.
+
     Raises:
-        ValueError: If the series row or version row is missing (FK-guaranteed
-            in the worker flow; defensive for direct callers).
+        ValueError: If the series row or version row is missing, or the blob
+            has no string ``start_node`` (FK/schema-guaranteed in the worker
+            flow; defensive for direct callers).
     """
     storybook = await session.get(Storybook, story_id)
     if storybook is None or storybook.series_id is None or storybook.book_index is None:
@@ -157,10 +163,17 @@ async def embed_series_block(
         msg = f"version {version} of storybook '{story_id}' not found"
         raise ValueError(msg)
     blob = dict(version_row.blob)
+    entry = blob.get("start_node")
+    if not isinstance(entry, str):
+        msg = f"storybook '{story_id}' v{version} blob has no string start_node"
+        # ValueError, not TRY004's TypeError: a missing or malformed blob key
+        # is bad DATA, matching this function's other guards and its
+        # documented Raises contract (one defensive exception type).
+        raise ValueError(msg)  # noqa: TRY004
     block = SeriesBlock(
         series_id=str(storybook.series_id),
         book_index=storybook.book_index,
-        series_entry_node=str(blob["start_node"]),
+        series_entry_node=entry,
         is_final=False,
         carries_state=series_row.carries_state,
     )
