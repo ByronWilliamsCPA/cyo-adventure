@@ -10,6 +10,7 @@ a background task (after the commit, off the event loop).
 
 from __future__ import annotations
 
+import logging
 import uuid
 
 import pytest
@@ -403,6 +404,7 @@ async def test_validate_storybook_version_missing() -> None:
 @pytest.mark.unit
 def test_enqueue_safely_swallows_redis_failure(
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """_enqueue_safely logs and swallows a failing enqueue (best-effort)."""
 
@@ -411,8 +413,19 @@ def test_enqueue_safely_swallows_redis_failure(
         raise ConnectionError(msg)
 
     monkeypatch.setattr("cyo_adventure.api.generation.enqueue_generation", _boom)
-    # Must not raise.
-    _enqueue_safely(str(uuid.uuid4()))
+    job_id = str(uuid.uuid4())
+
+    with caplog.at_level(logging.ERROR, logger="cyo_adventure.api.generation"):
+        result = _enqueue_safely(job_id)
+
+    # _enqueue_safely's documented contract is None (best-effort, never raises);
+    # the failure must still be observable via the logged exception.
+    assert result is None
+    assert any(
+        job_id in record.getMessage()
+        and "enqueue_generation failed" in record.getMessage()
+        for record in caplog.records
+    )
 
 
 @pytest.mark.unit

@@ -48,7 +48,12 @@ def _insert_event(conn: sa.Connection) -> str:
 
 def test_insert_is_allowed(upgraded_engine: sa.engine.Engine) -> None:
     with upgraded_engine.begin() as conn:
-        _insert_event(conn)
+        event_id = _insert_event(conn)
+        stored_type = conn.execute(
+            sa.text("SELECT event_type FROM pipeline_event WHERE id = :id"),
+            {"id": event_id},
+        ).scalar_one()
+    assert stored_type == "generation_started"
 
 
 def test_update_is_rejected(upgraded_engine: sa.engine.Engine) -> None:

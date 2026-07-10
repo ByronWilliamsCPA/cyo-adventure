@@ -35,7 +35,7 @@ async def test_explicit_value_when_row_exists(engine: AsyncEngine) -> None:
         await session.commit()
     async with AsyncSession(engine) as session:
         value = await load_admin_noise_floor(session)
-    assert value == 0.2
+    assert value == pytest.approx(0.2)
 
 
 async def test_out_of_range_value_rejected_by_check(engine: AsyncEngine) -> None:

@@ -21,7 +21,6 @@ from typing import TYPE_CHECKING, Literal
 import anthropic as anthropic_sdk
 import httpx
 import pytest
-from anthropic.resources.messages.messages import AsyncMessages
 
 from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import (
@@ -285,7 +284,9 @@ class TestOpenRouterProvider:
             return httpx.Response(404, json={"error": "no such model"})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"openrouter returned leg-fatal HTTP 404"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert calls == 1
@@ -298,7 +299,9 @@ class TestOpenRouterProvider:
             return httpx.Response(401, json={"error": "bad key"})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"openrouter returned leg-fatal HTTP 401"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
 
@@ -315,7 +318,9 @@ class TestOpenRouterProvider:
             return httpx.Response(status, json={"error": "fatal"})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=rf"openrouter returned leg-fatal HTTP {status}"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert exc_info.value.status_code == status
@@ -349,7 +354,10 @@ class TestOpenRouterProvider:
             return httpx.Response(500, json={"error": "boom"})
 
         provider = _openrouter(handler, max_retries=3)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 3 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
         assert calls == 3
@@ -379,7 +387,10 @@ class TestOpenRouterProvider:
             return httpx.Response(200, json=_openrouter_ok_body(""))
 
         provider = _openrouter(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -391,7 +402,10 @@ class TestOpenRouterProvider:
             return httpx.Response(200, json={"unexpected": True})
 
         provider = _openrouter(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -500,7 +514,9 @@ class TestOllamaProvider:
             return httpx.Response(404, json={"error": "model not found"})
 
         provider = _ollama(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama returned leg-fatal HTTP 404"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert calls == 1
@@ -531,7 +547,9 @@ class TestOllamaProvider:
             return httpx.Response(200, text=_ollama_stream(done=True))
 
         provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -543,7 +561,9 @@ class TestOllamaProvider:
             return httpx.Response(200, text='{"error": "model is loading"}\n')
 
         provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -555,7 +575,9 @@ class TestOllamaProvider:
             return httpx.Response(200, text="not json at all\n")
 
         provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -575,7 +597,9 @@ class TestOllamaProvider:
             return httpx.Response(200, text=body)
 
         provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -657,7 +681,9 @@ class TestOllamaProvider:
             )
 
         provider = _ollama(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama returned leg-fatal HTTP 302"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert "302" in str(exc_info.value)
@@ -686,7 +712,9 @@ class TestOllamaProvider:
             return httpx.Response(200, text=_ollama_stream(content))
 
         provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=1)
         assert exc_info.value.leg_fatal is False
 
@@ -722,7 +750,9 @@ class TestOllamaProvider:
 
         # Default multiplier (16): 24 bytes exceeds the 16-byte ceiling, reject.
         default_provider = _ollama(handler, max_retries=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 1 attempts"
+        ) as exc_info:
             await default_provider.complete(system="s", prompt="u", max_tokens=1)
         assert exc_info.value.leg_fatal is False
 
@@ -808,7 +838,9 @@ class TestFallbackProvider:
         leg_a = _StubLeg("a", [ProviderError("a down", leg_fatal=False)])
         leg_b = _StubLeg("b", [ProviderError("b down", leg_fatal=False)])
         cascade = FallbackProvider(legs=[leg_a, leg_b])
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"all fallback legs exhausted"
+        ) as exc_info:
             await cascade.complete(system="s", prompt="u", max_tokens=10)
         assert "exhausted" in str(exc_info.value)
 
@@ -818,7 +850,7 @@ class TestFallbackProvider:
         leg_a = _StubLeg("a", [ValidationError("PII", field="prompt")])
         leg_b = _StubLeg("b", ["should-not-run"])
         cascade = FallbackProvider(legs=[leg_a, leg_b])
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match=r"PII"):
             await cascade.complete(system="s", prompt="u", max_tokens=10)
         # The cascade did not fail over past the raising leg.
         assert leg_b.calls == 0
@@ -829,7 +861,9 @@ class TestFallbackProvider:
         leg_a = _StubLeg("a", [ProviderError("x", leg_fatal=False)] * 5)
         leg_b = _StubLeg("b", [ProviderError("y", leg_fatal=False)] * 5)
         cascade = FallbackProvider(legs=[leg_a, leg_b], max_total_attempts=1)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"fallback exceeded the per-run attempt cap of 1"
+        ) as exc_info:
             await cascade.complete(system="s", prompt="u", max_tokens=10)
         # Cap is 1: the first leg consumes the only allowed attempt, then the cap
         # trips before the second leg runs.
@@ -890,7 +924,9 @@ class TestOllamaProviderBranches:
             return httpx.Response(400, json={"error": "bad request"})
 
         provider = _ollama(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama returned leg-fatal HTTP 400"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert "bad request" in str(exc_info.value)
@@ -903,7 +939,9 @@ class TestOllamaProviderBranches:
             return httpx.Response(401, json={"error": "auth required"})
 
         provider = _ollama(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama returned leg-fatal HTTP 401"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert "401" in str(exc_info.value)
@@ -916,7 +954,9 @@ class TestOllamaProviderBranches:
             raise httpx.ReadTimeout("timeout", request=_request)
 
         provider = _ollama(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"ollama transient failure persisted after 3 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1011,7 +1051,10 @@ class TestOpenRouterProviderBranches:
             return httpx.Response(200, text="not-json-at-all")
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 3 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1023,7 +1066,9 @@ class TestOpenRouterProviderBranches:
             return httpx.Response(405, json={"error": "method not allowed"})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"openrouter returned leg-fatal HTTP 405"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert "405" in str(exc_info.value)
@@ -1037,7 +1082,10 @@ class TestOpenRouterProviderBranches:
             return httpx.Response(200, json=[1, 2, 3])
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 3 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1049,7 +1097,10 @@ class TestOpenRouterProviderBranches:
             return httpx.Response(200, json={"choices": ["not-a-dict"]})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 3 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1061,7 +1112,10 @@ class TestOpenRouterProviderBranches:
             return httpx.Response(200, json={"choices": [{"message": "not-a-dict"}]})
 
         provider = _openrouter(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"openrouter transient failure persisted after 3 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1199,7 +1253,9 @@ class TestModalProvider:
             return httpx.Response(404, json={"error": "no such model"})
 
         provider = _modal(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"modal returned leg-fatal HTTP 404"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
         assert calls == 1
@@ -1212,7 +1268,9 @@ class TestModalProvider:
             return httpx.Response(401, json={"error": "bad key"})
 
         provider = _modal(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"modal returned leg-fatal HTTP 401"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is True
 
@@ -1244,7 +1302,9 @@ class TestModalProvider:
             return httpx.Response(500, json={"error": "boom"})
 
         provider = _modal(handler, max_retries=3)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"modal transient failure persisted after 3 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
         assert calls == 3
@@ -1305,7 +1365,9 @@ class TestModalProviderBranches:
             return httpx.Response(200, text="not-json-at-all")
 
         provider = _modal(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"modal transient failure persisted after 3 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1318,7 +1380,9 @@ class TestModalProviderBranches:
             return httpx.Response(200, json=[1, 2, 3])
 
         provider = _modal(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"modal transient failure persisted after 3 attempts"
+        ) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
 
@@ -1437,7 +1501,10 @@ class TestAnthropicProvider:
             backoff_base_seconds=0,
             client=_anthropic_client(handler),
         )
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"anthropic transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
@@ -1453,7 +1520,9 @@ class TestAnthropicProvider:
             )
 
         provider = self._provider(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"anthropic returned leg-fatal HTTP 401"
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is True
         assert calls["n"] == 1
@@ -1468,7 +1537,9 @@ class TestAnthropicProvider:
             )
 
         provider = self._provider(handler)
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError, match=r"anthropic returned leg-fatal HTTP 404"
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is True
 
@@ -1488,7 +1559,10 @@ class TestAnthropicProvider:
             backoff_base_seconds=0,
             client=_anthropic_client(handler),
         )
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"anthropic transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
@@ -1510,7 +1584,10 @@ class TestAnthropicProvider:
             backoff_base_seconds=0,
             client=_anthropic_client(handler),
         )
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"anthropic transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
@@ -1565,14 +1642,15 @@ class TestAnthropicProvider:
             backoff_base_seconds=0,
             client=_anthropic_client(handler),
         )
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"anthropic transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
     @pytest.mark.asyncio
-    async def test_response_validation_error_is_transient(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_response_validation_error_is_transient(self) -> None:
         """APIResponseValidationError maps to a retryable ProviderError.
 
         It is a direct APIError subclass (NOT an APIStatusError), raised when a
@@ -1581,15 +1659,27 @@ class TestAnthropicProvider:
         applies. Without a dedicated except clause it would escape
         run_with_retries (ProviderError-only) as a raw SDK exception. This pins
         it to a transient ProviderError: leg_fatal is False.
+
+        The SDK client is built with strict response validation so a 2xx
+        text/html body from the MockTransport raises the real
+        APIResponseValidationError inside the SDK, exercising the same request
+        path as every other test in this file (no method monkeypatching).
         """
-        request = httpx.Request("POST", "https://api.anthropic.com/v1/messages")
-        response = httpx.Response(200, request=request, json=_anthropic_ok_body("x"))
-        exc = anthropic_sdk.APIResponseValidationError(response=response, body=None)
 
-        async def _raise(*_args: object, **_kwargs: object) -> object:
-            raise exc
+        def handler(_request: httpx.Request) -> httpx.Response:
+            # A misbehaving proxy answering 200 with an HTML error page.
+            return httpx.Response(
+                200,
+                headers={"content-type": "text/html"},
+                text="<html>proxy interposed</html>",
+            )
 
-        monkeypatch.setattr(AsyncMessages, "create", _raise)
+        strict_client = anthropic_sdk.AsyncAnthropic(
+            api_key="test-key",
+            max_retries=0,
+            http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+            _strict_response_validation=True,
+        )
         provider = AnthropicProvider(
             api_key="test-key",
             model="claude-sonnet-4-6",
@@ -1597,11 +1687,12 @@ class TestAnthropicProvider:
             timeout_seconds=5,
             max_retries=1,
             backoff_base_seconds=0,
-            client=_anthropic_client(
-                lambda _r: httpx.Response(200, json=_anthropic_ok_body("x"))
-            ),
+            client=strict_client,
         )
-        with pytest.raises(ProviderError) as exc_info:
+        with pytest.raises(
+            ProviderError,
+            match=r"anthropic transient failure persisted after 1 attempts",
+        ) as exc_info:
             await provider.complete(system="s", prompt="p", max_tokens=10)
         assert exc_info.value.leg_fatal is False
 
@@ -1621,14 +1712,18 @@ class TestBuildAnthropicLeg:
     def test_missing_key_raises_configuration_error_by_name(self) -> None:
         """A missing ANTHROPIC_API_KEY raises ConfigurationError naming the key."""
         settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
-        with pytest.raises(ConfigurationError) as exc_info:
+        with pytest.raises(
+            ConfigurationError, match=r"ANTHROPIC_API_KEY is not set"
+        ) as exc_info:
             build_anthropic_leg(settings, settings.anthropic_model)
         assert "ANTHROPIC_API_KEY" in str(exc_info.value)
 
     def test_missing_key_error_never_contains_a_key_value(self) -> None:
         """The fail-fast error names the key only, never a credential value."""
         settings = Settings(generation_provider="anthropic", anthropic_api_key=None)  # type: ignore[call-arg]
-        with pytest.raises(ConfigurationError) as exc_info:
+        with pytest.raises(
+            ConfigurationError, match=r"ANTHROPIC_API_KEY is not set"
+        ) as exc_info:
             build_anthropic_leg(settings, settings.anthropic_model)
         assert "Bearer" not in str(exc_info.value)
 
@@ -1642,15 +1737,18 @@ class TestBuildAnthropicLeg:
         assert provider.model == "claude-sonnet-4-6"
 
     @pytest.mark.asyncio
-    async def test_anthropic_key_value_not_leaked_in_error(
-        self, monkeypatch: pytest.MonkeyPatch
-    ) -> None:
+    async def test_anthropic_key_value_not_leaked_in_error(self) -> None:
         """Even with the API key set to a real (sentinel) value, a ProviderError
         raised on a failing request never echoes the key's value in its message
         or repr. Carried forward from Task 6's config #VERIFY marker: presence
         is checked by name in the fail-fast tests above, this test guards the
         VALUE never leaking once a key is actually configured and used to build
         a live client.
+
+        Uses the same MockTransport handler pattern as the rest of this file:
+        the sentinel key is wired through a real AsyncAnthropic client, the
+        captured X-Api-Key header proves the key was genuinely in play on the
+        failing request, and the resulting 401 ProviderError must not echo it.
         """
         sentinel_key = "sk-ant-sentinel-do-not-leak-9f3c2b7a"
         settings = Settings(  # type: ignore[call-arg]
@@ -1659,21 +1757,34 @@ class TestBuildAnthropicLeg:
         provider = build_anthropic_leg(settings, settings.anthropic_model)
         assert isinstance(provider, AnthropicProvider)
 
-        async def _raise_401(*_args: object, **_kwargs: object) -> None:
-            response = httpx.Response(
-                401,
-                request=httpx.Request("POST", "https://api.anthropic.com/v1/messages"),
+        captured: dict[str, str] = {}
+
+        def handler(request: httpx.Request) -> httpx.Response:
+            captured["x-api-key"] = request.headers.get("x-api-key", "")
+            return httpx.Response(
+                401, json=_anthropic_error_body("authentication_error", "bad key")
             )
-            raise anthropic_sdk.APIStatusError("bad key", response=response, body=None)
 
-        # Patch the SDK's own AsyncMessages.create (a public SDK class), not a
-        # private attribute of AnthropicProvider, so this stays basedpyright
-        # reportPrivateUsage-clean while still exercising the real client the
-        # sentinel key was used to construct.
-        monkeypatch.setattr(AsyncMessages, "create", _raise_401)
+        mocked_provider = AnthropicProvider(
+            api_key=sentinel_key,
+            model=settings.anthropic_model,
+            base_url="https://api.anthropic.com",
+            timeout_seconds=5,
+            backoff_base_seconds=0,
+            client=anthropic_sdk.AsyncAnthropic(
+                api_key=sentinel_key,
+                max_retries=0,
+                http_client=httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+            ),
+        )
 
-        with pytest.raises(ProviderError) as exc_info:
-            await provider.complete(system="s", prompt="p", max_tokens=10)
+        with pytest.raises(
+            ProviderError, match=r"anthropic returned leg-fatal HTTP 401"
+        ) as exc_info:
+            await mocked_provider.complete(system="s", prompt="p", max_tokens=10)
 
+        # The sentinel really was sent on the failing request...
+        assert captured["x-api-key"] == sentinel_key
+        # ...and never surfaces in the raised error.
         assert sentinel_key not in str(exc_info.value)
         assert sentinel_key not in repr(exc_info.value)

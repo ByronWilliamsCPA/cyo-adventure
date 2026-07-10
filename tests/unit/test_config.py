@@ -189,13 +189,14 @@ class TestValidatorRejectDevUrlOutsideLocal:
         """Settings does not raise when a non-default database_url is provided."""
         from cyo_adventure.core.config import Settings
 
-        # Must not raise
-        Settings(
+        settings = Settings(
             environment=environment,
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
         )
+        assert settings.database_url == _PROD_DB_URL
+        assert settings.environment == environment
 
 
 class TestValidatorRequirePreparedCacheForPoolerDsn:
@@ -556,12 +557,16 @@ class TestValidatorRequireOidcConfigOutsideLocal:
         """Settings does not raise when both oidc_issuer and oidc_jwks_url are set."""
         from cyo_adventure.core.config import Settings
 
-        # Must not raise
-        Settings(
+        settings = Settings(
             environment=environment,
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+        )
+        assert settings.oidc_issuer == "https://project.supabase.co/auth/v1"
+        assert (
+            settings.oidc_jwks_url
+            == "https://project.supabase.co/auth/v1/.well-known/jwks.json"
         )
 
     @pytest.mark.unit

@@ -24,7 +24,7 @@ _FLOOR = 0.05
 
 def test_admin_noise_floor_default_is_point_zero_five() -> None:
     """Lock the code default so it cannot drift silently from the seed row."""
-    assert ADMIN_NOISE_FLOOR_DEFAULT == 0.05
+    assert pytest.approx(0.05) == ADMIN_NOISE_FLOOR_DEFAULT
 
 
 def test_admin_noise_floor_key_matches_migration_seed() -> None:

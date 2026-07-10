@@ -87,7 +87,13 @@ def _seed_storybook(
 
 def test_series_table_accepts_valid_row(upgraded_engine: sa.engine.Engine) -> None:
     with upgraded_engine.begin() as conn:
-        _seed_series(conn, _family_id(conn))
+        series_id = _seed_series(conn, _family_id(conn))
+        stored = conn.execute(
+            sa.text("SELECT title, age_band FROM series WHERE id = :id"),
+            {"id": series_id},
+        ).one()
+    assert stored.title == "Fox Tales"
+    assert stored.age_band == "8-11"
 
 
 def test_series_rejects_bad_band(upgraded_engine: sa.engine.Engine) -> None:
@@ -118,8 +124,18 @@ def test_storybook_null_pair_rows_unlimited(
     """(NULL, NULL) never collides: non-series books are unaffected."""
     with upgraded_engine.begin() as conn:
         family_id = _family_id(conn)
-        _seed_storybook(conn, family_id)
-        _seed_storybook(conn, family_id)
+        first_id = _seed_storybook(conn, family_id)
+        second_id = _seed_storybook(conn, family_id)
+        count = conn.execute(
+            sa.text(
+                "SELECT count(*) FROM storybook WHERE id IN (:a, :b) "
+                "AND series_id IS NULL AND book_index IS NULL"
+            ),
+            {"a": first_id, "b": second_id},
+        ).scalar_one()
+    # Both NULL-pair rows must coexist; the partial unique index only
+    # applies when series_id IS NOT NULL.
+    assert count == 2
 
 
 def test_storybook_rejects_zero_index(upgraded_engine: sa.engine.Engine) -> None:

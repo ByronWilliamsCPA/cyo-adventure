@@ -100,7 +100,7 @@ def test_brief_from_request_without_profile_uses_band_reading_target() -> None:
         age_band="8-11",
     )
     brief = brief_from_request(request, None)
-    assert brief.reading_level_target == 4.0  # _BAND_FK_TARGET[8-11]
+    assert brief.reading_level_target == pytest.approx(4.0)  # _BAND_FK_TARGET[8-11]
 
 
 def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
@@ -113,7 +113,7 @@ def test_brief_from_request_uses_reading_cap_when_below_sentinel() -> None:
         age_band="5-8",
     )
     brief = brief_from_request(request, _profile("5-8", cap=2.5))
-    assert brief.reading_level_target == 2.5
+    assert brief.reading_level_target == pytest.approx(2.5)
 
 
 def test_brief_from_request_null_length_stays_null() -> None:

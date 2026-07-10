@@ -172,7 +172,7 @@ class TestCatchRate:
 
     def test_all_caught_is_full_rate(self) -> None:
         """A class with only caught items scores 1.0."""
-        assert _catch_rate({"caught": 3}) == 1.0
+        assert _catch_rate({"caught": 3}) == pytest.approx(1.0)
 
     def test_mixed_caught_and_missed(self) -> None:
         """A class with two caught and one missed scores 2/3."""

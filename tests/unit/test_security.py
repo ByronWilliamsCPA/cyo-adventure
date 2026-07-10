@@ -753,21 +753,29 @@ class TestAddSecurityMiddleware:
 
     @pytest.mark.unit
     def test_add_security_middleware_with_allowed_hosts(self) -> None:
-        """add_security_middleware accepts allowed_hosts without error."""
+        """add_security_middleware registers TrustedHostMiddleware when allowed_hosts is set."""
+        from starlette.middleware.trustedhost import TrustedHostMiddleware
+
         from cyo_adventure.middleware.security import add_security_middleware
 
         app = _minimal_app()
-        # Should not raise
         add_security_middleware(app, allowed_hosts=["testserver", "localhost"])
+
+        middleware_classes = [m.cls for m in app.user_middleware]
+        assert TrustedHostMiddleware in middleware_classes
 
     @pytest.mark.unit
     def test_add_security_middleware_with_https_redirect(self) -> None:
         """add_security_middleware registers HTTPSRedirectMiddleware when requested."""
+        from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+
         from cyo_adventure.middleware.security import add_security_middleware
 
         app = _minimal_app()
-        # Should not raise during setup
         add_security_middleware(app, enable_https_redirect=True)
+
+        middleware_classes = [m.cls for m in app.user_middleware]
+        assert HTTPSRedirectMiddleware in middleware_classes
 
     @pytest.mark.unit
     def test_add_security_middleware_disable_rate_limiting(self) -> None:

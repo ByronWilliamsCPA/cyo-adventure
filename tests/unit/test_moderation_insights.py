@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import UTC, datetime, timedelta
 from typing import cast
 
+import pytest
+
 from cyo_adventure.events import EventType
 from cyo_adventure.moderation.insights import (
     SUGGESTION_MIN_DECIDED,
@@ -107,7 +109,7 @@ class TestAggregateInsights:
         assert row.flag_findings == 1
         assert row.decided_versions == 2
         assert row.released_versions == 1
-        assert row.override_rate == 0.5
+        assert row.override_rate == pytest.approx(0.5)
         assert row.last_seen == _LATER
 
     def test_dedupes_category_within_a_version(self) -> None:
@@ -220,7 +222,7 @@ class TestSuggestThresholds:
         suggestion = suggestions[0]
         assert suggestion.current_min_verdict == "flag"
         assert suggestion.suggested_min_verdict == "block"
-        assert suggestion.override_rate == 1.0
+        assert suggestion.override_rate == pytest.approx(1.0)
         assert suggestion.current_min_score is None
 
     def test_override_row_at_advisory_suggests_flag(self) -> None:
@@ -235,7 +237,7 @@ class TestSuggestThresholds:
         suggestion = suggest_thresholds(insights, policy)[0]
         assert suggestion.current_min_verdict == "advisory"
         assert suggestion.suggested_min_verdict == "flag"
-        assert suggestion.current_min_score == 0.25
+        assert suggestion.current_min_score == pytest.approx(0.25)
 
     def test_below_volume_gate_no_suggestion(self) -> None:
         policy = ThresholdPolicy(rows={})
@@ -263,7 +265,7 @@ class TestSuggestThresholds:
         insights = [_insight(decided=SUGGESTION_MIN_DECIDED, released=4)]
         suggestions = suggest_thresholds(insights, policy)
         assert len(suggestions) == 1
-        assert suggestions[0].override_rate == 0.8
+        assert suggestions[0].override_rate == pytest.approx(0.8)
 
     def test_suggestions_preserve_insight_order(self) -> None:
         policy = ThresholdPolicy(rows={})

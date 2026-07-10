@@ -250,7 +250,7 @@ class TestLibraryItem:
         assert item.version == 3
         assert item.age_band == "6-8"
         assert item.tier == 1
-        assert item.reading_level_target == 2.5
+        assert item.reading_level_target == pytest.approx(2.5)
 
     @pytest.mark.unit
     def test_missing_title_falls_back_to_storybook_id(self) -> None:
@@ -273,7 +273,7 @@ class TestLibraryItem:
         item = _library_item("plain", blob, 1)
         assert item.age_band == ""
         assert item.tier == 0
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
 
     @pytest.mark.unit
     def test_non_dict_metadata_uses_defaults(self) -> None:
@@ -291,7 +291,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": {"target": 3}},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 3.0
+        assert item.reading_level_target == pytest.approx(3.0)
 
     @pytest.mark.unit
     def test_reading_level_non_numeric_target_defaults_to_zero(self) -> None:
@@ -301,7 +301,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": {"target": "high"}},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
 
     @pytest.mark.unit
     def test_reading_level_not_a_dict_defaults_to_zero(self) -> None:
@@ -311,7 +311,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": "advanced"},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
 
     @pytest.mark.unit
     def test_non_int_tier_defaults_to_zero(self) -> None:
@@ -342,7 +342,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": {"target": True}},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
 
     @pytest.mark.unit
     def test_nan_reading_level_target_defaults_to_zero(self) -> None:
@@ -352,7 +352,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": {"target": float("nan")}},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
         assert math.isfinite(item.reading_level_target)
 
     @pytest.mark.unit
@@ -363,7 +363,7 @@ class TestLibraryItem:
             "metadata": {"reading_level": {"target": float("inf")}},
         }
         item = _library_item("s", blob, 1)
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
 
     @pytest.mark.unit
     def test_malformed_metadata_emits_structured_warning(
@@ -379,7 +379,7 @@ class TestLibraryItem:
 
         assert item.title == "noisy-story"
         assert item.tier == 0
-        assert item.reading_level_target == 0.0
+        assert item.reading_level_target == pytest.approx(0.0)
         assert "library_item_malformed_metadata" in caplog.text
         assert "title" in caplog.text
         assert "tier" in caplog.text

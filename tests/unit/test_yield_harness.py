@@ -158,7 +158,7 @@ async def test_all_pass_returns_full_pass_rate() -> None:
     assert isinstance(report, YieldReport)
     assert report.total == 3
     assert report.passed == 3
-    assert report.pass_rate == 1.0
+    assert report.pass_rate == pytest.approx(1.0)
     assert report.meets_threshold is True
     assert len(report.per_story) == 3
 
@@ -245,7 +245,7 @@ async def test_zero_briefs_no_division_by_zero() -> None:
 
     assert report.total == 0
     assert report.passed == 0
-    assert report.pass_rate == 0.0
+    assert report.pass_rate == pytest.approx(0.0)
     assert report.meets_threshold is False
     assert report.per_story == []
 
@@ -313,7 +313,7 @@ async def test_cli_smoke_run_yield_with_canned_story_factory() -> None:
 
     assert report.total == 2
     assert report.passed == 2
-    assert report.pass_rate == 1.0
+    assert report.pass_rate == pytest.approx(1.0)
     assert report.meets_threshold is True
 
     for entry in report.per_story:

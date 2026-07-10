@@ -491,7 +491,7 @@ class TestDashboardEndpoint:
         assert row["flag_findings"] == 1
         assert row["decided_versions"] == 2
         assert row["released_versions"] == 1
-        assert row["override_rate"] == 0.5
+        assert row["override_rate"] == pytest.approx(0.5)
         assert body["recent_changes"] == []
 
     async def test_dashboard_shows_recent_threshold_changes(
@@ -667,14 +667,14 @@ class TestSuggestionsEndpoint:
         assert res.status_code == 200
         body = res.json()
         assert body["min_decided_versions"] == 5
-        assert body["min_override_rate"] == 0.8
+        assert body["min_override_rate"] == pytest.approx(0.8)
         assert len(body["suggestions"]) == 1
         suggestion = body["suggestions"][0]
         assert suggestion["age_band"] == "8-11"
         assert suggestion["category"] == "violence"
         assert suggestion["current_min_verdict"] == "flag"
         assert suggestion["suggested_min_verdict"] == "block"
-        assert suggestion["override_rate"] == 1.0
+        assert suggestion["override_rate"] == pytest.approx(1.0)
         assert suggestion["decided_versions"] == 6
 
     async def test_no_suggestion_below_volume(

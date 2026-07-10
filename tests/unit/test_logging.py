@@ -108,7 +108,7 @@ class TestLogPerformance:
         call_kwargs = logger.info.call_args
         assert call_kwargs[0][0] == "performance"
         assert call_kwargs[1]["operation"] == "test_op"
-        assert call_kwargs[1]["duration_ms"] == 42.5
+        assert call_kwargs[1]["duration_ms"] == pytest.approx(42.5)
         assert call_kwargs[1]["success"] is True
 
     @pytest.mark.unit
@@ -152,4 +152,4 @@ class TestLogPerformance:
         log_performance(logger, operation="x", duration_ms=1.23456789, success=True)
 
         call_kwargs = logger.info.call_args
-        assert call_kwargs[1]["duration_ms"] == 1.23
+        assert call_kwargs[1]["duration_ms"] == pytest.approx(1.23)

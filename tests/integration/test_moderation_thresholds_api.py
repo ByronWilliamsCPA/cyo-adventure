@@ -82,12 +82,12 @@ async def test_upsert_creates_then_updates_with_audit(
     listed = await client.get(_URL, headers=auth(seed.admin_token))
     rows = listed.json()["rows"]
     assert len(rows) == 1
-    assert rows[0]["min_score"] == 0.5
+    assert rows[0]["min_score"] == pytest.approx(0.5)
     async with AsyncSession(engine) as session:
         audits = (await session.scalars(select(ModerationThresholdAudit))).all()
     assert [a.action for a in audits] == ["upsert", "upsert"]
-    assert audits[1].old_min_score == 0.3
-    assert audits[1].new_min_score == 0.5
+    assert audits[1].old_min_score == pytest.approx(0.3)
+    assert audits[1].new_min_score == pytest.approx(0.5)
 
 
 async def test_delete_removes_row_with_audit(
@@ -133,7 +133,7 @@ async def test_audit_rows_capture_changed_by_and_old_new_values(
     assert upsert_audit.old_min_verdict is None
     assert upsert_audit.old_min_score is None
     assert upsert_audit.new_min_verdict == "flag"
-    assert upsert_audit.new_min_score == 0.4
+    assert upsert_audit.new_min_score == pytest.approx(0.4)
     assert upsert_audit.changed_by == seed.admin_user_id
 
     res = await client.delete(
@@ -147,7 +147,7 @@ async def test_audit_rows_capture_changed_by_and_old_new_values(
     assert len(audits) == 2
     delete_audit = next(a for a in audits if a.action == "delete")
     assert delete_audit.old_min_verdict == "flag"
-    assert delete_audit.old_min_score == 0.4
+    assert delete_audit.old_min_score == pytest.approx(0.4)
     assert delete_audit.new_min_verdict is None
     assert delete_audit.new_min_score is None
     assert delete_audit.changed_by == seed.admin_user_id

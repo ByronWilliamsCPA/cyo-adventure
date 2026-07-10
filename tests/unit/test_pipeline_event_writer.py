@@ -28,14 +28,18 @@ def test_validate_payload_rejects_unknown_key_for_every_event_type(
 
 
 def test_validate_payload_accepts_allowlisted_keys() -> None:
-    _validate_payload(EventType.RATED, {"value": 5, "is_update": True})
+    # _validate_payload's documented contract is None: it raises on any
+    # violation, so a clean return is the pass signal for an allowlisted payload.
+    result = _validate_payload(EventType.RATED, {"value": 5, "is_update": True})
+    assert result is None
 
 
 def test_validate_payload_accepts_moderation_counts_dict() -> None:
-    _validate_payload(
+    result = _validate_payload(
         EventType.MODERATION_COMPLETED,
         {"overall_verdict": "block", "repaired": False, "counts": {"block": 1}},
     )
+    assert result is None
 
 
 def test_validate_payload_rejects_free_text_value() -> None:

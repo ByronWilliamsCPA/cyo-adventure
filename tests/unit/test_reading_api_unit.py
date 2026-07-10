@@ -328,7 +328,9 @@ class TestParseUuid:
 
     @pytest.mark.unit
     def test_invalid_string_raises_validation_error(self) -> None:
-        with pytest.raises(ValidationError) as exc_info:
+        with pytest.raises(
+            ValidationError, match=r"profile_id must be a UUID"
+        ) as exc_info:
             _parse_uuid("bad", "profile_id")
         assert "profile_id" in str(exc_info.value)
 
@@ -485,7 +487,9 @@ class TestGetReadingState:
         )
         ctx = _ctx(_child_principal(family_id, profile_id), session)
 
-        with pytest.raises(ResourceNotFoundError):
+        with pytest.raises(
+            ResourceNotFoundError, match=r"no reading state for profile"
+        ):
             await get_reading_state(str(profile_id), "story-1", ctx)
 
     @pytest.mark.unit
@@ -496,7 +500,7 @@ class TestGetReadingState:
         session = _FakeSession()
         ctx = _ctx(_guardian_principal(family_id), session)
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match=r"profile_id must be a UUID"):
             await get_reading_state("bad-uuid", "story-1", ctx)
 
     @pytest.mark.unit
@@ -509,7 +513,9 @@ class TestGetReadingState:
         session = _FakeSession()
         ctx = _ctx(_child_principal(family_id, my_profile), session)
 
-        with pytest.raises(AuthorizationError):
+        with pytest.raises(
+            AuthorizationError, match=r"profile is not accessible to this principal"
+        ):
             await get_reading_state(str(other_profile), "story-1", ctx)
 
     @pytest.mark.unit
@@ -521,7 +527,9 @@ class TestGetReadingState:
         session = _FakeSession(get_map={})
         ctx = _ctx(_child_principal(family_id, profile_id), session)
 
-        with pytest.raises(ResourceNotFoundError):
+        with pytest.raises(
+            ResourceNotFoundError, match=r"storybook 'no-book' not found"
+        ):
             await get_reading_state(str(profile_id), "no-book", ctx)
 
     @pytest.mark.unit
@@ -535,7 +543,9 @@ class TestGetReadingState:
         session = _FakeSession(get_map={(Storybook, "story-1"): book})
         ctx = _ctx(_child_principal(my_family, profile_id), session)
 
-        with pytest.raises(AuthorizationError):
+        with pytest.raises(
+            AuthorizationError, match=r"resource belongs to another family"
+        ):
             await get_reading_state(str(profile_id), "story-1", ctx)
 
 
@@ -648,7 +658,10 @@ class TestPutReadingState:
         ctx = _ctx(_child_principal(family_id, profile_id), session)
         body = _body(state_revision=5)  # Should be 0 for first save
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(
+            ValidationError,
+            match=r"first reading-state save must start at state_revision 0",
+        ):
             await put_reading_state(str(profile_id), "story-1", body, ctx)
 
     @pytest.mark.unit
@@ -808,7 +821,7 @@ class TestPutReadingState:
         session = _FakeSession()
         ctx = _ctx(_guardian_principal(family_id), session)
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match=r"profile_id must be a UUID"):
             await put_reading_state("not-uuid", "story-1", _body(), ctx)
 
     @pytest.mark.unit
@@ -821,7 +834,9 @@ class TestPutReadingState:
         session = _FakeSession()
         ctx = _ctx(_child_principal(family_id, my_profile), session)
 
-        with pytest.raises(AuthorizationError):
+        with pytest.raises(
+            AuthorizationError, match=r"profile is not accessible to this principal"
+        ):
             await put_reading_state(str(other_profile), "story-1", _body(), ctx)
 
     @pytest.mark.unit
@@ -876,7 +891,9 @@ class TestPutReadingState:
             visit_set=["n_start"],
             state_revision=0,
         )
-        with pytest.raises(ValidationError):
+        with pytest.raises(
+            ValidationError, match=r"current_node is not a node in this story version"
+        ):
             await put_reading_state(str(profile_id), "s_syn", body, ctx)
 
     @pytest.mark.unit
@@ -899,7 +916,9 @@ class TestPutReadingState:
             visit_set=["n_start"],
             state_revision=0,
         )
-        with pytest.raises(ResourceNotFoundError):
+        with pytest.raises(
+            ResourceNotFoundError, match=r"version 7 of 's_syn' not found"
+        ):
             await put_reading_state(str(profile_id), "s_syn", body, ctx)
 
     @pytest.mark.unit
@@ -988,7 +1007,10 @@ class TestPutReadingState:
             choice_path=["c_go"],
             state_revision=0,
         )
-        with pytest.raises(ValidationError):
+        with pytest.raises(
+            ValidationError,
+            match=r"submitted reading state does not match a replay of choice_path",
+        ):
             await put_reading_state(str(profile_id), "s_syn", body, ctx)
 
 
@@ -1089,7 +1111,9 @@ class TestRecordCompletion:
             ending_id="fake-end",
         )
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(
+            ValidationError, match=r"ending_id does not belong to the cited version"
+        ):
             await record_completion(body, ctx)
 
     @pytest.mark.unit
@@ -1113,7 +1137,9 @@ class TestRecordCompletion:
             ending_id="end-x",
         )
 
-        with pytest.raises(ResourceNotFoundError):
+        with pytest.raises(
+            ResourceNotFoundError, match=r"version 99 of 'story-1' not found"
+        ):
             await record_completion(body, ctx)
 
     @pytest.mark.unit
@@ -1131,7 +1157,9 @@ class TestRecordCompletion:
             ending_id="end-x",
         )
 
-        with pytest.raises(ResourceNotFoundError):
+        with pytest.raises(
+            ResourceNotFoundError, match=r"storybook 'no-book' not found"
+        ):
             await record_completion(body, ctx)
 
     @pytest.mark.unit
@@ -1151,7 +1179,9 @@ class TestRecordCompletion:
             ending_id="end-x",
         )
 
-        with pytest.raises(AuthorizationError):
+        with pytest.raises(
+            AuthorizationError, match=r"resource belongs to another family"
+        ):
             await record_completion(body, ctx)
 
     @pytest.mark.unit
@@ -1168,7 +1198,7 @@ class TestRecordCompletion:
             ending_id="end-x",
         )
 
-        with pytest.raises(ValidationError):
+        with pytest.raises(ValidationError, match=r"profile_id must be a UUID"):
             await record_completion(body, ctx)
 
     @pytest.mark.unit
@@ -1187,5 +1217,7 @@ class TestRecordCompletion:
             ending_id="end-x",
         )
 
-        with pytest.raises(AuthorizationError):
+        with pytest.raises(
+            AuthorizationError, match=r"profile is not accessible to this principal"
+        ):
             await record_completion(body, ctx)
