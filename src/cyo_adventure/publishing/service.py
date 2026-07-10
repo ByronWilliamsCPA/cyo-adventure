@@ -15,10 +15,11 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from pydantic import ValidationError as PydanticValidationError
 from sqlalchemy import func, select
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
-from cyo_adventure.db.models import StorybookVersion
+from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
     Action,
@@ -26,13 +27,14 @@ from cyo_adventure.publishing.state_machine import (
     Visibility,
     assert_transition,
 )
+from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from cyo_adventure.utils.logging import get_logger
+from cyo_adventure.validator.series import validate_series
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
 
     from cyo_adventure.api.deps import Principal
-    from cyo_adventure.db.models import Storybook
 
 _logger = get_logger(__name__)
 
@@ -113,6 +115,87 @@ async def auto_reject(session: AsyncSession, storybook: Storybook) -> None:
     await session.flush()
 
 
+async def _series_chain_docs(
+    session: AsyncSession,
+    storybook: Storybook,
+    version_row: StorybookVersion,
+) -> list[StorybookDoc] | None:
+    """Load the parsed chain-so-far for a series approval, or None to skip.
+
+    The chain is every sibling that retains a published version (including
+    archived books, which keep ``current_published_version`` and their
+    ``book_index`` slot; excluding them would break SR-2 contiguity and
+    permanently block later approvals once any earlier book is archived) plus
+    the version under approval. Grandfather rule (WS-G G4): if ANY chain member
+    predates WS-G (no embedded series block) or no longer parses against the
+    current schema, return None so the gate is skipped with a warning;
+    approved blobs are immutable, so a legacy chain can never be made to
+    pass and must not block new approvals.
+
+    Args:
+        session: The request session (caller owns the transaction).
+        storybook: The story being approved.
+        version_row: The version row under approval.
+
+    Returns:
+        list[StorybookDoc] | None: The parsed chain-so-far, or ``None`` when
+        the gate must be skipped for a legacy or unparseable member.
+    """
+    siblings = (
+        (
+            await session.execute(
+                select(StorybookVersion)
+                .join(
+                    Storybook,
+                    (StorybookVersion.storybook_id == Storybook.id)
+                    & (StorybookVersion.version == Storybook.current_published_version),
+                )
+                .where(
+                    Storybook.series_id == storybook.series_id,
+                    Storybook.id != storybook.id,
+                    # #EDGE: data-integrity: archived siblings still occupy
+                    # their book_index slot and there is no archived->published
+                    # transition, so filtering on status=="published" would
+                    # make SR-2 fail forever once an earlier book is archived.
+                    # #VERIFY: test_archived_sibling_still_counts_in_chain.
+                    Storybook.current_published_version.is_not(None),
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    docs: list[StorybookDoc] = []
+    for row in [*siblings, version_row]:
+        try:
+            doc = StorybookDoc.model_validate(row.blob)
+        except PydanticValidationError:
+            # A persisted (and for siblings, previously approved) blob failing
+            # full schema parse signals data corruption or a schema regression,
+            # never the expected legacy shape; log at ERROR with the parse
+            # traceback so a systemic break that silently disables this gate is
+            # distinguishable from the benign missing-series-block skip below.
+            _logger.exception(
+                "series_gate.skipped_unparseable_blob",
+                storybook_id=row.storybook_id,
+                version=row.version,
+                series_id=str(storybook.series_id),
+                approving_storybook_id=storybook.id,
+            )
+            return None
+        if doc.metadata.series is None:
+            _logger.warning(
+                "series_gate.skipped_legacy_chain",
+                storybook_id=row.storybook_id,
+                version=row.version,
+                series_id=str(storybook.series_id),
+                approving_storybook_id=storybook.id,
+            )
+            return None
+        docs.append(doc)
+    return docs
+
+
 async def approve(
     session: AsyncSession,
     principal: Principal,
@@ -137,8 +220,12 @@ async def approve(
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
         ResourceNotFoundError: If the version row does not exist.
-        BusinessLogicError: If the version has never been screened by the
-            moderation pipeline (``moderation_report is None``).
+        BusinessLogicError: With ``rule="approve_without_moderation"`` when
+            the version has never been screened by the moderation pipeline
+            (``moderation_report is None``), or with
+            ``rule="series_validation"`` when chain-so-far series validation
+            fails for a series book (legacy pre-WS-G chains are grandfathered
+            and skip this check).
     """
     # #CRITICAL: security: this is the SOLE path that sets status="published",
     # and it stamps approved_by in the same operation, so no story is published
@@ -176,6 +263,23 @@ async def approve(
     if version_row.moderation_report is None:
         msg = "cannot approve a version that has never been screened by moderation"
         raise BusinessLogicError(msg, rule="approve_without_moderation")
+    # #ASSUME: data-integrity: the chain read and the approval write share the
+    # session's transaction; siblings are selected by a non-null
+    # current_published_version, so a chain member mid-approval in another
+    # transaction is simply not yet part of the chain-so-far.
+    # #EDGE: concurrency: two same-series approvals racing can make the later
+    # gate read a stale chain and fail SR-2 spuriously; the admin retries
+    # after the first commit. No cross-series lock is taken for this.
+    # #VERIFY: test_out_of_order_approval_blocked_sr2 covers the sequential
+    # equivalent of that ordering rule.
+    if storybook.series_id is not None:
+        chain = await _series_chain_docs(session, storybook, version_row)
+        if chain is not None:
+            series_report = validate_series(chain)
+            if not series_report.ok:
+                detail = "; ".join(f.message for f in series_report.errors)
+                msg = f"series chain validation failed: {detail}"
+                raise BusinessLogicError(msg, rule="series_validation")
     storybook.status = target.value
     storybook.current_published_version = version
     # #CRITICAL: security: visibility is stamped ONLY here, inside the sole

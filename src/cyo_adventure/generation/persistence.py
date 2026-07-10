@@ -142,3 +142,19 @@ def _check_byte_budget(payload: dict[str, object], *, field: str) -> None:
     if size > _MAX_BLOB_BYTES:
         msg = f"{field} serialized size {size} exceeds the {_MAX_BLOB_BYTES}-byte limit"
         raise ValidationError(msg, field=field)
+
+
+def ensure_blob_within_budget(blob: dict[str, object]) -> None:
+    """Guard a post-persist blob update against the JSONB byte budget.
+
+    Public wrapper so callers outside this module (WS-G series embed) do not
+    reach into the private ``_check_byte_budget``.
+
+    Args:
+        blob: The updated storybook blob dict about to be written back to
+            ``StorybookVersion.blob``.
+
+    Raises:
+        ValidationError: If the blob serializes past the budget.
+    """
+    _check_byte_budget(blob, field="blob")

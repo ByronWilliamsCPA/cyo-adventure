@@ -48,7 +48,10 @@ from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
 from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
-from cyo_adventure.generation.series_link import link_series_position
+from cyo_adventure.generation.series_link import (
+    embed_series_block,
+    link_series_position,
+)
 from cyo_adventure.generation.skeleton import load_skeleton
 from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.middleware.correlation import (
@@ -464,9 +467,13 @@ async def _persist_and_moderate(
     this logs and returns without touching the store, so the caller's single
     ``session.commit()`` still records the job's status/report/error. For a
     persist-eligible outcome it creates the Storybook/StorybookVersion, links
-    them to the job, and drives the moderation pipeline; a moderation failure
-    rolls back the unreviewed persist and records the failure on a re-fetched
-    row before re-raising (see the inline RAD markers).
+    them to the job's series (if any), drives the moderation pipeline, and
+    only then embeds the document ``Series`` block (WS-G G2) from the
+    post-moderation blob; a failure from either the moderation pipeline or the
+    embed step rolls back the unreviewed persist and records the failure on a
+    re-fetched row before re-raising (see the inline RAD markers). The embed
+    step deliberately runs after moderation, not before: see the RAD marker on
+    that call for why.
 
     Args:
         session: The worker's owned session (caller commits on the happy path).
@@ -474,8 +481,9 @@ async def _persist_and_moderate(
         outcome: The pipeline outcome about to be recorded on the job.
 
     Raises:
-        Exception: Re-raises any moderation-pipeline failure after rolling back
-            the persist and recording the failure on the job row.
+        Exception: Re-raises any moderation-pipeline or embed-step failure
+            after rolling back the persist and recording the failure on the
+            job row.
     """
     job_id = ctx.job_id
     # The `outcome.storybook is not None` half is redundant with
@@ -541,9 +549,36 @@ async def _persist_and_moderate(
             pii=ctx.pii,
             review_model_override=_review_stage2_override(ctx.authoring),
         )
+        # #CRITICAL: data-integrity: embed_series_block MUST run AFTER
+        # run_moderation_pipeline returns successfully, never before. The
+        # moderation soft-repair path (moderation/pipeline.py's
+        # attempt_repair, adopted at "version_row.blob = revised") reassigns
+        # the version row's blob wholesale; its repair prompt preserves node
+        # ids/structure but says nothing about metadata.series, and
+        # StoryMetadata.series is optional, so a repaired blob is schema-valid
+        # with the series block silently dropped. Embedding before moderation
+        # let a soft-repair erase (or, on a lucky-shaped LLM output, corrupt)
+        # the block on any series book that triggered a repair; approval's
+        # grandfather rule (publishing/service.py::_series_chain_docs) then
+        # reads the missing block as a legacy/unparseable chain and skips the
+        # SR gate for the WHOLE series, permanently. Placing the call here,
+        # after the pipeline call and still inside this try, means: (a) it
+        # reads the post-repair blob when a repair happened, so
+        # ``start_node`` (preserved by the repair prompt) is still valid, and
+        # (b) it shares the moderation-failure except below, so a raise from
+        # either call rolls back the unreviewed persist identically and never
+        # runs the other. Any FUTURE stage inserted between persist and this
+        # point that can rewrite ``version_row.blob`` must be audited against
+        # this same ordering constraint.
+        # #VERIFY: tests/integration/test_series_link.py::
+        # test_embed_series_block_survives_moderation_repair drives the
+        # soft-repair path with fakes and asserts the re-read blob carries the
+        # correct metadata.series afterward.
+        await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
     except Exception as exc:
-        # #CRITICAL: external-resource: a live review backend can raise
-        # (timeout, 5xx, auth). Roll back the unreviewed storybook persist
+        # #CRITICAL: external-resource + data-integrity: a live review backend
+        # can raise (timeout, 5xx, auth), and embed_series_block can raise on a
+        # malformed or over-budget blob. Roll back the unreviewed storybook persist
         # first: the per-job story_id (f"s_{job_id}") would otherwise collide
         # on an RQ retry of this same job. Then record the failure on a
         # re-fetched row and commit, so the committed job state is "failed"

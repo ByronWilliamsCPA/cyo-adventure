@@ -171,20 +171,23 @@ def _check_entry_nodes(series_books: list[_Book], report: ValidationReport) -> N
 
 
 def _check_final_flags(series_books: list[_Book], report: ValidationReport) -> None:
-    """SR-4: only the highest-index book may be ``is_final``."""
+    """SR-4: a book below the highest index must not be ``is_final``.
+
+    The top-index book MAY be final (closed series) or not (open-ended chain
+    a future continuation extends). ADR-011 section 8 and the WS-G spec (G4)
+    make open chains first-class; v1 generation always writes is_final=False.
+    """
     last = len(series_books)
     for book, series in series_books:
-        should_be_final = series.book_index == last
-        if series.is_final != should_be_final:
+        if series.is_final and series.book_index != last:
             report.add(
                 ValidationFinding(
                     rule_id="SR-4",
                     severity=Severity.ERROR,
                     story_id=book.id,
                     message=(
-                        f"SR-4 series: book {series.book_index} '{book.id}' has "
-                        f"is_final={series.is_final}, expected {should_be_final} "
-                        f"(only the last book of {last} is final)"
+                        f"SR-4 series: book {series.book_index} '{book.id}' is "
+                        f"marked is_final but is not the last of {last} books"
                     ),
                 )
             )

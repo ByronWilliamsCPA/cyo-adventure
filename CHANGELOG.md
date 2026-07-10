@@ -130,6 +130,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the request's own cell has no eligible skeleton; unreadable, schema-invalid, and
   band-ambiguous skeletons are logged and surfaced as distinct errors rather than
   silently treated as absent.
+- Series chaining (WS-G PR 1): generated series books embed their document
+  `Series` metadata block; SR-4 accepts open-ended chains; release approval
+  validates the chain-so-far and blocks on SR errors (legacy pre-WS-G chains
+  are grandfathered).
 - Story catalog: at release approval an admin now chooses whether a book stays
   family-only or joins the shared catalog (`visibility` on `Storybook`). Guardian
   browse lists catalog books from every family with a "Catalog" badge, and
