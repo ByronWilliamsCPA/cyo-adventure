@@ -22,15 +22,16 @@ export interface MascotProps {
 }
 
 export function Mascot({ size = 96, title, className }: MascotProps) {
+  const label = title?.trim() || undefined
   return (
     <svg
       className={className}
       width={size}
       height={size}
       viewBox="0 0 100 100"
-      role={title ? 'img' : undefined}
-      aria-label={title}
-      aria-hidden={title ? undefined : true}
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
       focusable="false"
     >
       <ellipse cx="50" cy="92" rx="26" ry="5" fill="rgba(0,0,0,0.10)" />

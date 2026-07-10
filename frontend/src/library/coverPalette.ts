@@ -16,8 +16,10 @@ const COVER_TOKENS = [
   'var(--cover-teal)',
 ] as const
 
-/** Stable index into the cover palette derived from the book title. */
-export function coverGradient(title: string): string {
+export type CoverToken = (typeof COVER_TOKENS)[number]
+
+/** The cover gradient CSS token deterministically selected from the book title. */
+export function coverGradient(title: string): CoverToken {
   let hash = 0
   for (let i = 0; i < title.length; i += 1) {
     hash = (hash * 31 + title.charCodeAt(i)) % 100000

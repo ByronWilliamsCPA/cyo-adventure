@@ -17,27 +17,39 @@ export interface KidNavProps {
  * was no visible way back. This bar sits above the library and always offers a
  * way to switch readers, and shows whose books these are.
  *
- * The child's name/avatar is a best-effort touch: it is fetched from the same
- * unauthenticated profile list the picker uses, and a failure (offline, hiccup)
+ * The child's name/avatar is a best-effort touch: it reuses the same
+ * authenticated `/v1/profiles` list the picker uses, scoped server-side to
+ * whatever session token the browser holds, and a failure (offline, hiccup)
  * degrades to the generic "Switch reader" control rather than blocking the page.
  */
 export function KidNav({ profileId }: KidNavProps) {
   const api = useApi()
   const profilesApi = useMemo(() => makeProfilesApi(api), [api])
-  const [profile, setProfile] = useState<ProfileView | null>(null)
+  const [loaded, setLoaded] = useState<{ forId: string; profile: ProfileView | null } | null>(
+    null
+  )
+  // Derived, not stored: the fetched profile only shows while it still belongs
+  // to the profileId on screen, so a profile switch instantly falls back to the
+  // generic label instead of flashing the previous child's identity.
+  const profile = loaded?.forId === profileId ? loaded.profile : null
 
   // #ASSUME: external-resources: the profile list can fail or resolve after the
   // child has already switched profiles.
-  // #VERIFY: `cancelled` guards the setState; a failure just leaves the name
-  // unshown, and the Switch control (which needs no data) still works.
+  // #VERIFY: `cancelled` guards the setState, and the fetched result is keyed
+  // by the profileId it was loaded for; a switch to a new profileId or a
+  // failed re-fetch therefore shows the generic label, never the previous
+  // child's name/avatar.
   useEffect(() => {
     let cancelled = false
     async function load() {
       try {
         const profiles = await profilesApi.list()
-        if (!cancelled) setProfile(profiles.find((p) => p.id === profileId) ?? null)
+        if (!cancelled) {
+          setLoaded({ forId: profileId, profile: profiles.find((p) => p.id === profileId) ?? null })
+        }
       } catch (err) {
-        console.error('kid nav profile lookup failed', err)
+        console.error('kid nav profile lookup failed', err instanceof Error ? err.message : err)
+        if (!cancelled) setLoaded({ forId: profileId, profile: null })
       }
     }
     void load()
