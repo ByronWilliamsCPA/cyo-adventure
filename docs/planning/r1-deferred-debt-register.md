@@ -2,8 +2,9 @@
 schema_type: planning
 title: "R1 Deferred-Debt Register"
 description: "Consolidated register of the accepted Minors and deferred items from the R1 gap-closure final
-  reviews (PRs #105-#109, #111, #112), plus the pre-R1 generation/safety/tooling debt carried in
-  completion-plan.md (merged, doc archived), with severity, source, and the R2 gate flags."
+  reviews (PRs #105-#109, #111, #112), the pre-R1 generation/safety/tooling debt carried in
+  completion-plan.md (merged, doc archived), plus the post-R1 story-lifecycle-redesign deferrals
+  (WS-A through WS-G), with severity, source, and the R2 gate flags."
 tags:
   - planning
   - technical-debt
@@ -81,6 +82,32 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | P2 | `get_generation_job` reports errors to guardians in tension with ADR-007 report-to-admin | PR #69 review | Reconcile with ADR-007 |
 | P3 | `useApi` does not redirect on 401 | PR #69 review | Decide global 401 handling with P1 |
 | P4 | Issues #77, #78, #79: deferred behavioral items from the skeleton scale enabler | PR #70 review | Skeleton workstream backlog, independent of R1 |
+
+## Story-lifecycle redesign deferrals (post-R1, WS-A through WS-G)
+
+The story-lifecycle redesign (umbrella PR #161, ten ratified decisions, seven workstreams WS-A through
+WS-G, all merged as of 2026-07-10) is feature-complete. These items were consciously deferred during that
+work: four are forward-looking, data-driven, or v2 decisions carried in the umbrella spec's "Open items"
+section; the rest are per-workstream follow-ups recorded in each workstream's final review. None blocks the
+merged feature set; all are R2-planning inputs.
+
+| # | Debt | Source | Severity | Suggested action |
+| --- | --- | --- | --- | --- |
+| SL1 | Per-band moderation threshold seed values are a placeholder starting set, not calibrated against real review outcomes (WS-F ships data-driven thresholds; the seeds still need tuning) | story-lifecycle-redesign.md Open item 1 (WS-F) | Low | Calibrate the per-band seeds against production review data before relying on per-band gating |
+| SL2 | The pipeline event taxonomy is a deliberate starting set, not exhaustive; new event kinds are expected as the pipeline grows | story-lifecycle-redesign.md Open item 2 (WS-D) | Info | Extend the taxonomy as new pipeline stages emit events |
+| SL3 | Catalog-continuation admin notification is undecided: when a child continues a catalog (non-family-authored) series, whether and how to notify an admin is unresolved | story-lifecycle-redesign.md Open item 3 (WS-E/WS-G) | Low | Decide the notification policy during R2 planning |
+| SL4 | Prompt-adjustment dashboard suggestions are deferred to v2: the guardian suggestion dashboard surfaces requests but does not yet feed prompt tuning | story-lifecycle-redesign.md Open item 4 (WS-F) | Low | Design the prompt-adjustment loop in v2 |
+| SL5 | WS-D deferred an enum-derived CHECK constraint on the event-log kind column and a `request_approved`-authored-path event | WS-D PR #168 review | Low | Add the CHECK constraint and the missing event once the taxonomy stabilizes (see SL2) |
+| SL6 | WS-E deferred guardian full-blob catalog scope confirmation, catalog pagination, and issue #173 (hand-written client-types refactor) | WS-E PR #180 review | Low | Confirm catalog scope, add pagination, and refactor per #173 |
+| SL7 | WS-F deferred F08/F09 suggestion-dashboard scaling and a `schemas.py` type-annotation batch | WS-F PR #176 review | Low | Address in a follow-up dashboard-scaling pass |
+| SL8 | WS-G deferred test/perf/architecture follow-ups F12-F23 (budget-over-limit embed test, multi-version sibling selection, chain-loading perf caps, ordering data-flow doc, grandfather sunset/backfill plan, re-embed path) | WS-G PR #184 Fix Summary (issuecomment-4935226310) | Low | Pull from the PR #184 Fix Summary as series usage grows |
+| SL9 | WS-G v2 declared-export block: the annotated-variables plus validator-checked-import escalation, the known fallback if reader-side name-matched variable seeding proves too weak; out of WS-G v1 scope | WS-G design decision G3 | Info | Implement only if name-matching proves insufficient in practice |
+| SL10 | WS-G reader v1 carry-state limits: RESTART on a continued book drops carried state (M1), and a hard refresh before the first save loses the location-state seed | WS-G PR #192 body | Low | Persist the continuation seed (for example, to IndexedDB) if these paths matter for users |
+
+Adjacent tooling deferrals surfaced alongside this workstream (not part of the redesign itself):
+
+- Codecov Bundle Analysis is deferred (issue #172).
+- Promotion of the Postman collection to a required CI gate is deferred (issue #187).
 
 ## Bookkeeping
 
