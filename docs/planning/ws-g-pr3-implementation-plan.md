@@ -255,25 +255,40 @@ _MAX_VARIABLE_NAMES = 10
 _VARIABLE_NAME_CHARS = 200  # matches concept._BoundedText's max_length
 ```
 
+add a module-level helper directly above `anchor_context_from_blob` (the extraction must NOT be
+inlined: `anchor_context_from_blob` is already exactly at the ruff mccabe ceiling of 10, and the
+inline shape trips C901; discovered during implementation, corrected here):
+
+```python
+def _variable_names_from_blob(blob: Mapping[str, object]) -> list[str]:
+    """Collect declared variable names from a blob's ``variables`` array.
+
+    Same defensive contract as the rest of this module: a malformed entry is
+    skipped, an overlong name is truncated, nothing raises.
+    """
+    names: list[str] = []
+    variables = blob.get("variables")
+    if not isinstance(variables, list):
+        return names
+    for variable in variables:
+        if len(names) >= _MAX_VARIABLE_NAMES:
+            break
+        if not isinstance(variable, dict):
+            continue
+        name = variable.get("name")
+        if isinstance(name, str) and name:
+            names.append(name[:_VARIABLE_NAME_CHARS])
+    return names
+```
+
 and in `anchor_context_from_blob`, replace the final `return AnchorContext(...)` with:
 
 ```python
-    variable_names: list[str] = []
-    variables = blob.get("variables")
-    if isinstance(variables, list):
-        for variable in variables:
-            if len(variable_names) >= _MAX_VARIABLE_NAMES:
-                break
-            if not isinstance(variable, dict):
-                continue
-            name = variable.get("name")
-            if isinstance(name, str) and name:
-                variable_names.append(name[:_VARIABLE_NAME_CHARS])
     return AnchorContext(
         title=safe_title[:_TITLE_CHARS],
         character_names=character_names[:_MAX_CHARACTER_NAMES],
         ending_summary=summary,
-        variable_names=variable_names,
+        variable_names=_variable_names_from_blob(blob),
     )
 ```
 
