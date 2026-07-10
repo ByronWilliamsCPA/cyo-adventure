@@ -4,16 +4,27 @@
 ' CYO Adventure
 '
 ' Source files:
-'   src/cyo_adventure/app.py                 (FastAPI app, middleware order)
+'   src/cyo_adventure/app.py                 (FastAPI app, middleware order,
+'                                              wires all 15 routers)
 '   src/cyo_adventure/api/health.py          (liveness/readiness/startup probes)
 '   src/cyo_adventure/api/library.py         (story library endpoints)
-'   src/cyo_adventure/api/reading.py         (reading-state + completions)
+'   src/cyo_adventure/api/reading.py         (reading-state + completions + series-next)
 '   src/cyo_adventure/api/generation.py      (guardian-only: concepts, jobs, validate)
 '   src/cyo_adventure/api/profiles.py        (guardian-only: child profile CRUD)
-'   src/cyo_adventure/api/assignments.py     (guardian-only: assign storybooks to profiles)
-'   src/cyo_adventure/api/approval.py        (global admin: submit/approve/send-back/archive/review)
+'   src/cyo_adventure/api/families.py        (admin: family listing)
 '   src/cyo_adventure/api/ratings.py         (kid ratings)
+'   src/cyo_adventure/api/assignments.py     (guardian-only: assign storybooks,
+'                                              content-summary, catalog /guardian/books)
+'   src/cyo_adventure/api/approval.py        (global admin: submit/approve/send-back/archive/review)
+'   src/cyo_adventure/api/covers.py          (AI cover-art request + fetch)
+'   src/cyo_adventure/api/moderation_thresholds.py (admin: per-band/category
+'                                              overrides + noise-floor scalar)
+'   src/cyo_adventure/api/moderation_dashboard.py  (admin: review surface + suggestions)
+'   src/cyo_adventure/api/provider_allowlist.py    (admin: provider/model allowlist CRUD)
 '   src/cyo_adventure/api/me.py              (principal identity)
+'   src/cyo_adventure/api/story_requests.py  (child request lifecycle: submit,
+'                                              list, approve, decline, authored,
+'                                              authoring-plan; WS-B)
 '   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
 '   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam)
 '   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware, added first)
@@ -21,7 +32,8 @@
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
-'   src/cyo_adventure/db/models.py           (9 ORM tables)
+'   src/cyo_adventure/db/models.py           (19 ORM tables)
+'   src/cyo_adventure/events/writer.py       (append-only pipeline_event log, WS-D)
 '   docs/planning/authorization-matrix.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
 '     decision 2 = Supabase Postgres as the operational database)
@@ -52,24 +64,36 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
-  package "API Routers (all under /api/v1)" #B2DFDB {
+  package "API Routers (all under /api/v1; 15 total)" #B2DFDB {
     component "health.py\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
 
     component "library.py\nGET /library\n(filtered by age band,\nreading cap, published status)" as library_router #B2DFDB
 
-    component "reading.py\nGET /reading-state/{profile}/{story}\nPUT /reading-state/{profile}/{story}\n(revision-based OCC, idempotent event_id)\nPOST /completions" as reading_router #B2DFDB
+    component "reading.py\nGET /reading-state/{profile}/{story}\nPUT /reading-state/{profile}/{story}\n(revision-based OCC, idempotent event_id)\nGET /series-next/{profile}/{story}\nPOST /completions" as reading_router #B2DFDB
 
-    component "generation.py [guardian-only]\nPOST /concepts (PII-screened)\nPOST /concepts/{id}/generate\nGET /generation-jobs/{id}\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
+    component "generation.py [guardian-only]\nPOST /concepts (PII-screened)\nPOST /concepts/{id}/generate\nGET /generation-jobs, /generation-jobs/{id}\nPOST /storybooks/{id}/versions/{v}/validate" as gen_router #B2DFDB
 
     component "profiles.py [guardian-only]\nGET /profiles\nPOST /profiles\nPATCH /profiles/{id}" as profiles_router #B2DFDB
 
-    component "assignments.py [guardian-only]\nPOST /storybooks/{id}/assignments\nGET /storybooks/{id}/assignments" as assignments_router #B2DFDB
+    component "families.py [admin]\nGET /admin/families" as families_router #B2DFDB
+
+    component "assignments.py [guardian-only]\nPOST/GET /storybooks/{id}/assignments\nGET /storybooks/{id}/content-summary\nGET /guardian/books (catalog, WS-E)" as assignments_router #B2DFDB
 
     component "approval.py [global admin]\nPOST /storybooks/{id}/submit\nPOST /storybooks/{id}/approve\nPOST /storybooks/{id}/send-back\nPOST /storybooks/{id}/archive\nGET /storybooks/{id}/review\nGET /review-queue" as approval_router #B2DFDB
+
+    component "covers.py\nPOST /storybooks/{id}/versions/{v}/cover\nGET /storybooks/{id}/versions/{v}/cover" as covers_router #B2DFDB
+
+    component "moderation_thresholds.py [admin]\nGET/PUT/DELETE /admin/moderation-thresholds\nGET/PUT /admin/moderation/noise-floor" as mod_thresh_router #B2DFDB
+
+    component "moderation_dashboard.py [admin]\nGET /admin/moderation/dashboard\nGET /admin/moderation/suggestions" as mod_dash_router #B2DFDB
+
+    component "provider_allowlist.py [admin]\nGET/POST /admin/provider-allowlist\nPUT/DELETE /admin/provider-allowlist/{id}" as allowlist_router #B2DFDB
 
     component "ratings.py\nPOST /ratings\nGET /ratings/{profile_id}" as ratings_router #B2DFDB
 
     component "me.py\nGET /me (principal identity)" as me_router #B2DFDB
+
+    component "story_requests.py [WS-B]\nPOST /story-requests\nPOST /story-requests/authored\nGET /story-requests\nPOST /story-requests/{id}/approve\nPOST /story-requests/{id}/decline\nPOST /story-requests/{id}/authoring-plan" as story_req_router #B2DFDB
   }
 
   package "Core" #A5D6A7 {
@@ -80,9 +104,10 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
 }
 
-package "ORM Models\nsrc/cyo_adventure/db/models.py" #FFF8E1 {
-  component "Family\nUser\nChildProfile\nStorybook\nStorybookVersion" as models_a #FFF8E1
-  component "ReadingState\nCompletion\nConcept\nGenerationJob" as models_b #FFF8E1
+package "ORM Models\nsrc/cyo_adventure/db/models.py (19 tables)" #FFF8E1 {
+  component "Family\nSeries\nUser\nChildProfile\nStorybook\nStorybookVersion" as models_a #FFF8E1
+  component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest" as models_b #FFF8E1
+  component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob" as models_c #FFF8E1
 }
 
 database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nAlembic migrations" as pg #E0F7FA
@@ -99,19 +124,32 @@ ctx --> library_router
 ctx --> gen_router
 ctx --> health_router
 ctx --> profiles_router
+ctx --> families_router
 ctx --> assignments_router
 ctx --> approval_router
+ctx --> covers_router
+ctx --> mod_thresh_router
+ctx --> mod_dash_router
+ctx --> allowlist_router
 ctx --> ratings_router
 ctx --> me_router
+ctx --> story_req_router
 
 reading_router --> models_a
 reading_router --> models_b
 library_router --> models_a
 gen_router --> models_a
 gen_router --> models_b
+gen_router --> models_c
+story_req_router --> models_a
+story_req_router --> models_b
+mod_thresh_router --> models_c
+mod_dash_router --> models_c
+allowlist_router --> models_c
 
 models_a --> pg
 models_b --> pg
+models_c --> pg
 
 exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers"
 exceptions --> gen_router
@@ -136,11 +174,25 @@ note right of reading_router
 end note
 
 note bottom of gen_router
-  All four endpoints are guardian-only
-  (checked before any DB access).
-  PII screen on concept creation
-  (child display_name must not
-  appear in the brief text).
+  Concept/generate/validate endpoints are
+  guardian-only (checked before any DB
+  access). PII screen on concept creation
+  (child display_name must not appear in
+  the brief text). Story generation can
+  also be enqueued indirectly via
+  story_req_router's approve endpoint
+  (WS-B), which builds a Concept and
+  enqueues a GenerationJob without going
+  through POST /concepts.
+end note
+
+note bottom of story_req_router
+  Approve/decline are guardian-own-family
+  or admin-global (404-over-403 existence
+  hiding outside scope). Every lifecycle
+  transition here also writes a
+  PipelineEvent row (events/writer.py,
+  WS-D) in the same transaction.
 end note
 
 @enduml

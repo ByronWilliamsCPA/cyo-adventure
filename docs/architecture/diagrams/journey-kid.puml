@@ -9,6 +9,8 @@
 '   frontend/src/router.tsx  (kid route tree: /, /library/:profileId, /read/...)
 '   frontend/src/kid/ProfilePickerPage.tsx
 '   frontend/src/library/LibraryPage.tsx, BookCard.tsx, StarRating.tsx
+'   frontend/src/library/RequestStory.tsx  (child-initiated request, WS-B;
+'     shipped, mounted on the library page -- see api/story_requests.py)
 '   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ConflictDialog.tsx
 '   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
 ' ============================================================
@@ -36,10 +38,6 @@ start
 dashed circle if none);
 note right: /  (Profile Picker)  •  shipped
 
-#F3D9D4:Tap "I want a new story"
-and say what it's about;
-note right: planned (child-initiated request)\nsurfaces to a guardian to approve
-
 :See "new story ready!"
 on my avatar;
 note right: status pill  •  shipped
@@ -48,6 +46,17 @@ note right: status pill  •  shipped
 (Continue Reading hero
 + "More to Explore" shelf);
 note right: /library/:profileId  •  shipped
+
+:Tap "Request a story"
+and say what it's about
+(or "Continue this story"
+on a series book);
+note right: RequestStory on the library page  •  shipped\nsurfaces to a guardian/admin to approve or decline\n(no moderation detail ever shown to the child)
+:See my own requests'
+friendly status
+(Waiting / Yay! / Not this time);
+note right: shipped  •  "My requests" list
+
 :Pick a book;
 
 ' error exits are real, tested paths

@@ -12,10 +12,14 @@
 '   GREY   = backend work, covered by pytest, out of frontend-e2e scope
 '
 ' Coverage sources:
-'   frontend/e2e/{reader,reader-conflict,library,intake,guardian-auth,
-'     guardian-console,guardian-review,guardian-profiles,assignments,
-'     profiles}.spec.ts
-'   frontend/e2e-real/approval-flow.spec.ts  (real-backend smoke, zero mocks)
+'   frontend/e2e/{reader,reader-conflict,reader-reload-resume,library,intake,
+'     guardian-auth,guardian-console,guardian-review,guardian-profiles,
+'     guardian-books,assignments,profiles,story-requests,
+'     story-requests-kid,story-requests-authored,series-continue,
+'     landing}.spec.ts
+'   frontend/e2e-real/{approval-flow,authored-request,kid-reads,
+'     naive-kid-misuse-real,series-continue-real}.spec.ts
+'     (real-backend smoke, zero mocks)
 '   frontend/src/**/*.test.ts(x)  (Vitest component + unit)
 ' ============================================================
 
@@ -52,11 +56,13 @@ repeat :a new story is wanted;
 |Child|
 #BFE3C6:Open app, pick avatar;
 note right: GREEN  •  e2e: profiles.spec (picker renders / empty)\nunit: ProfilePickerPage.test
-#F3C9C4:Tap "I want a new story";
-note right: RED  •  planned, not built -> no test
+#BFE3C6:Request a story
+(library page);
+note right: GREEN  •  e2e: story-requests-kid.spec (idea, proposed series,\nanchor to a series book)\ne2e-real: authored-request.spec (real backend)\nunit: RequestStory.test
 |Guardian|
-#F3C9C4:Approve the child's request;
-note right: RED  •  planned, not built -> no test
+#BFE3C6:Approve or decline
+the child's request;
+note right: GREEN  •  e2e: story-requests.spec (approve/decline,\nproposed-series prefill)\nunit: RequestsPage.test, storyRequestQueueApi.test
 
 |System|
 #E4E4E4:Generate the story;
@@ -117,9 +123,12 @@ legend bottom
   |<back:#F3C9C4> red </back>| No automated test (mostly not-yet-built) | -- |
   |<back:#E4E4E4> grey </back>| Backend, pytest-covered, out of frontend-e2e scope | tests/ (pytest) |
   <b>Now covered:</b> the guardian console (sign-in, profiles, intake, queue, review,
-  send-back, and the ADR-005 <b>Approve</b> gate) and the reader 409-conflict
-  reconciliation all have Playwright coverage; Approve also has a real-backend
-  smoke test (e2e-real/approval-flow.spec, zero mocks).
+  send-back, and the ADR-005 <b>Approve</b> gate), the child-initiated story
+  request loop (WS-B: request, approve/decline, proposed series, anchored
+  continuations), and the reader 409-conflict reconciliation all have
+  Playwright coverage; Approve, the authored-request path, and a naive-kid
+  misuse scenario also have real-backend smoke tests (e2e-real/*.spec.ts,
+  zero mocks).
   <b>Remaining amber:</b> "Avatar shows new story ready!" pill state is asserted
   in Vitest only, not e2e.
 endlegend

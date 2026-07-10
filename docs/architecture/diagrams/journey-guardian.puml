@@ -11,6 +11,11 @@
 '   frontend/src/router.tsx  (guardian route tree: /guardian/*)
 '   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx, ReviewDetailPage.tsx
 '   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
+'   frontend/src/guardian/RequestsPage.tsx  (/guardian/requests: approve/decline
+'     a child's story request, WS-B; shipped -- guardian-own-family or
+'     admin-global, NOT admin-only like the ADR-005 storybook approval gate)
+'   frontend/src/guardian/BooksPage.tsx  (/guardian/books: catalog browse +
+'     assign, WS-E; guardian-only nav entry)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md
 '   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
 ' ============================================================
@@ -49,8 +54,14 @@ note right: /guardian/login  •  shipped
 note right: /guardian/profiles  •  shipped
 
 ' --- Request a story ---
-#F3D9D4:Approve a story my child asked for;
-note right: planned (inbound child request-approval)
+:Open Story requests,
+review my child's idea
+(screened text + flags);
+note right: /guardian/requests  •  shipped\n(guardian-own-family or admin-global;\nNOT admin-only, unlike the approval gate below)
+:Set age band, length,
+optional series title,
+then Approve or Decline;
+note right: shipped  •  approve builds a Concept\nand enqueues generation
 
 :Request a story from Intake
 ("Who's it for?", topic, tone);

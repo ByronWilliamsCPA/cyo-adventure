@@ -1,14 +1,28 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: 9 ORM Tables
+' Entity-Relationship Diagram: 19 ORM Tables
 ' CYO Adventure
 '
 ' Source file:
 '   src/cyo_adventure/db/models.py  (SQLAlchemy ORM, all tables, columns, FKs)
 '
 ' Note: all timestamps are TIMESTAMP WITH TIME ZONE (timezone-aware).
-' Enum columns (role, status, age_band) are stored as strings (simple Alembic
-' migrations; validated at the application boundary).
+' Enum columns (role, status, age_band, ...) are stored as strings, each
+' backed by a CHECK constraint (simple Alembic migrations; the closed
+' vocabulary is enforced at rest as well as at the application boundary).
+'
+' Nine tables added since the original 9-table model (WS-A..WS-G, PRs
+' #141-#192): series (WS-B PR3, series/continuation chaining), rating
+' (family-sharing), storybook_assignment (guardian read-gate), story_request
+' (child-initiated request lifecycle), moderation_threshold +
+' moderation_threshold_audit (WS-A per-band/category overrides),
+' moderation_setting (WS-A admin noise-floor scalar), pipeline_event
+' (WS-D append-only lifecycle log), provider_model_allowlist +
+' provider_model_allowlist_audit (WS-C admin-editable model allowlist).
+' storybook/storybook_version/generation_job also gained columns since the
+' original diagram (visibility, series_id, book_index, provider,
+' skeleton_slug, cover_image_url, cover_status, authoring_metadata); see
+' docs/architecture/data-model.md for the full column dictionary.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -19,6 +33,17 @@ entity "family" as family #E8F5E9 {
   * id : UUID <<PK>>
   --
   name : VARCHAR(200)
+  created_at : TIMESTAMPTZ
+}
+
+entity "series" as series #C8E6C9 {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  title : VARCHAR(120)
+  age_band : VARCHAR(16) [3-5 | 5-8 | 8-11 | 10-13 | 13-16 | 16+]
+  carries_state : BOOLEAN [episodic vs stateful, ADR-011]
+  created_by : UUID <<FK user.id, NULL>>
   created_at : TIMESTAMPTZ
 }
 
@@ -51,7 +76,10 @@ entity "storybook" as storybook #F3E5F5 {
   * family_id : UUID <<FK family.id>>
   current_published_version : INT NULL
   status : VARCHAR(20) [draft|in_review|needs_revision|published|archived]
+  visibility : VARCHAR(16) [family|catalog, default family, WS-E]
   created_by : UUID <<FK user.id, NULL>>
+  series_id : UUID <<FK series.id, NULL>>
+  book_index : INT NULL [UNIQUE with series_id]
   created_at : TIMESTAMPTZ
 }
 
@@ -67,7 +95,11 @@ entity "storybook_version" as storybook_version #F3E5F5 {
   published_at : TIMESTAMPTZ NULL
   model : VARCHAR(120) NULL [LLM model id]
   prompt_version : VARCHAR(120) NULL
+  provider : VARCHAR(120) NULL [mock|anthropic|openrouter|modal|ollama|import]
+  skeleton_slug : VARCHAR(120) NULL [WS-C PR2 provenance]
   created_at : TIMESTAMPTZ
+  cover_image_url : VARCHAR(512) NULL
+  cover_status : VARCHAR(20) [none|generating|ready|failed]
 }
 
 entity "reading_state" as reading_state #E0F7FA {
@@ -97,6 +129,23 @@ entity "completion" as completion #DCEDC8 {
   found_at : TIMESTAMPTZ
 }
 
+entity "rating" as rating #FFF9C4 {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
+  --
+  value : INT [1-5]
+  rated_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ [mutable: re-rate overwrites]
+}
+
+entity "storybook_assignment" as storybook_assignment #CFD8DC {
+  * child_profile_id : UUID <<PK, FK child_profile.id>>
+  * storybook_id : VARCHAR(120) <<PK, FK storybook.id>>
+  --
+  assigned_by : UUID <<FK user.id, NULL>> [NULL = system backfill]
+  created_at : TIMESTAMPTZ
+}
+
 entity "concept" as concept #FFF8E1 {
   * id : UUID <<PK>>
   --
@@ -106,15 +155,119 @@ entity "concept" as concept #FFF8E1 {
   created_at : TIMESTAMPTZ
 }
 
+entity "story_request" as story_request #FFE0B2 {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  profile_id : UUID <<FK child_profile.id, NULL>>
+  request_text : VARCHAR(500)
+  status : VARCHAR(16) [pending|approved|declined|blocked]
+  initiator_role : VARCHAR(16) [child|guardian|admin, default child]
+  age_band : VARCHAR(16)
+  length : VARCHAR(16) NULL [short|medium|long]
+  narrative_style : VARCHAR(16) [prose|gamebook, default prose]
+  moderation_flags : JSONB NULL [redacted screening findings]
+  reviewed_by : UUID <<FK user.id, NULL>>
+  reviewed_at : TIMESTAMPTZ NULL
+  concept_id : UUID <<FK concept.id, NULL>> [set on approval]
+  series_id : UUID <<FK series.id, NULL>>
+  anchor_storybook_id : VARCHAR(120) <<FK storybook.id, NULL>>
+  proposed_series_title : VARCHAR(120) NULL
+  created_at : TIMESTAMPTZ
+}
+
+entity "moderation_threshold" as moderation_threshold #FFCDD2 {
+  * id : UUID <<PK>>
+  --
+  age_band : VARCHAR(16)
+  category : VARCHAR(64)
+  min_verdict : VARCHAR(16) [advisory|flag|block]
+  min_score : FLOAT NULL [0.0-1.0]
+  updated_by : UUID <<FK user.id, NULL>>
+  updated_at : TIMESTAMPTZ
+  --
+  UNIQUE (age_band, category)
+}
+
+entity "moderation_threshold_audit" as moderation_threshold_audit #FFCDD2 {
+  * id : UUID <<PK>>
+  --
+  age_band : VARCHAR(16)
+  category : VARCHAR(64)
+  action : VARCHAR(16) [upsert|delete]
+  old_min_verdict : VARCHAR(16) NULL
+  new_min_verdict : VARCHAR(16) NULL
+  old_min_score : FLOAT NULL
+  new_min_score : FLOAT NULL
+  changed_by : UUID <<FK user.id>> [NOT NULL]
+  changed_at : TIMESTAMPTZ
+  --
+  append-only (no update/delete path)
+}
+
+entity "moderation_setting" as moderation_setting #FFCDD2 {
+  * key : VARCHAR(64) <<PK>> [e.g. "admin_noise_floor"]
+  --
+  value : FLOAT [0.0-1.0]
+  updated_by : UUID <<FK user.id, NULL>>
+  updated_at : TIMESTAMPTZ
+}
+
+entity "pipeline_event" as pipeline_event #ECEFF1 {
+  * id : UUID <<PK>>
+  --
+  occurred_at : TIMESTAMPTZ
+  actor_id : UUID <<FK user.id, NULL>> [NULL iff actor_role='system']
+  actor_role : VARCHAR(16) [system|guardian|child|admin]
+  entity_type : VARCHAR(32) [story_request|generation_job|storybook|...]
+  entity_id : VARCHAR(255)
+  event_type : VARCHAR(48) [14 values, see EventType]
+  from_state : VARCHAR(32) NULL
+  to_state : VARCHAR(32) NULL
+  payload : JSONB [PII-free, allowlisted fields only]
+  --
+  append-only (DB trigger enforced)
+}
+
+entity "provider_model_allowlist" as provider_model_allowlist #D1C4E9 {
+  * id : UUID <<PK>>
+  --
+  provider : VARCHAR(32) [anthropic|openrouter|modal|ollama]
+  model_id : VARCHAR(120)
+  enabled : BOOLEAN [default true]
+  display_name : VARCHAR(120) NULL
+  created_by : UUID <<FK user.id, NULL>>
+  updated_by : UUID <<FK user.id, NULL>>
+  created_at : TIMESTAMPTZ
+  updated_at : TIMESTAMPTZ
+  --
+  UNIQUE (provider, model_id)
+}
+
+entity "provider_model_allowlist_audit" as provider_model_allowlist_audit #D1C4E9 {
+  * id : UUID <<PK>>
+  --
+  provider : VARCHAR(32)
+  model_id : VARCHAR(120)
+  action : VARCHAR(16) [create|update|delete]
+  old_enabled : BOOLEAN NULL
+  new_enabled : BOOLEAN NULL
+  changed_by : UUID <<FK user.id>> [NOT NULL]
+  changed_at : TIMESTAMPTZ
+  --
+  append-only (no update/delete path)
+}
+
 entity "generation_job" as generation_job #FFEBEE {
   * id : UUID <<PK>>
   --
   * concept_id : UUID <<FK concept.id>>
-  status : VARCHAR(20) [queued|running|passed|needs_review|failed]
+  status : VARCHAR(20) [queued|running|passed|needs_review|failed|\nawaiting_manual_fill]
   model : VARCHAR(120) NULL
   provider : VARCHAR(120) NULL
   prompt_version : VARCHAR(120) NULL
   report : JSONB NULL [GenerationOutcome JSON]
+  authoring_metadata : JSONB NULL [skeleton_slug, theme_brief, ...]
   storybook_id : VARCHAR(120) NULL [NOT FK, see note]
   version : INT NULL
   error : VARCHAR(512) NULL
@@ -122,21 +275,34 @@ entity "generation_job" as generation_job #FFEBEE {
   updated_at : TIMESTAMPTZ
 }
 
-' --- Relationships ---
+' --- Relationships (structural / cardinality-meaningful only; pure
+' attribution FKs to user.id are annotated inline on the column above and
+' not drawn here -- see the note bottom of user_t) ---
 family ||--o{ user_t : "1 family\nhas many users"
 family ||--o{ child_profile : "1 family\nhas many profiles"
 family ||--o{ storybook : "1 family\nhas many storybooks"
 family ||--o{ concept : "1 family\nhas many concepts"
+family ||--o{ series : "1 family\nhas many series"
+family ||--o{ story_request : "1 family\nhas many requests"
 user_t }o--o| child_profile : "child user\nassigned to 1 profile\n(NULL for guardians and admins)"
+series ||--o{ storybook : "1 series\nhas many books\n(book_index order)"
+series ||--o{ story_request : "continuation target\n(anchored requests)"
 storybook ||--|{ storybook_version : "1 storybook\n1+ versions"
+storybook ||--o{ storybook_assignment : "1 story\nmany assignments"
+storybook ||--o{ rating : "1 story\nmany ratings"
+storybook ||--o{ story_request : "anchor_storybook_id\n(continuation source)"
 child_profile ||--o{ reading_state : "1 profile\nmany reading states"
 storybook ||--o{ reading_state : "1 story\nmany reader states"
 storybook_version ||--o{ reading_state : "(storybook_id, version)\ncomposite FK"
 child_profile ||--o{ completion : "1 profile\nmany completions"
 storybook_version ||--o{ completion : "(storybook_id, version)\ncomposite FK"
+child_profile ||--o{ rating : "1 profile\nmany ratings"
+child_profile ||--o{ storybook_assignment : "1 profile\nmany assignments"
+child_profile ||--o{ story_request : "1 profile\nmany requests\n(NULL = profile-less)"
 concept ||--o{ generation_job : "1 concept\nmany job attempts"
+concept |o--o| story_request : "created on approval\n(concept_id)"
 
-note right of generation_job
+note bottom of generation_job
   storybook_id is NOT a foreign key.
   A job may fail before any storybook
   row exists; a hard FK would block
@@ -151,6 +317,36 @@ note bottom of reading_state
   references storybook_version (pk).
   Prevents saving state for a version
   that does not exist.
+end note
+
+note bottom of user_t
+  Several tables carry a pure-attribution
+  FK to user.id, annotated inline on the
+  owning column but not drawn as an arrow
+  here (to keep the graph legible):
+  series.created_by, storybook.created_by,
+  storybook_version.approved_by,
+  storybook_assignment.assigned_by,
+  concept.created_by, story_request.reviewed_by,
+  moderation_threshold.updated_by,
+  moderation_threshold_audit.changed_by (NOT NULL),
+  moderation_setting.updated_by,
+  provider_model_allowlist.created_by/updated_by,
+  provider_model_allowlist_audit.changed_by (NOT NULL),
+  pipeline_event.actor_id (NULL iff actor_role='system').
+end note
+
+note bottom of pipeline_event
+  WS-D append-only lifecycle log (spec
+  decision D1): written from the same
+  transaction as the transition it
+  records; a DB trigger blocks UPDATE/
+  DELETE. entity_type/entity_id together
+  identify the row the event describes
+  (e.g. entity_type='story_request',
+  entity_id=<uuid>). Not a foreign key:
+  entity_type varies per row, so no
+  single-table FK target applies.
 end note
 
 @enduml

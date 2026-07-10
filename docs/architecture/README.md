@@ -22,7 +22,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 | [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
-| [Data Model](data-model.md) | 9 ORM tables, ER diagram, relationships |
+| [Data Model](data-model.md) | 19 ORM tables, ER diagram, relationships |
 | [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
 | [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5) |
 
@@ -33,8 +33,8 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | Diagram | File | Description |
 | ------- | ---- | ----------- |
 | End-to-End User Journey | [journey-end-to-end.puml](diagrams/journey-end-to-end.puml) / [.svg](diagrams/journey-end-to-end.svg) | Target-state UX flow across Child/Guardian/Admin/System lanes; shipped vs planned |
-| Kid-Surface Journey | [journey-kid.puml](diagrams/journey-kid.puml) / [.svg](diagrams/journey-kid.svg) | Zoomed child-facing flow: picker, library, reader, offline/conflict, error exits |
-| Guardian Surface Journey | [journey-guardian.puml](diagrams/journey-guardian.puml) / [.svg](diagrams/journey-guardian.svg) | Zoomed parent flow: login, intake, review/approve (ADR-005), assign |
+| Kid-Surface Journey | [journey-kid.puml](diagrams/journey-kid.puml) / [.svg](diagrams/journey-kid.svg) | Zoomed child-facing flow: picker, library, story request, reader, offline/conflict, error exits |
+| Guardian Surface Journey | [journey-guardian.puml](diagrams/journey-guardian.puml) / [.svg](diagrams/journey-guardian.svg) | Zoomed parent flow: login, intake, child story-request approval, review/approve (ADR-005), assign |
 | Journey Test Coverage | [journey-dev-coverage.puml](diagrams/journey-dev-coverage.puml) / [.svg](diagrams/journey-dev-coverage.svg) | Journey recolored by e2e/unit/none coverage; Playwright gap map |
 | C4 Context (L1) | [c4-context.puml](diagrams/c4-context.puml) / [.svg](diagrams/c4-context.svg) | Actors and external systems |
 | C4 Container (L2) | [c4-container.puml](diagrams/c4-container.puml) / [.svg](diagrams/c4-container.svg) | Runtime containers and data stores |
@@ -45,7 +45,7 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
 | Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
-| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 9 ORM tables and FK relationships |
+| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 19 ORM tables and FK relationships |
 | Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Supabase OIDC |
 
 To regenerate SVGs after editing a PUML file:
@@ -69,24 +69,38 @@ PWA (React 19, TypeScript)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
 FastAPI backend (Python 3.12)
-  - api/: health, library, reading, generation (guardian-only)
+  - api/: 15 routers -- health, library, reading, generation, profiles,
+                 families, ratings, assignments, approval (global admin),
+                 covers, moderation_thresholds, moderation_dashboard,
+                 provider_allowlist, me, story_requests
   - api/deps.py: Principal (role/family/profile) auth seam
   - storybook/: Pydantic models, condition DSL, evaluator
   - player/: StoryEngine (Runtime Semantics v1, pure)
   - validator/: gate (L1+L2+RL+SAFE), walk, report
-  - generation/: orchestrator (Stage A->B->C), prompts, PII guard,
-                 providers (3-leg cascade: OpenRouter haiku primary,
-                 OpenRouter sonnet fallback, then Ollama local),
+  - generation/: orchestrator (Stage A->B->C fresh_generation, or
+                 skeleton_fill via fill_skeleton), prompts, PII guard
+                 (guarded.PiiGuardedProvider wrapper), skeleton
+                 catalog + cell-aware matching (WS-C PR2), series
+                 continuation chaining (WS-G),
+                 providers (default 3-leg cascade: OpenRouter haiku
+                 primary, OpenRouter sonnet fallback, then Ollama local;
+                 Anthropic and Modal are additional per-job-selectable
+                 legs behind the admin ProviderModelAllowlist, WS-C PR1),
                  FallbackProvider cascade, queue, worker
+  - moderation/: classifiers, fidelity review, thresholds (per-band/
+                 category overrides + admin noise floor), repair
+  - events/: append-only pipeline_event writer (WS-D)
+  - publishing/: approve -> publish state machine
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |
-  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 19 tables, Alembic)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker
         -> OpenRouter haiku (leg 1, primary)
         -> OpenRouter sonnet (leg 2, fallback)
         -> Ollama (leg 3, local fallback)
+        -> Anthropic / Modal (admin-selectable, per job)
         -> [Phase 5] MinIO (blob_ref object storage)
 ```
 

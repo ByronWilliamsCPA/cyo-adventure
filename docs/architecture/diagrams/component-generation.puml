@@ -4,19 +4,44 @@
 ' CYO Adventure
 '
 ' Source files:
-'   src/cyo_adventure/generation/orchestrator.py  (staged pipeline)
+'   src/cyo_adventure/generation/orchestrator.py  (fresh_generation staged
+'                                                   pipeline: generate_story();
+'                                                   also fill_skeleton() for
+'                                                   the skeleton_fill method)
 '   src/cyo_adventure/generation/prompts.py       (cacheable prompt blocks)
-'   src/cyo_adventure/generation/pii.py           (PII guard)
+'   src/cyo_adventure/generation/pii.py           (PII guard: assert_prompt_pii_safe)
+'   src/cyo_adventure/generation/guarded.py       (PiiGuardedProvider: wraps a
+'                                                   provider so every complete()
+'                                                   call is PII-screened at entry)
 '   src/cyo_adventure/generation/provider.py      (GenerationProvider protocol,
-'                                                   build_provider() cascade)
+'                                                   build_provider(): resolves
+'                                                   mock|ollama|anthropic|
+'                                                   openrouter[+cascade]|modal,
+'                                                   with per-job provider_override/
+'                                                   model_override, WS-C PR1)
+'   src/cyo_adventure/generation/allowlist.py     (admin ProviderModelAllowlist
+'                                                   gate: is_enabled_allowlist_pair)
+'   src/cyo_adventure/generation/skeleton_catalog.py  (skeleton library index)
+'   src/cyo_adventure/generation/skeleton_match.py    (cell-aware matching +
+'                                                       recency weighting, WS-C PR2)
+'   src/cyo_adventure/generation/series_link.py   (series continuation
+'                                                   chaining: book_index,
+'                                                   AnchorContext, WS-G)
 '   src/cyo_adventure/generation/providers/openrouter.py
+'   src/cyo_adventure/generation/providers/anthropic.py
+'   src/cyo_adventure/generation/providers/modal.py
 '   src/cyo_adventure/generation/providers/ollama.py
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
 '   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
 '   src/cyo_adventure/generation/concept.py       (ConceptBrief)
 '   src/cyo_adventure/generation/queue.py         (RQ queue)
-'   src/cyo_adventure/generation/worker.py        (async RQ worker)
+'   src/cyo_adventure/generation/worker.py        (async RQ worker; selects
+'                                                   fresh_generation vs
+'                                                   skeleton_fill per job)
 '   src/cyo_adventure/validator/gate.py           (run_gate entrypoint)
+'   src/cyo_adventure/moderation/pipeline.py      (post-gate review, runs
+'                                                   after the validator gate;
+'                                                   see component-validator.puml)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
 ' ============================================================
 
@@ -34,67 +59,98 @@ package "Generation Pipeline" #FFF3E0 {
 
   component "ConceptBrief\ngeneration/concept.py" as concept #FFF3E0
 
-  component "PII Guard\ngeneration/pii.py\nassert_prompt_pii_safe()" as pii #FFEBEE
+  component "Skeleton Catalog + Matcher\ngeneration/skeleton_catalog.py\ngeneration/skeleton_match.py\ncell-aware matching + recency\nweighting (WS-C PR2)" as skeleton_match #FFE0B2
+
+  component "PiiGuardedProvider\ngeneration/guarded.py + pii.py\nwraps the resolved provider;\nscreens every complete() call\n(raises on PII hit)" as pii #FFEBEE
 
   component "Prompt Builder\ngeneration/prompts.py\nbuild_structure_prompt()\nbuild_prose_prompt()\nbuild_repair_prompt()" as prompts #FFF3E0
 
-  component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story()\nStage A -> B -> C" as orchestrator #FFE0B2
+  component "Generation Orchestrator\ngeneration/orchestrator.py\ngenerate_story() [fresh_generation:\nStage A -> B -> C]\nfill_skeleton() [skeleton_fill method]" as orchestrator #FFE0B2
+
+  component "Series Continuation\ngeneration/series_link.py\nAnchorContext, book_index\nassignment (WS-G)" as series_link #FFE0B2
 
   package "Provider Layer" #F3E5F5 {
-    component "FallbackProvider\ngeneration/providers/fallback.py\nLayer 2: ordered 3-leg cascade\ncircuit breaker per leg" as fallback #F3E5F5
+    component "ProviderModelAllowlist gate\ngeneration/allowlist.py\nis_enabled_allowlist_pair()\nadmin-editable (provider, model)" as allowlist #D1C4E9
+
+    component "build_provider()\ngeneration/provider.py\nresolves settings.generation_provider\nor a per-job provider_override/\nmodel_override (WS-C PR1)" as build_provider #F3E5F5
+
+    component "FallbackProvider\ngeneration/providers/fallback.py\nLayer 2: default 3-leg cascade\ncircuit breaker per leg" as fallback #F3E5F5
 
     component "OpenRouterProvider [primary]\ngeneration/providers/openrouter.py\nmodel: anthropic/claude-haiku-4.5\nLayer 1: transient retry\nexp. backoff, leg-fatal map" as openrouter #F3E5F5
 
     component "OpenRouterProvider [fallback]\ngeneration/providers/openrouter.py\nmodel: anthropic/claude-sonnet-4.6\nsame adapter, second leg" as openrouter_fb #F3E5F5
 
     component "OllamaProvider\ngeneration/providers/ollama.py\nLayer 1: transient retry\nlocal fallback (3rd leg)" as ollama_prov #F3E5F5
+
+    component "AnthropicProvider\ngeneration/providers/anthropic.py\ndirect-Anthropic leg (no cascade)\nadmin-selectable per job" as anthropic_prov #F3E5F5
+
+    component "ModalProvider\ngeneration/providers/modal.py\nexperimental Modal-hosted leg\nadmin-selectable per job" as modal_prov #F3E5F5
   }
 
   component "Validator Gate\nvalidator/gate.py\nrun_gate() -> GateResult\n(blocked, safety_flagged)" as gate #E8F5E9
 
+  component "Moderation Pipeline\nmoderation/pipeline.py\npost-gate review + repair" as moderation_pipe #C5E1A5
+
   component "RQ Queue\ngeneration/queue.py\nenqueue_generation()" as queue #E0E0E0
 
-  component "RQ Worker\ngeneration/worker.py\nasync, per job" as worker_comp #FFF8E1
+  component "RQ Worker\ngeneration/worker.py\nasync, per job; selects\nfresh_generation vs skeleton_fill" as worker_comp #FFF8E1
 
 }
 
 package "External LLM APIs" #E0E0E0 {
   component "OpenRouter API\nhttps://openrouter.ai" as or_api #E0E0E0
   component "Ollama API\nhttp://localhost:11434" as ol_api #E0E0E0
+  component "Anthropic API\nhttps://api.anthropic.com" as anthropic_api #E0E0E0
+  component "Modal-hosted endpoint\nMODAL_BASE_URL" as modal_api #E0E0E0
 }
 
-database "PostgreSQL\nGenerationJob row\nstatus: queued->running->\npassed|needs_review|failed" as pg #FFF8E1
+database "PostgreSQL\nGenerationJob row\nstatus: queued->running->\npassed|needs_review|failed|\nawaiting_manual_fill" as pg #FFF8E1
 
 ' --- Flow ---
 concept --> orchestrator : "brief"
-orchestrator --> prompts : "build stage prompt"
+worker_comp --> skeleton_match : "resolve skeleton\n(method=skeleton_fill jobs)"
+skeleton_match --> orchestrator : "matched skeleton path"
+orchestrator --> series_link : "assign book_index\n(anchored/continuation requests)"
+orchestrator --> prompts : "build stage prompt\n(fresh_generation only)"
 prompts --> pii : "StagePrompt"
-pii --> fallback : "guarded prompt\n(raises on PII hit)"
+worker_comp --> build_provider : "resolve provider\n(provider_override/model_override\nor settings default)"
+build_provider --> allowlist : "validate (provider, model)\nbefore constructing a live adapter"
+build_provider --> pii : "wrap resolved provider"
+pii --> fallback : "default cascade\n(provider=openrouter, fallback enabled)"
 fallback --> openrouter : "leg 1 (primary)"
 fallback ..> openrouter_fb : "leg 2\n(failover, ADR-003 amended)"
 fallback ..> ollama_prov : "leg 3\n(failover)"
+pii ..> anthropic_prov : "provider=anthropic\n(no cascade, admin-selected)"
+pii ..> modal_prov : "provider=modal\n(no cascade, admin-selected)"
 openrouter --> or_api : "POST /chat/completions\n(httpx, retries)"
 openrouter_fb --> or_api : "POST /chat/completions\n(httpx, retries)"
 ollama_prov --> ol_api : "POST /api/generate\n(httpx, retries)"
+anthropic_prov --> anthropic_api : "POST /v1/messages\n(httpx, retries)"
+modal_prov --> modal_api : "POST (httpx, retries)"
 fallback --> orchestrator : "raw text"
 orchestrator --> gate : "parsed JSON doc\nrun_gate(doc)"
 gate --> orchestrator : "GateResult\n(blocked, safety_flagged)"
+gate --> moderation_pipe : "clean/flagged doc\n(post-gate review)"
 
 note right of orchestrator
+  fresh_generation (generate_story()):
   Stage A (Structure): build_structure_prompt ->
-    PII-guard -> provider.complete -> parse JSON
+    provider.complete (PII-guarded) -> parse JSON
     -> run_gate
     If blocked: skip Stage B, enter repair
   Stage B (Prose): build_prose_prompt ->
-    PII-guard -> provider.complete -> parse JSON
-    -> run_gate
+    provider.complete -> parse JSON -> run_gate
   Stage C (Repair, bounded max_repairs=3):
     while blocked AND attempts < max_repairs:
-      build_repair_prompt -> PII-guard ->
-      provider.complete -> parse JSON ->
-      run_gate -> no-progress check
+      build_repair_prompt -> provider.complete ->
+      parse JSON -> run_gate -> no-progress check
 
-  Outcome:
+  skeleton_fill (fill_skeleton()): fills a matched
+  skeleton library file's <<FILL ...>> directives
+  instead of building a story from scratch; runs
+  its own bounded Stage-1 fidelity repair loop.
+
+  Outcome (either method):
     gate clean, not safety_flagged  -> "passed"
     gate clean, safety_flagged       -> "needs_review"
     blocked after exhausting repairs -> "needs_review"
@@ -102,7 +158,7 @@ note right of orchestrator
 end note
 
 queue --> worker_comp : "job_id"
-worker_comp --> orchestrator : "generate_story(brief, provider, pii)"
+worker_comp --> orchestrator : "generate_story(brief, provider, pii)\nor fill_skeleton(...)"
 worker_comp --> pg : "update GenerationJob\nstatus, report, storybook_id"
 
 @enduml

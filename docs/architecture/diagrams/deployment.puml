@@ -34,7 +34,8 @@ node "Family Devices\n[browsers, tablets]" as devices #E3F2FD {
   component "PWA\n(React 19 SPA)\nService Worker\n+ IndexedDB" as pwa_client #DDEEFF
 }
 
-cloud "OpenRouter API\nhttps://openrouter.ai" as openrouter_cloud #F3E5F5
+cloud "OpenRouter API\nhttps://openrouter.ai\n[default cascade legs 1-2]" as openrouter_cloud #F3E5F5
+cloud "Anthropic / Modal APIs\n[admin-selectable per-job\nprovider legs, WS-C PR1]" as extra_provider_cloud #F3E5F5
 cloud "Supabase Auth\n[OIDC provider, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_cloud #E0F7FA
 cloud "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler:\naws-0-us-east-1.pooler.supabase.com:5432\n(session mode; dedicated backend\nper connection, R1 Task 1.7)" as supabase_pg_cloud #E0F7FA
 
@@ -80,6 +81,7 @@ fastapi_app --> ollama_svc : "HTTP\n11434"
 rq_worker --> redis_db : "dequeue\n6379"
 rq_worker --> supabase_pg_cloud : "update job\nsession pooler :5432"
 rq_worker --> openrouter_cloud : "HTTPS\nLLM completions\n(primary)"
+rq_worker ..> extra_provider_cloud : "HTTPS\nadmin-selected job override\n(anthropic/modal)"
 rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
 pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
