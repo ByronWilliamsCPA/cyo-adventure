@@ -157,6 +157,8 @@ export type SeriesNextBookInfo = NonNullable<SeriesNextView['next']>
  * the server answers next: null (every expected absence). Errors propagate;
  * the caller treats any failure as "no continuation offered" (best-effort).
  */
+// #ASSUME: external-resources: GET /v1/series-next answers every expected absence (non-series book, no next book, next unpublished or unreadable) as 200 with next: null, never a 404; errors are reserved for the CURRENT book, so this adapter maps nothing and lets any failure propagate.
+// #VERIFY: backend api/reading.py get_series_next null-body contract; ContinueSeries.tsx swallows rejections to "no button" (readerApi.test.ts makeFetchSeriesNext tests).
 export function makeFetchSeriesNext(
   api: AxiosInstance
 ): (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null> {

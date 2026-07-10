@@ -200,15 +200,8 @@ def _series_blob(
     }
 
 
-async def _seed_series_chain(
-    session: AsyncSession,
-    *,
-    family_id: uuid.UUID,
-    profile_id: uuid.UUID,
-    guardian_id: uuid.UUID,
-    published_at: datetime,
-) -> None:
-    """Seed a two-book, state-carrying series for the dev profile.
+async def _seed_series_chain(session: AsyncSession) -> bool:
+    """Idempotently seed the two-book, state-carrying series for the dev profile.
 
     Inserts one ``Series`` row plus two published ``Storybook``/
     ``StorybookVersion``/``StorybookAssignment`` rows (books 1 and 2), so
@@ -216,19 +209,45 @@ async def _seed_series_chain(
     "Continue the series", and land on book 2. The ``Series`` row is flushed
     first so its real id can be embedded in each book's blob.
 
+    Guarded on book 1's fixed storybook id (mirroring the fixed-profile-id
+    guard in ``_seed_unrelated_family``) so a database seeded BEFORE this
+    fixture existed still gains it on a re-run. The dev family, guardian, and
+    child profile are resolved from the database: on a fresh seed the base
+    rows were just added (autoflush makes them visible), and on an
+    already-seeded database they are read back from their rows.
+
     Args:
         session: The active seed session.
-        family_id: The dev family the series belongs to.
-        profile_id: The dev child profile both books are assigned to.
-        guardian_id: The user who authored and approved both versions.
-        published_at: Timestamp stamped on both published versions.
+
+    Returns:
+        True when it inserted the series, False when it already existed or
+        the base dev family is absent.
     """
+    existing_book = await session.scalar(
+        select(Storybook.id).where(Storybook.id == _SERIES_BOOKS[0][0])
+    )
+    if existing_book is not None:
+        return False
+    # #ASSUME: data integrity: the series hangs off the base dev family,
+    # guardian, and child profile; if any is missing (a half-seeded database),
+    # skip rather than insert orphan rows pointing at absent parents.
+    # #VERIFY: test_seed_dev_data_backfills_series_chain_on_existing_db.
+    guardian = await session.scalar(
+        select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
+    )
+    child = await session.scalar(
+        select(User).where(User.authn_subject == _CHILD_SUBJECT)
+    )
+    if guardian is None or child is None or child.child_profile_id is None:
+        return False
+
+    published_at = datetime.now(UTC)
     series = Series(
-        family_id=family_id,
+        family_id=guardian.family_id,
         title=_SERIES_TITLE,
         age_band=_SERIES_AGE_BAND,
         carries_state=True,
-        created_by=guardian_id,
+        created_by=guardian.id,
     )
     session.add(series)
     await session.flush()
@@ -237,7 +256,7 @@ async def _seed_series_chain(
         session.add(
             Storybook(
                 id=story_id,
-                family_id=family_id,
+                family_id=guardian.family_id,
                 current_published_version=1,
                 status="published",
                 series_id=series.id,
@@ -249,22 +268,25 @@ async def _seed_series_chain(
                 storybook_id=story_id,
                 version=1,
                 blob=_series_blob(story_id, title, book_index, str(series.id)),
-                approved_by=guardian_id,
+                approved_by=guardian.id,
                 published_at=published_at,
             )
         )
-        # #ASSUME: concurrency: shares the composite-PK / no-rerun assumption
-        # tagged on the published-story loop above; the function-level early
-        # return in seed_dev_data is the sole guard against a second run
-        # duplicating these rows.
-        # #VERIFY: test_seed_dev_data_seeds_series_chain.
+        # #ASSUME: concurrency: StorybookAssignment has a composite primary
+        # key on (child_profile_id, storybook_id); the fixed-id existence
+        # check at the top of this function (not seed_dev_data's early
+        # return, which guards the base seed only) is what keeps a second
+        # run from duplicating these rows.
+        # #VERIFY: test_seed_dev_data_seeds_series_chain,
+        # test_seed_dev_data_backfills_series_chain_on_existing_db.
         session.add(
             StorybookAssignment(
-                child_profile_id=profile_id,
+                child_profile_id=child.child_profile_id,
                 storybook_id=story_id,
-                assigned_by=guardian_id,
+                assigned_by=guardian.id,
             )
         )
+    return True
 
 
 async def _seed_unrelated_family(session: AsyncSession) -> bool:
@@ -342,11 +364,19 @@ async def seed_dev_data(
             select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
         )
         if existing is not None:
-            # Commit any just-added cross-family fixture before returning; the
-            # main dev family is already present, but the fixture may not be.
-            if unrelated_profile_seeded:
+            # The early return below guards the BASE seed only. Seed groups
+            # added after dev databases already existed (the cross-family
+            # fixture above, the Ember Trail series here) carry their own
+            # existence checks and run before it, so an already-seeded
+            # database still gains them on a re-run; gating them on
+            # guardian-absence would skip them forever.
+            series_chain_seeded = await _seed_series_chain(session)
+            if unrelated_profile_seeded or series_chain_seeded:
                 await session.commit()
-            print("Dev data already seeded; refreshed cross-family fixture if missing.")
+            print(
+                "Dev data already seeded; refreshed late-added fixtures "
+                "(cross-family profile, series chain) if missing."
+            )
             return
 
         family = Family(name="Dev Family")
@@ -456,13 +486,11 @@ async def seed_dev_data(
             )
         )
 
-        await _seed_series_chain(
-            session,
-            family_id=family.id,
-            profile_id=profile.id,
-            guardian_id=guardian.id,
-            published_at=published_at,
-        )
+        # Fresh-database path: the series chain needs the base family,
+        # guardian, and child profile just added above, so it cannot run at
+        # the pre-early-return site the way _seed_unrelated_family does; its
+        # internal existence check still makes this call idempotent.
+        await _seed_series_chain(session)
 
         await session.commit()
         print(

@@ -342,6 +342,47 @@ async def test_series_next_other_familys_profile_forbidden(
 
 @pytest.mark.integration
 @pytest.mark.asyncio
+async def test_series_next_current_book_not_readable_forbidden(
+    client: AsyncClient, seed: Seed, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """A profile that cannot read the CURRENT book gets 403, not next: null.
+
+    Book 1 exists and is published, but it is another family's catalog title
+    with no assignment for the querying profile, so the read gate on the
+    CURRENT book raises AuthorizationError before any series row is touched.
+    Book 2 IS assigned to the profile: the 403 proves an unreadable current
+    book can never be used to probe series structure, even when the next book
+    itself would be readable.
+    """
+    async with sessions() as session:
+        series = await _seed_series(session, seed.family_id, seed.admin_user_id)
+        await _seed_book(
+            session,
+            series,
+            seed,
+            story_id="s_next_g1",
+            book_index=1,
+            visibility="catalog",
+        )
+        await _seed_book(
+            session,
+            series,
+            seed,
+            story_id="s_next_g2",
+            book_index=2,
+            visibility="catalog",
+            assign_to=seed.other_child_profile_id,
+        )
+        await session.commit()
+    resp = await client.get(
+        f"/api/v1/series-next/{seed.other_child_profile_id}/s_next_g1",
+        headers=auth(seed.other_child_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
 async def test_series_next_unknown_current_book_is_404(
     client: AsyncClient, seed: Seed
 ) -> None:

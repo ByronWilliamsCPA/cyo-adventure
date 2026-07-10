@@ -236,10 +236,18 @@ export function ReaderPage({
     // re-continue can never clobber a child's place (WS-G spec section 6).
     // #VERIFY: ReaderPage.test.tsx "ignores a continuation when saved
     // progress exists".
-    const initialReading =
-      saved === undefined && continuation !== undefined
-        ? startContinuation(cached, continuation.entryNode, continuation.varState)
-        : saved
+    let initialReading = saved
+    if (saved === undefined && continuation !== undefined) {
+      try {
+        initialReading = startContinuation(cached, continuation.entryNode, continuation.varState)
+      } catch (error) {
+        // Same failure mapping as the fetch above: a corrupt story blob (e.g.
+        // a dangling start node) makes startContinuation throw, and an
+        // unhandled throw here would leave the page stuck in Loading.
+        if (!stale()) setPageState({ phase: loadErrorPhase(error) })
+        return
+      }
+    }
     setPageState({ phase: 'reading', story: cached, initialReading })
   }, [fetchStory, fetchServerState, profileId, storybookId, version, continuation])
 

@@ -180,4 +180,60 @@ describe('Reader series continuation', () => {
     reachEnding(seriesStory)
     expect(screen.queryByTestId('continue-series')).toBeNull()
   })
+
+  // The lantern fixture only has satisfying endings, so the non-satisfying
+  // boundary needs its own minimal story. The gate is on ending.kind
+  // (SATISFYING_ENDING_KINDS = success/completion), not valence.
+  function endedSeriesStory(ending: NonNullable<Storybook['nodes'][number]['ending']>): Storybook {
+    return {
+      schema_version: '2.0',
+      id: 's_series_end',
+      version: 1,
+      title: 'Series End',
+      metadata: { series: seriesBlock },
+      variables: [],
+      start_node: 'n_start',
+      nodes: [
+        {
+          id: 'n_start',
+          body: 'begin',
+          is_ending: false,
+          choices: [{ id: 'c_end', label: 'End it', target: 'n_end' }],
+        },
+        { id: 'n_end', body: 'done', is_ending: true, choices: [], ending },
+      ],
+    }
+  }
+
+  function reachAdHocEnding(story: Storybook) {
+    render(
+      <MemoryRouter>
+        <Reader story={story} profileId="p1" fetchSeriesNext={fetchNext} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_end'))
+  }
+
+  it('does not offer continuation for a non-satisfying ending (kind death)', () => {
+    reachAdHocEnding(
+      endedSeriesStory({ id: 'e_dead', kind: 'death', valence: 'negative', title: 'Lost' })
+    )
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+    expect(screen.queryByTestId('continue-series')).toBeNull()
+  })
+
+  it('gates on kind, not valence: a positive discovery ending offers no continuation', () => {
+    reachAdHocEnding(
+      endedSeriesStory({ id: 'e_found', kind: 'discovery', valence: 'positive', title: 'Found' })
+    )
+    expect(screen.getByTestId('ending-screen')).toBeTruthy()
+    expect(screen.queryByTestId('continue-series')).toBeNull()
+  })
+
+  it('offers continuation at the satisfying boundary (kind completion)', async () => {
+    reachAdHocEnding(
+      endedSeriesStory({ id: 'e_done', kind: 'completion', valence: 'neutral', title: 'Done' })
+    )
+    expect(await screen.findByTestId('continue-series')).toBeTruthy()
+  })
 })

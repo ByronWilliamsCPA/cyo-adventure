@@ -736,4 +736,69 @@ describe('ReaderPage', () => {
     expect(row?.current_node).toBe('n_one')
     expect(row?.var_state).toEqual({ courage: 5 })
   })
+
+  it('ignores a continuation when local (IndexedDB) progress exists', async () => {
+    // The server-origin variant above resumes via fetchServerState; this one
+    // pins the other no-clobber leg: progress already in the local cache must
+    // win over the seed, and the local row must survive unchanged.
+    const localSaved: ReadingState = {
+      current_node: 'n_one',
+      var_state: { courage: 4 },
+      path: ['n_one'],
+      visit_set: ['n_one'],
+      version: 1,
+      state_revision: 3,
+      save_slots: {},
+    }
+    await putReadingState('p_seed_local', 's_continuation_seed', localSaved)
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    const continuation: ContinuationSeed = { entryNode: 'n_two', varState: { courage: 2 } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(continuationStory)}
+          fetchServerState={fetchServerState}
+          continuation={continuation}
+          profileId="p_seed_local"
+          storybookId="s_continuation_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Local progress wins: no continuation jump, no server consult, and the
+    // stored row keeps the local position and vars.
+    expect(screen.getByTestId('passage-body').textContent).toContain('chapter one starts')
+    expect(fetchServerState).not.toHaveBeenCalled()
+    const row = await getReadingState('p_seed_local', 's_continuation_seed')
+    expect(row?.current_node).toBe('n_one')
+    expect(row?.var_state).toEqual({ courage: 4 })
+  })
+
+  it('shows the error screen (not a stuck Loading) when the continuation seed cannot start', async () => {
+    // A corrupt blob whose start_node points at no node: startContinuation
+    // throws while seeding, and load() must map that to the error phase.
+    const corrupt: Storybook = {
+      ...continuationStory,
+      id: 's_corrupt_seed',
+      start_node: 'n_missing',
+    }
+    const continuation: ContinuationSeed = { entryNode: null }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(corrupt)}
+          fetchServerState={() => Promise.resolve(null)}
+          continuation={continuation}
+          profileId="p_seed_corrupt"
+          storybookId="s_corrupt_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    expect(await screen.findByText('Something went wrong')).toBeTruthy()
+    expect(screen.queryByTestId('loading')).toBeNull()
+  })
 })

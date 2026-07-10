@@ -146,6 +146,25 @@ describe('startContinuation', () => {
     expect(state.var_state.courage).toBe(5)
   })
 
+  it('clamps a below-bounds carried int up to the declared lower bound', () => {
+    // min (1) sits above initial (2) here so the three outcomes are
+    // distinguishable: clamped-to-min (1), skipped-keeps-initial (2), or
+    // seeded raw (-3).
+    const bounded: Storybook = {
+      ...story,
+      variables: [{ name: 'courage', type: 'int', initial: 2, min: 1, max: 5 }],
+    }
+    const state = startContinuation(bounded, 'n_one', { courage: -3 })
+    expect(state.var_state.courage).toBe(1)
+  })
+
+  it('rejects a non-integer carried value for an int variable (initial stands)', () => {
+    // Distinct from the wrong-type test above: 2.5 is a number, but the
+    // Number.isInteger guard still rejects it rather than clamping it.
+    const state = startContinuation(story, 'n_one', { courage: 2.5 })
+    expect(state.var_state.courage).toBe(0)
+  })
+
   it('falls back to start_node for a null or unknown entry node', () => {
     expect(startContinuation(story, null, undefined).current_node).toBe('n_one')
     expect(startContinuation(story, 'n_missing', undefined).current_node).toBe('n_one')

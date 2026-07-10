@@ -703,7 +703,7 @@
       "name": "library",
       "item": [
         {
-          "name": "GET /library as guardian (two seeded published stories)",
+          "name": "GET /library as guardian (four seeded published stories)",
           "event": [
             {
               "listen": "test",
@@ -712,7 +712,7 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"stories\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"tier\": {\"type\": \"integer\"}, \"reading_level_target\": {\"type\": \"number\"}, \"node_count\": {\"type\": \"integer\", \"default\": 0}, \"rating\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"progress\": {\"anyOf\": [{\"properties\": {\"current_node\": {\"type\": \"string\"}, \"nodes_visited\": {\"type\": \"integer\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"current_node\", \"nodes_visited\", \"updated_at\"]}, {\"type\": \"null\"}]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"book_index\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"cover_url\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"title\", \"version\", \"age_band\", \"tier\", \"reading_level_target\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"stories\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"both seeded published stories are present\", function () { var body = pm.response.json(); var tide = body.stories.find(function (s) { return s.title === \"The Tide Pool Mystery\"; }); var clockwork = body.stories.find(function (s) { return s.title === \"The Clockwork Garden\"; }); pm.expect(tide).to.not.be.undefined; pm.expect(clockwork).to.not.be.undefined; pm.expect(body.stories.length).to.eql(2); pm.collectionVariables.set(\"storybook_id_1\", tide.id); pm.collectionVariables.set(\"storybook_title_1\", tide.title); pm.collectionVariables.set(\"storybook_id_2\", clockwork.id); });"
+                  "pm.test(\"all seeded published stories are present\", function () { var body = pm.response.json(); var tide = body.stories.find(function (s) { return s.title === \"The Tide Pool Mystery\"; }); var clockwork = body.stories.find(function (s) { return s.title === \"The Clockwork Garden\"; }); var ember1 = body.stories.find(function (s) { return s.title === \"Ember Trail 1\"; }); var ember2 = body.stories.find(function (s) { return s.title === \"Ember Trail 2\"; }); pm.expect(tide).to.not.be.undefined; pm.expect(clockwork).to.not.be.undefined; pm.expect(ember1).to.not.be.undefined; pm.expect(ember2).to.not.be.undefined; pm.expect(body.stories.length).to.eql(4); pm.collectionVariables.set(\"storybook_id_1\", tide.id); pm.collectionVariables.set(\"storybook_title_1\", tide.title); pm.collectionVariables.set(\"storybook_id_2\", clockwork.id); });"
                 ],
                 "type": "text/javascript"
               }

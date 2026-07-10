@@ -231,8 +231,10 @@ async def get_series_next(
     # #CRITICAL: security: profile authorization and the current book's read
     # gate run before any series resolution so this route cannot be used to
     # probe another family's series structure.
-    # #VERIFY: test_series_next_other_familys_profile_forbidden,
-    # test_series_next_unknown_current_book_is_404.
+    # #VERIFY: test_series_next_other_familys_profile_forbidden (the
+    # authorize_profile gate) and
+    # test_series_next_current_book_not_readable_forbidden (the current
+    # book's read gate raising AuthorizationError -> 403).
     parsed = _parse_uuid(profile_id, "profile_id")
     authorize_profile(ctx.principal, parsed)
     book = await _load_readable_storybook(ctx, storybook_id, parsed)

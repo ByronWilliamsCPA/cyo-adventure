@@ -6,6 +6,7 @@ import {
   ForbiddenError,
   StoryNotFoundError,
   makeFetchServerState,
+  makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
 } from './readerApi'
@@ -115,5 +116,39 @@ describe('makeRecordCompletion', () => {
       version: 1,
       ending_id: 'e_treasure_found',
     })
+  })
+})
+
+describe('makeFetchSeriesNext', () => {
+  const NEXT_BOOK = {
+    storybook_id: 's_book2',
+    version: 3,
+    title: 'Book 2',
+    series_entry_node: 'n_start',
+    carries_state: true,
+  }
+
+  it('resolves the next-book payload from the series-next endpoint', async () => {
+    const get = vi.fn(() => Promise.resolve({ data: { next: NEXT_BOOK } }))
+    const fetchSeriesNext = makeFetchSeriesNext({ get } as unknown as AxiosInstance)
+    await expect(fetchSeriesNext('p1', 's1')).resolves.toEqual(NEXT_BOOK)
+    expect(get).toHaveBeenCalledWith('/v1/series-next/p1/s1')
+  })
+
+  it('maps next: null (every expected absence) to null', async () => {
+    const fetchSeriesNext = makeFetchSeriesNext(axiosGetResolve({ data: { next: null } }))
+    await expect(fetchSeriesNext('p1', 's1')).resolves.toBeNull()
+  })
+
+  it('propagates a 404 unchanged: absence is next: null, an error means the current book', async () => {
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 404 } })
+    const fetchSeriesNext = makeFetchSeriesNext(axiosGetReject(err))
+    await expect(fetchSeriesNext('p1', 's1')).rejects.toBe(err)
+  })
+
+  it('propagates a server error unchanged (the caller treats any failure as no continuation)', async () => {
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
+    const fetchSeriesNext = makeFetchSeriesNext(axiosGetReject(err))
+    await expect(fetchSeriesNext('p1', 's1')).rejects.toBe(err)
   })
 })

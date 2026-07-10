@@ -60,7 +60,7 @@ branch. No migration, no new event types, no offline-layer changes.
 ## Key facts an implementer must not re-derive
 
 1. **The single read gate.** `_load_readable_storybook(ctx, storybook_id, profile_id)` in
-   [reading.py:81-132](../../src/cyo_adventure/api/reading.py) is the ONLY access check on every
+   `src/cyo_adventure/api/reading.py:81-132` is the ONLY access check on every
    reading route: published + own-family always readable; cross-family requires
    `visibility == "catalog"` plus a `StorybookAssignment` row, else 403; unknown id 404. The new
    route reuses it for both the current book (raise) and the sibling (catch, map to null).

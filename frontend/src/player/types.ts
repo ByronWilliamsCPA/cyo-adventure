@@ -17,10 +17,16 @@ export interface Effect {
   once?: boolean
 }
 
+// Closed unions, never bare strings, mirroring the backend's EndingKind and
+// Valence StrEnums (storybook/models.py): the response side keeps the same
+// compile-time guarantee as the schema that produced it.
+export type EndingKind = 'success' | 'setback' | 'death' | 'capture' | 'completion' | 'discovery'
+export type EndingValence = 'positive' | 'neutral' | 'negative'
+
 export interface Ending {
   id: string
-  kind: string
-  valence: string
+  kind: EndingKind
+  valence: EndingValence
   title: string
 }
 

@@ -38,6 +38,15 @@ export interface ContinuationSeed {
   varState?: VarState
 }
 
+// #ASSUME: security: router location.state is untrusted input; any page can
+// craft it via history manipulation, so no field of a would-be continuation
+// may be trusted without a shape check, and a forged seed must never reach
+// the engine unfiltered.
+// #VERIFY: entryNode is accepted only as a string (else null) and varState
+// only as an object; startContinuation re-filters every carried value
+// (declared-name match, type check, bounds clamp) and falls back to
+// start_node for an unknown entry node. Covered by series.test.ts
+// "parseContinuation" and engine.test.ts "startContinuation".
 /**
  * Parse a router location.state into a ContinuationSeed, defensively: state
  * is attacker-shapeable via history manipulation, so every field is checked.
