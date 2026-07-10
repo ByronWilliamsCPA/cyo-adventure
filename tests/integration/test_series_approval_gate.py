@@ -171,6 +171,42 @@ async def test_valid_chain_approves(
         assert book2.status == "published"
 
 
+async def test_archived_sibling_still_counts_in_chain(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    # Archiving book 1 must not break SR-2 contiguity for later approvals:
+    # archive() only flips status and no archived->published transition
+    # exists, so a status=="published" sibling filter would block book 2's
+    # approval forever. The gate keys on current_published_version instead.
+    async with sessions() as session:
+        series, admin_id = await _seed_series(session)
+        sid = str(series.id)
+        book1 = await _seed_book(
+            session,
+            series,
+            story_id="b1",
+            book_index=1,
+            status="published",
+            blob=_doc("b1", series_id=sid, book_index=1),
+        )
+        # Mirror publishing.service.archive(): a status flip only; the
+        # published version pointer and the book_index slot are retained.
+        book1.status = "archived"
+        await session.flush()
+        book2 = await _seed_book(
+            session,
+            series,
+            story_id="b2",
+            book_index=2,
+            status="in_review",
+            blob=_doc("b2", series_id=sid, book_index=2, entry="n0"),
+        )
+        principal = _principal(admin_id, series.family_id)
+        row = await approve(session, principal, book2, 1)
+        assert row.approved_by is not None
+        assert book2.status == "published"
+
+
 async def test_sr_violation_blocks_approval(
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
@@ -195,8 +231,9 @@ async def test_sr_violation_blocks_approval(
             blob=_doc("b2", series_id=sid, book_index=2, entry="n0"),
         )
         principal = _principal(admin_id, series.family_id)
-        with pytest.raises(BusinessLogicError, match="SR-5"):
+        with pytest.raises(BusinessLogicError, match="SR-5") as excinfo:
             await approve(session, principal, book2, 1)
+        assert excinfo.value.details["rule"] == "series_validation"
         assert book2.status == "in_review"  # transition never happened
 
 

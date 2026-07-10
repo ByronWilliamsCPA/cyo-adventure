@@ -117,8 +117,11 @@ async def _series_chain_docs(
 ) -> list[StorybookDoc] | None:
     """Load the parsed chain-so-far for a series approval, or None to skip.
 
-    The chain is every published sibling's current published version plus the
-    version under approval. Grandfather rule (WS-G G4): if ANY chain member
+    The chain is every sibling that retains a published version (including
+    archived books, which keep ``current_published_version`` and their
+    ``book_index`` slot; excluding them would break SR-2 contiguity and
+    permanently block later approvals once any earlier book is archived) plus
+    the version under approval. Grandfather rule (WS-G G4): if ANY chain member
     predates WS-G (no embedded series block) or no longer parses against the
     current schema, return None so the gate is skipped with a warning;
     approved blobs are immutable, so a legacy chain can never be made to
@@ -145,7 +148,12 @@ async def _series_chain_docs(
                 .where(
                     Storybook.series_id == storybook.series_id,
                     Storybook.id != storybook.id,
-                    Storybook.status == "published",
+                    # #EDGE: data-integrity: archived siblings still occupy
+                    # their book_index slot and there is no archived->published
+                    # transition, so filtering on status=="published" would
+                    # make SR-2 fail forever once an earlier book is archived.
+                    # #VERIFY: test_archived_sibling_still_counts_in_chain.
+                    Storybook.current_published_version.is_not(None),
                 )
             )
         )
@@ -157,18 +165,26 @@ async def _series_chain_docs(
         try:
             doc = StorybookDoc.model_validate(row.blob)
         except PydanticValidationError:
-            _logger.warning(
+            # A persisted (and for siblings, previously approved) blob failing
+            # full schema parse signals data corruption or a schema regression,
+            # never the expected legacy shape; log at ERROR with the parse
+            # traceback so a systemic break that silently disables this gate is
+            # distinguishable from the benign missing-series-block skip below.
+            _logger.exception(
                 "series_gate.skipped_unparseable_blob",
                 storybook_id=row.storybook_id,
                 version=row.version,
                 series_id=str(storybook.series_id),
+                approving_storybook_id=storybook.id,
             )
             return None
         if doc.metadata.series is None:
             _logger.warning(
                 "series_gate.skipped_legacy_chain",
                 storybook_id=row.storybook_id,
+                version=row.version,
                 series_id=str(storybook.series_id),
+                approving_storybook_id=storybook.id,
             )
             return None
         docs.append(doc)
@@ -239,9 +255,9 @@ async def approve(
         msg = "cannot approve a version that has never been screened by moderation"
         raise BusinessLogicError(msg, rule="approve_without_moderation")
     # #ASSUME: data-integrity: the chain read and the approval write share the
-    # session's transaction; siblings are selected by status="published", so a
-    # chain member mid-approval in another transaction is simply not yet part
-    # of the chain-so-far.
+    # session's transaction; siblings are selected by a non-null
+    # current_published_version, so a chain member mid-approval in another
+    # transaction is simply not yet part of the chain-so-far.
     # #EDGE: concurrency: two same-series approvals racing can make the later
     # gate read a stale chain and fail SR-2 spuriously; the admin retries
     # after the first commit. No cross-series lock is taken for this.
