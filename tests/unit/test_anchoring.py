@@ -245,3 +245,49 @@ async def test_protagonist_names_valid_name_returns_single_name() -> None:
     names = await _protagonist_names(session, "s_1")
 
     assert names == ["Zara"]
+
+
+def test_extracts_variable_names_from_blob() -> None:
+    blob = _blob()
+    blob["variables"] = [
+        {"name": "courage", "type": "int", "initial": 0, "min": 0, "max": 5},
+        {"name": "has_lantern", "type": "bool", "initial": False},
+    ]
+    ctx = anchor_context_from_blob(blob, character_names=[])
+    assert ctx.variable_names == ["courage", "has_lantern"]
+
+
+def test_variable_names_default_empty_when_absent() -> None:
+    ctx = anchor_context_from_blob(_blob(), character_names=[])
+    assert ctx.variable_names == []
+
+
+def test_malformed_variables_degrade_not_raise() -> None:
+    blob = _blob()
+    blob["variables"] = [
+        "not_a_dict",
+        {"name": 7},
+        {"name": ""},
+        {"type": "int"},
+        {"name": "kindness", "type": "int", "initial": 1},
+    ]
+    ctx = anchor_context_from_blob(blob, character_names=[])
+    assert ctx.variable_names == ["kindness"]
+
+
+def test_variable_names_capped_at_ten() -> None:
+    blob = _blob()
+    blob["variables"] = [
+        {"name": f"var_{i:02d}", "type": "bool", "initial": False} for i in range(12)
+    ]
+    ctx = anchor_context_from_blob(blob, character_names=[])
+    assert len(ctx.variable_names) == 10
+    assert ctx.variable_names[0] == "var_00"
+
+
+def test_overlong_variable_name_is_truncated_not_rejected() -> None:
+    """A malformed blob must degrade, not raise: 200 chars is _BoundedText's cap."""
+    blob = _blob()
+    blob["variables"] = [{"name": "x" * 500, "type": "bool", "initial": False}]
+    ctx = anchor_context_from_blob(blob, character_names=[])
+    assert ctx.variable_names == ["x" * 200]

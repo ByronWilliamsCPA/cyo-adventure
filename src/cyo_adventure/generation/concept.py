@@ -177,6 +177,13 @@ class AnchorContext(BaseModel):
     ``model_dump_json`` wholesale), so the generated book can follow on
     thematically without embedding document-level Series metadata (SR-1..SR-7
     stay dormant until WS-G).
+
+    ``variable_names`` (WS-G PR 3, decision G3) lists the anchor's declared
+    story-state variable names, read from the published blob's top-level
+    ``variables`` array. The structure prompt instructs the generator to reuse
+    these exact names where the continuation tracks the same state; the
+    reader's name-matched var-state seeding (spec section 4, PR 2) only
+    carries state when the names match.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -184,6 +191,7 @@ class AnchorContext(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     character_names: list[_BoundedText] = Field(default_factory=list, max_length=5)
     ending_summary: str = Field(default="", max_length=600)
+    variable_names: list[_BoundedText] = Field(default_factory=list, max_length=10)
 
 
 class ConceptBrief(BaseModel):

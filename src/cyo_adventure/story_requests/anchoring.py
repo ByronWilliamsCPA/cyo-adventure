@@ -36,6 +36,8 @@ _EXCERPT_CHARS = 150
 _SUMMARY_CHARS = 600
 _TITLE_CHARS = 200
 _MAX_CHARACTER_NAMES = 5
+_MAX_VARIABLE_NAMES = 10
+_VARIABLE_NAME_CHARS = 200  # matches concept._BoundedText's max_length
 
 
 async def resolve_anchor(
@@ -184,6 +186,27 @@ async def _protagonist_names(session: AsyncSession, storybook_id: str) -> list[s
     return []
 
 
+def _variable_names_from_blob(blob: Mapping[str, object]) -> list[str]:
+    """Collect declared variable names from a blob's ``variables`` array.
+
+    Same defensive contract as the rest of this module: a malformed entry is
+    skipped, an overlong name is truncated, nothing raises.
+    """
+    names: list[str] = []
+    variables = blob.get("variables")
+    if not isinstance(variables, list):
+        return names
+    for variable in variables:
+        if len(names) >= _MAX_VARIABLE_NAMES:
+            break
+        if not isinstance(variable, dict):
+            continue
+        name = variable.get("name")
+        if isinstance(name, str) and name:
+            names.append(name[:_VARIABLE_NAME_CHARS])
+    return names
+
+
 def anchor_context_from_blob(
     blob: Mapping[str, object], *, character_names: list[str]
 ) -> AnchorContext:
@@ -218,4 +241,5 @@ def anchor_context_from_blob(
         title=safe_title[:_TITLE_CHARS],
         character_names=character_names[:_MAX_CHARACTER_NAMES],
         ending_summary=summary,
+        variable_names=_variable_names_from_blob(blob),
     )
