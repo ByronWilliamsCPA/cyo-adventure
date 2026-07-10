@@ -2,7 +2,8 @@
 schema_type: planning
 title: "R1 Deferred-Debt Register"
 description: "Consolidated register of the accepted Minors and deferred items from the R1 gap-closure final
-  reviews (PRs #105-#109, #111, #112), with severity, source, and the R2 gate flags."
+  reviews (PRs #105-#109, #111, #112), plus the pre-R1 generation/safety/tooling debt carried in
+  completion-plan.md (merged, doc archived), with severity, source, and the R2 gate flags."
 tags:
   - planning
   - technical-debt
@@ -40,6 +41,14 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | C2 | **[Resolved]** Issue #110: `replayQueue` reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect. Resolved by Workstream B (PR #145): `useReplayOnReconnect` flushes on reader mount and on the browser `online` event; a replayed 409 surfaces a conflict dialog; a new e2e-real spec (`reader-reload-resume.spec.ts`) covers the resume path. | PR #112 review discovery; resolved PR #145 | Medium | Closed; no further action |
 | C3 | Blocked story-request submissions bypass the 5-pending cap, so a kid can retry a blocked text repeatedly and each retry spends classifier budget | PR #108 accepted design | Medium | Count blocked submissions against the cap, or rate-limit screening per child |
 | C4 | No true-concurrent test of the `SELECT ... FOR UPDATE` row-lock guard on request approval (double-approve race is guarded in code, tested only sequentially) | PR #108/#109 reviews | Low | Add a two-session integration test with a barrier, or accept the lock as sufficient |
+| C5 | `choice_path` is optional in reading-state saves this slice; absent it, only the structural floor runs, not full deterministic replay (`api/reading.py`) | Slice 3 (#45) accepted design; migrated from `completion-plan.md` (merged, doc archived) | Medium | Update the React player to send `choice_path`, regenerate the client, then make the field required so replay runs on every save |
+
+## Generation and safety debts (pre-R1, migrated from completion-plan.md)
+
+| # | Debt | Source | Severity | Suggested action |
+| --- | --- | --- | --- | --- |
+| GS1 | Tier-2 generation yield weak (3/7 on the 2026-06-22 live run vs Tier-1's 11/13); dominant failure was L1-7 "budget" (branch depth over the band cap, ending count off-brief) | Phase 2b live run, `yield-results/phase-2b-2026-06-22-analysis.md` | Medium | Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever per `phase-2b-live-provider.md`); re-measure before relying on Tier-2 generation in production |
+| GS2 | Adversarial safety gate's "flag and route to human review" claim is unverified for the model-dependent classes: no live-model adversarial run has been executed (blocked on credential availability in this environment, not code) | `safety/adversarial-safety-evaluation.md`, Findings A/B/E | Medium | Run the credentialed adversarial harness (`scripts/adversarial_harness.py`) against a live review model and archive per-class results |
 
 ## UX debts
 
@@ -61,6 +70,8 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | T5 | e2e-real auth helper hardcodes `user.id = 'e2e-user'` (fine while nothing reads it) | PR #112 task 1 ledger | Low | Parameterize when a test needs real per-user ids |
 | T6 | Intake poll test has ~2s margin (8s interval vs 10s timeout); flake risk under CI load | PR #112 task 5 ledger | Low | Bump timeout to 12s on first flake |
 | T7 | Real smoke tier is local-only by design (`--workers=1`; backend per-IP rate limiter 100rpm/burst 10 trips at 2 workers) | PR #112 user decision | Info | Revisit if a staging environment appears; not a defect |
+| T8 | `esbuild` Renovate re-proposal: no `renovate.json` rule pins/groups `esbuild` to Vite's range, so the #22 bump keeps getting re-proposed | Carried TODO; migrated from `completion-plan.md` (merged, doc archived) | Low | Open a `renovate.json` rule pinning/grouping `esbuild` to Vite's range |
+| T9 | markdownlint whole-repo table/heading debt (non-gating, pre-push only) | Carried TODO; migrated from `completion-plan.md` (merged, doc archived) | Low | Address opportunistically; do not block planning-doc updates on it |
 
 ## Policy and architecture deferrals (adjacent, pre-R1)
 

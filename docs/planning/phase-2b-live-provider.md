@@ -29,8 +29,8 @@ Both acceptance criteria below are **met**, and the work package is closed:
 The dominant Tier-2 failure was L1-7 "budget" (branch depth over the band cap, ending
 count off-brief). Tightening the Stage A structure prompt to state band budgets inline
 and numerically (the highest-leverage, model-independent fix described under In Scope
-below) is the open follow-up, tracked as a quality item in
-[`completion-plan.md`](./completion-plan.md), not a Phase-3 blocker.
+below) is the open follow-up, tracked as GS1 in
+[`r1-deferred-debt-register.md`](./r1-deferred-debt-register.md), not a Phase-3 blocker.
 
 The remainder of this document is the original work-package specification, retained for
 provenance.

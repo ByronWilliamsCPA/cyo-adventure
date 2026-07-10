@@ -150,7 +150,7 @@ async def _validate_against_pinned_version(
     # at the two sites that actually write (create, and a version-matched
     # update), so a stale-session version mismatch can 409 before this runs.
     # #ASSUME: security: choice_path is optional this slice; absent it, only the
-    # structural floor runs (completion-plan.md tracks making it required).
+    # structural floor runs (tracked as C5 in r1-deferred-debt-register.md).
     # #VERIFY: player/replay.py validate_reading_state; missing version -> 404.
     version_row = await ctx.session.get(StorybookVersion, (storybook_id, body.version))
     if version_row is None:

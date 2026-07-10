@@ -191,8 +191,8 @@ one child.
   findings (including bright-line score-0.0 blocks) and unscored findings
   always surface. This floor is orthogonal to the per-band threshold: the
   age-band policy governs the guardian/kid surfaces, the noise floor governs
-  admin denoising. See `docs/planning/ws-a-admin-noise-floor.md`, which lands
-  with PR #162.
+  admin denoising. Landed in PR #162; see the `ModerationSetting` model
+  docstring (`db/models.py`) for the design rationale.
 - Because the filter lives at the serialization boundary, it applies
   retroactively to every already-moderated book the moment it ships; no
   re-moderation pass is needed.

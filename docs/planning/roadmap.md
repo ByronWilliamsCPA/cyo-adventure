@@ -43,8 +43,8 @@ per-child profile management (#60), the kid library UI (#68), the guardian
 review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75) are all
 merged. The Phase 3 backend guarantee is now reachable through the browser: a guardian can
 generate, review, approve, and assign a story, and a child reads it offline. See
-[`completion-plan.md`](./completion-plan.md) for what remains toward full v1 (Phase 4b and
-Phase 5) and the later release rungs (R2/R3).
+[`r1-deferred-debt-register.md`](./r1-deferred-debt-register.md) for what remains toward
+full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 
 | Phase | Status | Evidence |
 |-------|--------|----------|
