@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   gate, persist, moderate) rather than only passing the structural gate. Refreshed
   for the current 21-file corpus and for WS-C PR2 (#175) skeleton matching, which
   makes the story-request `skeleton_fill` pipeline a live production path from the
-  corpus to the database; inlined the previously memory-only `seed_dev_data.py`
-  canned-story hazard and dev-run recipe.
+  corpus to the database; inlined the previously memory-only mock-generation
+  canned-story hazard (the `MockProvider` "Forest Path" default) and dev-run recipe.
 
 ### Added
 - Postman/newman API test suite (`docs/api/postman-collection.json`): 75

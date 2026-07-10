@@ -57,7 +57,7 @@ scope). Call both out explicitly so they don't get conflated with the drivers ab
 | **A. cyo-author skill (LLM-authored)** | `.claude/skills/cyo-author` skill, invoked per skeleton | Uses the active model to write `<<FILL>>`-compliant prose, then validates and imports | Interactive session; one run per skeleton |
 | **B. Direct import (scripted)** | `import_filled_story()` (`src/cyo_adventure/generation/import_story.py`), called from a batch harness against pre-filled JSON | Same validate-then-persist-then-moderate flow as the CLI, but scriptable across all 21 skeletons in one pass | A filled JSON per skeleton (can reuse Path A's output), a `family_id` UUID already present in the dev DB |
 | **B'. CLI import** | `uv run python -m cyo_adventure.generation.import_cli <path> --family <uuid>` (`main()` in `src/cyo_adventure/generation/import_cli.py`) | Same as B, one file at a time from the shell | Same as B; useful for spot-checking a single skeleton without a script |
-| **C. Moderation-bypassed smoke pass** | Path A/B with `OPENAI_API_KEY=""` and `PERSPECTIVE_API_KEY=""` | Same validate + persist, but classifiers short-circuit (`run_classifiers()` in `src/cyo_adventure/moderation/classifiers.py` returns `[]` when both keys are falsy), isolating "does the fill + import mechanics work" from "does moderation behave" | Nothing external; fastest first pass |
+| **C. Moderation-bypassed smoke pass** | Path A/B with `OPENAI_API_KEY=""` and `PERSPECTIVE_API_KEY=""` | Same validate + persist, but classifiers short-circuit (`run_classifiers()` in `src/cyo_adventure/moderation/classifiers.py` returns `[]` when both keys are falsy), isolating "does the fill + import mechanics work" from "does moderation behave" | Removes only classifier (Stage 0) traffic; a run is fully external-free only if `generation_provider`/`review_provider` also stay `mock` (their defaults), since Path A authors with a live model. Fastest first pass |
 
 **Now-live production path (in scope), do not confuse with the drivers above:** since
 WS-C PR2 (#175), skeleton selection is implemented, so a story request can now author
@@ -81,12 +81,17 @@ never read `skeletons/`. The worker routes on whether the authoring plan carries
 path above); a fresh-generation plan goes to `generate_story()`. Running the
 fresh-generation path tells you nothing about the skeleton corpus.
 
-**Known trap, verify it is not silently substituted:** `seed_dev_data.py`'s
-mocked/dev-seed stack has previously been observed to clobber all authored content to
-one canned story ("The Forest Path") regardless of input skeleton (observed during
-earlier local story-creation testing). Before trusting any result from Path A/B/B', confirm the
-persisted `StorybookVersion.blob` actually contains prose distinct per skeleton, not a
-repeated canned body.
+**Known trap, verify it is not silently substituted:** the canned "The Forest Path"
+story that has been observed to replace all authored content regardless of input skeleton
+(observed during earlier local story-creation testing) comes from the generation
+`MockProvider` (`src/cyo_adventure/generation/provider.py`), which is selected whenever
+`generation_provider` is left at its default of `"mock"` (`src/cyo_adventure/core/config.py`).
+It is **not** produced by `seed_dev_data.py`, which only inserts real fixture blobs from
+`tests/fixtures/storybook/valid/`. Set a real `generation_provider` (e.g. `openrouter`)
+before any generation path (Path A, and the live skeleton_fill pipeline) so the model, not
+the mock, writes the prose. Before trusting any result, confirm the persisted
+`StorybookVersion.blob` actually contains prose distinct per skeleton, not a repeated
+canned body.
 
 ## Per-skeleton success criteria
 
