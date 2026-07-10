@@ -13,6 +13,7 @@ import {
   LandingPage,
   LibraryPage,
   LoginPage,
+  ModerationDashboardPage,
   ModerationThresholdsPage,
   NotFoundPage,
   ProfilePickerPage,
@@ -119,6 +120,10 @@ export const routes = [
                   {
                     path: 'moderation-thresholds',
                     element: suspended(<ModerationThresholdsPage />),
+                  },
+                  {
+                    path: 'moderation-dashboard',
+                    element: suspended(<ModerationDashboardPage />),
                   },
                 ],
               },

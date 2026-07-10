@@ -52,6 +52,10 @@ _STORYBOOK_STATUS_VALUES = (
     "'draft', 'in_review', 'needs_revision', 'published', 'archived'"
 )
 
+# The two visibility states for published books (WS-E, decision E1), named once
+# for the CHECK constraint.
+_STORYBOOK_VISIBILITY_VALUES = "'family', 'catalog'"
+
 # The six generation-job lifecycle states, named once for the CHECK constraint.
 # "awaiting_manual_fill" is set only for method="skeleton_fill" +
 # mechanism="skill" jobs (see story_requests/authoring_plan.py), and cleared by
@@ -204,6 +208,10 @@ class Storybook(Base):
             f"status IN ({_STORYBOOK_STATUS_VALUES})",
             name="ck_storybook_status",
         ),
+        CheckConstraint(
+            f"visibility IN ({_STORYBOOK_VISIBILITY_VALUES})",
+            name="ck_storybook_visibility",
+        ),
         UniqueConstraint(
             "series_id", "book_index", name="uq_storybook_series_book_index"
         ),
@@ -221,6 +229,13 @@ class Storybook(Base):
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     current_published_version: Mapped[int | None] = mapped_column(default=None)
     status: Mapped[str] = mapped_column(String(20), default="draft")
+    # #CRITICAL: security: ``visibility`` widens who can browse/assign this book
+    # (WS-E decision E1/E5); the CHECK is the at-rest backstop and the app
+    # boundary coerces through publishing.state_machine.Visibility.
+    # #VERIFY: Visibility(storybook.visibility) raises on any value outside the set.
+    visibility: Mapped[str] = mapped_column(
+        String(16), default="family", server_default=text("'family'")
+    )
     created_by: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_USER), default=None
     )

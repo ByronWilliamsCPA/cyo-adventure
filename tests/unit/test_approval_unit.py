@@ -221,7 +221,12 @@ async def test_approve_handler_stamps_view(
     ctx = _ctx("admin", session)
 
     async def _approve(*_args: object, **_kwargs: object) -> StorybookVersion:
+        # Mirror the real service's stamps (publishing/service.py): approve is
+        # the sole publish path and sets status AND visibility together. The
+        # ORM instance here has no session, so the column default never fires;
+        # a fake that skips the visibility stamp fails ApprovedView validation.
         book.status = "published"
+        book.visibility = "family"
         return version_row
 
     approve_mock = AsyncMock(side_effect=_approve)

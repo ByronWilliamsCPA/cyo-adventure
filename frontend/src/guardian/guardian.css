@@ -473,6 +473,29 @@
   color: var(--color-error, #b3261e);
 }
 
+.review-detail__visibility {
+  border: 1px solid rgb(44 26 14 / 12%);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+}
+
+.review-detail__visibility label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+}
+
+.review-detail__visibility-warning {
+  color: var(--color-error, #b3261e);
+  margin: 0;
+}
+
 .review-actionbar {
   position: sticky;
   bottom: 0;

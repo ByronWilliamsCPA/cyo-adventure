@@ -2,8 +2,10 @@
 
 A rating is a per-child fact about a *book* (not a specific version) and is
 mutable: re-rating overwrites the prior value. This is a deliberately coarser
-grain than ``Completion``; see the ``Rating`` model docstring. All access is
-scoped to the principal's own family and profile.
+grain than ``Completion``; see the ``Rating`` model docstring. Access is scoped
+to the principal's own profile and, ordinarily, their own family; a
+visibility='catalog' book owned by another family is also ratable, but only
+once it is assigned to the calling profile (WS-E Task 13).
 """
 
 from __future__ import annotations
@@ -18,9 +20,10 @@ from cyo_adventure.api.deps import (
     parse_uuid,
 )
 from cyo_adventure.api.schemas import RatingBody, RatingListView, RatingView
-from cyo_adventure.core.exceptions import ResourceNotFoundError
-from cyo_adventure.db.models import Rating, Storybook
+from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.db.models import Rating, Storybook, StorybookAssignment
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.publishing.state_machine import Visibility
 
 router = APIRouter(prefix="/api/v1", tags=["ratings"])
 
@@ -66,7 +69,25 @@ async def record_rating(body: RatingBody, ctx: Context) -> RatingView:
     if book is None:
         msg = f"storybook '{body.storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    authorize_family(ctx.principal, book.family_id)
+    if book.family_id != ctx.principal.family_id:
+        # #CRITICAL: security: cross-family rating is allowed ONLY for a catalog
+        # book that is actually assigned to this profile; an unassigned catalog
+        # book is not ratable (prevents drive-by ratings polluting suggestion
+        # data), and a family-visibility book stays fully blocked (IDOR guard).
+        # #VERIFY: catalog+assigned -> 200; catalog+unassigned -> 403;
+        # cross-family family-visibility -> 403.
+        if book.visibility != Visibility.CATALOG.value:
+            authorize_family(ctx.principal, book.family_id)
+        else:
+            assigned = await ctx.session.scalar(
+                select(StorybookAssignment.storybook_id).where(
+                    StorybookAssignment.storybook_id == book.id,
+                    StorybookAssignment.child_profile_id == profile_id,
+                )
+            )
+            if assigned is None:
+                msg = "storybook is not accessible to this profile"
+                raise AuthorizationError(msg, resource=book.id)
     # #EDGE: concurrency: two simultaneous first-ratings for the same
     # (child_profile_id, storybook_id) can both see no existing row and both
     # INSERT, raising a PK violation at flush (a 500). This is vanishingly rare

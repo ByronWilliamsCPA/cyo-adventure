@@ -169,6 +169,9 @@ export function BooksPage() {
             <li key={book.storybook_id} className="books__row">
               <div className="books__main">
                 <span className="books__title">{book.title}</span>
+                {book.visibility === 'catalog' && (
+                  <span className="intake-pill">Catalog</span>
+                )}
                 <ContentBadge book={book} />
               </div>
               <p className="books__assigned">

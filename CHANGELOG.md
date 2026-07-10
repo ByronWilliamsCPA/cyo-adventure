@@ -109,6 +109,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Append-only `pipeline_event` log capturing every story-lifecycle transition
   (request, plan, generation, moderation, release, threshold, assignment, rating),
   the capture layer for the learning loop (WS-D).
+- Admin moderation suggestion dashboard (WS-F): override evidence per
+  (age band, category) aggregated from persisted moderation reports and the
+  pipeline event log, computed threshold suggestions behind volume and rate
+  gates, and an apply control that ratifies a suggestion through the existing
+  audited threshold upsert. Two new admin-only GET endpoints under
+  `/api/v1/admin/moderation/`; no migration, no new event type, no
+  auto-calibration.
 - Cell-aware skeleton matching for skeleton-fill authoring plans (WS-C PR 2): selection now
   matches the full ADR-011 `(age band, length, narrative style)` cell instead of band-only,
   weights the pick against the family's recently-used skeletons with a nonzero floor, and lets
@@ -127,6 +134,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `Series` metadata block; SR-4 accepts open-ended chains; release approval
   validates the chain-so-far and blocks on SR errors (legacy pre-WS-G chains
   are grandfathered).
+- Story catalog: at release approval an admin now chooses whether a book stays
+  family-only or joins the shared catalog (`visibility` on `Storybook`). Guardian
+  browse lists catalog books from every family with a "Catalog" badge, and
+  assignment enforces visibility server-side: any guardian may assign a catalog
+  book, while another family's private book stays 403. Assignment sets returned
+  to a guardian are always scoped to their own family's children. Children can
+  read and rate an assigned catalog book from another family; unassigned
+  catalog books stay hidden from child accounts. Admin-initiated catalog-origin
+  requests are deferred (#173).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
@@ -194,6 +210,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   both were in place the reports uploaded but were dropped server-side as "path
   mismatch", so only the backend sessions merged and the `frontend` /
   `design-system` flags stayed empty.
+- Qlty Cloud coverage now publishes from the CI jobs that hold the checkout
+  (`coverage-upload` for the backend Cobertura reports, and the `frontend` /
+  `design-system` jobs for their prefixed lcov) instead of the `workflow_run`
+  `qlty.yml`, which was removed. `qlty coverage publish` needs the repository
+  checked out to resolve the Cobertura `<source>` roots and to read the commit
+  SHA from git; the reusable `workflow_run` caller had neither, so its uploads
+  carried unresolvable paths and no commit association and never surfaced on the
+  Qlty dashboard (the job stayed green). qlty merges the per-surface uploads
+  into one coverage number for the commit, mirroring the Codecov sessions.
+- The Qlty upload steps are now `continue-on-error`, so a transient Qlty upload
+  failure cannot fail the `frontend` / `design-system` / `coverage-upload` jobs
+  and block an unrelated merge, matching the Codecov steps' `fail_ci_if_error:
+  false`.
 - The integration and security test buckets now run in CI
   (`run-integration-tests` / `run-security-tests`); previously the reusable
   workflow's unit step excluded `-m integration`/`-m security`, so those

@@ -42,6 +42,19 @@ class Status(StrEnum):
     ARCHIVED = "archived"
 
 
+class Visibility(StrEnum):
+    """Who may browse and assign a published book (WS-E, decision E1).
+
+    Chosen by the admin at release approval and stored on ``storybook.visibility``.
+    ``family`` restricts the book to its owning family; ``catalog`` shares it with
+    every family's guardian browse-and-assign surface. Coercing the ORM string
+    through ``Visibility(...)`` rejects any value outside this closed set.
+    """
+
+    FAMILY = "family"
+    CATALOG = "catalog"
+
+
 class Action(StrEnum):
     """The lifecycle actions that drive a storybook between states."""
 

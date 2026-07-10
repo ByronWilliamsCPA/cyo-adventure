@@ -8,7 +8,7 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { makeCoverApi, type CoverStatusView } from './coverApi'
 import { FlagBadge, verdictTone } from './FlagBadge'
-import { makeReviewApi, type FindingView, type ReviewSurface } from './reviewApi'
+import { makeReviewApi, type FindingView, type ReviewSurface, type Visibility } from './reviewApi'
 
 interface StoryNode {
   id: string
@@ -74,6 +74,7 @@ export function ReviewDetailPage() {
 
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [dialog, setDialog] = useState<ActionDialog>(null)
+  const [visibility, setVisibility] = useState<Visibility>('family')
   const [reason, setReason] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [actionError, setActionError] = useState(false)
@@ -203,6 +204,10 @@ export function ReviewDetailPage() {
   // stale error alert for an action the reviewer never attempted.
   function openDialog(kind: Exclude<ActionDialog, null>) {
     setActionError(false)
+    // Reset to the default visibility every time the approve dialog opens, so
+    // a prior "catalog" choice on one story never silently carries over and
+    // gets applied to the next approval.
+    if (kind === 'approve') setVisibility('family')
     setDialog(kind)
   }
 
@@ -370,7 +375,7 @@ export function ReviewDetailPage() {
               */}
               <Button
                 disabled={submitting}
-                onClick={() => void runAction(() => reviewApi.approve(storybookId))}
+                onClick={() => void runAction(() => reviewApi.approve(storybookId, visibility))}
               >
                 Confirm approve
               </Button>
@@ -383,6 +388,33 @@ export function ReviewDetailPage() {
             </p>
           ) : null}
           <p>Approving publishes this story to the assigned children.</p>
+          <fieldset className="review-detail__visibility">
+            <legend>Who can see this book?</legend>
+            <label>
+              <input
+                type="radio"
+                name="visibility"
+                checked={visibility === 'family'}
+                onChange={() => setVisibility('family')}
+              />
+              This family only
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="visibility"
+                checked={visibility === 'catalog'}
+                onChange={() => setVisibility('catalog')}
+              />
+              Catalog (every family)
+            </label>
+            {visibility === 'catalog' ? (
+              <p className="review-detail__visibility-warning">
+                Catalog books are visible to every family. Confirm the story contains no names,
+                photos, or personal details before sharing.
+              </p>
+            ) : null}
+          </fieldset>
         </Dialog>
       ) : null}
 

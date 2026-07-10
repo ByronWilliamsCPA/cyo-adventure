@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-03
+> **Status**: Active | **Version**: 0.3 | **Updated**: 2026-07-09
 
 ## Overview
 
@@ -41,6 +41,7 @@ transition: the single approve action stamps `approved_by` and `published_at` an
 | Approve (and publish) | Yes (global, cross-family) | No (403) | No (403) | Global admin role (`Role.ADMIN` / `is_admin`) required; enforced in the state machine. `authorize_family` is not applied |
 | Access another family's data | Yes (admin, cross-family) | No (403) | No (403) | Family ownership is checked on every non-admin resource access; cross-family 403 |
 | Edit a passage (Phase 4b) | Yes | Yes | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
+| Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | Own assigned profile only | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; the `StorybookAssignment` gate is unchanged for child read/write paths |
 
 Key implementation rules:
 
@@ -51,6 +52,31 @@ Key implementation rules:
   same restriction independently (defense in depth).
 - Family ownership is checked on every resource access, not only on listing endpoints.
   A story that belongs to family A is inaccessible to a guardian from family B.
+
+### Catalog visibility (WS-E)
+
+WS-E adds a `visibility` axis (`family` or `catalog`) on `Storybook`, set by the admin at
+approval. The plain family-ownership rule above still governs the default case; catalog
+visibility adds a narrow, server-checked exception on top of it. The contract is three-way:
+
+1. **Own-family**: unchanged. A guardian or child acting within their own family reads,
+   writes, or is assigned any book in that family exactly as before; visibility never
+   restricts an own-family action.
+2. **Cross-family, `visibility='family'`**: unchanged. `authorize_family` still returns 403;
+   the catalog widening does not touch the default (private) visibility case.
+3. **Cross-family, `visibility='catalog'`**: a guardian may browse the book in
+   `GET /api/v1/guardian/books` and assign it to any of their own children's profiles
+   without a 403, but every child-facing read or write path still requires a
+   `StorybookAssignment` row for the acting profile. On an assignment mismatch the
+   responses differ by surface: ratings and reading-state (progress saves and
+   completions) return 403, while the direct version-blob fetch returns 404 to hide an
+   unassigned book's existence rather than leaking a 403. In short: the family filter
+   widens to admit catalog books, but the assignment gate that already governs child
+   access is never bypassed.
+
+See the E5 amendment in [WS-E Catalog and Guardian Assignment Specification](./ws-e-catalog-spec.md)
+for the decision record and the file/line-level implementation this contract is pinned against
+(`api/library.py`, `api/ratings.py`, `api/reading.py`).
 
 ---
 
@@ -120,3 +146,4 @@ A story is visible in a child's library only in the `published` state.
 - [ADR-005: Mandatory human approval](./adr/adr-005-mandatory-human-approval.md) (amended 2026-06-30: approver is the global admin role)
 - [ADR-009: Supabase as the managed platform for auth, database, and storage](./adr/adr-009-supabase-platform.md)
 - [ADR-004: Homelab-first deployment](./adr/adr-004-homelab-first-deployment.md) (governs the homelab / family tier)
+- [WS-E Catalog and Guardian Assignment Specification](./ws-e-catalog-spec.md) (E5 amendment: catalog visibility contract)

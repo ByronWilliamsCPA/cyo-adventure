@@ -21,7 +21,12 @@ from sqlalchemy import func, select
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
 from cyo_adventure.events import Actor, EventType, record_event
-from cyo_adventure.publishing.state_machine import Action, Status, assert_transition
+from cyo_adventure.publishing.state_machine import (
+    Action,
+    Status,
+    Visibility,
+    assert_transition,
+)
 from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from cyo_adventure.utils.logging import get_logger
 from cyo_adventure.validator.series import validate_series
@@ -196,6 +201,8 @@ async def approve(
     principal: Principal,
     storybook: Storybook,
     version: int,
+    *,
+    visibility: Visibility = Visibility.FAMILY,
 ) -> StorybookVersion:
     """Approve and publish a specific version, stamping approval provenance.
 
@@ -204,6 +211,8 @@ async def approve(
         principal: The approving admin.
         storybook: The story being approved.
         version: The version number to publish.
+        visibility: Who may browse/assign the published book (WS-E E2);
+            defaults to family.
 
     Returns:
         StorybookVersion: The stamped version row.
@@ -273,6 +282,12 @@ async def approve(
                 raise BusinessLogicError(msg, rule="series_validation")
     storybook.status = target.value
     storybook.current_published_version = version
+    # #CRITICAL: security: visibility is stamped ONLY here, inside the sole
+    # publish path, so the release transition and the sharing decision are
+    # atomic (WS-E decision E2). A catalog value widens who can assign this
+    # book (E5); it must never be settable outside an admin-gated approve.
+    # #VERIFY: api/approval.py is the only caller and is admin-only.
+    storybook.visibility = visibility.value
     version_row.approved_by = principal.user_id
     version_row.published_at = datetime.now(UTC)
     # #CRITICAL: data-integrity: this is the WS-D event-log record of the
@@ -290,6 +305,7 @@ async def approve(
         event_type=EventType.RELEASED,
         from_state="in_review",
         to_state="published",
+        payload={"visibility": visibility.value},
     )
     return version_row
 

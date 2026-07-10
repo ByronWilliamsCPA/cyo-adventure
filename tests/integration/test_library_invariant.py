@@ -6,7 +6,12 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 
 from .conftest import Seed, auth
 
@@ -202,3 +207,237 @@ async def test_guardian_can_fetch_unassigned_version(
     )
     assert resp.status_code == 200
     assert resp.json()["id"] == unassigned_id
+
+
+# ---------------------------------------------------------------------------
+# Child read paths honor catalog visibility (Task 13, post-final-review
+# amendment): an assigned cross-family visibility='catalog' book must be fully
+# readable through all three child surfaces (listing, direct blob fetch,
+# rating); an unassigned one stays hidden through the same three surfaces; a
+# cross-family visibility='family' book stays blocked exactly as before, even
+# when an assignment row exists, isolating the family filter (not the
+# assignment gate) as the cause of that denial.
+# ---------------------------------------------------------------------------
+
+
+async def _add_cross_family_catalog_book(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    story_id: str,
+    *,
+    assign: bool,
+) -> str:
+    """Insert an approved, published, visibility='catalog' book owned by Family B.
+
+    Optionally assigns it to Family A's seeded child profile.
+    """
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=profile_b.family_id,
+                current_published_version=1,
+                status="published",
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        if assign:
+            session.add(
+                StorybookAssignment(
+                    child_profile_id=seed.child_profile_id,
+                    storybook_id=story_id,
+                )
+            )
+        await session.commit()
+        return story_id
+
+
+async def test_child_reads_assigned_cross_family_catalog_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An assigned catalog book from another family clears all three child gates.
+
+    The book is Family B's, so it fails a plain own-family filter; the
+    assignment row is what makes it visible, matching the guardian-assign
+    parity ratified for WS-E's catalog feature (E5 amendment).
+    """
+    story_id = await _add_cross_family_catalog_book(
+        sessions, seed, "catalog-cross-family-assigned", assign=True
+    )
+    listing = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert listing.status_code == 200, listing.text
+    assert story_id in {item["id"] for item in listing.json()["stories"]}
+    blob = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.child_token),
+    )
+    assert blob.status_code == 200, blob.text
+    rating = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "value": 4,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert rating.status_code == 200, rating.text
+
+
+async def test_child_cannot_read_unassigned_cross_family_catalog_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """An unassigned catalog book from another family stays hidden on all three gates.
+
+    Widening the family filter must not widen the assignment gate: the
+    StorybookAssignment EXISTS clause (listing) and the child assignment check
+    (blob fetch, ratings.py) remain the required gate for catalog books too.
+    """
+    story_id = await _add_cross_family_catalog_book(
+        sessions, seed, "catalog-cross-family-unassigned", assign=False
+    )
+    listing = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert listing.status_code == 200, listing.text
+    assert story_id not in {item["id"] for item in listing.json()["stories"]}
+    blob = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.child_token),
+    )
+    assert blob.status_code == 404, blob.text
+    rating = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "value": 4,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert rating.status_code == 403, rating.text
+
+
+async def test_child_cannot_read_cross_family_private_book(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A cross-family visibility='family' book stays blocked (regression guard).
+
+    An assignment row is added despite the book being private, so the denial on
+    every surface is attributable to the family filter alone, not a missing
+    assignment; the widened catalog gate must not accidentally widen the
+    family-visibility case too.
+    """
+    story_id = "private-cross-family"
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=profile_b.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob={"id": story_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id,
+                storybook_id=story_id,
+            )
+        )
+        await session.commit()
+    listing = await client.get(
+        f"/api/v1/library?profile_id={seed.child_profile_id}",
+        headers=auth(seed.child_token),
+    )
+    assert listing.status_code == 200, listing.text
+    assert story_id not in {item["id"] for item in listing.json()["stories"]}
+    blob = await client.get(
+        f"/api/v1/storybooks/{story_id}/versions/1",
+        headers=auth(seed.child_token),
+    )
+    assert blob.status_code == 403, blob.text
+    rating = await client.post(
+        "/api/v1/ratings",
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "storybook_id": story_id,
+            "value": 4,
+        },
+        headers=auth(seed.child_token),
+    )
+    assert rating.status_code == 403, rating.text
+
+
+async def test_guardian_reads_catalog_blob_but_not_private_cross_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Guardian parity for the visibility branch in ``get_storybook_version``.
+
+    The child-perspective tests above pin the catalog widening through the
+    assignment-gated child surfaces; this pins the other arm asserted only in a
+    comment on ``get_storybook_version`` (``api/library.py``): a guardian of
+    Family A may fetch a published, approved, ``visibility='catalog'`` book
+    owned by Family B with no assignment row at all (the assignment gate is
+    child-only), while a Family B book left at the default ``visibility='family'``
+    still 403s for the same guardian, exactly as the plain family-ownership rule
+    always required.
+    """
+    catalog_id = await _add_cross_family_catalog_book(
+        sessions, seed, "catalog-cross-family-guardian", assign=False
+    )
+    catalog_blob = await client.get(
+        f"/api/v1/storybooks/{catalog_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert catalog_blob.status_code == 200, catalog_blob.text
+
+    private_id = "private-cross-family-guardian"
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id=private_id,
+                family_id=profile_b.family_id,
+                current_published_version=1,
+                status="published",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=private_id,
+                version=1,
+                blob={"id": private_id},
+                approved_by=seed.admin_user_id,
+            )
+        )
+        await session.commit()
+    private_blob = await client.get(
+        f"/api/v1/storybooks/{private_id}/versions/1",
+        headers=auth(seed.guardian_token),
+    )
+    assert private_blob.status_code == 403, private_blob.text

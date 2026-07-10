@@ -55,6 +55,7 @@ const BOOKS = {
       screened: true,
       flagged_count: 1,
       assigned_profile_ids: ['p1'],
+      visibility: 'family' as const,
     },
   ],
 }
@@ -177,6 +178,7 @@ describe('BooksPage', () => {
             screened: false,
             flagged_count: 0,
             assigned_profile_ids: ['p9'],
+            visibility: 'family' as const,
           },
         ],
       },
@@ -187,5 +189,22 @@ describe('BooksPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(/Assigned to: 1 unknown profile$/)).toBeInTheDocument()
     expect(screen.queryByText(/Assigned to: No one yet/)).not.toBeInTheDocument()
+  })
+
+  it('badges catalog books and not family books', async () => {
+    routeGet({
+      '/v1/guardian/books': {
+        books: [
+          { ...BOOKS.books[0], storybook_id: 's-fam', title: 'Ours', visibility: 'family' },
+          { ...BOOKS.books[0], storybook_id: 's-cat', title: 'Shared', visibility: 'catalog' },
+        ],
+      },
+    })
+    renderPage()
+    const shared = (await screen.findByText('Shared')).closest('li')
+    expect(shared).not.toBeNull()
+    expect(within(shared as HTMLElement).getByText('Catalog')).toBeInTheDocument()
+    const ours = screen.getByText('Ours').closest('li')
+    expect(within(ours as HTMLElement).queryByText('Catalog')).not.toBeInTheDocument()
   })
 })

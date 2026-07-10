@@ -10,6 +10,8 @@ import { type AxiosInstance, isAxiosError } from 'axios'
 
 export type FindingVerdict = 'block' | 'flag' | 'advisory' | 'pass'
 
+export type Visibility = 'family' | 'catalog'
+
 export interface ReviewSummary {
   count: number
   hard_block: boolean
@@ -61,6 +63,7 @@ export interface ApprovedResult {
   current_published_version: number
   approved_by: string
   published_at: string
+  visibility: Visibility
 }
 
 export interface SentBackResult {
@@ -95,7 +98,7 @@ interface GenerationJobRow {
 export interface ReviewApi {
   queue(): Promise<ReviewQueueItem[]>
   surface(storybookId: string, version?: number): Promise<ReviewSurface>
-  approve(storybookId: string): Promise<ApprovedResult>
+  approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult>
   sendBack(storybookId: string, reason: string): Promise<SentBackResult>
   stillProcessing(): Promise<StillProcessingItem[]>
 }
@@ -113,8 +116,10 @@ export function makeReviewApi(api: AxiosInstance): ReviewApi {
       )
       return res.data
     },
-    async approve(storybookId: string): Promise<ApprovedResult> {
-      const res = await api.post<ApprovedResult>(`/v1/storybooks/${storybookId}/approve`)
+    async approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult> {
+      const res = await api.post<ApprovedResult>(`/v1/storybooks/${storybookId}/approve`, {
+        visibility,
+      })
       return res.data
     },
     async sendBack(storybookId: string, reason: string): Promise<SentBackResult> {
