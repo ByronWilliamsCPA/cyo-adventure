@@ -126,6 +126,18 @@ async def persist_storybook(session: AsyncSession, params: StorybookParams) -> s
     return params.story_id
 
 
+def ensure_blob_within_budget(blob: dict[str, object]) -> None:
+    """Guard a post-persist blob update against the JSONB byte budget.
+
+    Public wrapper so callers outside this module (WS-G series embed) do not
+    reach into the private ``_check_byte_budget``.
+
+    Raises:
+        ValidationError: If the blob serializes past the budget.
+    """
+    _check_byte_budget(blob, field="blob")
+
+
 def _check_byte_budget(payload: dict[str, object], *, field: str) -> None:
     """Raise ``ValidationError`` when ``payload``'s serialized size is too large.
 

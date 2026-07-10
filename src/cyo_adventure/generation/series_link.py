@@ -8,12 +8,15 @@ umbrella decision.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
-from cyo_adventure.db.models import Storybook, StoryRequest
+from cyo_adventure.db.models import Series as SeriesRow
+from cyo_adventure.db.models import Storybook, StorybookVersion, StoryRequest
+from cyo_adventure.generation.persistence import ensure_blob_within_budget
+from cyo_adventure.storybook.models import Series as SeriesBlock
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
@@ -126,3 +129,53 @@ async def _next_index(session: AsyncSession, series_id: uuid.UUID) -> int:
         select(func.max(Storybook.book_index)).where(Storybook.series_id == series_id)
     )
     return int(current or 0) + 1
+
+
+async def embed_series_block(
+    session: AsyncSession, *, story_id: str, version: int
+) -> None:
+    """Write the embedded document ``Series`` block for a linked series book.
+
+    WS-G G2: ``series_entry_node`` is the document's own ``start_node``;
+    ``is_final`` is always False in v1 (open chains are valid post-SR-4
+    relaxation); ``carries_state`` copies the series row. No-op for a book
+    with no series linkage. Same transaction as linkage; the caller commits.
+
+    Raises:
+        ValueError: If the series row or version row is missing (FK-guaranteed
+            in the worker flow; defensive for direct callers).
+    """
+    storybook = await session.get(Storybook, story_id)
+    if storybook is None or storybook.series_id is None or storybook.book_index is None:
+        return
+    series_row = await session.get(SeriesRow, storybook.series_id)
+    if series_row is None:
+        msg = f"series '{storybook.series_id}' not found for '{story_id}'"
+        raise ValueError(msg)
+    version_row = await session.get(StorybookVersion, (story_id, version))
+    if version_row is None:
+        msg = f"version {version} of storybook '{story_id}' not found"
+        raise ValueError(msg)
+    blob = dict(version_row.blob)
+    block = SeriesBlock(
+        series_id=str(storybook.series_id),
+        book_index=storybook.book_index,
+        series_entry_node=str(blob["start_node"]),
+        is_final=False,
+        carries_state=series_row.carries_state,
+    )
+    raw_meta = blob.get("metadata")
+    metadata: dict[str, object] = (
+        dict(cast(dict[str, object], raw_meta))  # noqa: TC006
+        if isinstance(raw_meta, dict)
+        else {}
+    )
+    metadata["series"] = block.model_dump()
+    blob["metadata"] = metadata
+    ensure_blob_within_budget(blob)
+    # #ASSUME: data-integrity: JSONB change detection requires reassigning
+    # version_row.blob to a new dict; in-place mutation is invisible to the
+    # session and would silently skip the UPDATE.
+    # #VERIFY: test_embed_series_block_writes_metadata re-reads after commit.
+    version_row.blob = blob
+    await session.flush()

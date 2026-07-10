@@ -21,11 +21,17 @@ from cyo_adventure.db.models import (
     Family,
     Series,
     Storybook,
+    StorybookVersion,
     StoryRequest,
     User,
 )
 from cyo_adventure.generation import series_link
-from cyo_adventure.generation.series_link import assign_book_index, link_series_position
+from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
+from cyo_adventure.generation.series_link import (
+    assign_book_index,
+    embed_series_block,
+    link_series_position,
+)
 
 from ._series_utils import seed_published_anchor
 
@@ -205,3 +211,92 @@ async def test_direct_concept_is_noop(
         assert refreshed is not None
         assert refreshed.series_id is None
         assert refreshed.book_index is None
+
+
+def _minimal_blob() -> dict[str, object]:
+    """A blob shaped enough to carry ``start_node`` and ``metadata`` (WS-G G2)."""
+    return {"title": "T", "start_node": "n0", "metadata": {}, "nodes": []}
+
+
+async def test_embed_series_block_writes_metadata(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The embed step writes metadata.series sourced from linkage + the series row."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=False,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        story_id = f"s_{uuid.uuid4().hex[:12]}"
+        await persist_storybook(
+            session,
+            StorybookParams(
+                story_id=story_id,
+                blob=_minimal_blob(),
+                family_id=family.id,
+                created_by=user.id,
+            ),
+        )
+
+        await link_series_position(session, story_id=story_id, concept_id=concept.id)
+        await embed_series_block(session, story_id=story_id, version=1)
+        await session.commit()
+
+        row = await session.get(StorybookVersion, (story_id, 1))
+        assert row is not None
+        meta = row.blob["metadata"]
+        assert isinstance(meta, dict)
+        block = meta["series"]
+        assert isinstance(block, dict)
+        storybook = await session.get(Storybook, story_id)
+        assert storybook is not None
+        assert block["series_id"] == str(storybook.series_id)
+        assert block["book_index"] == storybook.book_index
+        assert block["series_entry_node"] == row.blob["start_node"]
+        assert block["is_final"] is False
+        assert block["carries_state"] is False  # copied from the series row
+
+
+async def test_embed_series_block_noop_for_non_series(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A book with no series linkage leaves the blob's metadata untouched."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        story_id = f"s_{uuid.uuid4().hex[:12]}"
+        await persist_storybook(
+            session,
+            StorybookParams(
+                story_id=story_id,
+                blob=_minimal_blob(),
+                family_id=family.id,
+                created_by=user.id,
+            ),
+        )
+
+        await embed_series_block(session, story_id=story_id, version=1)
+
+        row = await session.get(StorybookVersion, (story_id, 1))
+        assert row is not None
+        assert "series" not in row.blob.get("metadata", {})
