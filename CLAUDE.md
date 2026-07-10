@@ -69,7 +69,7 @@ in the same repository.
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`),
   migrations via Alembic (`api` extra)
 - **Auth**: Supabase (guardian OIDC/JWT via `pyjwt[crypto]`); see
-  `adr/adr-009-supabase-platform.md`
+  `docs/planning/adr/adr-009-supabase-platform.md`
 - **Story generation**: staged LLM pipeline behind a deterministic
   validation/moderation gate (`generation/`, `validator/`, `moderation/`),
   with pluggable providers for Anthropic, OpenRouter, Ollama, and Modal
@@ -409,7 +409,8 @@ END BASELINE DEVELOPMENT STANDARDS
 Planning is no longer "awaiting generation": all core documents are
 substantively developed and are the live source of truth for scope and
 status. Before starting new feature work, check `roadmap.md`'s phase table
-first for current status.
+for current status and review the relevant planning documents and
+`docs/architecture/` docs for the affected area.
 
 **Planning Documents** (in `docs/planning/`):
 
@@ -546,7 +547,7 @@ React frontend (frontend/)
    |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/            15 routers (health, library, reading, generation, profiles,
+   - api/            14 routers (health, library, reading, generation, profiles,
                       families, ratings, assignments, approval, covers,
                       moderation_thresholds, provider_allowlist, me, story_requests)
    - core/           config.py, database.py (async SQLAlchemy), exceptions.py
@@ -556,7 +557,7 @@ FastAPI backend (src/cyo_adventure/)
    - storybook/      Storybook/Node/Choice/Ending domain model + condition evaluator
    - story_requests/ intake: brief, screening, authoring plan, anchoring
    - generation/     staged LLM pipeline; providers/{anthropic,modal,ollama,openrouter,
-                      fallback}; RQ-backed queue/worker; skeleton catalog/matching
+                      fallback}; RQ queue.py + worker.py; skeleton catalog/matching
    - validator/      deterministic two-layer validation gate (topology, safety,
                       reading level, band profile) before anything reaches a human
    - moderation/      safety classifiers, fidelity review, repair, thresholds
@@ -594,7 +595,7 @@ PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
    (see ADR "mandatory human approval" and `docs/planning/tech-spec.md`).
 5. **Auth is Supabase-based**, not custom. Guardian sessions use Supabase
    OIDC/JWT (`frontend/src/auth/`, `pyjwt[crypto]` on the backend); see
-   `adr/adr-009-supabase-platform.md`.
+   `docs/planning/adr/adr-009-supabase-platform.md`.
 6. **`utils/financial.py` has been removed.** It was unused template
    scaffolding for Decimal helpers with no domain relevance to a kids' reading
    app; this is documented in `docs/template_feedback.md`. Do not recreate it.
@@ -605,10 +606,11 @@ PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
 src/cyo_adventure/
 ├── __init__.py
 ├── app.py                  # FastAPI app; wires all routers via include_router
-├── api/                     # FastAPI routers (15): health, library, reading,
+├── api/                     # FastAPI routers (14): health, library, reading,
 │                            # generation, profiles, families, ratings, assignments,
 │                            # approval, covers, moderation_thresholds,
-│                            # provider_allowlist, me, story_requests, schemas, deps
+│                            # provider_allowlist, me, story_requests; support
+│                            # modules (not routers): schemas, deps, review_surface
 ├── core/                    # config.py, database.py, exceptions.py
 ├── middleware/              # security.py, correlation.py
 ├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,
@@ -616,7 +618,7 @@ src/cyo_adventure/
 ├── storybook/               # Storybook/Node/Choice/Ending models, condition
 │                            # evaluator, schema_export.py
 ├── story_requests/          # brief.py, screening.py, authoring_plan.py, anchoring.py
-├── generation/               # orchestrator, providers/, queue/worker (RQ),
+├── generation/               # orchestrator, providers/, queue.py + worker.py (RQ),
 │                            # skeleton catalog + matching, prompt templates
 ├── validator/                # layer1/layer2 gate, topology, safety, reading_level,
 │                            # band_profile, series, walk, policy, report
@@ -881,20 +883,22 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 19 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 21 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.12, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.13 Ubuntu
-  + 3.12 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
+  plus 3.12 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
 - **Security/supply chain**: `security-analysis.yml` (CodeQL, Bandit,
   OSV-Scanner), `container-security.yml`, `dependency-review.yml`,
   `dependency-provenance-weekly.yml`, `fips-compatibility.yml`,
   `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
 - **Compliance/release**: `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
-  `release.yml` (semantic-release; **currently broken** due to an invalid
-  `commit_parser` value, so the version has never bumped past `0.1.0` despite
-  substantial functionality being built, see `docs/template_feedback.md`),
+  `release.yml` (semantic-release; **currently broken**: branch rulesets
+  reject its direct version-bump push to `main` with GH013, so the version
+  has never bumped past `0.1.0` despite substantial functionality being
+  built; an earlier invalid `commit_parser` value was already fixed in
+  PR #152; tracked in issue #183),
   `publish-pypi.yml`
 - **Docs / review**: `docs.yml`, `claude-baseline-review.yml`
 
