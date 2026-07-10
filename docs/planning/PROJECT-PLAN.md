@@ -216,9 +216,9 @@ Key architectural decisions, each recorded in an ADR:
 
 **ADR status** (as of 2026-07-03):
 
-- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-005, ADR-006, ADR-009,
+- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-009,
   [ADR-011](./adr/adr-011-story-scale-framework.md).
-- **Proposed**: ADR-004, ADR-007, ADR-008,
+- **Proposed**: ADR-007, ADR-008,
   [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md).
 
 ADR-010 and ADR-011 are not in the index table above (which predates them); ADR-011 is

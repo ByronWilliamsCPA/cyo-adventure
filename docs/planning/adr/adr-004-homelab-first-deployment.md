@@ -1,7 +1,7 @@
 ---
 title: "ADR-004: Homelab-first deployment, Azure as the scale-out alternative"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to deploy to the homelab first with cloud-portable containers."
 tags:
@@ -12,7 +12,12 @@ tags:
 
 # ADR-004: Homelab-first deployment, Azure as the scale-out alternative
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-10; deployed and live behind Pangolin at
+> `cyo.williamshome.family` since the R1 rollout on 2026-07-05, with nightly Postgres
+> backups running on docker-host; guardian auth on this deployment runs on Supabase per
+> [ADR-009](./adr-009-supabase-platform.md) rather than Authentik as originally decided
+> here; the MinIO object-storage leg and a formal restore drill remain outstanding under
+> Phase 5 hardening)
 > **Date**: 2026-06-20
 > **Amended by**: ADR-008 (public-tier hosting), ADR-009 (Supabase platform); ADR-004 still governs the dev and family/homelab tier
 

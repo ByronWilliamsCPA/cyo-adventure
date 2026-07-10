@@ -28,7 +28,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-001](./adr-001-story-format-json-storybook.md) | Story format is a versioned JSON Storybook graph | Accepted | 2026-06-20 |
 | [ADR-002](./adr-002-client-pwa.md) | Client is a Progressive Web App | Accepted | 2026-06-20 |
 | [ADR-003](./adr-003-frontier-llm-generation.md) | Frontier LLM for generation, local model as fallback | Accepted | 2026-06-20 |
-| [ADR-004](./adr-004-homelab-first-deployment.md) | Homelab-first deployment, Azure as the scale-out alternative | Proposed | 2026-06-20 |
+| [ADR-004](./adr-004-homelab-first-deployment.md) | Homelab-first deployment, Azure as the scale-out alternative | Accepted | 2026-06-20 |
 | [ADR-005](./adr-005-mandatory-human-approval.md) | Mandatory human approval before any story reaches a child | Accepted | 2026-06-20 |
 | [ADR-006](./adr-006-conditions-inhouse-evaluator.md) | Conditions use the JSONLogic shape with an in-house whitelisted evaluator | Accepted | 2026-06-20 |
 | [ADR-007](./adr-007-raw-output-retention.md) | Raw LLM output retention policy for GenerationJob.report | Proposed | 2026-06-29 |
