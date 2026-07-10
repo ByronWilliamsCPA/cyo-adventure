@@ -11,7 +11,7 @@ tags:
 
 CYO Adventure's REST API is documented by its live, generated OpenAPI schema, not by
 hand-maintained pages here. With the backend running (`uv run uvicorn cyo_adventure.app:app
---reload`), the full, current set of 14 routers is available at:
+--reload`), the full, current set of routers is available at:
 
 - **Swagger UI**: <http://localhost:8000/docs>, interactive, try-it-out per endpoint.
 - **ReDoc**: <http://localhost:8000/redoc>, a single-page reference view.

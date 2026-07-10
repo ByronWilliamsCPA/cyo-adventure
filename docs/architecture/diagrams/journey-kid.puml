@@ -12,7 +12,8 @@
 '   frontend/src/library/RequestStory.tsx  (child-initiated request, WS-B;
 '     shipped, mounted on the library page -- see api/story_requests.py)
 '   frontend/src/reader/Reader.tsx, ReaderRoute.tsx, ConflictDialog.tsx
-'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+'   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
+'     docs/superpowers/specs/ was retired as scratch output once its work merged)
 ' ============================================================
 
 title Kid-Surface Journey\n(child-facing app "/"; rose = planned, not yet built)

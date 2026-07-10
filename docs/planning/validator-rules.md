@@ -125,8 +125,8 @@ advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-2
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
-3. PL-15 through PL-21 (age-policy gate; all stories). PL-19 is advisory; the rest block.
+2. PL-15 through PL-21 (age-policy gate; all stories). PL-19 is advisory; the rest block.
+3. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
 4. RL-13 (advisory; all stories). Log warnings; continue.
 5. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
 

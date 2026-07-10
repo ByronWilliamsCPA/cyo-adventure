@@ -342,12 +342,15 @@ The template meets 44/46 passing-level criteria:
    - `slsa-provenance.yml` runs, generating build hashes and SLSA Level 3 attestations.
    - `release.yml` publishes to PyPI (OIDC trusted publishing) when a release occurs.
 
-2. **Manual tag** (fallback, does not depend on PSR's direct push to `main`):
-
-   ```bash
-   git tag -a v1.0.0 -m "Release 1.0.0"
-   git push origin v1.0.0
-   ```
+2. **Manual dispatch** (fallback, does not depend on PSR's direct push to `main`):
+   `release.yml` also triggers on `workflow_dispatch` with an optional `force_release`
+   input (patch/minor/major/prerelease); run it manually from the Actions tab or
+   `gh workflow run release.yml -f force_release=patch` to produce a signed, attested
+   release without a push to `main`. Pushing a bare git tag (`git push origin v1.0.0`)
+   does **not** trigger this workflow: `release.yml`'s only triggers are `push` to
+   `main`/`master` and `workflow_dispatch`, with no tag-push trigger configured. A bare
+   tag push creates the git ref only; it produces no signed artifacts, no SLSA
+   provenance, and no PyPI publish.
 
 3. **Verification**:
    - Check GitHub Security tab for attestations

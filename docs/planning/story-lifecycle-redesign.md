@@ -192,7 +192,7 @@ one child.
 - Guardian- and kid-facing serializers filter findings through the threshold
   for the book's band. Admin endpoints bypass the age-band threshold entirely
   and return every finding.
-- Addendum (implemented in PR #162, in review): a separate, global,
+- Addendum (implemented in PR #162): a separate, global,
   admin-editable noise floor (seeded 0.05) denoises only the admin storybook
   review surface by hiding low-score ADVISORY findings; FLAG and BLOCK
   findings (including bright-line score-0.0 blocks) and unscored findings

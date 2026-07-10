@@ -109,7 +109,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
 [ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
-### Current status (2026-07-03)
+### Current status (2026-07-10)
 
 | Phase | Status |
 |-------|--------|

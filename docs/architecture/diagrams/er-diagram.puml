@@ -11,7 +11,7 @@
 ' backed by a CHECK constraint (simple Alembic migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' Nine tables added since the original 9-table model (WS-A..WS-G, PRs
+' Ten tables added since the original 9-table model (WS-A..WS-G, PRs
 ' #141-#192): series (WS-B PR3, series/continuation chaining), rating
 ' (family-sharing), storybook_assignment (guardian read-gate), story_request
 ' (child-initiated request lifecycle), moderation_threshold +

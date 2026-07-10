@@ -13,13 +13,13 @@ owner: core-maintainer
 authors:
   - name: "Byron Williams"
 purpose: "Give a zero-context implementer everything needed to build WS-G PR 3 (spec section 5 of
-  docs/planning/ws-g-series-chaining-spec.md, plus the F11 worker-path test deferred from PR 1's
+  the now-archived ws-g-series-chaining-spec.md, plus the F11 worker-path test deferred from PR 1's
   review) as bite-sized TDD tasks with complete code, exact commands, and the discovery facts that
-  must not be re-derived."
+  must not be re-derived. This plan's own described work shipped as PR #194."
 component: Generation
-source: "docs/planning/ws-g-series-chaining-spec.md section 5 (ratified 2026-07-09); PR #184 review
-  finding F11/F7 (issuecomment-4935226310); codebase discovery 2026-07-10 against origin/main
-  6c42867 (post WS-G PR 2 #192)."
+source: "ws-g-series-chaining-spec.md section 5 (ratified 2026-07-09; doc archived once PR #194
+  shipped); PR #184 review finding F11/F7 (issuecomment-4935226310); codebase discovery 2026-07-10
+  against origin/main 6c42867 (post WS-G PR 2 #192)."
 ---
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development

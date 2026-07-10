@@ -16,7 +16,8 @@
 '     WS-B; shipped -- see api/story_requests.py)
 '   frontend/src/guardian/RequestsPage.tsx            (guardian/admin approve
 '     or decline a child's request, WS-B; shipped)
-'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+'   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
+'     docs/superpowers/specs/ was retired as scratch output once its work merged)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md  (approval gate)
 '   docs/architecture/diagrams/seq-generation.puml  (behind-the-scenes detail)
 '   docs/architecture/diagrams/seq-offline.puml     (offline read + reconnect)

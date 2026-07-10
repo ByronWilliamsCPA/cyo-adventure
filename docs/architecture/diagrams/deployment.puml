@@ -7,8 +7,9 @@
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik as
 '     app IdP; decision 2 = Supabase Postgres as the operational database)
-'   docs/planning/r1-gap-closure-plan.md (Task 1.7: cut over the operational database
-'     to Supabase Postgres, session pooler, homelab-infra #576/#577)
+'   docs/planning/r1-deferred-debt-register.md (Task 1.7: cut over the operational
+'     database to Supabase Postgres, session pooler, homelab-infra #576/#577;
+'     r1-gap-closure-plan.md is archived, consolidated here)
 '   docs/planning/tech-spec.md  (Infrastructure section)
 '   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
 '

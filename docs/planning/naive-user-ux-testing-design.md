@@ -136,6 +136,11 @@ already exercised by one of these files is dropped rather than duplicated.
 
 ## 5. Track A: Playwright misuse regressions
 
+> Delivered (PR #132, kept current through PR #185): the plan below described
+> a directory yet to be created; `frontend/e2e/naive-user/` and its four spec
+> files now exist on `main` as planned. Retained as historical planning
+> context per the status banner above.
+
 New directory `frontend/e2e/naive-user/`, one file per persona plus one
 shared file, mocked-network style matching the existing suite.
 
@@ -247,8 +252,9 @@ New project-local skill at `.claude/skills/naive-ux-check/`:
 
 ## 8. Documentation follow-through
 
-- Once Track A specs exist, no coverage-diagram change is needed; they are
-  additive regression coverage, not new user-facing journeys.
+- Now that the Track A specs are delivered (see status banner above), no
+  coverage-diagram change was needed; they are additive regression coverage,
+  not new user-facing journeys.
 - Track B findings that reveal a confirmed, repeatable bug get filed as a
   normal GitHub issue and, where warranted, promoted into a new Track A spec
   in a follow-up change (Non-goals, Section 3).

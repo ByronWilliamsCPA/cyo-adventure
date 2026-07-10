@@ -17,7 +17,8 @@
 '   frontend/src/guardian/BooksPage.tsx  (/guardian/books: catalog browse +
 '     assign, WS-E; guardian-only nav entry)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md
-'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+'   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
+'     docs/superpowers/specs/ was retired as scratch output once its work merged)
 ' ============================================================
 
 title Guardian + Admin Surface Journey\n("/guardian"; rose = planned. Approve is admin-only, ADR-005)

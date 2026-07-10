@@ -76,12 +76,10 @@ orthogonal to the Phase 0-5 ladder above, refining capabilities already shipped 
 | WS-D | Pipeline event log | #168 |
 | WS-E | Catalog sharing + guardian assignment | #180 |
 | WS-F | Suggestion dashboard | #176 |
-| WS-G | Series chaining (continuation) | #184, #192 |
+| WS-G | Series chaining (continuation) | #184, #192, #194 |
 
-One item is coded but not yet opened as a PR: WS-G's "PR3" (`AnchorContext` declared
-variable names + continuation prompts) has real commits on
-`feat/ws-g-generation-continuity` (worktree `.worktrees/ws-g-pr3`), a documented quality
-improvement that can land after the rest without blocking them.
+WS-G's "PR3" (`AnchorContext` declared variable names + continuation prompts, #194)
+merged 2026-07-10, completing all seven workstreams.
 
 ## Timeline Overview
 

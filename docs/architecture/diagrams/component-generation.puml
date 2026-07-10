@@ -155,6 +155,15 @@ note right of orchestrator
     gate clean, safety_flagged       -> "needs_review"
     blocked after exhausting repairs -> "needs_review"
     blocked, no doc produced         -> "failed"
+
+  "awaiting_manual_fill" is a fifth status this pipeline does not itself
+  produce: story_requests/authoring_plan.py parks a skeleton_fill job there
+  BEFORE this diagram's flow ever runs, when the admin picks mechanism=skill
+  (a human/skill fills the skeleton offline instead of an LLM call). It is
+  resumed later via generation/import_story.py's resume function (invoked by
+  import_cli.py --job), which runs the filled story through the same
+  validator gate + persist + moderation pipeline and settles it to "passed"
+  or "needs_review" (a hard gate block instead settles it to "failed").
 end note
 
 queue --> worker_comp : "job_id"
