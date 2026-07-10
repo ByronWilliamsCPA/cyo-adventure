@@ -429,6 +429,15 @@ _ROUTE_SPECS: list[RouteSpec] = [
         path_params=_reading_state_path,
         json_body=_reading_state_body,
     ),
+    RouteSpec(
+        # Same gate as reading-state GET: authorize_profile then the
+        # _load_readable_storybook read gate on the CURRENT book, both before
+        # any series row is read (api/reading.py::get_series_next).
+        "GET",
+        "/api/v1/series-next/{profile_id}/{storybook_id}",
+        frozenset({Role.GUARDIAN, Role.CHILD}),
+        path_params=_reading_state_path,
+    ),
     # -- approval.py: admin-only (global, cross-family) ----------------------
     RouteSpec("GET", "/api/v1/review-queue", frozenset({Role.ADMIN})),
     # -- story_requests.py ----------------------------------------------------
@@ -702,6 +711,7 @@ _CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
     ("PATCH", "/api/v1/profiles/{profile_id}"),
     ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
     ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
     ("POST", "/api/v1/completions"),
     ("GET", "/api/v1/storybooks/{storybook_id}/assignments"),
     ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),

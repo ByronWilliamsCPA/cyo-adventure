@@ -139,6 +139,42 @@ describe('ReaderRoute wiring (T5)', () => {
     )
     expect(readingStateCalls.length).toBeLessThanOrEqual(2)
   })
+
+  it('applies a continuation seed parsed from router location state', async () => {
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/storybooks/')) {
+        return Promise.resolve({ data: lantern })
+      }
+      if (url.startsWith('/v1/reading-state/')) {
+        return Promise.reject(mockAxiosError({ isAxiosError: true, response: { status: 404 } }))
+      }
+      return Promise.reject(new Error(`unexpected GET ${url}`))
+    })
+
+    render(
+      <MemoryRouter
+        initialEntries={[
+          {
+            pathname: `/read/p_cont/${lantern.id}/${lantern.version}`,
+            state: {
+              continuation: { entryNode: 'n_cave_fork', varState: { has_lantern: true } },
+            },
+          },
+        ]}
+      >
+        <Routes>
+          <Route path="/read/:profileId/:storybookId/:version" element={<ReaderRoute />} />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    await screen.findByTestId('reader')
+    // The continuation seed jumps straight to n_cave_fork with has_lantern
+    // carried in, so the gated choice is visible without clicking through
+    // the start passage.
+    expect(screen.getByTestId('passage-body').textContent).toContain('splits')
+    expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
+  })
 })
 
 describe('ReaderRoute replay reconciliation (B2)', () => {

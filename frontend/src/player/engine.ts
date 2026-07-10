@@ -105,6 +105,53 @@ export function start(story: Storybook): ReadingState {
   return state
 }
 
+// #CRITICAL: data-integrity: a continuation state cannot be reproduced by
+// replaying choices from start_node, so continuation saves MUST NOT carry a
+// choice_path (the server would replay-from-start and reject them; see
+// api/reading.py's note that choice_path may become required). The server's
+// structural floor (player/replay.py::_check_structure) is what admits these
+// saves, so this function must uphold its exact invariants: every declared
+// variable present, values correctly typed and in-bounds (clamped below),
+// current_node === path[path.length - 1], all node ids known.
+// #VERIFY: engine.test.ts "startContinuation" describe block; if choice_path
+// ever becomes required server-side, the server needs a continuation-aware
+// replay mode first.
+/** Begin a continuation read at a declared entry node, seeding name-matched
+ * carried variables (WS-G decision G3). Wrong-typed carried values are
+ * skipped (the declared initial stands); carried ints are clamped to the
+ * variable's declared bounds. */
+export function startContinuation(
+  story: Storybook,
+  entryNode: string | null,
+  carriedVarState?: VarState
+): ReadingState {
+  const bounds = intBounds(story)
+  const varState: VarState = {}
+  for (const v of story.variables) {
+    varState[v.name] = v.initial
+    const carried = carriedVarState?.[v.name]
+    if (carried === undefined) continue
+    if (v.type === 'bool' && typeof carried === 'boolean') {
+      varState[v.name] = carried
+    } else if (v.type === 'int' && typeof carried === 'number' && Number.isInteger(carried)) {
+      varState[v.name] = clamp(bounds, v.name, carried)
+    }
+  }
+  const nodeId =
+    entryNode !== null && story.nodes.some((n) => n.id === entryNode) ? entryNode : story.start_node
+  const state: ReadingState = {
+    current_node: nodeId,
+    var_state: varState,
+    path: [nodeId],
+    visit_set: [],
+    version: story.version,
+    state_revision: 0,
+    save_slots: {},
+  }
+  enterNode(story, state, nodeId, true, bounds)
+  return state
+}
+
 /** Choices visible at the current node (false-condition choices are hidden). */
 export function visibleChoices(story: Storybook, state: ReadingState): Choice[] {
   const node = nodeIndex(story).get(state.current_node)

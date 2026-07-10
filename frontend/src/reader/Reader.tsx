@@ -15,11 +15,14 @@ import { ChoiceButton } from '@ds/components/ChoiceButton'
 import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
+import type { SeriesNextBookInfo } from '../api/readerApi'
 import { currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
+import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
+import { ContinueSeries } from './ContinueSeries'
 import { ReaderChrome } from './ReaderChrome'
 import { readerProgressLabel, readerProgressPercent } from './readerProgress'
 import './reader.css'
@@ -39,6 +42,12 @@ export interface ReaderProps {
    * straight to the profile's library as before.
    */
   onLeave?: () => void
+  /** Resolves the next readable series book; when provided, a satisfying
+   * ending of a non-final series book offers "Continue the series". */
+  fetchSeriesNext?: (
+    profileId: string,
+    storybookId: string
+  ) => Promise<SeriesNextBookInfo | null>
 }
 
 export function Reader({
@@ -48,6 +57,7 @@ export function Reader({
   onComplete,
   profileId,
   onLeave,
+  fetchSeriesNext,
 }: ReaderProps) {
   const navigate = useNavigate()
   const [snapshot, send] = useMachine(readerMachine, {
@@ -128,6 +138,12 @@ export function Reader({
 
   if (snapshot.matches('ended')) {
     const ending = node?.ending
+    const meta = seriesMeta(story)
+    const showContinue =
+      fetchSeriesNext !== undefined &&
+      meta !== null &&
+      !meta.isFinal &&
+      SATISFYING_ENDING_KINDS.has(ending?.kind ?? '')
     return (
       <div className="reader-shell">
         {chrome}
@@ -150,6 +166,15 @@ export function Reader({
               Read again
             </Button>
             <BackToLibrary profileId={profileId} />
+            {showContinue && meta && fetchSeriesNext ? (
+              <ContinueSeries
+                profileId={profileId}
+                storybookId={story.id}
+                fetchSeriesNext={fetchSeriesNext}
+                finalVarState={reading.var_state}
+                carriesState={meta.carriesState}
+              />
+            ) : null}
           </div>
         </section>
       </div>

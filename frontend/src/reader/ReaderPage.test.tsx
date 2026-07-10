@@ -14,6 +14,7 @@ import * as db from '../offline/db'
 import { _resetDbHandle, getReadingState, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
 import { OfflineError } from '../offline/sync'
+import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { ReaderPage } from './ReaderPage'
 
@@ -653,5 +654,151 @@ describe('ReaderPage', () => {
     // server node/vars overwriting the newer local ones.
     expect(rowAfter?.current_node).not.toBe(oldServerState.current_node)
     expect(rowAfter?.current_node).toBe(newerLocalState.current_node)
+  })
+
+  // Task 3 fixture shape (see player/engine.test.ts "startContinuation"):
+  // n_one is the start node, n_two has an on_enter effect that increments
+  // courage by 1 on top of whatever is seeded.
+  const continuationStory: Storybook = {
+    schema_version: '2.0',
+    id: 's_continuation_seed',
+    version: 1,
+    title: 'Continuation Seed',
+    metadata: {},
+    variables: [{ name: 'courage', type: 'int', initial: 0, min: 0, max: 5 }],
+    start_node: 'n_one',
+    nodes: [
+      { id: 'n_one', body: 'chapter one starts', is_ending: false, choices: [] },
+      {
+        id: 'n_two',
+        body: 'chapter two starts',
+        is_ending: false,
+        on_enter: [{ op: 'inc', var: 'courage', value: 1 }],
+        choices: [],
+      },
+    ],
+  }
+
+  it('seeds a fresh read from a continuation', async () => {
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    const continuation: ContinuationSeed = { entryNode: 'n_two', varState: { courage: 2 } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(continuationStory)}
+          fetchServerState={fetchServerState}
+          continuation={continuation}
+          profileId="p_seed"
+          storybookId="s_continuation_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    expect(screen.getByTestId('passage-body').textContent).toContain('chapter two starts')
+    const row = await getReadingState('p_seed', 's_continuation_seed')
+    expect(row?.current_node).toBe('n_two')
+    // seeded 2, then n_two's on_enter inc applies on top
+    expect(row?.var_state).toEqual({ courage: 3 })
+  })
+
+  it('ignores a continuation when saved progress exists', async () => {
+    const savedOnServer: ReadingState = {
+      current_node: 'n_one',
+      var_state: { courage: 5 },
+      path: ['n_one'],
+      visit_set: ['n_one'],
+      version: 1,
+      state_revision: 2,
+      save_slots: {},
+    }
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(savedOnServer))
+    const continuation: ContinuationSeed = { entryNode: 'n_two', varState: { courage: 2 } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(continuationStory)}
+          fetchServerState={fetchServerState}
+          continuation={continuation}
+          profileId="p_seed_saved"
+          storybookId="s_continuation_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Saved progress wins: resumes at n_one with the saved var_state, no
+    // continuation jump to n_two and no seeding.
+    expect(screen.getByTestId('passage-body').textContent).toContain('chapter one starts')
+    const row = await getReadingState('p_seed_saved', 's_continuation_seed')
+    expect(row?.current_node).toBe('n_one')
+    expect(row?.var_state).toEqual({ courage: 5 })
+  })
+
+  it('ignores a continuation when local (IndexedDB) progress exists', async () => {
+    // The server-origin variant above resumes via fetchServerState; this one
+    // pins the other no-clobber leg: progress already in the local cache must
+    // win over the seed, and the local row must survive unchanged.
+    const localSaved: ReadingState = {
+      current_node: 'n_one',
+      var_state: { courage: 4 },
+      path: ['n_one'],
+      visit_set: ['n_one'],
+      version: 1,
+      state_revision: 3,
+      save_slots: {},
+    }
+    await putReadingState('p_seed_local', 's_continuation_seed', localSaved)
+    const fetchServerState = vi.fn(() => Promise.resolve<ReadingState | null>(null))
+    const continuation: ContinuationSeed = { entryNode: 'n_two', varState: { courage: 2 } }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(continuationStory)}
+          fetchServerState={fetchServerState}
+          continuation={continuation}
+          profileId="p_seed_local"
+          storybookId="s_continuation_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Local progress wins: no continuation jump, no server consult, and the
+    // stored row keeps the local position and vars.
+    expect(screen.getByTestId('passage-body').textContent).toContain('chapter one starts')
+    expect(fetchServerState).not.toHaveBeenCalled()
+    const row = await getReadingState('p_seed_local', 's_continuation_seed')
+    expect(row?.current_node).toBe('n_one')
+    expect(row?.var_state).toEqual({ courage: 4 })
+  })
+
+  it('shows the error screen (not a stuck Loading) when the continuation seed cannot start', async () => {
+    // A corrupt blob whose start_node points at no node: startContinuation
+    // throws while seeding, and load() must map that to the error phase.
+    const corrupt: Storybook = {
+      ...continuationStory,
+      id: 's_corrupt_seed',
+      start_node: 'n_missing',
+    }
+    const continuation: ContinuationSeed = { entryNode: null }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={okApi()}
+          fetchStory={() => Promise.resolve(corrupt)}
+          fetchServerState={() => Promise.resolve(null)}
+          continuation={continuation}
+          profileId="p_seed_corrupt"
+          storybookId="s_corrupt_seed"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    expect(await screen.findByText('Something went wrong')).toBeTruthy()
+    expect(screen.queryByTestId('loading')).toBeNull()
   })
 })

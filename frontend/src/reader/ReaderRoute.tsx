@@ -1,10 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { Button } from '@ds/components/Button'
 import {
   makeFetchServerState,
+  makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
   makeSyncApi,
@@ -13,6 +14,7 @@ import { useApi } from '../hooks/useApi'
 import { useReplayOnReconnect } from '../hooks/useReplayOnReconnect'
 import type { QueuedWrite } from '../offline/db'
 import { resolveConflict, saveProgress, type ReplayOutcome } from '../offline/sync'
+import { parseContinuation } from '../player/series'
 import { KID_PICKER_PATH } from '../routes'
 import { BackToLibrary } from './BackToLibrary'
 import { ConflictDialog } from './ConflictDialog'
@@ -43,7 +45,10 @@ export function ReaderRoute() {
   // regression this pattern guards against).
   const fetchServerState = useMemo(() => makeFetchServerState(api), [api])
   const recordCompletion = useMemo(() => makeRecordCompletion(api), [api])
+  const fetchSeriesNext = useMemo(() => makeFetchSeriesNext(api), [api])
   const navigate = useNavigate()
+  const location = useLocation()
+  const continuation = useMemo(() => parseContinuation(location.state), [location.state])
 
   const [replayConflicts, setReplayConflicts] = useState<QueuedWrite[]>([])
   const [replayFailedCount, setReplayFailedCount] = useState(0)
@@ -152,6 +157,8 @@ export function ReaderRoute() {
         fetchStory={fetchStory}
         fetchServerState={fetchServerState}
         recordCompletion={recordCompletion}
+        fetchSeriesNext={fetchSeriesNext}
+        continuation={continuation}
         profileId={profileId}
         storybookId={storybookId}
         version={parsedVersion}

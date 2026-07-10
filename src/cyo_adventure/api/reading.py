@@ -24,6 +24,8 @@ from cyo_adventure.api.schemas import (
     ConflictView,
     ReadingStateBody,
     ReadingStateView,
+    SeriesNextBook,
+    SeriesNextView,
 )
 from cyo_adventure.core.exceptions import (
     AuthorizationError,
@@ -33,6 +35,7 @@ from cyo_adventure.core.exceptions import (
 from cyo_adventure.db.models import (
     Completion,
     ReadingState,
+    Series,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -195,6 +198,97 @@ async def get_reading_state(
         msg = f"no reading state for profile '{profile_id}' on '{storybook_id}'"
         raise ResourceNotFoundError(msg)
     return _view(row)
+
+
+@router.get("/series-next/{profile_id}/{storybook_id}")
+async def get_series_next(
+    profile_id: str,
+    storybook_id: str,
+    ctx: Context,
+) -> SeriesNextView:
+    """Resolve the next book in this storybook's series for a profile.
+
+    Expected absences (not a series book, no next book yet, next book
+    unpublished, next book not readable by this profile) answer 200 with
+    ``next: null``; errors are reserved for the CURRENT book being unknown
+    or unreadable, matching the other kid-scoped reading routes (WS-G spec
+    section 4).
+
+    Args:
+        profile_id: The child profile asking to continue.
+        storybook_id: The series book the profile just finished.
+        ctx: The request context.
+
+    Returns:
+        SeriesNextView: The next book's id, published version, title,
+            declared entry node, and state-carry flag, or ``next: null``.
+
+    Raises:
+        ResourceNotFoundError: If the current storybook does not exist.
+        AuthorizationError: If the profile is not the principal's, or the
+            CURRENT book is not readable by it.
+    """
+    # #CRITICAL: security: profile authorization and the current book's read
+    # gate run before any series resolution so this route cannot be used to
+    # probe another family's series structure.
+    # #VERIFY: test_series_next_other_familys_profile_forbidden (the
+    # authorize_profile gate) and
+    # test_series_next_current_book_not_readable_forbidden (the current
+    # book's read gate raising AuthorizationError -> 403).
+    parsed = _parse_uuid(profile_id, "profile_id")
+    authorize_profile(ctx.principal, parsed)
+    book = await _load_readable_storybook(ctx, storybook_id, parsed)
+    if book.series_id is None or book.book_index is None:
+        return SeriesNextView(next=None)
+    sibling = await ctx.session.scalar(
+        select(Storybook).where(
+            Storybook.series_id == book.series_id,
+            Storybook.book_index == book.book_index + 1,
+        )
+    )
+    published_version = sibling.current_published_version if sibling else None
+    if sibling is None or sibling.status != "published" or published_version is None:
+        return SeriesNextView(next=None)
+    # #ASSUME: security: the next book must pass the SAME read gate as any
+    # direct open; reusing _load_readable_storybook keeps this route from
+    # becoming a second, divergent access path. Expected absence maps a
+    # sibling 403/404 to next=null, which also avoids an existence oracle
+    # (unreadable and nonexistent answer identically).
+    # #VERIFY: test_series_next_unassigned_catalog_sibling_is_null vs
+    # test_series_next_assigned_catalog_sibling_returned.
+    try:
+        await _load_readable_storybook(ctx, sibling.id, parsed)
+    except (AuthorizationError, ResourceNotFoundError):
+        return SeriesNextView(next=None)
+    version_row = await ctx.session.get(
+        StorybookVersion, (sibling.id, published_version)
+    )
+    if version_row is None:
+        return SeriesNextView(next=None)
+    series_row = await ctx.session.get(Series, book.series_id)
+    blob = version_row.blob
+    title = blob.get("title")
+    # #EDGE: data integrity: a pre-WS-G sibling blob carries no embedded
+    # series block; the declared entry node is then unknown and the client
+    # falls back to the document's start_node (identical in v1 by G2).
+    # #VERIFY: test_series_next_legacy_sibling_has_null_entry_node.
+    entry: str | None = None
+    metadata = blob.get("metadata")
+    if isinstance(metadata, dict):
+        series_block = metadata.get("series")
+        if isinstance(series_block, dict):
+            raw_entry = series_block.get("series_entry_node")
+            if isinstance(raw_entry, str):
+                entry = raw_entry
+    return SeriesNextView(
+        next=SeriesNextBook(
+            storybook_id=sibling.id,
+            version=published_version,
+            title=title if isinstance(title, str) else "",
+            series_entry_node=entry,
+            carries_state=series_row.carries_state if series_row else False,
+        )
+    )
 
 
 @router.put(

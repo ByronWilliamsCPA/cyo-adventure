@@ -17,16 +17,18 @@ import uuid
 from typing import TYPE_CHECKING
 
 import pytest
-from sqlalchemy import and_, exists, select
+from sqlalchemy import and_, delete, exists, select
 
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
+    Series,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
     User,
 )
+from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from scripts.seed_dev_data import seed_dev_data
 
 if TYPE_CHECKING:
@@ -101,15 +103,16 @@ async def test_seed_dev_data_publishes_and_assigns_both_stories(
         assert child is not None
         assert child.child_profile_id == profile.id
 
+        # 2 tier stories + 1 in-review story + 2 series books ("Ember Trail" 1/2).
         versions = (await session.scalars(select(StorybookVersion))).all()
-        assert len(versions) == 3
+        assert len(versions) == 5
         published_versions = [v for v in versions if v.storybook_id != _REVIEW_STORY_ID]
         for version in published_versions:
             assert version.approved_by == guardian.id
             assert version.published_at is not None
 
         assignments = (await session.scalars(select(StorybookAssignment))).all()
-        assert len(assignments) == 3
+        assert len(assignments) == 5
         assert {a.child_profile_id for a in assignments} == {profile.id}
         assert {a.storybook_id for a in assignments} == {
             v.storybook_id for v in versions
@@ -131,8 +134,8 @@ async def test_seed_dev_data_is_idempotent(
     async with sessions() as session:
         assignments = (await session.scalars(select(StorybookAssignment))).all()
         versions = (await session.scalars(select(StorybookVersion))).all()
-        assert len(assignments) == 3
-        assert len(versions) == 3
+        assert len(assignments) == 5
+        assert len(versions) == 5
 
 
 async def test_seed_dev_data_seeds_admin_and_review_story(
@@ -216,3 +219,139 @@ async def test_seed_dev_data_seeds_unrelated_family_profile(
         assert unrelated_family is not None
         assert guardian_family is not None
         assert unrelated_family.id != guardian_family.id
+
+
+async def test_seed_dev_data_seeds_series_chain(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The dev seed creates a two-book, state-carrying series for the dev profile."""
+    await seed_dev_data(engine=engine, session_factory=sessions)
+
+    async with sessions() as session:
+        profile = await session.scalar(
+            select(ChildProfile).where(ChildProfile.display_name == "Dev Reader")
+        )
+        assert profile is not None
+
+        series = await session.scalar(
+            select(Series).where(Series.title == "Ember Trail")
+        )
+        assert series is not None
+        assert series.carries_state is True
+
+        books = (
+            await session.scalars(
+                select(Storybook).where(Storybook.series_id == series.id)
+            )
+        ).all()
+        books_by_id = {book.id: book for book in books}
+        assert set(books_by_id) == {"s_dev_ember_1", "s_dev_ember_2"}
+
+        for story_id, expected_index in (
+            ("s_dev_ember_1", 1),
+            ("s_dev_ember_2", 2),
+        ):
+            book = books_by_id[story_id]
+            assert book.status == "published"
+            assert book.current_published_version == 1
+            assert book.book_index == expected_index
+
+            version = await session.scalar(
+                select(StorybookVersion).where(
+                    StorybookVersion.storybook_id == story_id
+                )
+            )
+            assert version is not None
+            # #ASSUME: data-integrity: every reading-state PUT re-validates
+            # the pinned blob via Storybook.model_validate (api/reading.py
+            # -> player/replay.py::_parse), so a seeded blob that fails the
+            # schema gate would 422 every progress save on the real stack.
+            # #VERIFY: this model_validate call fails the test on any future
+            # fixture edit that breaks the schema gate.
+            StorybookDoc.model_validate(version.blob)
+            meta = version.blob["metadata"]
+            assert isinstance(meta, dict)
+            series_block = meta["series"]
+            assert isinstance(series_block, dict)
+            assert series_block["series_id"] == str(series.id)
+            assert series_block["series_entry_node"] == version.blob["start_node"]
+
+            assignment = await session.scalar(
+                select(StorybookAssignment).where(
+                    StorybookAssignment.storybook_id == story_id,
+                    StorybookAssignment.child_profile_id == profile.id,
+                )
+            )
+            assert assignment is not None
+
+
+async def test_seed_dev_data_backfills_series_chain_on_existing_db(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A dev database seeded before the series fixture existed still gains it.
+
+    Simulates a pre-WS-G dev database by seeding, then stripping the Ember
+    Trail rows: under a guardian-existence-only guard the early return would
+    skip the series forever on such a database, so the second run below
+    proves the series call now runs on the already-seeded path behind its own
+    existence check. A third run proves that check also prevents duplicates.
+    """
+    await seed_dev_data(engine=engine, session_factory=sessions)
+
+    ember_ids = ["s_dev_ember_1", "s_dev_ember_2"]
+    async with sessions() as session:
+        await session.execute(
+            delete(StorybookAssignment).where(
+                StorybookAssignment.storybook_id.in_(ember_ids)
+            )
+        )
+        await session.execute(
+            delete(StorybookVersion).where(StorybookVersion.storybook_id.in_(ember_ids))
+        )
+        await session.execute(delete(Storybook).where(Storybook.id.in_(ember_ids)))
+        await session.execute(delete(Series).where(Series.title == "Ember Trail"))
+        await session.commit()
+
+    await seed_dev_data(engine=engine, session_factory=sessions)
+
+    async with sessions() as session:
+        profile = await session.scalar(
+            select(ChildProfile).where(ChildProfile.display_name == "Dev Reader")
+        )
+        assert profile is not None
+
+        series_rows = (
+            await session.scalars(select(Series).where(Series.title == "Ember Trail"))
+        ).all()
+        assert len(series_rows) == 1
+
+        books = (
+            await session.scalars(
+                select(Storybook).where(Storybook.series_id == series_rows[0].id)
+            )
+        ).all()
+        assert {book.id for book in books} == set(ember_ids)
+
+        assignments = (
+            await session.scalars(
+                select(StorybookAssignment).where(
+                    StorybookAssignment.storybook_id.in_(ember_ids)
+                )
+            )
+        ).all()
+        assert len(assignments) == 2
+        assert {a.child_profile_id for a in assignments} == {profile.id}
+
+    # A further run against the now-complete database must not duplicate.
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        series_rows = (
+            await session.scalars(select(Series).where(Series.title == "Ember Trail"))
+        ).all()
+        assert len(series_rows) == 1
+        versions = (await session.scalars(select(StorybookVersion))).all()
+        assignments = (await session.scalars(select(StorybookAssignment))).all()
+        assert len(versions) == 5
+        assert len(assignments) == 5

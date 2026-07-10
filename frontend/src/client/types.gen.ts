@@ -1659,6 +1659,43 @@ export type SentBackView = {
 };
 
 /**
+ * SeriesNextBook
+ *
+ * The next readable book in a series, resolved for one profile.
+ */
+export type SeriesNextBook = {
+    /**
+     * Storybook Id
+     */
+    storybook_id: string;
+    /**
+     * Version
+     */
+    version: number;
+    /**
+     * Title
+     */
+    title: string;
+    /**
+     * Series Entry Node
+     */
+    series_entry_node?: string | null;
+    /**
+     * Carries State
+     */
+    carries_state: boolean;
+};
+
+/**
+ * SeriesNextView
+ *
+ * GET /series-next response; ``next`` is null for every expected absence.
+ */
+export type SeriesNextView = {
+    next?: SeriesNextBook | null;
+};
+
+/**
  * Source
  *
  * Which stage or classifier produced a finding.
@@ -2383,6 +2420,46 @@ export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses = {
 };
 
 export type PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponse = PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses[keyof PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses];
+
+export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Profile Id
+         */
+        profile_id: string;
+        /**
+         * Storybook Id
+         */
+        storybook_id: string;
+    };
+    query?: never;
+    url: '/api/v1/series-next/{profile_id}/{storybook_id}';
+};
+
+export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetError = GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors[keyof GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors];
+
+export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: SeriesNextView;
+};
+
+export type GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponse = GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses[keyof GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses];
 
 export type RecordCompletionApiV1CompletionsPostData = {
     body: CompletionBody;
