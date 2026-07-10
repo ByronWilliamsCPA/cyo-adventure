@@ -65,6 +65,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   moderation screening, mirroring the existing `approve()` check (closes #57).
 
 ### Added
+- Series continuation runtime (WS-G PR 2): kid-scoped `GET /api/v1/series-next` endpoint,
+  "Continue the series" on satisfying endings of non-final series books with entry-node jump
+  and name-matched variable-state seeding for state-carrying series, regenerated API client,
+  and chained-reading e2e coverage in both Playwright tiers.
 - Admin-generated story book covers: from a published story version an admin
   can trigger cover generation, which builds a textless-art prompt from the
   story content, calls Gemini image generation ("nano banana" Pro) in an async
