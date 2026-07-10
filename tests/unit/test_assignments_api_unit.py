@@ -234,7 +234,7 @@ class TestAssignStorybook:
         session = _FakeSession(book=_book("s1", other))
         body = AssignmentCreateBody(profile_ids=[str(p1)])
         with pytest.raises(
-            AuthorizationError, match=r"resource belongs to another family"
+            AuthorizationError, match=r"storybook is not visible to this family"
         ):
             await assign_storybook("s1", body, _ctx(_guardian(fam, {p1}), session))
 
@@ -331,7 +331,7 @@ class TestListAssignments:
         fam, other = uuid.uuid4(), uuid.uuid4()
         session = _FakeSession(book=_book("s1", other))
         with pytest.raises(
-            AuthorizationError, match=r"resource belongs to another family"
+            AuthorizationError, match=r"storybook is not visible to this family"
         ):
             await list_assignments("s1", _ctx(_guardian(fam, set()), session))
 

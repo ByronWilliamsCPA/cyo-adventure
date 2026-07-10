@@ -172,6 +172,7 @@ def _guardian_book_item(**overrides: object) -> dict[str, object]:
         "screened": True,
         "flagged_count": 0,
         "assigned_profile_ids": [],
+        "visibility": "family",
     }
     base.update(overrides)
     return base
