@@ -8,7 +8,7 @@
 
 import { type AxiosInstance, isAxiosError } from 'axios'
 
-import type { ConflictView } from '../client/types.gen'
+import type { ConflictView, SeriesNextView } from '../client/types.gen'
 import { OfflineError, type PutResponse, type SaveBody, type SyncApi } from '../offline/sync'
 import type { ReadingState, Storybook } from '../player/types'
 
@@ -146,5 +146,22 @@ export function makeRecordCompletion(
 ): (body: CompletionRequest) => Promise<void> {
   return async (body: CompletionRequest): Promise<void> => {
     await api.post('/v1/completions', body)
+  }
+}
+
+/** The generated non-null payload of GET /v1/series-next (single source of truth). */
+export type SeriesNextBookInfo = NonNullable<SeriesNextView['next']>
+
+/**
+ * Resolve the next readable book in a series for a profile. Returns null when
+ * the server answers next: null (every expected absence). Errors propagate;
+ * the caller treats any failure as "no continuation offered" (best-effort).
+ */
+export function makeFetchSeriesNext(
+  api: AxiosInstance
+): (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null> {
+  return async (profileId, storybookId) => {
+    const res = await api.get<SeriesNextView>(`/v1/series-next/${profileId}/${storybookId}`)
+    return res.data.next ?? null
   }
 }
