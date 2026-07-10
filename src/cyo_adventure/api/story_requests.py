@@ -24,6 +24,7 @@ from sqlalchemy import select
 
 from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import (
+    AlternativeView,
     AuthoringPlanRequest,
     AuthoringPlanResponse,
     JobStatusLiteral,
@@ -740,8 +741,9 @@ async def create_authoring_plan(
             fires after commit.
 
     Returns:
-        AuthoringPlanResponse: The created job id, status, matched skeleton
-        (if any), and any non-blocking eligibility warnings.
+        AuthoringPlanResponse: The created job id, status, matched or
+        overridden skeleton (if any), every in-cell skeleton_alternatives,
+        and any non-blocking eligibility/override warnings.
 
     Raises:
         AuthorizationError: If the caller is not an admin (-> 403).
@@ -750,8 +752,8 @@ async def create_authoring_plan(
         StateTransitionError: If the request is not approved, or a job
             already exists for its concept (-> 409).
         ValidationError: On an invalid method/mechanism combination, an
-            unrecognized skill-mechanism model, or no matching skeleton
-            (-> 422).
+            unrecognized skill-mechanism model, no matching skeleton, or an
+            unknown skeleton_slug override (-> 422).
     """
     # #CRITICAL: security: admin-only -- a guardian may approve a request but
     # must not choose its authoring backend or model (a child token is already
@@ -788,6 +790,9 @@ async def create_authoring_plan(
         mechanism=body.mechanism,
         status=cast("JobStatusLiteral", result.job.status),
         skeleton_slug=result.skeleton_slug,
+        skeleton_alternatives=[
+            AlternativeView(slug=slug) for slug in result.skeleton_alternatives
+        ],
         warnings=result.warnings,
     )
 

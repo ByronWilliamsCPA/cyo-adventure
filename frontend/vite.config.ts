@@ -98,10 +98,26 @@ export default defineConfig({
     setupFiles: './src/test/setup.ts',
     // Unit/component tests live under src; e2e/ is Playwright's.
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    // In CI, also emit JUnit XML so the run can be uploaded to Codecov Test
+    // Analytics (the "Tests" tab). GitHub Actions sets CI=true; locally we keep
+    // just the default reporter so no stray junit.xml is written on every run.
+    reporters: process.env.CI ? ['default', 'junit'] : ['default'],
+    outputFile: { junit: './junit.xml' },
     coverage: {
       provider: 'v8',
+      // Scope coverage to app source. Without an explicit include, the v8
+      // provider reports every file the run touches (node_modules, dist, e2e
+      // specs, design-system, even paths above frontend/), and those unmappable
+      // paths made Codecov reject the whole lcov as an "unusable report".
+      include: ['src/**'],
       reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: ['node_modules/', 'src/test/', 'src/client/', '**/*.d.ts', '**/*.config.*'],
+      exclude: [
+        'src/test/',
+        'src/client/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        '**/*.{test,spec}.{ts,tsx}',
+      ],
     },
   },
 })

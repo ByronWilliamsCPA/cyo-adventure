@@ -26,7 +26,6 @@ from __future__ import annotations
 import asyncio
 import dataclasses
 import uuid
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from sqlalchemy import select
@@ -40,6 +39,10 @@ from cyo_adventure.db.models import (
     GenerationJob,
 )
 from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.generation.authoring_metadata import (
+    SKELETON_BAND_KEY,
+    SKELETON_SLUG_KEY,
+)
 from cyo_adventure.generation.concept import ConceptBrief
 from cyo_adventure.generation.orchestrator import fill_skeleton, generate_story
 from cyo_adventure.generation.persistence import StorybookParams, persist_storybook
@@ -47,6 +50,7 @@ from cyo_adventure.generation.pii import PiiContext
 from cyo_adventure.generation.provider import build_provider
 from cyo_adventure.generation.series_link import link_series_position
 from cyo_adventure.generation.skeleton import load_skeleton
+from cyo_adventure.generation.skeleton_match import resolve_skeleton_path
 from cyo_adventure.middleware.correlation import (
     generate_correlation_id,
     set_correlation_id,
@@ -264,7 +268,7 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
             validation (see :func:`~cyo_adventure.generation.skeleton.load_skeleton`).
     """
     authoring = ctx.authoring
-    skeleton_slug = authoring.get("skeleton_slug")
+    skeleton_slug = authoring.get(SKELETON_SLUG_KEY)
     theme_brief = authoring.get("theme_brief")
     # #ASSUME: data-integrity: authoring_metadata for a method="skeleton_fill"
     # job always carries a string skeleton_slug (see
@@ -274,9 +278,19 @@ async def _run_skeleton_fill(ctx: _SkeletonFillContext) -> GenerationOutcome:
     if not isinstance(skeleton_slug, str):
         msg = "authoring_metadata.skeleton_slug is missing or not a string"
         raise ResourceNotFoundError(msg)
-    skeleton_path = (
-        Path("skeletons") / ctx.brief.age_band.value / f"{skeleton_slug}.json"
+    # #ASSUME: data-integrity: prefer the stored skeleton_band (the
+    # OVERRIDE skeleton's real band, WS-C PR2 final review C1) over the
+    # request's own brief.age_band, which is wrong for a cross-band admin
+    # override; fall back to the request band only for a pre-fix job whose
+    # authoring_metadata predates this key.
+    # #VERIFY: cross-band skeleton_fill test in
+    # tests/integration/test_generation_worker.py that a job carrying
+    # skeleton_band="13-16" on an 8-11 request loads the 13-16 file.
+    skeleton_band = authoring.get(SKELETON_BAND_KEY)
+    fill_band = (
+        skeleton_band if isinstance(skeleton_band, str) else ctx.brief.age_band.value
     )
+    skeleton_path = resolve_skeleton_path(fill_band, skeleton_slug)
     skeleton = load_skeleton(skeleton_path)
     theme_brief_dict = theme_brief if isinstance(theme_brief, dict) else {}
     review_stage1_model = authoring.get("review_stage1_model")
@@ -394,6 +408,24 @@ def _authoring_model_override(authoring: dict[str, object] | None) -> str | None
     return value if isinstance(value, str) else None
 
 
+def _skeleton_slug_of(authoring: dict[str, object] | None) -> str | None:
+    """Return the skeleton slug recorded on the job, if any.
+
+    Args:
+        authoring: The job's ``authoring_metadata`` dict, or ``None`` for a
+            fresh (non-skeleton) generation that carries no skeleton.
+
+    Returns:
+        The skeleton slug when ``authoring`` carries a string
+        ``skeleton_slug``; otherwise ``None`` (fresh_generation, or a
+        skeleton_fill job somehow missing the key).
+    """
+    if authoring is None:
+        return None
+    value = authoring.get("skeleton_slug")
+    return value if isinstance(value, str) else None
+
+
 @dataclasses.dataclass(frozen=True, slots=True)
 class _PersistContext:
     """The per-job context :func:`_persist_and_moderate` needs to persist + moderate.
@@ -475,6 +507,7 @@ async def _persist_and_moderate(
             model=ctx.job_row.model,
             prompt_version=_PROMPT_VERSION,
             provider=_provider_label(ctx.effective_provider),
+            skeleton_slug=_skeleton_slug_of(ctx.authoring),
             validation_report=dict(outcome.report),
             version=_FIRST_VERSION,
         ),

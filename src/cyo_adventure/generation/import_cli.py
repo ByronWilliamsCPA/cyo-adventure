@@ -72,6 +72,12 @@ async def _run(
         if job_id is not None:
             return await resume_manual_fill(session, job_id, blob, model=model)
         assert family_id is not None  # guaranteed by main()'s argument check
+        # #ASSUME: data-integrity: a standalone offline import has no skeleton
+        # or cell context, so skeleton_slug provenance is left NULL here on
+        # purpose. Recency weighting (which reads skeleton_slug history) simply
+        # does not count CLI-imported versions; this is intended, not a gap.
+        # #VERIFY: to record provenance for a manual fill, resume the parked job
+        # with --job (resume_manual_fill stamps skeleton_slug from the job).
         request = ImportRequest(blob=blob, family_id=family_id, model=model)
         story_id = await import_filled_story(session, request)
         await session.commit()

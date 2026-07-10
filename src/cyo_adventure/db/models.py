@@ -265,6 +265,11 @@ class StorybookVersion(Base):
     # (and any future write path that forgets to stamp it) simply have no
     # provenance recorded, which degrades to "unknown" for display, not an error.
     provider: Mapped[str | None] = mapped_column(String(120), default=None)
+    # Which production skeleton (skeletons/<band>/<slug>.json) this version was
+    # filled from, or None for a fresh_generation version, an imported book, or
+    # any version predating this column (WS-C PR2). Set once, at persist time,
+    # from the job's authoring_metadata["skeleton_slug"]; never backfilled.
+    skeleton_slug: Mapped[str | None] = mapped_column(String(120), default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
     cover_image_url: Mapped[str | None] = mapped_column(String(512), default=None)
     cover_status: Mapped[str] = mapped_column(

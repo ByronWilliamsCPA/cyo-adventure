@@ -116,6 +116,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   audited threshold upsert. Two new admin-only GET endpoints under
   `/api/v1/admin/moderation/`; no migration, no new event type, no
   auto-calibration.
+- Cell-aware skeleton matching for skeleton-fill authoring plans (WS-C PR 2): selection now
+  matches the full ADR-011 `(age band, length, narrative style)` cell instead of band-only,
+  weights the pick against the family's recently-used skeletons with a nonzero floor, and lets
+  an admin override to any skeleton on disk (with a non-blocking warning on a non-production or
+  out-of-cell pick). `AuthoringPlanResponse` now returns every in-cell alternative, and
+  `storybook_version.skeleton_slug` records which skeleton produced each version.
+  The admin override slug is charset- and length-bounded at the request boundary
+  (`^[a-z0-9][a-z0-9-]*$`, max 120), and every skeleton-fill path resolves the on-disk
+  file through a shared containment check that rejects any band or slug escaping the
+  skeleton root, so an untrusted override cannot traverse the filesystem. An override
+  now resolves before the empty-cell guard, so a cross-cell override succeeds even when
+  the request's own cell has no eligible skeleton; unreadable, schema-invalid, and
+  band-ambiguous skeletons are logged and surfaced as distinct errors rather than
+  silently treated as absent.
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
@@ -151,6 +165,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   neither had any remaining import. Closes F22.
 
 ### Fixed
+- Codecov configuration was silently invalid (a `testcase` comment-layout
+  token, a misplaced `flag_coverage_not_uploaded_behavior`, and a `behavior`
+  field on individual flags), which made Codecov discard the whole file and
+  fall back to defaults, ignoring every declared flag and component. The file
+  now passes `codecov.io/validate`. Flags are now test-type on the backend
+  (`unit`, `integration`, `security`, each uploaded from its own
+  `coverage-<type>.xml`) and surface on the frontend (`frontend`,
+  `design-system`, which cannot split by type), plus a dormant `api` Test
+  Analytics flag; the code-area split moved to components, including
+  safety-critical (moderation + security + core, 90/95) and generation-pipeline
+  (85/90).
+- Backend coverage now uploads to Codecov from an inline `coverage-upload` CI
+  job (per test type) instead of a `main`-only `workflow_run` workflow, so
+  backend coverage and patch coverage are visible on pull requests for the
+  first time; the redundant `.github/workflows/codecov.yml` was removed.
+- The `coverage-upload` job now checks out the repository before uploading.
+  pytest-cov emits two `<source>` roots (`src` and `src/cyo_adventure`), which
+  Codecov disambiguates against the git file tree; without a checkout every
+  report was rejected server-side as "source code unavailability / path
+  mismatch", so the first main run after the config fix showed 0% with ten
+  upload errors despite healthy 91%+ reports in the artifact.
+- Frontend and design-system coverage now reach Codecov and aggregate with the
+  backend into one commit total. Two fixes were needed: (1) an explicit
+  `coverage.include: ['src/**']` in both Vitest configs, since without it the v8
+  provider reported every file the run touched (`node_modules`, `dist`, e2e
+  specs, paths above the package root); and (2) rewriting the lcov `SF:` paths
+  to be repo-root-relative (`frontend/src/...`,
+  `frontend/design-system/src/...`) before upload, because Vitest emits them
+  relative to the package root and Codecov matches against the repo tree. Until
+  both were in place the reports uploaded but were dropped server-side as "path
+  mismatch", so only the backend sessions merged and the `frontend` /
+  `design-system` flags stayed empty.
+- The integration and security test buckets now run in CI
+  (`run-integration-tests` / `run-security-tests`); previously the reusable
+  workflow's unit step excluded `-m integration`/`-m security`, so those
+  test files never executed in CI.
 - OpenAI Moderation's `_run_openai` now logs `openai_moderation_malformed`
   when the response's `categories` field degrades to an empty map (missing or
   non-dict shape), matching the sibling shape-check log lines instead of

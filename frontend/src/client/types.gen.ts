@@ -88,6 +88,18 @@ export type AllowlistView = {
 };
 
 /**
+ * AlternativeView
+ *
+ * One in-cell, production-eligible skeleton the admin could pick instead.
+ */
+export type AlternativeView = {
+    /**
+     * Slug
+     */
+    slug: string;
+};
+
+/**
  * AnchorContext
  *
  * Soft-continuation context extracted from a series anchor storybook.
@@ -202,7 +214,14 @@ export type AssignmentListView = {
  * generation backend when ``mechanism='automated_provider'``; both are
  * required together in that case and are validated against the enabled
  * provider/model allowlist by ``build_authoring_plan`` (a DB-backed check
- * the schema layer cannot perform).
+ * the schema layer cannot perform). ``skeleton_slug`` is an optional admin
+ * override (decision C-6): any slug on disk is accepted, including a
+ * non-production-eligible or out-of-cell one, with a warning surfaced on
+ * mismatch rather than a rejection. It is "unconstrained" in WHICH skeleton it
+ * may name, but the value is charset-bounded to a slug (lowercase, digits,
+ * hyphens) so a path-traversal string can never reach the filesystem path
+ * builders; the DB provenance column is String(120), so the length is capped
+ * to match.
  */
 export type AuthoringPlanRequest = {
     /**
@@ -233,6 +252,10 @@ export type AuthoringPlanRequest = {
      * Review Stage2 Model
      */
     review_stage2_model?: string | null;
+    /**
+     * Skeleton Slug
+     */
+    skeleton_slug?: string | null;
 };
 
 /**
@@ -269,6 +292,10 @@ export type AuthoringPlanResponse = {
      * Skeleton Slug
      */
     skeleton_slug?: string | null;
+    /**
+     * Skeleton Alternatives
+     */
+    skeleton_alternatives?: Array<AlternativeView>;
     /**
      * Warnings
      */

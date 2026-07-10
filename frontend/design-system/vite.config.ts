@@ -29,16 +29,18 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
       provider: 'v8',
+      // Scope coverage to library source (see the frontend config note): an
+      // include keeps node_modules, dist, and .design-sync out of the lcov so
+      // Codecov does not reject the report over unmappable paths.
+      include: ['src/**'],
       reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
-        'node_modules/',
         'src/test/',
-        'dist/**',
-        '.design-sync/**',
         'src/index.ts',
         'src/components/**/index.ts',
         '**/*.d.ts',
         '**/*.config.*',
+        '**/*.{test,spec}.{ts,tsx}',
       ],
     },
   },
