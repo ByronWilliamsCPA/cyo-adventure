@@ -78,8 +78,10 @@ In `generation/worker.py`, for jobs whose storybook has a `series_id`:
   `persist_storybook` and `link_series_position` run (in their existing order; `assign_book_index`
   requires the `Storybook` row to exist, so linkage cannot precede persist), a new
   `embed_series_block` step reads the assigned linkage columns plus the `series` row and reassigns
-  the `StorybookVersion.blob` with `metadata.series` populated, before moderation runs and before
-  the worker's single commit. The existing savepoint retry guard on
+  the `StorybookVersion.blob` with `metadata.series` populated, AFTER the moderation pipeline runs
+  and before the worker's single commit. The ordering is load-bearing (WS-G C1): moderation's
+  soft-repair path reassigns the blob wholesale from LLM output, so an embed written before
+  moderation would be silently dropped whenever a repair is adopted. The existing savepoint retry guard on
   `uq_storybook_series_book_index` is reused untouched (`generation/series_link.py`; the
   umbrella's `#CRITICAL` concurrency race stays solved there, do not re-implement).
 - Non-series jobs are unchanged (the embed step no-ops when the storybook has no series linkage).
@@ -91,12 +93,17 @@ In `generation/worker.py`, for jobs whose storybook has a `series_id`:
 
 - **SR-4 relaxation** (`validator/series.py::_check_final_flags`): error only when a non-top book
   has `is_final=True`. The top-index book may be final or not (open-ended chains are valid). This
-  matches ADR-011 section 8 prose ("only the top index may be is_final"); the current strict
-  implementation would fail every open chain. Unit tests updated accordingly.
+  is consistent with ADR-011 section 8, which treats non-final books as a first-class category and
+  nowhere mandates that the top book be final (the previous strict rule was an implementation
+  artifact of the PR #70 enabler, not an ADR constraint); the strict form would fail every open
+  chain. Unit tests updated accordingly.
 - **Wiring point** (`publishing/service.py::approve`): when the storybook being approved has a
   `series_id`, load the chain-so-far (each sibling series book's current published version blob,
+  including archived siblings that retain one, since they still occupy their `book_index` slot;
   plus the version under approval), parse to `Storybook` models, and run `validate_series`. SR
-  errors block approval (422 via the centralized exception hierarchy); the approval transaction
+  errors block approval with HTTP 400 via `BusinessLogicError(rule="series_validation")` in the
+  centralized exception hierarchy (the same mapping as the adjacent `approve_without_moderation`
+  gate; only `ValidationError` maps to 422); the approval transaction
   rolls back. No new `pipeline_event` type; the existing `RELEASED` event is unchanged.
 - **Grandfather rule**: if any OTHER published book in the chain lacks an embedded series block
   (pre-WS-G generation), skip the cross-book gate for that series and emit a structured warning
@@ -138,7 +145,8 @@ In `generation/worker.py`, for jobs whose storybook has a `series_id`:
 
 ## 6. Error handling and edge cases
 
-- Approval gate failures surface as structured 422s naming the SR rule ids; admins fix by
+- Approval gate failures surface as structured 400s (`BusinessLogicError`,
+  `rule="series_validation"`) naming the SR rule ids; admins fix by
   regenerating or declining the book, never by editing approved blobs.
 - series-next returns its null payload (200, not an error status) for: final book, no next book
   yet, next book unpublished, next book not readable by the profile.
