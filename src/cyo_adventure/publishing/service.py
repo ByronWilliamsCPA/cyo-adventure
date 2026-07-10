@@ -195,11 +195,12 @@ async def approve(
     Raises:
         StateTransitionError: If the story is not in ``in_review``.
         ResourceNotFoundError: If the version row does not exist.
-        BusinessLogicError: If the version has never been screened by the
-            moderation pipeline (``moderation_report is None``), or if
-            ``rule="series_validation"`` when the chain-so-far fails
-            series-rule validation for a series book (legacy pre-WS-G
-            chains are grandfathered and skip this check).
+        BusinessLogicError: With ``rule="approve_without_moderation"`` when
+            the version has never been screened by the moderation pipeline
+            (``moderation_report is None``), or with
+            ``rule="series_validation"`` when chain-so-far series validation
+            fails for a series book (legacy pre-WS-G chains are grandfathered
+            and skip this check).
     """
     # #CRITICAL: security: this is the SOLE path that sets status="published",
     # and it stamps approved_by in the same operation, so no story is published

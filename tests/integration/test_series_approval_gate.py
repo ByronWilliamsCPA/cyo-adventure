@@ -307,6 +307,7 @@ async def test_unparseable_sibling_blob_is_grandfathered(
         principal = _principal(admin_id, series.family_id)
         row = await approve(session, principal, book2, 1)
         assert row.approved_by is not None
+        assert book2.status == "published"
 
 
 async def test_single_book_series_approves_cleanly(
