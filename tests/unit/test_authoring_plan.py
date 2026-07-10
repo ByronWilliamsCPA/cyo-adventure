@@ -16,8 +16,6 @@ from cyo_adventure.story_requests.authoring_plan import (
     eligibility_warnings,
 )
 
-pytestmark = pytest.mark.asyncio
-
 
 class _FakeResult:
     """A no-op result for the recent-usage query; every test starts with no history."""
@@ -92,6 +90,7 @@ def _admin_actor() -> Actor:
     return Actor(actor_id=uuid.uuid4(), actor_role="admin")
 
 
+@pytest.mark.asyncio
 async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
     """The unchanged path: a queued job, no skeleton, no warnings."""
     session = _FakeSession()
@@ -122,6 +121,7 @@ async def test_fresh_generation_automated_provider_creates_queued_job() -> None:
     }
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_skill_parks_job_with_metadata() -> None:
     """The new path: an awaiting_manual_fill job carrying skeleton + theme_brief."""
     session = _FakeSession()
@@ -159,6 +159,7 @@ def test_fresh_generation_with_skill_mechanism_is_rejected() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata() -> (
     None
 ):
@@ -188,6 +189,7 @@ async def test_skeleton_fill_automated_provider_creates_queued_job_with_metadata
     }
 
 
+@pytest.mark.asyncio
 async def test_unrecognized_skill_model_is_rejected() -> None:
     """prep_model must be a real Claude Code session model for mechanism='skill'."""
     session = _FakeSession()
@@ -203,6 +205,7 @@ async def test_unrecognized_skill_model_is_rejected() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_existing_job_for_concept_is_conflict() -> None:
     """A second authoring-plan call for the same concept is a 409, not a duplicate job."""
     concept = _concept()
@@ -224,6 +227,7 @@ async def test_existing_job_for_concept_is_conflict() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_no_matching_skeleton_for_band_is_rejected() -> None:
     """A band with no skeleton directory at all yields a 422, not a crash."""
     session = _FakeSession()
@@ -283,6 +287,7 @@ def test_provider_model_rejected_when_mechanism_not_automated_provider() -> None
         )
 
 
+@pytest.mark.asyncio
 async def test_unallowlisted_provider_model_is_rejected() -> None:
     """A provider/model pair that is not an enabled allowlist row is a 422."""
     session = _FakeSession(allowlisted=False)
@@ -302,6 +307,7 @@ async def test_unallowlisted_provider_model_is_rejected() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_populates_alternatives() -> None:
     """The result carries every in-cell candidate, not just the pick."""
     session = _FakeSession()
@@ -320,6 +326,7 @@ async def test_skeleton_fill_populates_alternatives() -> None:
     assert result.skeleton_slug == "the-cave-of-echoes"
 
 
+@pytest.mark.asyncio
 async def test_fresh_generation_has_no_alternatives() -> None:
     session = _FakeSession()
     result = await build_authoring_plan(
@@ -338,6 +345,7 @@ async def test_fresh_generation_has_no_alternatives() -> None:
     assert result.skeleton_alternatives == []
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_honors_unconstrained_override() -> None:
     """An out-of-cell override is accepted with a warning, never blocked."""
     session = _FakeSession()
@@ -359,6 +367,7 @@ async def test_skeleton_fill_honors_unconstrained_override() -> None:
     assert result.job.authoring_metadata["skeleton_band"] == "13-16"
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_weighted_pick_persists_request_band() -> None:
     """The non-override (weighted) path stores the request's own band."""
     session = _FakeSession()
@@ -376,6 +385,7 @@ async def test_skeleton_fill_weighted_pick_persists_request_band() -> None:
     assert result.job.authoring_metadata["skeleton_band"] == "8-11"
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_override_unknown_slug_is_rejected() -> None:
     session = _FakeSession()
     with pytest.raises(ValidationError):
@@ -393,6 +403,7 @@ async def test_skeleton_fill_override_unknown_slug_is_rejected() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_null_length_falls_back_to_short() -> None:
     """concept.brief with no "length" key at all still forms a cell (decision 3)."""
     session = _FakeSession()
@@ -413,6 +424,7 @@ async def test_skeleton_fill_null_length_falls_back_to_short() -> None:
     assert result.skeleton_slug == "the-cave-of-echoes"
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> None:
     """M1: a teen-band request with no length matches a real medium skeleton.
 
@@ -439,6 +451,7 @@ async def test_skeleton_fill_teen_band_null_length_falls_back_to_medium() -> Non
     assert result.skeleton_slug == "the-signal-in-the-static"
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_empty_cell_override_succeeds() -> None:
     """B1 headline: a valid admin override for a request whose OWN cell is empty
     must NOT hit the empty-cell 422 (decision C-6, unconstrained override).
@@ -482,6 +495,7 @@ async def test_skeleton_fill_empty_cell_override_succeeds() -> None:
         )
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
     """F6: coercing an absent request length to a default surfaces a
     non-blocking warning (warn, never block)."""
@@ -503,6 +517,7 @@ async def test_skeleton_fill_defaulted_length_appends_warning() -> None:
     assert result.skeleton_slug == "the-signal-in-the-static"
 
 
+@pytest.mark.asyncio
 async def test_skeleton_fill_specified_length_no_default_warning() -> None:
     """F6 inverse: an explicit request length adds no defaulted-length warning."""
     concept = Concept(

@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
 from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REVISION = "e1f2a3b4c5d6"
 DOWN_REVISION = "d0e1f2a3b4c5"
@@ -23,7 +27,7 @@ def _env(pg_url: str) -> dict[str, str]:
 
 
 @pytest.fixture
-def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
+def upgraded_engine(migration_pg_url: str) -> Iterator[sa.engine.Engine]:
     """Land on DOWN_REVISION, clear rows, seed a family, upgrade to REVISION."""
     env = _env(migration_pg_url)
     up = run_alembic(PROJECT_ROOT, env, "upgrade", DOWN_REVISION)
@@ -32,18 +36,21 @@ def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
     assert down.returncode == 0, down.stderr
     sync_url = migration_pg_url.replace("+asyncpg", "+psycopg")
     engine = sa.create_engine(sync_url)
-    with engine.begin() as conn:
-        conn.execute(sa.text("DELETE FROM story_request"))
-        conn.execute(sa.text("DELETE FROM storybook_version"))
-        conn.execute(sa.text("DELETE FROM storybook"))
-        conn.execute(sa.text("DELETE FROM family"))
-        conn.execute(
-            sa.text("INSERT INTO family (id, name) VALUES (:id, 'Fam')"),
-            {"id": str(uuid.uuid4())},
-        )
-    result = run_alembic(PROJECT_ROOT, env, "upgrade", REVISION)
-    assert result.returncode == 0, result.stderr
-    return engine
+    try:
+        with engine.begin() as conn:
+            conn.execute(sa.text("DELETE FROM story_request"))
+            conn.execute(sa.text("DELETE FROM storybook_version"))
+            conn.execute(sa.text("DELETE FROM storybook"))
+            conn.execute(sa.text("DELETE FROM family"))
+            conn.execute(
+                sa.text("INSERT INTO family (id, name) VALUES (:id, 'Fam')"),
+                {"id": str(uuid.uuid4())},
+            )
+        result = run_alembic(PROJECT_ROOT, env, "upgrade", REVISION)
+        assert result.returncode == 0, result.stderr
+        yield engine
+    finally:
+        engine.dispose()
 
 
 def _family_id(conn: sa.Connection) -> str:

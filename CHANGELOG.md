@@ -163,6 +163,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   art, and refreshed kid-surface design tokens.
 
 ### Changed
+- Test suites audited against the org testing standards and hardened to a
+  granular 70% per-file/function/class/branch coverage floor (aggregates were
+  already 95%+ but masked 5 backend files, 47 functions, and 8 frontend files
+  below floor; all closed, critical moderation modules now 100%). New
+  role x endpoint x method authorization matrix (46 endpoints, exact status
+  codes, completeness-gated), logging-security tests (tokens and DSN passwords
+  never logged), Vitest per-file 70% thresholds, `filterwarnings = ["error"]`
+  with `xfail_strict`, pytest-mock added, mock `spec=` discipline adopted, and
+  the moderation-pipeline unit tests de-mocked to run real stages through
+  boundary seams (raising pipeline branch coverage 88% -> 93%). Full audit
+  report in `docs/planning/test-coverage-audit-2026-07-09.md`.
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
   `.pre-commit-config.yaml` or any `.github/workflows/` job, so it added no
   scanning coverage. The active SAST/SCA gates remain Bandit, OSV-Scanner,

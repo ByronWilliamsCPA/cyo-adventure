@@ -26,8 +26,6 @@ from cyo_adventure.core.exceptions import (
 )
 from cyo_adventure.db.models import Storybook, StorybookVersion
 
-pytestmark = pytest.mark.asyncio
-
 
 def _principal(role: str) -> Principal:
     """Return a minimal Principal with the given role."""
@@ -73,6 +71,7 @@ def _execute_result(value: object) -> MagicMock:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_story_non_admin_raises_before_load() -> None:
     """A non-admin caller raises AuthorizationError without touching the session."""
     session = AsyncMock(spec=AsyncSession)
@@ -85,6 +84,7 @@ async def test_load_admin_story_non_admin_raises_before_load() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_story_missing_raises_404() -> None:
     """An admin caller with an unknown story id raises ResourceNotFoundError."""
     session = AsyncMock(spec=AsyncSession)
@@ -96,6 +96,7 @@ async def test_load_admin_story_missing_raises_404() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_story_returns_book() -> None:
     """An admin caller with a known story id returns the Storybook."""
     book = _story("draft")
@@ -109,6 +110,7 @@ async def test_load_admin_story_returns_book() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_load_admin_story_locks_row_for_update() -> None:
     """The admin-story load must carry SELECT ... FOR UPDATE.
 
@@ -148,6 +150,7 @@ async def test_load_admin_story_locks_row_for_update() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_latest_version_returns_max() -> None:
     """_latest_version returns the integer max version when versions exist."""
     session = AsyncMock(spec=AsyncSession)
@@ -159,6 +162,7 @@ async def test_latest_version_returns_max() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_latest_version_none_raises_404() -> None:
     """_latest_version raises ResourceNotFoundError when no versions exist."""
     session = AsyncMock(spec=AsyncSession)
@@ -174,6 +178,7 @@ async def test_latest_version_none_raises_404() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_submit_handler_calls_service_and_returns_view(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -201,6 +206,7 @@ async def test_submit_handler_calls_service_and_returns_view(
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_approve_handler_stamps_view(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -248,6 +254,7 @@ async def test_approve_handler_stamps_view(
         pytest.param(None, None, id="missing_both"),
     ],
 )
+@pytest.mark.asyncio
 async def test_approve_handler_missing_stamp_raises_business_logic_error(
     monkeypatch: pytest.MonkeyPatch,
     approved_by: uuid.UUID | None,
@@ -295,6 +302,7 @@ async def test_approve_handler_missing_stamp_raises_business_logic_error(
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_send_back_handler_echoes_reason(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -325,6 +333,7 @@ async def test_send_back_handler_echoes_reason(
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_archive_handler_calls_service(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -352,6 +361,7 @@ async def test_archive_handler_calls_service(
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_submit_handler_blocks_guardian() -> None:
     """submit_storybook blocks a guardian principal with AuthorizationError."""
     session = AsyncMock(spec=AsyncSession)
@@ -362,6 +372,7 @@ async def test_submit_handler_blocks_guardian() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_approve_handler_blocks_guardian() -> None:
     """approve_storybook blocks a guardian principal with AuthorizationError."""
     session = AsyncMock(spec=AsyncSession)
@@ -372,6 +383,7 @@ async def test_approve_handler_blocks_guardian() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_send_back_handler_blocks_guardian() -> None:
     """send_back_storybook blocks a guardian principal with AuthorizationError."""
     session = AsyncMock(spec=AsyncSession)
@@ -383,6 +395,7 @@ async def test_send_back_handler_blocks_guardian() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_archive_handler_blocks_guardian() -> None:
     """archive_storybook blocks a guardian principal with AuthorizationError."""
     session = AsyncMock(spec=AsyncSession)
@@ -398,6 +411,7 @@ async def test_archive_handler_blocks_guardian() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_surface_returns_view_for_admin() -> None:
     """get_review_surface returns a projected view for an admin caller."""
     session = AsyncMock(spec=AsyncSession)
@@ -444,6 +458,7 @@ async def test_review_surface_returns_view_for_admin() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_surface_blocks_child() -> None:
     """get_review_surface blocks a child principal with AuthorizationError, and
     never reads a row (role is checked before any load).
@@ -457,6 +472,7 @@ async def test_review_surface_blocks_child() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_surface_missing_version_raises_404() -> None:
     """get_review_surface raises 404 when the requested version row is missing."""
     session = AsyncMock(spec=AsyncSession)
@@ -471,6 +487,7 @@ async def test_review_surface_missing_version_raises_404() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_surface_rejects_non_positive_version() -> None:
     """A non-positive version query param is rejected before the version-row
     lookup: only _load_admin_story's (locked) session.execute call happens.
@@ -488,6 +505,7 @@ async def test_review_surface_rejects_non_positive_version() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_surface_rejects_negative_version() -> None:
     """A negative version query param is rejected the same as zero."""
     session = AsyncMock(spec=AsyncSession)
@@ -582,6 +600,7 @@ class _QueueSession:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_queue_blocks_non_admin() -> None:
     """A non-admin caller raises AuthorizationError without any DB round trip."""
     session = _QueueSession(storybooks=[], latest=[], versions=[])
@@ -595,6 +614,7 @@ async def test_review_queue_blocks_non_admin() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_queue_empty_returns_no_items() -> None:
     """No in_review stories yields an empty queue after a single scalars call."""
     session = _QueueSession(storybooks=[], latest=[], versions=[])
@@ -609,6 +629,7 @@ async def test_review_queue_empty_returns_no_items() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.asyncio
 async def test_review_queue_is_bulk_not_n_plus_one() -> None:
     """Two in_review stories still cost exactly four DB round trips."""
     book_a = _story("in_review")

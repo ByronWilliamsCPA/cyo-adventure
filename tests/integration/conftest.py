@@ -129,11 +129,13 @@ async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
     created on a prior (closed) loop.
     """
     eng = create_async_engine(_pg_url, poolclass=NullPool)
-    async with eng.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-    yield eng
-    await eng.dispose()
+    try:
+        async with eng.begin() as conn:
+            await conn.run_sync(Base.metadata.drop_all)
+            await conn.run_sync(Base.metadata.create_all)
+        yield eng
+    finally:
+        await eng.dispose()
 
 
 @pytest_asyncio.fixture
