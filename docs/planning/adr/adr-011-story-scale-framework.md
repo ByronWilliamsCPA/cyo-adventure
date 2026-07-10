@@ -24,9 +24,8 @@ tags:
 > `narrative_style`, and `series` metadata plus two `Topology` enum values),
 > [ADR-006](./adr-006-conditions-inhouse-evaluator.md) (series state-carry uses declared
 > variables/conditions). **Supersedes** the compact per-band budgets in
-> `validator/band_profile.py` (the "compact slice", the only part of the
-> reading-level x topology x scale design in
-> `docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md` that landed).
+> `validator/band_profile.py` (the "compact slice", the only part of an earlier
+> internal reading-level x topology x scale design memo that landed).
 
 ## TL;DR
 
@@ -43,7 +42,7 @@ non-final book converging on the next book's single entry node.
 
 ## Context
 
-The full model was specified in the modal-generation-tiers design but only a **compact
+The full model was specified in an earlier internal design memo but only a **compact
 slice** shipped: `band_profile.py` holds one small node range per band (8-11 <= 30, 16+
 <= 60), with no length or style axis, no words-per-node enforcement, and a band-only
 coverage view. Genre-faithful scale is far larger (8-11 ~90-120 nodes, 13-16 ~350-456,
@@ -271,6 +270,4 @@ records which numbers are empirical and which are tunable product choices.
 - [ADR-001](./adr-001-story-format-json-storybook.md): the schema this extends.
 - [ADR-006](./adr-006-conditions-inhouse-evaluator.md): the evaluator series state-carry
   relies on.
-- `docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md`: the original
-  reading-level x topology x scale design and the series concept (section 4.1).
 - `docs/planning/research/`: the empirical anchors (JHM 2019 + four-source reconciliation).
