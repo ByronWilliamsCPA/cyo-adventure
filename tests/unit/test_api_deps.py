@@ -347,9 +347,16 @@ class TestAuthStubGuard:
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        # spec=Settings() (a real instance, not the class): pydantic v2 field
-        # names live on instances, not as class-level descriptors, so
-        # spec=Settings would fail to recognize any of them. A cleaner
+        # spec=list(Settings.model_fields) (field names, not an instance):
+        # passing a Settings() instance as spec makes mock walk dir(spec)
+        # with real getattr on Python <= 3.12, which touches pydantic's
+        # deprecated `__fields__` instance property and raises
+        # PydanticDeprecatedSince20 under this project's
+        # filterwarnings = ["error"] (3.13+ mock uses inspect.getattr_static
+        # and skips properties). A name-list spec gives the same protection
+        # mock specs actually provide, reads of unknown attributes fail
+        # loudly while attribute sets are never spec-checked in any form,
+        # without ever touching the instance. A cleaner
         # monkeypatch.setenv(...) + single reload was evaluated instead of
         # this double-reload/patched-singleton pattern; it does not work
         # cleanly here because deps.py binds `settings` by value at import
@@ -362,7 +369,7 @@ class TestAuthStubGuard:
         # scope for this auth-stub guard test. Keeping the patched-singleton
         # pattern, now spec'd, per the documented deferral for this case.
         with patch(
-            "cyo_adventure.core.config.settings", spec=Settings()
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
         ) as mock_settings:
             mock_settings.environment = "production"
             mock_settings.oidc_issuer = None
@@ -381,7 +388,7 @@ class TestAuthStubGuard:
         # See test_guard_raises_when_non_local_and_no_oidc_config above for why
         # this stays a patched-singleton (now spec'd) instead of an env-var reload.
         with patch(
-            "cyo_adventure.core.config.settings", spec=Settings()
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
         ) as mock_settings:
             mock_settings.environment = "local"
             try:
@@ -405,7 +412,7 @@ class TestAuthStubGuard:
         # See test_guard_raises_when_non_local_and_no_oidc_config above for why
         # this stays a patched-singleton (now spec'd) instead of an env-var reload.
         with patch(
-            "cyo_adventure.core.config.settings", spec=Settings()
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
         ) as mock_settings:
             mock_settings.environment = "staging"
             mock_settings.oidc_issuer = "https://example.supabase.co/auth/v1"

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from typing import TYPE_CHECKING
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, create_autospec
 
 import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -73,20 +73,24 @@ def _pii() -> PiiContext:
 
 @pytest.fixture
 def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
-    """Factory stubbing the moderation pipeline's stage seams with spec'd mocks.
+    """Factory stubbing the moderation pipeline's stage seams with autospecs.
 
     The settings-level mock review backend cannot drive these event tests: its
     fixed ``"{}"`` bodies fail-safe every safety finding to FLAG and would
     spuriously trigger repair on every run. The stage functions are therefore
-    stubbed at the pipeline module's import sites; each stub is spec'd against
-    the real stage function (testing standard §4.2) so a signature drift in
-    the pipeline's calls fails loudly here instead of passing silently.
+    stubbed at the pipeline module's import sites; each stub is built with
+    ``create_autospec`` against the real stage function (testing standard
+    §4.2) so a signature drift in the pipeline's calls fails loudly here
+    instead of passing silently. Plain ``AsyncMock(spec=...)`` would NOT give
+    that: a function passed as ``spec=`` constrains attribute access only,
+    never call signatures; only ``create_autospec`` captures and enforces the
+    signature.
 
     Returns:
         An installer accepting ``classifiers`` (Stage-0 findings, default
-        clean) and ``readability`` (a pre-built spec'd AsyncMock for tests
-        needing per-call side effects, default clean); all other stages are
-        stubbed clean.
+        clean) and ``readability`` (a pre-built async mock for tests needing
+        per-call side effects; build it with ``create_autospec`` to keep the
+        signature check, default clean); all other stages are stubbed clean.
     """
 
     def _install(
@@ -97,7 +101,7 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
         monkeypatch.setattr(
             pipeline_mod,
             "run_classifiers",
-            AsyncMock(spec=_real_classifiers, return_value=classifiers or []),
+            create_autospec(_real_classifiers, return_value=classifiers or []),
         )
         for name, real in (
             ("run_safety_stage", _real_safety),
@@ -105,14 +109,14 @@ def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
             ("run_engagement_stage", _real_engagement),
         ):
             monkeypatch.setattr(
-                pipeline_mod, name, AsyncMock(spec=real, return_value=[])
+                pipeline_mod, name, create_autospec(real, return_value=[])
             )
         monkeypatch.setattr(
             pipeline_mod,
             "run_readability_stage",
             readability
             if readability is not None
-            else AsyncMock(spec=_real_readability, return_value=[]),
+            else create_autospec(_real_readability, return_value=[]),
         )
 
     return _install
@@ -593,7 +597,7 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
     # First call (initial moderation) returns the FLAG; second call (post-repair
     # re-moderation) returns clean.
     stub_stages(
-        readability=AsyncMock(spec=_real_readability, side_effect=[[flag_finding], []])
+        readability=create_autospec(_real_readability, side_effect=[[flag_finding], []])
     )
     revised_blob: dict[str, object] = {
         **dict(_CANNED_STORY),

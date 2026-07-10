@@ -24,10 +24,25 @@ paths must include tests before merging; do not lower the threshold.
 ## Test isolation
 
 - Unit tests must not make real network calls or hit a live database.
-  Patch external dependencies with `pytest-mock` (installed; use its `mocker`
-  fixture) or `unittest.mock`.
+  Patch external dependencies with `unittest.mock` (the current convention;
+  `pytest-mock` is installed for future adoption of its `mocker` fixture but
+  no test uses it yet).
 - Integration tests that need a database use the `AsyncSession` fixture from
   `conftest.py` inside a rolled-back transaction.
+
+## Mock spec traps
+
+- Never pass a pydantic model instance as `spec=` (e.g.
+  `patch(..., spec=Settings())`). On Python <= 3.12, mock walks `dir(spec)`
+  with real `getattr`, which fires pydantic's deprecated `__fields__`
+  instance property and escalates to a test failure under this project's
+  `filterwarnings = ["error"]` (3.13+ uses `inspect.getattr_static` and is
+  unaffected, so the failure appears only on the older CI legs). Use a
+  field-name list instead: `spec=list(Settings.model_fields)`.
+- `Mock(spec=some_function)` does NOT validate call signatures; a spec
+  constrains attribute reads only (attribute sets are never spec-checked in
+  any form). When the point of the stub is to fail on signature drift, build
+  it with `create_autospec(some_function, ...)`.
 
 ## Ruff and type checking in tests
 
