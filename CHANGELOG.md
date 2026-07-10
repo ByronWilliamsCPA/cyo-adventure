@@ -168,9 +168,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   already 95%+ but masked 5 backend files, 47 functions, and 8 frontend files
   below floor; all closed, critical moderation modules now 100%). New
   role x endpoint x method authorization matrix (46 endpoints, exact status
-  codes, completeness-gated), logging-security tests (tokens and DSN passwords
-  never logged), Vitest per-file 70% thresholds, `filterwarnings = ["error"]`
-  with `xfail_strict`, pytest-mock added, mock `spec=` discipline adopted, and
+  codes, completeness-gated), logging-security tests (malformed bearer tokens
+  and DSN passwords kept out of auth and engine-configuration log paths),
+  Vitest per-file 70% thresholds, `filterwarnings = ["error"]` with
+  `xfail_strict`, pytest-mock installed for future adoption (tests still use
+  `unittest.mock`), mock `spec=` discipline adopted, and
   the moderation-pipeline unit tests de-mocked to run real stages through
   boundary seams (raising pipeline branch coverage 88% -> 93%). Full audit
   report in `docs/planning/test-coverage-audit-2026-07-09.md`.

@@ -125,8 +125,8 @@ export default defineConfig({
         'src/main.tsx',
         // Type-only module: no runtime statements to cover.
         'src/player/types.ts',
-        // #ASSUME: data-integrity: the `include: ['src/**']` glob above is not
-        // anchored to the frontend root, so it also matches
+        // #ASSUME: data-integrity: the `include: ['src/**/*.{ts,tsx}']` glob
+        // above is not anchored to the frontend root, so it also matches
         // `design-system/src/**` (reached via the `@ds` alias) even though
         // design-system is a separate npm workspace with its own vitest
         // config, its own coverage run, and its own Codecov `design-system`

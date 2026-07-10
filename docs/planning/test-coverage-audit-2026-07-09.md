@@ -1,10 +1,22 @@
 ---
-purpose: Granular test-coverage and test-quality audit against org testing standards, with the remediation scope implemented on branch test/coverage-gap-closure
-component: testing
-source: pytest coverage.json (branch mode), vitest coverage-final.json, four parallel standards audits vs ~/.claude/standards/testing.md v2.0
+schema_type: planning
+title: "Test Coverage and Quality Audit (2026-07-09)"
+description: "Granular per-file/function/class/branch coverage and test-quality audit of the
+  backend pytest and frontend Vitest suites against org Testing Standards v2.0, with the
+  remediation batches implemented on branch test/coverage-gap-closure."
+tags:
+  - planning
+  - testing
+status: active
+owner: core-maintainer
+authors:
+  - name: "Byron Williams"
+purpose: "Granular test-coverage and test-quality audit against org testing standards, with the
+  remediation scope implemented on branch test/coverage-gap-closure."
+component: Development-Tools
+source: "pytest coverage.json (branch mode), vitest coverage-final.json, four parallel standards
+  audits vs ~/.claude/standards/testing.md v2.0."
 ---
-
-# Test Coverage and Quality Audit (2026-07-09)
 
 Audit of the CYO Adventure test suites (backend pytest, frontend Vitest/Playwright)
 against the org Testing Standards v2.0, with a granular floor of 70% coverage per
@@ -111,13 +123,13 @@ time.sleep in backend tests; zero direct os.environ mutation; prior findings
 
 ## Remediation scope (this branch)
 
-Batch A — backend coverage floors:
+Batch A: backend coverage floors
 A1 covers module (worker/service/prompt) to floor; A2 moderation/report.py and
 classifiers.py to 90/80 including Finding and branch gaps; A3 remaining function
 gaps across api/, middleware/security.py, generation/, validator/,
 story_requests/.
 
-Batch B — standards conformance:
+Batch B: standards conformance
 B1 pytest config (filterwarnings=error with warning fixes, xfail_strict,
 import-mode, marker consolidation, pytest-mock dep, conftest cleanup,
 llm_eval/ai_security marker registration); B2 assertion mechanics (assert-free
@@ -127,7 +139,7 @@ moderation-pipeline stage stubs to run real stages with MockProvider, consolidat
 _FakeSession into shared spec'd fake); B5 new authz role x endpoint matrix test
 plus auth-event logging and secrets-not-logged tests.
 
-Batch C — frontend:
+Batch C: frontend
 C1 Vitest thresholds (70% floors), tests for the below-floor files and the 22
 uncovered functions, coverage exclusions for main.tsx and type-only modules with
 rationale, replace raw sleeps in CI e2e specs with locator waits.
