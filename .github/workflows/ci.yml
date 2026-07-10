@@ -166,6 +166,8 @@ jobs:
       # backend and design-system uploads for one repo coverage number.
       - name: Upload frontend coverage to Qlty
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/coverage/lcov.info') != '' }}
+        # See the coverage-upload job: a Qlty hiccup must not block a merge.
+        continue-on-error: true
         uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
@@ -233,6 +235,8 @@ jobs:
       # the backend and frontend uploads for this commit (see coverage-upload).
       - name: Upload design-system coverage to Qlty
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/design-system/coverage/lcov.info') != '' }}
+        # See the coverage-upload job: a Qlty hiccup must not block a merge.
+        continue-on-error: true
         uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
@@ -389,6 +393,9 @@ jobs:
       # hashFiles gate just confirms the artifact downloaded.
       - name: Upload backend coverage to Qlty
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('coverage-reports/coverage-unit.xml') != '' }}
+        # A Qlty upload hiccup must not fail the job or block a merge, matching
+        # the Codecov steps' fail_ci_if_error: false.
+        continue-on-error: true
         uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}

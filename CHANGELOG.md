@@ -206,6 +206,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   carried unresolvable paths and no commit association and never surfaced on the
   Qlty dashboard (the job stayed green). qlty merges the per-surface uploads
   into one coverage number for the commit, mirroring the Codecov sessions.
+- The Qlty upload steps are now `continue-on-error`, so a transient Qlty upload
+  failure cannot fail the `frontend` / `design-system` / `coverage-upload` jobs
+  and block an unrelated merge, matching the Codecov steps' `fail_ci_if_error:
+  false`.
 - The integration and security test buckets now run in CI
   (`run-integration-tests` / `run-security-tests`); previously the reusable
   workflow's unit step excluded `-m integration`/`-m security`, so those
