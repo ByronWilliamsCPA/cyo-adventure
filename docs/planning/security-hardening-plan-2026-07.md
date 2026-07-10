@@ -20,7 +20,7 @@ purpose: "Close every design gap the red-team review confirmed, grouped into rev
 component: Strategy
 source: "docs/security/red-team-design-review-2026-07.md (eight-surface adversarial review plus
   completeness critic; every finding independently verified for a reachable path or a blocking
-  control). 22 gaps confirmed: 1 critical, 3 high, 8 medium, 5 low, 1 keystone."
+  control). 19 gaps confirmed: 1 critical, 4 high, 8 medium, 5 low, 1 keystone."
 ---
 
 > **For agentic workers:** implement this plan task-by-task (fresh subagent per task, supervisor
@@ -31,7 +31,7 @@ source: "docs/security/red-team-design-review-2026-07.md (eight-surface adversar
 
 ## Goal
 
-Remediate the 22 verified design gaps from the 2026-07-10 red-team review. Land the auth fail-open
+Remediate the 19 verified design gaps from the 2026-07-10 red-team review. Land the auth fail-open
 default (C1) first because it is a one-variable-away total auth bypass, then the child-safety delivery
 cluster (H1, H2, H4, M1, M2, M3) and its keystone (K1), then privacy/retention (H3, M5), then supply
 chain, cost, deployment, and inert-control cleanup. Each workstream lands as its own reviewed PR.
@@ -453,4 +453,5 @@ Raised by a finder but refuted on re-check, recorded for traceability: in-memory
 PII egress (folded into M5); dormant cross-book series validator (no runtime path today); the
 `GET /generation-jobs/{id}` report field (verified family-scoped, not cross-tenant); missing
 `TrustedHostMiddleware`/HTTPS in `app.py` (reasonably delegated to the reverse proxy; a defense-in-depth
-note, not a workstream).
+note, not a workstream); shared unbounded RQ queue as the sole throttle (overlaps M6/M7, no separate
+workstream). Seven candidates dismissed in total.

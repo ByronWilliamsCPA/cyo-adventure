@@ -1,13 +1,25 @@
-# Red-Team Review: CYO Adventure, Design Gaps
+---
+title: "Red-Team Review: CYO Adventure, Design Gaps"
+schema_type: common
+status: published
+owner: core-maintainer
+purpose: "Documents the verified design-security gaps found in the 2026-07 adversarial red-team review of
+  the CYO Adventure backend."
+tags:
+  - security
+  - safety
+  - compliance
+  - analysis
+---
 
 Date: 2026-07-10
 Scope: full backend (`src/cyo_adventure/`), deployment config, and app wiring.
 Method: eight independent adversarial finders (one per attack surface) plus a
 completeness critic; every finding was then re-checked by an independent
 verifier that tried to refute it and to establish a concrete reachable path or
-an existing blocking control. 31 candidate gaps were raised; 22 survived
-verification (1 critical, 3 high, 8 medium, 9 low, 1 keystone rated uncertain),
-9 were dismissed.
+an existing blocking control. 26 candidate gaps were raised; 19 survived
+verification (1 critical, 4 high, 8 medium, 5 low, 1 keystone rated uncertain),
+7 were dismissed.
 
 > Threat model, in priority order for a children's product: (1) unsafe content
 > reaching a child, (2) one family reaching another family's data, (3) a child
