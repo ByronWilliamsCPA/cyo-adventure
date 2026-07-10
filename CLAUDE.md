@@ -58,18 +58,28 @@ in the same repository.
 
 **Backend** (`src/cyo_adventure/`):
 
-- **Python**: 3.10+ supported (`requires-python = ">=3.10"`, no enforced upper
-  bound); 3.12 is the primary local target. No GitHub Actions workflow invokes
-  `nox`: `ci.yml` runs the full quality gate on Python 3.12 only, and
-  `python-compatibility.yml` covers 3.11-3.13 on Ubuntu plus 3.12 on
-  macOS/Windows. `nox -s test` runs the 3.10-3.14 matrix locally for parity
-  checks before pushing, but CI itself does not call it.
+- **Python**: 3.11+ (`requires-python = ">=3.11"`); 3.12 is the primary local
+  target. No GitHub Actions workflow invokes `nox`: `ci.yml` runs the full
+  quality gate on Python 3.12 only, and `python-compatibility.yml` covers
+  3.11-3.13 on Ubuntu plus 3.12 on macOS/Windows. `nox -s test` runs the
+  3.10-3.14 matrix locally for parity checks before pushing, but CI itself
+  does not call it.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
-- **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`)
+- **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`),
+  migrations via Alembic (`api` extra)
+- **Auth**: Supabase (guardian OIDC/JWT via `pyjwt[crypto]`); see
+  `adr/adr-009-supabase-platform.md`
+- **Story generation**: staged LLM pipeline behind a deterministic
+  validation/moderation gate (`generation/`, `validator/`, `moderation/`),
+  with pluggable providers for Anthropic, OpenRouter, Ollama, and Modal
+  (`google-genai` for cover art via nano banana)
+- **Background jobs**: Redis + RQ (`generation/queue.py`, `covers/worker.py`)
+- **Graph/condition logic**: networkx (skeleton/story graph), jsonschema
+  (Storybook schema validation)
 - **Logging**: structlog (structured, correlation-aware)
 - **Code Quality**: Ruff (linter/formatter), BasedPyright (type checker, strict)
-- **Testing**: pytest, coverage, hypothesis
+- **Testing**: pytest, coverage, hypothesis, mutation testing (mutmut via `nox -s mutate`)
 - **Security**: Bandit, pip-audit, OSV-Scanner
 - **Documentation**: MkDocs Material
 - **Containerization**: Docker
@@ -79,11 +89,21 @@ in the same repository.
 - **Stack**: React 19, TypeScript, Vite, axios
 - **Tooling**: ESLint, Prettier, Vitest (+ Testing Library), `tsc` for types
 - **API client**: generated from the backend OpenAPI schema (see Architecture
-  below), not hand-written.
+  below); the generated client is committed to git and CI fails on drift
+  (see Architecture note 1).
+- **Routes**: three surfaces, code-split by audience: landing (`/`), kid
+  (`/kids`, `/library/:profileId`, `/read/:profileId/:storybookId/:version`),
+  and guardian (`/guardian/*` console: requests, review, moderation
+  thresholds, profiles, assignments).
+- **Offline support**: IndexedDB-backed offline reading and sync
+  (`src/offline/`), with a client-side player engine (`src/player/`) that
+  mirrors backend reading-state logic.
 
-**Task orchestration**: `nox` (`noxfile.py`) wraps the multi-version test/lint
-matrix plus docs, SBOM, REUSE, and security sessions for local use; no CI
-workflow invokes `nox` (see the Python version note above).
+**Task orchestration**: `nox` (`noxfile.py`) has ~19 sessions covering the
+multi-version test/lint/typecheck matrix plus docs, SBOM, REUSE, mutation
+testing, and security (`security_tests`, not `security`) for local use; run
+`uv run nox -l` for the full list. No CI workflow invokes `nox` (see the
+Python version note above).
 
 ---
 
@@ -108,8 +128,9 @@ During `cruft update`, this section may be updated. Review changes carefully.
 - **Git**: Conventional commits, signed commits, feature branch workflow
 - **Response-Aware Development**: Assumption tagging and verification
 
-> Path-scoped operational rules live in `.claude/rules/` (e.g., `python.md`, `git-workflow.md`,
-> `testing.md`, `writing.md`, `supervisor.md`). These apply only when editing files under
+> This project does not currently have a `.claude/rules/` directory. If path-scoped
+> operational rule files are added later (e.g., `python.md`, `git-workflow.md`,
+> `testing.md`, `writing.md`, `supervisor.md`), they apply only when editing files under
 > the paths they specify and take precedence over root-level guidance on conflicts.
 
 ---
@@ -379,26 +400,53 @@ END BASELINE DEVELOPMENT STANDARDS
 
 - Test coverage: Minimum 80%
 - All linters must pass: `uv run ruff check .`, `uv run basedpyright src/`
-- Security scans: `uv run bandit -r src`, `uv run pip-audit`
+- Security scans: `uv run bandit -c pyproject.toml -r src`, `uv run pip-audit`
 
 ---
 
 ## Project Planning Documents
 
-> **First-Time Setup**: If planning documents show "Awaiting Generation", see the [Project Setup Guide](docs/PROJECT_SETUP.md#project-planning-with-claude-code).
+Planning is no longer "awaiting generation": all core documents are
+substantively developed and are the live source of truth for scope and
+status. Before starting new feature work, check `roadmap.md`'s phase table
+first for current status.
 
 **Planning Documents** (in `docs/planning/`):
 
-- [project-vision.md](docs/planning/project-vision.md) - Problem, solution, scope, success metrics
+- [project-vision.md](docs/planning/project-vision.md) - Problem, solution, scope, success metrics (codename "Ariadne")
 - [tech-spec.md](docs/planning/tech-spec.md) - Architecture, data model, APIs, security
-- [roadmap.md](docs/planning/roadmap.md) - Phased implementation plan
-- [adr/](docs/planning/adr/) - Architecture decisions with rationale
-- [PROJECT-PLAN.md](docs/planning/PROJECT-PLAN.md) - Synthesized plan with git branches (after synthesis)
+- [roadmap.md](docs/planning/roadmap.md) - Phased implementation plan and current status
+- [adr/](docs/planning/adr/) - 11 architecture decision records (story format, client PWA,
+  frontier LLM generation, homelab-first deployment, mandatory human approval, in-house
+  condition evaluator, raw-output retention, public App Store launch, Supabase platform,
+  Modal review + gated generation, story-scale framework)
+- [PROJECT-PLAN.md](docs/planning/PROJECT-PLAN.md) - Synthesized plan with git branches
+
+**Current status** (per `roadmap.md`, as of 2026-07-03): Phases 0, 1, 2, 2b,
+and 3 (backend) are delivered and merged to main. Phase 4a is delivered;
+R1 (the internal release) is feature-complete. Phase 4b (Editor+UX) and
+Phase 5 (Hardening) have not started (post-release). A Track 2 (Phases 6-9,
+public App Store launch per ADR-008, pivoted to Supabase per ADR-009) was
+added to `PROJECT-PLAN.md` on 2026-07-02.
+
+`docs/planning/` also holds ~35 supporting working documents (workstream
+plans, remediation/handoff notes, the condition-evaluator spec, drafting
+guide, privacy model, etc.) and `docs/architecture/` has a separate,
+diagram-backed architecture doc set (system overview, data model,
+deployment, generation pipeline, story skeletons, user journeys,
+validation/player) with C4, sequence, and ER diagrams. Consult these before
+assuming a design question is unanswered.
 
 **References**:
 
 - **Complete Workflow**: [Project Setup Guide](docs/PROJECT_SETUP.md#project-planning-with-claude-code)
 - **Skill Reference**: `.claude/skills/project-planning/`
+- **Story authoring**: `.claude/skills/cyo-author/` fills a pre-authored
+  Storybook skeleton (a story graph whose node bodies hold `<<FILL ...>>`
+  directives) with age-band-appropriate prose, then validates and imports it.
+  Note: its `reference/skeleton-format.md` still uses a stale field name
+  (`ending.type`); the enforced schema in `storybook/models.py` uses
+  `ending.kind` / `ending.valence` (tracked in `docs/template_feedback.md`).
 
 ### Quick Start
 
@@ -449,7 +497,7 @@ uv run basedpyright src/                   # Type check
 uv run pytest --cov=src --cov-fail-under=80
 uv run ruff check .
 uv run basedpyright src/
-uv run bandit -r src
+uv run bandit -c pyproject.toml -r src
 pre-commit run --all-files
 
 # Run a single test
@@ -488,21 +536,37 @@ npm run build                              # tsc -b && vite build
 
 ## Architecture (Big Picture)
 
-Backend and frontend communicate over a generated, type-safe contract:
+Backend and frontend communicate over a generated, type-safe contract; the
+backend runs a staged, human-gated pipeline that turns a guardian's story
+request into a published, offline-readable Storybook:
 
 ```text
 React frontend (frontend/)
-   |  axios client in frontend/src/client/  <- generated, do not hand-edit
-   |  npm run generate-client  =>  @hey-api/openapi-ts
+   |  axios client in frontend/src/client/  <- generated by @hey-api/openapi-ts,
+   |  npm run generate-client                  committed to git, CI fails on drift
    v  reads  http://localhost:8000/openapi.json
 FastAPI backend (src/cyo_adventure/)
-   - api/         FastAPI routers (health.py: k8s live/ready/startup probes)
-   - core/        config.py (Pydantic Settings), database.py (async SQLAlchemy),
-                  exceptions.py (centralized exception hierarchy)
-   - middleware/  correlation.py (request tracing), security.py (OWASP headers)
-   - utils/       logging.py (structlog), financial.py (Decimal helpers)
+   - api/            15 routers (health, library, reading, generation, profiles,
+                      families, ratings, assignments, approval, covers,
+                      moderation_thresholds, provider_allowlist, me, story_requests)
+   - core/           config.py, database.py (async SQLAlchemy), exceptions.py
+   - middleware/     correlation.py, security.py (OWASP headers)
+   - db/             SQLAlchemy ORM models (stories, profiles, families, requests,
+                      ratings, moderation reports, events)
+   - storybook/      Storybook/Node/Choice/Ending domain model + condition evaluator
+   - story_requests/ intake: brief, screening, authoring plan, anchoring
+   - generation/     staged LLM pipeline; providers/{anthropic,modal,ollama,openrouter,
+                      fallback}; RQ-backed queue/worker; skeleton catalog/matching
+   - validator/      deterministic two-layer validation gate (topology, safety,
+                      reading level, band profile) before anything reaches a human
+   - moderation/      safety classifiers, fidelity review, repair, thresholds
+   - publishing/      guardian approve-and-publish state machine
+   - covers/          AI cover-art generation (nano banana), storage, optimization
+   - player/          reading/replay state engine
+   - events/          append-only pipeline event log
+   - utils/           logging.py (structlog); no other utilities at present
    v
-PostgreSQL  (async SQLAlchemy engine in core/database.py)
+PostgreSQL (async SQLAlchemy, core/database.py) + Redis (RQ job queue)
 ```
 
 **Key architectural facts a future instance needs:**
@@ -510,8 +574,10 @@ PostgreSQL  (async SQLAlchemy engine in core/database.py)
 1. **The OpenAPI schema is the source of truth for the frontend's API types.**
    The frontend has no hand-written request/response types. After changing any
    backend route or Pydantic model, regenerate the client: start the backend,
-   then `cd frontend && npm run generate-client`. Treat `frontend/src/client/`
-   as build output.
+   then `cd frontend && npm run generate-client`. The generated client under
+   `frontend/src/client/` is committed (not gitignored); a `contract` CI job
+   dumps the OpenAPI schema and fails the build on drift, so always regenerate
+   and commit the diff alongside a backend contract change.
 2. **`core/database.py` is import-side-effect-free.** The async engine is
    created at import time but opens no connection until the first session. ORM
    models inherit from its `Base`; use the `get_session()` async context
@@ -520,43 +586,74 @@ PostgreSQL  (async SQLAlchemy engine in core/database.py)
    added before other middleware; `get_correlation_id()` plus the structlog
    config in `utils/logging.py` propagate the ID into every log line. See the
    Correlation ID Patterns section above.
-4. **`utils/financial.py` is template scaffolding**, not domain logic for this
-   kids' reading app. Do not build features around it; prefer removing it if it
-   stays unused (and log template feedback per the requirement above).
+4. **Story generation is a gated pipeline, not a single LLM call.** A story
+   request is turned into a filled Storybook by `generation/`, then must pass
+   the deterministic `validator/` gate and `moderation/` review before a
+   guardian/admin can approve and publish it (`publishing/`); nothing reaches
+   a child reader without passing both the automated gate and human approval
+   (see ADR "mandatory human approval" and `docs/planning/tech-spec.md`).
+5. **Auth is Supabase-based**, not custom. Guardian sessions use Supabase
+   OIDC/JWT (`frontend/src/auth/`, `pyjwt[crypto]` on the backend); see
+   `adr/adr-009-supabase-platform.md`.
+6. **`utils/financial.py` has been removed.** It was unused template
+   scaffolding for Decimal helpers with no domain relevance to a kids' reading
+   app; this is documented in `docs/template_feedback.md`. Do not recreate it.
 
 ## Project Structure
 
 ```text
 src/cyo_adventure/
-├── __init__.py              # Package initialization
-├── api/                     # FastAPI routers
-│   ├── __init__.py
-│   └── health.py           # Liveness/readiness/startup probes
-├── core/                    # Core business logic + plumbing
-│   ├── __init__.py
-│   ├── config.py           # Configuration (Pydantic Settings, database_url, ...)
-│   ├── database.py         # Async SQLAlchemy engine, Base, get_session()
-│   └── exceptions.py       # Centralized exception hierarchy
-├── middleware/              # Middleware components
-│   ├── __init__.py
-│   ├── security.py         # Security middleware (OWASP)
-│   └── correlation.py      # Request correlation/tracing
-└── utils/                   # Utilities
-    ├── __init__.py
-    ├── financial.py        # Template scaffolding (Decimal helpers); see note above
-    └── logging.py          # Structured logging with correlation
+├── __init__.py
+├── app.py                  # FastAPI app; wires all routers via include_router
+├── api/                     # FastAPI routers (15): health, library, reading,
+│                            # generation, profiles, families, ratings, assignments,
+│                            # approval, covers, moderation_thresholds,
+│                            # provider_allowlist, me, story_requests, schemas, deps
+├── core/                    # config.py, database.py, exceptions.py
+├── middleware/              # security.py, correlation.py
+├── db/                      # SQLAlchemy ORM models.py (domain: stories, profiles,
+│                            # families, requests, ratings, moderation, events)
+├── storybook/               # Storybook/Node/Choice/Ending models, condition
+│                            # evaluator, schema_export.py
+├── story_requests/          # brief.py, screening.py, authoring_plan.py, anchoring.py
+├── generation/               # orchestrator, providers/, queue/worker (RQ),
+│                            # skeleton catalog + matching, prompt templates
+├── validator/                # layer1/layer2 gate, topology, safety, reading_level,
+│                            # band_profile, series, walk, policy, report
+├── moderation/               # classifiers, fidelity_review, pipeline, repair,
+│                            # review_provider, thresholds
+├── publishing/               # service.py, state_machine.py (approve -> publish)
+├── covers/                   # AI cover-art: prompt, provider, service, storage,
+│                            # optimize, worker
+├── player/                   # engine.py, replay.py, state.py (reading state)
+├── events/                   # models.py, writer.py (append-only pipeline log)
+└── utils/                    # __init__.py, logging.py only
 
 tests/
-├── unit/                   # Unit tests (test_correlation.py, test_exceptions.py)
+├── unit/                   # Unit tests
 ├── integration/            # Integration tests
 ├── conftest.py             # Pytest fixtures
 └── test_example.py         # Package/settings/logging smoke tests
 
 frontend/                    # React 19 + Vite + TS app (own package.json)
-└── src/client/             # Generated axios client (build output)
+└── src/
+    ├── client/              # Generated axios client (committed, drift-checked in CI)
+    ├── auth/                # Supabase auth context, ProtectedRoute
+    ├── guardian/             # Guardian console: requests, review, moderation,
+    │                        # profiles, intake, assign-children
+    ├── kid/                  # KidShell, ProfilePickerPage
+    ├── landing/               # Landing page
+    ├── library/               # LibraryPage, BookCard, RequestStory, StarRating
+    ├── reader/                 # Reader, ReaderPage, offline/conflict dialogs
+    ├── player/                 # Client-side reading engine (mirrors backend player)
+    ├── profiles/               # Profile management
+    ├── offline/                # IndexedDB offline reading + sync
+    └── hooks/                  # useApi, useOnlineStatus, useReplayOnReconnect, ...
 
-docs/                        # MkDocs documentation
-└── planning/               # Vision, tech-spec, roadmap, ADRs
+docs/
+├── planning/                # Vision, tech-spec, roadmap, 11 ADRs, workstream docs
+└── architecture/            # System overview, data model, deployment, generation
+                              # pipeline, story skeletons, user journeys, diagrams
 ```
 
 ---
@@ -784,12 +881,22 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows**:
+**GitHub Actions Workflows** (`.github/workflows/`, 19 files):
 
-1. **CI** (`.github/workflows/ci.yml`): Tests, linting, type checking
-2. **Security** (`.github/workflows/security-analysis.yml`): CodeQL, Bandit, OSV-Scanner
-3. **Docs** (`.github/workflows/docs.yml`): Build and deploy documentation
-4. **Publish** (`.github/workflows/publish-pypi.yml`): PyPI release automation
+- **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.12, includes the
+  frontend contract-drift check), `python-compatibility.yml` (3.11-3.13 Ubuntu
+  + 3.12 macOS/Windows), `pr-title.yml`, `pr-validation.yml`
+- **Security/supply chain**: `security-analysis.yml` (CodeQL, Bandit,
+  OSV-Scanner), `container-security.yml`, `dependency-review.yml`,
+  `dependency-provenance-weekly.yml`, `fips-compatibility.yml`,
+  `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
+- **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
+- **Compliance/release**: `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
+  `release.yml` (semantic-release; **currently broken** due to an invalid
+  `commit_parser` value, so the version has never bumped past `0.1.0` despite
+  substantial functionality being built, see `docs/template_feedback.md`),
+  `publish-pypi.yml`
+- **Docs / review**: `docs.yml`, `claude-baseline-review.yml`
 
 **Quality Gates** (must pass):
 
@@ -947,7 +1054,9 @@ Use the right model for the task to balance quality and cost:
 | Standard development work | Sonnet 4.6 (default) | Most coding, editing, PR descriptions |
 | Read-only exploration | Haiku 4.5 | File scanning, structure mapping, quick lookups |
 
-Path-scoped rules for model assignment in subagents live in `.claude/rules/supervisor.md`.
+Path-scoped rules for model assignment in subagents would live in
+`.claude/rules/supervisor.md` if that directory existed in this project (it
+does not currently); the table above is the operative guidance for now.
 
 ---
 
@@ -962,5 +1071,5 @@ Path-scoped rules for model assignment in subagents live in `.claude/rules/super
 
 ---
 
-**Last Updated**: 2026-06-21
+**Last Updated**: 2026-07-10
 **Template Version**: 0.1.0
