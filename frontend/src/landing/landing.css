@@ -3,49 +3,88 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 1.5rem;
   min-height: 100vh;
   padding: 1.5rem;
   text-align: center;
-  background: var(--color-parchment, #f8f3e8);
+  background:
+    radial-gradient(130% 90% at 50% 0%, var(--color-amber-subtle, #fdf3e6) 0%, transparent 55%),
+    var(--color-parchment, #f8f3e8);
   color: var(--color-ink, #2c1a0e);
 }
 
+.landing__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .landing__title {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 2rem;
-  margin: 0;
+  font-family: var(--font-serif, Georgia, 'Times New Roman', serif);
+  font-size: clamp(2rem, 8vw, 2.75rem);
+  margin: 0.5rem 0 0;
 }
 
 .landing__tagline {
-  margin: 0 0 1.5rem;
+  margin: 0;
   color: var(--color-ink-secondary, #5a3e28);
 }
 
 .landing__doors {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   gap: 1rem;
   width: 100%;
-  max-width: 32rem;
+  max-width: 34rem;
 }
 
 .landing-door {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 1.5rem 1rem;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  padding: 1.25rem 1.25rem;
   border: 2px solid var(--color-parchment-deeper, #e0d5b8);
-  border-radius: 1rem;
+  border-radius: var(--radius-xl, 20px);
   background: var(--color-parchment-dark, #ede6d0);
   text-decoration: none;
   color: inherit;
-  transition: border-color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .landing-door:hover,
 .landing-door:focus-visible {
-  border-color: var(--color-amber, #c17b2a);
+  border-color: var(--color-amber, #e07f2e);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md, 0 4px 12px rgba(44, 26, 14, 0.14));
+}
+
+.landing-door__icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex-shrink: 0;
+  border-radius: var(--radius-lg, 12px);
+  color: #fff;
+}
+
+.landing-door--kids .landing-door__icon {
+  background: var(--color-amber, #e07f2e);
+}
+
+.landing-door--guardian .landing-door__icon {
+  background: var(--color-forest, #2d5a3d);
+}
+
+.landing-door__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
 .landing-door__heading {
@@ -60,4 +99,11 @@
 .landing-door__note {
   font-size: 0.8rem;
   color: var(--color-ink-muted, #8c6f56);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-door:hover,
+  .landing-door:focus-visible {
+    transform: none;
+  }
 }

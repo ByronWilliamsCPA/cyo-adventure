@@ -11,11 +11,12 @@
   --color-ink-secondary:   #5a3e28;
   --color-ink-muted:       #8c6f56;
 
-  /* Amber: primary interactive accent */
-  --color-amber:           #c17b2a;
-  --color-amber-hover:     #a3631f;
-  --color-amber-light:     #f0e4cc;
-  --color-amber-subtle:    #fdf6ec;
+  /* Amber: primary interactive accent (brightened to a sunnier tangerine for
+     the kid surface; still warm enough to sit on parchment) */
+  --color-amber:           #e07f2e;
+  --color-amber-hover:     #c4681c;
+  --color-amber-light:     #f7e2c4;
+  --color-amber-subtle:    #fdf3e6;
 
   /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;
@@ -24,6 +25,21 @@
   /* Sky: tertiary (informational) */
   --color-sky:             #4a7fb5;
   --color-sky-light:       #daeaf7;
+
+  /* Berry + treasure: playful kid-surface accents (adventure covers, stars,
+     "new" ribbons). Not used for status semantics. */
+  --color-berry:           #d8577b;
+  --color-berry-light:     #fbe1e8;
+  --color-gold:            #f4c430;
+
+  /* Adventure cover gradients: colour a book spine by its "world" so the
+     bookshelf reads as pictures, not text. Consumed by library/coverPalette.ts. */
+  --cover-forest:  linear-gradient(150deg, #2e8b63, #1f6b4a);
+  --cover-lagoon:  linear-gradient(150deg, #3d8fc4, #2a6b98);
+  --cover-berry:   linear-gradient(150deg, #d8577b, #b23d60);
+  --cover-plum:    linear-gradient(150deg, #8b5cc4, #654098);
+  --cover-sunset:  linear-gradient(150deg, #e07f2e, #c85b1e);
+  --cover-teal:    linear-gradient(150deg, #2f9c9c, #1f7373);
 
   /* Semantic */
   --color-error:           #9b2c2c;

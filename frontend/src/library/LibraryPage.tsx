@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { useApi } from '../hooks/useApi'
+import { Mascot } from '../kid/Mascot'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView } from './libraryApi'
 import { pickHero } from './pickHero'
@@ -141,7 +142,11 @@ export function LibraryPage() {
   if (items.length === 0) {
     return (
       <div className="library">
-        <EmptyState title="No books yet" description="Ask a grown-up to add one!" />
+        <EmptyState
+          title="No books yet"
+          description="Ask a grown-up to add one!"
+          icon={<Mascot size={96} />}
+        />
         <RequestStory profileId={profileId} />
       </div>
     )
@@ -153,13 +158,6 @@ export function LibraryPage() {
   return (
     <div className="library">
       <h1 className="library__heading">My Books</h1>
-      <div ref={requestStoryRef} tabIndex={-1}>
-        <RequestStory
-          profileId={profileId}
-          anchor={continueAnchor}
-          onClearAnchor={clearContinueAnchor}
-        />
-      </div>
       {hero ? (
         <section aria-label="Continue Reading">
           <BookCard
@@ -188,6 +186,15 @@ export function LibraryPage() {
           </ul>
         </section>
       ) : null}
+      {/* Requesting a new story comes after the child's own books, not before
+          them: the shelf is the point of the page, the request box is secondary. */}
+      <div ref={requestStoryRef} tabIndex={-1} className="library__request">
+        <RequestStory
+          profileId={profileId}
+          anchor={continueAnchor}
+          onClearAnchor={clearContinueAnchor}
+        />
+      </div>
     </div>
   )
 }

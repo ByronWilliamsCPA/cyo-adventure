@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { ChoiceButton } from '@ds/components/ChoiceButton'
@@ -15,6 +16,7 @@ import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
 import { currentEndingId, visibleChoices } from '../player/engine'
+import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
@@ -33,6 +35,7 @@ export interface ReaderProps {
 }
 
 export function Reader({ story, initialReading, onProgress, onComplete, profileId }: ReaderProps) {
+  const navigate = useNavigate()
   const [snapshot, send] = useMachine(readerMachine, {
     input: { story, reading: initialReading },
   })
@@ -71,6 +74,29 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
     send({ type: 'CHOOSE', choiceId })
   }
 
+  // An always-visible exit: a child can leave a story at any point, not only
+  // from the ending screen. It reads as "Leave" rather than a bare arrow so the
+  // action is unmistakable to a young reader.
+  const leaveButton = (
+    <button
+      type="button"
+      className="reader-leave"
+      onClick={() => void navigate(`/library/${profileId}`)}
+    >
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15 5 L8 12 L15 19"
+        />
+      </svg>
+      Leave
+    </button>
+  )
+
   // showLabel is left at its default (hidden): the percent's denominator is all
   // of the story's nodes, not the reachable subset for this branch, so it can
   // never hit 100% on a real playthrough. The bar's fill and aria-label still
@@ -79,6 +105,7 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
     <ReaderChrome
       percent={readerProgressPercent(story, reading)}
       label={readerProgressLabel(story, reading)}
+      back={leaveButton}
     />
   )
 
@@ -88,6 +115,7 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
       <div className="reader-shell">
         {chrome}
         <section data-testid="ending-screen" className="reader-ending">
+          <Mascot size={112} className="reader-ending__mascot" />
           <h2 className="reader-ending__title">{ending?.title ?? 'The End'}</h2>
           <div data-testid="passage-body" aria-live="polite">
             <PassageText text={node?.body ?? ''} />
