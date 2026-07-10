@@ -1,0 +1,3448 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Turns the 2026-07-10 adversarial red-team design review into PR-sized, trackable remediation workstreams: per-finding gap, attack, affected files, fix approach, and acceptance criteria, sequenced by severity and dependency.">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/security-hardening-plan-2026-07/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Security Hardening Plan: Red-Team Design-Gap Remediation (2026-07) - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#goal" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Security Hardening Plan: Red-Team Design-Gap Remediation (2026-07)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#severity-and-status-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Severity and status map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-of-the-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture of the work
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-a-auth-fail-closed-c1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream A: Auth fail-closed (C1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream A: Auth fail-closed (C1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c1-invert-the-environment-default-so-an-unset-value-fails-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C1. Invert the environment default so an unset value fails closed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-b-child-safety-delivery-path-h1-h2-m1-m2-m3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream B: Child-safety delivery path (H1, H2, M1, M2, M3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream B: Child-safety delivery path (H1, H2, M1, M2, M3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h1-enforce-an-age-band-ceiling-from-approval-through-assignment-to-delivery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H1. Enforce an age-band ceiling from approval through assignment to delivery
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h2-moderate-and-human-approve-ai-cover-images-before-children-see-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H2. Moderate and human-approve AI cover images before children see them
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m1-add-the-assignment-read-gate-to-reading-state-and-completion-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M1. Add the assignment read-gate to reading-state and completion routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M2. Enforce the assignment gate on the guardian blob-fetch path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m3-re-run-the-deterministic-validator-gate-on-repaired-blobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M3. Re-run the deterministic validator gate on repaired blobs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-c-moderation-reviewer-fail-fast-h4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream C: Moderation reviewer fail-fast (H4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream C: Moderation reviewer fail-fast (H4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h4-reject-the-no-op-mock-reviewer-outside-local-and-alarm-on-all-fail-safe-reports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H4. Reject the no-op mock reviewer outside local, and alarm on all-fail-safe reports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-d-privacy-and-retention-h3-m5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream D: Privacy and retention (H3, M5)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream D: Privacy and retention (H3, M5)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#h3-implement-the-adr-007-retention-purge-and-a-parental-deletion-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H3. Implement the ADR-007 retention purge and a parental-deletion path
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m5-replace-the-exact-name-pii-guard-with-a-real-detector-fix-or-delete-the-birthdate-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M5. Replace the exact-name PII guard with a real detector; fix or delete the birthdate arm
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-e-identity-and-the-guardian-token-keystone-k1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream E: Identity and the guardian-token keystone (K1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream E: Identity and the guardian-token keystone (K1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#k1-give-children-their-own-principal-so-role-checks-actually-apply" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        K1. Give children their own principal so role checks actually apply
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-f-supply-chain-and-cost-m4-m6-m7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream F: Supply chain and cost (M4, M6, M7)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream F: Supply chain and cost (M4, M6, M7)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#m4-validate-review-model-ids-against-the-provider-allowlist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M4. Validate review-model IDs against the provider allowlist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m6-make-generation-enqueue-idempotent-on-the-row-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M6. Make generation enqueue idempotent on the row id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m7-enforce-the-family-active-job-cap-on-every-enqueue-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M7. Enforce the family active-job cap on every enqueue path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-g-deployment-posture-m8-l5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream G: Deployment posture (M8, L5)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream G: Deployment posture (M8, L5)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#m8-stop-publishing-prod-postgres-to-the-host-remove-the-base-password-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M8. Stop publishing prod Postgres to the host; remove the base password default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l5-drop-version-fingerprinting-from-public-health-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L5. Drop version fingerprinting from public health probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workstream-h-integrity-and-inert-controls-l1-l2-l3-l4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workstream H: Integrity and inert controls (L1, L2, L3, L4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workstream H: Integrity and inert controls (L1, L2, L3, L4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#l1-make-reading-state-anti-forgery-replay-mandatory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1. Make reading-state anti-forgery replay mandatory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l2-frame-child-free-text-as-untrusted-content-in-generation-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2. Frame child free-text as untrusted content in generation prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l3-implement-or-remove-allowed_content_flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L3. Implement or remove allowed_content_flags
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l4-enforce-reading_level_cap-at-delivery-or-label-it-generation-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L4. Enforce reading_level_cap at delivery or label it generation-only
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-and-exit-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification and exit criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dismissed-during-verification-no-work-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dismissed during verification (no work planned)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Security Hardening Plan: Red-Team Design-Gap Remediation (2026-07)</h1>
+
+<blockquote>
+<p><strong>For agentic workers:</strong> implement this plan task-by-task (fresh subagent per task, supervisor
+review between tasks). Steps use checkbox (<code>- [ ]</code>) syntax for tracking. Every worker: sign commits
+(<code>git commit -S</code>), Conventional Commits, no em-dashes, one branch per workstream, never commit to
+<code>main</code>. Each finding ID below (C1, H1-H4, M1-M8, L1-L5, K1) maps 1:1 to the review report so the
+plan and the assessment cross-reference cleanly.</p>
+</blockquote>
+<h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
+<p>Remediate the 19 verified design gaps from the 2026-07-10 red-team review. Land the auth fail-open
+default (C1) first because it is a one-variable-away total auth bypass, then the child-safety delivery
+cluster (H1, H2, H4, M1, M2, M3) and its keystone (K1), then privacy/retention (H3, M5), then supply
+chain, cost, deployment, and inert-control cleanup. Each workstream lands as its own reviewed PR.</p>
+<h2 id="severity-and-status-map">Severity and status map<a class="headerlink" href="#severity-and-status-map" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severity</th>
+<th>Title</th>
+<th>Workstream</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C1</td>
+<td>Critical</td>
+<td><code>environment</code> defaults to unverified auth stub (fail-open)</td>
+<td>A</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>High</td>
+<td>No age-band ceiling from approval through delivery</td>
+<td>B</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>H2</td>
+<td>High</td>
+<td>AI cover images reach children unmoderated</td>
+<td>B</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>H3</td>
+<td>High</td>
+<td>ADR-007 retention purge unimplemented</td>
+<td>D</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>H4</td>
+<td>High</td>
+<td>No fail-fast on the no-op <code>mock</code> moderation reviewer</td>
+<td>C</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>K1</td>
+<td>Keystone</td>
+<td>Children share the guardian token in R1</td>
+<td>E</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M1</td>
+<td>Medium</td>
+<td>Reading/completion routes bypass the assignment read-gate</td>
+<td>B</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M2</td>
+<td>Medium</td>
+<td>Guardian blob-fetch skips the assignment gate</td>
+<td>B</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M3</td>
+<td>Medium</td>
+<td>Auto-repair skips the deterministic validator gate</td>
+<td>B</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Medium</td>
+<td>Review-model IDs bypass the provider allowlist</td>
+<td>F</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M5</td>
+<td>Medium</td>
+<td>PII egress guard is display-name-only; birthdate arm dead</td>
+<td>D</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M6</td>
+<td>Medium</td>
+<td>Stranded-job reclaim can double-execute a job</td>
+<td>F</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M7</td>
+<td>Medium</td>
+<td>Family cost cap enforced on only one enqueue path</td>
+<td>F</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>M8</td>
+<td>Medium</td>
+<td>Prod Postgres exposed to host; base compose password default</td>
+<td>G</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>L1</td>
+<td>Low</td>
+<td>Reading-state anti-forgery replay optional, off by default</td>
+<td>H</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>Low</td>
+<td>Child free-text templated into prompt with no delimiting</td>
+<td>H</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>Low</td>
+<td><code>allowed_content_flags</code> cap completely inert</td>
+<td>H</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>Low</td>
+<td><code>reading_level_cap</code> not enforced at delivery</td>
+<td>H</td>
+<td>[ ] not started</td>
+</tr>
+<tr>
+<td>L5</td>
+<td>Low</td>
+<td>Health endpoints disclose exact Python/app version</td>
+<td>G</td>
+<td>[ ] not started</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-of-the-work">Architecture of the work<a class="headerlink" href="#architecture-of-the-work" title="Permanent link">&para;</a></h2>
+<p>Eight workstreams (A-H), each a dedicated branch and reviewed PR. Dependency and sequencing:</p>
+<ul>
+<li><strong>A (auth fail-closed)</strong> gates nothing technically but is the highest risk; land first.</li>
+<li><strong>B (child-safety delivery)</strong> and <strong>E (identity/keystone)</strong> are the core child-safety cluster. B
+  can land independently; E (distinct child tokens) strengthens B's assignment gates and should
+  follow close behind. B2 (assignment/read-gate) and E share reasoning about the guardian token, so
+  sequence E after B or coordinate.</li>
+<li><strong>C (moderation fail-fast)</strong> and <strong>D (privacy/retention)</strong> are independent of B/E.</li>
+<li><strong>F (supply chain + cost)</strong>, <strong>G (deployment)</strong>, <strong>H (integrity + inert controls)</strong> are the
+  remaining backlog, independent of each other.</li>
+</ul>
+<p><strong>Conflict rule:</strong> if a worker finds a file already changed by a concurrently-merged PR, rebase the
+branch onto <code>origin/main</code> before continuing; never force-push over another head without
+<code>--force-with-lease</code>.</p>
+<hr />
+<h2 id="workstream-a-auth-fail-closed-c1">Workstream A: Auth fail-closed (C1)<a class="headerlink" href="#workstream-a-auth-fail-closed-c1" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/auth-fail-closed</code>. Priority: P0, land first.</p>
+<h3 id="c1-invert-the-environment-default-so-an-unset-value-fails-closed">C1. Invert the <code>environment</code> default so an unset value fails closed<a class="headerlink" href="#c1-invert-the-environment-default-so-an-unset-value-fails-closed" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Critical.</li>
+<li><strong>Design gap.</strong> The switch deciding whether bearer tokens are verified defaults to the insecure
+  value. <code>Settings.environment</code> defaults to <code>"local"</code> (<code>core/config.py:65-67</code>); in <code>local</code>,
+  <code>_resolve_subject</code> trusts the token verbatim with no verification (<code>api/deps.py:279-281</code>). Every
+  misconfig guard is itself gated on <code>environment != "local"</code>, so they all no-op when the value
+  silently resolves to <code>local</code>. The Dockerfile bakes no <code>ENVIRONMENT</code>.</li>
+<li><strong>Attack.</strong> Deploy the image via any path other than the two repo compose files, forget
+  <code>ENVIRONMENT</code>; the app boots and accepts <code>Authorization: Bearer &lt;any-subject&gt;</code> as that user,
+  including admin. Total auth bypass, defeating tenant isolation, privilege separation, and content
+  approval at once.</li>
+<li><strong>Affected files.</strong> <code>core/config.py:65-67</code>; <code>api/deps.py:67-76</code>, <code>:195</code>, <code>:279-281</code>; <code>Dockerfile</code>.</li>
+<li><strong>Fix approach.</strong> Default <code>environment</code> to <code>production</code> (or remove the default and require it), so
+  an unset or misspelled value fails closed. Bake <code>ENV ENVIRONMENT=production</code> into the runtime image
+  stage. Make the unverified <code>local</code> stub a deliberate opt-in. Add a startup assertion that refuses
+  to serve when <code>environment == "local"</code> while bound to a non-loopback interface.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>Settings()</code> with no env vars set does NOT resolve to <code>local</code> (unit test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Starting the app with <code>environment</code> unset and a non-loopback bind raises at startup.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The published image sets <code>ENVIRONMENT=production</code> by default.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A test asserts the unverified subject path is unreachable unless <code>environment == "local"</code> is
+        set explicitly.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>uv run pytest</code>, <code>uv run ruff check</code>, <code>uv run basedpyright src/</code> pass.</li>
+</ul>
+<hr />
+<h2 id="workstream-b-child-safety-delivery-path-h1-h2-m1-m2-m3">Workstream B: Child-safety delivery path (H1, H2, M1, M2, M3)<a class="headerlink" href="#workstream-b-child-safety-delivery-path-h1-h2-m1-m2-m3" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/child-safety-delivery</code>. Priority: P1. May split into B1 (band + read-gate), B2 (cover
+moderation), B3 (repair re-gate) if the diff is large.</p>
+<h3 id="h1-enforce-an-age-band-ceiling-from-approval-through-assignment-to-delivery">H1. Enforce an age-band ceiling from approval through assignment to delivery<a class="headerlink" href="#h1-enforce-an-age-band-ceiling-from-approval-through-assignment-to-delivery" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> High.</li>
+<li><strong>Design gap.</strong> Age band is stamped from the profile only at request-create (<code>api/story_requests.py:345</code>),
+  then overwritten by the guardian confirmation with any band at approve
+  (<code>story_requests/service.py:227</code>; <code>api/schemas.py:515</code>). Neither <code>assign_storybook</code>
+  (<code>api/assignments.py:190-260</code>) nor the read gate (<code>api/library.py:287-296</code>, <code>:405-411</code>) compares the
+  story's band to the target profile's band, and Stage-1 moderation is parameterized by the story's
+  band (higher band surfaces fewer findings). Per-profile band filtering is deferred to "Phase 4a"
+  (<code>api/library.py:5-8</code>).</li>
+<li><strong>Attack.</strong> Approve at <code>16+</code>, assign to a <code>3-5</code> profile in the same family; no band check, no
+  re-moderation; the young child reads content only ever cleared for 16+.</li>
+<li><strong>Fix approach.</strong> Reject a confirmation band above the requesting profile's band at approve and
+  authored-create; reject (or require a logged explicit override) assigning a storybook whose band
+  exceeds the target profile's band; add the band comparison to the read gate as defense in depth.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Approve with a band above the profile's band is rejected (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>assign_storybook</code> rejects a higher-band book for a lower-band profile (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Read gate filters/refuses a higher-band book even if a mismatched assignment row exists (test).</li>
+</ul>
+<h3 id="h2-moderate-and-human-approve-ai-cover-images-before-children-see-them">H2. Moderate and human-approve AI cover images before children see them<a class="headerlink" href="#h2-moderate-and-human-approve-ai-cover-images-before-children-see-them" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> High.</li>
+<li><strong>Design gap.</strong> The safety pipeline operates only on the story text blob. <code>generate_cover</code> flips
+  <code>cover_status</code> from <code>generating</code> straight to <code>ready</code> and publishes <code>cover_image_url</code>
+  (<code>covers/service.py:110-129</code>); the cover URL renders on the child library card
+  (<code>api/library.py:316-351</code>). The only safety is the image provider's own refusal plus prose clauses
+  in the prompt.</li>
+<li><strong>Attack.</strong> An admin requests a cover; untrusted title/themes/opening excerpt are templated into
+  the image prompt (<code>covers/prompt.py:78</code>, <code>:87-96</code>); the returned image is shown to every assigned
+  child with no human review and no image-moderation verdict.</li>
+<li><strong>Fix approach.</strong> Run an image-safety check before flipping to <code>ready</code>; require explicit human
+  approval before <code>cover_image_url</code> is exposed to any child card (mirror the text <code>approved_by</code>
+  gate); audit the decision. Until then, do not surface machine-generated covers to children.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A cover cannot reach <code>ready</code>/child card without passing image moderation AND human approval.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The approval is recorded with an approver id and timestamp.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Test covering the unmoderated/unapproved cover is not returned on the child library card.</li>
+</ul>
+<h3 id="m1-add-the-assignment-read-gate-to-reading-state-and-completion-routes">M1. Add the assignment read-gate to reading-state and completion routes<a class="headerlink" href="#m1-add-the-assignment-read-gate-to-reading-state-and-completion-routes" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> <code>api/reading.py</code> never consults <code>StorybookAssignment</code>: <code>get_reading_state</code>,
+  <code>put_reading_state</code>, and <code>record_completion</code> gate only on <code>authorize_profile</code> + <code>authorize_family</code>
+  (<code>reading.py:75-86</code>, <code>:144-151</code>, <code>:194-224</code>, <code>:305-314</code>) and resolve <code>StorybookVersion</code> by composite
+  key alone, accepting unapproved drafts. The <code>StorybookAssignment</code> docstring claims it is the "sole
+  authority" but only <code>library.py</code> enforces it.</li>
+<li><strong>Attack.</strong> A child calls <code>PUT /reading-state/{ownProfile}/{withheldStory}</code> or <code>POST /completions</code>
+  for a story withheld from them; both succeed (own profile, same family, no assignment check),
+  giving progress/completions on a withheld story and letting them enumerate valid ending ids and pin
+  state to an unapproved draft.</li>
+<li><strong>Fix approach.</strong> Add the same <code>StorybookAssignment</code> EXISTS gate that <code>library.py</code> uses to all three
+  reading routes; restrict the accepted version to the approved, published, current version for
+  non-admin principals. Update the <code>StorybookAssignment</code> docstring to enumerate every gated route.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> All three reading routes 403/404 for a story not assigned to the acting profile (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reading routes reject a non-published / non-current / unapproved version for non-admins (test).</li>
+</ul>
+<h3 id="m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path">M2. Enforce the assignment gate on the guardian blob-fetch path<a class="headerlink" href="#m2-enforce-the-assignment-gate-on-the-guardian-blob-fetch-path" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> <code>get_storybook_version</code> enforces the assignment gate only when
+  <code>principal.role == Role.CHILD</code> (<code>api/library.py:406-415</code>); a guardian principal skips it, and R1
+  kids use guardian tokens, so the gate never runs for real child readers.</li>
+<li><strong>Attack.</strong> On the guardian token, list <code>GET /library?profile_id=B</code> to learn a withheld book's id,
+  then <code>GET /storybooks/{id}/versions/{v}</code> returns the full blob because role is not CHILD.</li>
+<li><strong>Fix approach.</strong> Require a <code>storybook_assignment</code> row for an explicit target profile on
+  <code>get_storybook_version</code> for any non-admin caller, not only <code>role == CHILD</code>. (Interacts with E:
+  distinct child tokens close the R1 exposure directly.)</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Non-admin blob fetch requires an assignment row for a named target profile (test).</li>
+</ul>
+<h3 id="m3-re-run-the-deterministic-validator-gate-on-repaired-blobs">M3. Re-run the deterministic validator gate on repaired blobs<a class="headerlink" href="#m3-re-run-the-deterministic-validator-gate-on-repaired-blobs" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> Auto-repair adopts the LLM-revised blob as published content
+  (<code>moderation/pipeline.py:180-182</code>) after re-running only <code>_run_all_stages</code>, which does not call
+  <code>validator.gate.run_gate</code>, where the age-policy invariants live (PL-15 forbidden ending kinds per
+  band, PL-16 content-flag ceilings; <code>validator/gate.py:118-149</code>, <code>validator/policy.py:79-133</code>). The
+  repair prompt asks the model to preserve structure but nothing enforces it.</li>
+<li><strong>Attack.</strong> A soft-FLAG <code>3-5</code> story is repaired; the model also changes an ending to <code>death</code> or
+  bumps a peril flag; the schema-valid revision publishes because PL-15/PL-16 never re-run.</li>
+<li><strong>Fix approach.</strong> Re-run <code>validator.gate.run_gate</code> on the repaired blob before adopting it; treat a
+  gate block on the revision as a hard block (discard repair, route to <code>needs_revision</code>).</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A repaired blob that violates PL-15 or PL-16 is not published (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A gate block on the revision routes the job to <code>needs_revision</code>/auto_reject (test).</li>
+</ul>
+<hr />
+<h2 id="workstream-c-moderation-reviewer-fail-fast-h4">Workstream C: Moderation reviewer fail-fast (H4)<a class="headerlink" href="#workstream-c-moderation-reviewer-fail-fast-h4" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/moderation-reviewer-failfast</code>. Priority: P1.</p>
+<h3 id="h4-reject-the-no-op-mock-reviewer-outside-local-and-alarm-on-all-fail-safe-reports">H4. Reject the no-op <code>mock</code> reviewer outside local, and alarm on all-fail-safe reports<a class="headerlink" href="#h4-reject-the-no-op-mock-reviewer-outside-local-and-alarm-on-all-fail-safe-reports" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> High.</li>
+<li><strong>Design gap.</strong> <code>review_provider</code> defaults to <code>"mock"</code> (<code>core/config.py:302</code>); the only
+  review-related guard (<code>_require_classifier_when_reviewing</code>, <code>config.py:460-483</code>) is exempt when
+  <code>review_provider == "mock"</code>. With mock, every stage receives <code>"{}"</code>, <code>_parse_verdict</code> returns the
+  fail-safe (<code>moderation/stages.py:159-205</code>), Stage 1 can never emit BLOCK, and <code>auto_reject</code> is never
+  called (<code>moderation/pipeline.py:205-208</code>). The automated safety gate produces no blocking signal.</li>
+<li><strong>Attack.</strong> Deploy with <code>DATABASE_URL</code> and OIDC set but <code>review_provider</code> left at <code>mock</code>; the app
+  starts, every story is "reviewed" by the mock into identical fail-safe FLAGs, none auto-rejected,
+  humans approve through alarm fatigue, unsafe prose reaches children with the automated layer
+  silently off.</li>
+<li><strong>Affected files.</strong> <code>core/config.py:302</code>, <code>:460-483</code>; <code>moderation/review_provider.py:77</code>;
+  <code>moderation/stages.py:159-205</code>; <code>moderation/pipeline.py:205-208</code>; <code>moderation/classifiers.py:40-51</code>.</li>
+<li><strong>Fix approach.</strong> Add a <code>Settings</code> validator that raises when <code>environment != "local"</code> and
+  <code>review_provider == "mock"</code> (mirror <code>_reject_dev_database_url_outside_local</code>). Independently, treat
+  an all-fail-safe-FLAG report (every node flagged with the parse-failure reason) as a pipeline health
+  error so a dead/misconfigured reviewer surfaces as a job failure for retry, not silent human review.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>Settings()</code> with <code>environment=production, review_provider=mock</code> raises <code>ConfigurationError</code> (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> An all-fail-safe report is flagged as a pipeline health error rather than a normal soft-flag
+        outcome (test).</li>
+</ul>
+<hr />
+<h2 id="workstream-d-privacy-and-retention-h3-m5">Workstream D: Privacy and retention (H3, M5)<a class="headerlink" href="#workstream-d-privacy-and-retention-h3-m5" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/privacy-retention</code>. Priority: P1 (grows daily).</p>
+<h3 id="h3-implement-the-adr-007-retention-purge-and-a-parental-deletion-path">H3. Implement the ADR-007 retention purge and a parental-deletion path<a class="headerlink" href="#h3-implement-the-adr-007-retention-purge-and-a-parental-deletion-path" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> High.</li>
+<li><strong>Design gap.</strong> <code>generation_job.report</code> and <code>story_request.request_text</code> are durable with no purge
+  anywhere; retention exists only as a comment deferring to a nonexistent "Phase 5 pg_cron job"
+  (<code>db/models.py:973-982</code>). No DELETE path for profiles or requests (<code>api/profiles.py</code>).</li>
+<li><strong>Attack.</strong> A child's real name/address is stored verbatim (retained even for screening-blocked
+  rows); generation writes the raw prompt+output to <code>report</code> (<code>generation/worker.py:704</code>); none is
+  ever deleted; a backup leak or legal request exposes years of children's raw PII.</li>
+<li><strong>Fix approach.</strong> Implement the purge now: a scheduled job (RQ periodic or a checked-in pg_cron
+  migration) that nulls <code>generation_job.report</code> past 30 days or on publish and scrubs <code>request_text</code>
+  past its window; add a parental-deletion path for family/profile data.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A seeded aged <code>generation_job.report</code> is nulled by the scheduled job (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>report</code> is nulled when the linked version reaches <code>published</code> (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A DELETE (or equivalent) path removes a profile's/family's retained free-text (test).</li>
+</ul>
+<h3 id="m5-replace-the-exact-name-pii-guard-with-a-real-detector-fix-or-delete-the-birthdate-arm">M5. Replace the exact-name PII guard with a real detector; fix or delete the birthdate arm<a class="headerlink" href="#m5-replace-the-exact-name-pii-guard-with-a-real-detector-fix-or-delete-the-birthdate-arm" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> <code>assert_prompt_pii_safe</code> is documented as "the sole chokepoint" for names and
+  birthdates (<code>generation/pii.py:1-10</code>), but all call sites pass <code>birthdates=frozenset()</code> (dead arm),
+  the name set is only exact registered <code>display_name</code> strings, and raw <code>request_text</code> egresses to
+  OpenAI/Perspective/the LLM (<code>story_requests/screening.py:105-111</code>). <code>import_story.py:410</code> passes both
+  sets empty (total no-op).</li>
+<li><strong>Attack.</strong> "a story about me, Tommy Ellison, and my sister Katie at 14 Oak Street" egresses the
+  surname, sibling name, and address verbatim when the profile name is "Tommy E."; birthdate
+  protection never runs.</li>
+<li><strong>Fix approach.</strong> Populate birthdates from a real source or delete the dead arm and its docstring
+  claim; add a generic PII detector (addresses, phones, emails, broader names) over the free text
+  before egress; fix <code>import_story.py:410</code> to load family child names; document exactly which child
+  data is sent to each third party.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Free text with an address/phone/non-registered name is blocked or redacted before egress (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The birthdate arm either runs against real data or is removed along with its docstring claim.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The COPPA/DPA disclosure lists each third-party recipient of child data.</li>
+</ul>
+<hr />
+<h2 id="workstream-e-identity-and-the-guardian-token-keystone-k1">Workstream E: Identity and the guardian-token keystone (K1)<a class="headerlink" href="#workstream-e-identity-and-the-guardian-token-keystone-k1" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/child-identity-separation</code>. Priority: P1 (root cause of M1/M2/H1 reachability).</p>
+<h3 id="k1-give-children-their-own-principal-so-role-checks-actually-apply">K1. Give children their own principal so role checks actually apply<a class="headerlink" href="#k1-give-children-their-own-principal-so-role-checks-actually-apply" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Keystone (rated uncertain for direct content impact, but structural).</li>
+<li><strong>Design gap.</strong> The auth model defines a <code>child</code> role, and gates assert "a child must never approve
+  its own request" and "guardian-only," but R1 authenticates the kid surface AS the guardian
+  (<code>api/story_requests.py:1-14</code>; <code>db/models.py:450</code>). Under that token every <code>is_guardian</code> check
+  returns true for a child. <code>create_story_request</code> hardcodes <code>initiator_role='child'</code>
+  (<code>story_requests.py:346</code>) regardless of the real principal, so a child self-approval is
+  indistinguishable in the audit log from a guardian review.</li>
+<li><strong>Attack.</strong> A child on the guardian token self-approves their own request, declines a sibling's,
+  authors pre-approved requests, and assigns any published family book to any profile. Generation and
+  publish stay admin-gated, so this is not a direct unmoderated-content path, but it removes the
+  guardian oversight the design relies on and is the shared root of M1, M2, and H1.</li>
+<li><strong>Fix approach.</strong> Issue children their own child-role principal (or a scoped token), so
+  <code>is_guardian</code> is false for them; OR gate the approve/decline/assign/authored transitions behind a
+  server-checked guardian secret a child session cannot satisfy. At minimum, derive <code>initiator_role</code>
+  from the authenticated principal (stop hardcoding) and treat approve-by-the-same-actor-that-created
+  as an anomaly.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A child-role principal fails every <code>is_guardian</code>/<code>is_admin</code> gate (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>initiator_role</code> is derived from the principal, not hardcoded (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Self-approval (creator == approver on a child-initiated request) is rejected or flagged (test).</li>
+</ul>
+<hr />
+<h2 id="workstream-f-supply-chain-and-cost-m4-m6-m7">Workstream F: Supply chain and cost (M4, M6, M7)<a class="headerlink" href="#workstream-f-supply-chain-and-cost-m4-m6-m7" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/generation-supply-chain-cost</code>. Priority: P2.</p>
+<h3 id="m4-validate-review-model-ids-against-the-provider-allowlist">M4. Validate review-model IDs against the provider allowlist<a class="headerlink" href="#m4-validate-review-model-ids-against-the-provider-allowlist" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> The allowlist is enforced for the generation backend
+  (<code>story_requests/authoring_plan.py:261</code>) but not for <code>review_stage1_model</code>/<code>review_stage2_model</code>,
+  which are unconstrained <code>str | None</code> (<code>api/schemas.py:614-615</code>) that flow unchecked into
+  <code>build_review_provider</code> (<code>moderation/review_provider.py:86-97</code>).</li>
+<li><strong>Attack.</strong> A rogue/careless admin sets <code>review_stage2_model</code> to an off-allowlist expensive model;
+  every review call is billed against the unvetted model, defeating the billing control on a sibling
+  route.</li>
+<li><strong>Fix approach.</strong> Validate the review-model overrides with <code>is_enabled_allowlist_pair</code> at the
+  authoring-plan seam before persisting; re-check inside <code>build_review_provider</code>.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> An off-allowlist review-model id is rejected at authoring-plan creation (test).</li>
+</ul>
+<h3 id="m6-make-generation-enqueue-idempotent-on-the-row-id">M6. Make generation enqueue idempotent on the row id<a class="headerlink" href="#m6-make-generation-enqueue-idempotent-on-the-row-id" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> The normal enqueue mints an RQ-random id with <code>unique=False</code>
+  (<code>generation/queue.py:129-136</code>); <code>requeue_stranded_jobs</code> re-enqueues with <code>rq_job_id=row_id,
+  unique=True</code>, so the uniqueness collision the <code>queue.py:151</code> comment relies on never fires and
+  <code>run_generation_job</code> can run twice for one row.</li>
+<li><strong>Attack.</strong> After a &gt;30-min backlog/outage, reclaim double-runs a job: a duplicate billed generation
+  that then collides on the <code>s_{job_id}</code> primary key, flipping the row to <code>failed</code> while the storybook
+  persists.</li>
+<li><strong>Fix approach.</strong> Enqueue with <code>rq_job_id=job_id, unique=True</code> on both paths, or take a row-level
+  lock and re-check status before any provider work; fix the misleading comment.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A second dispatch of the same job_id is a cheap no-op, not a duplicate paid run (test).</li>
+</ul>
+<h3 id="m7-enforce-the-family-active-job-cap-on-every-enqueue-path">M7. Enforce the family active-job cap on every enqueue path<a class="headerlink" href="#m7-enforce-the-family-active-job-cap-on-every-enqueue-path" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> <code>MAX_ACTIVE_JOBS_PER_FAMILY</code> is checked only in <code>enqueue_concept_generation</code>; the
+  production authoring-plan path creates the <code>GenerationJob</code> directly with no family cap
+  (<code>story_requests/authoring_plan.py:421-475</code>).</li>
+<li><strong>Fix approach.</strong> Enforce the family active-job cap (and any global concurrency budget) in the shared
+  enqueue helper so every path is throttled identically.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The authoring-plan path is subject to the same family cap as <code>/concepts</code> (test).</li>
+</ul>
+<hr />
+<h2 id="workstream-g-deployment-posture-m8-l5">Workstream G: Deployment posture (M8, L5)<a class="headerlink" href="#workstream-g-deployment-posture-m8-l5" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/deployment-posture</code>. Priority: P2.</p>
+<h3 id="m8-stop-publishing-prod-postgres-to-the-host-remove-the-base-password-default">M8. Stop publishing prod Postgres to the host; remove the base password default<a class="headerlink" href="#m8-stop-publishing-prod-postgres-to-the-host-remove-the-base-password-default" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Medium.</li>
+<li><strong>Design gap.</strong> Base compose publishes db to the host (<code>docker-compose.yml:146-147</code>) and defaults
+  <code>POSTGRES_PASSWORD</code> to <code>password</code> (<code>:137</code>); the prod override never removes the <code>ports:</code> mapping, and
+  Compose appends port sequences, so prod still exposes Postgres on the host (iptables DNAT bypasses
+  host firewalls).</li>
+<li><strong>Fix approach.</strong> In the prod override, drop the db host <code>ports:</code> mapping (internal-network only) or
+  bind to <code>127.0.0.1</code>; remove the <code>password</code> default so a missing <code>DB_PASSWORD</code> fails fast everywhere.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Merged prod compose does not publish 5432 on a host interface (verify merged config).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Missing <code>DB_PASSWORD</code> fails fast in every compose path.</li>
+</ul>
+<h3 id="l5-drop-version-fingerprinting-from-public-health-probes">L5. Drop version fingerprinting from public health probes<a class="headerlink" href="#l5-drop-version-fingerprinting-from-public-health-probes" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Low.</li>
+<li><strong>Design gap.</strong> <code>HealthStatus</code> exposes <code>python_version</code> and <code>version</code> on unauthenticated
+  <code>/health/live</code>, <code>/health/startup</code>, <code>/health</code> (<code>api/health.py:46-47</code>).</li>
+<li><strong>Fix approach.</strong> Drop <code>python_version</code> (and ideally <code>version</code>) from public probe payloads, or gate
+  detailed diagnostics behind an internal/authenticated route; return a bare status to anonymous
+  callers.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Public probes return no interpreter/app version (test).</li>
+</ul>
+<hr />
+<h2 id="workstream-h-integrity-and-inert-controls-l1-l2-l3-l4">Workstream H: Integrity and inert controls (L1, L2, L3, L4)<a class="headerlink" href="#workstream-h-integrity-and-inert-controls-l1-l2-l3-l4" title="Permanent link">&para;</a></h2>
+<p>Branch: <code>fix/integrity-and-inert-controls</code>. Priority: P3.</p>
+<h3 id="l1-make-reading-state-anti-forgery-replay-mandatory">L1. Make reading-state anti-forgery replay mandatory<a class="headerlink" href="#l1-make-reading-state-anti-forgery-replay-mandatory" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Low.</li>
+<li><strong>Design gap.</strong> Full engine replay runs only when <code>choice_path</code> is provided
+  (<code>player/replay.py:60-68</code>), which defaults to <code>None</code> (<code>api/schemas.py:70</code>); the default path runs only
+  the structural floor, which accepts a client-forged state pointing at any node with any in-bounds
+  vars. The <code>replay.py:112-120</code> comment claiming the floor closes the valid-but-unreached-node forgery
+  is false for the default path.</li>
+<li><strong>Fix approach.</strong> Make <code>choice_path</code> mandatory and always run the full deterministic replay; correct
+  the comment.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A reading-state write without a legal <code>choice_path</code> is rejected (test).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A state whose reachability is unverified is not trusted for gating decisions.</li>
+</ul>
+<h3 id="l2-frame-child-free-text-as-untrusted-content-in-generation-prompts">L2. Frame child free-text as untrusted content in generation prompts<a class="headerlink" href="#l2-frame-child-free-text-as-untrusted-content-in-generation-prompts" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Low.</li>
+<li><strong>Design gap.</strong> <code>request_text</code> is serialized wholesale into the structure and fill prompts
+  (<code>generation/prompts.py:305</code>, <code>:377</code>) with no untrusted-content delimiter or instruction, contrary to
+  the project's OWASP LLM01 directive.</li>
+<li><strong>Fix approach.</strong> Wrap <code>premise</code>/<code>theme_brief</code> in a uniquely-delimited untrusted-content block with a
+  system instruction that its contents are story input, never instructions.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Prompts render the premise inside an explicit untrusted-content delimiter (test/snapshot).</li>
+</ul>
+<h3 id="l3-implement-or-remove-allowed_content_flags">L3. Implement or remove <code>allowed_content_flags</code><a class="headerlink" href="#l3-implement-or-remove-allowed_content_flags" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Low.</li>
+<li><strong>Design gap.</strong> <code>ChildProfile.allowed_content_flags</code> (<code>db/models.py:184-186</code>) is documented as a
+  content cap but is dead: not settable via the profile API, in no <code>ProfileView</code>, and read by no
+  delivery path.</li>
+<li><strong>Fix approach.</strong> Implement end-to-end (expose on the profile API; enforce at assignment/read by
+  comparing book <code>metadata.content_flags</code> to the cap) or remove the column and its "content caps" claim.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The cap is either enforced at delivery (test) or removed with its docstring claim.</li>
+</ul>
+<h3 id="l4-enforce-reading_level_cap-at-delivery-or-label-it-generation-only">L4. Enforce <code>reading_level_cap</code> at delivery or label it generation-only<a class="headerlink" href="#l4-enforce-reading_level_cap-at-delivery-or-label-it-generation-only" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li><strong>Severity:</strong> Low.</li>
+<li><strong>Design gap.</strong> <code>reading_level_cap</code> is guardian-settable and consumed only when building a generation
+  brief (<code>story_requests/brief.py:94-95</code>); never enforced at assignment or read (Phase 4a deferral).</li>
+<li><strong>Fix approach.</strong> Enforce at assignment time and/or filter in library and version fetch; if deferral
+  is intended, label the field generation-only in the UI.</li>
+<li><strong>Acceptance criteria.</strong></li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A book above a lowered cap is filtered/refused at delivery (test), OR the field is documented
+        as generation-only and the UI reflects it.</li>
+</ul>
+<hr />
+<h2 id="verification-and-exit-criteria">Verification and exit criteria<a class="headerlink" href="#verification-and-exit-criteria" title="Permanent link">&para;</a></h2>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Every workstream lands as its own reviewed, signed PR against <code>main</code>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Each finding's acceptance-criteria tests are added and pass.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The status map above is updated to <code>done</code> per finding as PRs merge.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <code>uv run pytest --cov=src --cov-fail-under=80</code>, <code>uv run ruff check .</code>, <code>uv run basedpyright src/</code>
+      pass on every PR.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> The review report (<code>docs/security/red-team-design-review-2026-07.md</code>) is annotated with the
+      remediating PR per finding on completion.</li>
+</ul>
+<h2 id="dismissed-during-verification-no-work-planned">Dismissed during verification (no work planned)<a class="headerlink" href="#dismissed-during-verification-no-work-planned" title="Permanent link">&para;</a></h2>
+<p>Raised by a finder but refuted on re-check, recorded for traceability: in-memory rate limiter design
+(tech debt, not a safety gap); condition-evaluator recursion (bounded, not reachable); cover-provider
+PII egress (folded into M5); dormant cross-book series validator (no runtime path today); the
+<code>GET /generation-jobs/{id}</code> report field (verified family-scoped, not cross-tenant); missing
+<code>TrustedHostMiddleware</code>/HTTPS in <code>app.py</code> (reasonably delegated to the reverse proxy; a defense-in-depth
+note, not a workstream); shared unbounded RQ queue as the sole throttle (overlaps M6/M7, no separate
+workstream). Seven candidates dismissed in total.</p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:06:56 UTC">July 10, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:06:56 UTC">July 10, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
