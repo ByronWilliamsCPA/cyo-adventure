@@ -13,7 +13,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 
 # Development Roadmap: CYO Adventure
 
-> **Status**: Active | **Updated**: 2026-07-03
+> **Status**: Active | **Updated**: 2026-07-10
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -22,7 +22,9 @@ Build the schema first, then the player and reader, then the two-layer validator
 generation, then safety and review, then library/profiles, editor, and hardening, across
 six phases over roughly 16 to 25 weeks for a 1 to 2 developer team. The decided release
 cut puts generation in R1 (the internal release: web PWA only, Phases 0-3 plus the Phase 4a
-library-and-profiles slice, roughly 11 to 16 weeks).
+library-and-profiles slice, roughly 11 to 16 weeks). R1 is feature-complete (2026-07-03);
+the WS-A through WS-G story-lifecycle redesign (see below) then hardened it through
+2026-07-10, and R2 planning follows.
 
 ## Current Status (2026-07-03)
 
@@ -56,6 +58,30 @@ full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).
 | 4a Library + Profiles | ✅ Delivered (R1 feature-complete) | app shell/auth #56, profiles #60, library #68, guardian console #76, intake #69, assign #75 (all merged 2026-07-03) |
 | 4b Editor + UX | ⏸️ Not started | post-release |
 | 5 Hardening | ⏸️ Not started | in-memory rate limiter, backups, restore drill outstanding |
+
+## Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)
+
+Between R1 feature-complete (2026-07-03) and R2 planning, seven workstreams (WS-A through
+WS-G) hardened and extended the story lifecycle across moderation, request handling,
+generation matching, observability, catalog sharing, and series continuation. This work is
+orthogonal to the Phase 0-5 ladder above, refining capabilities already shipped in Phases
+2-4a rather than opening a new phase. All seven are merged; see
+[`story-lifecycle-redesign.md`](./story-lifecycle-redesign.md) for the full design.
+
+| Workstream | Scope | PRs |
+|------------|-------|-----|
+| WS-A | Moderation thresholds + admin noise floor | #141, #161, #162 |
+| WS-B | Story-request lifecycle | #163, #164, #165, #167 |
+| WS-C | Provider selection + skeleton matching | #170, #175 |
+| WS-D | Pipeline event log | #168 |
+| WS-E | Catalog sharing + guardian assignment | #180 |
+| WS-F | Suggestion dashboard | #176 |
+| WS-G | Series chaining (continuation) | #184, #192 |
+
+One item is coded but not yet opened as a PR: WS-G's "PR3" (`AnchorContext` declared
+variable names + continuation prompts) has real commits on
+`feat/ws-g-generation-continuity` (worktree `.worktrees/ws-g-pr3`), a documented quality
+improvement that can land after the rest without blocking them.
 
 ## Timeline Overview
 
