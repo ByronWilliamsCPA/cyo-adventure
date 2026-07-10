@@ -36,16 +36,21 @@ test('double-clicking Approve on a guardian request only approves once', async (
     route.fulfill({ json: { requests } })
   )
   let approveCalls = 0
+  // A deterministic gate (released only after the forced second click) keeps
+  // the row mounted long enough for that click to land (in-flight, disabled)
+  // rather than racing an instant-resolving mock: the row unmounts entirely
+  // once approve resolves, and a fully-detached locator would otherwise make
+  // the second click hang for the full test timeout instead of exercising the
+  // guard. Replaces a raw 300ms sleep, which could still race a slow CI runner.
+  // Mirrors the same pattern in naive-kid-misuse.spec.ts's Send button test.
+  let releaseApprove: () => void = () => {}
+  const approveGate = new Promise<void>((resolve) => {
+    releaseApprove = resolve
+  })
   await page.route('**/api/v1/story-requests/req-1/approve', async (route) => {
     approveCalls += 1
     requests = requests.filter((r) => r.id !== 'req-1')
-    // An artificial delay so the row survives long enough for the forced
-    // second click to land (in-flight, disabled) rather than racing the
-    // instant-resolving mock: the row unmounts entirely once approve
-    // resolves, and a fully-detached locator would otherwise make the second
-    // click hang for the full test timeout instead of exercising the guard.
-    // Mirrors the same pattern in naive-kid-misuse.spec.ts's Send button test.
-    await new Promise((resolve) => setTimeout(resolve, 300))
+    await approveGate
     return route.fulfill({
       json: { id: 'req-1', status: 'approved', concept_id: 'concept-1', job_id: 'job-1' },
     })
@@ -56,7 +61,12 @@ test('double-clicking Approve on a guardian request only approves once', async (
   await requestRow.getByLabel('Story length').selectOption('medium')
   const approveButton = requestRow.getByRole('button', { name: 'Approve' })
   await approveButton.click()
+  // Locator-based wait: the in-flight guard disables the button synchronously,
+  // so this is the deterministic signal that the forced second click lands
+  // mid-flight (a disabled button never dispatches a click, even forced).
+  await expect(approveButton).toBeDisabled()
   await approveButton.click({ force: true })
+  releaseApprove()
 
   await expect(page.getByText('No requests to review')).toBeVisible()
   expect(approveCalls).toBe(1)
@@ -124,16 +134,21 @@ test('double-clicking Assign in the guardian books dialog only posts once', asyn
     })
   )
   let assignCalls = 0
+  // Deterministic gate (released only after the forced second click) so the
+  // dialog survives long enough for that click to land (in-flight, on a
+  // disabled button) rather than racing an instant-resolving mock: the dialog
+  // unmounts entirely once the assign resolves, and a fully-detached locator
+  // would otherwise make the second click hang for the full test timeout
+  // instead of exercising the guard. Replaces a raw 300ms sleep. Mirrors the
+  // Approve and intake double-click tests in this file.
+  let releaseAssign: () => void = () => {}
+  const assignGate = new Promise<void>((resolve) => {
+    releaseAssign = resolve
+  })
   await page.route('**/api/v1/storybooks/story-1/assignments', async (route) => {
     if (route.request().method() === 'POST') {
       assignCalls += 1
-      // An artificial delay so the dialog survives long enough for the forced
-      // second click to land (in-flight, on a disabled button) rather than
-      // racing the instant-resolving mock: the dialog unmounts entirely once
-      // the assign resolves, and a fully-detached locator would otherwise make
-      // the second click hang for the full test timeout instead of exercising
-      // the guard. Mirrors the Approve and intake double-click tests above.
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await assignGate
       return route.fulfill({ json: { storybook_id: 'story-1', profile_ids: ['p1', 'p2'] } })
     }
     return route.fulfill({ json: { storybook_id: 'story-1', profile_ids: ['p1'] } })
@@ -145,7 +160,11 @@ test('double-clicking Assign in the guardian books dialog only posts once', asyn
   await dialog.getByRole('checkbox', { name: /Reader A2/ }).click()
   const assignButton = dialog.getByRole('button', { name: /^Assign$/ })
   await assignButton.click()
+  // Locator-based wait: the saving flag disables the button synchronously, so
+  // this is the deterministic signal that the forced second click lands mid-flight.
+  await expect(assignButton).toBeDisabled()
   await assignButton.click({ force: true })
+  releaseAssign()
 
   // Wait for the terminal success state (the dialog closes once the assign
   // resolves) before asserting the call count. expect.poll(...).toBe(1) would
@@ -193,9 +212,16 @@ test('double-clicking Request Story in intake only creates one generation job', 
   let jobs: Array<Record<string, unknown>> = []
   await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs } }))
   let conceptCalls = 0
+  // Deterministic gate instead of a raw 300ms sleep: hold the concept POST
+  // open until the forced second click has landed on the disabled button, so
+  // the in-flight window is guaranteed rather than timing-dependent.
+  let releaseConcept: () => void = () => {}
+  const conceptGate = new Promise<void>((resolve) => {
+    releaseConcept = resolve
+  })
   await page.route('**/api/v1/concepts', async (route) => {
     conceptCalls += 1
-    await new Promise((resolve) => setTimeout(resolve, 300))
+    await conceptGate
     return route.fulfill({ status: 201, json: { concept_id: 'c1' } })
   })
   await page.route('**/api/v1/concepts/c1/generate', (route) => {
@@ -220,7 +246,12 @@ test('double-clicking Request Story in intake only creates one generation job', 
   await page.getByLabel(/What's it about/).fill('tide pools and brave crabs')
   const submitButton = page.getByRole('button', { name: 'Request Story' })
   await submitButton.click()
-  await submitButton.click({ force: true })
+  // Locator-based wait: submit() sets `saving` synchronously before any await,
+  // and the label flips to "Requesting…" while canSubmit disables the button;
+  // waiting on the label change is the deterministic in-flight signal.
+  await expect(page.getByRole('button', { name: 'Requesting…' })).toBeDisabled()
+  await page.getByRole('button', { name: 'Requesting…' }).click({ force: true })
+  releaseConcept()
 
   await expect(page.getByTestId('request-status-j1')).toHaveText('Generating')
   expect(conceptCalls).toBe(1)

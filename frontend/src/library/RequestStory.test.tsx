@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RequestStory } from './RequestStory'
@@ -207,6 +208,51 @@ describe('RequestStory', () => {
         anchor_storybook_id: 's_1',
       })
     )
+  })
+
+  it('Cancel closes the form and resets the idea and series name', async () => {
+    const user = userEvent.setup()
+    render(<RequestStory profileId="p1" />)
+    await user.click(await screen.findByRole('button', { name: /request a story/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /what should your story be about/i }),
+      'A dragon who loves cupcakes'
+    )
+    await user.type(
+      screen.getByLabelText(/part of a series\? give it a name!/i),
+      'The Cupcake Chronicles'
+    )
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(
+      screen.queryByRole('textbox', { name: /what should your story be about/i })
+    ).not.toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+
+    // Reopening shows a fresh, empty form: cancel really reset the state.
+    await user.click(screen.getByRole('button', { name: /request a story/i }))
+    expect(
+      screen.getByRole('textbox', { name: /what should your story be about/i })
+    ).toHaveValue('')
+    expect(screen.getByLabelText(/part of a series\? give it a name!/i)).toHaveValue('')
+  })
+
+  it('Cancel in anchor mode also calls onClearAnchor', async () => {
+    const user = userEvent.setup()
+    const onClearAnchor = vi.fn()
+    render(
+      <RequestStory
+        profileId="p1"
+        anchor={{ id: 's_1', title: 'The Fox' }}
+        onClearAnchor={onClearAnchor}
+      />
+    )
+    await screen.findByText(/continuing: the fox/i)
+
+    await user.click(screen.getByRole('button', { name: /^cancel$/i }))
+
+    expect(onClearAnchor).toHaveBeenCalled()
   })
 
   it('"Not this one" calls onClearAnchor', async () => {

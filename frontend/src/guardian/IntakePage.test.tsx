@@ -198,6 +198,64 @@ describe('IntakePage', () => {
     expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
   })
 
+  it('retries the load when the Retry button is clicked after a load failure', async () => {
+    const user = userEvent.setup()
+    let calls = 0
+    mockGet.mockReset().mockImplementation((url: string) => {
+      calls += 1
+      // Both mount fetches (profiles + jobs) fail; the first retry succeeds.
+      if (calls <= 2) return Promise.reject(new Error('boom'))
+      return Promise.resolve(getMock(url))
+    })
+    renderPage()
+
+    await screen.findByText(/could not load your requests/i)
+    await user.click(screen.getByRole('button', { name: /Retry/i }))
+
+    await waitFor(() =>
+      expect(screen.queryByText(/could not load your requests/i)).not.toBeInTheDocument()
+    )
+    expect(await screen.findByRole('button', { name: /Reader A/i })).toBeInTheDocument()
+  })
+
+  it('opens the assign dialog from an Approved row and closes it', async () => {
+    const user = userEvent.setup()
+    mockGet.mockReset().mockImplementation((url: string) => {
+      if (url === '/v1/profiles') return Promise.resolve({ data: { profiles: [PROFILE] } })
+      if (url === '/v1/generation-jobs') {
+        return Promise.resolve({
+          data: {
+            jobs: [
+              {
+                id: 'ja', status: 'passed', storybook_status: 'published', error: null,
+                title: 'A', premise_snippet: 'a', age_band: '8-11', storybook_id: 's2',
+                version: 1, created_at: '2026-07-02T00:00:00Z',
+              },
+            ],
+          },
+        })
+      }
+      if (url === '/v1/storybooks/s2/assignments')
+        return Promise.resolve({ data: { storybook_id: 's2', profile_ids: [] } })
+      if (url === '/v1/storybooks/s2/content-summary')
+        return Promise.resolve({
+          data: {
+            storybook_id: 's2', version: 1, screened: true, summary: null,
+            flagged_count: 0, findings: [],
+          },
+        })
+      throw new Error(`unexpected GET ${url}`)
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Assign more/i }))
+    const dialog = await screen.findByRole('dialog', { name: /Assign to children/i })
+    expect(dialog).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^Cancel$/i }))
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+
   it('polls while a job is active and stops after it settles', async () => {
     // Deviation from the brief: Testing Library's fake-timer detection only
     // fires when a `jest` global exists (jestFakeTimersAreEnabled in

@@ -181,6 +181,81 @@ describe('ReviewDetailPage', () => {
     expect(sendBack).toBeEnabled()
   })
 
+  it('shows an error state when the review surface fails to load', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+    renderAt('s1')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /could not load this story for review/i
+    )
+    expect(screen.queryByRole('button', { name: /^Approve$/i })).not.toBeInTheDocument()
+  })
+
+  it('renders story-level notes when the surface carries story-level findings', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        story_level_findings: [
+          {
+            stage: 2,
+            source: 'llm_safety',
+            category: 'tone',
+            node_id: null,
+            verdict: 'flag',
+            score: null,
+            message: 'overall tone is tense',
+          },
+        ],
+      },
+    })
+    renderAt('s1')
+    expect(await screen.findByText('Story-level notes')).toBeInTheDocument()
+    expect(screen.getByText('overall tone is tense')).toBeInTheDocument()
+  })
+
+  it('keeps malformed node entries a reviewer must still see, and skips only unusable ones', async () => {
+    // readNodes is deliberately lenient on a safety surface: prose with a
+    // broken id must not silently drop out of the read-through. Entries that
+    // are not objects or have neither id nor prose are the only ones skipped.
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        blob: {
+          // No title: the heading falls back to the storybook id.
+          nodes: [
+            null, // not an object: skipped
+            {}, // neither id nor body: skipped
+            { id: 42, body: 'Prose with a malformed id survives.' }, // synthetic id
+            { id: 'n_tail', body: 'A normal closing passage.' },
+          ],
+        },
+        flagged_passages: [],
+        story_level_findings: [],
+      },
+    })
+    renderAt('s1')
+    expect(
+      await screen.findByRole('heading', { name: 's1', level: 1 })
+    ).toBeInTheDocument()
+    expect(screen.getByText('Prose with a malformed id survives.')).toBeInTheDocument()
+    expect(screen.getByText('A normal closing passage.')).toBeInTheDocument()
+  })
+
+  it('renders no read-through nodes when the blob has a non-array nodes field', async () => {
+    mockGet.mockResolvedValue({
+      data: {
+        ...SURFACE,
+        blob: { title: 'The Cave', nodes: 'not-an-array' },
+        flagged_passages: [],
+        story_level_findings: [],
+      },
+    })
+    renderAt('s1')
+    await screen.findByRole('heading', { name: 'The Cave', level: 1 })
+    const fullStory = document.getElementById('full-story')
+    expect(fullStory).not.toBeNull()
+    expect(fullStory?.querySelectorAll('.review-node')).toHaveLength(0)
+  })
+
   it('does not bleed a prior action error into the other dialog', async () => {
     const user = userEvent.setup()
     mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 400 } })

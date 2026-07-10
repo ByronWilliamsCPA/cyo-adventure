@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { StrictMode } from 'react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
@@ -182,6 +182,31 @@ describe('ReaderPage', () => {
     expect(await screen.findByTestId('download-needed')).toBeTruthy()
   })
 
+  it('navigates to the profile library from the offline screen\'s Back to my books button', async () => {
+    render(
+      <MemoryRouter initialEntries={['/read/p_dl/s_lantern_cave/1']}>
+        <Routes>
+          <Route
+            path="/read/:profileId/:storybookId/:version"
+            element={
+              <ReaderPage
+                api={okApi()}
+                fetchStory={() => Promise.reject(new OfflineError())}
+                profileId="p_dl"
+                storybookId="s_lantern_cave"
+                version={1}
+              />
+            }
+          />
+          <Route path="/library/:profileId" element={<div>Library Page</div>} />
+        </Routes>
+      </MemoryRouter>
+    )
+    await screen.findByTestId('download-needed')
+    fireEvent.click(screen.getByTestId('download-back'))
+    expect(await screen.findByText('Library Page')).toBeInTheDocument()
+  })
+
   it('shows a generic error screen on other failures', async () => {
     renderPage(() => Promise.reject(new Error('boom')))
     expect(await screen.findByText('Something went wrong')).toBeTruthy()
@@ -278,6 +303,61 @@ describe('ReaderPage', () => {
     await screen.findByTestId('conflict-dialog')
     fireEvent.click(screen.getByTestId('conflict-keep'))
     await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+  })
+
+  it('adopts the server position when "Use the newest place" is chosen on a 409', async () => {
+    const serverState: ReadingState = {
+      current_node: 'n_cave_fork',
+      var_state: { has_lantern: true },
+      path: ['n_entrance', 'n_cave_fork'],
+      visit_set: ['n_entrance', 'n_cave_fork'],
+      version: 1,
+      state_revision: 5,
+      save_slots: {},
+    }
+    let calls = 0
+    const api: SyncApi = {
+      putReadingState: (_p, _s, body) => {
+        calls += 1
+        if (calls === 1) {
+          return Promise.resolve<PutResponse>({ status: 409, currentRow: serverState })
+        }
+        return Promise.resolve<PutResponse>({ status: 200, row: { ...body, state_revision: 6 } })
+      },
+    }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_adopt"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    // The mount-time save returns 409 (another device is ahead), so the
+    // dialog appears; the reader is still at the entrance here.
+    await screen.findByTestId('conflict-dialog')
+    fireEvent.click(screen.getByTestId('conflict-use-newest'))
+    await waitFor(() => expect(screen.queryByTestId('conflict-dialog')).toBeNull())
+
+    // The Reader remounted seeded from the adopted server state: the fork
+    // passage renders, and the lantern-gated choice is visible because the
+    // server's var_state (has_lantern: true) was adopted too.
+    await waitFor(() =>
+      expect(screen.getByTestId('passage-body').textContent).toContain('splits')
+    )
+    expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
+
+    // The adopted state was mirrored into the local cache so the next open
+    // resumes from the server position (resolveConflict's use_newer_progress
+    // path). The remounted Reader immediately re-saves the adopted state, so
+    // the stored revision may already have advanced past the server's 5; the
+    // position, not the exact revision, is the adopted-state invariant.
+    const mirrored = await getReadingState('p_adopt', 's_lantern_cave')
+    expect(mirrored?.current_node).toBe('n_cave_fork')
+    expect(mirrored?.state_revision).toBeGreaterThanOrEqual(5)
   })
 
   it('issues one save and no false 409 under StrictMode double-invoke (#86)', async () => {

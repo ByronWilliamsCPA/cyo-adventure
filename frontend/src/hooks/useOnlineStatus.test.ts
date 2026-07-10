@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useOnlineStatus } from './useOnlineStatus'
 
 function setOnLine(value: boolean) {
@@ -29,5 +29,18 @@ describe('useOnlineStatus', () => {
       window.dispatchEvent(new Event('online'))
     })
     expect(result.current).toBe(true)
+  })
+
+  it('defaults to online when navigator is unavailable (SSR-style environment)', () => {
+    // The initial-state seed guards `typeof navigator === 'undefined'` so the
+    // hook is safe outside a browser. Stub navigator to undefined so that arm
+    // actually runs; the effect's listeners still attach to window fine.
+    vi.stubGlobal('navigator', undefined)
+    try {
+      const { result } = renderHook(() => useOnlineStatus())
+      expect(result.current).toBe(true)
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 })

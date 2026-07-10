@@ -76,4 +76,12 @@ describe('BookCard', () => {
     expect(tile).not.toHaveClass('book-card__tile--painted')
     expect(tile).not.toHaveAttribute('style')
   })
+
+  it('falls back to the first-letter tile when the cover image fails to load', () => {
+    renderCard({ ...BASE_ITEM, title: 'Zephyr', cover_url: 'https://cdn/broken.webp' })
+    const img = screen.getByRole<HTMLImageElement>('presentation', { hidden: true })
+    fireEvent.error(img)
+    expect(screen.getByText('Z')).toBeInTheDocument()
+    expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument()
+  })
 })

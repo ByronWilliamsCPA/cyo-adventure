@@ -19,6 +19,38 @@ function getResponseRejectedHandler(api: AxiosInstance) {
   return handler.rejected
 }
 
+/** Same extraction for the response interceptor's fulfilled (pass-through) handler. */
+function getResponseFulfilledHandler(api: AxiosInstance) {
+  const handlers = api.interceptors.response as unknown as {
+    handlers: Array<{ fulfilled: (response: unknown) => unknown } | null>
+  }
+  const handler = handlers.handlers[0]
+  if (!handler) {
+    throw new Error('Expected a registered response interceptor')
+  }
+  return handler.fulfilled
+}
+
+/** And for the request interceptor's fulfilled/rejected pair. */
+function getRequestHandlers(api: AxiosInstance) {
+  const handlers = api.interceptors.request as unknown as {
+    handlers: Array<{
+      fulfilled: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig
+      rejected: (error: AxiosError) => Promise<never>
+    } | null>
+  }
+  const handler = handlers.handlers[0]
+  if (!handler) {
+    throw new Error('Expected a registered request interceptor')
+  }
+  return handler
+}
+
+function makeRequestConfig(): InternalAxiosRequestConfig {
+  // A minimal config with a real headers bag, which is all the interceptor touches.
+  return { headers: {} } as unknown as InternalAxiosRequestConfig
+}
+
 function makeUnauthorizedError(): AxiosError {
   return new AxiosError(
     'Unauthorized',
@@ -104,5 +136,105 @@ describe('useApi 401 interceptor', () => {
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     expect(location.replace).not.toHaveBeenCalled()
+  })
+})
+
+describe('useApi 401 interceptor non-401 pass-through', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('re-rejects a non-401 error without touching the token or navigating', async () => {
+    localStorage.setItem('auth_token', 'test-token')
+    const { result } = renderHook(() => useApi())
+    const rejected = getResponseRejectedHandler(result.current)
+
+    const serverError = new AxiosError(
+      'Server Error',
+      'ERR_BAD_RESPONSE',
+      {} as InternalAxiosRequestConfig,
+      undefined,
+      {
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {},
+        config: {} as InternalAxiosRequestConfig,
+        data: undefined,
+      }
+    )
+    await expect(rejected(serverError)).rejects.toBe(serverError)
+
+    // A 500 is not a session problem: the token survives for the retry.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+  })
+})
+
+describe('useApi baseURL selection', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
+  it('uses the dev proxy path when not in production', () => {
+    // Vitest runs with PROD=false, matching dev: requests go through /api.
+    const { result } = renderHook(() => useApi())
+    expect(result.current.defaults.baseURL).toBe('/api')
+  })
+
+  it('uses VITE_API_URL directly in production builds', () => {
+    vi.stubEnv('PROD', true)
+    vi.stubEnv('VITE_API_URL', 'https://api.example.test')
+    const { result } = renderHook(() => useApi())
+    expect(result.current.defaults.baseURL).toBe('https://api.example.test')
+  })
+
+  it('falls back to /api in production when VITE_API_URL is unset', () => {
+    vi.stubEnv('PROD', true)
+    vi.stubEnv('VITE_API_URL', '')
+    const { result } = renderHook(() => useApi())
+    expect(result.current.defaults.baseURL).toBe('/api')
+  })
+})
+
+describe('useApi request interceptor', () => {
+  afterEach(() => {
+    localStorage.clear()
+  })
+
+  it('attaches the stored auth token as a Bearer Authorization header', () => {
+    localStorage.setItem('auth_token', 'stored-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer stored-token')
+  })
+
+  it('leaves Authorization unset when no token is stored', () => {
+    localStorage.removeItem('auth_token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBeUndefined()
+  })
+
+  it('re-rejects a request setup error unchanged', async () => {
+    const { result } = renderHook(() => useApi())
+    const { rejected } = getRequestHandlers(result.current)
+
+    const error = new AxiosError('setup failed', 'ERR_NETWORK')
+    await expect(rejected(error)).rejects.toBe(error)
+  })
+})
+
+describe('useApi response interceptor pass-through', () => {
+  it('returns a successful response unchanged', () => {
+    const { result } = renderHook(() => useApi())
+    const fulfilled = getResponseFulfilledHandler(result.current)
+
+    const response = { status: 200, data: { ok: true } }
+    expect(fulfilled(response)).toBe(response)
   })
 })
