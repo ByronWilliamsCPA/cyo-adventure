@@ -37,4 +37,22 @@ describe('ReaderChrome', () => {
     render(<ReaderChrome percent={40} label="2 of 5 pages explored" showLabel />)
     expect(screen.getByText('2 of 5 pages explored')).toBeTruthy()
   })
+
+  it('renders the back slot when provided', () => {
+    setOnLine(true)
+    render(
+      <ReaderChrome
+        percent={40}
+        label="2 of 5 pages explored"
+        back={<button type="button">Leave</button>}
+      />
+    )
+    expect(screen.getByRole('button', { name: 'Leave' })).toBeTruthy()
+  })
+
+  it('renders nothing extra when the back slot is omitted', () => {
+    setOnLine(true)
+    render(<ReaderChrome percent={40} label="2 of 5 pages explored" />)
+    expect(screen.queryByRole('button')).toBeNull()
+  })
 })

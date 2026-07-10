@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { BookCard } from './BookCard'
 import type { LibraryItemView } from './libraryApi'
+import { coverGradient } from './coverPalette'
 
 const BASE_ITEM: LibraryItemView = {
   id: 's1',
@@ -60,5 +61,19 @@ describe('BookCard', () => {
     renderCard({ ...BASE_ITEM, title: 'Zephyr', cover_url: null })
     expect(screen.getByText('Z')).toBeInTheDocument()
     expect(screen.queryByRole('presentation', { hidden: true })).not.toBeInTheDocument()
+  })
+
+  it('paints the tile with the title-derived gradient when cover_url is absent', () => {
+    const { container } = renderCard({ ...BASE_ITEM, title: 'Zephyr', cover_url: null })
+    const tile = container.querySelector('.book-card__tile')
+    expect(tile).toHaveClass('book-card__tile--painted')
+    expect(tile).toHaveStyle({ background: coverGradient('Zephyr') })
+  })
+
+  it('does not paint the tile when cover_url is present', () => {
+    const { container } = renderCard({ ...BASE_ITEM, cover_url: 'https://cdn/x.webp' })
+    const tile = container.querySelector('.book-card__tile')
+    expect(tile).not.toHaveClass('book-card__tile--painted')
+    expect(tile).not.toHaveAttribute('style')
   })
 })
