@@ -63,7 +63,7 @@ export interface ApprovedResult {
   current_published_version: number
   approved_by: string
   published_at: string
-  visibility: string
+  visibility: Visibility
 }
 
 export interface SentBackResult {

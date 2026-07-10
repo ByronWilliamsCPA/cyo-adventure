@@ -1066,7 +1066,9 @@ Expected: FAIL (post called without a body; no radio present)
 export type Visibility = 'family' | 'catalog'
 ```
 
-`ApprovedResult` gains `visibility: string`. The interface method and implementation become:
+`ApprovedResult` gains `visibility: Visibility` (the closed union above, never a bare
+`string`, so the response type keeps the same compile-time guarantee as the request
+side). The interface method and implementation become:
 
 ```typescript
   approve(storybookId: string, visibility: Visibility): Promise<ApprovedResult>
