@@ -225,9 +225,9 @@ generation prompt as `{concept_brief}`. Fields marked with `?` are optional.
 | `title?` | string | Working title (optional; the LLM may propose one) |
 | `premise` | string | One-paragraph description of the situation and stakes |
 | `protagonist` | object | `name` (fictional), `age` (fictional), `role` (description) |
-| `point_of_view` | enum | `"second_person"` (default and required for v1) |
-| `age_band` | enum | `"8-11"`, `"10-13"`, or `"13-16"` |
-| `reading_level_target` | object | `{ "scheme": "flesch_kincaid_grade", "target": 4.0, "tolerance": 0.5 }` |
+| `point_of_view` | string | Narrative POV; free text, default `"second"` (not an enum) |
+| `age_band` | enum | `"3-5"`, `"5-8"`, `"8-11"`, `"10-13"`, `"13-16"`, or `"16+"` |
+| `reading_level_target` | float | Target Flesch-Kincaid grade level, e.g. `4.0` |
 | `tier` | int | `1` (branching only) or `2` (state-tracking) |
 | `tone` | string | e.g. "adventurous", "gentle mystery", "tense survival" |
 | `themes_allowed` | string[] | e.g. `["friendship", "courage", "nature"]` |
@@ -235,7 +235,7 @@ generation prompt as `{concept_brief}`. Fields marked with `?` are optional.
 | `target_node_count` | int | Target total node count (see budgets above) |
 | `ending_count` | int | Number of distinct endings (minimum 2) |
 | `structure_pattern` | enum | `time_cave`, `gauntlet`, `branch_and_bottleneck`, `quest`, `loop_and_grow` |
-| `desired_variables[]?` | object[] | For Tier 2: each has `name`, `type`, `initial`, `min?`, `max?`, `description` |
+| `desired_variables[]?` | string[] | For Tier 2: bounded variable-name strings (1-200 chars each); no nested type/initial/min/max/description |
 | `special_constraints[]?` | string[] | Freeform constraints for the LLM; length-limited; no real PII |
 
 `protagonist.name` must be a fictional name, not the name of any real child. The backend
