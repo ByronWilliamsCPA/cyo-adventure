@@ -676,9 +676,7 @@ async def test_assign_book_index_reraises_non_unique_constraint_integrity_error(
         assert "uq_storybook_series_book_index" not in str(exc_info.value.orig)
 
 
-def _series_seed_rows(
-    family: Family, user: User, series: Series, concept: Concept
-) -> StoryRequest:
+def _series_seed_rows(family: Family, series: Series, concept: Concept) -> StoryRequest:
     """A StoryRequest linking concept to series (the worker's series signal)."""
     return StoryRequest(
         family_id=family.id,
@@ -732,7 +730,7 @@ async def test_persist_and_moderate_repair_roundtrip_embeds_series_block(
         concept = Concept(family_id=family.id, brief={}, created_by=user.id)
         session.add(concept)
         await session.flush()
-        session.add(_series_seed_rows(family, user, series, concept))
+        session.add(_series_seed_rows(family, series, concept))
         await session.flush()
         job = GenerationJob(concept_id=concept.id, status="running")
         session.add(job)
@@ -827,7 +825,7 @@ async def test_persist_and_moderate_embed_failure_rolls_back_and_fails_job(
         concept = Concept(family_id=family.id, brief={}, created_by=user.id)
         session.add(concept)
         await session.flush()
-        session.add(_series_seed_rows(family, user, series, concept))
+        session.add(_series_seed_rows(family, series, concept))
         await session.flush()
         job = GenerationJob(concept_id=concept.id, status="running")
         session.add(job)
