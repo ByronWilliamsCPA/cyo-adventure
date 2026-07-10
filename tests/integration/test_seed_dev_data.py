@@ -28,6 +28,7 @@ from cyo_adventure.db.models import (
     StorybookVersion,
     User,
 )
+from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from scripts.seed_dev_data import seed_dev_data
 
 if TYPE_CHECKING:
@@ -262,6 +263,13 @@ async def test_seed_dev_data_seeds_series_chain(
                 )
             )
             assert version is not None
+            # #ASSUME: data-integrity: every reading-state PUT re-validates
+            # the pinned blob via Storybook.model_validate (api/reading.py
+            # -> player/replay.py::_parse), so a seeded blob that fails the
+            # schema gate would 422 every progress save on the real stack.
+            # #VERIFY: this model_validate call fails the test on any future
+            # fixture edit that breaks the schema gate.
+            StorybookDoc.model_validate(version.blob)
             meta = version.blob["metadata"]
             assert isinstance(meta, dict)
             series_block = meta["series"]

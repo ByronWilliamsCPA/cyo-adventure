@@ -28,8 +28,24 @@ def _blob(
     book_index: int,
     entry: str = "n_start",
 ) -> dict[str, object]:
-    """A minimal schema-valid two-node story blob, optionally series-embedded."""
-    metadata: dict[str, object] = {"age_band": "10-13"}
+    """A minimal schema-valid two-node story blob, optionally series-embedded.
+
+    Carries every field StoryMetadata requires (reading_level, tier,
+    estimated_minutes, ending_count, topology) so the blob survives
+    Storybook.model_validate: the reading-state PUT path re-runs that gate
+    on the pinned blob, and a gate-failing fixture must not be copied into
+    seeds or other tests.
+    """
+    metadata: dict[str, object] = {
+        "age_band": "10-13",
+        "reading_level": {"scheme": "flesch_kincaid", "target": 4.0},
+        # Tier 2, not 1: the model forbids variables on tier 1 stories
+        # (_check_tier_variables), and this blob declares "courage".
+        "tier": 2,
+        "estimated_minutes": 2,
+        "ending_count": 1,
+        "topology": "branch_and_bottleneck",
+    }
     if series_id is not None:
         metadata["series"] = {
             "series_id": series_id,

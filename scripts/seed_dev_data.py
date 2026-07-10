@@ -98,14 +98,18 @@ def _flagged_moderation_report(node_id: str) -> dict[str, object]:
 def _series_blob(
     story_id: str, title: str, book_index: int, series_id: str
 ) -> dict[str, object]:
-    """Build a schema-valid, three-node story blob for a series book.
+    """Build a three-node story blob for a series book.
 
     Mirrors the two-node ``_blob`` helper in
     ``tests/integration/test_series_next.py`` but adds a middle node so the
     start node offers a real choice (one branch sets ``courage`` via an
     effect, the other is plain) before the reader reaches the ending; both
     branches converge on the middle node so the book resolves in at most two
-    clicks.
+    clicks. The metadata carries every field ``StoryMetadata`` requires
+    (reading_level, tier, estimated_minutes, ending_count, topology): the
+    reading-state PUT path re-runs ``Storybook.model_validate`` on the pinned
+    blob (api/reading.py -> player/replay.py), so a blob missing any of them
+    would 422 every progress save.
 
     Args:
         story_id: Fixed storybook id embedded in the blob (``blob["id"]``).
@@ -115,9 +119,9 @@ def _series_blob(
             ``metadata.series.series_id`` so the book links to a real row.
 
     Returns:
-        A schema-valid Storybook blob whose ``metadata.series`` block
-        declares the start node as the series entry node and marks the book
-        as state-carrying.
+        A ``Storybook.model_validate``-clean blob whose ``metadata.series``
+        block declares the start node as the series entry node and marks the
+        book as state-carrying.
     """
     prefix = f"n_e{book_index}"
     start = f"{prefix}_start"
@@ -130,6 +134,13 @@ def _series_blob(
         "title": title,
         "metadata": {
             "age_band": _SERIES_AGE_BAND,
+            "reading_level": {"scheme": "flesch_kincaid", "target": 4.0},
+            # Tier 2, not 1: the model forbids variables on tier 1 stories
+            # (_check_tier_variables), and this blob declares "courage".
+            "tier": 2,
+            "estimated_minutes": 2,
+            "ending_count": 1,
+            "topology": "branch_and_bottleneck",
             "series": {
                 "series_id": series_id,
                 "book_index": book_index,
