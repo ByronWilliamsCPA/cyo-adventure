@@ -74,7 +74,7 @@
 }
 
 .landing-door--kids .landing-door__icon {
-  background: var(--color-amber, #e07f2e);
+  background: var(--color-amber-deep, #c17b2a);
 }
 
 .landing-door--guardian .landing-door__icon {

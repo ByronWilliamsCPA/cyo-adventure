@@ -136,7 +136,7 @@
 }
 
 .star-rating__star--filled {
-  color: var(--color-amber);
+  color: var(--color-amber-deep, #c17b2a);
 }
 
 .library__request {

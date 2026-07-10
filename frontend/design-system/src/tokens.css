@@ -17,6 +17,10 @@
   --color-amber-hover:     #c4681c;
   --color-amber-light:     #f7e2c4;
   --color-amber-subtle:    #fdf3e6;
+  /* Contrast-safe amber for white-on-amber fills and small amber glyphs on
+     parchment (white 3.42:1, on-parchment 3.09:1; the bright amber fails
+     both at 2.90/2.62 vs the 3:1 WCAG 1.4.11 minimum). */
+  --color-amber-deep:      #c17b2a;
 
   /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;
@@ -26,8 +30,8 @@
   --color-sky:             #4a7fb5;
   --color-sky-light:       #daeaf7;
 
-  /* Berry + treasure: playful kid-surface accents (adventure covers, stars,
-     "new" ribbons). Not used for status semantics. */
+  /* Berry + treasure: RESERVED for upcoming kid-surface accents (not yet
+     consumed by any component). Not used for status semantics. */
   --color-berry:           #d8577b;
   --color-berry-light:     #fbe1e8;
   --color-gold:            #f4c430;
