@@ -34,7 +34,7 @@ const story: Storybook = {
       id: 'n_end',
       body: 'End',
       is_ending: true,
-      ending: { id: 'e', type: 'good', title: 'End' },
+      ending: { id: 'e', kind: 'success', valence: 'positive', title: 'End' },
       choices: [],
     },
   ],

@@ -19,7 +19,8 @@ export interface Effect {
 
 export interface Ending {
   id: string
-  type: string
+  kind: string
+  valence: string
   title: string
 }
 
