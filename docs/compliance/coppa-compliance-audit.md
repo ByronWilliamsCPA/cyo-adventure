@@ -1,20 +1,15 @@
 ---
 title: "COPPA Compliance Audit"
-schema_type: compliance
+schema_type: planning
 status: draft
 owner: core-maintainer
 purpose: "Full-scope engineering audit of CYO Adventure against the Children's Online Privacy Protection Act (COPPA, 16 CFR Part 312), mapping data practices to each Rule requirement and ranking remediation before the ADR-008 public launch."
 tags:
   - compliance
-  - privacy
-  - coppa
-  - children
   - security
 component: Development-Tools
 source: "Static review of src/cyo_adventure, frontend/src, migrations, and docs at commit c9dbfa9 (2026-07-10)"
 ---
-
-# COPPA Compliance Audit: CYO Adventure
 
 > **Status**: Draft | **Version**: 1.0 | **Audit date**: 2026-07-10
 > **Code reviewed at**: commit `c9dbfa9` on `main`
@@ -168,7 +163,9 @@ payload is free of child free text by contract (key allowlist plus a scalar-only
 ## 4. Third-party disclosure map
 
 COPPA treats disclosure of a child's personal information to third parties as a distinct, tightly
-regulated event, and the 2025 amendments require separate consent for most third-party disclosures.
+regulated event, and the 2025 amendments require separate consent for most third-party disclosures
+(other than disclosures to service providers acting solely as the operator's processors, and those
+that support the service's internal operations, which remain within the original consent).
 The single technical control is `assert_prompt_pii_safe` (`generation/pii.py:101`), a case-insensitive
 **allowlist match** against the family's registered `child_profile.display_name` values. Its coverage
 and gaps are analysed in finding M-01.
@@ -227,7 +224,7 @@ disclosure practices, and a direct notice to the parent before collection. Neith
 - No consent code exists anywhere; `consent`, `COPPA`, `verifiable`, and `parental` match only in
   planning docs, not in `src/` or `frontend/src/`.
 - There is **no signup or account-provisioning endpoint** (all routers are wired in
-  `api/app.py:172-185`; none creates a `Family` or guardian `User`). Guardian accounts are created
+  `app.py:172-185`; none creates a `Family` or guardian `User`). Guardian accounts are created
   by hand in Supabase for the R1 families (`frontend/src/guardian/LoginPage.tsx:22-27`). There is
   therefore not even a structural point at which consent could be captured.
 - Child-profile creation (`POST /profiles`, `api/profiles.py:101-132`) requires only the guardian
@@ -258,8 +255,10 @@ no read endpoint for `completion` data, and no aggregate "all data about my chil
 - No soft-delete column (`deleted_at`, `is_active`) exists on `child_profile` or any child table.
 - **No foreign-key cascades are defined.** Every FK in `migrations/versions/20260621_1926_initial_schema.py`
   and in `db/models.py` omits `ondelete` (child_profile is referenced by `user`, `reading_state`,
-  `completion`, `rating`, `storybook_assignment`, and `story_request`). A raw delete would hit
-  Postgres default RESTRICT (blocked) or orphan rows. This directly contradicts the project's own
+  `completion`, `rating`, `storybook_assignment`, and `story_request`). A raw delete of a referenced
+  `child_profile` would fail: with no `ON DELETE` action Postgres defaults to `NO ACTION`, which blocks
+  the delete while dependent rows exist (orphaned rows would arise only from an incomplete
+  application-level purge, not from the database default). This directly contradicts the project's own
   stated requirement that "Cascades must be defined in the Alembic schema"
   (`docs/planning/privacy-model.md:133`). See finding C-03.
 
@@ -281,7 +280,7 @@ hygiene, and OWASP security headers. Gaps:
   guessable key `{storybook_id}/{version}.webp` and a public URL is returned
   (`covers/storage.py:41-53`). Child-derived artwork is retrievable without authentication.
 - **`TrustedHostMiddleware` not added** and app-layer HTTPS redirect off (`middleware/security.py`
-  defaults via `api/app.py:167`), delegating Host validation and TLS entirely to the reverse proxy
+  defaults via `app.py:167`), delegating Host validation and TLS entirely to the reverse proxy
   (L-02).
 - **No written information-security program** artifact (a 2025-amendment expectation): no designated
   coordinator, documented risk assessment, or vendor-oversight process is present in the repo.
@@ -318,7 +317,7 @@ Severity reflects risk at the **public launch** for which COPPA is binding, with
 ### C-01. No verifiable parental consent mechanism (Critical at launch)
 
 **COPPA**: 312.5. **Evidence**: no consent code in `src/`/`frontend/src`; no signup endpoint
-(`api/app.py:172-185`); manual Supabase provisioning (`LoginPage.tsx:22-27`); ungated
+(`app.py:172-185`); manual Supabase provisioning (`LoginPage.tsx:22-27`); ungated
 `POST /profiles` (`api/profiles.py:101-132`).
 **Risk**: Collecting personal information from children without prior verifiable parental consent is
 the core COPPA violation.
@@ -454,7 +453,7 @@ information (retention, deletion, disclosure in the notice).
 
 ### L-02. `TrustedHostMiddleware` disabled and app-layer HTTPS redirect off (Low)
 
-**Evidence**: `api/app.py:167` uses `add_security_middleware` defaults (`middleware/security.py:548,
+**Evidence**: `app.py:167` uses `add_security_middleware` defaults (`middleware/security.py:548,
 588-592`). **Recommendation**: Set `allowed_hosts` and enable HTTPS redirect (or confirm the proxy
 enforces both) before public launch.
 
@@ -489,7 +488,7 @@ These controls materially reduce child-privacy risk and should be maintained thr
   `local` (`api/deps.py:67-76`).
 - **Strong tenancy authorization**: family and profile scoping derived from the verified principal
   (never the client), cross-family IDOR blocked with no existence oracle, and a closed `Role` enum
-  backed by at-rest CHECK constraints (`api/deps.py:394-421`; `db/models.py:159-161`).
+  backed by at-rest CHECK constraints (`api/deps.py:45-55`; `db/models.py:159-161`).
 - **PII egress chokepoint** on the main generation path (`generation/guarded.py`), even though its
   coverage is allowlist-limited (M-01).
 - **Human-in-the-loop safety**: mandatory guardian approval (ADR-005), an independent moderation
