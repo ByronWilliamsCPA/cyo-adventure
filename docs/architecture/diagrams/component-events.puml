@@ -1,0 +1,152 @@
+@startuml component-events
+' ============================================================
+' Component Diagram: Pipeline Event Log
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/events/models.py   (EventType: 14-value StrEnum;
+'                                          Actor: system() / from_principal();
+'                                          D2 invariant: system actor <-> no
+'                                          user id, enforced at construction)
+'   src/cyo_adventure/events/writer.py   (record_event(): the ONLY write path;
+'                                          _PAYLOAD_ALLOWLIST per-event-type
+'                                          key allowlist, PII-free contract D3;
+'                                          adds to the caller's session and
+'                                          flushes -- never commits its own
+'                                          transaction, spec decision D1)
+'   src/cyo_adventure/db/models.py       (PipelineEvent ORM table; DB trigger
+'                                          enforces append-only, no UPDATE/
+'                                          DELETE from the ORM)
+'
+'   Call sites (every record_event() invocation in the codebase, grep-verified):
+'   src/cyo_adventure/generation/worker.py           (GENERATION_STARTED,
+'                                                      GENERATION_FINISHED x2)
+'   src/cyo_adventure/moderation/pipeline.py          (MODERATION_COMPLETED,
+'                                                      REPAIR_APPLIED)
+'   src/cyo_adventure/publishing/service.py           (RELEASED, SENT_BACK)
+'   src/cyo_adventure/story_requests/service.py       (REQUEST_CREATED,
+'                                                      REQUEST_APPROVED,
+'                                                      REQUEST_DECLINED)
+'   src/cyo_adventure/story_requests/authoring_plan.py (PLAN_ASSIGNED)
+'   src/cyo_adventure/api/story_requests.py           (REQUEST_CREATED)
+'   src/cyo_adventure/api/moderation_thresholds.py    (THRESHOLD_CHANGED x2,
+'                                                      NOISE_FLOOR_CHANGED)
+'   src/cyo_adventure/api/assignments.py              (BOOK_ASSIGNED)
+'   src/cyo_adventure/api/ratings.py                  (RATED)
+'
+'   Downstream reader:
+'   src/cyo_adventure/api/moderation_dashboard.py     (admin dashboard reads
+'                                                      THRESHOLD_CHANGED /
+'                                                      NOISE_FLOOR_CHANGED rows)
+'   docs/planning/story-lifecycle-redesign-plan.md (spec: "Event taxonomy",
+'     decisions D1-D3, WS-D capture layer)
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+package "Pipeline Event Log (WS-D)" #FFF8E1 {
+
+  component "EventType\nevents/models.py\n14-value StrEnum:\nREQUEST_CREATED/APPROVED/DECLINED,\nPLAN_ASSIGNED, GENERATION_STARTED/\nFINISHED, MODERATION_COMPLETED,\nREPAIR_APPLIED, SENT_BACK, RELEASED,\nTHRESHOLD_CHANGED, NOISE_FLOOR_CHANGED,\nBOOK_ASSIGNED, RATED" as event_type #FFECB3
+
+  component "Actor\nevents/models.py\nsystem() -- worker/moderation,\nno principal\nfrom_principal() -- HTTP caller\nD2: system <-> actor_id is None" as actor #FFECB3
+
+  component "record_event()\nevents/writer.py\nTHE ONLY write path\n_validate_payload(): per-event-type\nkey allowlist + PII-safe value check\n(D3); adds + flushes on the\nCALLER's session/transaction (D1)" as record_event #FFD54F
+
+}
+
+database "PostgreSQL" as pg #E0F7FA {
+  component "PipelineEvent\nid, occurred_at, actor_id,\nactor_role, entity_type, entity_id,\nevent_type, from_state, to_state,\npayload (JSONB)\nDB trigger: append-only\n(no UPDATE/DELETE from the ORM)" as pipeline_event_table #E0F7FA
+}
+
+' --- Writers: generation workflow ---
+component "Generation Worker\ngeneration/worker.py\n[see component-generation.puml]" as gen_worker #FFF3E0
+gen_worker ==> record_event : "GENERATION_STARTED\n(job dequeued)"
+gen_worker ==> record_event : "GENERATION_FINISHED\n(outcome, provider, model,\nprompt_version)"
+
+' --- Writers: moderation workflow ---
+component "Moderation Pipeline\nmoderation/pipeline.py\n[see component-moderation.puml]" as mod_pipeline #E8F5E9
+mod_pipeline ==> record_event : "REPAIR_APPLIED\n(if a soft-flag repair\nis adopted, BEFORE\nMODERATION_COMPLETED)"
+mod_pipeline ==> record_event : "MODERATION_COMPLETED\n(always; overall_verdict,\nrepaired, PII-free counts)"
+
+' --- Writers: publishing workflow ---
+component "Publishing Service\npublishing/service.py\n[see component-publishing.puml]" as pub_service #F3E5F5
+pub_service ==> record_event : "RELEASED\n(approve -> published;\nvisibility payload)"
+pub_service ==> record_event : "SENT_BACK\n(in_review -> needs_revision;\nempty payload, D3)"
+
+' --- Writers: story-request lifecycle (not generation/moderation/publishing,
+'     but every other actual call site, grep-verified) ---
+component "Story Request Service\nstory_requests/service.py\napi/story_requests.py" as story_req #DCEDC8
+story_req --> record_event : "REQUEST_CREATED\nREQUEST_APPROVED\nREQUEST_DECLINED"
+
+component "Authoring Plan\nstory_requests/authoring_plan.py" as authoring_plan #DCEDC8
+authoring_plan --> record_event : "PLAN_ASSIGNED\n(job_status, plan_kind)"
+
+component "Moderation Thresholds\napi/moderation_thresholds.py [admin]\n[see component-moderation.puml]" as mod_thresholds #E1BEE7
+mod_thresholds --> record_event : "THRESHOLD_CHANGED\n(upsert / delete)\nNOISE_FLOOR_CHANGED"
+
+component "Assignments\napi/assignments.py [guardian-only]" as assignments #DCEDC8
+assignments --> record_event : "BOOK_ASSIGNED\n(child_profile_id)"
+
+component "Ratings\napi/ratings.py" as ratings #DCEDC8
+ratings --> record_event : "RATED\n(value, is_update)"
+
+' --- Internal ---
+record_event --> event_type : "coerce + validate"
+record_event --> actor : "actor_id, actor_role"
+record_event --> pipeline_event_table : "session.add()\n+ flush\n(no commit)"
+
+' --- Downstream reader ---
+component "Moderation Dashboard\napi/moderation_dashboard.py [admin]\n[see component-moderation.puml]" as mod_dashboard #E1BEE7
+pipeline_event_table --> mod_dashboard : "read THRESHOLD_CHANGED /\nNOISE_FLOOR_CHANGED\n(recent_changes list)"
+
+note right of record_event
+  Spec decisions enforced here:
+
+  D1: the row rides the caller's own
+  transaction -- record_event never
+  opens or commits its own transaction,
+  so the event and the state change it
+  describes commit or roll back
+  together, atomically.
+
+  D2: a system actor (worker,
+  moderation pipeline) carries
+  actor_id=None; a user actor
+  (HTTP caller) always carries one.
+  Enforced twice: Actor.__post_init__
+  (construction-time) and the
+  ck_pipeline_event_system_actor_null
+  DB CHECK (backstop for any non-ORM
+  writer).
+
+  D3: payload is PII-free by contract.
+  _PAYLOAD_ALLOWLIST is a closed
+  per-event-type key set; values are
+  restricted to None/bool/int/float/a
+  bounded (<=200 char) string, or a
+  str->int count mapping. Free text
+  (story prose, a child's name, a
+  send-back reason) is structurally
+  rejected, never merely discouraged.
+end note
+
+note bottom of pipeline_event_table
+  Bold arrows mark the three workflows
+  this diagram was scoped to trace
+  (generation, moderation, publishing);
+  the remaining call sites (story
+  requests, threshold admin, assignments,
+  ratings) are the complete, grep-verified
+  set of every other record_event() site
+  in the codebase, shown for accuracy.
+end note
+
+@enduml

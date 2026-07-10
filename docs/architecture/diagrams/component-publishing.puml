@@ -1,0 +1,145 @@
+@startuml component-publishing
+' ============================================================
+' Component Diagram: Publishing (Approval State Machine)
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/publishing/state_machine.py (Status, Action, Visibility,
+'                                                   LEGAL_TRANSITIONS,
+'                                                   assert_transition: pure,
+'                                                   dependency-free transition table)
+'   src/cyo_adventure/publishing/service.py       (submit, auto_reject, approve,
+'                                                   send_back, archive: each wraps
+'                                                   a transition + ORM writes +
+'                                                   record_event, one flush)
+'   src/cyo_adventure/api/approval.py             (admin-only HTTP surface:
+'                                                   submit/approve/send-back/
+'                                                   archive/review/review-queue)
+'   src/cyo_adventure/api/review_surface.py       (build_review_surface,
+'                                                   build_review_queue_item)
+'   src/cyo_adventure/moderation/pipeline.py      (worker-path caller of
+'                                                   submit()/auto_reject();
+'                                                   see component-moderation.puml)
+'   src/cyo_adventure/events/writer.py            (RELEASED, SENT_BACK events)
+'   docs/planning/adr/adr-005-mandatory-human-approval.md (amended 2026-06-30:
+'                                                   approve/publish is
+'                                                   admin-only; no guardian path)
+'   docs/planning/tech-spec.md (section: Authorization Matrix)
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+actor "Admin\n(global safety operator,\ncross-family, ADR-005)" as admin #EDE7F6
+
+component "Moderation Pipeline\nmoderation/pipeline.py\n[worker path]\n[see component-moderation.puml]" as moderation #E8F5E9
+
+package "Publishing" #F3E5F5 {
+
+  component "approval.py [global admin]\napi/approval.py\nPOST .../submit\nPOST .../approve\nPOST .../send-back\nPOST .../archive\nGET .../review\nGET /review-queue" as approval_router #E1BEE7
+
+  component "_load_admin_story()\napi/approval.py\nrequires ctx.principal.is_admin\n(role checked BEFORE any load);\nSELECT ... FOR UPDATE\n(closes #129 concurrency race)" as load_admin #D1C4E9
+
+  component "review_surface.py\napi/review_surface.py\nbuild_review_surface()\nbuild_review_queue_item()\napplies admin noise floor" as review_surface #D1C4E9
+
+  component "State Machine\npublishing/state_machine.py\nassert_transition()\npure, dependency-free" as state_machine #CE93D8
+
+  component "Publishing Service\npublishing/service.py\nsubmit()\napprove()\nsend_back()\narchive()" as service #CE93D8
+
+  component "auto_reject()\npublishing/service.py\nmachine-side rejection;\nActor.system(), no principal" as auto_reject #CE93D8
+
+}
+
+database "PostgreSQL" as pg #E0F7FA {
+  component "Storybook\n.status, .visibility,\n.current_published_version" as storybook_row #E0F7FA
+  component "StorybookVersion\n.approved_by, .published_at\n.moderation_report" as version_row #E0F7FA
+}
+
+component "Pipeline Event Log\nevents/writer.py [WS-D]\n[see component-events.puml]" as events_log #FFF8E1
+
+' --- HTTP entry ---
+admin --> approval_router : "submit / approve /\nsend-back / archive"
+approval_router --> load_admin : "admin role check\n(403 before any query)"
+load_admin --> storybook_row : "SELECT ... FOR UPDATE"
+approval_router --> review_surface : "GET .../review,\nGET /review-queue"
+review_surface --> version_row : "blob + moderation_report"
+
+' --- Service / state-machine ---
+approval_router ==> service : "submit(session, book)\n[admin path]"
+moderation ==> service : "submit(session, book)\n[worker path, post-gate\nclean or repaired]"
+moderation ..> auto_reject : "auto_reject(session, book)\n[worker path, hard block]"
+service --> state_machine : "assert_transition(\ncurrent, action)"
+auto_reject --> state_machine
+
+approval_router ==> service : "approve(session, principal,\nbook, version, visibility)\n[ADMIN ONLY -- ADR-005]"
+approval_router --> service : "send_back(session,\nprincipal, book, reason)"
+approval_router --> service : "archive(session,\nprincipal, book)"
+
+service --> storybook_row : "status, visibility,\ncurrent_published_version"
+service --> version_row : "approved_by,\npublished_at"
+auto_reject --> storybook_row : "status = needs_revision"
+
+service --> events_log : "RELEASED (approve)\nSENT_BACK (send_back)"
+
+note right of state_machine
+  LEGAL_TRANSITIONS (the single source
+  of truth for legal hops):
+
+  draft --submit--> in_review
+  draft --auto_reject--> needs_revision
+  needs_revision --submit--> in_review
+  in_review --approve--> published
+  in_review --send_back--> needs_revision
+  published --archive--> archived
+
+  Any other (from_state, action) pair
+  raises StateTransitionError -> 409.
+end note
+
+note right of approval_router
+  Every handler in this router is
+  admin-only: authorize_family is
+  intentionally NOT called (admin
+  authority is cross-family, the
+  backend safety-review operator).
+
+  approve() is the SOLE code path that
+  may set status="published"; it always
+  stamps approved_by + published_at in
+  the same operation (no-unapproved-
+  publish invariant). tech-spec.md's
+  Authorization Matrix: guardians get
+  403 on approve/publish, including on
+  their own family's story -- there is
+  no guardian path (ADR-005, amended
+  2026-06-30).
+end note
+
+note bottom of service
+  submit() and approve() both refuse a
+  version whose moderation_report is
+  still None (BusinessLogicError,
+  "cannot submit/approve a version that
+  has never been screened by
+  moderation"): no unscreened or
+  unmoderated version can reach
+  in_review or published, regardless of
+  which of the two callers (admin HTTP
+  path or moderation worker path)
+  invokes it.
+
+  approve() additionally runs the WS-G
+  series-chain validation gate for a
+  series book before publishing (legacy
+  pre-WS-G chains are grandfathered and
+  skip the check).
+end note
+
+@enduml

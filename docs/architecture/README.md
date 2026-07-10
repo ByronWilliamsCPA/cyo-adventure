@@ -42,6 +42,9 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | Validator Gate | [component-validator.puml](diagrams/component-validator.puml) / [.svg](diagrams/component-validator.svg) | L1/Policy/L2/RL/SAFE layers |
 | Player Engine | [component-player.puml](diagrams/component-player.puml) / [.svg](diagrams/component-player.svg) | StoryEngine, evaluator, XState |
 | API and Persistence | [component-api-persistence.puml](diagrams/component-api-persistence.puml) / [.svg](diagrams/component-api-persistence.svg) | Routers, auth seam, ORM |
+| Moderation Pipeline | [component-moderation.puml](diagrams/component-moderation.puml) / [.svg](diagrams/component-moderation.svg) | Stage 0-4 review, auto-repair, admin thresholds |
+| Publishing | [component-publishing.puml](diagrams/component-publishing.puml) / [.svg](diagrams/component-publishing.svg) | Approval state machine, admin-only approve (ADR-005) |
+| Pipeline Event Log | [component-events.puml](diagrams/component-events.puml) / [.svg](diagrams/component-events.svg) | Append-only PipelineEvent writers across every workflow |
 | Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
 | Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
