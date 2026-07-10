@@ -32,9 +32,23 @@ export interface ReaderProps {
   onComplete?: (endingId: string) => void
   /** Profile whose library the ending screen's "Back to my books" returns to. */
   profileId: string
+  /**
+   * Optional handler for the always-visible Leave button. When provided it
+   * replaces the default navigation so the owner (ReaderPage) can settle an
+   * in-flight progress save before leaving; when omitted, Leave navigates
+   * straight to the profile's library as before.
+   */
+  onLeave?: () => void
 }
 
-export function Reader({ story, initialReading, onProgress, onComplete, profileId }: ReaderProps) {
+export function Reader({
+  story,
+  initialReading,
+  onProgress,
+  onComplete,
+  profileId,
+  onLeave,
+}: ReaderProps) {
   const navigate = useNavigate()
   const [snapshot, send] = useMachine(readerMachine, {
     input: { story, reading: initialReading },
@@ -76,12 +90,15 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
 
   // An always-visible exit: a child can leave a story at any point, not only
   // from the ending screen. It reads as "Leave" rather than a bare arrow so the
-  // action is unmistakable to a young reader.
+  // action is unmistakable to a young reader. When the owner passes onLeave it
+  // takes over the tap (ReaderPage uses it to settle an in-flight progress save
+  // before unmounting; see "surfaces a lost save..." in ReaderLeave.test.tsx);
+  // otherwise Leave navigates to the profile's library directly.
   const leaveButton = (
     <button
       type="button"
       className="reader-leave"
-      onClick={() => void navigate(`/library/${profileId}`)}
+      onClick={onLeave ?? (() => void navigate(`/library/${profileId}`))}
     >
       <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path
@@ -117,7 +134,7 @@ export function Reader({ story, initialReading, onProgress, onComplete, profileI
         <section data-testid="ending-screen" className="reader-ending">
           <Mascot size={112} className="reader-ending__mascot" />
           <h2 className="reader-ending__title">{ending?.title ?? 'The End'}</h2>
-          <div data-testid="passage-body" aria-live="polite">
+          <div data-testid="passage-body" className="reader-ending__body" aria-live="polite">
             <PassageText text={node?.body ?? ''} />
           </div>
           <p data-testid="ending-id" hidden>

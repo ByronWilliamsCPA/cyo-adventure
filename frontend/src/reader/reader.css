@@ -83,6 +83,15 @@
   text-align: center;
 }
 
+/* The ending screen centers its title, mascot, and actions, but multi-line
+   passage prose must stay left-aligned for young readers: centered body text
+   makes line starts jump around. Full width so the prose column matches the
+   in-story reading layout instead of shrink-wrapping under align-items. */
+.reader-ending__body {
+  align-self: stretch;
+  text-align: left;
+}
+
 .reader-ending__mascot {
   margin-bottom: calc(-1 * var(--space-2));
 }
