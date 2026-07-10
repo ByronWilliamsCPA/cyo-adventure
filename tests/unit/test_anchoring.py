@@ -2,7 +2,17 @@
 
 from __future__ import annotations
 
-from cyo_adventure.story_requests.anchoring import anchor_context_from_blob
+from types import SimpleNamespace
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from cyo_adventure.story_requests.anchoring import (
+    _protagonist_names,
+    anchor_context_from_blob,
+    load_anchor_context,
+)
 
 
 def _blob() -> dict[str, object]:
@@ -97,3 +107,141 @@ def test_malformed_blob_degrades_to_defaults() -> None:
     )
     assert ctx.title == "Untitled story"
     assert ctx.ending_summary == ""
+
+
+def _mock_session() -> AsyncSession:
+    """Build an AsyncSession double via spec= so async methods auto-mock.
+
+    ``MagicMock(spec=AsyncSession)`` produces ``AsyncMock`` instances for the
+    async members (``get``, ``scalar``) automatically, so ``await
+    mock_session.scalar(...)`` is awaitable without hand-wiring each method.
+    """
+    return MagicMock(spec=AsyncSession)
+
+
+@pytest.mark.asyncio
+async def test_load_anchor_context_storybook_missing_returns_none() -> None:
+    """A None session.get result (no such storybook) degrades to None."""
+    session = _mock_session()
+    session.get = AsyncMock(return_value=None)
+
+    result = await load_anchor_context(session, "s_missing")
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_load_anchor_context_no_published_version_returns_none() -> None:
+    """A storybook with no current_published_version degrades to None."""
+    session = _mock_session()
+    storybook = SimpleNamespace(id="s_1", current_published_version=None)
+    session.get = AsyncMock(return_value=storybook)
+
+    result = await load_anchor_context(session, "s_1")
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_load_anchor_context_version_row_missing_returns_none() -> None:
+    """A published version pointer with no matching version row degrades to None."""
+    session = _mock_session()
+    storybook = SimpleNamespace(id="s_1", current_published_version=1)
+    session.get = AsyncMock(return_value=storybook)
+    session.scalar = AsyncMock(return_value=None)
+
+    result = await load_anchor_context(session, "s_1")
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_load_anchor_context_non_dict_blob_returns_none() -> None:
+    """A version row whose blob is not a dict degrades to None."""
+    session = _mock_session()
+    storybook = SimpleNamespace(id="s_1", current_published_version=1)
+    version = SimpleNamespace(blob="not-a-dict")
+    session.get = AsyncMock(return_value=storybook)
+    session.scalar = AsyncMock(return_value=version)
+
+    result = await load_anchor_context(session, "s_1")
+
+    assert result is None
+
+
+@pytest.mark.asyncio
+async def test_load_anchor_context_happy_path_returns_context() -> None:
+    """A valid published anchor with a dict blob builds a real AnchorContext.
+
+    The two sequential ``session.scalar`` calls (version lookup inside
+    ``load_anchor_context``, then the concept-brief lookup inside its own
+    ``_protagonist_names`` call) are ordered via ``side_effect``.
+    """
+    session = _mock_session()
+    storybook = SimpleNamespace(id="s_1", current_published_version=1)
+    version = SimpleNamespace(blob=_blob())
+    session.get = AsyncMock(return_value=storybook)
+    session.scalar = AsyncMock(
+        side_effect=[version, {"protagonist": {"name": "Robin"}}]
+    )
+
+    result = await load_anchor_context(session, "s_1")
+
+    assert result is not None
+    assert result.title == "The Fox and the Map"
+    assert result.character_names == ["Robin"]
+
+
+@pytest.mark.asyncio
+async def test_protagonist_names_brief_not_dict_returns_empty() -> None:
+    """A non-dict (or missing) concept brief degrades to an empty list."""
+    session = _mock_session()
+    session.scalar = AsyncMock(return_value=None)
+
+    names = await _protagonist_names(session, "s_1")
+
+    assert names == []
+
+
+@pytest.mark.asyncio
+async def test_protagonist_names_protagonist_not_dict_returns_empty() -> None:
+    """A brief whose 'protagonist' key is not a dict degrades to an empty list."""
+    session = _mock_session()
+    session.scalar = AsyncMock(return_value={"protagonist": "not-a-dict"})
+
+    names = await _protagonist_names(session, "s_1")
+
+    assert names == []
+
+
+@pytest.mark.asyncio
+async def test_protagonist_names_name_key_missing_returns_empty() -> None:
+    """A protagonist dict with no 'name' key degrades to an empty list."""
+    session = _mock_session()
+    session.scalar = AsyncMock(return_value={"protagonist": {}})
+
+    names = await _protagonist_names(session, "s_1")
+
+    assert names == []
+
+
+@pytest.mark.asyncio
+async def test_protagonist_names_empty_name_returns_empty() -> None:
+    """A protagonist dict with an empty-string name degrades to an empty list."""
+    session = _mock_session()
+    session.scalar = AsyncMock(return_value={"protagonist": {"name": ""}})
+
+    names = await _protagonist_names(session, "s_1")
+
+    assert names == []
+
+
+@pytest.mark.asyncio
+async def test_protagonist_names_valid_name_returns_single_name() -> None:
+    """A protagonist dict with a valid non-empty name returns that name."""
+    session = _mock_session()
+    session.scalar = AsyncMock(return_value={"protagonist": {"name": "Zara"}})
+
+    names = await _protagonist_names(session, "s_1")
+
+    assert names == ["Zara"]

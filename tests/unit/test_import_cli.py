@@ -1,12 +1,38 @@
 import json
 import uuid
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.core.exceptions import ValidationError
-from cyo_adventure.generation.import_cli import build_arg_parser, main
+from cyo_adventure.generation.import_cli import _run, build_arg_parser, main
+from cyo_adventure.generation.import_story import (
+    ImportRequest,
+    import_filled_story,
+    resume_manual_fill,
+)
+
+
+class _FakeSessionCtx:
+    """Minimal async context manager standing in for get_session()'s return.
+
+    core/database.py::get_session() is not an async generator; it directly
+    returns an AsyncSession-producing async context manager
+    (_session_factory()). Patching get_session with a plain function that
+    returns one of these lets _run's `async with get_session() as session:`
+    line run without touching a real database.
+    """
+
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
+
+    async def __aenter__(self) -> AsyncSession:
+        return self._session
+
+    async def __aexit__(self, *exc: object) -> bool:
+        return False
 
 
 @pytest.mark.unit
@@ -146,3 +172,91 @@ def test_invalid_job_uuid_is_an_error(tmp_path, monkeypatch) -> None:
     code = main(["story.json", "--job", "not-a-uuid"])
 
     assert code == 1
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_standalone_import_commits_and_returns_story_id_none_status() -> None:
+    """_run's no-job branch: build an ImportRequest, persist, and commit.
+
+    Every other test in this file drives _run only through main() with
+    asyncio.run patched away, so _run's own coroutine body has never
+    actually been awaited. This calls _run(...) directly to exercise the
+    real `if job_id is not None:` branch (the False side) and its body.
+    """
+    fake_session = MagicMock(spec=AsyncSession)
+    fake_session.commit = AsyncMock()
+
+    family_id = "fam-uuid"
+    blob: dict[str, object] = {"x": 1}
+    model = "m"
+
+    mock_import_filled_story = AsyncMock(spec=import_filled_story)
+    mock_import_filled_story.return_value = "s_abc123"
+
+    with (
+        patch(
+            "cyo_adventure.generation.import_cli.get_session",
+            return_value=_FakeSessionCtx(fake_session),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.import_filled_story",
+            mock_import_filled_story,
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.resume_manual_fill",
+            AsyncMock(spec=resume_manual_fill),
+        ) as mock_resume,
+    ):
+        result = await _run(blob=blob, family_id=family_id, model=model, job_id=None)
+
+    assert result == ("s_abc123", None)
+    fake_session.commit.assert_awaited_once()
+    mock_resume.assert_not_awaited()
+    mock_import_filled_story.assert_awaited_once()
+    awaited_session, awaited_request = mock_import_filled_story.await_args.args
+    assert awaited_session is fake_session
+    assert awaited_request == ImportRequest(blob=blob, family_id=family_id, model=model)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_run_resumes_manual_fill_job_when_job_id_given() -> None:
+    """_run's job branch: delegate to resume_manual_fill, no local commit.
+
+    resume_manual_fill owns its own persistence (per its docstring), so
+    _run must not call session.commit() itself on this branch; only the
+    delegate call and its return value matter here.
+    """
+    fake_session = MagicMock(spec=AsyncSession)
+    fake_session.commit = AsyncMock()
+
+    job_id = "job-uuid"
+    blob: dict[str, object] = {"x": 1}
+    model = "m"
+
+    mock_resume_manual_fill = AsyncMock(spec=resume_manual_fill)
+    mock_resume_manual_fill.return_value = ("s_xyz", "needs_review")
+
+    with (
+        patch(
+            "cyo_adventure.generation.import_cli.get_session",
+            return_value=_FakeSessionCtx(fake_session),
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.resume_manual_fill",
+            mock_resume_manual_fill,
+        ),
+        patch(
+            "cyo_adventure.generation.import_cli.import_filled_story",
+            AsyncMock(spec=import_filled_story),
+        ) as mock_import,
+    ):
+        result = await _run(blob=blob, family_id=None, model=model, job_id=job_id)
+
+    assert result == ("s_xyz", "needs_review")
+    mock_resume_manual_fill.assert_awaited_once_with(
+        fake_session, job_id, blob, model=model
+    )
+    mock_import.assert_not_awaited()
+    fake_session.commit.assert_not_awaited()

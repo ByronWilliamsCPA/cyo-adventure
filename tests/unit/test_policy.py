@@ -1,5 +1,7 @@
 """Unit tests for the age-policy gate layer (PL-15..PL-18)."""
 
+import pytest
+
 from cyo_adventure.storybook.models import (
     AgeBand,
     Choice,
@@ -568,3 +570,23 @@ def test_pl20_allows_fast_fail_when_win_is_deep():
     )
     report = validate_policy(story)
     assert not any(f.rule_id == "PL-20" for f in report.errors)
+
+
+def test_validate_policy_short_circuits_when_profile_is_none(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """profile_for returning None is a documented fail-open, defensive branch.
+
+    test_profiles_match_age_band_enum_exactly guarantees every real AgeBand has
+    a configured profile, so this branch is unreachable through any valid
+    Storybook. Exercising it requires monkeypatching profile_for at its policy.py
+    import site; this is a coverage-only test for the defensive short-circuit,
+    not evidence the branch is reachable in production.
+    """
+    monkeypatch.setattr(
+        "cyo_adventure.validator.policy.profile_for", lambda _band: None
+    )
+    story = _story(age_band="8-11", kind=EndingKind.SUCCESS)
+    report = validate_policy(story)
+    assert report.ok is True
+    assert report.findings == []

@@ -520,3 +520,79 @@ async def test_embed_series_block_survives_moderation_repair(
         assert block["series_entry_node"] == row.blob["start_node"]
         assert block["is_final"] is False
         assert block["carries_state"] is True
+
+
+async def test_link_series_position_assigns_index_and_logs(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A request with a series_id drives a real book_index assignment."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        book = await _bare_storybook(session, family_id=family.id)
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        await link_series_position(session, story_id=book.id, concept_id=concept.id)
+
+        refreshed = await session.get(Storybook, book.id)
+        assert refreshed is not None
+        assert refreshed.series_id == series.id
+        assert refreshed.book_index == 1
+
+
+async def test_assign_book_index_raises_value_error_when_storybook_missing(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A story_id with no storybook row raises ValueError, not a DB error."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        with pytest.raises(ValueError, match="not found for series assignment"):
+            await assign_book_index(
+                session, story_id="s_doesnotexist", series_id=series.id
+            )
+
+
+async def test_assign_book_index_reraises_non_unique_constraint_integrity_error(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A non-unique-constraint IntegrityError (FK violation) is not retried."""
+    async with sessions() as session:
+        family, _user = await _seed_family_and_user(session)
+        book = await _bare_storybook(session, family_id=family.id)
+
+        with pytest.raises(IntegrityError) as exc_info:
+            await assign_book_index(session, story_id=book.id, series_id=uuid.uuid4())
+
+        assert "uq_storybook_series_book_index" not in str(exc_info.value.orig)

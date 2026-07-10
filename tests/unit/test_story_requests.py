@@ -657,3 +657,76 @@ def test_to_view_skips_malformed_verdict() -> None:
     assert len(view.moderation_flags) == 1
     assert view.moderation_flags[0].verdict is Verdict.FLAG
     assert view.moderation_flags[0].message == "borderline"
+
+
+def test_to_view_skips_non_dict_flag_entry() -> None:
+    """A raw non-dict entry in the flags list is skipped, not raised.
+
+    moderation_flags is unconstrained JSONB; a legacy row or manual edit
+    could store a bare string or number in the flags array instead of an
+    object. _parse_flag's isinstance(item, dict) guard drops it silently.
+    """
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={
+            "blocked": False,
+            "flags": [
+                "not-a-flag-object",
+                {
+                    "category": "toxicity",
+                    "verdict": "flag",
+                    "message": "borderline",
+                },
+            ],
+        },
+        created_at=datetime(2026, 7, 4, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert len(view.moderation_flags) == 1
+    assert view.moderation_flags[0].message == "borderline"
+
+
+def test_to_view_skips_flag_entry_missing_required_string_fields() -> None:
+    """A dict flag entry with a non-string field (e.g. a numeric verdict) is
+    skipped rather than raising, since _parse_flag requires verdict, category,
+    and message to all be strings before it even attempts Verdict(verdict)."""
+    request = StoryRequest(
+        id=uuid.uuid4(),
+        family_id=uuid.uuid4(),
+        profile_id=uuid.uuid4(),
+        request_text="a story about a brave fox",
+        status="pending",
+        initiator_role="child",
+        age_band="10-13",
+        narrative_style="prose",
+        moderation_flags={
+            "blocked": False,
+            "flags": [
+                {
+                    "category": "toxicity",
+                    "verdict": 42,
+                    "message": "malformed verdict type",
+                },
+                {
+                    "category": "toxicity",
+                    "verdict": "flag",
+                    "message": "borderline",
+                },
+            ],
+        },
+        created_at=datetime(2026, 7, 4, tzinfo=UTC),
+    )
+
+    view = _to_view(request, policy=ThresholdPolicy(rows={}), surface_all=False)
+
+    assert len(view.moderation_flags) == 1
+    assert view.moderation_flags[0].message == "borderline"

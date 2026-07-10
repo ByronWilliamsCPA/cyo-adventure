@@ -312,6 +312,37 @@ async def test_get_generation_job_returns_status() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_get_generation_job_missing_job_not_found() -> None:
+    """A job id with no matching row raises ResourceNotFoundError (-> 404)."""
+    session = _FakeSession(results={GenerationJob: None})
+    ctx = RequestContext(
+        principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(ResourceNotFoundError, match="not found"):
+        await get_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_missing_concept_not_found() -> None:
+    """A job whose concept row is gone raises ResourceNotFoundError (-> 404).
+
+    This is the IDOR-guard load order: the job resolves, but the concept it
+    points to (used for the family-ownership check) does not.
+    """
+    job = GenerationJob(concept_id=uuid.uuid4(), status="queued")
+    session = _FakeSession(results={GenerationJob: job, Concept: None})
+    ctx = RequestContext(
+        principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(ResourceNotFoundError, match="not found"):
+        await get_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_validate_storybook_version_runs_gate() -> None:
     """The validate endpoint re-runs the gate on the stored blob for its family."""
     family_id = uuid.uuid4()

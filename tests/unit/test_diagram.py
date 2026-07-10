@@ -10,6 +10,7 @@ from cyo_adventure.generation.diagram import (
     _parse_fill,
     _require_node_id,
     _sanitize_text,
+    nodes_of,
     skeleton_to_plantuml,
     valence_split,
 )
@@ -30,6 +31,14 @@ def test_parse_fill_handles_completion_role() -> None:
 @pytest.mark.unit
 def test_parse_fill_returns_none_for_non_fill_body() -> None:
     assert _parse_fill("Once upon a time the fox was warm.") == (None, None)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("data", [{}, {"nodes": "not-a-list"}])
+def test_nodes_of_returns_empty_list_when_nodes_missing_or_not_a_list(
+    data: dict[str, object],
+) -> None:
+    assert nodes_of(data) == []
 
 
 def _tiny_skeleton() -> dict[str, object]:
@@ -128,6 +137,54 @@ def test_ending_node_shows_kind_valence_and_title() -> None:
     out = skeleton_to_plantuml(_tiny_skeleton())
     assert "n_end : completion (positive)" in out
     assert 'n_end : "The End"' in out
+
+
+@pytest.mark.unit
+def test_ending_node_description_omits_kind_valence_line_when_kind_missing() -> None:
+    """A title-only ending (no kind/valence) shows the title line but no
+    "kind (valence)" line: the kind/valence isinstance guard is False."""
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    ending_node = nodes[1]
+    assert isinstance(ending_node, dict)
+    ending_node["ending"] = {"id": "e_end", "title": "The End"}
+    out = skeleton_to_plantuml(skel)
+    desc_lines = [line for line in out.splitlines() if line.startswith("n_end : ")]
+    assert desc_lines == ['n_end : "The End"']
+
+
+@pytest.mark.unit
+def test_ending_node_description_omits_title_line_when_title_missing() -> None:
+    """A kind/valence-only ending (no title) shows the "kind (valence)" line
+    but no quoted title line: the title isinstance guard is False."""
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    ending_node = nodes[1]
+    assert isinstance(ending_node, dict)
+    ending_node["ending"] = {
+        "id": "e_end",
+        "valence": "positive",
+        "kind": "completion",
+    }
+    out = skeleton_to_plantuml(skel)
+    desc_lines = [line for line in out.splitlines() if line.startswith("n_end : ")]
+    assert desc_lines == ["n_end : completion (positive)"]
+
+
+@pytest.mark.unit
+def test_non_ending_node_with_non_fill_body_has_no_description_line() -> None:
+    """A non-ending node whose body isn't a FILL directive gets no
+    "role · Nw" description line: _parse_fill returns (None, None)."""
+    skel = _tiny_skeleton()
+    nodes = skel["nodes"]
+    assert isinstance(nodes, list)
+    start_node = nodes[0]
+    assert isinstance(start_node, dict)
+    start_node["body"] = "Just some prose with no fill marker."
+    out = skeleton_to_plantuml(skel)
+    assert not any(line.startswith("n_start : ") for line in out.splitlines())
 
 
 @pytest.mark.unit

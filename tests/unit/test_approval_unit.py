@@ -238,6 +238,56 @@ async def test_approve_handler_stamps_view(
     assert view.published_at == published
 
 
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("approved_by", "published_at"),
+    [
+        pytest.param(None, datetime.now(UTC), id="missing_approver"),
+        pytest.param(uuid.uuid4(), None, id="missing_published_at"),
+        pytest.param(None, None, id="missing_both"),
+    ],
+)
+async def test_approve_handler_missing_stamp_raises_business_logic_error(
+    monkeypatch: pytest.MonkeyPatch,
+    approved_by: uuid.UUID | None,
+    published_at: datetime | None,
+) -> None:
+    """approve_storybook rejects a service response missing its approval stamp.
+
+    This is the defensive #CRITICAL invariant guard in approve_storybook: the
+    publishing service is contracted to always set both approved_by and
+    published_at together, so a version_row missing either must never reach
+    the response layer as if it were a valid ApprovedView.
+    """
+    from cyo_adventure.core.exceptions import BusinessLogicError
+
+    book = _story("in_review")
+    version_row = StorybookVersion(
+        storybook_id="s1",
+        version=1,
+        blob={},
+        approved_by=approved_by,
+        published_at=published_at,
+    )
+
+    session = AsyncMock()
+    session.execute = AsyncMock(return_value=_execute_result(book))
+    session.scalar = AsyncMock(return_value=1)
+    ctx = _ctx("admin", session)
+
+    async def _approve(*_args: object, **_kwargs: object) -> StorybookVersion:
+        book.status = "published"
+        return version_row
+
+    approve_mock = AsyncMock(side_effect=_approve)
+    monkeypatch.setattr("cyo_adventure.publishing.service.approve", approve_mock)
+
+    with pytest.raises(
+        BusinessLogicError, match="approved version is missing its approval stamp"
+    ):
+        await approval.approve_storybook("s1", ctx)
+
+
 # ---------------------------------------------------------------------------
 # send_back_storybook
 # ---------------------------------------------------------------------------

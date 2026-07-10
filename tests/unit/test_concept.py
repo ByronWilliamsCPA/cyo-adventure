@@ -304,3 +304,15 @@ def test_printable_text_unaffected_by_control_char_strip() -> None:
     bad["premise"] = "Line one\nLine two\twith a tab."
     brief = ConceptBrief(**bad)
     assert brief.premise == "Line one\nLine two\twith a tab."
+
+
+def test_non_dict_input_passes_through_and_fails_pydantic_validation() -> None:
+    """A non-dict payload skips the control-char strip and fails field validation.
+
+    _strip_control_characters only walks a dict payload (the normal
+    JSON-body/kwargs case); any other input type is passed through unchanged
+    on line 220, and Pydantic's own field validation then rejects it because
+    a bare string cannot satisfy the model's dict-shaped fields.
+    """
+    with pytest.raises(PydanticValidationError):
+        ConceptBrief.model_validate("not-a-dict")

@@ -505,6 +505,103 @@ def test_off_matrix_length_falls_back_to_band_budget() -> None:
 
 
 @pytest.mark.unit
+def test_set_below_min_bound_is_l1_6() -> None:
+    """A ``set`` value below the declared min bound trips L1-6 (below-min path)."""
+    node = _link("n_start", "n_end", on_enter=[{"op": "set", "var": "x", "value": 0}])
+    variables = [{"name": "x", "type": "int", "initial": 5, "min": 5, "max": 10}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert any(f.rule_id == "L1-6" and "below min" in f.message for f in report.errors)
+
+
+@pytest.mark.unit
+def test_set_above_max_bound_is_l1_6() -> None:
+    """A ``set`` value above the declared max bound trips L1-6 (above-max path)."""
+    node = _link("n_start", "n_end", on_enter=[{"op": "set", "var": "x", "value": 99}])
+    variables = [{"name": "x", "type": "int", "initial": 5, "min": 0, "max": 10}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert any(f.rule_id == "L1-6" and "above max" in f.message for f in report.errors)
+
+
+@pytest.mark.unit
+def test_set_within_bounds_is_valid() -> None:
+    """A ``set`` value strictly within both bounds produces no L1-6 finding."""
+    node = _link("n_start", "n_end", on_enter=[{"op": "set", "var": "x", "value": 5}])
+    variables = [{"name": "x", "type": "int", "initial": 0, "min": 0, "max": 10}]
+    report = validate_layer1(_story([node, _ending()], variables=variables))
+    assert "L1-6" not in report.rule_ids()
+
+
+@pytest.mark.unit
+def test_bool_variable_non_boolean_initial_is_l1_6() -> None:
+    """A ``bool`` variable declared with a non-boolean initial trips L1-6."""
+    variables = [{"name": "b", "type": "bool", "initial": 1}]
+    report = validate_layer1(
+        _story([_link("n_start", "n_end"), _ending()], variables=variables)
+    )
+    assert any(
+        f.rule_id == "L1-6"
+        and "bool variable must have a boolean initial value" in f.message
+        for f in report.errors
+    )
+
+
+@pytest.mark.unit
+def test_int_variable_bool_initial_is_l1_6() -> None:
+    """An ``int`` variable declared with a bool initial trips L1-6.
+
+    ``isinstance(True, int)`` is also ``True`` in Python, so the explicit
+    ``isinstance(initial, bool)`` guard is required to reject this case.
+    """
+    variables = [{"name": "i", "type": "int", "initial": True}]
+    report = validate_layer1(
+        _story([_link("n_start", "n_end"), _ending()], variables=variables)
+    )
+    assert any(
+        f.rule_id == "L1-6"
+        and "int variable must have an integer initial value" in f.message
+        for f in report.errors
+    )
+
+
+@pytest.mark.unit
+def test_budget_skipped_when_age_band_missing() -> None:
+    """No age_band in metadata resolves budget to None and skips quietly (L1-7)."""
+    meta = {
+        "reading_level": {"scheme": "flesch_kincaid", "target": 4.0, "tolerance": 1.0},
+        "tier": 2,
+        "themes": [],
+        "estimated_minutes": 5,
+        "ending_count": 1,
+        "content_flags": {"violence": "none", "scariness": "none", "peril": "none"},
+        "topology": "branch_and_bottleneck",
+    }
+    nodes = [_link("n_start", "n_end"), _ending()]
+    report = validate_layer1(_story(nodes, meta=meta))
+    assert not any(
+        f.rule_id == "L1-7" and "compact profile" in f.message for f in report.findings
+    )
+    assert not any(
+        f.rule_id == "L1-7"
+        and ("node_count" in f.message or "branch_depth" in f.message)
+        for f in report.findings
+    )
+
+
+@pytest.mark.unit
+def test_compact_scale_with_no_profile_warns() -> None:
+    """A band with no compact-scale entry warns instead of enforcing a budget."""
+    nodes = [_link("n_start", "n_end"), _ending()]
+    story = _story(nodes, meta=_meta(age_band="3-5", tier=1, ending_count=1))
+    report = validate_layer1(story, "compact")
+    assert any(
+        f.rule_id == "L1-7"
+        and f.severity is Severity.WARNING
+        and "no compact profile defined for age band '3-5'" in f.message
+        for f in report.findings
+    )
+
+
+@pytest.mark.unit
 def test_resolve_node_budget_precedence() -> None:
     """The shared resolver applies MVP -> production-cell -> band precedence.
 

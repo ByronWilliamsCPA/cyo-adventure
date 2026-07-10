@@ -91,6 +91,58 @@ async def test_unparseable_response_fails_open() -> None:
     assert result is None
 
 
+async def test_skips_malformed_node_entries_when_building_beat_prose_pairs() -> None:
+    """A malformed entry in either side's "nodes" list (not a dict, or a dict
+    with no valid string id) is silently excluded, not a crash; only the
+    well-formed node pair reaches the reviewer prompt."""
+    original: dict[str, object] = {
+        "nodes": [
+            {"id": "n1", "body": "<<FILL role=setup words=10 beats='a fox'>>"},
+            "garbage",
+            {"body": "no id here"},
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            {"id": "n1", "body": "A fox finds a lantern."},
+            {"id": 123, "body": "id is not a string"},
+        ]
+    }
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    assert len(provider.calls) == 1
+    assert "n1" in provider.calls[0][1]
+
+
+async def test_skips_node_with_valid_id_but_non_string_body() -> None:
+    """A node with a valid string id but a non-string (or missing) body is
+    excluded from the id->body index, so it never reaches the beat/prose pair
+    even though its id is well-formed."""
+    original: dict[str, object] = {
+        "nodes": [
+            {"id": "n1", "body": "<<FILL role=setup words=10 beats='a fox'>>"},
+            {"id": "n2", "body": None},
+        ]
+    }
+    filled: dict[str, object] = {
+        "nodes": [
+            {"id": "n1", "body": "A fox finds a lantern."},
+            {"id": "n2", "body": {"not": "a string"}},
+        ]
+    }
+    provider = _ScriptedReviewProvider(json.dumps({"verdict": "pass", "notes": ""}))
+
+    result = await run_semantic_fidelity_check(original, filled, provider)
+
+    assert result is None
+    assert len(provider.calls) == 1
+    assert "n1" in provider.calls[0][1]
+    assert "n2" not in provider.calls[0][1]
+
+
 async def test_semantic_check_fails_open_on_non_string_response() -> None:
     """A provider returning a non-str (contract violation) fails open, not crash.
 

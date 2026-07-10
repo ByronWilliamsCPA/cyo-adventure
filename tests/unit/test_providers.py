@@ -968,6 +968,32 @@ class TestOllamaProviderBranches:
         result = await provider.complete(system="s", prompt="u", max_tokens=100)
         assert result == "ok"
 
+    @pytest.mark.asyncio
+    async def test_attempt_without_injected_client_creates_own_async_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No client injected: the adapter opens and closes its own httpx.AsyncClient."""
+        real_async_client = httpx.AsyncClient
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text=_ollama_stream("ok"))
+
+        def _fake_client(*args: object, **kwargs: object) -> httpx.AsyncClient:
+            kwargs["transport"] = httpx.MockTransport(handler)
+            return real_async_client(*args, **kwargs)
+
+        monkeypatch.setattr(httpx, "AsyncClient", _fake_client)
+        provider = OllamaProvider(
+            model="qwen3",
+            base_url="http://localhost:11434",
+            timeout_seconds=30,
+            max_retries=3,
+            backoff_base_seconds=0,
+            client=None,
+        )
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
+
 
 # ---------------------------------------------------------------------------
 # OpenRouterProvider: additional branch coverage
@@ -1038,6 +1064,34 @@ class TestOpenRouterProviderBranches:
         with pytest.raises(ProviderError) as exc_info:
             await provider.complete(system="s", prompt="u", max_tokens=100)
         assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_attempt_without_injected_client_creates_own_async_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No client injected: the adapter opens and closes its own httpx.AsyncClient."""
+        real_async_client = httpx.AsyncClient
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        def _fake_client(*args: object, **kwargs: object) -> httpx.AsyncClient:
+            kwargs["transport"] = httpx.MockTransport(handler)
+            return real_async_client(*args, **kwargs)
+
+        monkeypatch.setattr(httpx, "AsyncClient", _fake_client)
+        provider = OpenRouterProvider(
+            api_key="test-key",
+            model="anthropic/claude-sonnet-4.6",
+            base_url="https://openrouter.ai/api/v1",
+            timeout_seconds=30,
+            effort="off",
+            max_retries=3,
+            backoff_base_seconds=0,
+            client=None,
+        )
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
 
 
 # ---------------------------------------------------------------------------
@@ -1233,6 +1287,68 @@ class TestModalProvider:
 
         provider = _modal(handler, model="openai/gpt-oss-120b")
         assert provider.name == "modal:openai/gpt-oss-120b"
+
+
+# ---------------------------------------------------------------------------
+# ModalProvider: additional branch coverage
+# ---------------------------------------------------------------------------
+
+
+class TestModalProviderBranches:
+    """Cover the remaining uncovered branches in the Modal adapter."""
+
+    @pytest.mark.asyncio
+    async def test_non_json_response_body_raises_transient(self) -> None:
+        """A response body that is not valid JSON raises a non-leg-fatal ProviderError."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, text="not-json-at-all")
+
+        provider = _modal(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_dig_content_non_dict_payload_raises_via_empty_content(self) -> None:
+        """A JSON list response body triggers the 'no content' ProviderError path."""
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            # A JSON array is valid JSON but fails as_str_map(payload) -> None.
+            return httpx.Response(200, json=[1, 2, 3])
+
+        provider = _modal(handler)
+        with pytest.raises(ProviderError) as exc_info:
+            await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert exc_info.value.leg_fatal is False
+
+    @pytest.mark.asyncio
+    async def test_attempt_without_injected_client_creates_own_async_client(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No client injected: the adapter opens and closes its own httpx.AsyncClient."""
+        real_async_client = httpx.AsyncClient
+
+        def handler(_request: httpx.Request) -> httpx.Response:
+            return httpx.Response(200, json=_openrouter_ok_body("ok"))
+
+        def _fake_client(*args: object, **kwargs: object) -> httpx.AsyncClient:
+            kwargs["transport"] = httpx.MockTransport(handler)
+            return real_async_client(*args, **kwargs)
+
+        monkeypatch.setattr(httpx, "AsyncClient", _fake_client)
+        provider = ModalProvider(
+            base_url="https://example--cyo-standard.modal.run/v1",
+            model="google/gemma-4-26b-a4b-it",
+            proxy_key="test-key-id",
+            proxy_secret="test-key-secret",
+            timeout_seconds=30,
+            max_retries=3,
+            backoff_base_seconds=0,
+            client=None,
+        )
+        result = await provider.complete(system="s", prompt="u", max_tokens=100)
+        assert result == "ok"
 
 
 # ---------------------------------------------------------------------------

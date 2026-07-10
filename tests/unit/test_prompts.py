@@ -21,9 +21,14 @@ import json
 
 import pytest
 
+from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.generation.concept import ConceptBrief, Protagonist, StructurePattern
 from cyo_adventure.generation.prompts import (
+    _USER_MARKER,
     StagePrompt,
+    _budget_block,
+    _scale_cell_block,
+    _split_stage_prompt,
     build_fidelity_repair_prompt,
     build_fill_prompt,
     build_prose_prompt,
@@ -651,3 +656,148 @@ class TestRuntimeLoading:
         )
         assert len(text) > 0
         assert "Node and Depth Budgets" in text
+
+
+# ---------------------------------------------------------------------------
+# _split_stage_prompt marker-count error path
+# ---------------------------------------------------------------------------
+
+
+class TestSplitStagePromptMarkerErrors:
+    """A malformed template (zero or 2+ markers) raises BusinessLogicError.
+
+    This is a template-authoring correctness check: real bundled templates
+    always carry exactly one marker (see TestRuntimeLoading above), so this
+    path is only reachable via a malformed template file. Testing the private
+    ``_split_stage_prompt`` directly is the pragmatic approach: no public
+    caller can pass malformed marker text since templates are fixed bundled
+    resources.
+    """
+
+    @pytest.mark.parametrize(
+        "text",
+        [
+            pytest.param("system only, no marker at all", id="zero_markers"),
+            pytest.param(
+                f"system{_USER_MARKER}middle{_USER_MARKER}user", id="two_markers"
+            ),
+        ],
+    )
+    def test_wrong_marker_count_raises_business_logic_error(self, text: str) -> None:
+        """Zero or two-plus markers both raise BusinessLogicError."""
+        with pytest.raises(BusinessLogicError, match="must contain exactly one"):
+            _split_stage_prompt(text)
+
+    def test_wrong_marker_count_sets_rule_attribute(self) -> None:
+        """The raised error carries rule='stage_prompt_marker' for callers to match."""
+        with pytest.raises(BusinessLogicError) as exc_info:
+            _split_stage_prompt("no marker here")
+        assert exc_info.value.details["rule"] == "stage_prompt_marker"
+
+
+# ---------------------------------------------------------------------------
+# _budget_block defensive None-budget path (unreachable via real data)
+# ---------------------------------------------------------------------------
+
+
+class TestBudgetBlockMissingBudget:
+    """A ``None`` budget from resolve_node_budget raises BusinessLogicError.
+
+    The source comment above ``_budget_block`` states this branch is
+    defensive-only and unreachable via any valid ConceptBrief, because every
+    real AgeBand has a budget at every scale. Monkeypatching
+    resolve_node_budget (as imported into prompts.py) to return None is the
+    only way to exercise it.
+    """
+
+    def test_none_budget_raises_business_logic_error(
+        self, minimal_brief: ConceptBrief, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A None budget from resolve_node_budget raises with rule='band_budget_missing'."""
+        monkeypatch.setattr(
+            "cyo_adventure.generation.prompts.resolve_node_budget",
+            lambda *args, **kwargs: None,
+        )
+        with pytest.raises(BusinessLogicError, match="no L1-7 budget"):
+            _budget_block(minimal_brief)
+
+    def test_none_budget_sets_rule_attribute(
+        self, minimal_brief: ConceptBrief, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """The raised error carries rule='band_budget_missing'."""
+        monkeypatch.setattr(
+            "cyo_adventure.generation.prompts.resolve_node_budget",
+            lambda *args, **kwargs: None,
+        )
+        with pytest.raises(BusinessLogicError) as exc_info:
+            _budget_block(minimal_brief)
+        assert exc_info.value.details["rule"] == "band_budget_missing"
+
+
+# ---------------------------------------------------------------------------
+# _scale_cell_block branch coverage: words_per_node None (monkeypatched,
+# unreachable via real data) and min_complete_floor None (real off-matrix cell)
+# ---------------------------------------------------------------------------
+
+
+class TestScaleCellBlockBranches:
+    """Cover both independent None branches inside _scale_cell_block."""
+
+    def test_words_per_node_none_omits_words_per_node_line(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """A None from words_per_node_profile omits the 'Words per node' line.
+
+        words_per_node_profile always falls back to a band's prose entry for
+        any real AgeBand, so this branch is genuinely unreachable via real
+        data; monkeypatching it to return None is the only way to cover it.
+        """
+        brief = ConceptBrief(
+            premise="A layered mystery through a flooded city.",
+            protagonist=Protagonist(name="Isla", age=12, role="diver"),
+            age_band=AgeBand.BAND_8_11,
+            reading_level_target=5.0,
+            tier=1,
+            tone="mysterious",
+            target_node_count=120,
+            ending_count=6,
+            structure_pattern=StructurePattern.BRANCH_AND_BOTTLENECK,
+            length=Length.MEDIUM,
+        )
+        monkeypatch.setattr(
+            "cyo_adventure.generation.prompts.words_per_node_profile",
+            lambda *args, **kwargs: None,
+        )
+        result = _scale_cell_block(brief)
+        assert "Words per node" not in result
+
+    def test_off_matrix_cell_omits_earned_ending_but_keeps_words_per_node(
+        self,
+    ) -> None:
+        """An off-matrix (band, length, style) combo has no arc floor, real data.
+
+        (3-5, long, prose) is not a key in band_profile._MIN_COMPLETE (3-5
+        only offers short/medium), so min_complete_floor genuinely returns
+        None for a real ConceptBrief; Pydantic does not cross-validate
+        band/length/style, so this combination is constructible without any
+        monkeypatching. words_per_node_profile("3-5", "prose") IS defined, so
+        that line is independently present.
+        """
+        brief = ConceptBrief(
+            premise="A tiny adventure that runs long for its band.",
+            protagonist=Protagonist(name="Miko", age=4, role="explorer"),
+            age_band=AgeBand.BAND_3_5,
+            reading_level_target=1.0,
+            tier=1,
+            tone="gentle",
+            target_node_count=15,
+            ending_count=2,
+            structure_pattern=StructurePattern.GAUNTLET,
+            length=Length.LONG,
+            narrative_style=NarrativeStyle.PROSE,
+        )
+        assert min_complete_floor("3-5", "long", "prose") is None
+        assert words_per_node_profile("3-5", "prose") is not None
+        result = _scale_cell_block(brief)
+        assert "Earned ending" not in result
+        assert "Words per node" in result
