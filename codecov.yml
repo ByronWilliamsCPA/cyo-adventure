@@ -40,7 +40,8 @@ coverage:
         # Pass gracefully when well-tested code is deleted (avoids penalizing cleanup PRs)
         removed_code_behavior: fully_covered_patch
 
-# Flags (single axis: one report -> one flag). See standards/testing.md 16.2.
+# Flags (single axis: one report -> one flag), per the org's tiered Codecov
+# flag standard (testing.md 16.2 in the org standards repo, not this repo).
 #
 # Backend is flagged by TEST TYPE: the reusable python-ci workflow runs the
 # unit, integration, and security buckets separately and emits
@@ -51,8 +52,9 @@ coverage:
 # tests in one pass and cannot split by test type, so a surface flag is used
 # per the standard's full-stack exception. The code-area split (frontend vs
 # backend modules) is carried by components (below), which are orthogonal to
-# flags. `api` is a dormant Test Analytics flag (newman JUnit) with no coverage
-# status; it activates when a Postman collection + api CI job exist (follow-up).
+# flags. `api` is a Test-Analytics-only flag (newman JUnit from ci.yml's
+# api-tests job, running docs/api/postman-collection.json) with no coverage
+# status by design.
 flags:
   unit:
     carryforward: true
@@ -81,7 +83,8 @@ flag_management:
   default_rules:
     carryforward: true
     # if_not_found: success keeps a flag that uploaded no report this run (e.g.
-    # api while dormant, or security when no security tests exist) from blocking.
+    # api, which is Test-Analytics-only and never uploads coverage, or security
+    # when no security-marked tests exist) from blocking.
     statuses:
       - type: project
         target: auto

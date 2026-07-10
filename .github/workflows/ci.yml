@@ -466,11 +466,12 @@ jobs:
           fi
 
   # API-level tests (Postman/newman) -> Codecov Test Analytics under the `api`
-  # flag (standards/testing.md 16.2). DORMANT until docs/api/postman-collection
-  # .json is authored (generate it with the postman-test-designer agent): the
-  # job is skipped, not failed, while absent. Intentionally NOT in ci-gate's
-  # needs while it can be skipped; add it there once the collection lands and
-  # the `api` gate should block merges.
+  # flag (org Codecov flag taxonomy; the tiered-flag standard lives in the org
+  # standards repo, not at a path in this repo). ACTIVE: the collection lives
+  # at docs/api/postman-collection.json; detect-api-collection keeps the job
+  # skipped (not failed) only if it is ever removed. Intentionally NOT in
+  # ci-gate's needs yet: promotion to a required gate is deferred until the
+  # job proves stable across a few merges (see the promotion follow-up issue).
   api-tests:
     name: API Tests (newman)
     runs-on: ubuntu-latest
@@ -498,8 +499,8 @@ jobs:
         run: npm install -g --ignore-scripts newman@6.2.1
 
       # Brings up the API (port 8000, /health/live) plus Postgres from the repo
-      # compose stack. Enabling this for real may require the app's runtime env
-      # (see docker-compose.yml); dormant today via detect-api-collection.
+      # compose stack; the compose defaults (ENVIRONMENT=local dev auth, no
+      # external-service credentials) are all this job needs.
       - name: Start API stack
         run: docker compose up -d --build app db
 
@@ -513,10 +514,47 @@ jobs:
           done
           echo "::error::API did not become ready in time"; exit 1
 
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+        with:
+          python-version: "3.12"
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        with:
+          enable-cache: true
+
+      # The `api` extra (FastAPI, SQLAlchemy, alembic) is enough to migrate and
+      # seed the compose db; no `dev` extra test/lint tooling is needed here.
+      - name: Install backend (api extra)
+        run: uv sync --extra api
+
+      # Runs the real alembic chain against the compose db (not
+      # Base.metadata.create_all): the collection exercises the migrated
+      # schema, matching what production deploys actually run.
+      - name: Apply database migrations
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run alembic upgrade head
+
+      # Seeds the family/profiles/published+in-review stories the collection
+      # asserts on. Idempotent (scripts/seed_dev_data.py), and runs AFTER the
+      # migration so it inserts into the migrated schema, not a schema built
+      # ad hoc from ORM metadata.
+      - name: Seed dev data
+        env:
+          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: uv run python scripts/seed_dev_data.py
+
+      # #ASSUME: timing: --delay-request 1100 paces the suite under the app's
+      # 60 req/min sliding-window rate limiter (RateLimitMiddleware).
+      # #VERIFY: every newman invocation of this collection (here and the local
+      # loop in docs/api/README.md) must carry the same delay or requests 429.
       - name: Run newman (JUnit for Test Analytics)
         run: |
           newman run docs/api/postman-collection.json \
             --env-var "base_url=http://localhost:8000" \
+            --delay-request 1100 \
             --reporters cli,junit \
             --reporter-junit-export newman-junit.xml \
             --bail

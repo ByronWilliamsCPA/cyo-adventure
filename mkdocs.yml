@@ -176,6 +176,7 @@ nav:
   - Development:
       - Architecture: development/architecture.md
       - Testing: development/testing.md
+      - API Testing: api/README.md
       - Code Quality: development/code-quality.md
       - Contributing: development/contributing.md
 
