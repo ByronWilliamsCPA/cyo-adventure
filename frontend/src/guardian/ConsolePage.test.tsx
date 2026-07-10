@@ -181,4 +181,26 @@ describe('ConsolePage', () => {
     await screen.findByText('Scary Tale')
     expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })
+
+  it('shows moderation admin links for admins only', async () => {
+    mockUseAuth.mockReturnValue(principal('admin'))
+    renderPage()
+    expect(
+      await screen.findByRole('link', { name: /moderation dashboard/i })
+    ).toHaveAttribute('href', '/guardian/moderation-dashboard')
+    expect(
+      screen.getByRole('link', { name: /moderation thresholds/i })
+    ).toHaveAttribute('href', '/guardian/moderation-thresholds')
+  })
+
+  it('hides moderation admin links from plain guardians', async () => {
+    mockUseAuth.mockReturnValue(principal('guardian'))
+    renderPage()
+    // ConsolePage's own heading is "Review queue", not "Console"; wait on the
+    // same settled-state query the guardian-role form test above uses.
+    await screen.findByText('Scary Tale')
+    expect(
+      screen.queryByRole('link', { name: /moderation dashboard/i })
+    ).not.toBeInTheDocument()
+  })
 })

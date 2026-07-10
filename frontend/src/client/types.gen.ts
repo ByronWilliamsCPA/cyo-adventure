@@ -303,6 +303,46 @@ export type AuthoringPlanResponse = {
 };
 
 /**
+ * CategoryInsightView
+ *
+ * Override evidence for one (age_band, category) pair (WS-F).
+ */
+export type CategoryInsightView = {
+    /**
+     * Age Band
+     */
+    age_band: string;
+    /**
+     * Category
+     */
+    category: string;
+    /**
+     * Advisory Findings
+     */
+    advisory_findings: number;
+    /**
+     * Flag Findings
+     */
+    flag_findings: number;
+    /**
+     * Decided Versions
+     */
+    decided_versions: number;
+    /**
+     * Released Versions
+     */
+    released_versions: number;
+    /**
+     * Override Rate
+     */
+    override_rate: number | null;
+    /**
+     * Last Seen
+     */
+    last_seen: string;
+};
+
+/**
  * CompletionBody
  *
  * A request to record that a child reached an ending.
@@ -1019,6 +1059,22 @@ export type MeResponse = {
      * Profile Ids
      */
     profile_ids: Array<string>;
+};
+
+/**
+ * ModerationDashboardView
+ *
+ * Aggregated moderation evidence for the admin dashboard (WS-F).
+ */
+export type ModerationDashboardView = {
+    /**
+     * Insights
+     */
+    insights: Array<CategoryInsightView>;
+    /**
+     * Recent Changes
+     */
+    recent_changes: Array<ThresholdChangeView>;
 };
 
 /**
@@ -1880,6 +1936,52 @@ export type SubmittedView = {
 };
 
 /**
+ * SuggestionListView
+ *
+ * Computed proposals plus the gates that produced them (WS-F).
+ */
+export type SuggestionListView = {
+    /**
+     * Min Decided Versions
+     */
+    min_decided_versions: number;
+    /**
+     * Min Override Rate
+     */
+    min_override_rate: number;
+    /**
+     * Suggestions
+     */
+    suggestions: Array<ThresholdSuggestionView>;
+};
+
+/**
+ * ThresholdChangeView
+ *
+ * One recent threshold or noise-floor change event (WS-F).
+ */
+export type ThresholdChangeView = {
+    /**
+     * Occurred At
+     */
+    occurred_at: string;
+    /**
+     * Event Type
+     */
+    event_type: string;
+    /**
+     * Entity Id
+     */
+    entity_id: string;
+    /**
+     * Payload
+     */
+    payload: {
+        [key: string]: unknown;
+    };
+};
+
+/**
  * ThresholdListView
  *
  * All overrides plus the code default and the category suggestion list.
@@ -1901,6 +2003,46 @@ export type ThresholdListView = {
      * Rows
      */
     rows: Array<ThresholdView>;
+};
+
+/**
+ * ThresholdSuggestionView
+ *
+ * A computed threshold proposal awaiting admin ratification (WS-F).
+ */
+export type ThresholdSuggestionView = {
+    /**
+     * Age Band
+     */
+    age_band: string;
+    /**
+     * Category
+     */
+    category: string;
+    /**
+     * Current Min Verdict
+     */
+    current_min_verdict: 'advisory' | 'flag' | 'block';
+    /**
+     * Current Min Score
+     */
+    current_min_score: number | null;
+    /**
+     * Suggested Min Verdict
+     */
+    suggested_min_verdict: 'advisory' | 'flag' | 'block';
+    /**
+     * Override Rate
+     */
+    override_rate: number;
+    /**
+     * Decided Versions
+     */
+    decided_versions: number;
+    /**
+     * Released Versions
+     */
+    released_versions: number;
 };
 
 /**
@@ -3229,6 +3371,68 @@ export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses = {
 };
 
 export type UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponse = UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses[keyof UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses];
+
+export type ModerationDashboardApiV1AdminModerationDashboardGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/dashboard';
+};
+
+export type ModerationDashboardApiV1AdminModerationDashboardGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ModerationDashboardApiV1AdminModerationDashboardGetError = ModerationDashboardApiV1AdminModerationDashboardGetErrors[keyof ModerationDashboardApiV1AdminModerationDashboardGetErrors];
+
+export type ModerationDashboardApiV1AdminModerationDashboardGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: ModerationDashboardView;
+};
+
+export type ModerationDashboardApiV1AdminModerationDashboardGetResponse = ModerationDashboardApiV1AdminModerationDashboardGetResponses[keyof ModerationDashboardApiV1AdminModerationDashboardGetResponses];
+
+export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/admin/moderation/suggestions';
+};
+
+export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetError = ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors[keyof ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors];
+
+export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: SuggestionListView;
+};
+
+export type ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponse = ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses[keyof ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses];
 
 export type ListAllowlistApiV1AdminProviderAllowlistGetData = {
     body?: never;
