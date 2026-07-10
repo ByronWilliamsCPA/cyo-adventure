@@ -16,8 +16,18 @@ tags:
 > Track B expected observations describe the app as of 2026-07-05. PR #140 (the
 > landing page at `/` and the `/kids` profile picker) and PR #185 (the persistent
 > KidNav bar, the reader "Leave" control, and the reordered library) have since
-> changed the kid surface those sections describe. The Track A and Track B
-> methodology, the scenario inventory, and the promotion rules remain live.
+> changed the kid surface those sections describe. Two further points have moved
+> since 2026-07-05: (1) the Track A specs this doc plans as future work already
+> exist on `main` (`frontend/e2e/naive-user/*`, added by PR #132 and kept current
+> through PR #185), so Sections 5, 8, and 9 read as a plan for work that has since
+> been delivered; (2) the Section 5 and Section 10 analysis of `approval.py`'s
+> storybook-approve as an unguarded concurrency gap is no longer accurate. A
+> `SELECT ... FOR UPDATE` row lock was added to close issue #129 (see
+> `_load_admin_story` in `src/cyo_adventure/api/approval.py`), so both "approve"
+> endpoints are now guarded; the `story_requests.py` half of that comparison, and
+> the backend code line citations (which reflect 2026-07-05), are otherwise
+> unchanged in substance. The Track A and Track B methodology, the scenario
+> inventory, and the promotion rules remain live.
 >
 > Date: 2026-07-05 | Author: Byron Williams (with Claude)
 
@@ -139,7 +149,7 @@ shared file, mocked-network style matching the existing suite.
 | `naive-guardian-misuse.spec.ts` | Guardian | Visit `/guardian/books` or `/guardian/requests` with zero child profiles | Page renders a coherent empty state, not an unhandled error |
 | `naive-admin-misuse.spec.ts` | Admin | Navigate away mid-generation-job, return later without the job ID | The job is still locatable from the console/queue by content, not just by URL |
 | `naive-admin-misuse.spec.ts` | Admin | Attempt approve as a guardian-role session (re-confirms `guardian-review.spec.ts`'s existing 403 case from this suite's angle) | 403, fails closed, no partial state change |
-| `naive-admin-misuse.spec.ts` | Admin | Two admin sessions approve the same *storybook* concurrently (ADR-005 gate, `approval.py`'s `/approve`, distinct from the request-approve endpoint above) | Confirmed gap, not a guarded path: `approve_storybook` loads the row with a plain `session.get`, no `FOR UPDATE`/version check, so both calls silently succeed (last-write-wins on `approved_by`/`published_at`). Test is a characterization of current behavior, not an assertion of a guard that doesn't exist; pair with a filed backend issue recommending the same row-lock pattern already used in `story_requests.py` |
+| `naive-admin-misuse.spec.ts` | Admin | Two admin sessions approve the same *storybook* concurrently (ADR-005 gate, `approval.py`'s `/approve`, distinct from the request-approve endpoint above) | Confirmed gap, not a guarded path: `approve_storybook` loads the row with a plain `session.get`, no `FOR UPDATE`/version check, so both calls silently succeed (last-write-wins on `approved_by`/`published_at`). Test is a characterization of current behavior, not an assertion of a guard that doesn't exist; pair with a filed backend issue recommending the same row-lock pattern already used in `story_requests.py`. **Superseded (2026-07-10):** this gap is now closed. `approve_storybook` loads through `_load_admin_story`, which issues `SELECT ... FOR UPDATE` (`src/cyo_adventure/api/approval.py`, per issue #129), so concurrent approvals no longer race. The characterization test should now assert the guard (the second approver gets a 409), and the recommended backend issue is unnecessary. |
 | `naive-misuse-shared.spec.ts` | All (parametrized) | Double-click every primary submit button (request, approve, generate, assign) | No duplicate record from any of the four actions |
 | `naive-misuse-shared.spec.ts` | All (parametrized) | Browser back after a successful submit, then resubmit | No duplicate record (re-POST protection) |
 | `naive-misuse-shared.spec.ts` | All (parametrized) | Hand-typed URL directly into a mid-flow page, skipping the preceding step | Redirects to the correct starting point or shows a clear guard, not a broken page |
@@ -260,6 +270,6 @@ New project-local skill at `.claude/skills/naive-ux-check/`:
 | Risk | Mitigation |
 | --- | --- |
 | Track B narrative feedback is inherently subjective, findings could be noise | The fixed four-question rubric keeps responses comparable; only findings that reproduce on a second run get promoted to Track A |
-| The two "approve" endpoints in this domain behave differently under concurrency and are easy to conflate | Verified directly: `story_requests.py`'s request-approve uses `.with_for_update()` and is properly guarded (409 on stale transition); `approval.py`'s ADR-005 storybook-approve has no such guard. Section 5 keeps them as two separate table rows, targeting the correct endpoint by name rather than a shared "approve" scenario |
+| The two "approve" endpoints in this domain behave differently under concurrency and are easy to conflate | Verified directly: `story_requests.py`'s request-approve uses `.with_for_update()` and is properly guarded (409 on stale transition); `approval.py`'s ADR-005 storybook-approve has no such guard. Section 5 keeps them as two separate table rows, targeting the correct endpoint by name rather than a shared "approve" scenario. **Superseded (2026-07-10):** `approval.py`'s storybook-approve is now also guarded by a `SELECT ... FOR UPDATE` lock (issue #129); the "has no such guard" statement above reflected the 2026-07-05 code only |
 | The cross-profile kid-route scenario may already be covered, wasting effort if duplicated | Section 5 explicitly calls out checking `guardian-profiles.spec.ts` first |
 | The skill's manual paste-and-log loop is friction-heavy compared to full automation | Accepted for now (Non-goals, Section 3); revisit if a Claude-for-Chrome automation tool becomes available to this session |
