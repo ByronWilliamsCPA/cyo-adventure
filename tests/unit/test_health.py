@@ -17,6 +17,7 @@ from unittest.mock import AsyncMock, patch
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy.ext.asyncio import AsyncSession
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable
@@ -152,7 +153,7 @@ class TestCheckDatabase:
         """check_database returns status=True when the session executes successfully."""
         from cyo_adventure.api.health import check_database
 
-        mock_session = AsyncMock()
+        mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock()
 
         @asynccontextmanager
@@ -287,7 +288,7 @@ class TestReadiness:
     @pytest.mark.unit
     def test_readiness_returns_200_when_database_healthy(self) -> None:
         """GET /health/ready returns 200 when database check passes."""
-        mock_session = AsyncMock()
+        mock_session = AsyncMock(spec=AsyncSession)
         mock_session.execute = AsyncMock()
 
         @asynccontextmanager

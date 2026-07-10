@@ -314,9 +314,9 @@ def test_skeleton_matches_cell_treats_null_length_as_wildcard() -> None:
 def test_weight_never_reaches_zero() -> None:
     """The inverse-frequency floor: however often a slug was used, its weight
     stays strictly positive, so it is never fully excluded from the draw."""
-    assert skeleton_match._weight(0) == 1.0
-    assert skeleton_match._weight(1) == 0.5
-    assert skeleton_match._weight(1000) == 1.0 / 1001
+    assert skeleton_match._weight(0) == pytest.approx(1.0)
+    assert skeleton_match._weight(1) == pytest.approx(0.5)
+    assert skeleton_match._weight(1000) == pytest.approx(1.0 / 1001)
 
 
 def test_select_skeleton_for_cell_is_deterministic_under_seeded_rng() -> None:

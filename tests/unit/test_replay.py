@@ -65,7 +65,9 @@ def _blob() -> dict[str, object]:
 
 @pytest.mark.unit
 def test_structural_floor_accepts_start_state_without_choice_path() -> None:
-    validate_reading_state(
+    # validate_reading_state's documented contract is None on success (see
+    # its docstring's Raises section); a clean return IS the pass signal.
+    result = validate_reading_state(
         _blob(),
         current_node="n_start",
         var_state={"courage": 0},
@@ -73,11 +75,14 @@ def test_structural_floor_accepts_start_state_without_choice_path() -> None:
         visit_set=["n_start"],
         choice_path=None,
     )
+    assert result is None
 
 
 @pytest.mark.unit
 def test_unknown_current_node_rejected() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"current_node is not a node in this story version"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_ghost",
@@ -90,7 +95,9 @@ def test_unknown_current_node_rejected() -> None:
 
 @pytest.mark.unit
 def test_unknown_path_node_rejected() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"path references a node not in this story version"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -103,7 +110,9 @@ def test_unknown_path_node_rejected() -> None:
 
 @pytest.mark.unit
 def test_undeclared_var_key_rejected() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"var_state contains an undeclared variable"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -116,7 +125,7 @@ def test_undeclared_var_key_rejected() -> None:
 
 @pytest.mark.unit
 def test_out_of_bounds_int_rejected() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match=r"is out of declared bounds"):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -129,7 +138,7 @@ def test_out_of_bounds_int_rejected() -> None:
 
 @pytest.mark.unit
 def test_replay_accepts_genuine_state() -> None:
-    validate_reading_state(
+    result = validate_reading_state(
         _blob(),
         current_node="n_end",
         var_state={"courage": 2},
@@ -137,11 +146,15 @@ def test_replay_accepts_genuine_state() -> None:
         visit_set=["n_start", "n_end"],
         choice_path=["c_go"],
     )
+    assert result is None
 
 
 @pytest.mark.unit
 def test_replay_rejects_forged_var_state() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError,
+        match=r"submitted reading state does not match a replay of choice_path",
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_end",
@@ -154,7 +167,9 @@ def test_replay_rejects_forged_var_state() -> None:
 
 @pytest.mark.unit
 def test_replay_rejects_illegal_choice_id() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"choice_path contains an illegal choice"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_end",
@@ -167,7 +182,10 @@ def test_replay_rejects_illegal_choice_id() -> None:
 
 @pytest.mark.unit
 def test_corrupt_blob_rejected_generically() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError,
+        match=r"story version failed schema validation \(corrupt, or no longer permitted\)",
+    ):
         validate_reading_state(
             {"not": "a story"},
             current_node="n_start",
@@ -183,7 +201,10 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
     """CWE-209: the raised error must be a generic message, not the raw
     pydantic ValidationError detail (which would echo the corrupt payload).
     """
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(
+        ValidationError,
+        match=r"story version failed schema validation \(corrupt, or no longer permitted\)",
+    ) as exc_info:
         validate_reading_state(
             {"not": "a story"},
             current_node="n_start",
@@ -204,7 +225,9 @@ def test_corrupt_blob_error_does_not_leak_schema_detail() -> None:
 @pytest.mark.unit
 def test_current_node_path_mismatch_rejected() -> None:
     """A forged current_node that is a real node id but not path[-1] must 422."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"current_node must be the last entry of path"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -218,7 +241,9 @@ def test_current_node_path_mismatch_rejected() -> None:
 @pytest.mark.unit
 def test_missing_declared_variable_rejected() -> None:
     """Omitting a declared variable must not fall back to its implicit default."""
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"var_state is missing a declared variable"
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -239,7 +264,9 @@ def test_unbounded_int_var_above_float64_safe_range_rejected() -> None:
     """
     blob = _blob()
     blob["variables"] = [{"name": "courage", "type": "int", "initial": 0}]
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"exceeds the float64-safe integer range"
+    ):
         validate_reading_state(
             blob,
             current_node="n_start",
@@ -255,7 +282,7 @@ def test_unbounded_int_var_at_float64_safe_bound_accepted() -> None:
     """A save value exactly at 2**53 - 1 on an unbounded int variable passes."""
     blob = _blob()
     blob["variables"] = [{"name": "courage", "type": "int", "initial": 0}]
-    validate_reading_state(
+    result = validate_reading_state(
         blob,
         current_node="n_start",
         var_state={"courage": 2**53 - 1},
@@ -263,6 +290,7 @@ def test_unbounded_int_var_at_float64_safe_bound_accepted() -> None:
         visit_set=["n_start"],
         choice_path=None,
     )
+    assert result is None
 
 
 @pytest.mark.unit
@@ -270,7 +298,10 @@ def test_visit_set_only_forgery_rejected() -> None:
     """A visit_set entry that is a real node id but was never actually visited
     can only be caught by full replay, not the id-membership check alone.
     """
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError,
+        match=r"submitted reading state does not match a replay of choice_path",
+    ):
         validate_reading_state(
             _blob(),
             current_node="n_start",
@@ -311,7 +342,7 @@ def _bool_blob() -> dict[str, object]:
 
 @pytest.mark.unit
 def test_bool_variable_accepts_boolean_value() -> None:
-    validate_reading_state(
+    result = validate_reading_state(
         _bool_blob(),
         current_node="n_start",
         var_state={"has_key": True},
@@ -319,11 +350,12 @@ def test_bool_variable_accepts_boolean_value() -> None:
         visit_set=["n_start"],
         choice_path=None,
     )
+    assert result is None
 
 
 @pytest.mark.unit
 def test_bool_variable_rejects_non_boolean_value() -> None:
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationError, match=r"requires a boolean value"):
         validate_reading_state(
             _bool_blob(),
             current_node="n_start",
@@ -398,7 +430,7 @@ def test_replay_accepts_looping_conformance_fixture() -> None:
     """A choice sequence that revisits n_start via n_loop before finishing must
     replay cleanly: path records every visit, visit_set only the distinct ids.
     """
-    validate_reading_state(
+    result = validate_reading_state(
         _looping_blob(),
         current_node="n_end",
         var_state={},
@@ -406,3 +438,4 @@ def test_replay_accepts_looping_conformance_fixture() -> None:
         visit_set=["n_start", "n_loop", "n_end"],
         choice_path=["c_advance", "c_back", "c_advance", "c_finish"],
     )
+    assert result is None

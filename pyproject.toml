@@ -87,6 +87,7 @@ dev = [
     "pytest>=7.4.0",
     "pytest-cov>=4.1.0",
     "pytest-asyncio>=0.21.0",
+    "pytest-mock>=3.15.1",
     "pytest-xdist>=3.3.0",
     "pytest-randomly>=3.15.0",
     "hypothesis>=6.82.0",
@@ -645,12 +646,32 @@ addopts = [
     "-ra",
     "--strict-markers",
     "--strict-config",
+    "--import-mode=importlib",
     "--cov=src/cyo_adventure",
     "--cov-report=html",
     "--cov-report=term-missing:skip-covered",
     "--cov-report=xml",
     "--cov-fail-under=80",
 ]
+filterwarnings = [
+    "error",
+    # google-genai (src/cyo_adventure/covers/provider.py) builds a Union type
+    # alias at import time that trips a Python 3.14 stdlib deprecation for the
+    # pre-3.10 typing shim (_UnionGenericAlias); this fires inside the vendored
+    # dependency, not our code, and has no upstream fix as of this writing.
+    "ignore:.*_UnionGenericAlias.*is deprecated.*:DeprecationWarning",
+    # testcontainers' RedisContainer (tests/integration/test_queue_reclaim.py)
+    # still applies the legacy @wait_container_is_ready decorator internally;
+    # the replacement (structured wait strategies) is a testcontainers-side API
+    # applied at the decorator's own call site, not something a caller can swap.
+    "ignore:The @wait_container_is_ready decorator is deprecated.*:DeprecationWarning",
+    # starlette.testclient (used by TestClient in tests/unit/test_health.py,
+    # test_security.py, test_app.py) prefers the not-yet-released httpx2
+    # package and warns when it falls back to the pinned httpx dependency;
+    # that fallback is explicitly supported and is what this project uses.
+    "ignore:Using .httpx. with .starlette.testclient. is deprecated.*:starlette.exceptions.StarletteDeprecationWarning",
+]
+xfail_strict = true
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
@@ -661,6 +682,12 @@ markers = [
     "py311plus: marks tests requiring Python 3.11+",
     "py313plus: marks tests requiring Python 3.13+ (PEP 594 removals)",
     "py314plus: marks tests requiring Python 3.14+ (free-threaded, PEP 649)",
+    "perf: Performance and load tests (benchmarking, stress testing)",
+    "performance: Alias for perf marker",
+    "smoke: Smoke tests for quick sanity checks",
+    "regression: Regression tests for previously fixed bugs",
+    "llm_eval: Tier 3 behavioral LLM evaluation (scheduled, not run in CI PRs)",
+    "ai_security: adversarial AI security tests",
 ]
 
 # Coverage Configuration

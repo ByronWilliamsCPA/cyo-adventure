@@ -101,6 +101,42 @@ def test_structure_violations_flags_net_new_node_key() -> None:
     assert any("is_ending" in v for v in violations)
 
 
+def test_structure_violations_tolerates_missing_nodes_list() -> None:
+    """A story with no "nodes" key at all indexes to zero nodes on both sides,
+    not a crash; the only difference reported is on other top-level keys."""
+    original = _minimal_story("<<FILL role=setup words=10 beats='go'>>")
+    del original["nodes"]
+    filled = _minimal_story("You step into the glowing cave.")
+    del filled["nodes"]
+    assert structure_violations(original, filled) == []
+
+
+def test_structure_violations_tolerates_non_list_nodes() -> None:
+    """A "nodes" value that isn't a list (malformed document) indexes to zero
+    nodes rather than raising."""
+    original = _minimal_story("<<FILL role=setup words=10 beats='go'>>")
+    original["nodes"] = "not-a-list"
+    filled = _minimal_story("You step into the glowing cave.")
+    filled["nodes"] = "not-a-list"
+    assert structure_violations(original, filled) == []
+
+
+def test_structure_violations_skips_malformed_node_entries() -> None:
+    """A malformed entry in the "nodes" list (not a dict, or a dict with no
+    valid string id) is silently excluded from the id-indexed comparison
+    rather than crashing or contributing a bogus node id."""
+    original = _minimal_story("<<FILL role=setup words=10 beats='go'>>")
+    original_nodes = original["nodes"]
+    assert isinstance(original_nodes, list)
+    original_nodes.append("garbage")
+    original_nodes.append({"body": "no id here"})
+    filled = _minimal_story("You step into the glowing cave.")
+    filled_nodes = filled["nodes"]
+    assert isinstance(filled_nodes, list)
+    filled_nodes.append({"id": 123, "body": "id is not a string"})
+    assert structure_violations(original, filled) == []
+
+
 def test_word_count_violations_flags_too_short() -> None:
     """A body far below its directive's word target is flagged."""
     original = _minimal_story("<<FILL role=setup words=100 beats='go'>>")

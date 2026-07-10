@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RequestStory } from './RequestStory'
@@ -140,6 +141,34 @@ describe('RequestStory', () => {
     expect(screen.queryByText(/too many pending requests/i)).not.toBeInTheDocument()
   })
 
+  it('a rapid second click on Send while saving does not fire a duplicate create', async () => {
+    // send() guards with `if (saving) return`, set synchronously before the
+    // first await; a rapid second click on the same render must not slip
+    // through and fire a second create.
+    let resolveCreate: (() => void) | undefined
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveCreate = () => resolve({ data: { id: 'req1', status: 'pending' } })
+        })
+    )
+
+    render(<RequestStory profileId="p1" />)
+    fireEvent.click(await screen.findByRole('button', { name: /request a story/i }))
+    fireEvent.change(screen.getByRole('textbox', { name: /what should your story be about/i }), {
+      target: { value: 'A dragon who loves cupcakes' },
+    })
+    const sendButton = screen.getByRole('button', { name: /^send$/i })
+    fireEvent.click(sendButton)
+    fireEvent.click(sendButton)
+
+    expect(mockPost).toHaveBeenCalledTimes(1)
+    expect(sendButton).toBeDisabled()
+
+    resolveCreate?.()
+    await waitFor(() => expect(mockPost).toHaveBeenCalledTimes(1))
+  })
+
   it('posts proposed_series_title alongside the idea when a series name is given', async () => {
     mockPost.mockResolvedValue({ data: { id: 'req1', status: 'pending' } })
 
@@ -207,6 +236,80 @@ describe('RequestStory', () => {
         anchor_storybook_id: 's_1',
       })
     )
+  })
+
+  it('Cancel closes the form and resets the idea and series name', async () => {
+    const user = userEvent.setup()
+    render(<RequestStory profileId="p1" />)
+    await user.click(await screen.findByRole('button', { name: /request a story/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /what should your story be about/i }),
+      'A dragon who loves cupcakes'
+    )
+    await user.type(
+      screen.getByLabelText(/part of a series\? give it a name!/i),
+      'The Cupcake Chronicles'
+    )
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(
+      screen.queryByRole('textbox', { name: /what should your story be about/i })
+    ).not.toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+
+    // Reopening shows a fresh, empty form: cancel really reset the state.
+    await user.click(screen.getByRole('button', { name: /request a story/i }))
+    expect(
+      screen.getByRole('textbox', { name: /what should your story be about/i })
+    ).toHaveValue('')
+    expect(screen.getByLabelText(/part of a series\? give it a name!/i)).toHaveValue('')
+  })
+
+  it('Cancel in anchor mode also calls onClearAnchor', async () => {
+    const user = userEvent.setup()
+    const onClearAnchor = vi.fn()
+    render(
+      <RequestStory
+        profileId="p1"
+        anchor={{ id: 's_1', title: 'The Fox' }}
+        onClearAnchor={onClearAnchor}
+      />
+    )
+    await screen.findByText(/continuing: the fox/i)
+
+    await user.click(screen.getByRole('button', { name: /^cancel$/i }))
+
+    expect(onClearAnchor).toHaveBeenCalled()
+  })
+
+  it('recovers from a stale anchor: clears the anchor and shows a retry message on a 404 send', async () => {
+    // A stale anchor (the anchored storybook is gone or no longer eligible by
+    // the time the request lands) fails with 404/422; the component must
+    // clear the anchor via onClearAnchor so a retry sends a fresh, anchor-less
+    // request instead of resending the same doomed anchor.
+    const onClearAnchor = vi.fn()
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 404 },
+    })
+
+    render(
+      <RequestStory
+        profileId="p1"
+        anchor={{ id: 's_1', title: 'The Fox' }}
+        onClearAnchor={onClearAnchor}
+      />
+    )
+    await screen.findByText(/continuing: the fox/i)
+    fireEvent.change(screen.getByRole('textbox', { name: /what should your story be about/i }), {
+      target: { value: 'What happens next to the fox' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /^send$/i }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/can.t be continued right now/i)
+    expect(onClearAnchor).toHaveBeenCalled()
   })
 
   it('"Not this one" calls onClearAnchor', async () => {

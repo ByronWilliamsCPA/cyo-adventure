@@ -17,14 +17,19 @@ from pydantic import ValidationError as PydanticValidationError
 from cyo_adventure.api.schemas import (
     PATH_MAX_LENGTH,
     VISIT_SET_MAX_LENGTH,
+    FindingView,
+    FlaggedPassage,
+    GuardianBookItem,
     JobStatusLiteral,
     ReadingStateBody,
+    ReviewSurfaceView,
     StoryRequestStatus,
 )
 from cyo_adventure.db.models import (
     _GENERATION_JOB_STATUS_VALUES,  # pyright: ignore[reportPrivateUsage]
     _STORY_REQUEST_STATUS_VALUES,  # pyright: ignore[reportPrivateUsage]
 )
+from cyo_adventure.moderation.report import Source, Verdict
 
 
 def _reading_state(**overrides: object) -> dict[str, object]:
@@ -150,3 +155,129 @@ def test_save_slots_over_byte_budget_rejected() -> None:
     """A save_slots payload over the 64_000-byte cap is rejected."""
     with pytest.raises(PydanticValidationError):
         ReadingStateBody(**_reading_state(save_slots={"pad": "x" * 64_001}))
+
+
+# ---------------------------------------------------------------------------
+# GuardianBookItem._unscreened_has_no_flags (Task 2.2 redacted content badge)
+# ---------------------------------------------------------------------------
+
+
+def _guardian_book_item(**overrides: object) -> dict[str, object]:
+    """Return a minimal valid GuardianBookItem payload, with overrides applied."""
+    base: dict[str, object] = {
+        "storybook_id": "sb1",
+        "title": "The Cave",
+        "version": 1,
+        "age_band": "8-11",
+        "screened": True,
+        "flagged_count": 0,
+        "assigned_profile_ids": [],
+        "visibility": "family",
+    }
+    base.update(overrides)
+    return base
+
+
+def test_guardian_book_item_screened_with_flags_accepted() -> None:
+    """A screened book reporting flagged passages is a valid, coherent badge."""
+    item = GuardianBookItem(**_guardian_book_item(screened=True, flagged_count=3))
+    assert item.screened is True
+    assert item.flagged_count == 3
+
+
+def test_guardian_book_item_unscreened_with_zero_flags_accepted() -> None:
+    """An unscreened book reporting zero flags is the expected degrade state."""
+    item = GuardianBookItem(**_guardian_book_item(screened=False, flagged_count=0))
+    assert item.screened is False
+    assert item.flagged_count == 0
+
+
+def test_guardian_book_item_unscreened_with_flags_rejected() -> None:
+    """An unscreened badge that also reports flagged passages is contradictory."""
+    with pytest.raises(
+        PydanticValidationError,
+        match="an unscreened book cannot report flagged passages",
+    ):
+        GuardianBookItem(**_guardian_book_item(screened=False, flagged_count=1))
+
+
+# ---------------------------------------------------------------------------
+# ReviewSurfaceView._no_pass_verdict_leaks (C3-4 guardian review surface)
+# ---------------------------------------------------------------------------
+
+
+def _finding_view(**overrides: object) -> dict[str, object]:
+    """Return a minimal valid FindingView payload, with overrides applied."""
+    base: dict[str, object] = {
+        "stage": 1,
+        "source": Source.LLM_SAFETY,
+        "category": "violence",
+        "node_id": "n1",
+        "verdict": Verdict.FLAG,
+        "score": 0.6,
+        "message": "flagged for review",
+    }
+    base.update(overrides)
+    return base
+
+
+def _review_surface_view(**overrides: object) -> dict[str, object]:
+    """Return a minimal valid ReviewSurfaceView payload, with overrides applied."""
+    base: dict[str, object] = {
+        "storybook_id": "sb1",
+        "version": 1,
+        "status": "in_review",
+        "blob": {},
+        "screened": True,
+        "summary": None,
+        "flagged_passages": [],
+        "story_level_findings": [],
+    }
+    base.update(overrides)
+    return base
+
+
+def test_review_surface_view_flag_verdicts_accepted() -> None:
+    """A surface carrying only flag/block findings is a valid review surface."""
+    passage = FlaggedPassage(
+        node_id="n1",
+        prose="Once upon a time.",
+        findings=[FindingView(**_finding_view(verdict=Verdict.FLAG))],
+    )
+    view = ReviewSurfaceView(
+        **_review_surface_view(
+            flagged_passages=[passage],
+            story_level_findings=[FindingView(**_finding_view(verdict=Verdict.BLOCK))],
+        )
+    )
+    assert len(view.flagged_passages) == 1
+    assert view.story_level_findings[0].verdict is Verdict.BLOCK
+
+
+def test_review_surface_view_pass_verdict_in_passage_rejected() -> None:
+    """A pass-verdict finding inside a flagged passage must not leak through."""
+    passage = FlaggedPassage(
+        node_id="n1",
+        prose="Once upon a time.",
+        findings=[FindingView(**_finding_view(verdict=Verdict.PASS))],
+    )
+    with pytest.raises(
+        PydanticValidationError,
+        match="review surface must not contain a pass-verdict finding",
+    ):
+        ReviewSurfaceView(**_review_surface_view(flagged_passages=[passage]))
+
+
+def test_review_surface_view_pass_verdict_in_story_level_rejected() -> None:
+    """A pass-verdict story-level finding must not leak through either."""
+    with pytest.raises(
+        PydanticValidationError,
+        match="review surface must not contain a pass-verdict finding",
+    ):
+        ReviewSurfaceView(
+            **_review_surface_view(
+                story_level_findings=[
+                    FindingView(**_finding_view(verdict=Verdict.PASS))
+                ]
+            )
+        )

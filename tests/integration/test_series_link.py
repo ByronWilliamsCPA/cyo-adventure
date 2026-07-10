@@ -317,6 +317,80 @@ async def test_embed_series_block_noop_for_non_series(
         assert "series" not in row.blob.get("metadata", {})
 
 
+async def test_embed_series_block_replaces_non_dict_metadata(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A blob whose ``metadata`` key is present but not a dict is replaced, not raised on.
+
+    ``embed_series_block`` reads ``raw_meta = blob.get("metadata")`` and only
+    treats it as a base to merge into when ``isinstance(raw_meta, dict)``;
+    otherwise it falls back to a fresh ``{}`` before writing ``metadata.series``
+    (see ``generation/series_link.py``). This pins that a corrupted/malformed
+    ``metadata`` value (a string here) is silently discarded and replaced with
+    a dict containing only the new ``series`` key, rather than raising or
+    preserving the non-dict value.
+    """
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=False,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        story_id = f"s_{uuid.uuid4().hex[:12]}"
+        blob = _minimal_blob()
+        blob["metadata"] = "not-a-dict"
+        await persist_storybook(
+            session,
+            StorybookParams(
+                story_id=story_id,
+                blob=blob,
+                family_id=family.id,
+                created_by=user.id,
+            ),
+        )
+
+        await link_series_position(session, story_id=story_id, concept_id=concept.id)
+        # #ASSUME: data-integrity: a non-dict metadata value must not raise;
+        # the isinstance guard falls back to a fresh {} instead.
+        # #VERIFY: the resulting metadata is a dict with only "series" set,
+        # never the original string.
+        await embed_series_block(session, story_id=story_id, version=1)
+        await session.commit()
+
+    # Fresh session for the same identity-map reason as the tests above.
+    async with sessions() as session:
+        row = await session.get(StorybookVersion, (story_id, 1))
+        assert row is not None
+        meta = row.blob["metadata"]
+        assert isinstance(meta, dict)
+        assert set(meta) == {"series"}
+        block = meta["series"]
+        assert isinstance(block, dict)
+        storybook = await session.get(Storybook, story_id)
+        assert storybook is not None
+        assert block["series_id"] == str(storybook.series_id)
+
+
 async def test_embed_series_block_refuses_published_blob(
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
@@ -520,3 +594,79 @@ async def test_embed_series_block_survives_moderation_repair(
         assert block["series_entry_node"] == row.blob["start_node"]
         assert block["is_final"] is False
         assert block["carries_state"] is True
+
+
+async def test_link_series_position_assigns_index_and_logs(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A request with a series_id drives a real book_index assignment."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        book = await _bare_storybook(session, family_id=family.id)
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        await link_series_position(session, story_id=book.id, concept_id=concept.id)
+
+        refreshed = await session.get(Storybook, book.id)
+        assert refreshed is not None
+        assert refreshed.series_id == series.id
+        assert refreshed.book_index == 1
+
+
+async def test_assign_book_index_raises_value_error_when_storybook_missing(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A story_id with no storybook row raises ValueError, not a DB error."""
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        with pytest.raises(ValueError, match="not found for series assignment"):
+            await assign_book_index(
+                session, story_id="s_doesnotexist", series_id=series.id
+            )
+
+
+async def test_assign_book_index_reraises_non_unique_constraint_integrity_error(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A non-unique-constraint IntegrityError (FK violation) is not retried."""
+    async with sessions() as session:
+        family, _user = await _seed_family_and_user(session)
+        book = await _bare_storybook(session, family_id=family.id)
+
+        with pytest.raises(IntegrityError) as exc_info:
+            await assign_book_index(session, story_id=book.id, series_id=uuid.uuid4())
+
+        assert "uq_storybook_series_book_index" not in str(exc_info.value.orig)

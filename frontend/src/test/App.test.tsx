@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react'
 import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import App from '../App'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
 
@@ -195,5 +196,37 @@ describe('router: guardian surface', () => {
     })
     renderAt('/guardian/review/s1')
     expect(await screen.findByRole('heading', { name: 'The Cave' })).toBeInTheDocument()
+  })
+
+  it('renders the profiles page at /guardian/profiles', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    // Shared get mock: the auth /v1/me lookup plus the profiles list fetch.
+    mockGet.mockImplementation((url: string) => {
+      if (url === '/v1/profiles') {
+        return Promise.resolve({ data: { profiles: [] } })
+      }
+      return Promise.resolve({
+        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+      })
+    })
+    renderAt('/guardian/profiles')
+    expect(await screen.findByText(/No profiles yet/i)).toBeInTheDocument()
+  })
+})
+
+describe('App', () => {
+  // App.tsx itself only wires <RouterProvider router={router} />, using the
+  // real singleton `router` (createBrowserRouter) rather than the
+  // createMemoryRouter used above; jsdom's default test URL is
+  // http://localhost:3000/, which resolves to the same kid-surface landing
+  // route exercised by the memory-router test above.
+  it('mounts and renders the landing page at the default browser URL', async () => {
+    render(<App />)
+    expect(await screen.findByRole('link', { name: /grown-ups/i })).toHaveAttribute(
+      'href',
+      '/guardian'
+    )
   })
 })

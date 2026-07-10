@@ -109,7 +109,10 @@ export default defineConfig({
       // provider reports every file the run touches (node_modules, dist, e2e
       // specs, design-system, even paths above frontend/), and those unmappable
       // paths made Codecov reject the whole lcov as an "unusable report".
-      include: ['src/**'],
+      // Code files only: a bare 'src/**' also feeds non-code files (e.g.
+      // src/assets/.gitkeep) into the uncovered-files pass, where the parser
+      // fails on them with a noisy (though harmless) PARSE_ERROR.
+      include: ['src/**/*.{ts,tsx}'],
       reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'src/test/',
@@ -117,7 +120,29 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/*.{test,spec}.{ts,tsx}',
+        // Bootstrap entry: only exercised by e2e (Playwright), never imported
+        // by a unit/component test.
+        'src/main.tsx',
+        // Type-only module: no runtime statements to cover.
+        'src/player/types.ts',
+        // #ASSUME: data-integrity: the `include: ['src/**/*.{ts,tsx}']` glob
+        // above is not anchored to the frontend root, so it also matches
+        // `design-system/src/**` (reached via the `@ds` alias) even though
+        // design-system is a separate npm workspace with its own vitest
+        // config, its own coverage run, and its own Codecov `design-system`
+        // flag (see .github/workflows/ci.yml `design-system` job). Without
+        // this exclude, adding perFile thresholds here would also gate files
+        // that are already covered and thresholded by that separate job.
+        // #VERIFY: `npm run test:coverage` reports only `src/**` files below.
+        '**/design-system/**',
       ],
+      thresholds: {
+        lines: 70,
+        branches: 70,
+        functions: 70,
+        statements: 70,
+        perFile: true,
+      },
     },
   },
 })

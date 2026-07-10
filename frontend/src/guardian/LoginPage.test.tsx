@@ -151,3 +151,33 @@ describe('LoginPage password form', () => {
     expect(screen.getByText('review landing')).toBeInTheDocument()
   })
 })
+
+describe('LoginPage OAuth buttons (startSignIn)', () => {
+  it('calls signInWithOAuth with "google" when the Google button is clicked', async () => {
+    mockSignInWithOAuth.mockResolvedValue(undefined)
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
+    await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('google'))
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('calls signInWithOAuth with "apple" when the Apple button is clicked', async () => {
+    vi.stubEnv('VITE_ENABLE_APPLE_OAUTH', 'true')
+    try {
+      mockSignInWithOAuth.mockResolvedValue(undefined)
+      renderLogin()
+      fireEvent.click(screen.getByRole('button', { name: /Continue with Apple/ }))
+      await waitFor(() => expect(mockSignInWithOAuth).toHaveBeenCalledWith('apple'))
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
+  it('shows a sign-in error banner when signInWithOAuth rejects', async () => {
+    mockSignInWithOAuth.mockRejectedValue(new Error('provider unreachable'))
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/sign-in didn't start/i)
+  })
+})

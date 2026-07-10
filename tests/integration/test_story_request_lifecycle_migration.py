@@ -3,12 +3,16 @@
 from __future__ import annotations
 
 import uuid
+from typing import TYPE_CHECKING
 
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 
 from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REVISION = "d0e1f2a3b4c5"
 DOWN_REVISION = "c9d0e1f2a3b4"
@@ -23,7 +27,7 @@ def _env(pg_url: str) -> dict[str, str]:
 
 
 @pytest.fixture
-def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
+def upgraded_engine(migration_pg_url: str) -> Iterator[sa.engine.Engine]:
     """Reset to the previous head, seed a legacy row, then upgrade to REVISION.
 
     Function-scoped against a module-scoped container, so several test
@@ -46,6 +50,15 @@ def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
     # (see pyproject.toml); a bare "postgresql://" URL defaults to psycopg2.
     sync_url = migration_pg_url.replace("+asyncpg", "+psycopg")
     engine = sa.create_engine(sync_url)
+    try:
+        _seed_and_upgrade(engine, env)
+        yield engine
+    finally:
+        engine.dispose()
+
+
+def _seed_and_upgrade(engine: sa.engine.Engine, env: dict[str, str]) -> None:
+    """Delete legacy rows, seed a fresh family/user/profile/request, then upgrade."""
     with engine.begin() as conn:
         conn.execute(sa.text("DELETE FROM story_request"))
         conn.execute(sa.text('DELETE FROM "user"'))
@@ -87,7 +100,6 @@ def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
         )
     result = run_alembic(PROJECT_ROOT, env, "upgrade", REVISION)
     assert result.returncode == 0, result.stderr
-    return engine
 
 
 def test_backfill_band_from_profile_and_role_default(

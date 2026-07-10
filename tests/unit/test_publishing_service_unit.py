@@ -12,6 +12,7 @@ from datetime import UTC, datetime
 from unittest.mock import AsyncMock
 
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from cyo_adventure.api.deps import Principal
 from cyo_adventure.core.exceptions import (
@@ -51,7 +52,7 @@ def _story(status: str, *, current: int | None = None) -> Storybook:
 async def test_submit_draft_moves_to_in_review() -> None:
     """submit() on a draft story transitions status to in_review and flushes."""
     story = _story("draft")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     await service.submit(session, story)
 
@@ -63,7 +64,7 @@ async def test_submit_draft_moves_to_in_review() -> None:
 async def test_submit_needs_revision_moves_to_in_review() -> None:
     """submit() on a needs_revision story transitions to in_review and flushes."""
     story = _story("needs_revision")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     await service.submit(session, story)
 
@@ -75,7 +76,7 @@ async def test_submit_needs_revision_moves_to_in_review() -> None:
 async def test_submit_illegal_status_raises() -> None:
     """submit() on an already-published story raises StateTransitionError; no flush."""
     story = _story("published")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     with pytest.raises(StateTransitionError):
         await service.submit(session, story)
@@ -93,7 +94,7 @@ async def test_submit_without_moderation_report_raises() -> None:
     """
     story = _story("draft")
     version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.scalar = AsyncMock(return_value=1)
     session.get = AsyncMock(return_value=version_row)
 
@@ -114,7 +115,7 @@ async def test_submit_with_moderation_report_succeeds() -> None:
         blob={},
         moderation_report=make_clean_moderation_report(),
     )
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.scalar = AsyncMock(return_value=1)
     session.get = AsyncMock(return_value=version_row)
 
@@ -134,7 +135,7 @@ async def test_approve_publishes_and_stamps() -> None:
         blob={},
         moderation_report=make_clean_moderation_report(),
     )
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
     principal = _principal("admin")
 
@@ -161,7 +162,7 @@ async def test_approve_without_moderation_report_raises() -> None:
     """
     story = _story("in_review")
     version_row = StorybookVersion(storybook_id="s1", version=1, blob={})
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
 
     with pytest.raises(BusinessLogicError):
@@ -175,7 +176,7 @@ async def test_approve_without_moderation_report_raises() -> None:
 async def test_approve_missing_version_raises() -> None:
     """approve() raises ResourceNotFoundError when the version row is absent."""
     story = _story("in_review")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=None)
 
     with pytest.raises(ResourceNotFoundError):
@@ -186,7 +187,7 @@ async def test_approve_missing_version_raises() -> None:
 async def test_approve_illegal_status_raises() -> None:
     """approve() on a draft raises StateTransitionError before the version lookup."""
     story = _story("draft")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock()
 
     with pytest.raises(StateTransitionError):
@@ -199,7 +200,7 @@ async def test_approve_illegal_status_raises() -> None:
 async def test_send_back_moves_to_needs_revision() -> None:
     """send_back() transitions in_review to needs_revision and flushes."""
     story = _story("in_review")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     await service.send_back(session, _principal("admin"), story, "too scary")
 
@@ -211,7 +212,7 @@ async def test_send_back_moves_to_needs_revision() -> None:
 async def test_send_back_illegal_status_raises() -> None:
     """send_back() on a draft raises StateTransitionError; no flush."""
     story = _story("draft")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     with pytest.raises(StateTransitionError):
         await service.send_back(session, _principal("admin"), story, "reason")
@@ -223,7 +224,7 @@ async def test_send_back_illegal_status_raises() -> None:
 async def test_archive_moves_to_archived() -> None:
     """archive() transitions published to archived and flushes."""
     story = _story("published", current=1)
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     await service.archive(session, _principal("admin"), story)
 
@@ -235,7 +236,7 @@ async def test_archive_moves_to_archived() -> None:
 async def test_archive_illegal_status_raises() -> None:
     """archive() on a draft raises StateTransitionError; no flush."""
     story = _story("draft")
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
 
     with pytest.raises(StateTransitionError):
         await service.archive(session, _principal("admin"), story)
@@ -253,7 +254,7 @@ async def test_approve_stamps_utc_published_at() -> None:
         blob={},
         moderation_report=make_clean_moderation_report(),
     )
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     session.get = AsyncMock(return_value=version_row)
     before = datetime.now(UTC)
 
@@ -268,7 +269,7 @@ async def test_approve_stamps_utc_published_at() -> None:
 @pytest.mark.unit
 async def test_auto_reject_moves_draft_to_needs_revision() -> None:
     """auto_reject() transitions draft to needs_revision and flushes."""
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     story = _story("draft")
 
     await service.auto_reject(session, story)
@@ -280,7 +281,7 @@ async def test_auto_reject_moves_draft_to_needs_revision() -> None:
 @pytest.mark.unit
 async def test_auto_reject_illegal_state_raises_and_does_not_flush() -> None:
     """auto_reject() on published raises StateTransitionError; no flush."""
-    session = AsyncMock()
+    session = AsyncMock(spec=AsyncSession)
     story = _story("published")
 
     with pytest.raises(StateTransitionError):

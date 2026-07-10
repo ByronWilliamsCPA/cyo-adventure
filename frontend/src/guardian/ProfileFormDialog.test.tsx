@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -49,5 +49,105 @@ describe('ProfileFormDialog', () => {
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save.*try again/i)
+  })
+
+  // The Save/Cancel actions render outside the <form> (Dialog's `actions`
+  // prop), so clicking them never fires the form's own onSubmit handler.
+  // jsdom's implicit Enter-to-submit only fires for a form with exactly one
+  // text field or an in-form submit button; this form has neither (multiple
+  // fields, no in-form submit button), so a real `submit` event is the only
+  // way to reach onSubmit at all. fireEvent.submit is a deliberate, narrow
+  // exception to the userEvent-only rule for that reason.
+  it('submits via the form onSubmit event (not the Save button)', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    const onClose = vi.fn()
+    const { container } = render(
+      <ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={onClose} />
+    )
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    const form = container.querySelector('form.profile-form')
+    expect(form).not.toBeNull()
+    fireEvent.submit(form as HTMLFormElement)
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ display_name: 'Robin' }))
+    )
+    expect(onClose).toHaveBeenCalled()
+  })
+
+  it('does not call onSubmit on a form submit event while the form is invalid', () => {
+    const onSubmit = vi.fn()
+    const { container } = render(
+      <ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />
+    )
+    // Name is required and left blank: the form is invalid.
+    const form = container.querySelector('form.profile-form')
+    expect(form).not.toBeNull()
+    fireEvent.submit(form as HTMLFormElement)
+
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('allows a reading level cap of exactly 99 (the boundary)', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    const capInput = screen.getByLabelText(/reading level cap/i)
+    await user.clear(capInput)
+    await user.type(capInput, '99')
+
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeEnabled()
+    await user.click(saveButton)
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ reading_level_cap: 99 }),
+      )
+    )
+  })
+
+  it('blocks a reading level cap of 100 (one past the boundary)', () => {
+    const onSubmit = vi.fn()
+    const { container } = render(
+      <ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />
+    )
+
+    const nameInput = screen.getByLabelText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Robin' } })
+    const capInput = screen.getByLabelText(/reading level cap/i)
+    fireEvent.change(capInput, { target: { value: '100' } })
+
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeDisabled()
+
+    // Guard the form-submit path too, not just the Save button's disabled
+    // attribute (see the "does not call onSubmit ... while invalid" test).
+    const form = container.querySelector('form.profile-form')
+    expect(form).not.toBeNull()
+    fireEvent.submit(form as HTMLFormElement)
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
+  it('selects an avatar via its radio input', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    const foxRadio = screen.getByRole('radio', { name: /fox/i })
+    expect(foxRadio).not.toBeChecked()
+    await user.click(foxRadio)
+    expect(foxRadio).toBeChecked()
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ avatar: 'fox' }))
+    )
   })
 })

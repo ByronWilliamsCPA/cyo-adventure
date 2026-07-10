@@ -398,6 +398,11 @@ def test_findings_ordered_l1_before_l2() -> None:
         elif f.rule_id == "SAFE-14":
             layer_order.append("SAFE")
 
+    # The fixture must actually exercise both layers, or the ordering check
+    # below (no L1 label after an L2 label) would pass vacuously.
+    assert "L1" in layer_order
+    assert "L2" in layer_order
+
     # No L1 label should appear after an L2 label in the ordering.
     seen_l2 = False
     for layer in layer_order:

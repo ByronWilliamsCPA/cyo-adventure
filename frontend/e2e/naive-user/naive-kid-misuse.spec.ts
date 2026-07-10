@@ -46,11 +46,16 @@ test.describe('double-submitting a story request', () => {
     await page.route('**/api/v1/story-requests?profile_id=p1', (route) =>
       route.fulfill({ json: { requests } })
     )
+    // Deterministic gate instead of a raw 300ms sleep: hold the create POST
+    // open until the forced second click has landed, so the impatient-kid
+    // window is guaranteed rather than timing-dependent on a CI runner.
+    let releaseCreate: () => void = () => {}
+    const createGate = new Promise<void>((resolve) => {
+      releaseCreate = resolve
+    })
     await page.route('**/api/v1/story-requests', async (route) => {
       createCalls += 1
-      // Hold the response open briefly so an impatient second click has a
-      // real window to land while the guard should already be active.
-      await new Promise((resolve) => setTimeout(resolve, 300))
+      await createGate
       requests = [{ id: 'req-1', status: 'pending' }]
       return route.fulfill({ json: { id: 'req-1', status: 'pending' } })
     })
@@ -66,13 +71,15 @@ test.describe('double-submitting a story request', () => {
 
     const sendButton = page.getByRole('button', { name: /send/i })
     await sendButton.click()
-    // RequestStory.tsx's saving-flag guard disables the button synchronously;
-    // force bypasses Playwright's own enabled-check to simulate a kid
-    // mashing it anyway. A genuinely disabled button does not dispatch a
-    // click handler even when forced, so this cannot double-count.
-    // Note: After first click, button text changes to "Sending…", but the
-    // more flexible regex /send/i still matches.
+    // Locator-based wait: RequestStory.tsx's saving-flag guard disables the
+    // button synchronously (its label also flips to "Sending…", which the
+    // /send/i regex still matches); waiting on disabled is the deterministic
+    // in-flight signal. force bypasses Playwright's own enabled-check to
+    // simulate a kid mashing it anyway. A genuinely disabled button does not
+    // dispatch a click handler even when forced, so this cannot double-count.
+    await expect(sendButton).toBeDisabled()
     await sendButton.click({ force: true })
+    releaseCreate()
 
     await expect(page.getByText('Waiting for a grown-up to say yes')).toBeVisible()
     expect(createCalls).toBe(1)

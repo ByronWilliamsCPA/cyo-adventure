@@ -12,6 +12,7 @@ import pytest
 
 from cyo_adventure.api import deps
 from cyo_adventure.api.deps import Principal
+from cyo_adventure.core.config import Settings
 from cyo_adventure.core.exceptions import AuthenticationError
 
 if TYPE_CHECKING:
@@ -346,7 +347,30 @@ class TestAuthStubGuard:
         """
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        with patch("cyo_adventure.core.config.settings") as mock_settings:
+        # spec=list(Settings.model_fields) (field names, not an instance):
+        # passing a Settings() instance as spec makes mock walk dir(spec)
+        # with real getattr on Python <= 3.12, which touches pydantic's
+        # deprecated `__fields__` instance property and raises
+        # PydanticDeprecatedSince20 under this project's
+        # filterwarnings = ["error"] (3.13+ mock uses inspect.getattr_static
+        # and skips properties). A name-list spec gives the same protection
+        # mock specs actually provide, reads of unknown attributes fail
+        # loudly while attribute sets are never spec-checked in any form,
+        # without ever touching the instance. A cleaner
+        # monkeypatch.setenv(...) + single reload was evaluated instead of
+        # this double-reload/patched-singleton pattern; it does not work
+        # cleanly here because deps.py binds `settings` by value at import
+        # time (`from cyo_adventure.core.config import settings`), so
+        # reloading only `deps` would keep the OLD Settings instance. Getting
+        # a genuinely new instance requires reloading `core.config` too,
+        # which reruns Settings' own model_validator (the non-local +
+        # dev-database-url guard in config.py) and would need an unrelated
+        # DATABASE_URL override just to avoid tripping that guard: out of
+        # scope for this auth-stub guard test. Keeping the patched-singleton
+        # pattern, now spec'd, per the documented deferral for this case.
+        with patch(
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
+        ) as mock_settings:
             mock_settings.environment = "production"
             mock_settings.oidc_issuer = None
             mock_settings.oidc_jwks_url = None
@@ -361,7 +385,11 @@ class TestAuthStubGuard:
         """deps imports cleanly when environment == 'local' (the default)."""
         from cyo_adventure.core.exceptions import ConfigurationError
 
-        with patch("cyo_adventure.core.config.settings") as mock_settings:
+        # See test_guard_raises_when_non_local_and_no_oidc_config above for why
+        # this stays a patched-singleton (now spec'd) instead of an env-var reload.
+        with patch(
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
+        ) as mock_settings:
             mock_settings.environment = "local"
             try:
                 importlib.reload(deps)
@@ -381,7 +409,11 @@ class TestAuthStubGuard:
         against, so the guard must not block it. A ConfigurationError here would
         fail the test naturally.
         """
-        with patch("cyo_adventure.core.config.settings") as mock_settings:
+        # See test_guard_raises_when_non_local_and_no_oidc_config above for why
+        # this stays a patched-singleton (now spec'd) instead of an env-var reload.
+        with patch(
+            "cyo_adventure.core.config.settings", spec=list(Settings.model_fields)
+        ) as mock_settings:
             mock_settings.environment = "staging"
             mock_settings.oidc_issuer = "https://example.supabase.co/auth/v1"
             mock_settings.oidc_jwks_url = (

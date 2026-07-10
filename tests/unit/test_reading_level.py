@@ -231,6 +231,31 @@ class TestReadingLevelFloor:
         assert report.ok is True
 
 
+class TestReadingLevelNumericOnlyBody:
+    """A body of only numeric tokens clears the word-count floor but has zero
+    FK-countable words, exercising _flesch_kincaid_grade's word_count == 0 guard
+    through the real check_reading_level path (no monkeypatch needed).
+    """
+
+    def test_numeric_only_body_scores_zero_grade(self) -> None:
+        """Digits pass ``body.split()``'s whitespace floor but not ``_WORD_RE``.
+
+        24 whitespace-separated numeric tokens clear the ``_MIN_WORDS_FOR_FK``
+        floor (a plain whitespace-token count) even though none of them match
+        ``_WORD_RE`` (which requires letters), so ``_flesch_kincaid_grade``
+        computes ``word_count == 0`` and returns ``0.0``.
+        """
+        numeric_body = " ".join(str(i) for i in range(1, 25))
+        assert len(numeric_body.split()) >= _MIN_WORDS_FOR_FK
+        # A wide band centered on 0.0 confirms the 0.0 grade is treated as a
+        # normal (in-band) value rather than crashing or misreporting.
+        story = _make_story(numeric_body, target=0.0, tolerance=5.0)
+        report = check_reading_level(story)
+        rl13 = [f for f in report.findings if f.rule_id == "RL-13"]
+        assert rl13 == [], "a 0.0 FK grade within [-5, 5] must not warn"
+        assert report.ok is True
+
+
 class TestReadingLevelFromFixture:
     """Smoke-test against the hello-world fixture: advisory semantics hold."""
 

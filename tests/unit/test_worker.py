@@ -971,3 +971,29 @@ class TestEffectiveProviderPerJobOverride:
         # skeleton_slug ResourceNotFoundError (the misroute would have tripped
         # the _no_skeleton_fill sentinel above and failed the test first).
         assert job.status in {"passed", "needs_review", "failed"}
+
+
+def test_run_generation_job_sync_parses_uuid_and_delegates_to_async_worker(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Verify run_generation_job_sync parses the job id and awaits the worker.
+
+    run_generation_job_sync is RQ's sync entrypoint: it must parse the
+    incoming job id string into a real uuid.UUID (not pass the raw string
+    through) before handing off to the async worker via asyncio.run. Only
+    the inner coroutine is mocked here; the real asyncio.run executes the
+    event loop, exercising the actual synchronous wrapper body, which
+    otherwise has zero coverage (every other worker test drives
+    run_generation_job directly as a coroutine, never through this sync
+    wrapper).
+    """
+    import uuid as uuid_mod
+
+    mock_async_worker = AsyncMock()
+    monkeypatch.setattr(worker_module, "run_generation_job", mock_async_worker)
+
+    job_id = uuid_mod.uuid4()
+
+    worker_module.run_generation_job_sync(str(job_id))
+
+    mock_async_worker.assert_awaited_once_with(job_id)

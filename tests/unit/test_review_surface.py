@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import pytest
 
+from cyo_adventure.api import review_surface
 from cyo_adventure.api.review_surface import (
     build_content_summary,
     build_review_queue_item,
     build_review_surface,
 )
 from cyo_adventure.core.exceptions import ValidationError
+from cyo_adventure.moderation.report import Source, Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy
 
 _DEFAULT_POLICY = ThresholdPolicy(rows={})
@@ -252,6 +254,34 @@ def test_unrecognized_verdict_rejected() -> None:
             blob=_blob(),
             moderation_report=report,
         )
+
+
+@pytest.mark.unit
+def test_as_source_valid_string_returns_source() -> None:
+    """A recognized source string narrows to the matching Source member."""
+    assert review_surface._as_source("llm_safety") is Source.LLM_SAFETY
+
+
+@pytest.mark.unit
+def test_as_source_non_string_value_rejected() -> None:
+    """A non-string source value (corrupt-at-rest JSON) is rejected outright,
+    without ever reaching the Source(value) enum lookup."""
+    with pytest.raises(ValidationError, match="unrecognized source"):
+        review_surface._as_source(42)
+
+
+@pytest.mark.unit
+def test_as_verdict_valid_string_returns_verdict() -> None:
+    """A recognized verdict string narrows to the matching Verdict member."""
+    assert review_surface._as_verdict("flag") is Verdict.FLAG
+
+
+@pytest.mark.unit
+def test_as_verdict_non_string_value_rejected() -> None:
+    """A non-string verdict value (corrupt-at-rest JSON) is rejected outright,
+    without ever reaching the Verdict(value) enum lookup."""
+    with pytest.raises(ValidationError, match="unrecognized verdict"):
+        review_surface._as_verdict(None)
 
 
 @pytest.mark.unit

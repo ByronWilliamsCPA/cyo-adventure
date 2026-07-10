@@ -296,6 +296,67 @@ class TestRateLimitMiddleware:
         assert result is mock_response
         assert "unknown" in middleware.requests
 
+    @pytest.mark.unit
+    def test_rate_limiter_cleanup_retains_ips_with_recent_activity(self) -> None:
+        """_cleanup_stale_entries keeps the recent-timestamp slice for an IP.
+
+        The prior cleanup test only exercises the "all timestamps expired"
+        (stale) branch; this covers the sibling branch where filtering still
+        leaves at least one recent timestamp, so the IP's entry is trimmed
+        in place rather than dropped.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=60,
+            burst_size=10,
+            cleanup_interval=0,
+        )
+
+        now = time.time()
+        middleware.requests["1.2.3.4"] = [now - 120, now - 5]
+        middleware._last_cleanup = 0
+
+        middleware._cleanup_stale_entries(now)
+
+        assert middleware.requests["1.2.3.4"] == [now - 5]
+
+    @pytest.mark.unit
+    def test_rate_limiter_cleanup_evicts_oldest_ips_over_max_tracked(self) -> None:
+        """_cleanup_stale_entries trims to max_tracked_ips, keeping the newest.
+
+        All three IPs here have recent activity, so none are dropped by the
+        stale-timestamp check; only the LRU-style max_tracked_ips eviction
+        should remove the least-recently-active one.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import RateLimitMiddleware
+
+        middleware = RateLimitMiddleware(
+            app=MagicMock(),
+            requests_per_minute=60,
+            burst_size=10,
+            max_tracked_ips=2,
+            cleanup_interval=0,
+        )
+
+        now = time.time()
+        middleware.requests["1.1.1.1"] = [now - 50]
+        middleware.requests["2.2.2.2"] = [now - 30]
+        middleware.requests["3.3.3.3"] = [now - 10]
+        middleware._last_cleanup = 0
+
+        middleware._cleanup_stale_entries(now)
+
+        assert len(middleware.requests) == 2
+        assert "3.3.3.3" in middleware.requests
+        assert "2.2.2.2" in middleware.requests
+        assert "1.1.1.1" not in middleware.requests
+
 
 # ---------------------------------------------------------------------------
 # BodySizeLimitMiddleware (audit Finding 8: unbounded request body)
@@ -368,6 +429,94 @@ class TestBodySizeLimitMiddleware:
         asyncio.run(middleware({"type": "lifespan"}, None, None))  # type: ignore[arg-type]
 
         assert calls == ["lifespan"]
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_streamed_body_over_limit_raises_413_without_content_length(
+        self,
+    ) -> None:
+        """A body that only exceeds the cap once streamed (no Content-Length
+        header at all) still gets rejected with 413.
+
+        This drives the byte-counting backstop in ``limited_receive`` directly
+        at the ASGI layer: the fast-path Content-Length check in ``__call__``
+        never fires (no such header is present), so the only way to reject
+        this body is the streamed-total check on line 181.
+        """
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        messages = [
+            {"type": "http.request", "body": b"0" * 6, "more_body": True},
+            {"type": "http.request", "body": b"0" * 6, "more_body": False},
+        ]
+        message_iter = iter(messages)
+
+        async def receive() -> dict[str, object]:
+            return next(message_iter)
+
+        async def inner_app(
+            scope: dict[str, object], receive: object, send: object
+        ) -> None:
+            while True:
+                message = await receive()  # type: ignore[operator]
+                if not message.get("more_body", False):
+                    break
+
+        sent: list[dict[str, object]] = []
+
+        async def send(message: dict[str, object]) -> None:
+            sent.append(message)
+
+        middleware = BodySizeLimitMiddleware(inner_app, max_body_bytes=10)
+        await middleware({"type": "http", "headers": []}, receive, send)  # type: ignore[arg-type]
+
+        assert sent[0]["status"] == 413
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_non_request_message_skips_size_check(self) -> None:
+        """A non-``http.request`` message (e.g. ``http.disconnect``) passes
+        through ``limited_receive`` without being counted toward the cap."""
+        from cyo_adventure.middleware.security import BodySizeLimitMiddleware
+
+        messages = [{"type": "http.disconnect"}]
+        message_iter = iter(messages)
+
+        async def receive() -> dict[str, object]:
+            return next(message_iter)
+
+        async def inner_app(
+            scope: dict[str, object], receive: object, send: object
+        ) -> None:
+            await receive()  # type: ignore[operator]
+
+        sent: list[dict[str, object]] = []
+
+        async def send(message: dict[str, object]) -> None:
+            sent.append(message)
+
+        middleware = BodySizeLimitMiddleware(inner_app, max_body_bytes=10)
+        await middleware({"type": "http", "headers": []}, receive, send)  # type: ignore[arg-type]
+
+        assert sent == []
+
+
+class TestParseContentLength:
+    """Tests for the standalone ``_parse_content_length`` helper."""
+
+    @pytest.mark.unit
+    def test_parse_content_length_valid_bytes_returns_int(self) -> None:
+        """A well-formed numeric Content-Length header parses to an int."""
+        from cyo_adventure.middleware.security import _parse_content_length
+
+        assert _parse_content_length(b"1024") == 1024
+
+    @pytest.mark.unit
+    def test_parse_content_length_malformed_bytes_returns_none(self) -> None:
+        """A non-numeric Content-Length header returns None instead of raising."""
+        from cyo_adventure.middleware.security import _parse_content_length
+
+        assert _parse_content_length(b"not-a-number") is None
 
 
 # ---------------------------------------------------------------------------
@@ -508,6 +657,69 @@ class TestSSRFPreventionMiddleware:
         # A plain relative path has no scheme or host
         assert middleware._is_blocked_url("/relative/path") is False
 
+    @pytest.mark.unit
+    def test_is_blocked_url_decimal_ip_out_of_range_is_not_blocked(self) -> None:
+        """A digit-only host outside the 0-0xFFFFFFFF IPv4 int range is not
+        treated as an obfuscated IP (falls through to the "not blocked" path)."""
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import SSRFPreventionMiddleware
+
+        middleware = SSRFPreventionMiddleware(app=MagicMock())
+
+        # 99999999999 exceeds 0xFFFFFFFF (4294967295), so the range guard
+        # short-circuits before ipaddress.ip_address is ever called.
+        assert middleware._is_blocked_url("http://99999999999/path") is False
+
+    @pytest.mark.unit
+    def test_is_blocked_url_decimal_ip_public_is_not_blocked(self) -> None:
+        """A digit-only host that decodes to a public IP is not blocked."""
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import SSRFPreventionMiddleware
+
+        middleware = SSRFPreventionMiddleware(app=MagicMock())
+
+        # 134744072 == 8.8.8.8 (public) in decimal notation.
+        assert middleware._is_blocked_url("http://134744072/path") is False
+
+    @pytest.mark.unit
+    def test_is_blocked_url_unicode_digit_host_swallows_int_conversion_error(
+        self,
+    ) -> None:
+        """A host that is Unicode-digit-like but not ``int()``-convertible is
+        handled by the except clause instead of propagating.
+
+        ``str.isdigit()`` returns True for characters like U+00B2
+        (superscript two) that ``int()`` still rejects; this is the real
+        (not mocked) trigger for the ValueError/OverflowError guard around
+        the decimal-IP-obfuscation check.
+        """
+        from unittest.mock import MagicMock
+
+        from cyo_adventure.middleware.security import SSRFPreventionMiddleware
+
+        middleware = SSRFPreventionMiddleware(app=MagicMock())
+
+        assert "²".isdigit()
+        assert middleware._is_blocked_url("http://²/path") is False
+
+    @pytest.mark.unit
+    def test_extract_host_from_url_malformed_ipv6_returns_none(self) -> None:
+        """_extract_host_from_url returns None instead of raising on a
+        malformed IPv6-bracketed URL that makes urlparse raise ValueError."""
+        from cyo_adventure.middleware.security import SSRFPreventionMiddleware
+
+        assert SSRFPreventionMiddleware._extract_host_from_url("http://[::1") is None
+
+    @pytest.mark.unit
+    def test_extract_scheme_from_url_malformed_ipv6_returns_none(self) -> None:
+        """_extract_scheme_from_url returns None instead of raising on a
+        malformed IPv6-bracketed URL that makes urlparse raise ValueError."""
+        from cyo_adventure.middleware.security import SSRFPreventionMiddleware
+
+        assert SSRFPreventionMiddleware._extract_scheme_from_url("http://[::1") is None
+
 
 # ---------------------------------------------------------------------------
 # add_security_middleware
@@ -541,21 +753,29 @@ class TestAddSecurityMiddleware:
 
     @pytest.mark.unit
     def test_add_security_middleware_with_allowed_hosts(self) -> None:
-        """add_security_middleware accepts allowed_hosts without error."""
+        """add_security_middleware registers TrustedHostMiddleware when allowed_hosts is set."""
+        from starlette.middleware.trustedhost import TrustedHostMiddleware
+
         from cyo_adventure.middleware.security import add_security_middleware
 
         app = _minimal_app()
-        # Should not raise
         add_security_middleware(app, allowed_hosts=["testserver", "localhost"])
+
+        middleware_classes = [m.cls for m in app.user_middleware]
+        assert TrustedHostMiddleware in middleware_classes
 
     @pytest.mark.unit
     def test_add_security_middleware_with_https_redirect(self) -> None:
         """add_security_middleware registers HTTPSRedirectMiddleware when requested."""
+        from starlette.middleware.httpsredirect import HTTPSRedirectMiddleware
+
         from cyo_adventure.middleware.security import add_security_middleware
 
         app = _minimal_app()
-        # Should not raise during setup
         add_security_middleware(app, enable_https_redirect=True)
+
+        middleware_classes = [m.cls for m in app.user_middleware]
+        assert HTTPSRedirectMiddleware in middleware_classes
 
     @pytest.mark.unit
     def test_add_security_middleware_disable_rate_limiting(self) -> None:

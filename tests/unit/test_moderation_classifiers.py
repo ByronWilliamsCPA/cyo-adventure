@@ -409,3 +409,170 @@ async def test_perspective_malformed_attribute_degrades_gracefully() -> None:
     categories = {f.category for f in findings}
     assert "toxicity" in categories
     assert "sexually_explicit" not in categories
+
+
+@pytest.mark.unit
+async def test_openai_non_dict_top_level_response_returns_no_findings() -> None:
+    """A top-level JSON body that is not a dict (for example a bare list) degrades."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=["unexpected", "shape"])
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_openai_empty_results_list_returns_no_findings() -> None:
+    """An empty ``results`` list (present but empty) must not raise or emit findings."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"results": []})
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_openai_result_zero_not_a_dict_returns_no_findings() -> None:
+    """``results[0]`` that is not a dict (for example a bare number) degrades."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"results": [123]})
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_openai_non_dict_categories_and_scores_return_no_findings() -> None:
+    """Non-dict ``categories``/``category_scores`` fields narrow to empty maps."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "results": [
+                    {
+                        "flagged": False,
+                        "categories": "not-a-dict",
+                        "category_scores": "not-a-dict",
+                    }
+                ]
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key="k",
+        perspective_key=None,
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_perspective_http_error_returns_no_findings() -> None:
+    """A non-2xx Perspective response raises HTTPStatusError, which is caught."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(500)
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_perspective_non_dict_top_level_response_returns_no_findings() -> None:
+    """A top-level JSON body that is not a dict (for example a bare list) degrades."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=["unexpected", "shape"])
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_perspective_missing_attribute_scores_returns_no_findings() -> None:
+    """A response body missing ``attributeScores`` entirely degrades gracefully."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"unrelated": "field"})
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_perspective_attribute_payload_not_a_dict_is_skipped() -> None:
+    """A per-attribute payload that is not a dict (for example a bare string) is skipped."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={"attributeScores": {"TOXICITY": "not-a-dict"}},
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []
+
+
+@pytest.mark.unit
+async def test_perspective_attribute_value_non_numeric_is_skipped() -> None:
+    """A ``summaryScore.value`` that is not numeric (for example a string) is skipped."""
+
+    def handler(_request: httpx.Request) -> httpx.Response:
+        return httpx.Response(
+            200,
+            json={
+                "attributeScores": {
+                    "TOXICITY": {
+                        "summaryScore": {"value": "high", "type": "PROBABILITY"}
+                    }
+                }
+            },
+        )
+
+    findings = await run_classifiers(
+        nodes=[("n1", "text")],
+        openai_key=None,
+        perspective_key="pkey",
+        client=_client(handler),
+    )
+    assert findings == []

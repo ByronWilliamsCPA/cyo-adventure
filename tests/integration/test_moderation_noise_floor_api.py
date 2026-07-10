@@ -41,17 +41,17 @@ async def test_get_with_no_row_returns_default(client: AsyncClient, seed: Seed) 
     """GET with no persisted row falls back to the 0.05 code default."""
     res = await client.get(_URL, headers=auth(seed.admin_token))
     assert res.status_code == 200
-    assert res.json() == {"value": 0.05}
+    assert res.json() == {"value": pytest.approx(0.05)}
 
 
 async def test_put_then_get_roundtrips(client: AsyncClient, seed: Seed) -> None:
     """A successful PUT persists the value; a subsequent GET returns it."""
     res = await client.put(_URL, json={"value": 0.2}, headers=auth(seed.admin_token))
     assert res.status_code == 200
-    assert res.json() == {"value": 0.2}
+    assert res.json() == {"value": pytest.approx(0.2)}
     res = await client.get(_URL, headers=auth(seed.admin_token))
     assert res.status_code == 200
-    assert res.json() == {"value": 0.2}
+    assert res.json() == {"value": pytest.approx(0.2)}
 
 
 async def test_put_over_max_rejected(client: AsyncClient, seed: Seed) -> None:
@@ -76,3 +76,24 @@ async def test_put_records_updated_by(
         row = await session.get(ModerationSetting, "admin_noise_floor")
     assert row is not None
     assert row.updated_by is not None
+
+
+async def test_put_twice_updates_existing_row_in_place(
+    client: AsyncClient, seed: Seed, engine: AsyncEngine
+) -> None:
+    """A second PUT updates the already-persisted row rather than inserting.
+
+    The first PUT takes the "no row yet" insert branch; this pins the sibling
+    branch where the row already exists and update_noise_floor mutates it in
+    place (same primary key, no duplicate row).
+    """
+    first = await client.put(_URL, json={"value": 0.1}, headers=auth(seed.admin_token))
+    assert first.status_code == 200
+    second = await client.put(_URL, json={"value": 0.4}, headers=auth(seed.admin_token))
+    assert second.status_code == 200
+    assert second.json() == {"value": pytest.approx(0.4)}
+
+    async with AsyncSession(engine) as session:
+        rows = (await session.scalars(select(ModerationSetting))).all()
+    assert len(rows) == 1
+    assert rows[0].value == pytest.approx(0.4)

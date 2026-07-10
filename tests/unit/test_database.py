@@ -108,14 +108,18 @@ class TestImportSideEffects:
 
     @pytest.mark.unit
     def test_module_imports_without_live_database(self) -> None:
-        """Importing database module must not raise even without a live database."""
+        """Reimporting database module builds an engine without opening a connection."""
         import importlib
 
         # If the module is already imported, reimport to exercise the path;
-        # no exception means no connection was attempted.
+        # a populated, idle pool (no checked-out connections) confirms the
+        # engine was constructed lazily rather than by attempting a connect.
         import cyo_adventure.core.database as db_module
 
-        importlib.reload(db_module)
+        reloaded = importlib.reload(db_module)
+
+        assert reloaded.get_engine() is not None
+        assert reloaded.get_engine().sync_engine.pool.checkedout() == 0  # type: ignore[attr-defined]
 
     @pytest.mark.unit
     def test_engine_pool_has_no_checked_out_connections_at_startup(self) -> None:

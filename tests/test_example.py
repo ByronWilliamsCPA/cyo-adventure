@@ -8,7 +8,13 @@ This module shows:
 - Docstring examples that can be tested with doctest
 """
 
+import re
+
 import pytest
+
+# Anchored to the full string (with optional SemVer prerelease/build suffix)
+# so a malformed version like "1.2.3garbage" fails instead of prefix-matching.
+_SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 class TestPackageInitialization:
@@ -23,9 +29,10 @@ class TestPackageInitialization:
         """
         from cyo_adventure import __version__
 
-        assert __version__ is not None
         assert isinstance(__version__, str)
-        assert len(__version__) > 0
+        assert _SEMVER_RE.match(__version__), (
+            f"{__version__!r} does not look like a semantic version"
+        )
 
     @pytest.mark.unit
     def test_package_author_exists(self) -> None:
@@ -35,10 +42,10 @@ class TestPackageInitialization:
         """
         from cyo_adventure import __author__, __email__
 
-        assert __author__ is not None
-        assert isinstance(__author__, str)
-        assert __email__ is not None
-        assert isinstance(__email__, str)
+        assert __author__ == "Byron Williams"
+        assert re.match(r"^[^@\s]+@[^@\s]+\.[^@\s]+$", __email__), (
+            f"{__email__!r} does not look like an email address"
+        )
 
 
 class TestSettings:
@@ -110,7 +117,10 @@ class TestLogging:
 
         logger = get_logger("test_logger")
 
-        assert logger is not None
+        # get_logger is lazily bound until first use, so it is a
+        # BoundLoggerLazyProxy rather than a realized BoundLogger; assert on
+        # the structlog module identity plus the callable contract instead.
+        assert type(logger).__module__.startswith("structlog")
         assert callable(logger.info)
         assert callable(logger.debug)
         assert callable(logger.warning)
@@ -141,7 +151,9 @@ class TestLogging:
         call_args = mock_logger.info.call_args
         assert call_args[0][0] == "performance"
         assert call_args[1]["operation"] == "test_operation"
-        assert call_args[1]["duration_ms"] == 123.46  # Rounded to 2 decimals
+        assert call_args[1]["duration_ms"] == pytest.approx(
+            123.46
+        )  # Rounded to 2 decimals
         assert call_args[1]["success"] is True
         assert call_args[1]["extra_metric"] == 42
 
@@ -158,14 +170,15 @@ class TestLoggingJSON:
 
         Tests that setup_logging properly configures JSON output.
         """
+        import structlog
+
         from cyo_adventure.utils.logging import setup_logging
 
         # Configure with JSON logging to cover the JSON renderer branch
         setup_logging(level="INFO", json_logs=True)
 
-        # Should complete without errors
-        # The JSON renderer path (line 87) is now covered
-        assert True
+        processors = structlog.get_config()["processors"]
+        assert isinstance(processors[-1], structlog.processors.JSONRenderer)
 
 
 class TestExampleIntegration:
@@ -189,7 +202,7 @@ class TestExampleIntegration:
         logger = get_logger(__name__)
 
         assert settings.log_level == "INFO"
-        assert logger is not None
+        assert type(logger).__module__.startswith("structlog")
 
     @pytest.mark.integration
     def test_package_imports(self) -> None:
@@ -208,6 +221,8 @@ class TestExampleIntegration:
 
         assert callable(get_logger)
 
+        from pydantic_settings import BaseSettings
+
         from cyo_adventure.core import Settings
 
-        assert Settings is not None
+        assert issubclass(Settings, BaseSettings)

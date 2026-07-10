@@ -10,6 +10,7 @@ a background task (after the commit, off the event loop).
 
 from __future__ import annotations
 
+import logging
 import uuid
 
 import pytest
@@ -312,6 +313,37 @@ async def test_get_generation_job_returns_status() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_get_generation_job_missing_job_not_found() -> None:
+    """A job id with no matching row raises ResourceNotFoundError (-> 404)."""
+    session = _FakeSession(results={GenerationJob: None})
+    ctx = RequestContext(
+        principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(ResourceNotFoundError, match="not found"):
+        await get_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_get_generation_job_missing_concept_not_found() -> None:
+    """A job whose concept row is gone raises ResourceNotFoundError (-> 404).
+
+    This is the IDOR-guard load order: the job resolves, but the concept it
+    points to (used for the family-ownership check) does not.
+    """
+    job = GenerationJob(concept_id=uuid.uuid4(), status="queued")
+    session = _FakeSession(results={GenerationJob: job, Concept: None})
+    ctx = RequestContext(
+        principal=_principal("guardian", uuid.uuid4(), uuid.uuid4()), session=session
+    )
+
+    with pytest.raises(ResourceNotFoundError, match="not found"):
+        await get_generation_job(str(uuid.uuid4()), ctx)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_validate_storybook_version_runs_gate() -> None:
     """The validate endpoint re-runs the gate on the stored blob for its family."""
     family_id = uuid.uuid4()
@@ -372,6 +404,7 @@ async def test_validate_storybook_version_missing() -> None:
 @pytest.mark.unit
 def test_enqueue_safely_swallows_redis_failure(
     monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """_enqueue_safely logs and swallows a failing enqueue (best-effort)."""
 
@@ -380,8 +413,19 @@ def test_enqueue_safely_swallows_redis_failure(
         raise ConnectionError(msg)
 
     monkeypatch.setattr("cyo_adventure.api.generation.enqueue_generation", _boom)
-    # Must not raise.
-    _enqueue_safely(str(uuid.uuid4()))
+    job_id = str(uuid.uuid4())
+
+    with caplog.at_level(logging.ERROR, logger="cyo_adventure.api.generation"):
+        result = _enqueue_safely(job_id)
+
+    # _enqueue_safely's documented contract is None (best-effort, never raises);
+    # the failure must still be observable via the logged exception.
+    assert result is None
+    assert any(
+        job_id in record.getMessage()
+        and "enqueue_generation failed" in record.getMessage()
+        for record in caplog.records
+    )
 
 
 @pytest.mark.unit

@@ -37,31 +37,41 @@ def make_ctx(
 def test_exact_name_raises() -> None:
     """Prompt containing the real child's name as a standalone word raises."""
     ctx = make_ctx(names=frozenset({"Mia"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Write a story about Mia.", forbidden=ctx)
 
 
 def test_name_case_insensitive_raises() -> None:
     """Name match is case-insensitive (uppercase, mixed case)."""
     ctx = make_ctx(names=frozenset({"Mia"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("MIA saves the day.", forbidden=ctx)
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("mIa went exploring.", forbidden=ctx)
 
 
 def test_name_at_start_of_prompt_raises() -> None:
     """Name at the very start of the prompt (no leading word boundary) raises."""
     ctx = make_ctx(names=frozenset({"Emma"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Emma found a treasure map.", forbidden=ctx)
 
 
 def test_name_at_end_of_prompt_raises() -> None:
     """Name at the end of the prompt with trailing punctuation raises."""
     ctx = make_ctx(names=frozenset({"Luca"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("The hero was Luca.", forbidden=ctx)
 
 
@@ -99,7 +109,9 @@ def test_name_as_suffix_substring_does_not_raise() -> None:
 def test_birthdate_iso_format_raises() -> None:
     """Prompt containing an ISO-format birthdate substring raises."""
     ctx = make_ctx(birthdates=frozenset({"2018-04-07"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe(
             "The child was born on 2018-04-07 in the village.", forbidden=ctx
         )
@@ -108,14 +120,18 @@ def test_birthdate_iso_format_raises() -> None:
 def test_birthdate_rendered_format_raises() -> None:
     """Prompt containing a rendered birthdate form raises."""
     ctx = make_ctx(birthdates=frozenset({"April 7, 2018"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("The story is set around April 7, 2018.", forbidden=ctx)
 
 
 def test_birthdate_case_insensitive_raises() -> None:
     """Birthdate substring match is case-insensitive."""
     ctx = make_ctx(birthdates=frozenset({"april 7, 2018"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Set around April 7, 2018 in a forest.", forbidden=ctx)
 
 
@@ -162,7 +178,9 @@ def test_exception_does_not_echo_name() -> None:
     """The ValidationError message must not contain the actual child name."""
     secret_name = "SuperSecretChildName"
     ctx = make_ctx(names=frozenset({secret_name}))
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ) as exc_info:
         assert_prompt_pii_safe(f"Tell me about {secret_name}.", forbidden=ctx)
     # The secret must not appear anywhere in the string representation.
     assert secret_name not in str(exc_info.value)
@@ -173,7 +191,9 @@ def test_exception_does_not_echo_birthdate() -> None:
     """The ValidationError message must not contain the actual birthdate."""
     secret_date = "1999-12-31"
     ctx = make_ctx(birthdates=frozenset({secret_date}))
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ) as exc_info:
         assert_prompt_pii_safe(f"The event happened on {secret_date}.", forbidden=ctx)
     assert secret_date not in str(exc_info.value)
 
@@ -181,7 +201,9 @@ def test_exception_does_not_echo_birthdate() -> None:
 def test_exception_details_name_kind() -> None:
     """ValidationError raised on a name match includes kind='name' in details."""
     ctx = make_ctx(names=frozenset({"Rosa"}))
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ) as exc_info:
         assert_prompt_pii_safe("Rosa crossed the bridge.", forbidden=ctx)
     assert exc_info.value.details.get("kind") == "name"
 
@@ -189,7 +211,9 @@ def test_exception_details_name_kind() -> None:
 def test_exception_details_birthdate_kind() -> None:
     """ValidationError raised on a birthdate match includes kind='birthdate'."""
     ctx = make_ctx(birthdates=frozenset({"2020-01-15"}))
-    with pytest.raises(ValidationError) as exc_info:
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ) as exc_info:
         assert_prompt_pii_safe("Born on 2020-01-15 was a hero.", forbidden=ctx)
     assert exc_info.value.details.get("kind") == "birthdate"
 
@@ -229,7 +253,9 @@ def test_real_child_name_in_prompt_raises_even_when_protagonist_present() -> Non
         f"You are {fictional_protagonist}. "
         f"This story was created for {real_child_name}."
     )
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe(prompt, forbidden=ctx)
 
 
@@ -249,7 +275,9 @@ def test_name_with_regex_metacharacters_matches_literally() -> None:
     ctx = make_ctx(names=frozenset({"A.B"}))
 
     # Literal match: 'A.B' present in prompt -> must raise.
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Hello A.B today", forbidden=ctx)
 
     # Dot-as-wildcard would match 'AxB', but re.escape prevents that.
@@ -257,7 +285,9 @@ def test_name_with_regex_metacharacters_matches_literally() -> None:
 
     # Additional metacharacter: '+' in name must be literal.
     ctx2 = make_ctx(names=frozenset({"C+C"}))
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Music by C+C Factory.", forbidden=ctx2)
     # 'CxC' should not trigger the 'C+C' guard.
     assert_prompt_pii_safe("Music by CxC Factory.", forbidden=ctx2)
@@ -275,7 +305,9 @@ def test_name_with_trailing_nonword_char_matches() -> None:
     ctx = make_ctx(names=frozenset({"J.R."}))
 
     # 'J.R.' appears as a standalone token surrounded by spaces/sentence end.
-    with pytest.raises(ValidationError):
+    with pytest.raises(
+        ValidationError, match=r"prompt contains a forbidden real-child identifier"
+    ):
         assert_prompt_pii_safe("Ask J.R. about it", forbidden=ctx)
 
     # Verify the non-match case: 'JR' (no dots) should not trigger 'J.R.' guard.

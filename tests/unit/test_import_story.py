@@ -6,7 +6,11 @@ import pytest
 from cyo_adventure.core.exceptions import ResourceNotFoundError, ValidationError
 from cyo_adventure.db.models import StorybookVersion
 from cyo_adventure.generation import import_story
-from cyo_adventure.generation.import_story import ImportRequest, import_filled_story
+from cyo_adventure.generation.import_story import (
+    ImportRequest,
+    _str_meta,
+    import_filled_story,
+)
 
 
 class _FakeResult:
@@ -350,3 +354,16 @@ def test_resume_invalid_skeleton_json_is_validation_error(
     monkeypatch.setattr(import_story, "load_skeleton", _raise_bad_json)
     with pytest.raises(ValidationError):
         import_story._load_resume_skeleton("8-11", "the-cave-of-echoes")
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        pytest.param(None, id="none"),
+        pytest.param("a string", id="string"),
+        pytest.param(["a", "list"], id="list"),
+    ],
+)
+def test_str_meta_returns_none_for_non_dict_metadata(metadata: object) -> None:
+    """A non-dict authoring_metadata degrades to None instead of raising."""
+    assert _str_meta(metadata, "any_key") is None

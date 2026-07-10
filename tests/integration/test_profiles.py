@@ -38,7 +38,7 @@ async def test_guardian_lists_own_family_profiles(
     row = profiles[0]
     assert row["id"] == str(seed.child_profile_id)
     assert row["age_band"] == "10-13"
-    assert row["reading_level_cap"] == 99.0
+    assert row["reading_level_cap"] == pytest.approx(99.0)
     assert row["avatar"] is None
     assert row["tts_enabled"] is False
     assert "created_at" in row
@@ -79,7 +79,7 @@ async def test_guardian_creates_profile(client: AsyncClient, seed: Seed) -> None
     body = resp.json()
     assert body["display_name"] == "Nova"  # whitespace stripped
     assert body["age_band"] == "5-8"
-    assert body["reading_level_cap"] == 99.0
+    assert body["reading_level_cap"] == pytest.approx(99.0)
     assert body["avatar"] == "fox"
     assert body["tts_enabled"] is False
 
@@ -145,7 +145,7 @@ async def test_guardian_updates_caps_and_clears_avatar(
     )
     assert resp.status_code == 200, resp.text
     body = resp.json()
-    assert body["reading_level_cap"] == 4.5
+    assert body["reading_level_cap"] == pytest.approx(4.5)
     assert body["age_band"] == "8-11"
     assert body["avatar"] is None
     assert body["display_name"] == "Nova"  # untouched field survives
@@ -354,7 +354,7 @@ async def test_create_reading_cap_boundaries(client: AsyncClient, seed: Seed) ->
         headers=guardian,
     )
     assert at_zero.status_code == 201, at_zero.text
-    assert at_zero.json()["reading_level_cap"] == 0.0
+    assert at_zero.json()["reading_level_cap"] == pytest.approx(0.0)
     at_max = await client.post(
         "/api/v1/profiles",
         json={"display_name": "Nova2", "age_band": "5-8", "reading_level_cap": 99.0},

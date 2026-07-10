@@ -74,7 +74,10 @@ def test_unknown_field_rejected() -> None:
     """A ConceptBrief with an unknown field raises a Pydantic ValidationError."""
     bad = dict(VALID_BRIEF)
     bad["unexpected_field"] = "surprise"
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"unexpected_field\n\s*Extra inputs are not permitted",
+    ):
         ConceptBrief(**bad)
 
 
@@ -84,7 +87,10 @@ def test_unknown_protagonist_field_rejected() -> None:
     bad_protagonist["real_name"] = "actual child"
     bad = dict(VALID_BRIEF)
     bad["protagonist"] = bad_protagonist
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"protagonist\.real_name\n\s*Extra inputs are not permitted",
+    ):
         ConceptBrief(**bad)
 
 
@@ -97,7 +103,10 @@ def test_tier_zero_rejected() -> None:
     """tier=0 is below the allowed range (ge=1) and raises ValidationError."""
     bad = dict(VALID_BRIEF)
     bad["tier"] = 0
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"tier\n\s*Input should be greater than or equal to 1",
+    ):
         ConceptBrief(**bad)
 
 
@@ -105,7 +114,10 @@ def test_tier_three_rejected() -> None:
     """tier=3 is above the allowed range (le=2) and raises ValidationError."""
     bad = dict(VALID_BRIEF)
     bad["tier"] = 3
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"tier\n\s*Input should be less than or equal to 2",
+    ):
         ConceptBrief(**bad)
 
 
@@ -113,7 +125,9 @@ def test_invalid_structure_pattern_rejected() -> None:
     """An unknown structure_pattern value raises a Pydantic ValidationError."""
     bad = dict(VALID_BRIEF)
     bad["structure_pattern"] = "star_shaped"
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError, match=r"structure_pattern\n\s*Input should be"
+    ):
         ConceptBrief(**bad)
 
 
@@ -121,7 +135,10 @@ def test_protagonist_age_negative_rejected() -> None:
     """Protagonist.age < 0 is rejected (ge=0)."""
     bad = dict(VALID_BRIEF)
     bad["protagonist"] = {**VALID_PROTAGONIST, "age": -1}
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"protagonist\.age\n\s*Input should be greater than or equal to 0",
+    ):
         ConceptBrief(**bad)
 
 
@@ -129,7 +146,10 @@ def test_protagonist_age_over_limit_rejected() -> None:
     """Protagonist.age > 18 is rejected (le=18)."""
     bad = dict(VALID_BRIEF)
     bad["protagonist"] = {**VALID_PROTAGONIST, "age": 19}
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"protagonist\.age\n\s*Input should be less than or equal to 18",
+    ):
         ConceptBrief(**bad)
 
 
@@ -137,7 +157,10 @@ def test_empty_premise_rejected() -> None:
     """An empty premise string violates min_length=1 and raises ValidationError."""
     bad = dict(VALID_BRIEF)
     bad["premise"] = ""
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"premise\n\s*String should have at least 1 character",
+    ):
         ConceptBrief(**bad)
 
 
@@ -145,7 +168,10 @@ def test_reading_level_negative_rejected() -> None:
     """reading_level_target < 0 is rejected (ge=0)."""
     bad = dict(VALID_BRIEF)
     bad["reading_level_target"] = -0.1
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"reading_level_target\n\s*Input should be greater than or equal to 0",
+    ):
         ConceptBrief(**bad)
 
 
@@ -153,7 +179,10 @@ def test_target_node_count_zero_rejected() -> None:
     """target_node_count < 1 is rejected (ge=1)."""
     bad = dict(VALID_BRIEF)
     bad["target_node_count"] = 0
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"target_node_count\n\s*Input should be greater than or equal to 1",
+    ):
         ConceptBrief(**bad)
 
 
@@ -161,7 +190,10 @@ def test_ending_count_zero_rejected() -> None:
     """ending_count < 1 is rejected (ge=1)."""
     bad = dict(VALID_BRIEF)
     bad["ending_count"] = 0
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"ending_count\n\s*Input should be greater than or equal to 1",
+    ):
         ConceptBrief(**bad)
 
 
@@ -177,7 +209,10 @@ def test_target_node_count_over_max_rejected() -> None:
     """target_node_count one over the ADR-011 matrix ceiling is rejected (le=)."""
     bad = dict(VALID_BRIEF)
     bad["target_node_count"] = MAX_TARGET_NODE_COUNT + 1
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"target_node_count\n\s*Input should be less than or equal to",
+    ):
         ConceptBrief(**bad)
 
 
@@ -193,7 +228,10 @@ def test_ending_count_over_max_rejected() -> None:
     """ending_count one over the derived ceiling is rejected (le=)."""
     bad = dict(VALID_BRIEF)
     bad["ending_count"] = MAX_ENDING_COUNT + 1
-    with pytest.raises(PydanticValidationError):
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"ending_count\n\s*Input should be less than or equal to",
+    ):
         ConceptBrief(**bad)
 
 
@@ -304,3 +342,18 @@ def test_printable_text_unaffected_by_control_char_strip() -> None:
     bad["premise"] = "Line one\nLine two\twith a tab."
     brief = ConceptBrief(**bad)
     assert brief.premise == "Line one\nLine two\twith a tab."
+
+
+def test_non_dict_input_passes_through_and_fails_pydantic_validation() -> None:
+    """A non-dict payload skips the control-char strip and fails field validation.
+
+    _strip_control_characters only walks a dict payload (the normal
+    JSON-body/kwargs case); any other input type is passed through unchanged
+    on line 220, and Pydantic's own field validation then rejects it because
+    a bare string cannot satisfy the model's dict-shaped fields.
+    """
+    with pytest.raises(
+        PydanticValidationError,
+        match=r"Input should be a valid dictionary or instance of ConceptBrief",
+    ):
+        ConceptBrief.model_validate("not-a-dict")

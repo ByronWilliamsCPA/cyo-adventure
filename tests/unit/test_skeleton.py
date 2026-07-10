@@ -21,6 +21,21 @@ def test_load_skeleton_accepts_valid_shell() -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    "story",
+    [
+        pytest.param({}, id="no_nodes_key"),
+        pytest.param({"nodes": "not-a-list"}, id="nodes_not_a_list"),
+    ],
+)
+def test_has_unfilled_directives_returns_false_when_nodes_missing_or_not_a_list(
+    story: dict[str, object],
+) -> None:
+    """A story with no 'nodes' key, or a non-list 'nodes', reports no directives."""
+    assert has_unfilled_directives(story) is False
+
+
+@pytest.mark.unit
 def test_load_skeleton_rejects_structurally_broken_shell(tmp_path: Path) -> None:
     """A shell whose choice targets a missing node is rejected."""
     import json

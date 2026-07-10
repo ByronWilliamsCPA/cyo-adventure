@@ -73,4 +73,32 @@ describe('player engine behaviour', () => {
     state = choose(lantern, state, 'c_bright_tunnel')
     expect(() => choose(lantern, state, 'anything')).toThrow(/ending/)
   })
+
+  it('rejects a choice id that does not exist on the current node', () => {
+    const state = start(lantern)
+    expect(() => choose(lantern, state, 'c_does_not_exist')).toThrow(
+      /does not exist on the current node/
+    )
+  })
+
+  it('throws when a choice targets a node id that does not exist in the story', () => {
+    // A dangling target: the validator normally rejects this before it reaches
+    // the reader (see the #ASSUME note above enterNode), so this is a
+    // belt-and-suspenders guard exercised directly here.
+    const dangling: Storybook = {
+      ...lantern,
+      nodes: [
+        {
+          id: 'n_entrance',
+          body: 'Start',
+          is_ending: false,
+          choices: [{ id: 'c_go', label: 'Go', target: 'n_missing' }],
+        },
+      ],
+    }
+    const state = start(dangling)
+    expect(() => choose(dangling, state, 'c_go')).toThrow(
+      /node 'n_missing' does not exist in the story/
+    )
+  })
 })

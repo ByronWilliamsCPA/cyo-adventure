@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import os
 import uuid
+from typing import TYPE_CHECKING
 
 import pytest
 import sqlalchemy as sa
 from sqlalchemy.exc import DBAPIError
 
 from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 REVISION = "f2a3b4c5d6e7"
 DOWN_REVISION = "e1f2a3b4c5d6"
@@ -22,7 +26,7 @@ def _env(pg_url: str) -> dict[str, str]:
 
 
 @pytest.fixture
-def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
+def upgraded_engine(migration_pg_url: str) -> Iterator[sa.engine.Engine]:
     """Land on DOWN_REVISION, then upgrade to REVISION; yield a sync engine."""
     env = _env(migration_pg_url)
     up = run_alembic(PROJECT_ROOT, env, "upgrade", DOWN_REVISION)
@@ -30,7 +34,11 @@ def upgraded_engine(migration_pg_url: str) -> sa.engine.Engine:
     result = run_alembic(PROJECT_ROOT, env, "upgrade", REVISION)
     assert result.returncode == 0, result.stderr
     sync_url = migration_pg_url.replace("+asyncpg", "+psycopg")
-    return sa.create_engine(sync_url)
+    engine = sa.create_engine(sync_url)
+    try:
+        yield engine
+    finally:
+        engine.dispose()
 
 
 def _insert_event(conn: sa.Connection) -> str:
@@ -48,7 +56,12 @@ def _insert_event(conn: sa.Connection) -> str:
 
 def test_insert_is_allowed(upgraded_engine: sa.engine.Engine) -> None:
     with upgraded_engine.begin() as conn:
-        _insert_event(conn)
+        event_id = _insert_event(conn)
+        stored_type = conn.execute(
+            sa.text("SELECT event_type FROM pipeline_event WHERE id = :id"),
+            {"id": event_id},
+        ).scalar_one()
+    assert stored_type == "generation_started"
 
 
 def test_update_is_rejected(upgraded_engine: sa.engine.Engine) -> None:

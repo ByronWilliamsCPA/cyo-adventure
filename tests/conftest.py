@@ -1,105 +1,16 @@
 """Pytest configuration and shared fixtures for CYO Adventure tests.
 
 This module provides:
-- Test fixture paths and directories
-- Pytest markers for test categorization
 - Shared fixtures for common test resources
 - Temporary directory management
+
+Custom pytest markers are registered in ``pyproject.toml``
+(``[tool.pytest.ini_options].markers``), not here.
 """
 
 from pathlib import Path
 
 import pytest
-
-# ============================================================================
-# Test Fixture Paths
-# ============================================================================
-
-# Root paths
-PROJECT_ROOT = Path(__file__).parent.parent
-FIXTURES_DIR = PROJECT_ROOT / "data" / "test_fixtures"
-BENCHMARKS_DIR = PROJECT_ROOT / "data" / "benchmarks"
-
-
-# ============================================================================
-# Pytest Markers
-# ============================================================================
-
-
-def pytest_configure(config: pytest.Config) -> None:
-    """Register custom pytest markers for test pyramid.
-
-    Test Pyramid Markers:
-        unit: Fast, isolated tests (no external dependencies)
-        integration: Tests verifying component interaction
-        security: Security-focused assertion tests
-        perf: Performance and load tests
-        slow: Tests that take significant time
-
-    Args:
-        config: Pytest configuration object.
-    """
-    # Test type markers (for test pyramid)
-    config.addinivalue_line(
-        "markers",
-        "unit: Unit tests (fast, isolated, no external dependencies)",
-    )
-    config.addinivalue_line(
-        "markers",
-        "integration: Integration tests (moderate speed, may use fixtures)",
-    )
-    config.addinivalue_line(
-        "markers",
-        "security: Security-focused tests (auth, input validation, etc.)",
-    )
-    config.addinivalue_line(
-        "markers",
-        "perf: Performance and load tests (benchmarking, stress testing)",
-    )
-    config.addinivalue_line(
-        "markers",
-        "performance: Alias for perf marker",
-    )
-
-    # Execution modifier markers
-    config.addinivalue_line(
-        "markers",
-        "slow: Slow tests (can be excluded with -m 'not slow')",
-    )
-    config.addinivalue_line(
-        "markers",
-        "smoke: Smoke tests for quick sanity checks",
-    )
-    config.addinivalue_line(
-        "markers",
-        "regression: Regression tests for previously fixed bugs",
-    )
-
-
-# ============================================================================
-# Fixture Directory Fixtures
-# ============================================================================
-
-
-@pytest.fixture(scope="session")
-def fixtures_dir() -> Path:
-    """Return path to test fixtures directory.
-
-    Returns:
-        Path object pointing to the test fixtures directory.
-    """
-    return FIXTURES_DIR
-
-
-@pytest.fixture(scope="session")
-def benchmarks_dir() -> Path:
-    """Return path to benchmarks directory.
-
-    Returns:
-        Path object pointing to the benchmarks directory.
-    """
-    return BENCHMARKS_DIR
-
 
 # ============================================================================
 # Temporary Directory Fixtures
