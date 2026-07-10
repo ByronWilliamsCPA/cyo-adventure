@@ -31,7 +31,10 @@ and grandfather-skips legacy ones.
 ## Architecture
 
 Three seams, all existing: `generation/series_link.py` gains `embed_series_block` (called by the
-worker right after `link_series_position`, same transaction, before moderation);
+worker after `link_series_position` AND after `run_moderation_pipeline` returns, same
+transaction: moderation's soft-repair path can reassign the blob wholesale, and a repaired blob
+predates the embedded block, so embedding first would let repair silently discard it; see the
+`worker.py::_persist_and_moderate` RAD marker on the embed call for the full rationale);
 `validator/series.py::_check_final_flags` is relaxed to error only on a non-top final book;
 `publishing/service.py::approve` gains a chain-so-far `validate_series` gate with the grandfather
 rule. No migration (Alembic head stays `228c68e8f1e7`), no OpenAPI change, no new event type.
@@ -336,16 +339,28 @@ Expected: PASS (new tests plus the file's pre-existing linkage/concurrency tests
 - [ ] **Step 7: Wire the worker**
 
 In `src/cyo_adventure/generation/worker.py`, extend the `series_link` import to include
-`embed_series_block`, and immediately after the existing
-`await link_series_position(session, story_id=story_id, concept_id=ctx.job_row.concept_id)`
-(~line 519) add:
+`embed_series_block`, and add the call *after* the existing
+`await run_moderation_pipeline(...)` call inside `_persist_and_moderate`'s try block (not after
+`link_series_position`):
 
 ```python
-    await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
+    try:
+        await run_moderation_pipeline(...)
+        await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
+    except Exception as exc:
+        ...
 ```
 
-This runs before `run_moderation_pipeline`, so the moderated and eventually approved blob
-already carries the block, inside the worker's single unit of work.
+This runs AFTER `run_moderation_pipeline` returns, not before: moderation's soft-repair path
+(`moderation/pipeline.py`'s `attempt_repair`) can reassign `version_row.blob` to an LLM-revised
+blob whose prompt preserves node ids/structure but says nothing about `metadata.series`, and
+`StoryMetadata.series` is optional, so a repaired blob is schema-valid with the series block
+silently dropped. Embedding after moderation reads the post-repair blob (when a repair happened)
+and stamps the authoritative linkage-derived block last, inside the worker's single unit of work.
+Placing the call inside the same `try` as `run_moderation_pipeline`, right after it, means a
+moderation failure still takes the existing rollback path unchanged (the embed call is simply
+never reached), and an embed failure (for example a malformed blob missing `start_node`) is
+caught by the same except and rolled back identically.
 
 - [ ] **Step 8: Assert the wiring in the worker's own test**
 
