@@ -17,7 +17,7 @@ schema. CI runs it with [newman](https://github.com/postmanlabs/newman) in the `
 
 ## What is tested
 
-The collection contains 15 folders (one per resource), 69 requests, and 204 assertions. Every request
+The collection contains 16 folders (one per resource), 75 requests, and 223 assertions. Every request
 asserts an exact status code and validates the response body against a JSON Schema resolved from the
 app's OpenAPI components; happy-path requests add semantic assertions (state transitions, echoed fields,
 list contents guaranteed by seed data).
@@ -26,14 +26,15 @@ list contents guaranteed by seed data).
 | --- | --- |
 | health | Liveness, readiness, and startup probes |
 | auth-negative | Cross-cutting 401 (no token), 403 (wrong role), 401 (unknown subject) |
-| me, profiles, families | Identity, profile CRUD, admin family listing, role gates |
-| library, reading, ratings | Published-book discovery, reading-state save/replay, rating create/update |
-| assignments | Assign/unassign storybooks, guardian book listing, content summary |
-| story-requests | Full lifecycle: create, decline, approve, authored create |
+| me, profiles, families | Identity, profile create/read/update, admin family listing, role gates |
+| library, reading, ratings | Published-book discovery, reading-state save/replay, rating creation (the endpoint is an upsert; the update path is not yet re-exercised) |
+| assignments | Assign storybooks, guardian book listing, content summary (no unassign endpoint exists) |
+| story-requests | Full lifecycle: create, decline, approve, authored create, admin authoring-plan (201 + 409 idempotency) |
 | approval | Storybook lifecycle on the seeded in-review story: send-back, resubmit, approve |
 | generation | Concept creation and generation-job flow (enqueue is best-effort without Redis) |
 | moderation-thresholds, provider-allowlist | Admin CRUD plus role gates |
 | covers | Auth negatives and DB-only status reads only (see externals policy below) |
+| archive | Archive lifecycle on the second seeded published story; runs last because it removes the book from the library |
 
 All resource IDs are discovered dynamically from prior responses (`pm.collectionVariables.set`), never
 hardcoded, so the suite is stable across reseeded databases.
@@ -61,10 +62,12 @@ subjects the collection uses as collection variables:
 ### Rate-limit pacing
 
 The app enforces a 60 requests/minute sliding window (plus a 10 req/s burst cap) via
-`RateLimitMiddleware`. A collection-level pre-request script paces requests at ~1.1s so any 60-second
-window stays under the limit; a full run takes roughly 90 seconds by design. If you add requests, keep
-the pacing; if the suite grows enough to hurt CI latency, raise the app's limit for CI instead of
-shrinking the delay.
+`RateLimitMiddleware`. Pacing is supplied by the runner, not the collection: every newman invocation
+must pass `--delay-request 1100` (CI does; the local command below does) so any 60-second window stays
+under the limit. A full run takes roughly 90 seconds by design. If you run the collection in the Postman
+desktop Runner instead of newman, set its own Delay setting to 1100 ms; the CLI flag does not apply
+there. If the suite grows enough to hurt CI latency, raise the app's limit for CI instead of shrinking
+the delay.
 
 ## Running locally
 
@@ -82,6 +85,7 @@ uv run python scripts/seed_dev_data.py           # idempotent seed (users, stori
 
 newman run docs/api/postman-collection.json \
   --env-var "base_url=http://localhost:8000" \
+  --delay-request 1100 \
   --reporters cli,junit --reporter-junit-export newman-junit.xml --bail
 ```
 
@@ -91,10 +95,12 @@ example a running dev stack), run the suite under an isolated project with remap
 
 ## Required environment
 
-No secrets are required. The compose defaults are sufficient: `ENVIRONMENT=local` (dev auth),
-`DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/LLM/Redis configuration. The
-only non-default env used in CI is `DATABASE_URL` for the runner-side migrate and seed steps, which
-targets the published Postgres port.
+No secrets are required to run the suite. The compose defaults are sufficient: `ENVIRONMENT=local` (dev
+auth), `DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/LLM/Redis
+configuration. The only non-default env used in CI is `DATABASE_URL` for the runner-side migrate and
+seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
+step uses the repo-level `CODECOV_TOKEN` secret for optional, non-blocking Test Analytics reporting
+(`fail_ci_if_error: false`); a missing token degrades reporting only, never test execution.
 
 ## CI integration
 

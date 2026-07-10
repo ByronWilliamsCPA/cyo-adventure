@@ -5,18 +5,6 @@
     "description": "Sequential API test suite for CYO Adventure, run against a freshly migrated and seeded dev database (scripts/seed_dev_data.py). Folders run in an order that tells one coherent scenario; run with --bail so the first failing assertion stops the suite.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          "var _throttleStart = Date.now();",
-          "while (Date.now() - _throttleStart < 1100) { /* stay under the app's 60 req/min sliding-window limiter */ }"
-        ]
-      }
-    }
-  ],
   "variable": [
     {
       "key": "base_url",
@@ -724,7 +712,7 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"stories\": {\"items\": {\"properties\": {\"id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"tier\": {\"type\": \"integer\"}, \"reading_level_target\": {\"type\": \"number\"}, \"node_count\": {\"type\": \"integer\", \"default\": 0}, \"rating\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"progress\": {\"anyOf\": [{\"properties\": {\"current_node\": {\"type\": \"string\"}, \"nodes_visited\": {\"type\": \"integer\"}, \"updated_at\": {\"type\": \"string\", \"format\": \"date-time\"}}, \"type\": \"object\", \"required\": [\"current_node\", \"nodes_visited\", \"updated_at\"]}, {\"type\": \"null\"}]}, \"series_id\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"book_index\": {\"anyOf\": [{\"type\": \"integer\"}, {\"type\": \"null\"}]}, \"cover_url\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}}, \"type\": \"object\", \"required\": [\"id\", \"title\", \"version\", \"age_band\", \"tier\", \"reading_level_target\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"stories\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"both seeded published stories are present\", function () { var body = pm.response.json(); var tide = body.stories.find(function (s) { return s.title === \"The Tide Pool Mystery\"; }); var clockwork = body.stories.find(function (s) { return s.title === \"The Clockwork Garden\"; }); pm.expect(tide).to.not.be.undefined; pm.expect(clockwork).to.not.be.undefined; pm.expect(body.stories.length).to.eql(2); pm.collectionVariables.set(\"storybook_id_1\", tide.id); pm.collectionVariables.set(\"storybook_id_2\", clockwork.id); });"
+                  "pm.test(\"both seeded published stories are present\", function () { var body = pm.response.json(); var tide = body.stories.find(function (s) { return s.title === \"The Tide Pool Mystery\"; }); var clockwork = body.stories.find(function (s) { return s.title === \"The Clockwork Garden\"; }); pm.expect(tide).to.not.be.undefined; pm.expect(clockwork).to.not.be.undefined; pm.expect(body.stories.length).to.eql(2); pm.collectionVariables.set(\"storybook_id_1\", tide.id); pm.collectionVariables.set(\"storybook_title_1\", tide.title); pm.collectionVariables.set(\"storybook_id_2\", clockwork.id); });"
                 ],
                 "type": "text/javascript"
               }
@@ -767,9 +755,10 @@
               "script": {
                 "exec": [
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
-                  "var schema = {\"type\": \"object\", \"additionalProperties\": true};",
-                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"blob title matches\", function () { var body = pm.response.json(); pm.expect(body.title).to.eql(\"The Tide Pool Mystery\"); pm.expect(body.id).to.eql(\"s_tide_pools\"); });"
+                  "var schema = {\"type\": \"object\", \"properties\": {\"schema_version\": {\"type\": \"string\"}, \"id\": {\"type\": \"string\", \"minLength\": 1}, \"version\": {\"type\": \"integer\", \"minimum\": 1}, \"title\": {\"type\": \"string\", \"minLength\": 1}, \"metadata\": {\"type\": \"object\"}, \"variables\": {\"type\": \"array\"}, \"start_node\": {\"type\": \"string\", \"minLength\": 1}, \"nodes\": {\"type\": \"array\", \"minItems\": 1, \"items\": {\"type\": \"object\"}}}, \"required\": [\"schema_version\", \"id\", \"version\", \"title\", \"metadata\", \"start_node\", \"nodes\"]};",
+                  "pm.test(\"response matches the Storybook blob schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"blob id and title match the discovered library entry\", function () { var body = pm.response.json(); pm.expect(body.id).to.eql(pm.collectionVariables.get(\"storybook_id_1\")); pm.expect(body.title).to.eql(pm.collectionVariables.get(\"storybook_title_1\")); });",
+                  "pm.test(\"start node exists in the node list\", function () { var body = pm.response.json(); var ids = body.nodes.map(function (n) { return n.id; }); pm.expect(ids).to.include(body.start_node); });"
                 ],
                 "type": "text/javascript"
               }
@@ -1861,6 +1850,114 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"method\": \"skeleton_fill\",\n  \"mechanism\": \"skill\",\n  \"prep_model\": \"newman-test-model\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST authoring-plan as admin creates an awaiting_manual_fill job",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 201\", function () { pm.response.to.have.status(201); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"request_id\": {\"type\": \"string\"}, \"concept_id\": {\"type\": \"string\"}, \"job_id\": {\"type\": \"string\"}, \"method\": {\"type\": \"string\", \"enum\": [\"skeleton_fill\", \"fresh_generation\"]}, \"mechanism\": {\"type\": \"string\", \"enum\": [\"skill\", \"automated_provider\"]}, \"status\": {\"type\": \"string\"}, \"skeleton_slug\": {\"anyOf\": [{\"type\": \"string\"}, {\"type\": \"null\"}]}, \"warnings\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}}, \"required\": [\"request_id\", \"concept_id\", \"job_id\", \"method\", \"mechanism\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"skill-mechanism job is parked for manual fill with a matched skeleton\", function () { var body = pm.response.json(); pm.expect(body.status).to.eql(\"awaiting_manual_fill\"); pm.expect(body.method).to.eql(\"skeleton_fill\"); pm.expect(body.mechanism).to.eql(\"skill\"); pm.expect(body.skeleton_slug).to.be.a(\"string\").and.not.empty; pm.expect(body.request_id).to.eql(pm.collectionVariables.get(\"request_id_2\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id_2}}/authoring-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id_2}}",
+                "authoring-plan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"skeleton_fill\",\n  \"mechanism\": \"skill\",\n  \"prep_model\": \"sonnet\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST authoring-plan again -> 409 (job already exists)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names StateTransitionError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"StateTransitionError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/story-requests/{{request_id_2}}/authoring-plan",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "story-requests",
+                "{{request_id_2}}",
+                "authoring-plan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"skeleton_fill\",\n  \"mechanism\": \"skill\",\n  \"prep_model\": \"sonnet\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3180,6 +3277,192 @@
                 "versions",
                 "1",
                 "cover"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "archive",
+      "description": "Storybook archive lifecycle on the second seeded published story. Runs LAST: archiving removes the book from the library, so earlier folders (library, reading, assignments) must complete before it disappears.",
+      "item": [
+        {
+          "name": "POST archive as guardian (admin-only) -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 403\", function () { pm.response.to.have.status(403); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names AuthorizationError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"AuthorizationError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_2}}/archive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_2}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST archive as admin archives the published story",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"id\": {\"type\": \"string\"}, \"status\": {\"type\": \"string\", \"const\": \"archived\"}}, \"required\": [\"id\", \"status\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"archived id matches the target book\", function () { var body = pm.response.json(); pm.expect(body.id).to.eql(pm.collectionVariables.get(\"storybook_id_2\")); pm.expect(body.status).to.eql(\"archived\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_2}}/archive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_2}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST archive again -> 409 (not published)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 409\", function () { pm.response.to.have.status(409); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"error\": {\"type\": \"string\"}, \"message\": {\"type\": \"string\"}}, \"required\": [\"error\", \"message\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"error body names StateTransitionError\", function () { var body = pm.response.json(); pm.expect(body.error).to.eql(\"StateTransitionError\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/storybooks/{{storybook_id_2}}/archive",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "storybooks",
+                "{{storybook_id_2}}",
+                "archive"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET /library as guardian excludes the archived story",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
+                  "var schema = {\"type\": \"object\", \"properties\": {\"stories\": {\"type\": \"array\", \"items\": {\"type\": \"object\"}}}, \"required\": [\"stories\"]};",
+                  "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
+                  "pm.test(\"archived story is gone; the other published story remains\", function () { var body = pm.response.json(); var ids = body.stories.map(function (s) { return s.id; }); pm.expect(ids).to.not.include(pm.collectionVariables.get(\"storybook_id_2\")); pm.expect(ids).to.include(pm.collectionVariables.get(\"storybook_id_1\")); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{guardian_token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/library?profile_id={{profile_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "library"
+              ],
+              "query": [
+                {
+                  "key": "profile_id",
+                  "value": "{{profile_id}}"
+                }
               ]
             }
           },
