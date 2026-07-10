@@ -5,11 +5,13 @@ Run against a local Postgres so the reader app has content to serve::
     uv run python scripts/seed_dev_data.py
 
 It creates the schema (if missing), one family with a guardian, an admin, and
-a child profile; publishes the two hand-authored Phase 1 stories; and leaves a
+a child profile; publishes the two hand-authored Phase 1 stories; leaves a
 third story in review with a flagged moderation report so the admin review
-queue has work to approve. It is idempotent: re-running skips rows that
-already exist. This is a development convenience, not a migration; production
-data comes through the generation pipeline.
+queue has work to approve; and seeds a two-book, state-carrying series
+("Ember Trail") assigned to the child profile so a continuation flow has
+something real to walk. It is idempotent: re-running skips rows that already
+exist. This is a development convenience, not a migration; production data
+comes through the generation pipeline.
 """
 
 from __future__ import annotations
@@ -28,6 +30,7 @@ from cyo_adventure.core.database import Base, get_engine, get_session
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
+    Series,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
@@ -52,6 +55,16 @@ _ADMIN_SUBJECT = "dev-admin"
 # Fixed id so naive-kid-misuse-real.spec.ts can request a known cross-family
 # profile. Kept in sync with UNRELATED_PROFILE_ID in that spec.
 _UNRELATED_PROFILE_ID = uuid.UUID("22222222-2222-2222-2222-222222222222")
+
+# Fixed ids/titles so series-continue-real.spec.ts can locate the two books by
+# title in the library and follow the reader flow through to book 2 without a
+# dynamic lookup of story ids.
+_SERIES_TITLE = "Ember Trail"
+_SERIES_AGE_BAND = "10-13"
+_SERIES_BOOKS = (
+    ("s_dev_ember_1", "Ember Trail 1", 1),
+    ("s_dev_ember_2", "Ember Trail 2", 2),
+)
 
 
 def _flagged_moderation_report(node_id: str) -> dict[str, object]:
@@ -80,6 +93,167 @@ def _flagged_moderation_report(node_id: str) -> dict[str, object]:
             "reviewer_independent": True,
         },
     }
+
+
+def _series_blob(
+    story_id: str, title: str, book_index: int, series_id: str
+) -> dict[str, object]:
+    """Build a schema-valid, three-node story blob for a series book.
+
+    Mirrors the two-node ``_blob`` helper in
+    ``tests/integration/test_series_next.py`` but adds a middle node so the
+    start node offers a real choice (one branch sets ``courage`` via an
+    effect, the other is plain) before the reader reaches the ending; both
+    branches converge on the middle node so the book resolves in at most two
+    clicks.
+
+    Args:
+        story_id: Fixed storybook id embedded in the blob (``blob["id"]``).
+        title: Story title, also used as the passage-body prefix.
+        book_index: 1-based position within the series.
+        series_id: The just-flushed ``Series.id`` (as a string), embedded in
+            ``metadata.series.series_id`` so the book links to a real row.
+
+    Returns:
+        A schema-valid Storybook blob whose ``metadata.series`` block
+        declares the start node as the series entry node and marks the book
+        as state-carrying.
+    """
+    prefix = f"n_e{book_index}"
+    start = f"{prefix}_start"
+    middle = f"{prefix}_middle"
+    end = f"{prefix}_end"
+    return {
+        "schema_version": "2.0",
+        "id": story_id,
+        "version": 1,
+        "title": title,
+        "metadata": {
+            "age_band": _SERIES_AGE_BAND,
+            "series": {
+                "series_id": series_id,
+                "book_index": book_index,
+                "series_entry_node": start,
+                "is_final": False,
+                "carries_state": True,
+            },
+        },
+        "variables": [
+            {"name": "courage", "type": "int", "initial": 0, "min": 0, "max": 5}
+        ],
+        "start_node": start,
+        "nodes": [
+            {
+                "id": start,
+                "body": f"{title}: the trail begins.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": f"c_{prefix}_brave",
+                        "label": "Face it with courage",
+                        "target": middle,
+                        "effects": [{"op": "set", "var": "courage", "value": 3}],
+                    },
+                    {
+                        "id": f"c_{prefix}_plain",
+                        "label": "Walk on carefully",
+                        "target": middle,
+                    },
+                ],
+            },
+            {
+                "id": middle,
+                "body": f"{title}: onward through the woods.",
+                "is_ending": False,
+                "choices": [
+                    {
+                        "id": f"c_{prefix}_onward",
+                        "label": "Keep going",
+                        "target": end,
+                    }
+                ],
+            },
+            {
+                "id": end,
+                "body": f"{title}: journey's end.",
+                "is_ending": True,
+                "ending": {
+                    "id": f"e_{prefix}_done",
+                    "valence": "positive",
+                    "kind": "success",
+                    "title": "The End",
+                },
+                "choices": [],
+            },
+        ],
+    }
+
+
+async def _seed_series_chain(
+    session: AsyncSession,
+    *,
+    family_id: uuid.UUID,
+    profile_id: uuid.UUID,
+    guardian_id: uuid.UUID,
+    published_at: datetime,
+) -> None:
+    """Seed a two-book, state-carrying series for the dev profile.
+
+    Inserts one ``Series`` row plus two published ``Storybook``/
+    ``StorybookVersion``/``StorybookAssignment`` rows (books 1 and 2), so
+    ``series-continue-real.spec.ts`` can play book 1 to its ending, follow
+    "Continue the series", and land on book 2. The ``Series`` row is flushed
+    first so its real id can be embedded in each book's blob.
+
+    Args:
+        session: The active seed session.
+        family_id: The dev family the series belongs to.
+        profile_id: The dev child profile both books are assigned to.
+        guardian_id: The user who authored and approved both versions.
+        published_at: Timestamp stamped on both published versions.
+    """
+    series = Series(
+        family_id=family_id,
+        title=_SERIES_TITLE,
+        age_band=_SERIES_AGE_BAND,
+        carries_state=True,
+        created_by=guardian_id,
+    )
+    session.add(series)
+    await session.flush()
+
+    for story_id, title, book_index in _SERIES_BOOKS:
+        session.add(
+            Storybook(
+                id=story_id,
+                family_id=family_id,
+                current_published_version=1,
+                status="published",
+                series_id=series.id,
+                book_index=book_index,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id=story_id,
+                version=1,
+                blob=_series_blob(story_id, title, book_index, str(series.id)),
+                approved_by=guardian_id,
+                published_at=published_at,
+            )
+        )
+        # #ASSUME: concurrency: shares the composite-PK / no-rerun assumption
+        # tagged on the published-story loop above; the function-level early
+        # return in seed_dev_data is the sole guard against a second run
+        # duplicating these rows.
+        # #VERIFY: test_seed_dev_data_seeds_series_chain.
+        session.add(
+            StorybookAssignment(
+                child_profile_id=profile_id,
+                storybook_id=story_id,
+                assigned_by=guardian_id,
+            )
+        )
 
 
 async def _seed_unrelated_family(session: AsyncSession) -> bool:
@@ -271,11 +445,20 @@ async def seed_dev_data(
             )
         )
 
+        await _seed_series_chain(
+            session,
+            family_id=family.id,
+            profile_id=profile.id,
+            guardian_id=guardian.id,
+            published_at=published_at,
+        )
+
         await session.commit()
         print(
             f"Seeded family {family.id}, profile {profile.id}, admin user, "
-            f"{len(_STORIES)} published stories, and 1 in-review story "
-            f"({review_id}) awaiting approval."
+            f"{len(_STORIES)} published stories, 1 in-review story "
+            f"({review_id}) awaiting approval, and the 2-book '{_SERIES_TITLE}' "
+            "series."
         )
 
 
