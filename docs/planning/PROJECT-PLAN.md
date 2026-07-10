@@ -877,7 +877,9 @@ Supabase project (dev/staging) created at phase start. Blocks Phases 8 and 9.
 
 **Branch**: `feat/phase-7-kids-compliance`
 **Milestone**: M7 - Compliance checklist signed off; deletion drill passes
-**Status**: Planned
+**Status**: Planned. Scope expanded 2026-07-10 with items P7-09..P7-13 from the COPPA compliance
+audit ([docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md));
+per-item audit notes appear in the table below.
 
 **Objective**: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
@@ -890,13 +892,18 @@ label, the deletion contract, and the consent disclosure.
 | Plan item | Deliverable | Notes |
 |-----------|-------------|-------|
 | P7-01 | Apple Developer Program enrollment + EU DSA trader status | Prerequisite for P6-05, TestFlight, and submission; publish trader contact details |
-| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change |
+| P7-02 | Verifiable parental consent at onboarding | COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; **audit 2026-07-10**: no onboarding endpoint exists yet (P6-03 unbuilt) and `POST /profiles` is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01) |
 | P7-03 | Privacy policy published + linked in-app | Drafted from `privacy-model.md`; hosted at a stable URL (App Store Connect requires one) |
-| P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows |
+| P7-04 | In-app account deletion (Guideline 5.1.1(v)) | Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; **audit 2026-07-10**: no FK `ondelete` cascade exists on any child-linked table today (contradicts `privacy-model.md` line 133), so the job must add cascades or enumerate every child table plus the `pipeline_event` `BOOK_ASSIGNED` rows (audit C-03) |
 | P7-05 | Guardian data export | All family data in a portable format (GDPR access right) |
-| P7-06 | Kid-context SDK and telemetry audit | No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels |
+| P7-06 | Kid-context SDK and telemetry audit | No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels; **audit 2026-07-10**: confirmed no Sentry, analytics, ad, or tracker SDK is wired anywhere; include the public cover bucket (P7-11) and the classifier egress (P7-10) in the label inventory (audit H-02/H-03/M-02) |
 | P7-07 | Age-rating questionnaire prep + AI disclosure + reviewer notes | `docs/planning/app-store-review-notes.md`: how the pre-moderated pipeline works, why children cannot reach generation, moderation and approval evidence |
 | P7-08 | Compliance checklist | `docs/planning/compliance-checklist.md` covering Guidelines 1.3, 4.8, 5.1.1(v), 5.1.4, COPPA, GDPR-K; includes verifying the Supabase DPA and data-region selection (Supabase is a processor of guardian and child-linked data per ADR-009); owner sign-off required; **gates Phase 9 submission** |
+| P7-09 | Data-retention policy and enforced purge | Written, published retention policy stating purpose and window per child-data category (`child_profile`, `reading_state`, `completion`, `rating`, `story_request`, `generation_job.report`, `pipeline_event`); implement the ADR-007 `generation_job.report` pg_cron purge (still unbuilt, carried from Phase 5) and add expiry for stale `reading_state` and for the raw text of blocked/declined `story_request` rows (retained at rest today, redacted only at the view layer); satisfies 16 CFR 312.10 (2025 amendment: no indefinite retention). Audit H-01, M-03 |
+| P7-10 | PII-egress hardening across every provider leg | Route the cover-generation prompt through `assert_prompt_pii_safe` before the image model (`covers/` is unguarded today; audit H-02); apply the same screening to the Stage-0 classifier inputs in `moderation/pipeline.py` (bypassed today while the sibling LLM review stages are guarded; audit H-03); extend the guard beyond the registered-name allowlist with pattern detectors (email, phone, address) so free-form child PII is caught, and retire the dead birthdate branch (audit M-01, L-03) |
+| P7-11 | Private cover-image storage | Move covers off the public Supabase bucket with guessable keys (`{storybook_id}/{version}.webp`) to a private bucket with signed, expiring URLs, or gate retrieval behind the family-scoped API. Audit M-02 |
+| P7-12 | Confirm third-party processor terms (public tier) | Obtain written zero-data-retention or standard-retention terms for every cloud egress destination (OpenRouter and downstream models, Anthropic-direct, Google Gemini image, OpenAI Moderation, Perspective) and record them in `privacy-model.md`, closing its Open Blocker 1; prefer ZDR routes. The Supabase DPA and data-region check remain in P7-08. Audit H-04 |
+| P7-13 | Information-security program + security-doc correction | Produce the 16 CFR 312.8 (2025) safeguards artifact (designated coordinator, documented risk assessment, vendor-oversight process); correct `SECURITY.md`, which today asserts a "no persistent PII without explicit parental consent" mitigation that does not exist and still describes the retired Authentik / dev-stub auth. Audit M-04 |
 
 **Acceptance criteria**:
 
@@ -905,12 +912,19 @@ label, the deletion contract, and the consent disclosure.
 - Consent records exist for every family created after the flow ships; onboarding without
   consent is impossible.
 - P7-08 checklist complete and signed off; no open high-severity compliance item.
+- No child-linked data category lacks a stated retention window, and the `generation_job.report`
+  purge runs on schedule (P7-09).
+- Every cloud egress leg (generation, review, Stage-0 classifiers, cover image) is PII-screened or
+  contractually covered as a processor, and the cover bucket is private (P7-10, P7-11, P7-12).
 
 **Quality gates** (plus Section 7 standards):
 
 - [ ] 90% coverage on consent and deletion paths
 - [ ] Deletion drill test green in CI (fixtures spanning every child-linked table)
 - [ ] Privacy nutrition label inventory matches the SDK audit (P7-06) exactly
+- [ ] PII-egress guard covers the cover-generation and Stage-0 classifier paths (P7-10); no
+      unguarded child-derived egress remains
+- [ ] Retention purge job green in CI against fixtures older than the policy window (P7-09)
 
 **Dependencies**: Overlaps Phase 6 (consent hooks into P6-03 onboarding; deletion depends on
 P6-01 identities). Blocks Phase 9 submission via P7-08.
@@ -1127,7 +1141,7 @@ documents.
 | Provider data-handling terms not confirmed before first LLM call | M | H | Phase-0 hard blocker: P0-09 must be resolved before Phase 2 begins | 0 |
 | Scope creep (dice/combat, social features) | M | M | Explicitly out of scope on every rung; revisit only on demand; public-rung (R2/R3) scope is bounded by ADR-008 | All |
 | App Store rejection (4.2 web wrapper, kids' AI content, parental gate) | M | H | Native affordances checklist (P8-08), parental gate (P6-08), reviewer notes on the pre-moderated pipeline (P7-07), TestFlight beta before submission (P9-09) | 8, 9 |
-| COPPA / GDPR-K violation | L | H | Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08) | 6, 7 |
+| COPPA / GDPR-K violation | L | H | Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08); plus retention purge (P7-09), PII-egress hardening (P7-10), private cover storage (P7-11), processor terms (P7-12), and an infosec program (P7-13) added from the [COPPA audit](../compliance/coppa-compliance-audit.md) | 6, 7 |
 | Auth defect enables cross-family data access | L | H | Reuse of proven `Principal` model; negative-token suite (P6-09); stranger-family IDOR suite (P6-10); 90% coverage on auth boundary | 6 |
 | R1 ships on the dev auth stub (`_extract_subject` trusts the bearer as a verified subject) | L | M | **Narrowed 2026-07-02**: P6-01 real JWT validation was pulled forward into C4a-1 and now runs in every non-local environment (`Settings()` itself refuses to start outside `local` without `oidc_issuer`/`oidc_jwks_url`, per `_require_oidc_config_outside_local`); the stub is reachable only when `environment == "local"`, which remains acceptable for local/CI dev. Remaining exposure: no `Principal` is minted for a child session yet (P6-04) and no JIT guardian provisioning exists (P6-03), so the frontend has no way to reach a non-local backend as a real user until those land | 4a, 6 |
 | LLM cost abuse at public scale | M | M | Metered credits (P8-05), per-family quotas, global spend cap with circuit breaker (P9-05) | 8, 9 |
@@ -1248,10 +1262,16 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | ADR-009: Supabase platform | Auth, database, storage, and queue topology for the public tier (amends ADR-008) | [docs/planning/adr/adr-009-supabase-platform.md](./adr/adr-009-supabase-platform.md) |
 | ADR-010: Modal review + gated generation leg | Moderation reviewer on Modal; evidence-gated path for Modal generation (amends ADR-003) | [docs/planning/adr/adr-010-modal-review-and-gated-generation.md](./adr/adr-010-modal-review-and-gated-generation.md) |
 | Privacy and provider data-handling model | Data classification behind the consent, label, and deletion work in Phase 7 | [docs/planning/privacy-model.md](./privacy-model.md) |
+| COPPA compliance audit | Engineering audit against 16 CFR Part 312; findings mapped to Phase 7 items P7-02..P7-13 | [docs/compliance/coppa-compliance-audit.md](../compliance/coppa-compliance-audit.md) |
 
 ---
 
-**Last Updated**: 2026-07-03 (v2.5: doc-consistency sweep: Phase 4a marked delivered and
+**Last Updated**: 2026-07-10 (v2.6: integrated the COPPA compliance audit
+(`docs/compliance/coppa-compliance-audit.md`): added Phase 7 items P7-09..P7-13 (retention purge,
+PII-egress hardening, private cover storage, processor terms, infosec program), per-item audit
+notes on P7-02/P7-04/P7-06, Phase 7 acceptance/quality-gate additions, and Risk Register
+cross-references;
+v2.5: doc-consistency sweep: Phase 4a marked delivered and
 R1 feature-complete (C4a-1..6 merged); Supabase OIDC recorded as the app's current auth in
 the tech-stack table with Authentik retained for the homelab/family tier; ADR status
 promotions (001, 002, 003, 005, 006, 009, 011 Accepted; 004, 007, 008, 010 Proposed); old
