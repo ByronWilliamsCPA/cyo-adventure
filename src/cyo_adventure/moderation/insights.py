@@ -36,6 +36,8 @@ SUGGESTION_MIN_OVERRIDE_RATE = 0.8
 
 # Raising the surfacing bar one step: findings below min_verdict stop
 # surfacing to families, so "overridden too often" moves the bar upward.
+# Co-dependent with _OVERRIDABLE_VERDICTS below: a verdict added to one but
+# not the other silently produces wrong suggestions.
 _VERDICT_RAISE: dict[str, str] = {
     Verdict.ADVISORY.value: Verdict.FLAG.value,
     Verdict.FLAG.value: Verdict.BLOCK.value,
@@ -43,6 +45,8 @@ _VERDICT_RAISE: dict[str, str] = {
 
 # Verdicts a guardian can override by releasing anyway; hard blocks never
 # reach the guardian, so they carry no override signal.
+# Co-dependent with _VERDICT_RAISE above: a verdict added to one but not
+# the other silently produces wrong suggestions.
 _OVERRIDABLE_VERDICTS = frozenset({Verdict.ADVISORY.value, Verdict.FLAG.value})
 
 
@@ -82,6 +86,16 @@ def attribute_outcome(
         version was never approved.
     """
     for occurred_at, event_type in decisions:
+        # #ASSUME: timing-dependencies: pipeline_event timestamps are
+        # monotonic across the moderation_completed and released/sent_back
+        # writers, and at most one version per storybook awaits a decision
+        # at a time; two moderations completed before one decision event
+        # would double-credit that decision to both versions. Currently
+        # unreachable: no code path creates version > 1 before the prior
+        # version's decision lands.
+        # #VERIFY: tests/unit/test_moderation_insights.py::
+        # TestAttributeOutcome::test_boundary_equal_timestamp_is_decided and
+        # ::test_decision_event_wins_over_approved_fallback
         if occurred_at >= moderated_at:
             return VersionOutcome(
                 decided=True, released=event_type == EventType.RELEASED.value
@@ -131,6 +145,86 @@ class _CategoryAccumulator:
     released_versions: int = 0
 
 
+def _fold_finding_into_accumulator(
+    finding: Mapping[str, object],
+    record: VersionModerationRecord,
+    seen_categories: set[str],
+    accumulators: dict[tuple[str, str], _CategoryAccumulator],
+) -> None:
+    """Fold one finding into its (age_band, category) accumulator, in place.
+
+    Extracted from ``aggregate_insights`` to keep that function's cognitive
+    complexity within the project's SonarQube gate (python:S3776); behavior
+    is unchanged.
+
+    Args:
+        finding: One entry from ``record``'s moderation report.
+        record: The version the finding belongs to (supplies age_band,
+            moderated_at, and the attributed outcome).
+        seen_categories: Categories already credited for this version's
+            decided/released counts; mutated to add ``finding``'s category.
+        accumulators: The running per-(age_band, category) tallies; mutated
+            in place.
+    """
+    # #EDGE: data-integrity: a findings sequence may contain an element that
+    # is not a JSON object (a bare string, int, or null) in a legacy or
+    # imported row; skipped here, never a crash, matching the module
+    # docstring's "skipped, never a crash" contract.
+    # #VERIFY: tests/unit/test_moderation_insights.py::
+    # TestAggregateInsights::test_non_dict_findings_elements_are_skipped
+    if not isinstance(finding, dict):
+        return
+    category = finding.get("category")
+    verdict = finding.get("verdict")
+    # #EDGE: data-integrity: moderation_report is JSONB written by
+    # ModerationReport.to_dict(), but imported or legacy rows may
+    # deviate; a finding missing category/verdict is skipped, never
+    # a crash.
+    # #VERIFY: tests/unit/test_moderation_insights.py::
+    # TestAggregateInsights::test_malformed_findings_are_skipped
+    if not isinstance(category, str) or verdict not in _OVERRIDABLE_VERDICTS:
+        return
+    key = (record.age_band, category)
+    accumulator = accumulators.get(key)
+    if accumulator is None:
+        accumulator = _CategoryAccumulator(last_seen=record.moderated_at)
+        accumulators[key] = accumulator
+    else:
+        accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
+    if verdict == Verdict.ADVISORY.value:
+        accumulator.advisory_findings += 1
+    else:
+        accumulator.flag_findings += 1
+    if category in seen_categories:
+        return
+    seen_categories.add(category)
+    if record.outcome.decided:
+        accumulator.decided_versions += 1
+        if record.outcome.released:
+            accumulator.released_versions += 1
+
+
+def _build_category_insight(
+    age_band: str, category: str, accumulator: _CategoryAccumulator
+) -> CategoryInsight:
+    """Convert one accumulator into its public ``CategoryInsight`` row."""
+    override_rate = (
+        accumulator.released_versions / accumulator.decided_versions
+        if accumulator.decided_versions
+        else None
+    )
+    return CategoryInsight(
+        age_band=age_band,
+        category=category,
+        advisory_findings=accumulator.advisory_findings,
+        flag_findings=accumulator.flag_findings,
+        decided_versions=accumulator.decided_versions,
+        released_versions=accumulator.released_versions,
+        override_rate=override_rate,
+        last_seen=accumulator.last_seen,
+    )
+
+
 def aggregate_insights(
     records: Sequence[VersionModerationRecord],
 ) -> list[CategoryInsight]:
@@ -152,54 +246,13 @@ def aggregate_insights(
     for record in records:
         seen_categories: set[str] = set()
         for finding in record.findings:
-            category = finding.get("category")
-            verdict = finding.get("verdict")
-            # #EDGE: data-integrity: moderation_report is JSONB written by
-            # ModerationReport.to_dict(), but imported or legacy rows may
-            # deviate; a finding missing category/verdict is skipped, never
-            # a crash.
-            # #VERIFY: tests/unit/test_moderation_insights.py::
-            # TestAggregateInsights::test_malformed_findings_are_skipped
-            if not isinstance(category, str) or verdict not in _OVERRIDABLE_VERDICTS:
-                continue
-            key = (record.age_band, category)
-            accumulator = accumulators.get(key)
-            if accumulator is None:
-                accumulator = _CategoryAccumulator(last_seen=record.moderated_at)
-                accumulators[key] = accumulator
-            else:
-                accumulator.last_seen = max(record.moderated_at, accumulator.last_seen)
-            if verdict == Verdict.ADVISORY.value:
-                accumulator.advisory_findings += 1
-            else:
-                accumulator.flag_findings += 1
-            if category in seen_categories:
-                continue
-            seen_categories.add(category)
-            if record.outcome.decided:
-                accumulator.decided_versions += 1
-                if record.outcome.released:
-                    accumulator.released_versions += 1
-    insights: list[CategoryInsight] = []
-    for (age_band, category), accumulator in sorted(accumulators.items()):
-        override_rate = (
-            accumulator.released_versions / accumulator.decided_versions
-            if accumulator.decided_versions
-            else None
-        )
-        insights.append(
-            CategoryInsight(
-                age_band=age_band,
-                category=category,
-                advisory_findings=accumulator.advisory_findings,
-                flag_findings=accumulator.flag_findings,
-                decided_versions=accumulator.decided_versions,
-                released_versions=accumulator.released_versions,
-                override_rate=override_rate,
-                last_seen=accumulator.last_seen,
+            _fold_finding_into_accumulator(
+                finding, record, seen_categories, accumulators
             )
-        )
-    return insights
+    return [
+        _build_category_insight(age_band, category, accumulator)
+        for (age_band, category), accumulator in sorted(accumulators.items())
+    ]
 
 
 @dataclass(frozen=True, slots=True)
@@ -222,10 +275,11 @@ def suggest_thresholds(
 ) -> list[ThresholdSuggestion]:
     """Derive threshold proposals from override evidence.
 
-    A proposal appears only above the volume and rate gates and only when the
-    effective threshold has a step left to raise; a (band, category) already
-    at ``block`` yields nothing, which also makes an applied suggestion stop
-    reappearing (F2: dismiss is a no-op, the threshold move retires it).
+    A proposal appears only at or above the volume and rate gates and only
+    when the effective threshold has a step left to raise; a (band, category)
+    already at ``block`` yields nothing, which also makes an applied
+    suggestion stop reappearing (F2: dismiss is a no-op, the threshold move
+    retires it).
 
     Args:
         insights: Output of ``aggregate_insights``.
@@ -358,8 +412,17 @@ async def load_version_records(session: AsyncSession) -> list[VersionModerationR
             # TestLoadVersionRecords::test_loader_skips_versions_without_band
             continue
         raw_findings = report.get("findings") if isinstance(report, dict) else None
+        # #EDGE: data-integrity: a legacy or imported row's findings array may
+        # hold elements that are not JSON objects (a bare string, int, or
+        # null); filtering to dict elements here, before the record is built,
+        # keeps aggregate_insights from ever receiving a non-Mapping finding.
+        # #VERIFY: tests/unit/test_moderation_insights.py::
+        # TestAggregateInsights::test_non_dict_findings_elements_are_skipped
         findings = (
-            cast("list[Mapping[str, object]]", raw_findings)
+            cast(
+                "list[Mapping[str, object]]",
+                [item for item in raw_findings if isinstance(item, dict)],
+            )
             if isinstance(raw_findings, list)
             else []
         )

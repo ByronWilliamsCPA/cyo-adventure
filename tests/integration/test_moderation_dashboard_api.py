@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime, timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
@@ -105,6 +105,62 @@ async def _seed_moderated_version(
                 occurred_at=moderated_at + timedelta(minutes=5),
             )
         )
+
+
+async def _seed_malformed_rows(
+    sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Seed three malformed version shapes plus one valid moderated version.
+
+    Covers three independent malformed-data boundaries the loader must
+    survive: a ``findings`` value that is a bare string rather than a list,
+    a ``moderation_report`` value that is not an object at all, and a
+    ``blob`` whose ``metadata`` is not an object (so age_band extraction
+    yields null). None of the three should crash either endpoint; only the
+    valid version (``s_good``) contributes to insights/suggestions.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(id="s_bad_findings", family_id=seed.family_id, status="in_review")
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="s_bad_findings",
+                version=1,
+                blob={"metadata": {"age_band": "8-11"}},
+                moderation_report={"findings": "not-a-list"},
+            )
+        )
+        session.add(
+            Storybook(id="s_bad_report", family_id=seed.family_id, status="in_review")
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="s_bad_report",
+                version=1,
+                blob={"metadata": {"age_band": "8-11"}},
+                moderation_report=cast("dict[str, object]", "not-a-report"),
+            )
+        )
+        session.add(
+            Storybook(id="s_bad_blob", family_id=seed.family_id, status="in_review")
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="s_bad_blob",
+                version=1,
+                blob={"metadata": "not-an-object"},
+                moderation_report=_report(_finding("violence", "advisory")),
+            )
+        )
+        await _seed_moderated_version(
+            session,
+            seed,
+            storybook_id="s_good",
+            findings=[_finding("violence", "advisory")],
+            decision=EventType.RELEASED,
+        )
+        await session.commit()
 
 
 class TestLoadVersionRecords:
@@ -485,6 +541,99 @@ class TestDashboardEndpoint:
         assert changes[0]["event_type"] == "noise_floor_changed"
         assert changes[0]["entity_id"] == "admin_noise_floor"
 
+    async def test_dashboard_empty_database_returns_200_with_empty_collections(
+        self, client: AsyncClient, seed: Seed
+    ) -> None:
+        """No moderated versions and no threshold/noise-floor changes: the
+        endpoint still returns 200 with empty collections rather than a
+        404 or 500."""
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        body = res.json()
+        assert body["insights"] == []
+        assert body["recent_changes"] == []
+
+    async def test_recent_changes_excludes_non_threshold_events(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """A RELEASED pipeline event is not a threshold/noise-floor change;
+        the event_type filter (a payload-exposure safety boundary, see the
+        #CRITICAL marker on the query in moderation_dashboard.py) must keep
+        it out of recent_changes."""
+        async with sessions() as session:
+            session.add(
+                _event(
+                    entity_type="storybook",
+                    entity_id="s_released_event",
+                    event_type=EventType.RELEASED,
+                    occurred_at=_T0,
+                )
+            )
+            await session.commit()
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        assert res.json()["recent_changes"] == []
+
+    async def test_recent_changes_honors_limit_and_desc_order(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """25 seeded threshold_changed events, each with a distinct
+        timestamp: only the newest 20 (_RECENT_CHANGES_LIMIT) come back,
+        ordered newest-first."""
+        async with sessions() as session:
+            for index in range(25):
+                session.add(
+                    _event(
+                        entity_type="moderation_threshold",
+                        entity_id=f"8-11:violence:{index}",
+                        event_type=EventType.THRESHOLD_CHANGED,
+                        occurred_at=_T0 + timedelta(minutes=index),
+                    )
+                )
+            await session.commit()
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        changes = res.json()["recent_changes"]
+        assert len(changes) == 20
+        occurred_ats = [change["occurred_at"] for change in changes]
+        assert occurred_ats == sorted(occurred_ats, reverse=True)
+        assert changes[0]["entity_id"] == "8-11:violence:24"
+        assert changes[-1]["entity_id"] == "8-11:violence:5"
+
+    async def test_dashboard_skips_malformed_moderation_rows(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """Malformed report/blob shapes never crash the endpoint; only the
+        one valid moderated version contributes to insights."""
+        await _seed_malformed_rows(sessions, seed)
+
+        res = await client.get(
+            "/api/v1/admin/moderation/dashboard", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        rows = {
+            (row["age_band"], row["category"]): row for row in res.json()["insights"]
+        }
+        assert ("8-11", "violence") in rows
+        assert rows[("8-11", "violence")]["advisory_findings"] == 1
+
 
 async def _seed_high_override_corpus(
     sessions: async_sessionmaker[AsyncSession], seed: Seed
@@ -578,3 +727,31 @@ class TestSuggestionsEndpoint:
             "/api/v1/admin/moderation/suggestions", headers=auth(seed.guardian_token)
         )
         assert res.status_code == 403
+
+    async def test_suggestions_empty_database_returns_200_with_empty_list(
+        self, client: AsyncClient, seed: Seed
+    ) -> None:
+        """No moderated versions at all: the endpoint still returns 200
+        with an empty suggestions list rather than a 404 or 500."""
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        assert res.json()["suggestions"] == []
+
+    async def test_suggestions_skips_malformed_moderation_rows(
+        self,
+        client: AsyncClient,
+        sessions: async_sessionmaker[AsyncSession],
+        seed: Seed,
+    ) -> None:
+        """Malformed report/blob shapes never crash the endpoint; the one
+        valid moderated version is below the volume gate, so no suggestion
+        is produced but the response is still 200."""
+        await _seed_malformed_rows(sessions, seed)
+
+        res = await client.get(
+            "/api/v1/admin/moderation/suggestions", headers=auth(seed.admin_token)
+        )
+        assert res.status_code == 200
+        assert res.json()["suggestions"] == []

@@ -44,7 +44,8 @@ def _require_admin(ctx: Context) -> None:
     # #CRITICAL: security: these aggregates describe the moderation posture
     # across every family and drive threshold changes; admin-only (F5).
     # #VERIFY: tests/integration/test_moderation_dashboard_api.py::
-    # TestDashboardEndpoint::test_guardian_gets_403
+    # TestDashboardEndpoint::test_guardian_gets_403 and
+    # ::TestSuggestionsEndpoint::test_guardian_gets_403
     if not ctx.principal.is_admin:
         msg = "admin role required"
         raise AuthorizationError(msg, required_permission="admin")
@@ -61,6 +62,14 @@ async def moderation_dashboard(ctx: Context) -> ModerationDashboardView:
     # TestDashboardEndpoint.
     records = await load_version_records(ctx.session)
     insights = aggregate_insights(records)
+    # #CRITICAL: security: this event_type filter is the only boundary
+    # keeping non-admin-authored payloads out of the response; every field
+    # on a PipelineEvent.payload is passed straight through by
+    # ThresholdChangeView below with no further sanitization. Widening this
+    # filter to any other event_type requires revisiting payload exposure
+    # for that event's writer first.
+    # #VERIFY: tests/integration/test_moderation_dashboard_api.py::
+    # TestDashboardEndpoint::test_recent_changes_excludes_non_threshold_events
     recent = (
         await ctx.session.scalars(
             select(PipelineEvent)
@@ -111,6 +120,11 @@ async def moderation_suggestions(ctx: Context) -> SuggestionListView:
     raised threshold retires its own suggestion (F2).
     """
     _require_admin(ctx)
+    # #ASSUME: external-resources: a whole-corpus read per request is
+    # deliberate at v1 volumes, mirroring load_version_records' own no-cache
+    # stance; revisit with an occurred_at window if the corpus grows large.
+    # #VERIFY: tests/integration/test_moderation_dashboard_api.py::
+    # TestSuggestionsEndpoint.
     records = await load_version_records(ctx.session)
     insights = aggregate_insights(records)
     policy = await load_threshold_policy(ctx.session)

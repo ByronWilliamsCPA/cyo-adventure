@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from typing import cast
 
 from cyo_adventure.events import EventType
 from cyo_adventure.moderation.insights import (
@@ -69,6 +70,18 @@ class TestAttributeOutcome:
     def test_no_decision_and_not_approved_is_undecided(self) -> None:
         outcome = attribute_outcome(_T0, [], approved=False)
         assert outcome == VersionOutcome(decided=False, released=False)
+
+    def test_boundary_equal_timestamp_is_decided(self) -> None:
+        """The ``>=`` comparison: a decision at exactly ``moderated_at``
+        (not strictly after it) still attributes to this version."""
+        outcome = attribute_outcome(_T0, [(_T0, _RELEASED)], approved=False)
+        assert outcome == VersionOutcome(decided=True, released=True)
+
+    def test_decision_event_wins_over_approved_fallback(self) -> None:
+        """A real decision event at or after ``moderated_at`` overrides the
+        ``approved_by`` fallback, even when the version row is approved."""
+        outcome = attribute_outcome(_T0, [(_T0, _SENT_BACK)], approved=True)
+        assert outcome == VersionOutcome(decided=True, released=False)
 
 
 class TestAggregateInsights:
@@ -157,6 +170,26 @@ class TestAggregateInsights:
             )
         ]
         assert aggregate_insights(records) == []
+
+    def test_non_dict_findings_elements_are_skipped(self) -> None:
+        """A findings sequence containing a bare string, int, and null
+        alongside one valid dict finding aggregates without crashing and
+        counts only the valid finding."""
+        malformed_findings = cast(
+            "list[dict[str, object]]",
+            ["not-a-finding", 42, None, _finding("violence", "advisory")],
+        )
+        records = [
+            _record(
+                findings=malformed_findings,
+                outcome=VersionOutcome(decided=True, released=True),
+            )
+        ]
+        row = aggregate_insights(records)[0]
+        assert row.advisory_findings == 1
+        assert row.flag_findings == 0
+        assert row.decided_versions == 1
+        assert row.released_versions == 1
 
 
 def _insight(
