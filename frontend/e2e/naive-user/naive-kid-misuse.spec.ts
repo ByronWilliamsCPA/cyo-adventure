@@ -11,11 +11,31 @@ const lantern = loadLanternStory()
  * which cover the happy paths these tests build on.
  */
 
+// KidNav (mounted by KidShell on every /library/:profileId route) fetches
+// GET /api/v1/profiles unconditionally, same as the picker (see
+// profiles.spec.ts). Only the describe blocks below that navigate to
+// /library/p1 need the mock; "refresh mid-reader" goes straight to a reader
+// route, which KidShell does not chrome with KidNav.
+const PROFILES = {
+  profiles: [
+    {
+      id: 'p1',
+      display_name: 'Remy',
+      age_band: '6-8',
+      reading_level_cap: 99,
+      avatar: 'fox',
+      tts_enabled: false,
+      created_at: '2026-01-01T00:00:00Z',
+    },
+  ],
+}
+
 test.describe('double-submitting a story request', () => {
-  test.beforeEach(async ({ context }) => {
+  test.beforeEach(async ({ context, page }) => {
     await context.addInitScript(() => {
       window.localStorage.setItem('auth_token', 'child-fox')
     })
+    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   })
 
   test('double-clicking Send only creates one story request', async ({ page }) => {
@@ -130,10 +150,11 @@ test.describe('refresh mid-reader', () => {
 })
 
 test.describe('rating twice', () => {
-  test.beforeEach(async ({ context }) => {
+  test.beforeEach(async ({ context, page }) => {
     await context.addInitScript(() => {
       window.localStorage.setItem('auth_token', 'child-fox')
     })
+    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   })
 
   test('rating a story twice keeps only the latest value', async ({ page }) => {

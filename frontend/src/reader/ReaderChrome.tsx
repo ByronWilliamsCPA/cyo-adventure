@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react'
+
 import { ProgressBar } from '@ds/components/ProgressBar'
 import { StatusBadge } from '@ds/components/StatusBadge'
 import { useOnlineStatus } from '../hooks/useOnlineStatus'
@@ -15,6 +17,12 @@ export interface ReaderChromeProps {
    * caller has a total it can vouch for.
    */
   showLabel?: boolean
+  /**
+   * Optional leading control, rendered at the start of the bar. The reader
+   * passes an always-visible "Leave" button here so a child can exit a story
+   * at any point, not only from the ending screen.
+   */
+  back?: ReactNode
 }
 
 /**
@@ -22,10 +30,11 @@ export interface ReaderChromeProps {
  * progress. Chrome is intentionally persistent (offline reading is a core
  * feature, so connection status stays visible) per the phase-4a wireframes.
  */
-export function ReaderChrome({ percent, label, showLabel = false }: ReaderChromeProps) {
+export function ReaderChrome({ percent, label, showLabel = false, back }: ReaderChromeProps) {
   const online = useOnlineStatus()
   return (
     <header className="reader-chrome">
+      {back}
       <StatusBadge status={online ? 'connected' : 'offline'} />
       <ProgressBar value={percent} label={label} showLabel={showLabel} />
     </header>

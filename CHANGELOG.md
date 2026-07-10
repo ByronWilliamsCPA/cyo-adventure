@@ -139,6 +139,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   read and rate an assigned catalog book from another family; unassigned
   catalog books stay hidden from child accounts. Admin-initiated catalog-origin
   requests are deferred (#173).
+- Kid-friendly navigation and character-led redesign of the kid surface: a
+  persistent `KidNav` wayfinding bar (whose books these are, plus a Switch
+  reader control), a Leave control in the reader, a books-first library
+  layout, Pip the fox mascot at the moments a child might feel lost or
+  triumphant, painted first-letter cover fallbacks for books without cover
+  art, and refreshed kid-surface design tokens.
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from

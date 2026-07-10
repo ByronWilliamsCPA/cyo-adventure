@@ -5,6 +5,7 @@ import { ProgressBar } from '@ds/components/ProgressBar'
 import type { LibraryItemView } from './libraryApi'
 import { StarRating } from './StarRating'
 import { percentComplete } from './bookCardUtils'
+import { coverGradient } from './coverPalette'
 
 export interface BookCardProps {
   item: LibraryItemView
@@ -22,21 +23,24 @@ export function BookCard({ item, profileId, hero = false, onRate, onContinue }: 
   // A broken or expired cover URL falls back to the letter tile instead of
   // rendering a broken-image icon.
   const [coverError, setCoverError] = useState(false)
+  const showImage = Boolean(item.cover_url) && !coverError
   return (
     <div className={hero ? 'book-card book-card--hero' : 'book-card'}>
       <Link className="book-card__link" to={readTo}>
-        <div className="book-card__tile" aria-hidden="true">
-          {item.cover_url && !coverError ? (
+        <div
+          className={showImage ? 'book-card__tile' : 'book-card__tile book-card__tile--painted'}
+          style={showImage ? undefined : { background: coverGradient(item.title) }}
+          aria-hidden="true"
+        >
+          {showImage ? (
             <img
               className="book-card__cover"
-              src={item.cover_url}
+              src={item.cover_url ?? undefined}
               alt=""
               onError={() => setCoverError(true)}
             />
           ) : (
-            <span className="book-card__letter">
-              {item.title.charAt(0).toUpperCase()}
-            </span>
+            <span className="book-card__letter">{item.title.charAt(0).toUpperCase()}</span>
           )}
         </div>
         <h3 className="book-card__title">{item.title}</h3>

@@ -6,6 +6,7 @@ import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
+import { Mascot } from './Mascot'
 
 type PickerState =
   | { status: 'loading' }
@@ -93,7 +94,10 @@ export function ProfilePickerPage() {
 
   return (
     <section className="picker">
-      <h1 className="picker__title">Who&apos;s reading?</h1>
+      <div className="picker__hello">
+        <Mascot size={88} />
+        <h1 className="picker__title">Who&apos;s reading?</h1>
+      </div>
       <ul className="picker__grid">
         {state.profiles.map((profile) => (
           <li key={profile.id}>

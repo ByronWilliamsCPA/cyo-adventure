@@ -59,6 +59,13 @@ const NO_RECORD_COMPLETION: RecordCompletion = () => Promise.resolve()
 
 type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
 
+type SaveWarning = 'lost' | 'failing' | null
+
+// How long a Leave tap waits for an in-flight save to settle before deciding
+// whether to surface a loss. Bounded so a hung request can never trap a child
+// in the reader.
+const LEAVE_SAVE_WAIT_MS = 1500
+
 // A discriminated union, not parallel phase/story/initialReading state: the
 // 'reading' variant is the only one carrying a story, so phase === 'reading'
 // guarantees story is present at the type level instead of relying on a
@@ -102,7 +109,16 @@ export function ReaderPage({
   // A single-instance-lifetime warning, not tied to the load phase: a dropped
   // save doesn't stop the reader from playing, so it renders as a banner
   // alongside the reading UI rather than as its own page state.
-  const [saveWarning, setSaveWarning] = useState<'lost' | 'failing' | null>(null)
+  const [saveWarning, setSaveWarning] = useState<SaveWarning>(null)
+  // Mirror of saveWarning for handlers that need the freshest value across an
+  // await (state reads inside an async closure are frozen at render time).
+  const saveWarningRef = useRef<SaveWarning>(null)
+  // The latest in-flight persist() call. Leave awaits this (bounded) so a save
+  // that is about to fail can surface its warning before the page unmounts.
+  const pendingSaveRef = useRef<Promise<void> | null>(null)
+  // Set once a Leave tap was blocked to show the lost-save warning; the next
+  // tap then always navigates so a child can never be stuck in the reader.
+  const leaveWarningShownRef = useRef(false)
   // Bumped to remount the Reader (and re-seed its machine) when we adopt the
   // server's state; the machine reads its input only at creation.
   const [readerKey, setReaderKey] = useState(0)
@@ -117,6 +133,13 @@ export function ReaderPage({
   // this guard across stories.
   const loadGenerationRef = useRef(0)
   const navigate = useNavigate()
+
+  // Single write path for the save warning so the state (what renders) and the
+  // ref (what async handlers read after an await) can never diverge.
+  const updateSaveWarning = useCallback((warning: SaveWarning) => {
+    saveWarningRef.current = warning
+    setSaveWarning(warning)
+  }, [])
 
   const load = useCallback(async () => {
     const generation = ++loadGenerationRef.current
@@ -239,7 +262,7 @@ export function ReaderPage({
           deviceId,
         })
         failedSaveCountRef.current = 0
-        setSaveWarning(null)
+        updateSaveWarning(null)
         if (result.kind === 'saved') {
           revisionRef.current = result.row.state_revision
         } else if (result.kind === 'conflict') {
@@ -257,7 +280,7 @@ export function ReaderPage({
             revision: revisionRef.current,
             error,
           })
-          setSaveWarning('lost')
+          updateSaveWarning('lost')
           return
         }
         failedSaveCountRef.current += 1
@@ -273,16 +296,57 @@ export function ReaderPage({
         // ongoing problem worth interrupting the reader for.
         // #VERIFY: two consecutive failures is the threshold before surfacing.
         if (failedSaveCountRef.current >= 2) {
-          setSaveWarning('failing')
+          updateSaveWarning('failing')
         }
       }
     },
-    [api, profileId, storybookId, deviceId]
+    [api, profileId, storybookId, deviceId, updateSaveWarning]
   )
 
   // Stable handler so the Reader's progress effect does not re-fire (and re-save
-  // unchanged state) on every ReaderPage re-render.
-  const handleProgress = useCallback((reading: ReadingState) => void persist(reading), [persist])
+  // unchanged state) on every ReaderPage re-render. The in-flight promise is
+  // kept in pendingSaveRef so handleLeave can settle it before unmounting;
+  // persist() catches its own failures, so this promise never rejects.
+  const handleProgress = useCallback(
+    (reading: ReadingState) => {
+      pendingSaveRef.current = persist(reading)
+    },
+    [persist]
+  )
+
+  // #CRITICAL: data-integrity: persist() is fired-and-forgotten on every
+  // choice, and a failed local write's ONLY surfacing is the saveWarning
+  // banner rendered inside this component. Navigating away on Leave unmounts
+  // this page, so an in-flight save that fails after the tap would lose its
+  // warning silently: the child's step is gone and nobody is told.
+  // #VERIFY: covered by ReaderLeave.test.tsx: "surfaces a lost save and blocks
+  // the first Leave tap; a second tap still leaves" and "navigates to the
+  // library immediately when no save is pending or at risk".
+  const handleLeave = useCallback(() => {
+    void (async () => {
+      // Second tap after the warning was surfaced: always leave. The banner
+      // was shown; holding the child hostage to a failing save helps nobody.
+      if (!leaveWarningShownRef.current) {
+        const pending = pendingSaveRef.current
+        if (pending) {
+          // Bounded wait: give the in-flight save a chance to settle (and to
+          // set the warning) without letting a hung request trap the reader.
+          await Promise.race([
+            pending,
+            new Promise<void>((resolve) => setTimeout(resolve, LEAVE_SAVE_WAIT_MS)),
+          ])
+        }
+        if (saveWarningRef.current === 'lost') {
+          // The step is stored nowhere (see persist's LocalWriteError branch).
+          // Stay on the page this tap so the role="alert" banner is actually
+          // seen; the next tap leaves regardless.
+          leaveWarningShownRef.current = true
+          return
+        }
+      }
+      void navigate(`/library/${profileId}`)
+    })()
+  }, [navigate, profileId])
 
   const handleComplete = useCallback(
     (endingId: string) => {
@@ -407,6 +471,7 @@ export function ReaderPage({
         onProgress={handleProgress}
         onComplete={handleComplete}
         profileId={profileId}
+        onLeave={handleLeave}
       />
       {conflict ? (
         <ConflictDialog

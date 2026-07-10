@@ -20,10 +20,29 @@ import { expect, test } from '@playwright/test'
 const IDEA_LABEL = 'What should your story be about?'
 const SERIES_LABEL = 'Part of a series? Give it a name! (optional)'
 
-test.beforeEach(async ({ context }) => {
+// KidNav (mounted by KidShell on every /library/:profileId route) fetches
+// GET /api/v1/profiles unconditionally, same as the picker (see
+// profiles.spec.ts). Every test in this file navigates to /library/p1, so the
+// mock lives in beforeEach alongside the auth token init script.
+const PROFILES = {
+  profiles: [
+    {
+      id: 'p1',
+      display_name: 'Remy',
+      age_band: '6-8',
+      reading_level_cap: 99,
+      avatar: 'fox',
+      tts_enabled: false,
+      created_at: '2026-01-01T00:00:00Z',
+    },
+  ],
+}
+
+test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-fox')
   })
+  await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
 })
 
 test('typing an idea and sending it posts the request and shows the pending status', async ({
