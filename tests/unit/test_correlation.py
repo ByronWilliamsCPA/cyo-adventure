@@ -14,6 +14,21 @@ import uuid
 from unittest.mock import MagicMock
 
 import pytest
+from fastapi import Request
+from starlette.responses import Response
+
+
+async def _asgi_app_stub(
+    scope: object, receive: object, send: object
+) -> None:  # pragma: no cover
+    """Signature-only ASGI app double; never called, used only as a mock spec.
+
+    ``BaseHTTPMiddleware.__init__`` stores its ``app`` argument without
+    calling it in these tests, so a real ASGI callable is never needed; this
+    exists only to give ``MagicMock(spec=...)`` a concrete callable interface
+    to constrain against (``ASGIApp`` itself is a ``Callable`` type alias, not
+    a class, so it cannot be used as a ``spec=`` target directly).
+    """
 
 
 class TestContextVariableFunctions:
@@ -132,7 +147,12 @@ class TestCorrelationContextProcessor:
         try:
             event_dict: dict = {"event": "test"}
             result = correlation_context_processor(
-                MagicMock(),
+                # The processor's logger param is unused by its own body (it
+                # only reads context vars), so a bare sentinel replaces the
+                # unspec'd MagicMock() that used to stand in for it; a real
+                # WrappedLogger has no concrete class to spec= against, and
+                # nothing here ever calls or inspects this argument.
+                object(),
                 "info",
                 event_dict,
             )
@@ -152,7 +172,12 @@ class TestCorrelationContextProcessor:
         try:
             event_dict: dict = {"event": "test"}
             result = correlation_context_processor(
-                MagicMock(),
+                # The processor's logger param is unused by its own body (it
+                # only reads context vars), so a bare sentinel replaces the
+                # unspec'd MagicMock() that used to stand in for it; a real
+                # WrappedLogger has no concrete class to spec= against, and
+                # nothing here ever calls or inspects this argument.
+                object(),
                 "info",
                 event_dict,
             )
@@ -172,7 +197,12 @@ class TestCorrelationContextProcessor:
         try:
             event_dict: dict = {"event": "test"}
             result = correlation_context_processor(
-                MagicMock(),
+                # The processor's logger param is unused by its own body (it
+                # only reads context vars), so a bare sentinel replaces the
+                # unspec'd MagicMock() that used to stand in for it; a real
+                # WrappedLogger has no concrete class to spec= against, and
+                # nothing here ever calls or inspects this argument.
+                object(),
                 "info",
                 event_dict,
             )
@@ -192,7 +222,12 @@ class TestCorrelationContextProcessor:
         try:
             event_dict: dict = {"event": "test"}
             result = correlation_context_processor(
-                MagicMock(),
+                # The processor's logger param is unused by its own body (it
+                # only reads context vars), so a bare sentinel replaces the
+                # unspec'd MagicMock() that used to stand in for it; a real
+                # WrappedLogger has no concrete class to spec= against, and
+                # nothing here ever calls or inspects this argument.
+                object(),
                 "info",
                 event_dict,
             )
@@ -221,7 +256,12 @@ class TestCorrelationContextProcessor:
         try:
             event_dict: dict = {"event": "test"}
             result = correlation_context_processor(
-                MagicMock(),
+                # The processor's logger param is unused by its own body (it
+                # only reads context vars), so a bare sentinel replaces the
+                # unspec'd MagicMock() that used to stand in for it; a real
+                # WrappedLogger has no concrete class to spec= against, and
+                # nothing here ever calls or inspects this argument.
+                object(),
                 "info",
                 event_dict,
             )
@@ -289,14 +329,14 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         # Create mock request without correlation headers
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {}
 
         # Create mock response
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -317,13 +357,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         # Create mock request with correlation header
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {CORRELATION_ID_HEADER: "incoming-corr-id"}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -343,13 +383,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         # Create mock request with only request ID header
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {REQUEST_ID_HEADER: "incoming-req-id"}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -369,12 +409,12 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -393,12 +433,12 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {TRACE_ID_HEADER: "trace-123"}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -417,12 +457,12 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {SPAN_ID_HEADER: "span-456"}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -447,13 +487,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         oversized = "a" * 65
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {CORRELATION_ID_HEADER: oversized}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -485,13 +525,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         malicious = "abc\r\nX-Injected: evil"
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {CORRELATION_ID_HEADER: malicious}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -520,15 +560,15 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {
             TRACE_ID_HEADER: "bad\r\ntrace",
             SPAN_ID_HEADER: "b" * 65,
         }
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -554,13 +594,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         oversized = "a" * 65
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {REQUEST_ID_HEADER: oversized}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -590,13 +630,13 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
         malicious = "abc\r\nX-Injected: evil"
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {REQUEST_ID_HEADER: malicious}
 
-        mock_response = MagicMock()
+        mock_response = MagicMock(spec=Response)
         mock_response.headers = {}
 
         async def mock_call_next(request):
@@ -618,9 +658,9 @@ class TestCorrelationMiddleware:
             CorrelationMiddleware,
         )
 
-        middleware = CorrelationMiddleware(app=MagicMock())
+        middleware = CorrelationMiddleware(app=MagicMock(spec=_asgi_app_stub))
 
-        mock_request = MagicMock()
+        mock_request = MagicMock(spec=Request)
         mock_request.headers = {"X-Correlation-ID": "test-corr"}
 
         async def mock_call_next_error(request):

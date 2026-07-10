@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
 
@@ -26,7 +27,20 @@ from cyo_adventure.generation.provider import (
 )
 from cyo_adventure.generation.worker import run_generation_job
 from cyo_adventure.moderation import pipeline as pipeline_mod
+from cyo_adventure.moderation.classifiers import run_classifiers as _real_classifiers
 from cyo_adventure.moderation.report import Finding, Source, Verdict
+from cyo_adventure.moderation.stages import (
+    run_coherence_stage as _real_coherence,
+)
+from cyo_adventure.moderation.stages import (
+    run_engagement_stage as _real_engagement,
+)
+from cyo_adventure.moderation.stages import (
+    run_readability_stage as _real_readability,
+)
+from cyo_adventure.moderation.stages import (
+    run_safety_stage as _real_safety,
+)
 from tests.conftest import make_clean_moderation_report
 from tests.integration._event_assertions import assert_single_event, fetch_events
 from tests.integration.conftest import Seed, auth
@@ -37,6 +51,7 @@ from tests.integration.test_generation_worker import (
 
 if TYPE_CHECKING:
     import uuid
+    from collections.abc import Callable
 
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import async_sessionmaker
@@ -54,6 +69,53 @@ def _moderation_settings() -> Settings:
 def _pii() -> PiiContext:
     """Return an empty PiiContext with no real-child identifiers to guard against."""
     return PiiContext(child_names=frozenset(), birthdates=frozenset())
+
+
+@pytest.fixture
+def stub_stages(monkeypatch: pytest.MonkeyPatch) -> Callable[..., None]:
+    """Factory stubbing the moderation pipeline's stage seams with spec'd mocks.
+
+    The settings-level mock review backend cannot drive these event tests: its
+    fixed ``"{}"`` bodies fail-safe every safety finding to FLAG and would
+    spuriously trigger repair on every run. The stage functions are therefore
+    stubbed at the pipeline module's import sites; each stub is spec'd against
+    the real stage function (testing standard §4.2) so a signature drift in
+    the pipeline's calls fails loudly here instead of passing silently.
+
+    Returns:
+        An installer accepting ``classifiers`` (Stage-0 findings, default
+        clean) and ``readability`` (a pre-built spec'd AsyncMock for tests
+        needing per-call side effects, default clean); all other stages are
+        stubbed clean.
+    """
+
+    def _install(
+        *,
+        classifiers: list[Finding] | None = None,
+        readability: AsyncMock | None = None,
+    ) -> None:
+        monkeypatch.setattr(
+            pipeline_mod,
+            "run_classifiers",
+            AsyncMock(spec=_real_classifiers, return_value=classifiers or []),
+        )
+        for name, real in (
+            ("run_safety_stage", _real_safety),
+            ("run_coherence_stage", _real_coherence),
+            ("run_engagement_stage", _real_engagement),
+        ):
+            monkeypatch.setattr(
+                pipeline_mod, name, AsyncMock(spec=real, return_value=[])
+            )
+        monkeypatch.setattr(
+            pipeline_mod,
+            "run_readability_stage",
+            readability
+            if readability is not None
+            else AsyncMock(spec=_real_readability, return_value=[]),
+        )
+
+    return _install
 
 
 async def _seed_draft_storybook(
@@ -464,30 +526,20 @@ async def test_generation_finished_event_and_failed_status_share_one_commit(
 
 async def test_clean_moderation_writes_moderation_completed(
     sessions: async_sessionmaker[AsyncSession],
-    monkeypatch: pytest.MonkeyPatch,
+    stub_stages: Callable[..., None],
 ) -> None:
     """A clean moderation run (no soft flags, no hard block) writes exactly one
     moderation_completed event, attributed to the system actor, with
     to_state="in_review" and a PII-free payload showing repaired=False.
 
-    Drives ``run_moderation_pipeline`` directly against a real session, reusing
-    the stage-stubbing arrangement from
-    tests/unit/test_moderation_pipeline.py::test_clean_story_routes_to_submit
-    (classifiers and all four LLM stages stubbed clean) rather than the mock
-    review backend, whose fixed ``"{}"`` responses fail-safe every safety
-    finding to FLAG and would spuriously trigger repair on every run.
+    Drives ``run_moderation_pipeline`` directly against a real session with
+    classifiers and all four LLM stages stubbed clean (see the ``stub_stages``
+    fixture for why the mock review backend cannot be used here).
     """
     story_id = "s_mod_clean"
     await _seed_draft_storybook(sessions, story_id)
 
-    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
-    for name in (
-        "run_safety_stage",
-        "run_readability_stage",
-        "run_coherence_stage",
-        "run_engagement_stage",
-    ):
-        monkeypatch.setattr(pipeline_mod, name, AsyncMock(return_value=[]))
+    stub_stages()
 
     async with sessions() as session:
         await pipeline_mod.run_moderation_pipeline(
@@ -495,7 +547,7 @@ async def test_clean_moderation_writes_moderation_completed(
             story_id=story_id,
             version=1,
             settings=_moderation_settings(),
-            generation_provider=AsyncMock(),
+            generation_provider=MockProvider(responses=[]),
             pii=_pii(),
         )
         await session.commit()
@@ -516,26 +568,19 @@ async def test_clean_moderation_writes_moderation_completed(
 
 async def test_repaired_moderation_writes_repair_applied_then_completed(
     sessions: async_sessionmaker[AsyncSession],
-    monkeypatch: pytest.MonkeyPatch,
+    stub_stages: Callable[..., None],
 ) -> None:
     """A soft-flagged run that triggers repair writes exactly one repair_applied
     event followed by exactly one moderation_completed event with
     payload["repaired"] is True.
 
-    Reuses the repair-triggering arrangement from
-    tests/unit/test_moderation_pipeline.py::test_soft_flag_triggers_repair_then_submits
-    (readability FLAGs once, then clean after the stubbed repair) against a
-    real session so both events land in the durable pipeline_event table.
+    Readability FLAGs on the first pass, then reports clean after the repair,
+    exercised against a real session so both events land in the durable
+    pipeline_event table. The repair itself runs the REAL ``attempt_repair``
+    against a MockProvider queued with the revised, schema-valid blob.
     """
     story_id = "s_mod_repair"
     await _seed_draft_storybook(sessions, story_id)
-
-    monkeypatch.setattr(pipeline_mod, "run_classifiers", AsyncMock(return_value=[]))
-    monkeypatch.setattr(pipeline_mod, "run_safety_stage", AsyncMock(return_value=[]))
-    monkeypatch.setattr(pipeline_mod, "run_coherence_stage", AsyncMock(return_value=[]))
-    monkeypatch.setattr(
-        pipeline_mod, "run_engagement_stage", AsyncMock(return_value=[])
-    )
 
     flag_finding = Finding(
         stage=2,
@@ -546,19 +591,15 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
         message="too hard",
     )
     # First call (initial moderation) returns the FLAG; second call (post-repair
-    # re-moderation) returns clean, mirroring the unit test's arrangement.
-    monkeypatch.setattr(
-        pipeline_mod,
-        "run_readability_stage",
-        AsyncMock(side_effect=[[flag_finding], []]),
+    # re-moderation) returns clean.
+    stub_stages(
+        readability=AsyncMock(spec=_real_readability, side_effect=[[flag_finding], []])
     )
     revised_blob: dict[str, object] = {
         **dict(_CANNED_STORY),
         "title": "The Forest Path (revised)",
     }
-    monkeypatch.setattr(
-        pipeline_mod, "attempt_repair", AsyncMock(return_value=revised_blob)
-    )
+    generation_provider = MockProvider(responses=[json.dumps(revised_blob)])
 
     async with sessions() as session:
         await pipeline_mod.run_moderation_pipeline(
@@ -566,7 +607,7 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
             story_id=story_id,
             version=1,
             settings=_moderation_settings(),
-            generation_provider=AsyncMock(),
+            generation_provider=generation_provider,
             pii=_pii(),
         )
         await session.commit()
@@ -596,46 +637,32 @@ async def test_repaired_moderation_writes_repair_applied_then_completed(
 
 async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
     sessions: async_sessionmaker[AsyncSession],
-    monkeypatch: pytest.MonkeyPatch,
+    stub_stages: Callable[..., None],
 ) -> None:
     """A hard-blocked run (auto_reject, not submit) writes exactly one
     moderation_completed event with to_state="needs_revision" and a payload
     holding only enum verdicts, a bool, and int counts, never the blocking
     finding's message text or category (spec D3 PII-free contract).
 
-    Mirrors the hard-block arrangement from
-    tests/unit/test_moderation_pipeline.py::test_hard_block_routes_to_auto_reject
-    (a classifier BLOCK finding, all four LLM stages stubbed clean) against a
-    real session, and additionally asserts the storybook's real routed state
-    (the unit test only checks that ``publishing.service.auto_reject`` was
-    called; here it actually runs).
+    Seeds a classifier BLOCK finding (all four LLM stages stubbed clean)
+    against a real session, and asserts the storybook's real routed state
+    (``publishing.service.auto_reject`` actually runs here).
     """
     story_id = "s_mod_block"
     await _seed_draft_storybook(sessions, story_id)
 
-    monkeypatch.setattr(
-        pipeline_mod,
-        "run_classifiers",
-        AsyncMock(
-            return_value=[
-                Finding(
-                    stage=0,
-                    source=Source.OPENAI,
-                    category="sexual/minors",
-                    node_id="n1",
-                    verdict=Verdict.BLOCK,
-                    message="this finding's prose must never reach the event log",
-                )
-            ]
-        ),
+    stub_stages(
+        classifiers=[
+            Finding(
+                stage=0,
+                source=Source.OPENAI,
+                category="sexual/minors",
+                node_id="n1",
+                verdict=Verdict.BLOCK,
+                message="this finding's prose must never reach the event log",
+            )
+        ]
     )
-    for name in (
-        "run_safety_stage",
-        "run_readability_stage",
-        "run_coherence_stage",
-        "run_engagement_stage",
-    ):
-        monkeypatch.setattr(pipeline_mod, name, AsyncMock(return_value=[]))
 
     async with sessions() as session:
         await pipeline_mod.run_moderation_pipeline(
@@ -643,7 +670,7 @@ async def test_hard_block_moderation_writes_moderation_completed_needs_revision(
             story_id=story_id,
             version=1,
             settings=_moderation_settings(),
-            generation_provider=AsyncMock(),
+            generation_provider=MockProvider(responses=[]),
             pii=_pii(),
         )
         await session.commit()

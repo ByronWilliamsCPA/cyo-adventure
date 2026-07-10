@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
+from rq import Queue, Worker
+from sqlalchemy.ext.asyncio import AsyncEngine
 
 from cyo_adventure.generation import worker_main
 
@@ -30,7 +32,7 @@ def _install_fake_engine(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
     Returns:
         The fake engine whose ``dispose`` is an ``AsyncMock``.
     """
-    fake_engine = MagicMock()
+    fake_engine = MagicMock(spec=AsyncEngine)
     fake_engine.dispose = AsyncMock()
     monkeypatch.setattr(worker_main, "get_engine", lambda: fake_engine)
     return fake_engine
@@ -41,7 +43,14 @@ def _install_fake_engine(monkeypatch: pytest.MonkeyPatch) -> MagicMock:
 async def test_reclaim_stranded_jobs_uses_a_fresh_session(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """_reclaim_stranded_jobs opens a session and returns requeue_stranded_jobs' count."""
+    """_reclaim_stranded_jobs opens a session and returns requeue_stranded_jobs' count.
+
+    Kept as a direct private-function test deliberately: the return-value
+    contract (the requeued count) is consumed by main() only as a structlog
+    field, so the public entry point cannot observe it without introspecting
+    log output. The ordering/failure behaviors ARE driven through main() in
+    the tests below.
+    """
 
     @asynccontextmanager
     async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
@@ -62,11 +71,17 @@ async def test_reclaim_stranded_jobs_uses_a_fresh_session(
 
 
 @pytest.mark.unit
-@pytest.mark.asyncio
-async def test_reclaim_stranded_jobs_disposes_engine_even_on_sweep_failure(
+def test_sweep_failure_disposes_engine_and_never_starts_the_worker(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The engine pool is disposed inside the sweep's loop even if the sweep raises."""
+    """A sweep failure still disposes the engine pool, and the worker never starts.
+
+    Driven through the public entry point main() (not a direct call to the
+    private ``_reclaim_stranded_jobs``): the sweep's exception propagates out
+    of ``asyncio.run`` and out of ``main()``, so the public path reaches this
+    case deterministically. This also pins the fail-fast contract that a
+    process whose reclaim sweep crashed does not go on to pull new jobs.
+    """
 
     @asynccontextmanager
     async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
@@ -80,11 +95,14 @@ async def test_reclaim_stranded_jobs_disposes_engine_even_on_sweep_failure(
     monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
     monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
     fake_engine = _install_fake_engine(monkeypatch)
+    fake_get_queue = MagicMock()
+    monkeypatch.setattr(worker_main, "get_queue", fake_get_queue)
 
     with pytest.raises(RuntimeError, match="sweep exploded"):
-        await worker_main._reclaim_stranded_jobs()
+        worker_main.main()
 
     fake_engine.dispose.assert_awaited_once()
+    fake_get_queue.assert_not_called()
 
 
 @pytest.mark.unit
@@ -96,16 +114,25 @@ def test_main_sweeps_before_starting_the_worker(
     #CRITICAL: timing: a job stranded by a prior crash must be requeued
     before this same process would otherwise sit idle waiting for new work;
     this test locks in that ordering.
+
+    Runs the REAL ``_reclaim_stranded_jobs`` (mocking only its session/queue
+    boundaries) instead of patching the private function, so the ordering
+    contract is exercised through the public ``main()`` path end to end.
     """
     calls: list[str] = []
 
-    async def _fake_sweep() -> int:
+    @asynccontextmanager
+    async def _fake_get_session() -> AsyncGenerator[_FakeSession]:
+        yield _FakeSession()
+
+    async def _fake_requeue(session: object, **_kwargs: object) -> int:
+        _ = session
         calls.append("sweep")
         return 2
 
-    fake_queue = MagicMock()
+    fake_queue = MagicMock(spec=Queue)
     fake_queue.connection = "fake-connection"
-    fake_worker_instance = MagicMock()
+    fake_worker_instance = MagicMock(spec=Worker)
 
     def _fake_get_queue(settings: object) -> MagicMock:
         _ = settings
@@ -117,7 +144,9 @@ def test_main_sweeps_before_starting_the_worker(
         assert connection == "fake-connection"
         return fake_worker_instance
 
-    monkeypatch.setattr(worker_main, "_reclaim_stranded_jobs", _fake_sweep)
+    monkeypatch.setattr(worker_main, "get_session", _fake_get_session)
+    monkeypatch.setattr(worker_main, "requeue_stranded_jobs", _fake_requeue)
+    _install_fake_engine(monkeypatch)
     monkeypatch.setattr(worker_main, "get_queue", _fake_get_queue)
     monkeypatch.setattr(worker_main, "Worker", _fake_worker_cls)
 
@@ -156,12 +185,12 @@ def test_main_disposes_engine_after_sweep_and_before_worker_work(
     async def _fake_dispose() -> None:
         calls.append("dispose")
 
-    fake_engine = MagicMock()
+    fake_engine = MagicMock(spec=AsyncEngine)
     fake_engine.dispose = AsyncMock(side_effect=_fake_dispose)
 
-    fake_queue = MagicMock()
+    fake_queue = MagicMock(spec=Queue)
     fake_queue.connection = "fake-connection"
-    fake_worker_instance = MagicMock()
+    fake_worker_instance = MagicMock(spec=Worker)
     fake_worker_instance.work = MagicMock(
         side_effect=lambda: calls.append("worker_work")
     )
