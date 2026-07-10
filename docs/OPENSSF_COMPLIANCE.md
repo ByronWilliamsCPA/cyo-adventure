@@ -284,7 +284,7 @@ The template meets 44/46 passing-level criteria:
 **Change Control** (3/3):
 
 - ✅ Public version-controlled repository
-- ✅ Unique version numbering (semantic versioning)
+- ⚠️ Unique version numbering (SemVer scheme is used, but the automated version-bump has not run successfully since project creation; see "Release Process" below)
 - ✅ Release notes (CHANGELOG.md)
 
 **Reporting** (2/2):
@@ -319,19 +319,38 @@ The template meets 44/46 passing-level criteria:
 
 ### Release Process
 
-1. **Tag Release**:
+> ⚠️ **Currently broken**: `release.yml` ("Semantic Release") triggers on every push to `main` and
+> uses [python-semantic-release](https://python-semantic-release.readthedocs.io/) (PSR) to compute
+> the next SemVer bump from Conventional Commits and push a version-bump commit and tag back to
+> `main`. That push is rejected with `GH013: Repository rule violations`, because the branch
+> protection ruleset on `main` requires changes to land through the merge queue (required CI Gate
+> check, signed commits) rather than a direct push. As a result, the version has never advanced
+> past the initial `0.1.0`, despite substantial functionality being merged since project creation
+> (2026-06-20). Tracked in [issue #183](https://github.com/ByronWilliamsCPA/cyo-adventure/issues/183).
+> A separate, earlier bug (an invalid `commit_parser` config value that failed PSR at the
+> config-load step on every run) was already fixed in PR #152; the GH013 branch-ruleset rejection
+> is the current, distinct blocker. Because releases never complete, the downstream
+> `slsa-provenance.yml` workflow (which triggers on a successful `Semantic Release` run) and the
+> PyPI publish step have also not executed for any post-`0.1.0` version.
 
-   ```bash
-   git tag -a v1.0.0 -m "Release 1.0.0"
-   git push origin v1.0.0
-   ```
+**Intended flow** (once #183 is resolved):
 
-2. **Automated Actions**:
-   - Build distribution packages
-   - Sign with Cosign
-   - Generate SLSA provenance
-   - Create GitHub release
-   - Upload signed artifacts
+1. **Automated release** (normal path):
+   - Merge Conventional-Commit PRs to `main` via the merge queue.
+   - `release.yml` runs PSR, which computes the next version from commit history and pushes a
+     version-bump commit and tag.
+   - `slsa-provenance.yml` runs, generating build hashes and SLSA Level 3 attestations.
+   - `release.yml` publishes to PyPI (OIDC trusted publishing) when a release occurs.
+
+2. **Manual dispatch** (fallback, does not depend on PSR's direct push to `main`):
+   `release.yml` also triggers on `workflow_dispatch` with an optional `force_release`
+   input (patch/minor/major/prerelease); run it manually from the Actions tab or
+   `gh workflow run release.yml -f force_release=patch` to produce a signed, attested
+   release without a push to `main`. Pushing a bare git tag (`git push origin v1.0.0`)
+   does **not** trigger this workflow: `release.yml`'s only triggers are `push` to
+   `main`/`master` and `workflow_dispatch`, with no tag-push trigger configured. A bare
+   tag push creates the git ref only; it produces no signed artifacts, no SLSA
+   provenance, and no PyPI publish.
 
 3. **Verification**:
    - Check GitHub Security tab for attestations

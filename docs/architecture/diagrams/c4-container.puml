@@ -15,7 +15,8 @@
 '   docs/planning/adr/adr-004-homelab-first-deployment.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
 '     decision 2 = Supabase Postgres as the operational database)
-'   docs/planning/r1-gap-closure-plan.md (Task 1.7: Supabase Postgres cutover)
+'   docs/planning/r1-deferred-debt-register.md (Task 1.7: Supabase Postgres cutover;
+'     r1-gap-closure-plan.md is archived, consolidated here)
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -42,12 +43,15 @@ rectangle "PWA Container\n[React 19, TypeScript, Vite]\nServed as static assets"
 
 ' --- Backend ---
 rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventure/" as backend #E8F5E9 {
-  rectangle "API Routers (9)\nhealth, library, reading, generation,\nprofiles, ratings, assignments,\napproval [global admin], me" as routers #CCEECC
+  rectangle "API Routers (15)\nhealth, library, reading, generation,\nprofiles, families, ratings, assignments,\napproval [global admin], covers,\nmoderation_thresholds [admin],\nmoderation_dashboard [admin],\nprovider_allowlist [admin], me,\nstory_requests" as routers #CCEECC
   rectangle "Auth Seam\napi/deps.py\nPrincipal / family / role" as auth #CCEECC
   rectangle "Storybook Domain\nstorybook/models.py\nstorybook/evaluator.py\nstorybook/condition.py" as storybook_dom #CCEECC
   rectangle "Player Engine\nplayer/engine.py\nRuntime Semantics v1 (pure)" as player_eng #CCEECC
   rectangle "Validator Gate\nvalidator/gate.py\nL1+Policy+L2+RL+SAFE layers" as validator #CCEECC
-  rectangle "Generation Orchestrator\ngeneration/orchestrator.py\nStage A->B->C pipeline" as orchestrator #CCEECC
+  rectangle "Generation Orchestrator\ngeneration/orchestrator.py\nfresh_generation (Stage A->B->C)\nor skeleton_fill (fill_skeleton)" as orchestrator #CCEECC
+  rectangle "Moderation\nmoderation/pipeline.py, thresholds.py\nfidelity_review.py, repair.py" as moderation_comp #CCEECC
+  rectangle "Publishing\npublishing/state_machine.py\napprove -> publish gate (ADR-005)" as publishing_comp #CCEECC
+  rectangle "Pipeline Event Log\nevents/writer.py [WS-D]\nappend-only lifecycle audit" as events_comp #CCEECC
   rectangle "Middleware\nmiddleware/correlation.py\nmiddleware/security.py" as middleware #CCEECC
 }
 
@@ -55,14 +59,15 @@ rectangle "FastAPI Backend\n[Python 3.12, FastAPI, Pydantic v2]\nsrc/cyo_adventu
 rectangle "Generation Worker\n[RQ worker process]\ngeneration/worker.py" as worker #FFF3E0
 
 ' --- Data stores ---
-database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n9 ORM tables:\nFamily, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion,\nConcept, GenerationJob" as postgres #E0F7FA
+database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nSession pooler :5432 (session mode)\n19 ORM tables:\nFamily, Series, User, ChildProfile,\nStorybook, StorybookVersion,\nReadingState, Completion, Rating,\nStorybookAssignment, Concept,\nStoryRequest, ModerationThreshold(+Audit),\nModerationSetting, PipelineEvent,\nProviderModelAllowlist(+Audit),\nGenerationJob" as postgres #E0F7FA
 
 database "Redis\n[Job broker]\nRQ queue for generation jobs" as redis #E0E0E0
 
 rectangle "MinIO\n[Object storage, deferred Phase 5]\nStorybook blobs via S3 API" as minio #E0E0E0
 
 ' --- External LLMs ---
-rectangle "OpenRouter\n[Primary LLM]" as openrouter #F3E5F5
+rectangle "OpenRouter\n[Primary LLM, default cascade]" as openrouter #F3E5F5
+rectangle "Anthropic / Modal\n[Admin-selectable per-job\nprovider legs, WS-C PR1]" as extra_providers #F3E5F5
 rectangle "Ollama\n[Local fallback]" as ollama #FFEBEE
 rectangle "Supabase Auth\n[OIDC, ADR-009]" as supabase_auth #E0F7FA
 
@@ -79,11 +84,16 @@ routers --> orchestrator
 routers --> validator
 routers --> storybook_dom
 routers --> player_eng
+routers --> moderation_comp
+routers --> publishing_comp
+routers --> events_comp : "write PipelineEvent\n(same transaction)"
 backend --> postgres : "async SQLAlchemy 2\nsession pooler :5432"
 backend --> redis : "enqueue job\n(BackgroundTask)"
 worker --> redis : "dequeue job"
-worker --> orchestrator : "generate_story()"
-worker --> openrouter : "provider.complete()"
+worker --> orchestrator : "generate_story()\nor fill_skeleton()"
+worker --> moderation_comp : "post-gate review"
+worker --> openrouter : "provider.complete()\n(default provider)"
+worker ..> extra_providers : "provider.complete()\n(admin-selected job override)"
 worker ..> ollama : "fallback"
 worker --> postgres : "update GenerationJob\nsession pooler :5432"
 worker ..> minio : "[planned Phase 5]\nblob_ref store"

@@ -64,10 +64,10 @@ SKILL_MECHANISM_MODELS = frozenset(
 )
 
 # Bands where a low-effort skill model is more likely to under-deliver on a
-# skeleton fill, per the tiered-backends spec's fill-difficulty table
-# (docs/superpowers/specs/2026-06-23-modal-generation-tiers-design.md sec 7):
-# medium-high/high difficulty starts at 10-13. Starting heuristic, not
-# calibrated data (see that spec's own caveat); warns only, never blocks.
+# skeleton fill: medium-high/high difficulty starts at 10-13. Starting
+# heuristic, not calibrated data; warns only, never blocks. See ADR-011
+# (docs/planning/adr/adr-011-story-scale-framework.md) for the shipped
+# reading-band scale model this heuristic approximates.
 _HARD_BANDS = frozenset({"10-13", "13-16", "16+"})
 
 # The lightest Claude Code model; paired with _HARD_BANDS below.

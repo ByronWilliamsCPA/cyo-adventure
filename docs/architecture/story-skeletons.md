@@ -70,19 +70,60 @@ by narrative role.
 
 <!-- END GENERATED: skeleton-catalog -->
 
-Three of the six catalogued skeletons (The Clocktower Cipher, The Sunken Signal, The
-Lost Mitten) declare `production_eligible: false` and no `length` or `narrative_style`:
-they are ADR-011 section 1a MVP/Test-tier development seeds (a band-independent 8-45
-node envelope, budgeted with `mvp_node_budget` in `validator/band_profile.py`), not
-examples of a production `(age_band, length, narrative_style)` cell. The other three
-(The Midnight Museum, The Lantern Festival, The Cave of Echoes) are the first
-production-eligible seeds: each declares `length: short`, `narrative_style: prose`,
-and `production_eligible: true` for one ADR-011 launch cell. The "Length (min)" column
-above is `estimated_minutes` (a read-time estimate), not the ADR-011 `length` scale
-tier described below; per-cell production node budgets live in
+Of the 21 catalogued skeletons, 18 are production-eligible and give full-matrix
+coverage: one skeleton per `(age_band, length, narrative_style)` cell of the ADR-011
+production matrix (18 cells total), each declaring its `length`, `narrative_style`
+(where the band is style-aware), and `production_eligible: true`. The remaining three
+(The Clocktower Cipher, The Sunken Signal, The Lost Mitten) declare
+`production_eligible: false` and no `length` or `narrative_style`: they are ADR-011
+section 1a MVP/Test-tier development seeds (a band-independent 8-45 node envelope,
+budgeted with `mvp_node_budget` in `validator/band_profile.py`), not examples of a
+production cell, and are excluded from the cell-aware selection described below. The
+"Length (min)" column above is `estimated_minutes` (a read-time estimate), not the
+ADR-011 `length` scale tier described below; per-cell production node budgets live in
 `validator/band_profile.py` (`_PRODUCTION_CELLS`), not a single fixed per-band range.
 The "Tier" column is the generation `tier` field (`1` forbids state variables, `2`
 allows them), a separate concept from the MVP/Test tier.
+
+## Skeleton selection
+
+When an admin builds the authoring plan for an approved story request
+(`story_requests/authoring_plan.py`), the skeleton for a `skeleton_fill` plan is chosen
+by **cell-aware matching**, not by band alone (`generation/skeleton_match.py`). This
+replaced an earlier band-only, style/length-blind `select_skeleton_for_band` helper as
+part of the skeleton-matching rework (workstream WS-C, PR #175).
+
+1. **Cell match.** `candidates_for_cell(band, length, style)` scans every
+   production-eligible skeleton file under `skeletons/<band>/` and keeps only those
+   whose metadata matches the request's `(age_band, length, narrative_style)` cell
+   (`skeleton_matches_cell`). A skeleton that declares no `length` is a wildcard that
+   matches any request length. `narrative_style` is checked only for the two
+   style-aware bands, `13-16` and `16+`; every other band is implicitly `prose`. If no
+   skeleton matches the cell, the authoring plan is rejected (422) rather than falling
+   back to a different cell.
+2. **Recency-weighted pick.** Among the in-cell candidates, `select_skeleton_for_cell`
+   draws a weighted-random slug so a family does not keep seeing the same skeleton
+   repeated. The weight is inverse-frequency, `1 / (1 + recent_count)`, where
+   `recent_count` (from `recent_skeleton_usage`) is how many of the family's most
+   recent 20 `storybook_version` rows used that slug, counted across every status and
+   every storybook (skeleton diversity reflects authoring activity, not delivery). An
+   unused skeleton gets weight `1.0`; a recently-used one is discounted but never
+   reaches zero, so no candidate is ever fully excluded. A family-less (admin or
+   catalog-origin) request has no recency history and gets a uniform pick.
+3. **Admin override.** An admin may set `skeleton_slug` directly on the authoring plan
+   (decision C-6); the override is unconstrained and may name a skeleton outside the
+   request's own cell or band. `find_skeleton_metadata` resolves it by scanning every
+   band directory, rejects any path-traversal attempt (`resolve_skeleton_path`), and
+   the caller records the skeleton's *real* band rather than the request's band. An
+   out-of-cell or non-production-eligible override is accepted but attaches a
+   non-blocking warning to the authoring-plan result instead of failing.
+
+Skeleton selection is a distinct concern from **provider selection**: which LLM
+backend (Anthropic, OpenRouter, Modal, or Ollama) fills the chosen skeleton's
+`<<FILL>>` directives is governed separately by the admin-editable provider/model
+allowlist (`generation/allowlist.py`, workstream WS-C PR #170) and
+`generation/provider.py::build_provider`. Which skeleton is picked and which provider
+fills it are independent decisions within the same authoring plan.
 
 ## Data dictionary
 

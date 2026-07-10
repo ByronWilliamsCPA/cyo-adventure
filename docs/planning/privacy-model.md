@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Privacy controls, Data Protection, 
 
 # Privacy and Provider Data-Handling Model
 
-> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-03
+> **Status**: Active | **Version**: 0.2 | **Updated**: 2026-07-10
 
 ## Overview
 
@@ -159,8 +159,10 @@ Defense controls:
 
 ## OPEN BLOCKERS
 
-The following items gate both the Phase 0 exit and the first Phase 2 LLM call. No
-generation call may be made with a real concept brief until both are resolved.
+The following item gates both the Phase 0 exit and the first Phase 2 LLM call. No
+generation call may be made with a real concept brief until it is resolved. A second
+former blocker (homelab reachability through Pangolin) has since been resolved; see
+[Resolved Blockers](#resolved-blockers) below.
 
 ### Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)
 
@@ -190,28 +192,28 @@ committed with the resolution.
 
 ---
 
-### Blocker 2: Homelab Reachability Through Pangolin (P0-10)
+## Resolved Blockers
 
-```python
-# #CRITICAL: external resource: homelab hosting reachability through Pangolin has not
-#            been verified for this project's deployment.
-# #VERIFY: confirm that a bare environment is reachable through Pangolin before the
-#          Phase 0 exit gate; record the verification outcome in TECHNICAL_BASELINE.md
-#          and cross-reference here.
-```
+### Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)
 
-The homelab must be reachable through the Pangolin zero-trust ingress before Phase 1
-begins, so that integration tests and the CI environment can reach the deployed stack.
-This is plan item P0-10 and a Phase 0 exit condition.
+The homelab needed to be reachable through the Pangolin zero-trust ingress before
+integration tests and the CI environment could reach the deployed stack. This was plan
+item P0-10 and a Phase 0 exit condition.
 
-**Required action**: stand up the bare homelab / family-tier environment (Postgres and
-Redis behind Pangolin). Verify reachability. Record the outcome in
-`TECHNICAL_BASELINE.md` and update this entry with a cross-reference date. Note this
-blocker is scoped to the homelab / family tier only. On the public tier, Supabase is the
-identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the datastore,
-so Pangolin ingress and a self-hosted IdP do not apply there.
+**Resolution**: the homelab stack is reachable through Pangolin and has been live in
+production since 2026-07-05 at `https://cyo.williamshome.family` (Cloudflare, Pangolin
+VPS, WireGuard tunnel, docker-host Traefik). R1 (the internal web release) is
+feature-complete as of 2026-07-03 and has been exercised end to end against this live
+URL, including guardian email/password sign-in through Supabase (ADR-009), `/health/live`
+and `/health/ready` returning 200 (verified 2026-07-07), and the full guardian-authoring
+to kid-reading journey. See `docs/planning/roadmap.md` (Phase 5 success criteria: "✅
+Deployed behind Pangolin with Supabase guardian login (ADR-009)") and
+`docs/planning/r1-live-e2e-checklist.md` for the live verification record. Note this
+blocker was scoped to the homelab / family tier only; on the public tier, Supabase is the
+identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the
+datastore, so Pangolin ingress and a self-hosted IdP do not apply there.
 
-**Status**: OPEN. Phase 1 cannot begin until this entry is completed.
+**Status**: RESOLVED (2026-07-05, verified live 2026-07-07).
 
 ---
 

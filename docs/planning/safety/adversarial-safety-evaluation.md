@@ -15,7 +15,8 @@ source: "2026-07-01 full-repository senior review (Important finding: a checked 
 
 ## Why this document exists
 
-PROJECT-PLAN.md, completion-plan.md, and ADR-005 all record a **checked** Phase 3
+PROJECT-PLAN.md, completion-plan.md (since archived; its open items migrated to
+r1-deferred-debt-register.md), and ADR-005 all record a **checked** Phase 3
 gate: "adversarial concept briefs verified to flag moderation and route to human
 review; no auto-publish path." The 2026-07-01 full-repository review found no
 adversarial test, corpus, or archived result anywhere in the repo backing that
@@ -377,8 +378,9 @@ at all). Two of its three implicit claims do hold and are worth stating precisel
   import or admin-submit seams (never screened).
 
 Action taken in this change: the checkbox is unchecked and reframed in
-PROJECT-PLAN.md, completion-plan.md, roadmap.md, and ADR-005's success criteria,
-pointing to this document. The gate becomes: (a) close Findings 1-2 so no
+PROJECT-PLAN.md, completion-plan.md (since archived; see the note under "Why
+this document exists"), roadmap.md, and ADR-005's success criteria, pointing to
+this document. The gate becomes: (a) close Findings 1-2 so no
 unmoderated path reaches `published`; (b) ship Finding 3's explicit unscreened
 signal into the C4a-4 console; (c) run the credentialed adversarial harness and
 archive per-class results meeting the thresholds above; (d) record Finding 4 as an

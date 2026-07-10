@@ -37,7 +37,8 @@ written as final prose. The output must be the full Storybook JSON, not a diff o
    semantic intent of the beat description in the skeleton.
 5. **Ending nodes**: the `body` of an ending node should bring the story to a
    satisfying close. Do not end with a question or a choice. The emotional tone should
-   match the ending's `valence` (`positive`, `neutral`, `negative`) and `kind`.
+   match the ending's `kind` (`success`, `setback`, `death`, `capture`, `completion`,
+   `discovery`) and `valence` (`positive`, `neutral`, `negative`).
 6. **Age-appropriate content**: follow `metadata.themes` and the system-level content
    policy. Do not introduce content categories not listed in `themes_allowed` from the
    original brief.

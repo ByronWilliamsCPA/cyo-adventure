@@ -199,6 +199,11 @@ nav:
           - ADR-004: planning/adr/adr-004-homelab-first-deployment.md
           - ADR-005: planning/adr/adr-005-mandatory-human-approval.md
           - ADR-006: planning/adr/adr-006-conditions-inhouse-evaluator.md
+          - ADR-007: planning/adr/adr-007-raw-output-retention.md
+          - ADR-008: planning/adr/adr-008-public-app-store-launch.md
+          - ADR-009: planning/adr/adr-009-supabase-platform.md
+          - ADR-010: planning/adr/adr-010-modal-review-and-gated-generation.md
+          - ADR-011: planning/adr/adr-011-story-scale-framework.md
 
   - Supplementary Docs:
       - Project Setup: PROJECT_SETUP.md

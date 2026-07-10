@@ -1,0 +1,182 @@
+@startuml component-moderation
+' ============================================================
+' Component Diagram: Moderation Pipeline
+' CYO Adventure
+'
+' Source files:
+'   src/cyo_adventure/moderation/pipeline.py        (run_moderation_pipeline:
+'                                                     orchestrates Stage 0-4,
+'                                                     bounded repair, routing)
+'   src/cyo_adventure/moderation/classifiers.py      (Stage 0: OpenAI Moderation +
+'                                                     Perspective; bright-line block,
+'                                                     graded advisory floor 0.01)
+'   src/cyo_adventure/moderation/stages.py           (Stages 1-4: LLM safety/
+'                                                     readability/coherence/engagement)
+'   src/cyo_adventure/moderation/repair.py           (attempt_repair: one bounded
+'                                                     re-prompt on a soft flag)
+'   src/cyo_adventure/moderation/report.py           (Finding, ModerationReport,
+'                                                     Verdict: BLOCK/FLAG/ADVISORY/PASS)
+'   src/cyo_adventure/moderation/review_provider.py  (ReviewProvider, independence
+'                                                     tiers, PiiGuardedProvider wrap)
+'   src/cyo_adventure/moderation/thresholds.py       (ThresholdPolicy: surfacing
+'                                                     overrides; admin_surfaces()
+'                                                     noise-floor denoise)
+'   src/cyo_adventure/moderation/fidelity_review.py  (semantic fidelity check,
+'                                                     invoked from
+'                                                     generation/fidelity_gate.py,
+'                                                     not from pipeline.py)
+'   src/cyo_adventure/moderation/insights.py         (WS-F: aggregate override
+'                                                     evidence + threshold suggestions)
+'   src/cyo_adventure/api/moderation_thresholds.py   (admin CRUD: per-band/category
+'                                                     overrides + noise-floor scalar)
+'   src/cyo_adventure/api/moderation_dashboard.py    (admin read-only dashboard +
+'                                                     suggestions, WS-F)
+'   src/cyo_adventure/db/models.py                   (ModerationThreshold,
+'                                                     ModerationThresholdAudit,
+'                                                     ModerationSetting)
+'   src/cyo_adventure/events/writer.py               (MODERATION_COMPLETED,
+'                                                     REPAIR_APPLIED,
+'                                                     THRESHOLD_CHANGED,
+'                                                     NOISE_FLOOR_CHANGED)
+'   src/cyo_adventure/generation/worker.py           (_persist_and_moderate: caller)
+'   src/cyo_adventure/publishing/service.py          (submit / auto_reject targets;
+'                                                     see component-publishing.puml)
+'   docs/planning/adr/adr-005-mandatory-human-approval.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+component "Generation Worker\ngeneration/worker.py\n_persist_and_moderate()\n(after draft persisted,\nbefore request commit)" as worker #FFF3E0
+
+package "Moderation Pipeline" #E8F5E9 {
+
+  component "Pipeline Entry\nmoderation/pipeline.py\nrun_moderation_pipeline()\nlocks storybook row FOR UPDATE" as entry #A5D6A7
+
+  component "Review Provider\nmoderation/review_provider.py\nbuild_review_provider()\nindependence tiers 1-3;\nwrapped in PiiGuardedProvider" as review_provider #C8E6C9
+
+  package "Stage 0: Classifier Pre-Filter" #DCEDC8 {
+    component "run_classifiers()\nmoderation/classifiers.py\nOpenAI Moderation + Perspective\nbright-line category -> BLOCK\ngraded score >= 0.01 -> ADVISORY\n(missing key -> classifier skipped)" as stage0 #DCEDC8
+  }
+
+  package "Stages 1-4: LLM Review" #DCEDC8 {
+    component "Stage 1: Safety\nrun_safety_stage()\nHARD gate: safe|flag|block" as stage1 #FFCDD2
+    component "Stage 2: Readability\nrun_readability_stage()\nsoft gate: flag|pass" as stage2 #FFF9C4
+    component "Stage 3: Coherence\nrun_coherence_stage()\nsoft gate: flag|pass" as stage3 #FFF9C4
+    component "Stage 4: Engagement\nrun_engagement_stage()\nadvisory only" as stage4 #C8E6C9
+  }
+
+  component "ModerationReport\nmoderation/report.py\nFinding, Verdict\nhas_hard_block / has_soft_flag" as report #B2DFDB
+
+  component "Auto-Repair\nmoderation/repair.py\nattempt_repair()\none bounded re-prompt of the\ngeneration provider; re-moderated\nand adopted only if schema-valid" as repair #FFE0B2
+
+}
+
+package "Surfacing Policy (admin-curated)" #F3E5F5 {
+  component "ThresholdPolicy\nmoderation/thresholds.py\nsurfaces(): guardian/kid gate\nadmin_surfaces(): admin\nnoise-floor denoise" as threshold_policy #E1BEE7
+
+  component "moderation_thresholds.py [admin]\nGET/PUT/DELETE\n/admin/moderation-thresholds\nGET/PUT /admin/moderation/noise-floor" as mod_thresh_router #E1BEE7
+
+  component "moderation_dashboard.py [admin]\nGET /admin/moderation/dashboard\nGET /admin/moderation/suggestions\n(read-only, WS-F)" as mod_dash_router #E1BEE7
+
+  component "insights.py\nmoderation/insights.py\naggregate_insights()\nsuggest_thresholds()" as insights #E1BEE7
+}
+
+database "PostgreSQL" as pg #E0F7FA {
+  component "StorybookVersion\n.moderation_report (JSONB)" as version_row #E0F7FA
+  component "ModerationThreshold\nsparse (age_band, category)\noverride rows" as threshold_table #E0F7FA
+  component "ModerationThresholdAudit\nappend-only edit trail" as threshold_audit_table #E0F7FA
+  component "ModerationSetting\nadmin_noise_floor scalar" as setting_table #E0F7FA
+}
+
+component "Publishing State Machine\npublishing/service.py\nsubmit() / auto_reject()\n[see component-publishing.puml]" as publishing #F3E5F5
+
+component "Pipeline Event Log\nevents/writer.py [WS-D]\n[see component-events.puml]" as events_log #FFF8E1
+
+' --- Primary moderation flow ---
+worker ==> entry : "run_moderation_pipeline(\nstory_id, version, ...)"
+entry --> review_provider : "resolve + guard\n(forbidden=pii)"
+entry ==> stage0 : "Stage 0\n(always runs first)"
+stage0 --> report : "bright-line BLOCK /\nadvisory findings"
+entry ..> stage1 : "skip Stage 0->4 entirely\nif Stage 0 hard block"
+review_provider --> stage1
+stage1 --> report : "BLOCK / FLAG / PASS"
+entry ..> stage2 : "skip Stages 1-4\nif Stage 1 BLOCK"
+review_provider --> stage2
+review_provider --> stage3
+review_provider --> stage4
+stage2 --> report
+stage3 --> report
+stage4 --> report
+
+report --> entry : "has_hard_block /\nhas_soft_flag"
+entry --> repair : "soft flag AND\nno hard block\n(one bounded attempt)"
+repair --> review_provider : "re-moderate\nrevised blob"
+repair --> entry : "revised blob\n(adopted only if\nschema-valid;\notherwise discarded)"
+
+entry --> version_row : "persist\nmoderation_report"
+entry ==> publishing : "clean or repaired ->\nsubmit() [draft/needs_revision\n-> in_review]"
+entry ..> publishing : "has_hard_block ->\nauto_reject() [draft\n-> needs_revision]"
+entry --> events_log : "MODERATION_COMPLETED (always)\nREPAIR_APPLIED (if adopted)"
+
+' --- Admin threshold configuration ---
+mod_thresh_router --> threshold_table : "upsert / delete\n(admin only)"
+mod_thresh_router --> threshold_audit_table : "one audit row\nper edit, same transaction"
+mod_thresh_router --> setting_table : "admin_noise_floor\nupsert"
+mod_thresh_router --> events_log : "THRESHOLD_CHANGED /\nNOISE_FLOOR_CHANGED"
+threshold_policy --> threshold_table : "load_threshold_policy()\nwhole-table read, no cache"
+threshold_policy --> setting_table : "load_admin_noise_floor()"
+
+mod_dash_router --> insights : "aggregate_insights()\nsuggest_thresholds()"
+insights --> version_row : "read persisted\nmoderation_report history"
+mod_dash_router --> events_log : "read recent\nTHRESHOLD_CHANGED /\nNOISE_FLOOR_CHANGED rows"
+
+note right of entry
+  Routing decision (pipeline.py):
+  1. Stage 0 classifiers always run first.
+  2. Any Stage 0 bright-line hit -> hard block,
+     Stages 1-4 are skipped (no LLM spend).
+  3. Stage 1 (safety) is the only other hard gate;
+     a BLOCK there also skips Stages 2-4.
+  4. Stages 2-3 are soft (FLAG); Stage 4 is
+     advisory only and never gates.
+  5. has_hard_block -> auto_reject()
+     (draft -> needs_revision, no human review).
+  6. has_soft_flag and NOT has_hard_block ->
+     one bounded auto-repair attempt, then
+     re-moderate; a schema-invalid revision is
+     discarded and the original report stands.
+  7. Otherwise (clean, or repair adopted) ->
+     submit() (-> in_review) for the admin
+     to approve or send back (ADR-005: the
+     admin is the final gate; this pipeline
+     never calls approve() or publish()).
+end note
+
+note right of stage0
+  Sub-floor graded scores (< 0.01) are
+  dropped as classifier noise, except an
+  OpenAI boolean flag always bypasses the
+  floor. Advisories never gate
+  (has_soft_flag counts FLAG only).
+end note
+
+note bottom of threshold_policy
+  Distinct from the pipeline's own gating:
+  ThresholdPolicy governs which ALREADY-
+  RECORDED findings surface on a filtered
+  guardian/kid response or the admin review
+  view; it never changes has_hard_block /
+  has_soft_flag. Admin surfaces are never
+  filtered by ThresholdPolicy.surfaces(),
+  only by the separate noise-floor scalar.
+end note
+
+@enduml

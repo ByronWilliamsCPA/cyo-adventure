@@ -2,7 +2,8 @@
 schema_type: planning
 title: "R1 Deferred-Debt Register"
 description: "Consolidated register of the accepted Minors and deferred items from the R1 gap-closure final
-  reviews (PRs #105-#109, #111, #112), with severity, source, and the R2 gate flags."
+  reviews (PRs #105-#109, #111, #112), plus the pre-R1 generation/safety/tooling debt carried in
+  completion-plan.md (merged, doc archived), with severity, source, and the R2 gate flags."
 tags:
   - planning
   - technical-debt
@@ -11,11 +12,12 @@ status: active
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
-purpose: "Task 4.2 of the R1 gap-closure plan: one place to triage everything consciously deferred while
-  shipping R1, so R2 planning starts from a complete debt inventory instead of scattered review ledgers."
+purpose: "One place to triage everything consciously deferred while shipping R1, so R2 planning starts
+  from a complete debt inventory instead of scattered review ledgers. Originated as Task 4.2 of the R1
+  gap-closure plan (merged, doc archived)."
 component: Strategy
 source: "SDD ledgers (.superpowers/sdd/progress.md) for story-requests-kid-ui and playwright-e2e; final
-  review verdicts for PRs #105, #106, #107, #108, #109, #111, #112; docs/planning/r1-handoff-2026-07-04.md"
+  review verdicts for PRs #105, #106, #107, #108, #109, #111, #112"
 ---
 
 ## Reading this register
@@ -27,7 +29,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 
 | # | Debt | Source | Why it gates R2 |
 | --- | --- | --- | --- |
-| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per Task C4 of the remediation plan, since a real child-scoped session is architecture work, not a mechanical fix. | R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in Task C4, docs/planning/r1-remediation-plan-2026-07-05.md | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
+| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per the remediation plan's Task C4 decision record: the kid surface has no principal of its own, so removing the token breaks every kid read; the real fix is child-scoped sessions, tracked here as G1. | R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in the R1 remediation plan's Task C4 (merged, doc archived) | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
 | G2 | **[Closed]** Issue #57: residual admin-submit gap (accepted for R1 local testing only). Closed by the Task E4 hardening pass: `submit()` (`publishing/service.py`) now refuses the draft/needs_revision -> in_review transition when the story's latest version has `moderation_report is None`, mirroring the gate `approve()` already enforced. | PR #55 closeout | Explicitly scoped as R1-only acceptance (resolved) |
 | G3 | **[Closed]** Issue #64 (safety-eval Finding 5: a documented control-character strip in concept.py does not exist; accepted for R1 local testing only, same ruling as #57). Closed by the Task E4 hardening pass: `ConceptBrief` now strips control characters from every string field at intake (`generation/concept.py`). | C4a review cycle | Same acceptance boundary (resolved) |
 
@@ -39,6 +41,14 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | C2 | **[Resolved]** Issue #110: `replayQueue` reconnect flush is exported but never wired, so queued offline writes do not flush on reconnect. Resolved by Workstream B (PR #145): `useReplayOnReconnect` flushes on reader mount and on the browser `online` event; a replayed 409 surfaces a conflict dialog; a new e2e-real spec (`reader-reload-resume.spec.ts`) covers the resume path. | PR #112 review discovery; resolved PR #145 | Medium | Closed; no further action |
 | C3 | Blocked story-request submissions bypass the 5-pending cap, so a kid can retry a blocked text repeatedly and each retry spends classifier budget | PR #108 accepted design | Medium | Count blocked submissions against the cap, or rate-limit screening per child |
 | C4 | No true-concurrent test of the `SELECT ... FOR UPDATE` row-lock guard on request approval (double-approve race is guarded in code, tested only sequentially) | PR #108/#109 reviews | Low | Add a two-session integration test with a barrier, or accept the lock as sufficient |
+| C5 | `choice_path` is optional in reading-state saves this slice; absent it, only the structural floor runs, not full deterministic replay (`api/reading.py`) | Slice 3 (#45) accepted design; migrated from `completion-plan.md` (merged, doc archived) | Medium | Update the React player to send `choice_path`, regenerate the client, then make the field required so replay runs on every save |
+
+## Generation and safety debts (pre-R1, migrated from completion-plan.md)
+
+| # | Debt | Source | Severity | Suggested action |
+| --- | --- | --- | --- | --- |
+| GS1 | Tier-2 generation yield weak (3/7 on the 2026-06-22 live run vs Tier-1's 11/13); dominant failure was L1-7 "budget" (branch depth over the band cap, ending count off-brief) | Phase 2b live run, `yield-results/phase-2b-2026-06-22-analysis.md` | Medium | Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever per `phase-2b-live-provider.md`); re-measure before relying on Tier-2 generation in production |
+| GS2 | Adversarial safety gate's "flag and route to human review" claim is unverified for the model-dependent classes: no live-model adversarial run has been executed (blocked on credential availability in this environment, not code) | `safety/adversarial-safety-evaluation.md`, Findings A/B/E | Medium | Run the credentialed adversarial harness (`scripts/adversarial_harness.py`) against a live review model and archive per-class results |
 
 ## UX debts
 
@@ -60,6 +70,8 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 | T5 | e2e-real auth helper hardcodes `user.id = 'e2e-user'` (fine while nothing reads it) | PR #112 task 1 ledger | Low | Parameterize when a test needs real per-user ids |
 | T6 | Intake poll test has ~2s margin (8s interval vs 10s timeout); flake risk under CI load | PR #112 task 5 ledger | Low | Bump timeout to 12s on first flake |
 | T7 | Real smoke tier is local-only by design (`--workers=1`; backend per-IP rate limiter 100rpm/burst 10 trips at 2 workers) | PR #112 user decision | Info | Revisit if a staging environment appears; not a defect |
+| T8 | `esbuild` Renovate re-proposal: no `renovate.json` rule pins/groups `esbuild` to Vite's range, so the #22 bump keeps getting re-proposed | Carried TODO; migrated from `completion-plan.md` (merged, doc archived) | Low | Open a `renovate.json` rule pinning/grouping `esbuild` to Vite's range |
+| T9 | markdownlint whole-repo table/heading debt (non-gating, pre-push only) | Carried TODO; migrated from `completion-plan.md` (merged, doc archived) | Low | Address opportunistically; do not block planning-doc updates on it |
 
 ## Policy and architecture deferrals (adjacent, pre-R1)
 

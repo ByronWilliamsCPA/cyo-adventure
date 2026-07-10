@@ -12,7 +12,8 @@
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
 '     decision 2 = Supabase Postgres as the operational database)
-'   docs/planning/r1-gap-closure-plan.md (Task 1.7: Supabase Postgres cutover)
+'   docs/planning/r1-deferred-debt-register.md (Task 1.7: Supabase Postgres cutover;
+'     r1-gap-closure-plan.md is archived, consolidated here)
 '   docs/planning/tech-spec.md
 ' ============================================================
 
@@ -45,6 +46,7 @@ rectangle "CYO Adventure System\n[Homelab, Docker, Pangolin zero-trust]" as syst
 
 ' --- External systems ---
 rectangle "OpenRouter\n[Primary LLM provider]\nMulti-model API gateway" as openrouter #F3E5F5
+rectangle "Anthropic / Modal\n[Admin-selectable LLM providers,\nWS-C PR1 per-job override]" as extra_providers #F3E5F5
 rectangle "Ollama\n[Local fallback LLM]\nSelf-hosted, homelab" as ollama #FFEBEE
 rectangle "Supabase (OIDC)\n[Managed auth platform, ADR-009]\nGuardian + admin sign-in (Apple/Google)" as supabase_auth #E0F7FA
 rectangle "Supabase Postgres\n[Managed operational database,\nADR-009 decision 2]\nSession pooler :5432 (session mode)\nMetadata and reading state" as postgres #E0F7FA
@@ -56,6 +58,7 @@ guardian --> pwa : "Authors concepts,\nsubmits for review (ADR-005)"
 admin --> pwa : "Reviews and approves/rejects\nstorybooks, cross-family (ADR-005)"
 pwa --> backend : "REST /api/v1\n(OIDC bearer token)"
 backend --> openrouter : "LLM completions\n(primary, ADR-003)"
+backend ..> extra_providers : "LLM completions\n(admin-selected job override)"
 backend ..> ollama : "LLM completions\n(local fallback)"
 backend --> supabase_auth : "OIDC token validation\n(JWKS, ADR-009)"
 backend --> postgres : "Async SQLAlchemy 2\nsession pooler :5432"

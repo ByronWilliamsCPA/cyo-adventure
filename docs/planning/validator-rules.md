@@ -103,14 +103,32 @@ the closure of reachable configurations. The default configuration cap is 100,00
 
 ---
 
+## Policy Gate (Age-Band, All Stories)
+
+Runs after Layer 1 passes and the Storybook parses, on the typed model plus the choice
+graph (`validator/policy.py`). Most findings are ERROR-severity and blocking; PL-19 is
+advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-20
+(fastest-finish arc floor), and PL-21 (off-matrix rejection) are specified in
+[ADR-011](./adr/adr-011-story-scale-framework.md) rather than duplicated here.
+
+| Rule ID | Layer | Description | Failure Message Template |
+|---------|-------|-------------|--------------------------|
+| PL-15 | Policy | **Ending-kind policy**: no ending whose `kind` is in the band's `forbidden_ending_kinds` (the no-death / no-capture rule). | `PL-15 policy: ending kind '{kind}' is forbidden for band '{age_band}' in story '{story_id}'` |
+| PL-16 | Policy | **Content ceiling**: each `metadata.content_flags` value must not exceed the band's `content_ceiling` for that flag (ordered-enum comparison). | `PL-16 policy: {flag} '{level}' exceeds band '{age_band}' ceiling '{ceiling}' in story '{story_id}'` |
+| PL-17 | Policy | **Floors**: distinct endings must meet `min_endings`; decision nodes (non-ending nodes with >= 2 choices) must meet `min_decisions`, both possibly scaled and counted from the graph. | `PL-17 floor: {n} ending(s)/decision node(s) below {scope} minimum {min} in story '{story_id}'` |
+| PL-18 | Policy | **Topology verify**: declared `metadata.topology` must be admissible for the class inferred from graph metrics (networkx classifier). | `PL-18 topology: declared '{topology}' is not admissible for the graph (admissible: {admissible}) in story '{story_id}'` |
+
+---
+
 ## Rule Application Order
 
 The validator applies rules in this order:
 
 1. L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.
-2. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
-3. RL-13 (advisory; all stories). Log warnings; continue.
-4. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
+2. PL-15 through PL-21 (age-policy gate; all stories). PL-19 is advisory; the rest block.
+3. L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.
+4. RL-13 (advisory; all stories). Log warnings; continue.
+5. SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.
 
 Stopping at the first Layer-1 failure is allowed for efficiency; all Layer-1 failures may also
 be collected in a single pass before reporting, which is preferred for repair-stage prompts

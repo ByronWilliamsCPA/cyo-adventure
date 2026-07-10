@@ -26,7 +26,7 @@ source: "Synthesized 2026-06-20 from project-vision.md v1.0, tech-spec.md v1.0,
 
 # Project Plan: CYO Adventure (Ariadne)
 
-> **Status**: Active | **Version**: 2.5 | **Updated**: 2026-07-03
+> **Status**: Active | **Version**: 2.7 | **Updated**: 2026-07-10
 > **Codename**: Ariadne (the thread that guides a reader through the maze of choices)
 > **Primary branch**: `main`
 
@@ -109,7 +109,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 [ADR-008](./adr/adr-008-public-app-store-launch.md) and
 [ADR-009](./adr/adr-009-supabase-platform.md) for the public rungs (R2/R3).
 
-### Current status (2026-07-03)
+### Current status (2026-07-10)
 
 | Phase | Status |
 |-------|--------|
@@ -119,6 +119,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
 | 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete**, pending release-readiness (#73 auth redirect, docs sync #52) |
+| Story-lifecycle redesign (WS-A..G, post-R1) | ✅ Delivered (merged 2026-07-06 to 2026-07-10: moderation thresholds #141/#161/#162, request lifecycle #163/#164/#165/#167, provider selection + skeleton matching #170/#175, pipeline event log #168, catalog sharing #180, suggestion dashboard #176, series chaining #184/#192); see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
 | 4b Editor + UX | ⏸️ Not started (post-R1; read-aloud is also an R2/R3 subscription lever) |
 | 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9) |
 | 6 Public auth + multi-tenancy | ⏸️ Not started (R2; planned 2026-07-02) |
@@ -130,7 +131,10 @@ With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1)
 feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
 enforced, and the guardian-facing app shell, library, per-child profiles, guardian
 console, and concept intake are built and merged (C4a-1..6). What remains for R1 is
-release-readiness, not new build (#73 auth redirect, docs sync #52). The public rungs
+release-readiness, not new build (#73 auth redirect, docs sync #52). Between R1
+feature-complete and R2 planning, the seven-workstream story-lifecycle redesign (WS-A
+through WS-G) hardened moderation, request handling, generation matching, observability,
+catalog sharing, and series continuation; all seven merged by 2026-07-10. The public rungs
 (R2/R3) are the next critical path; see Section 5.
 
 ---
@@ -212,9 +216,9 @@ Key architectural decisions, each recorded in an ADR:
 
 **ADR status** (as of 2026-07-03):
 
-- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-005, ADR-006, ADR-009,
+- **Accepted**: ADR-001, ADR-002, ADR-003, ADR-004, ADR-005, ADR-006, ADR-009,
   [ADR-011](./adr/adr-011-story-scale-framework.md).
-- **Proposed**: ADR-004, ADR-007, ADR-008,
+- **Proposed**: ADR-007, ADR-008,
   [ADR-010](./adr/adr-010-modal-review-and-gated-generation.md).
 
 ADR-010 and ADR-011 are not in the index table above (which predates them); ADR-011 is
@@ -1251,6 +1255,7 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 | Project Vision and Scope | Problem, users, scope, constraints, success metrics | [docs/planning/project-vision.md](./project-vision.md) |
 | Technical Specification | Architecture, data model, APIs, security, testing strategy | [docs/planning/tech-spec.md](./tech-spec.md) |
 | Development Roadmap | Phase objectives, deliverables, acceptance criteria, risk register | [docs/planning/roadmap.md](./roadmap.md) |
+| Story-Lifecycle Redesign (WS-A..G) | Post-R1 hardening across moderation, request handling, generation matching, observability, catalog sharing, and series continuation | [docs/planning/story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
 | ADR-001: Story format is a versioned JSON Storybook graph | Format decision and rationale | [docs/planning/adr/adr-001-story-format-json-storybook.md](./adr/adr-001-story-format-json-storybook.md) |
 | ADR-002: Client is a Progressive Web App | PWA decision and iOS trade-offs | [docs/planning/adr/adr-002-client-pwa.md](./adr/adr-002-client-pwa.md) |
 | ADR-003: Frontier LLM for generation | Provider strategy and interface design | [docs/planning/adr/adr-003-frontier-llm-generation.md](./adr/adr-003-frontier-llm-generation.md) |
@@ -1266,7 +1271,10 @@ Source: [Roadmap: Milestones](./roadmap.md#milestones);
 
 ---
 
-**Last Updated**: 2026-07-10 (v2.6: integrated the COPPA compliance audit
+**Last Updated**: 2026-07-10 (v2.7: added the post-R1 story-lifecycle redesign (WS-A
+through WS-G, PRs #141-#192, all merged 2026-07-06 to 2026-07-10) as delivered scope in
+Section 1's status table and narrative, cross-referenced against
+`docs/planning/story-lifecycle-redesign.md`; v2.6: integrated the COPPA compliance audit
 (`docs/compliance/coppa-compliance-audit.md`): added Phase 7 items P7-09..P7-13 (retention purge,
 PII-egress hardening, private cover storage, processor terms, infosec program), per-item audit
 notes on P7-02/P7-04/P7-06, Phase 7 acceptance/quality-gate additions, and Risk Register

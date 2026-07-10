@@ -133,8 +133,7 @@ Tests use Vitest with React Testing Library.
 ## Real-backend e2e (smoke tier)
 
 Two e2e tiers exist: `chromium` (`e2e/`) mocks the API per test and needs no backend running;
-`real-backend` (`e2e-real/`) makes zero mocks and requires the local stack below. Full design:
-`docs/superpowers/specs/2026-07-04-playwright-e2e-suite-design.md`.
+`real-backend` (`e2e-real/`) makes zero mocks and requires the local stack below.
 
 The mocked tier (`npm run test:e2e`, no backend needed) runs in CI on every PR. The
 real-backend smoke tier is local-only (it needs Postgres and a seeded uvicorn). Run the

@@ -41,7 +41,7 @@ transition: the single approve action stamps `approved_by` and `published_at` an
 | Approve (and publish) | Yes (global, cross-family) | No (403) | No (403) | Global admin role (`Role.ADMIN` / `is_admin`) required; enforced in the state machine. `authorize_family` is not applied |
 | Access another family's data | Yes (admin, cross-family) | No (403) | No (403) | Family ownership is checked on every non-admin resource access; cross-family 403 |
 | Edit a passage (Phase 4b) | Yes | Yes | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
-| Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | Own assigned profile only | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; the `StorybookAssignment` gate is unchanged for child read/write paths |
+| Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | No (403) | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child token gets 403 regardless of `profile_id`; the `StorybookAssignment` gate is unchanged for child read/write paths |
 
 Key implementation rules:
 
@@ -74,9 +74,8 @@ visibility adds a narrow, server-checked exception on top of it. The contract is
    widens to admit catalog books, but the assignment gate that already governs child
    access is never bypassed.
 
-See the E5 amendment in [WS-E Catalog and Guardian Assignment Specification](./ws-e-catalog-spec.md)
-for the decision record and the file/line-level implementation this contract is pinned against
-(`api/library.py`, `api/ratings.py`, `api/reading.py`).
+This contract (the E5 amendment, ratified 2026-07-09, shipped in WS-E's PR #180) is pinned
+against `api/library.py`, `api/ratings.py`, and `api/reading.py`.
 
 ---
 
@@ -146,4 +145,3 @@ A story is visible in a child's library only in the `published` state.
 - [ADR-005: Mandatory human approval](./adr/adr-005-mandatory-human-approval.md) (amended 2026-06-30: approver is the global admin role)
 - [ADR-009: Supabase as the managed platform for auth, database, and storage](./adr/adr-009-supabase-platform.md)
 - [ADR-004: Homelab-first deployment](./adr/adr-004-homelab-first-deployment.md) (governs the homelab / family tier)
-- [WS-E Catalog and Guardian Assignment Specification](./ws-e-catalog-spec.md) (E5 amendment: catalog visibility contract)

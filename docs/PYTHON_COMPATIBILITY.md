@@ -10,22 +10,29 @@ tags:
   - requirements
 ---
 
-This project supports **Python 3.10, 3.11, 3.12, 3.13, and 3.14** with full testing across all versions.
+This project requires **Python 3.11+** (`requires-python = ">=3.11"` in `pyproject.toml`, no upper bound). Python 3.12 is the primary local development target. CI coverage is split across two workflows with different scope: `ci.yml` runs the full quality gate (tests, lint, type checking) on **Python 3.12 only**; `python-compatibility.yml` runs a pytest-only compatibility check on Python 3.11-3.13 (Ubuntu), plus Python 3.12 on macOS and Windows. Python 3.10 and 3.14 appear only in the local `nox -s test` / `lint` / `typecheck` matrix (3.10-3.14); **no GitHub Actions workflow invokes `nox`**, so those two versions have no CI coverage, and 3.10 in particular falls below the project's `requires-python` floor (see the note under [Python 3.10 Support](#python-310-support-backports-needed) below).
 
 ## Version Support Matrix
 
-| Python Version | Support Status | Nox Testing | CI Testing | Notes |
-|----------------|----------------|-------------|------------|-------|
-| 3.10 | ✅ Supported | ✅ All versions | ✅ Full CI/CD | Minimum version, requires backports |
-| 3.11 | ✅ Supported | ✅ All versions | ✅ Full CI/CD | LTS version (EOL Oct 2027) |
-| 3.12 | ✅ Supported | ✅ All versions | ✅ Full CI/CD | Default/recommended version |
-| 3.13 | ✅ Supported | ✅ All versions | ✅ Full CI/CD | Latest stable, PEP 594 removals |
-| 3.14 | ✅ Supported | ✅ All versions | ✅ Full CI/CD | Latest (Oct 2025), free-threaded, JIT |
+| Python Version | Support Status | Nox Testing (local only) | CI Testing | Notes |
+|----------------|----------------|--------------------------|------------|-------|
+| 3.10 | ❌ Not supported | ⚠️ Listed in `noxfile.py`'s `test`/`lint`/`typecheck` matrix | ❌ None | Below `requires-python = ">=3.11"`; not installable via `uv sync` |
+| 3.11 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) | LTS version (EOL Oct 2027) |
+| 3.12 | ✅ Supported | ✅ test/lint/typecheck | ✅ Full quality gate (`ci.yml`) + `python-compatibility.yml` (Ubuntu, macOS, Windows) | Primary/default local dev target; only version covered by the main CI gate |
+| 3.13 | ✅ Supported | ✅ test/lint/typecheck | ✅ `python-compatibility.yml` (Ubuntu only) | Latest stable, PEP 594 removals |
+| 3.14 | ⚠️ Locally tested only | ✅ test/lint/typecheck | ❌ None | Not covered by any GitHub Actions workflow |
 | 3.15+ | ⚠️ Not tested | ❌ None | ❌ No CI/CD | May work but not guaranteed |
 
 ## Python 3.10 Support (Backports Needed)
 
-Since Python 3.10 is the minimum version, some features from newer versions require backport packages:
+> **Note:** This project's actual `requires-python` floor is `>=3.11` (verified in
+> `pyproject.toml`), so Python 3.10 is **not currently supported** and the backport
+> dependencies below are not active (they exist only as commented-out illustrative
+> examples in `pyproject.toml`). This section is retained as generic reference
+> guidance in case the floor is lowered again in the future; it does not describe
+> this project's current dependency set.
+
+If this project's floor were lowered back to Python 3.10, some features from newer versions would require backport packages:
 
 ### Required Backports for 3.10
 
@@ -229,7 +236,7 @@ This project does **not** require t-strings - standard f-strings work across all
 **`from __future__ import annotations` is deprecated:**
 - This template's `check_type_hints.py` currently enforces this import
 - Deprecation in 3.14, removal not before Python 3.13 EOL (2029)
-- Continue using it for now (required for 3.10 compatibility)
+- Continue using it for now (enforced by `scripts/check_type_hints.py`, independent of the 3.10/3.11 floor)
 - We'll update the template before 2029
 
 **NotImplemented Boolean Context:**
@@ -387,32 +394,64 @@ This ensures BasedPyright:
 
 ### Nox Sessions
 
-Test across all supported versions:
+`nox`'s `test`, `lint`, and `typecheck` sessions run a wide local matrix
+(3.10, 3.11, 3.12, 3.13, 3.14). This is a **local-only parity check**: no
+GitHub Actions workflow invokes `nox`, so running these sessions is the only
+way to exercise 3.10 or 3.14 at all, and the only way to run lint/typecheck
+against anything other than 3.12.
 
 ```bash
-# Run tests on all Python versions (3.10, 3.11, 3.12, 3.13, 3.14)
+# Run tests locally across the nox matrix (3.10, 3.11, 3.12, 3.13, 3.14)
 nox -s test
 
-# Run linting on all versions
+# Run linting locally across the nox matrix
 nox -s lint
 
-# Run type checking on all versions
+# Run type checking locally across the nox matrix
 nox -s typecheck
 ```
 
 ### CI/CD Matrix
 
-Our GitHub Actions workflow tests on all supported versions:
+CI coverage is split across two separate workflows, neither of which matches
+the local `nox` matrix exactly:
+
+**`ci.yml`** (the main quality gate: tests, lint, type checking) runs on
+Python 3.12 only:
+
+```yaml
+env:
+  python-version: "3.12"
+```
+
+**`python-compatibility.yml`** (a pytest-only compatibility check, no lint or
+type checking) runs a matrix of 3.11-3.13 on Ubuntu, plus 3.12 on macOS and
+Windows:
 
 ```yaml
 strategy:
   matrix:
-    python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+    python-version: ['3.11', '3.12', '3.13']
+    os: [ubuntu-latest]
+    include:
+      - os: macos-latest
+        python-version: '3.12'
+      - os: windows-latest
+        python-version: '3.12'
 ```
+
+Neither workflow covers Python 3.10 or 3.14; those two versions are exercised
+only by the local `nox` matrix described above.
 
 ## Migration Guide
 
 ### Migrating to Python 3.10+
+
+> **Note:** This project has already moved past this stage; its current
+> `requires-python` floor is `>=3.11` with no upper bound. This walkthrough is
+> retained as generic reference guidance for other projects (or a future
+> re-lowering of the floor), not a description of this project's current
+> state.
 
 If migrating from Python 3.9 or earlier:
 
@@ -423,7 +462,7 @@ If migrating from Python 3.9 or earlier:
    uv python install 3.10
 
    # Update requires-python in pyproject.toml
-   requires-python = ">=3.10,<3.15"
+   requires-python = ">=3.10"
    ```
 
 2. **Add backport packages** for 3.10 compatibility:
@@ -452,7 +491,12 @@ If migrating from Python 3.9 or earlier:
 
 ### Upgrading from Python 3.10 to 3.11+
 
-When dropping 3.10 support in the future:
+> **Note:** This project has already dropped 3.10 support; `requires-python`
+> in `pyproject.toml` is `>=3.11` today with no upper bound. This section is
+> kept as reference guidance for the steps that were taken (and for other
+> projects following the same path).
+
+When dropping 3.10 support:
 
 1. **Remove backport packages**:
 
@@ -476,7 +520,7 @@ When dropping 3.10 support in the future:
 3. **Update requires-python**:
 
    ```toml
-   requires-python = ">=3.11,<3.15"
+   requires-python = ">=3.11"
    ```
 
 ### Preparing for Python 3.14

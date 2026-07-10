@@ -787,11 +787,18 @@ class ModerationSetting(Base):
     """A single named global moderation scalar (WS-A admin noise-floor addendum).
 
     Distinct from ``ModerationThreshold``: this table holds global scalars
-    (currently one row, key ``admin_noise_floor``) rather than sparse
-    per-(age_band, category) overrides. No append-only audit table backs this
-    one; see the module-level design note in
-    ``docs/planning/ws-a-admin-noise-floor.md`` ("Design decision") for the
-    deliberate YAGNI call.
+    (currently one row, key ``admin_noise_floor``, seeded at 0.05) rather than
+    sparse per-(age_band, category) overrides. It denoises the admin review
+    surface: ADVISORY findings scoring below the floor are hidden so a
+    genuine low-but-real score is not lost in a wall of near-zero advisories;
+    BLOCK/FLAG findings and unscored findings always surface regardless.
+
+    Deliberately has no append-only audit table (unlike
+    ``moderation_threshold_audit``), only ``updated_by``/``updated_at``: this
+    is a single low-churn scalar, and full change history is deferred to the
+    ``pipeline_event`` log rather than duplicated here. This is an
+    intentional YAGNI call, not a missed one; don't flag the asymmetry with
+    ``ModerationThreshold`` as a defect.
 
     Attributes:
         key: The setting's unique name (e.g. ``admin_noise_floor``).

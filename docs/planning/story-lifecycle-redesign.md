@@ -22,6 +22,13 @@ source: "Brainstorming session 2026-07-06 (Fable 5); current-state codebase expl
   story_requests, generation, moderation, publishing, and assignments modules."
 ---
 
+> **Status: Complete.** All seven workstreams (WS-A through WS-G) are merged as of
+> 2026-07-10. See [roadmap.md](./roadmap.md#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1)
+> and [PROJECT-PLAN.md](./PROJECT-PLAN.md#1-executive-summary) for the delivered-scope
+> summary and merged-PR groupings. This document remains the design record; workstream-level
+> implementation plans and handoffs have been retired now that their content is either
+> shipped or migrated to a permanent home (ADRs, docstrings, or the debt register).
+
 ## Why this redesign
 
 Skeletons were introduced because LLMs struggled to produce structurally sound
@@ -185,14 +192,14 @@ one child.
 - Guardian- and kid-facing serializers filter findings through the threshold
   for the book's band. Admin endpoints bypass the age-band threshold entirely
   and return every finding.
-- Addendum (implemented in PR #162, in review): a separate, global,
+- Addendum (implemented in PR #162): a separate, global,
   admin-editable noise floor (seeded 0.05) denoises only the admin storybook
   review surface by hiding low-score ADVISORY findings; FLAG and BLOCK
   findings (including bright-line score-0.0 blocks) and unscored findings
   always surface. This floor is orthogonal to the per-band threshold: the
   age-band policy governs the guardian/kid surfaces, the noise floor governs
-  admin denoising. See `docs/planning/ws-a-admin-noise-floor.md`, which lands
-  with PR #162.
+  admin denoising. Landed in PR #162; see the `ModerationSetting` model
+  docstring (`db/models.py`) for the design rationale.
 - Because the filter lives at the serialization boundary, it applies
   retroactively to every already-moderated book the moment it ships; no
   re-moderation pass is needed.

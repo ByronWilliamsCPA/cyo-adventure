@@ -5,8 +5,8 @@ choice graph. Most findings are ERROR-severity and blocking; the PL-19 story-mea
 words-per-node check is advisory (WARNING). These rules convert age-safety, shape,
 and story-scale judgments into deterministic invariants.
 
-Rule sources: docs/superpowers/specs/2026-06-24-typed-story-metadata-design.md
-(PL-15..PL-18); docs/planning/adr/adr-011-story-scale-framework.md (PL-19
+Rule sources: docs/planning/validator-rules.md (PL-15..PL-18);
+docs/planning/adr/adr-011-story-scale-framework.md (PL-19
 words-per-node, PL-20 fastest-finish arc floor, and PL-21 off-matrix rejection).
 """
 

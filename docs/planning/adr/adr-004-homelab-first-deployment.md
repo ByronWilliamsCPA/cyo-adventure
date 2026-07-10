@@ -1,7 +1,7 @@
 ---
 title: "ADR-004: Homelab-first deployment, Azure as the scale-out alternative"
 schema_type: planning
-status: proposed
+status: accepted
 owner: core-maintainer
 purpose: "Record the decision to deploy to the homelab first with cloud-portable containers."
 tags:
@@ -12,16 +12,23 @@ tags:
 
 # ADR-004: Homelab-first deployment, Azure as the scale-out alternative
 
-> **Status**: Proposed
+> **Status**: Accepted (2026-07-10; deployed and live behind Pangolin at
+> `cyo.williamshome.family` since the R1 rollout on 2026-07-05, with nightly Postgres
+> backups running on docker-host; guardian auth on this deployment runs on Supabase per
+> [ADR-009](./adr-009-supabase-platform.md) rather than Authentik as originally decided
+> here; the MinIO object-storage leg and a formal restore drill remain outstanding under
+> Phase 5 hardening)
 > **Date**: 2026-06-20
 > **Amended by**: ADR-008 (public-tier hosting), ADR-009 (Supabase platform); ADR-004 still governs the dev and family/homelab tier
 
 ## TL;DR
 
 Deploy to the homelab first (containers behind Pangolin zero-trust ingress, Authentik
-for SSO and roles, with Postgres, Redis, and MinIO as services), keeping containers
-cloud-portable so Azure Container Apps is a drop-in alternative, because self-hosting
-keeps minors' data on hardware we control.
+for internal homelab-service SSO, with Postgres, Redis, and MinIO as services), keeping
+containers cloud-portable so Azure Container Apps is a drop-in alternative, because
+self-hosting keeps minors' data on hardware we control. App-level guardian and child
+authentication runs on Supabase Auth (OIDC) per [ADR-009](./adr-009-supabase-platform.md),
+not Authentik.
 
 ## Context
 
@@ -45,10 +52,12 @@ keeps a move to Azure cheap if we ever outgrow the homelab.
 
 ## Decision
 
-**We will deploy to the homelab first, behind Pangolin and Authentik, with Postgres,
-Redis, and MinIO as services, because self-hosting keeps minors' data private and
-reuses infrastructure we already run well.** Containers stay cloud-portable so Azure
-Container Apps is a drop-in alternative.
+**We will deploy to the homelab first, behind Pangolin (with Authentik for internal
+homelab-service SSO), with Postgres, Redis, and MinIO as services, because self-hosting
+keeps minors' data private and reuses infrastructure we already run well.** App-level
+guardian and child authentication is Supabase Auth (OIDC) per
+[ADR-009](./adr-009-supabase-platform.md), not Authentik. Containers stay cloud-portable
+so Azure Container Apps is a drop-in alternative.
 
 ### Rationale
 
@@ -105,8 +114,9 @@ always-on uptime and managed backups if the need arises.
 
 ### Components Affected
 
-1. **Ingress and auth**: Pangolin (zero-trust) and Authentik (OIDC, guardian and child
-   roles).
+1. **Ingress and auth**: Pangolin (zero-trust ingress) and Authentik (internal
+   homelab-service SSO only); app-level guardian and child authentication is Supabase
+   Auth (OIDC) per [ADR-009](./adr-009-supabase-platform.md).
 2. **Stateful services**: Postgres, Redis, MinIO as containers orchestrated via Dockge.
 3. **Storage abstraction**: S3 API for story blobs.
 
@@ -120,7 +130,8 @@ always-on uptime and managed backups if the need arises.
 
 ### Success Criteria
 
-- [ ] Deployed behind Pangolin with Authentik login.
+- [x] Deployed behind Pangolin with Supabase Auth login for guardians/children (live
+  since 2026-07-05; Authentik remains internal homelab-service SSO only).
 - [ ] A restore from backup succeeds in a drill.
 
 ### Review Schedule

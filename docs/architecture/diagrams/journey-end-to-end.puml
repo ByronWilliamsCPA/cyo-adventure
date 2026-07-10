@@ -4,14 +4,20 @@
 '
 ' Product/UX-clarity altitude (not an API sequence). Columns are the
 ' human/behind-the-scenes roles; node fill marks shipped vs planned so the
-' aspirational loop doubles as a gap map.
+' loop doubles as a gap map.
 '
-' Primary path is child-initiated (target state). Rose-filled nodes are the
-' parts of that loop not yet built (tracked in the R1 deployment review).
+' Primary path is child-initiated (target state, WS-B; shipped). Rose-filled
+' nodes, if any remain, are gaps not yet built; as of this update every step
+' in this loop is shipped (see the "Now covered" note at the bottom).
 '
 ' Source screens / decisions:
 '   frontend/src/router.tsx                         (kid + guardian route trees)
-'   docs/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design.md
+'   frontend/src/library/RequestStory.tsx            (child-initiated request,
+'     WS-B; shipped -- see api/story_requests.py)
+'   frontend/src/guardian/RequestsPage.tsx            (guardian/admin approve
+'     or decline a child's request, WS-B; shipped)
+'   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
+'     docs/superpowers/specs/ was retired as scratch output once its work merged)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md  (approval gate)
 '   docs/architecture/diagrams/seq-generation.puml  (behind-the-scenes detail)
 '   docs/architecture/diagrams/seq-offline.puml     (offline read + reconnect)
@@ -59,13 +65,15 @@ repeat :a new story is wanted;
 |Child|
 :Open the app, tap my avatar;
 note right: /  (Profile Picker)  •  shipped
-#F3D9D4:Tap "I want a new story"
-and say what it's about;
-note right: planned
+:Open my Library, tap
+"Request a story" and
+say what it's about;
+note right: RequestStory on the library page  •  shipped
 |Guardian|
-#F3D9D4:See my child's request,
-approve or tweak it;
-note right: planned (request-approval)
+:See my child's request
+(screened text + flags),
+approve or decline it;
+note right: /guardian/requests  •  shipped\n(guardian-own-family or admin-global)
 
 ' ---- Act 3: Behind the scenes ----
 |System|
@@ -139,9 +147,11 @@ legend bottom
   |= Node |= Meaning |
   |<back:#FFFDF8>  white  </back>| Shipped in the app today |
   |<back:#F3D9D4>  rose   </back>| Planned target-state step, not yet built |
-  The child-initiated request (Act 2) is the target-state entry point; today a
-  guardian starts requests from the Intake page. Approval (ADR-005) is the one
-  mandatory gate before any story reaches a child.
+  The child-initiated request (Act 2, WS-B) is shipped: a guardian or admin
+  approves or declines it from /guardian/requests. A guardian can also
+  author a request directly from Intake without a prior child ask. Approval
+  of the generated storybook (ADR-005) remains the one mandatory admin gate
+  before any story reaches a child.
 endlegend
 
 @enduml

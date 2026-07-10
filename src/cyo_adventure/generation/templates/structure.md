@@ -57,9 +57,10 @@ must contain:
      - `condition`: omit if unconditional; include the JSONLogic object if conditional.
      - `effects`: an array (may be empty).
    - `is_ending`: `false` for non-ending nodes; `true` for ending nodes.
-   - `ending`: include on ending nodes only, with `id` (a stable slug), `kind`
-     (`success`, `setback`, `death`, `capture`, `completion`, or `discovery`),
-     `valence` (`positive`, `neutral`, or `negative`), and `title`.
+   - `ending`: include on ending nodes only, with `id` (stable slug), `kind`
+     (`success`, `setback`, `death`, `capture`, `completion`, or `discovery`
+     -- what mechanically happened), `valence` (`positive`, `neutral`, or
+     `negative` -- how it feels, independent of `kind`), and `title`.
    - `tags`: an array (may be empty).
 
 5. Exactly as many ending nodes as the Budget section requires, each with a

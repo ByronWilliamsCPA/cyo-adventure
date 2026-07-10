@@ -11,11 +11,11 @@ status: active
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
-purpose: "Task 4.1 of the R1 gap-closure plan: a repeatable checklist to verify the live deployment end to end
-  before declaring R1 done, and after any subsequent image redeploy."
+purpose: "A repeatable checklist to verify the live deployment end to end before declaring R1 done, and
+  after any subsequent image redeploy."
 component: Strategy
-source: "docs/planning/r1-gap-closure-plan.md Task 4.1; journey map in docs/architecture/user-journeys.md;
-  PR #112 smoke tier (frontend/e2e-real/) as the pre-deploy harness"
+source: "Originated as Task 4.1 of the R1 gap-closure plan (merged, doc archived); journey map in
+  docs/architecture/user-journeys.md; PR #112 smoke tier (frontend/e2e-real/) as the pre-deploy harness"
 ---
 
 ## How to use this checklist
