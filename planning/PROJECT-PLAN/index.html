@@ -4553,7 +4553,9 @@ Supabase project (dev/staging) created at phase start. Blocks Phases 8 and 9.</p
 <h3 id="phase-7-kids-category-compliance-and-account-lifecycle-2-3-weeks-overlaps-phase-6">Phase 7: Kids Category Compliance and Account Lifecycle (2-3 weeks; overlaps Phase 6)<a class="headerlink" href="#phase-7-kids-category-compliance-and-account-lifecycle-2-3-weeks-overlaps-phase-6" title="Permanent link">&para;</a></h3>
 <p><strong>Branch</strong>: <code>feat/phase-7-kids-compliance</code>
 <strong>Milestone</strong>: M7 - Compliance checklist signed off; deletion drill passes
-<strong>Status</strong>: Planned</p>
+<strong>Status</strong>: Planned. Scope expanded 2026-07-10 with items P7-09..P7-13 from the COPPA compliance
+audit (<a href="../../compliance/coppa-compliance-audit/">docs/compliance/coppa-compliance-audit.md</a>);
+per-item audit notes appear in the table below.</p>
 <p><strong>Objective</strong>: Meet the obligations that make a child-directed public app lawful and
 App-Store-reviewable: COPPA/GDPR-K consent, privacy disclosures, account deletion, and the
 Kids Category constraints (App Store Guidelines 1.3, 5.1.4, 5.1.1(v)). The existing
@@ -4577,7 +4579,7 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-02</td>
 <td>Verifiable parental consent at onboarding</td>
-<td>COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change</td>
+<td>COPPA-acceptable method; persist a consent record (method, timestamp, policy version) on the family; re-consent flow on material policy change; <strong>audit 2026-07-10</strong>: no onboarding endpoint exists yet (P6-03 unbuilt) and <code>POST /profiles</code> is currently ungated, so consent has no host and child-profile creation must be blocked behind it (audit C-01)</td>
 </tr>
 <tr>
 <td>P7-03</td>
@@ -4587,7 +4589,7 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-04</td>
 <td>In-app account deletion (Guideline 5.1.1(v))</td>
-<td>Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows</td>
+<td>Full-family erasure driven by the child-linked data classification; removes the guardian identity via the Supabase Auth admin API; calls Apple's Sign in with Apple token-revocation endpoint (our code); async deletion job with audit record; drill test proves zero residual child-linked rows; <strong>audit 2026-07-10</strong>: no FK <code>ondelete</code> cascade exists on any child-linked table today (contradicts <code>privacy-model.md</code> line 133), so the job must add cascades or enumerate every child table plus the <code>pipeline_event</code> <code>BOOK_ASSIGNED</code> rows (audit C-03)</td>
 </tr>
 <tr>
 <td>P7-05</td>
@@ -4597,7 +4599,7 @@ label, the deletion contract, and the consent disclosure.</p>
 <tr>
 <td>P7-06</td>
 <td>Kid-context SDK and telemetry audit</td>
-<td>No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels</td>
+<td>No third-party ads or trackers; any analytics are first-party and anonymized; documented result feeds the privacy nutrition labels; <strong>audit 2026-07-10</strong>: confirmed no Sentry, analytics, ad, or tracker SDK is wired anywhere; include the public cover bucket (P7-11) and the classifier egress (P7-10) in the label inventory (audit H-02/H-03/M-02)</td>
 </tr>
 <tr>
 <td>P7-07</td>
@@ -4609,6 +4611,31 @@ label, the deletion contract, and the consent disclosure.</p>
 <td>Compliance checklist</td>
 <td><code>docs/planning/compliance-checklist.md</code> covering Guidelines 1.3, 4.8, 5.1.1(v), 5.1.4, COPPA, GDPR-K; includes verifying the Supabase DPA and data-region selection (Supabase is a processor of guardian and child-linked data per ADR-009); owner sign-off required; <strong>gates Phase 9 submission</strong></td>
 </tr>
+<tr>
+<td>P7-09</td>
+<td>Data-retention policy and enforced purge</td>
+<td>Written, published retention policy stating purpose and window per child-data category (<code>child_profile</code>, <code>reading_state</code>, <code>completion</code>, <code>rating</code>, <code>story_request</code>, <code>generation_job.report</code>, <code>pipeline_event</code>); implement the ADR-007 <code>generation_job.report</code> pg_cron purge (still unbuilt, carried from Phase 5) and add expiry for stale <code>reading_state</code> and for the raw text of blocked/declined <code>story_request</code> rows (retained at rest today, redacted only at the view layer); satisfies 16 CFR 312.10 (2025 amendment: no indefinite retention). Audit H-01, M-03</td>
+</tr>
+<tr>
+<td>P7-10</td>
+<td>PII-egress hardening across every provider leg</td>
+<td>Route the cover-generation prompt through <code>assert_prompt_pii_safe</code> before the image model (<code>covers/</code> is unguarded today; audit H-02); apply the same screening to the Stage-0 classifier inputs in <code>moderation/pipeline.py</code> (bypassed today while the sibling LLM review stages are guarded; audit H-03); extend the guard beyond the registered-name allowlist with pattern detectors (email, phone, address) so free-form child PII is caught, and retire the dead birthdate branch (audit M-01, L-03)</td>
+</tr>
+<tr>
+<td>P7-11</td>
+<td>Private cover-image storage</td>
+<td>Move covers off the public Supabase bucket with guessable keys (<code>{storybook_id}/{version}.webp</code>) to a private bucket with signed, expiring URLs, or gate retrieval behind the family-scoped API. Audit M-02</td>
+</tr>
+<tr>
+<td>P7-12</td>
+<td>Confirm third-party processor terms (public tier)</td>
+<td>Obtain written data-handling terms covering retention, sub-processing, and no independent use (per audit H-04) for every cloud egress destination (OpenRouter and downstream models, Anthropic-direct, Google Gemini image, OpenAI Moderation, Perspective) and record them in <code>privacy-model.md</code>, closing its Open Blocker 1; prefer zero-data-retention routes. The Supabase DPA and data-region check remain in P7-08. Audit H-04</td>
+</tr>
+<tr>
+<td>P7-13</td>
+<td>Information-security program + security-doc correction</td>
+<td>Produce the 16 CFR 312.8 (2025) safeguards artifact (designated coordinator, documented risk assessment, vendor-oversight process); correct <code>SECURITY.md</code>, which today asserts a "no persistent PII without explicit parental consent" mitigation that does not exist and still describes the retired Authentik / dev-stub auth. Audit M-04</td>
+</tr>
 </tbody>
 </table>
 <p><strong>Acceptance criteria</strong>:</p>
@@ -4618,12 +4645,19 @@ label, the deletion contract, and the consent disclosure.</p>
 <li>Consent records exist for every family created after the flow ships; onboarding without
   consent is impossible.</li>
 <li>P7-08 checklist complete and signed off; no open high-severity compliance item.</li>
+<li>No child-linked data category lacks a stated retention window, and the <code>generation_job.report</code>
+  purge runs on schedule (P7-09).</li>
+<li>Every cloud egress leg (generation, review, Stage-0 classifiers, cover image) is PII-screened or
+  contractually covered as a processor, and the cover bucket is private (P7-10, P7-11, P7-12).</li>
 </ul>
 <p><strong>Quality gates</strong> (plus Section 7 standards):</p>
 <ul class="task-list">
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 90% coverage on consent and deletion paths</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Deletion drill test green in CI (fixtures spanning every child-linked table)</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Privacy nutrition label inventory matches the SDK audit (P7-06) exactly</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> PII-egress guard covers the cover-generation and Stage-0 classifier paths (P7-10); no
+      unguarded child-derived egress remains</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Retention purge job green in CI against fixtures older than the policy window (P7-09)</li>
 </ul>
 <p><strong>Dependencies</strong>: Overlaps Phase 6 (consent hooks into P6-03 onboarding; deletion depends on
 P6-01 identities). Blocks Phase 9 submission via P7-08.</p>
@@ -5136,7 +5170,7 @@ documents.</p>
 <td>COPPA / GDPR-K violation</td>
 <td>L</td>
 <td>H</td>
-<td>Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08)</td>
+<td>Guardian-only IdP identities, verifiable consent (P7-02), deletion drill (P7-04), kid-context SDK audit (P7-06), compliance checklist gating submission (P7-08); plus retention purge (P7-09), PII-egress hardening (P7-10), private cover storage (P7-11), processor terms (P7-12), and an infosec program (P7-13) added from the <a href="../../compliance/coppa-compliance-audit/">COPPA audit</a></td>
 <td>6, 7</td>
 </tr>
 <tr>
@@ -5498,10 +5532,20 @@ documents.</p>
 <td>Data classification behind the consent, label, and deletion work in Phase 7</td>
 <td><a href="../privacy-model/">docs/planning/privacy-model.md</a></td>
 </tr>
+<tr>
+<td>COPPA compliance audit</td>
+<td>Engineering audit against 16 CFR Part 312; findings mapped to Phase 7 items P7-02..P7-13</td>
+<td><a href="../../compliance/coppa-compliance-audit/">docs/compliance/coppa-compliance-audit.md</a></td>
+</tr>
 </tbody>
 </table>
 <hr />
-<p><strong>Last Updated</strong>: 2026-07-03 (v2.5: doc-consistency sweep: Phase 4a marked delivered and
+<p><strong>Last Updated</strong>: 2026-07-10 (v2.6: integrated the COPPA compliance audit
+(<code>docs/compliance/coppa-compliance-audit.md</code>): added Phase 7 items P7-09..P7-13 (retention purge,
+PII-egress hardening, private cover storage, processor terms, infosec program), per-item audit
+notes on P7-02/P7-04/P7-06, Phase 7 acceptance/quality-gate additions, and Risk Register
+cross-references;
+v2.5: doc-consistency sweep: Phase 4a marked delivered and
 R1 feature-complete (C4a-1..6 merged); Supabase OIDC recorded as the app's current auth in
 the tech-stack table with Authentik retained for the homelab/family tier; ADR status
 promotions (001, 002, 003, 005, 006, 009, 011 Accepted; 004, 007, 008, 010 Proposed); old
@@ -5538,7 +5582,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 17:00:15 UTC">July 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:07:18 UTC">July 10, 2026</span>
   </span>
 
     

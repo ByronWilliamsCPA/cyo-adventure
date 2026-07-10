@@ -1,0 +1,3620 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+      
+      
+        <meta name="author" content="Byron Williams">
+      
+      
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/compliance/coppa-compliance-audit/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>COPPA Compliance Audit - CYO Adventure</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config",""),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#0-important-disclaimer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CYO Adventure
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              COPPA Compliance Audit
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guides/overview/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  User Guide
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api-reference/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/architecture/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../project/roadmap/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Project
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../planning/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Planning
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Supplementary Docs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../ADRs/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CYO Adventure
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ByronWilliamsCPA/cyo-adventure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ByronWilliamsCPA/cyo-adventure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Guide
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    User Guide
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guides/usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../architecture/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    User Journeys
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Overview
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Generation Pipeline
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation and Player
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/data-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Model
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Deployment
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../api/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/code-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Quality
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../project/license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Planning
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Planning
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/project-vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Vision
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tech Specification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Plan
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--active"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../planning/adr/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADRs
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ADRs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-001
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-002
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-003
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-004
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-005
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supplementary Docs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Supplementary Docs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Setup
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OpenSSF Compliance
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Python Compatibility
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../template_feedback/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Template Feedback
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../ADRs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR Template
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--draft"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-important-disclaimer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. Important disclaimer
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-methodology-and-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Methodology and scope
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-personal-information-inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Personal information inventory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Personal information inventory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-data-collected-directly-from-a-child" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Data collected directly from a child
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-data-the-guardian-enters-about-a-child" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Data the guardian enters about a child
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-persistent-identifiers-about-a-child" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Persistent identifiers about a child
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-child-influenced-content-that-flows-downstream" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Child-influenced content that flows downstream
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-audit-and-event-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Audit and event logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-third-party-disclosure-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Third-party disclosure map
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-requirement-by-requirement-assessment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Requirement-by-requirement assessment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Requirement-by-requirement assessment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-notice-16-cfr-3124" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Notice (16 CFR 312.4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-verifiable-parental-consent-16-cfr-3125" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Verifiable parental consent (16 CFR 312.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-parental-access-deletion-and-refusal-of-further-collection-16-cfr-3126" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Parental access, deletion, and refusal of further collection (16 CFR 312.6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-prohibition-on-conditioning-participation-16-cfr-3127" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Prohibition on conditioning participation (16 CFR 312.7)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-confidentiality-security-and-integrity-16-cfr-3128" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Confidentiality, security, and integrity (16 CFR 312.8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#56-data-retention-and-deletion-16-cfr-31210" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6 Data retention and deletion (16 CFR 312.10)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#57-data-minimization-and-the-internal-operations-exception-16-cfr-3122" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7 Data minimization and the internal-operations exception (16 CFR 312.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-findings-register" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Findings register
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Findings register">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#c-01-no-verifiable-parental-consent-mechanism-critical-at-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-01. No verifiable parental consent mechanism (Critical at launch)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-02-no-published-privacy-notice-or-direct-notice-to-parents-critical-at-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-02. No published privacy notice or direct notice to parents (Critical at launch)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-03-no-deletion-capability-schema-cannot-cascade-a-child-delete-critical-at-launch-high-now" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C-03. No deletion capability; schema cannot cascade a child delete (Critical at launch / High now)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-01-no-data-retention-policy-or-purge-indefinite-retention-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-01. No data-retention policy or purge; indefinite retention (High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-02-cover-generation-to-google-gemini-has-no-pii-screening-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-02. Cover generation to Google Gemini has no PII screening (High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-03-stage-0-classifiers-bypass-the-pii-guard-in-the-moderation-pipeline-high" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-03. Stage-0 classifiers bypass the PII guard in the moderation pipeline (High)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#h-04-unconfirmed-third-party-llm-processor-terms-high-at-launch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        H-04. Unconfirmed third-party LLM processor terms (High at launch)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-01-pii-guard-is-a-registered-name-allowlist-not-pii-detection-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-01. PII guard is a registered-name allowlist, not PII detection (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-02-public-cover-image-bucket-with-guessable-keys-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-02. Public cover-image bucket with guessable keys (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-03-raw-child-free-text-retained-at-rest-even-when-blocked-or-declined-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-03. Raw child free text retained at rest even when blocked or declined (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-04-securitymd-misstates-a-child-privacy-control-and-is-stale-on-auth-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-04. SECURITY.md misstates a child-privacy control and is stale on auth (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-05-no-aggregate-parental-access-export-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-05. No aggregate parental access / export (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#m-06-client-does-not-enforce-child-token-scoping-medium" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        M-06. Client does not enforce child token scoping (Medium)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-01-latent-persistent-identifier-column-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-01. Latent persistent-identifier column (Low)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-02-trustedhostmiddleware-disabled-and-app-layer-https-redirect-off-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-02. TrustedHostMiddleware disabled and app-layer HTTPS redirect off (Low)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-03-birthdate-screening-is-dead-code-low-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-03. Birthdate screening is dead code (Low / Info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l-04-supabase-project-ref-committed-low-info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L-04. Supabase project ref committed (Low / Info)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-strengths-to-preserve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Strengths to preserve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-prioritized-remediation-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Prioritized remediation roadmap
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>COPPA Compliance Audit</h1>
+
+<blockquote>
+<p><strong>Status</strong>: Draft | <strong>Version</strong>: 1.0 | <strong>Audit date</strong>: 2026-07-10
+<strong>Code reviewed at</strong>: commit <code>c9dbfa9</code> on <code>main</code>
+<strong>Scope</strong>: <code>src/cyo_adventure/</code>, <code>frontend/src/</code>, <code>migrations/</code>, <code>docs/</code></p>
+</blockquote>
+<h2 id="0-important-disclaimer">0. Important disclaimer<a class="headerlink" href="#0-important-disclaimer" title="Permanent link">&para;</a></h2>
+<p>This is a <strong>technical and engineering compliance audit</strong>, not legal advice. It maps the codebase's
+observable data practices to the requirements of the Children's Online Privacy Protection Act
+(COPPA) and the FTC's implementing Rule (16 CFR Part 312, as amended in 2025). Determinations of
+legal sufficiency, the correct verifiable-parental-consent method, and the precise text of required
+notices must be made with qualified privacy counsel. Nothing here should be read as a legal opinion
+or as certification of compliance.</p>
+<hr />
+<h2 id="1-executive-summary">1. Executive summary<a class="headerlink" href="#1-executive-summary" title="Permanent link">&para;</a></h2>
+<p>CYO Adventure is a <strong>child-directed</strong> reading service (age bands <code>3-5</code>, <code>5-8</code>, <code>8-11</code>, <code>10-13</code>,
+<code>13-16</code>, <code>16+</code>; see <code>src/cyo_adventure/storybook/models.py</code> <code>AgeBand</code>). COPPA governs the online
+collection of personal information from children under 13. The project's own planning documents
+correctly identify COPPA as a launch blocker for the public tier (<code>docs/planning/privacy-model.md</code>
+lines 218-233; <code>docs/planning/adr/adr-008-public-app-store-launch.md</code> lines 56-59, 127-133) and
+schedule the work as Phase 7 (<code>feat/phase-7-kids-compliance</code>, <code>docs/planning/PROJECT-PLAN.md</code>
+lines 883-915). <strong>That work is not yet implemented.</strong></p>
+<p><strong>Overall posture.</strong> The engineering foundations relevant to child privacy are unusually strong for
+a project at this stage: genuine data minimization by design (no birthdate, no exact age, no child
+photos, no child email/phone/address, no geolocation), a real authentication and family-tenancy
+authorization layer, an outbound PII egress guard on the main generation path, a mandatory
+human-approval safety pipeline, and no analytics, advertising, or tracking SDKs anywhere. What is
+missing is the entire <strong>compliance control plane</strong> that COPPA requires once the service is offered
+to the public: verifiable parental consent, a published privacy notice and direct notice to
+parents, parental deletion rights, a data-retention policy with enforced purging, and confirmed
+processor terms for the third parties that receive child-derived content.</p>
+<p><strong>Applicability nuance (tiered).</strong> COPPA attaches to a commercial online service offered to the
+public. The current private family / homelab / "R1" tier (guardian accounts provisioned by hand in
+Supabase, generation and review providers defaulting to <code>mock</code>) is most likely outside COPPA's
+scope as operated today. The <strong>public App Store tier decided in ADR-008 is squarely in scope</strong>, and
+the current architecture already accumulates child-linked data in ways that must be remediated
+before that launch. This audit assesses readiness for the public tier and flags issues that exist
+regardless of tier.</p>
+<p><strong>Headline findings (detail in Section 6):</strong></p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Finding</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C-01</td>
+<td>No verifiable parental consent mechanism, and no signup flow to attach one to</td>
+<td>Critical (at launch)</td>
+</tr>
+<tr>
+<td>C-02</td>
+<td>No published privacy notice and no direct notice to parents</td>
+<td>Critical (at launch)</td>
+</tr>
+<tr>
+<td>C-03</td>
+<td>No child-data deletion capability; schema lacks the cascades that would make deletion feasible</td>
+<td>Critical (at launch) / High (now)</td>
+</tr>
+<tr>
+<td>H-01</td>
+<td>No data-retention policy or purge; child data (including raw free text) is retained indefinitely</td>
+<td>High</td>
+</tr>
+<tr>
+<td>H-02</td>
+<td>Cover-image generation to Google Gemini applies no PII screening at all</td>
+<td>High</td>
+</tr>
+<tr>
+<td>H-03</td>
+<td>Stage-0 safety classifiers (OpenAI, Perspective) bypass the PII guard in the moderation pipeline</td>
+<td>High</td>
+</tr>
+<tr>
+<td>H-04</td>
+<td>Third-party LLM processor data-handling terms are unconfirmed (project's own open blocker)</td>
+<td>High (at launch)</td>
+</tr>
+<tr>
+<td>M-01</td>
+<td>The PII egress guard is a registered-name allowlist, not PII detection (misses free-form child PII)</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>M-02</td>
+<td>Public, unauthenticated cover-image bucket with guessable object keys</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>M-03</td>
+<td>Raw child free text is retained at rest even when blocked or declined (redaction is view-only)</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>M-04</td>
+<td><code>SECURITY.md</code> asserts a child-privacy control that does not exist, and is stale on auth</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>M-05</td>
+<td>No aggregate parental access / data export; some child data has no read endpoint</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>M-06</td>
+<td>Client does not enforce child token scoping; kid surface runs under the guardian token in <code>localStorage</code></td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>L-01</td>
+<td><code>updated_by_device_id</code> persistent identifier column exists on child reading state (latent)</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>L-02</td>
+<td><code>TrustedHostMiddleware</code> disabled and app-layer HTTPS redirect off</td>
+<td>Low</td>
+</tr>
+<tr>
+<td>L-03</td>
+<td>Birthdate screening in the PII guard is dead code (no birthdate stored), giving false assurance</td>
+<td>Low / Info</td>
+</tr>
+<tr>
+<td>L-04</td>
+<td>Supabase project ref committed in <code>.mcp.json</code> (developer tooling)</td>
+<td>Low / Info</td>
+</tr>
+</tbody>
+</table>
+<p>Strengths that materially reduce risk are catalogued in Section 7 and should be preserved through
+the Phase 7 work.</p>
+<hr />
+<h2 id="2-methodology-and-scope">2. Methodology and scope<a class="headerlink" href="#2-methodology-and-scope" title="Permanent link">&para;</a></h2>
+<p>Static source review only; no code was executed and no live data was inspected. Coverage:</p>
+<ul>
+<li><strong>Backend</strong>: all FastAPI routers (<code>src/cyo_adventure/api/</code>), ORM models (<code>src/cyo_adventure/db/models.py</code>),
+  Alembic migrations (<code>migrations/versions/</code>), the auth seam (<code>api/deps.py</code>), the generation and
+  moderation pipelines (<code>generation/</code>, <code>moderation/</code>), the PII egress guard (<code>generation/pii.py</code>),
+  configuration (<code>core/config.py</code>), middleware (<code>middleware/</code>), and the cover-image path (<code>covers/</code>).</li>
+<li><strong>Frontend</strong>: <code>frontend/src/</code> routing, auth context, guardian console, kid surface, profile and
+  story-request forms.</li>
+<li><strong>Docs and config</strong>: <code>docs/planning/</code> (privacy model, ADRs, project plan), <code>SECURITY.md</code>,
+  <code>README.md</code>, <code>.env.example</code>, <code>.mcp.json</code>.</li>
+</ul>
+<p>Findings cite <code>file:line</code> evidence. "Absent" means searched for and not found in source (not merely
+undocumented). The regulatory frame is COPPA (15 U.S.C. 6501-6506) and 16 CFR Part 312, including
+the FTC's 2025 amendments (written data-retention policy and prohibition on indefinite retention,
+separate consent for third-party disclosures, and a written information-security program).</p>
+<hr />
+<h2 id="3-personal-information-inventory">3. Personal information inventory<a class="headerlink" href="#3-personal-information-inventory" title="Permanent link">&para;</a></h2>
+<p>All persistent data lives in one Postgres schema defined in <code>src/cyo_adventure/db/models.py</code>
+(19 tables). No file datastore, SQLite, or local dumps exist (<code>data/</code> and <code>configs/</code> hold only
+<code>.gitkeep</code>). Guardian identity (email, password, OAuth identity) is delegated to Supabase Auth and
+is <strong>not</strong> stored in the application database; the backend persists only an opaque OIDC subject.</p>
+<h3 id="31-data-collected-directly-from-a-child">3.1 Data collected directly from a child<a class="headerlink" href="#31-data-collected-directly-from-a-child" title="Permanent link">&para;</a></h3>
+<p>The child actor (running under the guardian token in R1; see Section 5.3) can submit only:</p>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Where collected</th>
+<th>Where stored</th>
+<th>COPPA classification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Free-text story idea (<code>request_text</code>, &lt;=500 chars)</td>
+<td><code>frontend/src/library/RequestStory.tsx:185-190</code></td>
+<td><code>story_request.request_text</code> (<code>db/models.py:558</code>)</td>
+<td>Personal information if the child types identifying content</td>
+</tr>
+<tr>
+<td>Proposed series title (&lt;=120 chars)</td>
+<td><code>RequestStory.tsx:202-208</code></td>
+<td><code>story_request.proposed_series_title</code> (<code>db/models.py:589</code>)</td>
+<td>Same as above</td>
+</tr>
+<tr>
+<td>Book rating (1-5)</td>
+<td><code>frontend/src/library/StarRating.tsx</code></td>
+<td><code>rating.value</code> (<code>db/models.py:374</code>)</td>
+<td>Behavioral data tied to the child</td>
+</tr>
+<tr>
+<td>Reading progress (node, path, visit set, save slots)</td>
+<td>reader UI</td>
+<td><code>reading_state.*</code> (<code>db/models.py:287-324</code>)</td>
+<td>Behavioral data tied to the child</td>
+</tr>
+<tr>
+<td>Endings reached</td>
+<td>reader UI</td>
+<td><code>completion.*</code> (<code>db/models.py:327-344</code>)</td>
+<td>Behavioral data tied to the child</td>
+</tr>
+</tbody>
+</table>
+<p>There is <strong>no</strong> child-entered name, birthdate, age, photo, email, phone, address, or geolocation.</p>
+<h3 id="32-data-the-guardian-enters-about-a-child">3.2 Data the guardian enters about a child<a class="headerlink" href="#32-data-the-guardian-enters-about-a-child" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Data</th>
+<th>Where collected</th>
+<th>Where stored</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Child display name / nickname (&lt;=120)</td>
+<td><code>frontend/src/guardian/ProfileFormDialog.tsx:108-113</code></td>
+<td><code>child_profile.display_name</code> (<code>db/models.py:181</code>)</td>
+<td>A first name or nickname; the only stored child name</td>
+</tr>
+<tr>
+<td>Age band (coarse category)</td>
+<td><code>ProfileFormDialog.tsx:117-126</code></td>
+<td><code>child_profile.age_band</code> (<code>db/models.py:182</code>)</td>
+<td>One of six bands; not a birthdate or exact age</td>
+</tr>
+<tr>
+<td>Reading-level cap</td>
+<td><code>ProfileFormDialog.tsx:130-138</code></td>
+<td><code>child_profile.reading_level_cap</code> (<code>db/models.py:183</code>)</td>
+<td></td>
+</tr>
+<tr>
+<td>Avatar</td>
+<td><code>ProfileFormDialog.tsx:143-165</code></td>
+<td><code>child_profile.avatar</code> (<code>db/models.py:188</code>)</td>
+<td>Closed 8-glyph vocabulary, never a photo (<code>api/schemas.py:705-712</code>)</td>
+</tr>
+<tr>
+<td>TTS preference</td>
+<td><code>ProfileFormDialog.tsx:166-173</code></td>
+<td><code>child_profile.tts_enabled</code> (<code>db/models.py:187</code>)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-persistent-identifiers-about-a-child">3.3 Persistent identifiers about a child<a class="headerlink" href="#33-persistent-identifiers-about-a-child" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>child_profile.id</code> (UUID), the stable per-child key referenced by all behavioral tables.</li>
+<li>A <code>child</code>-role <code>user.authn_subject</code> linked to one profile (<code>db/models.py:166-170</code>), if a
+  child-scoped token is ever issued (not exercised by the shipped client; see Section 5.3).</li>
+<li><code>reading_state.updated_by_device_id</code> (String 64) (<code>db/models.py:319</code>), a client-supplied device
+  identifier. Under COPPA a persistent identifier is personal information. The shipped kid client
+  never populates it today (finding L-01), so this is latent, not active.</li>
+</ul>
+<h3 id="34-child-influenced-content-that-flows-downstream">3.4 Child-influenced content that flows downstream<a class="headerlink" href="#34-child-influenced-content-that-flows-downstream" title="Permanent link">&para;</a></h3>
+<p>A child's typed words propagate: <code>story_request.request_text</code> becomes <code>ConceptBrief.premise</code>
+(<code>story_requests/brief.py:99</code>) stored in <code>concept.brief</code> (<code>db/models.py:440</code>); that drives the
+generation prompt whose raw output is stored in <code>generation_job.report</code> (<code>db/models.py:988</code>); the
+finished prose is stored in <code>storybook_version.blob</code> with possible echoes in <code>moderation_report</code>
+(<code>db/models.py:247,252</code>). Each hop is a place child-derived content is retained and, in several
+cases, disclosed to a third party (Section 4).</p>
+<h3 id="35-audit-and-event-logs">3.5 Audit and event logs<a class="headerlink" href="#35-audit-and-event-logs" title="Permanent link">&para;</a></h3>
+<p><code>pipeline_event</code> (<code>db/models.py:714-768</code>) is a durable, append-only log (DB-trigger enforced) that
+retains child identifiers (<code>actor_id</code> when a child acts, composite <code>entity_id</code> values, and a
+<code>child_profile_id</code> in the <code>BOOK_ASSIGNED</code> payload, <code>events/writer.py:38</code>) and rating values. Its
+payload is free of child free text by contract (key allowlist plus a scalar-only value guard,
+<code>events/writer.py:17-83</code>). The two <code>*_audit</code> tables hold admin edits only, no child data.</p>
+<hr />
+<h2 id="4-third-party-disclosure-map">4. Third-party disclosure map<a class="headerlink" href="#4-third-party-disclosure-map" title="Permanent link">&para;</a></h2>
+<p>COPPA treats disclosure of a child's personal information to third parties as a distinct, tightly
+regulated event, and the 2025 amendments require separate consent for most third-party disclosures
+(other than disclosures to service providers acting solely as the operator's processors, and those
+that support the service's internal operations, which remain within the original consent).
+The single technical control is <code>assert_prompt_pii_safe</code> (<code>generation/pii.py:101</code>), a case-insensitive
+<strong>allowlist match</strong> against the family's registered <code>child_profile.display_name</code> values. Its coverage
+and gaps are analysed in finding M-01.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Destination</th>
+<th>What is sent</th>
+<th>Contains child data?</th>
+<th>PII guard applied?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>LLM text generation: OpenRouter (prod default), Anthropic, Ollama (local), Modal</td>
+<td>Full <code>ConceptBrief</code> including <code>premise</code> (child free text after approval), plus story JSON on repair</td>
+<td>Yes</td>
+<td>Yes, via <code>PiiGuardedProvider</code> (<code>generation/orchestrator.py:647</code>, <code>generation/guarded.py:71-72</code>); allowlist gap applies</td>
+</tr>
+<tr>
+<td>2</td>
+<td>OpenAI Moderation API (<code>api.openai.com</code>)</td>
+<td>Child's raw request text at screening; each generated node body at moderation</td>
+<td>Yes</td>
+<td><strong>Screening only</strong>; <strong>bypassed at moderation</strong> (<code>moderation/pipeline.py:306-311</code> sends raw nodes)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Google Perspective API</td>
+<td>Same content as #2</td>
+<td>Yes</td>
+<td>Same as #2 (bypass at moderation)</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Moderation LLM review stages: OpenRouter / Ollama</td>
+<td>Generated node prose in <code>&lt;untrusted_passage&gt;</code> tags</td>
+<td>Yes (derived)</td>
+<td>Yes (<code>moderation/pipeline.py:104-112</code>)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Google Gemini "nano banana" cover generation</td>
+<td>Story title, protagonist name recovered from <code>concept.brief</code>, themes, a 240-char prose excerpt, age band</td>
+<td>Yes</td>
+<td><strong>No guard at all</strong> (<code>covers/</code> never imports the guard)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Supabase Storage (cover bucket)</td>
+<td>WebP image bytes only</td>
+<td>Derived (artwork)</td>
+<td>N/A (binary), but bucket is public (M-02)</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Supabase Auth / GoTrue</td>
+<td>Guardian email/password or OAuth identity</td>
+<td>Guardian only, not child</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Supabase MCP (<code>.mcp.json</code>)</td>
+<td>Developer tooling, read-only; not a runtime data path</td>
+<td>No</td>
+<td>N/A (project ref committed, L-04)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Production default path.</strong> <code>generation_provider</code> defaults to <code>mock</code> (<code>core/config.py:134-136</code>), so
+CI and local runs make no live calls; the documented production default routes generation through
+<strong>OpenRouter cloud</strong> first, falling back to local Ollama (<code>generation/provider.py:594-606</code>;
+<code>docs/planning/privacy-model.md:174-176</code>). The review provider defaults to <code>mock</code> (<code>config.py:302</code>).</p>
+<p><strong>Negative findings (good).</strong> No Sentry integration exists (only a commented <code>SENTRY_DSN</code>
+placeholder, <code>.env.example:137-140</code>; no <code>sentry_sdk</code> import anywhere). No PostHog, Google Analytics,
+Mixpanel, Segment, Datadog, or OpenTelemetry anywhere in backend or frontend. Logging is on-box only
+(structlog to stdout/stderr, <code>utils/logging.py</code>); providers deliberately avoid logging prompt or
+response bodies (<code>generation/providers/openrouter.py:230-231</code>); correlation IDs are UUIDs, not PII.
+The browser uses Supabase for <strong>authentication only</strong> (no <code>.from()</code>, <code>.storage</code>, or <code>.rpc()</code> calls in
+<code>frontend/src</code>), so no child data is written to Supabase from the client.</p>
+<hr />
+<h2 id="5-requirement-by-requirement-assessment">5. Requirement-by-requirement assessment<a class="headerlink" href="#5-requirement-by-requirement-assessment" title="Permanent link">&para;</a></h2>
+<p>Status legend: <strong>Implemented</strong>, <strong>Partial</strong>, <strong>Not implemented</strong>, <strong>N/A (current tier)</strong>.</p>
+<h3 id="51-notice-16-cfr-3124">5.1 Notice (16 CFR 312.4)<a class="headerlink" href="#51-notice-16-cfr-3124" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Not implemented.</strong></p>
+<ul>
+<li>No privacy-policy or terms page or route exists in the frontend (<code>frontend/src/router.tsx</code> has no
+  such route; <code>LandingPage.tsx:12-30</code> has no policy link; <code>frontend/index.html</code> has none).</li>
+<li><code>README.md</code> describes the app ("A choose-your-own-adventure reading app for kids") but contains no
+  privacy notice or data-collection disclosure.</li>
+<li>The only privacy document is the internal <code>docs/planning/privacy-model.md</code>, which itself lists "a
+  published privacy notice" as future work (line 231).</li>
+<li>No direct-notice-to-parents mechanism exists (no email or notice dispatch anywhere in source). The
+  <code>user</code> table has no email/contact column today; <code>docs/planning/PROJECT-PLAN.md:826</code> (P6-03) plans
+  to add one.</li>
+</ul>
+<p>COPPA requires both a clear online privacy notice describing what is collected, how it is used, and
+disclosure practices, and a direct notice to the parent before collection. Neither exists.</p>
+<h3 id="52-verifiable-parental-consent-16-cfr-3125">5.2 Verifiable parental consent (16 CFR 312.5)<a class="headerlink" href="#52-verifiable-parental-consent-16-cfr-3125" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Not implemented (most consequential gap).</strong></p>
+<ul>
+<li>No consent code exists anywhere; <code>consent</code>, <code>COPPA</code>, <code>verifiable</code>, and <code>parental</code> match only in
+  planning docs, not in <code>src/</code> or <code>frontend/src/</code>.</li>
+<li>There is <strong>no signup or account-provisioning endpoint</strong> (all routers are wired in
+  <code>app.py:172-185</code>; none creates a <code>Family</code> or guardian <code>User</code>). Guardian accounts are created
+  by hand in Supabase for the R1 families (<code>frontend/src/guardian/LoginPage.tsx:22-27</code>). There is
+  therefore not even a structural point at which consent could be captured.</li>
+<li>Child-profile creation (<code>POST /profiles</code>, <code>api/profiles.py:101-132</code>) requires only the guardian
+  role; there is no consent precondition, verification step, or consent record on the model
+  (<code>db/models.py:174-189</code>).</li>
+<li>Child behavioral data (<code>reading_state</code>, <code>completion</code>, <code>rating</code>) and child free text
+  (<code>story_request</code>) are collected with no consent gate.</li>
+</ul>
+<p>The guardian-only identity model (children never obtain third-party IdP identities;
+<code>adr-008</code> lines 100-111) is a sound foundation for a low-friction consent method, but the consent
+step itself, and a persisted consent artifact (method, timestamp, policy version), do not exist.
+This is planned as P7-02 (<code>PROJECT-PLAN.md:893</code>).</p>
+<h3 id="53-parental-access-deletion-and-refusal-of-further-collection-16-cfr-3126">5.3 Parental access, deletion, and refusal of further collection (16 CFR 312.6)<a class="headerlink" href="#53-parental-access-deletion-and-refusal-of-further-collection-16-cfr-3126" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Partial (review) / Not implemented (deletion).</strong></p>
+<p><strong>Review</strong>: A guardian principal is scoped to all family profiles (<code>api/deps.py:332-336</code>), so
+per-resource review is possible: <code>GET /profiles</code> (<code>api/profiles.py:73-98</code>), <code>GET /reading-state/...</code>
+(<code>api/reading.py:120-151</code>), <code>GET /ratings/{profile_id}</code> (<code>api/ratings.py:109-138</code>). Gaps: there is
+no read endpoint for <code>completion</code> data, and no aggregate "all data about my child" export
+(finding M-05).</p>
+<p><strong>Deletion and refusal</strong>: Not implemented.</p>
+<ul>
+<li>No DELETE handler exists for child profiles or any child data. The only DELETE routes are for
+  admin config tables (<code>api/moderation_thresholds.py:240</code>, <code>api/provider_allowlist.py:204</code>).</li>
+<li>No soft-delete column (<code>deleted_at</code>, <code>is_active</code>) exists on <code>child_profile</code> or any child table.</li>
+<li><strong>No foreign-key cascades are defined.</strong> Every FK in <code>migrations/versions/20260621_1926_initial_schema.py</code>
+  and in <code>db/models.py</code> omits <code>ondelete</code> (child_profile is referenced by <code>user</code>, <code>reading_state</code>,
+  <code>completion</code>, <code>rating</code>, <code>storybook_assignment</code>, and <code>story_request</code>). A raw delete of a referenced
+  <code>child_profile</code> would fail: with no <code>ON DELETE</code> action Postgres defaults to <code>NO ACTION</code>, which blocks
+  the delete while dependent rows exist (orphaned rows would arise only from an incomplete
+  application-level purge, not from the database default). This directly contradicts the project's own
+  stated requirement that "Cascades must be defined in the Alembic schema"
+  (<code>docs/planning/privacy-model.md:133</code>). See finding C-03.</li>
+</ul>
+<h3 id="54-prohibition-on-conditioning-participation-16-cfr-3127">5.4 Prohibition on conditioning participation (16 CFR 312.7)<a class="headerlink" href="#54-prohibition-on-conditioning-participation-16-cfr-3127" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Largely satisfied by design.</strong> The service collects only what is needed to deliver
+personalized reading (a nickname, a coarse age band, reading progress). It does not condition access
+on the disclosure of more personal information than is reasonably necessary. This should be
+re-verified once monetization and the parental gate land (ADR-008 part 3).</p>
+<h3 id="55-confidentiality-security-and-integrity-16-cfr-3128">5.5 Confidentiality, security, and integrity (16 CFR 312.8)<a class="headerlink" href="#55-confidentiality-security-and-integrity-16-cfr-3128" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Partial. Reasonable baseline with specific gaps.</strong></p>
+<p>Strengths (Section 7) include real OIDC JWT verification, family/profile authorization, secret
+hygiene, and OWASP security headers. Gaps:</p>
+<ul>
+<li><strong>Public cover bucket</strong> (M-02): covers are uploaded to a public Supabase Storage bucket with a
+  guessable key <code>{storybook_id}/{version}.webp</code> and a public URL is returned
+  (<code>covers/storage.py:41-53</code>). Child-derived artwork is retrievable without authentication.</li>
+<li><strong><code>TrustedHostMiddleware</code> not added</strong> and app-layer HTTPS redirect off (<code>middleware/security.py</code>
+  defaults via <code>app.py:167</code>), delegating Host validation and TLS entirely to the reverse proxy
+  (L-02).</li>
+<li><strong>No written information-security program</strong> artifact (a 2025-amendment expectation): no designated
+  coordinator, documented risk assessment, or vendor-oversight process is present in the repo.</li>
+<li>The unconfirmed processor terms (H-04) also fall under this section.</li>
+</ul>
+<h3 id="56-data-retention-and-deletion-16-cfr-31210">5.6 Data retention and deletion (16 CFR 312.10)<a class="headerlink" href="#56-data-retention-and-deletion-16-cfr-31210" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Not implemented.</strong></p>
+<ul>
+<li>No retention policy, TTL, scheduled purge, or minimization job exists. <code>reading_state</code>,
+  <code>completion</code>, <code>rating</code>, and <code>story_request</code> (including raw <code>request_text</code>) accumulate indefinitely.</li>
+<li>The one documented retention rule, purging <code>generation_job.report</code> after 30 days or on publish
+  (ADR-007), is explicitly not built (<code>db/models.py:973-982</code> marks it a Phase 5 pg_cron task;
+  <code>privacy-model.md:96-98</code> says "The purge worker is a Phase 5 deliverable and is not yet built").</li>
+<li>The 2025 amendments require a written, published retention policy and prohibit indefinite
+  retention; both are currently unmet. See finding H-01.</li>
+</ul>
+<h3 id="57-data-minimization-and-the-internal-operations-exception-16-cfr-3122">5.7 Data minimization and the internal-operations exception (16 CFR 312.2)<a class="headerlink" href="#57-data-minimization-and-the-internal-operations-exception-16-cfr-3122" title="Permanent link">&para;</a></h3>
+<p><strong>Status: Strong on minimization; a nuance on classifiers.</strong> The absence of birthdate, exact age,
+photos, and contact data is exactly the posture COPPA's minimization principle favors. The safety
+classifiers and moderation LLMs process child content to protect the integrity and safety of the
+service, which can align with the "support for internal operations" concept, but only if the third
+parties act strictly as the operator's processors under contract and do not use the data for their
+own purposes. That contractual posture is unconfirmed (H-04), and the classifier calls are not PII
+screened (H-03).</p>
+<hr />
+<h2 id="6-findings-register">6. Findings register<a class="headerlink" href="#6-findings-register" title="Permanent link">&para;</a></h2>
+<p>Severity reflects risk at the <strong>public launch</strong> for which COPPA is binding, with current-state notes.</p>
+<h3 id="c-01-no-verifiable-parental-consent-mechanism-critical-at-launch">C-01. No verifiable parental consent mechanism (Critical at launch)<a class="headerlink" href="#c-01-no-verifiable-parental-consent-mechanism-critical-at-launch" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.5. <strong>Evidence</strong>: no consent code in <code>src/</code>/<code>frontend/src</code>; no signup endpoint
+(<code>app.py:172-185</code>); manual Supabase provisioning (<code>LoginPage.tsx:22-27</code>); ungated
+<code>POST /profiles</code> (<code>api/profiles.py:101-132</code>).
+<strong>Risk</strong>: Collecting personal information from children without prior verifiable parental consent is
+the core COPPA violation.
+<strong>Recommendation</strong>: Implement onboarding (P6-03) with a consent step (P7-02): present the privacy
+notice, obtain consent by a COPPA-acceptable method appropriate to the data use, and persist a
+consent record (method, timestamp, policy version) on the family. Block child-data collection until
+consent exists. Add a re-consent flow on material policy change.</p>
+<h3 id="c-02-no-published-privacy-notice-or-direct-notice-to-parents-critical-at-launch">C-02. No published privacy notice or direct notice to parents (Critical at launch)<a class="headerlink" href="#c-02-no-published-privacy-notice-or-direct-notice-to-parents-critical-at-launch" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.4. <strong>Evidence</strong>: no policy page/route; <code>README.md</code> and <code>LandingPage.tsx</code> carry no
+notice; only the internal <code>privacy-model.md</code>.
+<strong>Risk</strong>: COPPA requires a compliant online notice and direct notice to the parent before
+collection.
+<strong>Recommendation</strong>: Publish a privacy policy (derivable from the Section 3 inventory and
+<code>privacy-model.md</code>), link it from the landing page, the guardian console, and the app-store listing,
+and deliver direct notice to the parent at onboarding. Align it with the Apple privacy nutrition
+label (ADR-008 part 5).</p>
+<h3 id="c-03-no-deletion-capability-schema-cannot-cascade-a-child-delete-critical-at-launch-high-now">C-03. No deletion capability; schema cannot cascade a child delete (Critical at launch / High now)<a class="headerlink" href="#c-03-no-deletion-capability-schema-cannot-cascade-a-child-delete-critical-at-launch-high-now" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.6, 312.10; ADR-008 App Store Guideline 5.1.1(v). <strong>Evidence</strong>: no profile DELETE
+(<code>api/profiles.py</code> exposes GET/POST/PATCH only); no soft-delete column (<code>db/models.py:174-189</code>); no
+<code>ondelete</code> on any FK (<code>migrations/versions/20260621_1926_initial_schema.py:40,51-52,100-112</code>);
+contradicts <code>privacy-model.md:133</code>.
+<strong>Risk</strong>: A parent cannot exercise the deletion right, and the data model cannot currently satisfy a
+deletion request even manually without orphaning or FK errors. Data is already accumulating.
+<strong>Recommendation</strong>: Add cascade behavior (DB-level <code>ON DELETE CASCADE</code> via migration, or an explicit
+application-level purge that enumerates every child-linked table, plus the <code>pipeline_event</code>
+<code>BOOK_ASSIGNED</code> rows) and expose an authenticated in-app deletion endpoint for a child profile and
+for the whole family account. Add the deletion drill from P7-04. Verify erasure against the Section 3
+inventory.</p>
+<h3 id="h-01-no-data-retention-policy-or-purge-indefinite-retention-high">H-01. No data-retention policy or purge; indefinite retention (High)<a class="headerlink" href="#h-01-no-data-retention-policy-or-purge-indefinite-retention-high" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.10. <strong>Evidence</strong>: no TTL/purge/cron for user data; <code>generation_job.report</code> purge
+documented but unbuilt (<code>db/models.py:973-982</code>, <code>privacy-model.md:96-98</code>).
+<strong>Recommendation</strong>: Write and publish a retention policy stating purposes and retention windows per
+data category; implement the pg_cron purge for <code>generation_job.report</code>; add retention/expiry for
+<code>story_request</code> (especially blocked/declined rows, see M-03) and stale <code>reading_state</code>.</p>
+<h3 id="h-02-cover-generation-to-google-gemini-has-no-pii-screening-high">H-02. Cover generation to Google Gemini has no PII screening (High)<a class="headerlink" href="#h-02-cover-generation-to-google-gemini-has-no-pii-screening-high" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.2 (disclosure), 312.8. <strong>Evidence</strong>: <code>covers/</code> never imports or calls the PII guard;
+the cover prompt includes the protagonist name recovered from <code>concept.brief</code> and a 240-char prose
+excerpt (<code>covers/prompt.py:43-112</code>, <code>covers/service.py:41-61</code>, <code>covers/provider.py:36-44</code>).
+<strong>Risk</strong>: Guardian-entered names and generated prose (which may echo names) are disclosed to Google
+with no screening at all, the weakest egress path in the system.
+<strong>Recommendation</strong>: Route cover-prompt assembly through <code>assert_prompt_pii_safe</code> with the family's
+<code>PiiContext</code> before calling the image model, or strip names to role descriptors in the cover prompt.
+Confirm the image provider's data-handling terms (H-04).</p>
+<h3 id="h-03-stage-0-classifiers-bypass-the-pii-guard-in-the-moderation-pipeline-high">H-03. Stage-0 classifiers bypass the PII guard in the moderation pipeline (High)<a class="headerlink" href="#h-03-stage-0-classifiers-bypass-the-pii-guard-in-the-moderation-pipeline-high" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.2, 312.8. <strong>Evidence</strong>: <code>moderation/pipeline.py:306-311</code> calls <code>run_classifiers</code> with
+raw node prose (to OpenAI Moderation and Perspective), while the sibling LLM review stages in the
+same pipeline are wrapped by <code>PiiGuardedProvider</code> (<code>pipeline.py:104-112</code>). At story-request screening
+the local guard runs first (<code>story_requests/screening.py:80-95</code>) but the classifiers then receive
+everything else (<code>:105-111</code>).
+<strong>Recommendation</strong>: Apply the same PII screening to classifier inputs, or document and confirm the
+classifier vendors as safety processors under terms consistent with COPPA's internal-operations
+posture. Prefer screening at the pipeline boundary so all egress is uniformly guarded.</p>
+<h3 id="h-04-unconfirmed-third-party-llm-processor-terms-high-at-launch">H-04. Unconfirmed third-party LLM processor terms (High at launch)<a class="headerlink" href="#h-04-unconfirmed-third-party-llm-processor-terms-high-at-launch" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.4(d), 312.8. <strong>Evidence</strong>: the project's own open blocker,
+<code>privacy-model.md:165-189</code> (OpenRouter standard-retention vs zero-data-retention unconfirmed for both
+the generation and the review legs).
+<strong>Recommendation</strong>: Obtain written data-handling terms (retention, sub-processing, no independent
+use) for every cloud egress destination (OpenRouter and its downstream models, Anthropic-direct,
+Google Gemini image, OpenAI Moderation, Perspective, Supabase). Prefer zero-data-retention routes.
+Record the outcome in <code>privacy-model.md</code> before enabling any live provider for the public tier.</p>
+<h3 id="m-01-pii-guard-is-a-registered-name-allowlist-not-pii-detection-medium">M-01. PII guard is a registered-name allowlist, not PII detection (Medium)<a class="headerlink" href="#m-01-pii-guard-is-a-registered-name-allowlist-not-pii-detection-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>generation/pii.py:101-158</code> matches only registered <code>child_profile.display_name</code>
+tokens; it is a no-op when a family has no profiles (<code>pii.py:108</code>) and cannot detect other
+children's names, nicknames, misspellings, addresses, schools, or phone numbers a child types into
+free text. The child's raw request egresses to OpenAI and Perspective at submission
+(<code>screening.py:105-111</code>) and to the generation LLM as <code>premise</code> after approval.
+<strong>Recommendation</strong>: Treat the allowlist as one layer; add pattern-based detectors (emails, phone
+numbers, street addresses) and consider a broader named-entity pass on child free text before egress.
+Document the residual risk. Do not rely on the guard as the sole disclosure control.</p>
+<h3 id="m-02-public-cover-image-bucket-with-guessable-keys-medium">M-02. Public cover-image bucket with guessable keys (Medium)<a class="headerlink" href="#m-02-public-cover-image-bucket-with-guessable-keys-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>covers/storage.py:41-53</code> uploads to a public bucket and returns
+<code>/object/public/{bucket}/{key}</code> with <code>key = {storybook_id}/{version}.webp</code>.
+<strong>Recommendation</strong>: Use a private bucket with signed, expiring URLs, or gate cover retrieval behind
+the family-scoped API. Avoid predictable keys.</p>
+<h3 id="m-03-raw-child-free-text-retained-at-rest-even-when-blocked-or-declined-medium">M-03. Raw child free text retained at rest even when blocked or declined (Medium)<a class="headerlink" href="#m-03-raw-child-free-text-retained-at-rest-even-when-blocked-or-declined-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>story_requests/service.py:375-390</code> stores <code>request_text</code> unconditionally and only
+flips <code>status</code> to <code>blocked</code>; <code>proposed_series_title</code> is "retained as an audit trail after
+ratification or request decline" (<code>db/models.py:487-488</code>). Redaction happens only at the API view
+layer (<code>api/schemas.py</code>, <code>story_requests.py:236</code>).
+<strong>Recommendation</strong>: For blocked or declined requests, purge or null the raw text at rest (retain only
+the redacted category/verdict for audit), or apply a short retention window. Align with H-01.</p>
+<h3 id="m-04-securitymd-misstates-a-child-privacy-control-and-is-stale-on-auth-medium">M-04. <code>SECURITY.md</code> misstates a child-privacy control and is stale on auth (Medium)<a class="headerlink" href="#m-04-securitymd-misstates-a-child-privacy-control-and-is-stale-on-auth-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>SECURITY.md:55</code> claims a mitigation of "no persistent PII without explicit parental
+consent," which is not implemented (child names and free text are persisted with no consent gate).
+<code>SECURITY.md:37-42</code> still describes the dev auth stub and pending Authentik JWT validation, although
+Supabase OIDC verification is already implemented (<code>api/deps.py:207-258</code>) per ADR-009.
+<strong>Recommendation</strong>: Correct the security policy to reflect the real state, and avoid asserting
+compliance controls that do not exist (such assertions can themselves create exposure).</p>
+<h3 id="m-05-no-aggregate-parental-access-export-medium">M-05. No aggregate parental access / export (Medium)<a class="headerlink" href="#m-05-no-aggregate-parental-access-export-medium" title="Permanent link">&para;</a></h3>
+<p><strong>COPPA</strong>: 312.6(a). <strong>Evidence</strong>: per-resource GETs exist but there is no <code>completion</code> read endpoint
+and no single export of all data about a child.
+<strong>Recommendation</strong>: Provide a guardian-facing export that assembles every child-linked record
+(profile, reading state, completions, ratings, story requests, generation reports) per the Section 3
+inventory.</p>
+<h3 id="m-06-client-does-not-enforce-child-token-scoping-medium">M-06. Client does not enforce child token scoping (Medium)<a class="headerlink" href="#m-06-client-does-not-enforce-child-token-scoping-medium" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: the kid surface is not auth-gated (<code>frontend/src/router.tsx:63-77</code>) and both surfaces
+share one bearer token in <code>localStorage['auth_token']</code> (<code>frontend/src/hooks/useApi.ts:39-44</code>); the
+backend <code>child</code> role and scoping exist (<code>api/deps.py:332-339</code>) but the shipped client never obtains a
+child-scoped token. ADR-008 (part 6) itself calls for tokens out of <code>localStorage</code>.
+<strong>Recommendation</strong>: Issue and use the backend-minted, single-profile child token described in ADR-008
+part 2 for the kid surface, and move tokens out of <code>localStorage</code> (memory plus silent refresh on web,
+Keychain in the shell). This is a defense-in-depth and child-data-separation improvement.</p>
+<h3 id="l-01-latent-persistent-identifier-column-low">L-01. Latent persistent-identifier column (Low)<a class="headerlink" href="#l-01-latent-persistent-identifier-column-low" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>reading_state.updated_by_device_id</code> (<code>db/models.py:319</code>) is defined but unset by the
+shipped kid client. <strong>Recommendation</strong>: Keep it unset, or if used, treat device IDs as personal
+information (retention, deletion, disclosure in the notice).</p>
+<h3 id="l-02-trustedhostmiddleware-disabled-and-app-layer-https-redirect-off-low">L-02. <code>TrustedHostMiddleware</code> disabled and app-layer HTTPS redirect off (Low)<a class="headerlink" href="#l-02-trustedhostmiddleware-disabled-and-app-layer-https-redirect-off-low" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>app.py:167</code> uses <code>add_security_middleware</code> defaults (<code>middleware/security.py:548,
+588-592</code>). <strong>Recommendation</strong>: Set <code>allowed_hosts</code> and enable HTTPS redirect (or confirm the proxy
+enforces both) before public launch.</p>
+<h3 id="l-03-birthdate-screening-is-dead-code-low-info">L-03. Birthdate screening is dead code (Low / Info)<a class="headerlink" href="#l-03-birthdate-screening-is-dead-code-low-info" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>PiiContext.birthdates</code> is always empty because no birthdate is stored
+(<code>generation/worker.py:648,675,682</code>). <strong>Recommendation</strong>: Remove the dead branch or wire it only if a
+birthdate is ever collected, so the guard does not imply coverage it lacks.</p>
+<h3 id="l-04-supabase-project-ref-committed-low-info">L-04. Supabase project ref committed (Low / Info)<a class="headerlink" href="#l-04-supabase-project-ref-committed-low-info" title="Permanent link">&para;</a></h3>
+<p><strong>Evidence</strong>: <code>.mcp.json</code> embeds a Supabase project ref for read-only developer tooling.
+<strong>Recommendation</strong>: This is dev tooling, not a runtime path; confirm the ref is not sensitive and
+that project access is otherwise controlled.</p>
+<hr />
+<h2 id="7-strengths-to-preserve">7. Strengths to preserve<a class="headerlink" href="#7-strengths-to-preserve" title="Permanent link">&para;</a></h2>
+<p>These controls materially reduce child-privacy risk and should be maintained through Phase 7:</p>
+<ul>
+<li><strong>Data minimization by design</strong>: no birthdate or exact age (coarse <code>age_band</code> only), <strong>no child
+  photos</strong> (closed 8-glyph avatar vocabulary enforced by a <code>Literal</code> type, <code>api/schemas.py:705-712</code>,
+  plus a <code>camera=()</code> permissions-policy header), no child email/phone/address/geolocation, and no
+  child-entered name (only a guardian-set nickname).</li>
+<li><strong>Guardian identity delegated and minimized</strong>: no guardian email, password, phone, or real name in
+  the app database; only an opaque OIDC subject (<code>db/models.py:166</code>), with credentials held by
+  Supabase.</li>
+<li><strong>Real authentication</strong>: Supabase OIDC JWT verification with JWKS, an RS256/ES256 algorithm
+  allowlist (defeating <code>alg=none</code>/HS256 confusion), issuer/audience/expiry checks, and HTTPS-only
+  JWKS (<code>api/deps.py:181-258</code>), with a hard import-time guard preventing the dev stub outside
+  <code>local</code> (<code>api/deps.py:67-76</code>).</li>
+<li><strong>Strong tenancy authorization</strong>: family and profile scoping derived from the verified principal
+  (never the client), cross-family IDOR blocked with no existence oracle, and a closed <code>Role</code> enum
+  backed by at-rest CHECK constraints (<code>api/deps.py:45-55</code>; <code>db/models.py:159-161</code>).</li>
+<li><strong>PII egress chokepoint</strong> on the main generation path (<code>generation/guarded.py</code>), even though its
+  coverage is allowlist-limited (M-01).</li>
+<li><strong>Human-in-the-loop safety</strong>: mandatory guardian approval (ADR-005), an independent moderation
+  pipeline, and screening of child free text before a guardian ever sees it, with classifier scores
+  and sources redacted from guardians (<code>story_requests/screening.py:46-55</code>).</li>
+<li><strong>No analytics, advertising, or tracking SDKs</strong>; no Sentry wired; on-box logging only; providers
+  avoid logging content; the durable event log is PII-free by allowlist contract.</li>
+<li><strong>Secret hygiene</strong>: no committed secrets, secret-manager sourcing, and fail-fast production guards
+  for database and OIDC configuration (<code>core/config.py</code>).</li>
+<li><strong>A documented privacy model and an explicit COPPA plan</strong> (<code>privacy-model.md</code>, ADR-008/009,
+  Phase 7 in <code>PROJECT-PLAN.md</code>): the team already knows this work is required and has scoped it.</li>
+</ul>
+<hr />
+<h2 id="8-prioritized-remediation-roadmap">8. Prioritized remediation roadmap<a class="headerlink" href="#8-prioritized-remediation-roadmap" title="Permanent link">&para;</a></h2>
+<p>Ordered by dependency and severity. Items map to the existing plan where one exists.</p>
+<p><strong>Gate 0: before any public (non-family) exposure or app-store submission.</strong></p>
+<ol>
+<li>Verifiable parental consent at onboarding, with a persisted consent record (C-01; plan P6-03,
+   P7-02).</li>
+<li>Published privacy notice plus direct notice to parents, linked from all surfaces (C-02).</li>
+<li>In-app deletion of a child profile and of the family account, with schema cascades or an explicit
+   enumerated purge, verified by a deletion drill (C-03; plan P7-04).</li>
+<li>Written, published data-retention policy and the <code>generation_job.report</code> purge; retention for
+   blocked/declined <code>story_request</code> text (H-01, M-03).</li>
+<li>Confirm processor data-handling terms for every cloud egress destination and prefer
+   zero-data-retention routes (H-04).</li>
+</ol>
+<p><strong>Gate 1: harden the disclosure surface.</strong></p>
+<ol>
+<li>Add PII screening to the cover-generation prompt (H-02) and to the Stage-0 classifier inputs
+   (H-03); strengthen the guard beyond the name allowlist (M-01).</li>
+<li>Move covers to a private bucket with signed URLs (M-02).</li>
+<li>Issue and use child-scoped tokens for the kid surface; move tokens out of <code>localStorage</code> (M-06).</li>
+</ol>
+<p><strong>Gate 2: governance and hygiene.</strong></p>
+<ol>
+<li>Correct <code>SECURITY.md</code> (M-04); add a guardian data-export endpoint (M-05); set <code>allowed_hosts</code> and
+   HTTPS redirect (L-02); produce a written information-security program artifact (312.8).</li>
+<li>Retire the dead birthdate branch or wire it correctly (L-03); review the committed project ref
+    (L-04).</li>
+</ol>
+<p><strong>Cross-cutting</strong>: run the Phase 7 compliance checklist (P7-08) as the submission gate, and engage
+privacy counsel to confirm the consent method, notice text, and retention windows.</p>
+<hr />
+<h2 id="9-references">9. References<a class="headerlink" href="#9-references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>15 U.S.C. 6501-6506 (COPPA); 16 CFR Part 312 (COPPA Rule), including the 2025 amendments.</li>
+<li>FTC, "Complying with COPPA: Frequently Asked Questions."</li>
+<li><code>docs/planning/privacy-model.md</code> (internal data classification and retention rules).</li>
+<li><code>docs/planning/adr/adr-008-public-app-store-launch.md</code>, <code>adr-009-supabase-platform.md</code>.</li>
+<li><code>docs/planning/PROJECT-PLAN.md</code> (Phase 6 and Phase 7 deliverables).</li>
+</ul>
+<p><em>End of audit. This document records observed data practices at commit <code>c9dbfa9</code> and is a
+point-in-time engineering assessment, not legal advice or a certification of compliance.</em></p>
+
+
+
+
+
+
+
+  
+    
+  
+  
+    
+  
+
+
+  <aside class="md-source-file">
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Last update">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:07:18 UTC">July 10, 2026</span>
+  </span>
+
+    
+    
+      
+  <span class="md-source-file__fact">
+    <span class="md-icon" title="Created">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
+    </span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:07:18 UTC">July 10, 2026</span>
+  </span>
+
+    
+    
+    
+  </aside>
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Byron Williams
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/williaby" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
