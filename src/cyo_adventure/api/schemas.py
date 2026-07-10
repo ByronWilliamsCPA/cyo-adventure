@@ -174,6 +174,26 @@ class CompletionView(BaseModel):
     found_at: datetime
 
 
+class SeriesNextBook(BaseModel):
+    """The next readable book in a series, resolved for one profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    storybook_id: str
+    version: int
+    title: str
+    series_entry_node: str | None = None
+    carries_state: bool
+
+
+class SeriesNextView(BaseModel):
+    """GET /series-next response; ``next`` is null for every expected absence."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    next: SeriesNextBook | None = None
+
+
 # ---------------------------------------------------------------------------
 # Generation / concept schemas
 # ---------------------------------------------------------------------------
