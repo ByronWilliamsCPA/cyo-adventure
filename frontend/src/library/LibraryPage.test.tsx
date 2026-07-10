@@ -93,6 +93,7 @@ describe('LibraryPage', () => {
     renderLibrary()
     expect(await screen.findByText(/no books yet/i)).toBeInTheDocument()
     expect(screen.getByText(/ask a grown-up/i)).toBeInTheDocument()
+    expect(screen.queryByText(/lost the bookshelf/i)).not.toBeInTheDocument()
   })
 
   it('shows an error state with retry on fetch failure', async () => {
@@ -102,6 +103,28 @@ describe('LibraryPage', () => {
     const retry = await screen.findByRole('button', { name: /try again/i })
     fireEvent.click(retry)
     expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+  })
+
+  it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 401 } })
+    renderLibrary()
+
+    expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Who's reading/i })).toHaveAttribute('href', '/kids')
+    expect(screen.getByRole('link', { name: /I am a grown-up/i })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+  })
+
+  it('shows the forbidden copy on a 403, with a link back to the picker', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    renderLibrary()
+
+    expect(await screen.findByText(/This bookshelf isn't yours/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Who's reading/i })).toHaveAttribute('href', '/kids')
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
   })
 
   it('posts a rating and re-renders the new value', async () => {

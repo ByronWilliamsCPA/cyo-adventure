@@ -119,4 +119,37 @@ describe('ProfilePickerPage', () => {
       '/guardian/login'
     )
   })
+
+  it('shows the empty state without any transient-error copy', async () => {
+    mockGet.mockResolvedValue({ data: { profiles: [] } })
+    renderPicker()
+    await screen.findByText(/No profiles yet/i)
+    expect(screen.queryByText(/hit a snag/i)).not.toBeInTheDocument()
+  })
+
+  it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 401 } })
+    renderPicker()
+
+    expect(await screen.findByText(/Ask a grown-up to help/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /I am a grown-up/i })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+    expect(screen.queryByText(/hit a snag/i)).not.toBeInTheDocument()
+  })
+
+  it('shows the forbidden copy on a 403, with no retry', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    renderPicker()
+
+    expect(await screen.findByText(/We can't show this right now/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /I am a grown-up/i })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+    expect(screen.queryByText(/hit a snag/i)).not.toBeInTheDocument()
+  })
 })
