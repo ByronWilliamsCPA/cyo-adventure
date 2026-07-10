@@ -125,6 +125,9 @@ describe('LibraryPage', () => {
     expect(await screen.findByText(/This bookshelf isn't yours/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Who's reading/i })).toHaveAttribute('href', '/kids')
     expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+    // Pins forbidden as distinct from unauthenticated: no grown-up sign-in
+    // link, just the way back to the picker.
+    expect(screen.queryByRole('link', { name: /I am a grown-up/i })).not.toBeInTheDocument()
   })
 
   it('posts a rating and re-renders the new value', async () => {
@@ -164,6 +167,28 @@ describe('LibraryPage', () => {
     const five = await screen.findByRole('button', { name: /5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'false')
     expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('a 401 on the rating POST surfaces the ask-a-grown-up gate', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 401 } })
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+
+    expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /stars/i })).not.toBeInTheDocument()
+  })
+
+  it('a non-auth rating failure keeps the shelf and the previous rating', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 500 } })
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+
+    const five = await screen.findByRole('button', { name: /5 stars/i })
+    expect(five).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.queryByText(/Time to find your grown-up/i)).not.toBeInTheDocument()
   })
 
   it('renders the shelf non-hero started book with a plain progress bar and no pages-explored label', async () => {

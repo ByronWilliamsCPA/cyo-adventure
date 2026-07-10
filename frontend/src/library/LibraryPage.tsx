@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
@@ -88,6 +89,23 @@ export function LibraryPage() {
         const items = await libraryApi.list(id)
         if (!cancelled && isMountedRef.current) setState({ status: 'ready', items })
       } catch (err) {
+        // Log a redacted shape, never the raw axios error: its `config`
+        // carries the Authorization header, which must never land in console
+        // output.
+        console.error(
+          'library list failed',
+          isAxiosError(err)
+            ? {
+                status: err.response?.status,
+                url: err.config?.url,
+                // Cast: axios types response bodies as `any`; unknown keeps
+                // the log while satisfying no-unsafe-assignment.
+                data: err.response?.data as unknown,
+              }
+            : err instanceof Error
+              ? err.message
+              : err
+        )
         if (!cancelled && isMountedRef.current) {
           const { kind } = classifyApiError(err)
           if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
@@ -121,8 +139,32 @@ export function LibraryPage() {
               : prev
           )
         )
-        .catch(() => {
-          /* keep the previous rating; transient failure must not break browsing */
+        .catch((err: unknown) => {
+          // A 401 means the session is dead (the useApi interceptor already
+          // cleared the token), so every rating and refetch from here on would
+          // fail too; surface the ask-a-grown-up gate instead of a page that
+          // silently stops responding.
+          if (classifyApiError(err).kind === 'unauthenticated') {
+            if (isMountedRef.current) setState({ status: 'unauthenticated' })
+            return
+          }
+          // Otherwise keep the previous rating; a transient failure must not
+          // break browsing. Log a redacted shape, never the raw axios error
+          // (its `config` carries the Authorization header).
+          console.error(
+            'rating save failed',
+            isAxiosError(err)
+              ? {
+                  status: err.response?.status,
+                  url: err.config?.url,
+                  // Cast: axios types response bodies as `any`; unknown keeps
+                  // the log while satisfying no-unsafe-assignment.
+                  data: err.response?.data as unknown,
+                }
+              : err instanceof Error
+                ? err.message
+                : err
+          )
         })
     },
     [libraryApi, profileId]
@@ -180,9 +222,14 @@ export function LibraryPage() {
           title="We lost the bookshelf"
           description="Something went wrong loading your books."
           actions={
-            <Button variant="primary" size="lg" onClick={load}>
-              Try again
-            </Button>
+            <>
+              <Button variant="primary" size="lg" onClick={load}>
+                Try again
+              </Button>
+              <Link className="picker-tile__add-link" to={KID_PICKER_PATH}>
+                Back to Who&apos;s reading?
+              </Link>
+            </>
           }
         />
       </div>

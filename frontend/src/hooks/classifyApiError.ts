@@ -18,7 +18,7 @@ const DEFAULT_MESSAGES: Record<ApiErrorKind, string> = {
   // 401 recovery on guardian surfaces is owned by the useApi response
   // interceptor (it clears the token and redirects to the login route), so this
   // string is only a fallback for the brief pre-navigation window; kid surfaces
-  // (`/`, `/library/*`) deliberately supply their own ask-a-grown-up gate
+  // (`/kids`, `/library/*`) deliberately supply their own ask-a-grown-up gate
   // (ProfilePickerPage's and LibraryPage's `unauthenticated`/`forbidden` states)
   // and do not route here.
   unauthenticated: 'Your session has ended. Please sign in again.',
