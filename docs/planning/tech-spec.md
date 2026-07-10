@@ -14,7 +14,7 @@ source: "Project Ariadne scoping handoff (architecture rev 3, 2026-06-20)"
 # Technical Implementation Spec: CYO Adventure
 
 > **Status**: Active
-> **Version**: 1.1 | **Updated**: 2026-07-03
+> **Version**: 1.1 | **Updated**: 2026-07-10
 > **Codename**: Ariadne
 
 ## TL;DR
@@ -485,20 +485,25 @@ child-session split. Child tokens are scoped to reader and library endpoints. Se
 
 Enforced server-side on every endpoint. The token subject maps to an allowed-profile set;
 a guardian may act on any profile in their family, a child only on its own assigned
-profile. `profile_id` is never trusted alone. The `approve` and `publish` transitions
-require a guardian.
+profile. `profile_id` is never trusted alone. The `in_review -> published` transition is a
+single approve-and-publish action reserved for the global admin role (`Role.ADMIN` /
+`is_admin`), applied cross-family (`authorize_family` is not called on it); no guardian,
+including one acting on their own family's story, may perform it. See
+[ADR-005](./adr/adr-005-mandatory-human-approval.md) (amended 2026-06-30).
 
 | Action | Guardian | Child (own profile) | Enforcement |
 |--------|----------|---------------------|-------------|
 | Read own library / story / state | Any family profile | Own profile only | Token subject to allowed-profile set; 403 otherwise |
 | Write own reading state | Any family profile | Own profile only | Same, plus `state_revision` and version guards |
 | Record a completion | Any family profile | Own profile only | `ending_id` must belong to the published version |
-| Generate / submit / approve / publish | Yes | No (403) | Guardian role required on the transition |
+| Generate / submit concept for review | Yes | No (403) | Guardian role required; scoped to own family |
+| Approve and publish (single `in_review -> published` transition) | No (403) | No (403) | Global admin role required (`Role.ADMIN` / `is_admin`), cross-family; there is no guardian path |
 | Access another family's data | No (403) | No (403) | Family ownership checked on every resource |
 
 **IDOR negative tests** (each expects 403): child A requesting child B's library or state;
 a child mutating `profile_id` in a reading-state `PUT`; a child calling approve or publish;
-a guardian from another family accessing a story.
+a guardian calling approve or publish, including on their own family's story; a guardian
+from another family accessing a story.
 
 ### Data Protection
 
