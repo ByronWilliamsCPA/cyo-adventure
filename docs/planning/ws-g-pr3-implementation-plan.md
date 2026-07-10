@@ -153,13 +153,13 @@ Operational task.
 
 - [ ] **Step 1: Confirm branch and base**
 
-Run: `git -C /home/byron/dev/CYO_Adventure/.worktrees/ws-g-pr3 branch --show-current && git -C /home/byron/dev/CYO_Adventure/.worktrees/ws-g-pr3 rev-parse --short HEAD`
+Run (from repo root): `git branch --show-current && git rev-parse --short HEAD`
 Expected: `feat/ws-g-generation-continuity` at `6c42867`.
 Abort if: different branch or base.
 
 - [ ] **Step 2: Sanity-run the nearest test files**
 
-Run: `cd /home/byron/dev/CYO_Adventure/.worktrees/ws-g-pr3 && uv run pytest tests/unit/test_anchoring.py tests/unit/test_prompts.py -q`
+Run (from repo root): `uv run pytest tests/unit/test_anchoring.py tests/unit/test_prompts.py -q`
 Expected: all pass.
 Abort if: any failure (the base is broken; report BLOCKED).
 
