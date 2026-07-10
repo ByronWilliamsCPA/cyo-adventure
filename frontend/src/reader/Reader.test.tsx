@@ -128,3 +128,56 @@ describe('Reader', () => {
     expect(completed).toEqual(['e_treasure_found', 'e_safe_exit'])
   })
 })
+
+describe('Reader series continuation', () => {
+  const seriesBlock = {
+    series_id: 'ser-1',
+    book_index: 1,
+    series_entry_node: 'n_entrance',
+    is_final: false,
+    carries_state: true,
+  }
+  const seriesStory = { ...lantern, metadata: { ...lantern.metadata, series: seriesBlock } }
+  const finalStory = {
+    ...lantern,
+    metadata: { ...lantern.metadata, series: { ...seriesBlock, is_final: true } },
+  }
+  const fetchNext = () =>
+    Promise.resolve({
+      storybook_id: 's_book2',
+      version: 1,
+      title: 'Book 2',
+      series_entry_node: 'n_start',
+      carries_state: true,
+    })
+
+  function reachEnding(story: Storybook, fetchSeriesNext?: typeof fetchNext) {
+    render(
+      <MemoryRouter>
+        <Reader story={story} profileId="p1" fetchSeriesNext={fetchSeriesNext} />
+      </MemoryRouter>
+    )
+    fireEvent.click(screen.getByTestId('choice-c_take_lantern'))
+    fireEvent.click(screen.getByTestId('choice-c_dark_passage'))
+  }
+
+  it('offers Continue the series for a satisfying ending of a non-final series book', async () => {
+    reachEnding(seriesStory, fetchNext)
+    expect(await screen.findByTestId('continue-series')).toBeTruthy()
+  })
+
+  it('does not offer continuation for the final book of a series', () => {
+    reachEnding(finalStory, fetchNext)
+    expect(screen.queryByTestId('continue-series')).toBeNull()
+  })
+
+  it('does not offer continuation for a non-series story', () => {
+    reachEnding(lantern, fetchNext)
+    expect(screen.queryByTestId('continue-series')).toBeNull()
+  })
+
+  it('does not offer continuation without a fetchSeriesNext prop', () => {
+    reachEnding(seriesStory)
+    expect(screen.queryByTestId('continue-series')).toBeNull()
+  })
+})

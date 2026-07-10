@@ -13,7 +13,12 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 
-import { ForbiddenError, StoryNotFoundError, type CompletionRequest } from '../api/readerApi'
+import {
+  ForbiddenError,
+  StoryNotFoundError,
+  type CompletionRequest,
+  type SeriesNextBookInfo,
+} from '../api/readerApi'
 import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
 import {
   LocalWriteError,
@@ -22,6 +27,8 @@ import {
   resolveConflict,
   saveProgress,
 } from '../offline/sync'
+import { startContinuation } from '../player/engine'
+import type { ContinuationSeed } from '../player/series'
 import type { ReadingState, Storybook } from '../player/types'
 import { BackToLibrary } from './BackToLibrary'
 import { ConflictDialog } from './ConflictDialog'
@@ -39,6 +46,14 @@ export interface ReaderPageProps {
   fetchServerState?: FetchServerState
   /** Records a completion when the reader reaches an ending. Defaults to a no-op. */
   recordCompletion?: RecordCompletion
+  /** One-shot continuation seed for a fresh read (WS-G); ignored whenever any
+   * saved progress exists (spec section 6 no-clobber rule). */
+  continuation?: ContinuationSeed
+  /** Forwarded to the Reader's ending screen. */
+  fetchSeriesNext?: (
+    profileId: string,
+    storybookId: string
+  ) => Promise<SeriesNextBookInfo | null>
 }
 
 type FetchServerState = (
@@ -103,6 +118,8 @@ export function ReaderPage({
   deviceId,
   fetchServerState = NO_SERVER_STATE,
   recordCompletion = NO_RECORD_COMPLETION,
+  continuation,
+  fetchSeriesNext,
 }: ReaderPageProps) {
   const [pageState, setPageState] = useState<PageState>({ phase: 'loading' })
   const [conflict, setConflict] = useState<ConflictState | null>(null)
@@ -214,8 +231,17 @@ export function ReaderPage({
     }
     if (stale()) return
     revisionRef.current = saved?.state_revision ?? 0
-    setPageState({ phase: 'reading', story: cached, initialReading: saved })
-  }, [fetchStory, fetchServerState, profileId, storybookId, version])
+    // #ASSUME: data-integrity: the continuation seed applies ONLY to a fresh
+    // read (no local and no server state); any existing progress wins so a
+    // re-continue can never clobber a child's place (WS-G spec section 6).
+    // #VERIFY: ReaderPage.test.tsx "ignores a continuation when saved
+    // progress exists".
+    const initialReading =
+      saved === undefined && continuation !== undefined
+        ? startContinuation(cached, continuation.entryNode, continuation.varState)
+        : saved
+    setPageState({ phase: 'reading', story: cached, initialReading })
+  }, [fetchStory, fetchServerState, profileId, storybookId, version, continuation])
 
   // Load on mount and whenever the load inputs change.
   useEffect(() => {
@@ -472,6 +498,7 @@ export function ReaderPage({
         onComplete={handleComplete}
         profileId={profileId}
         onLeave={handleLeave}
+        fetchSeriesNext={fetchSeriesNext}
       />
       {conflict ? (
         <ConflictDialog
