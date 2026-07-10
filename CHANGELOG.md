@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- The kid surface no longer collapses every fetch failure into one generic
+  retryable error: the profile picker (`/kids`) and library
+  (`/library/:profileId`) now distinguish an unauthenticated session (an
+  ask-a-grown-up gate linking to guardian sign-in, with no dead-end "Try
+  again"), a forbidden response (a way back to the profile picker), transient
+  failures (retry, now with an in-page route back to the picker), and the
+  existing zero-items empty states. A 401 on a rating save surfaces the same
+  gate instead of failing silently, and kid-surface fetch logging is redacted
+  to status/url/body so the Authorization header can never reach the console.
+  Covered by Vitest state tests and a no-token Playwright scenario in the
+  naive-user suite. Fixes #196 and the kid half of naive-UX finding F1 (#137).
+
 ### Documentation
 - Landed the skeleton corpus story-generation test plan
   (`docs/planning/skeleton-corpus-story-generation-test-plan.md`): a proof-pass
