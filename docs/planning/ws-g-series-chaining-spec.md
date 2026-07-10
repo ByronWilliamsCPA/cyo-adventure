@@ -74,12 +74,15 @@ Convergence is **declared, not wired**. Book N's node graph is never edited afte
 
 In `generation/worker.py`, for jobs whose storybook has a `series_id`:
 
-- `link_series_position` moves **before** blob serialization inside `_persist_and_moderate`, so
-  the assigned `book_index` is available when the document is serialized. The existing savepoint
-  retry guard on `uq_storybook_series_book_index` is reused untouched (`generation/series_link.py`;
-  the umbrella's `#CRITICAL` concurrency race stays solved there, do not re-implement).
-- The worker constructs the embedded `Series` block (fields per section 1) and writes it into the
-  document before persisting the `StorybookVersion` blob. Non-series jobs are unchanged.
+- The embedded block is written as a same-transaction **post-persist blob update**: after
+  `persist_storybook` and `link_series_position` run (in their existing order; `assign_book_index`
+  requires the `Storybook` row to exist, so linkage cannot precede persist), a new
+  `embed_series_block` step reads the assigned linkage columns plus the `series` row and reassigns
+  the `StorybookVersion.blob` with `metadata.series` populated, before moderation runs and before
+  the worker's single commit. The existing savepoint retry guard on
+  `uq_storybook_series_book_index` is reused untouched (`generation/series_link.py`; the
+  umbrella's `#CRITICAL` concurrency race stays solved there, do not re-implement).
+- Non-series jobs are unchanged (the embed step no-ops when the storybook has no series linkage).
 - Both the skeleton-fill path (`_run_skeleton_fill`) and fresh generation get the block; node ids
   survive skeleton fill 1:1 and every document has a top-level `start_node`, so G2 applies
   uniformly.
