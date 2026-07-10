@@ -64,6 +64,9 @@ jobs:
         working-directory: ./frontend
     permissions:
       contents: read
+    env:
+      # See the coverage-upload job: job-scoped so the Qlty step can gate on it.
+      QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -158,6 +161,16 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+      # Same prefixed lcov (paths already frontend/src/...) to Qlty; this job's
+      # checkout lets qlty attach the commit SHA and qlty merges it with the
+      # backend and design-system uploads for one repo coverage number.
+      - name: Upload frontend coverage to Qlty
+        if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/coverage/lcov.info') != '' }}
+        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        with:
+          token: ${{ env.QLTY_COVERAGE_TOKEN }}
+          files: frontend/coverage/lcov.info
+
   design-system:
     name: Design System (Node 22)
     runs-on: ubuntu-latest
@@ -167,6 +180,9 @@ jobs:
         working-directory: ./frontend/design-system
     permissions:
       contents: read
+    env:
+      # See the coverage-upload job: job-scoped so the Qlty step can gate on it.
+      QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -212,6 +228,15 @@ jobs:
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # Same prefixed lcov (frontend/design-system/src/...) to Qlty; merged with
+      # the backend and frontend uploads for this commit (see coverage-upload).
+      - name: Upload design-system coverage to Qlty
+        if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/design-system/coverage/lcov.info') != '' }}
+        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        with:
+          token: ${{ env.QLTY_COVERAGE_TOKEN }}
+          files: frontend/design-system/coverage/lcov.info
 
   # Note: the mocked Playwright tier (`test:e2e`) runs inside the `frontend`
   # job above. The real-backend tier (`test:e2e:real`) is deliberately not a CI
@@ -287,13 +312,18 @@ jobs:
   # false) and deliberately NOT in ci-gate's needs: a Codecov hiccup must not
   # block merges. Frontend/design-system coverage upload from their own jobs.
   coverage-upload:
-    name: Upload backend coverage to Codecov
+    name: Upload backend coverage (Codecov + Qlty)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: ci
     if: ${{ !cancelled() && needs.ci.result == 'success' }}
     permissions:
       contents: read
+    env:
+      # Surfaced at job scope so the Qlty step's `if:` can gate on token
+      # presence; `secrets.*` is not referenceable in a step-level if:. Absent
+      # on forks, so the Qlty upload skips there rather than failing.
+      QLTY_COVERAGE_TOKEN: ${{ secrets.QLTY_COVERAGE_TOKEN }}
     steps:
       - name: Harden the runner
         # deferral: 2026-09-18
@@ -347,6 +377,22 @@ jobs:
           fail_ci_if_error: false
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # Qlty Cloud coverage. This runs here, not the old workflow_run qlty.yml,
+      # because `qlty coverage publish` needs the repo checked out: it resolves
+      # the Cobertura <source> roots (src and src/cyo_adventure) against the
+      # working tree and reads the commit SHA from git. The reusable workflow_run
+      # caller had neither, so its uploads carried unresolvable paths and no
+      # commit association (green job, nothing on the dashboard). qlty merges the
+      # three per-type reports into one report for the commit, mirroring the
+      # Codecov sessions above. All three are produced every run; the unit
+      # hashFiles gate just confirms the artifact downloaded.
+      - name: Upload backend coverage to Qlty
+        if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('coverage-reports/coverage-unit.xml') != '' }}
+        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        with:
+          token: ${{ env.QLTY_COVERAGE_TOKEN }}
+          files: coverage-reports/coverage-unit.xml,coverage-reports/coverage-integration.xml,coverage-reports/coverage-security.xml
 
       - name: Upload unit test results
         if: ${{ !cancelled() && hashFiles('coverage-reports/junit-unit.xml') != '' }}

@@ -190,6 +190,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   both were in place the reports uploaded but were dropped server-side as "path
   mismatch", so only the backend sessions merged and the `frontend` /
   `design-system` flags stayed empty.
+- Qlty Cloud coverage now publishes from the CI jobs that hold the checkout
+  (`coverage-upload` for the backend Cobertura reports, and the `frontend` /
+  `design-system` jobs for their prefixed lcov) instead of the `workflow_run`
+  `qlty.yml`, which was removed. `qlty coverage publish` needs the repository
+  checked out to resolve the Cobertura `<source>` roots and to read the commit
+  SHA from git; the reusable `workflow_run` caller had neither, so its uploads
+  carried unresolvable paths and no commit association and never surfaced on the
+  Qlty dashboard (the job stayed green). qlty merges the per-surface uploads
+  into one coverage number for the commit, mirroring the Codecov sessions.
 - The integration and security test buckets now run in CI
   (`run-integration-tests` / `run-security-tests`); previously the reusable
   workflow's unit step excluded `-m integration`/`-m security`, so those
