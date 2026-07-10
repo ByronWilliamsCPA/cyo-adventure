@@ -22,6 +22,13 @@ source: "Brainstorming session 2026-07-06 (Fable 5); current-state codebase expl
   story_requests, generation, moderation, publishing, and assignments modules."
 ---
 
+> **Status: Complete.** All seven workstreams (WS-A through WS-G) are merged as of
+> 2026-07-10. See [roadmap.md](./roadmap.md#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1)
+> and [PROJECT-PLAN.md](./PROJECT-PLAN.md#1-executive-summary) for the delivered-scope
+> summary and merged-PR groupings. This document remains the design record; workstream-level
+> implementation plans and handoffs have been retired now that their content is either
+> shipped or migrated to a permanent home (ADRs, docstrings, or the debt register).
+
 ## Why this redesign
 
 Skeletons were introduced because LLMs struggled to produce structurally sound
