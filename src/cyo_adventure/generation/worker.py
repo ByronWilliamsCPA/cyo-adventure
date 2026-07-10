@@ -573,7 +573,10 @@ async def _persist_and_moderate(
         # #VERIFY: tests/integration/test_series_link.py::
         # test_embed_series_block_survives_moderation_repair drives the
         # soft-repair path with fakes and asserts the re-read blob carries the
-        # correct metadata.series afterward.
+        # correct metadata.series afterward;
+        # test_persist_and_moderate_repair_roundtrip_embeds_series_block and
+        # test_persist_and_moderate_embed_failure_rolls_back_and_fails_job drive
+        # THIS function directly, so a reorder of the calls above fails them.
         await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
     except Exception as exc:
         # #CRITICAL: external-resource + data-integrity: a live review backend
