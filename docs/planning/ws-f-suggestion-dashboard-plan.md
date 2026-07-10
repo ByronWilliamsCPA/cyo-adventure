@@ -1467,7 +1467,8 @@ regenerated in the same PR. Never sort keys.
 
 Run:
 ```bash
-uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > /tmp/cyo-openapi-wsf.json
+export CYO_OPENAPI_JSON="${TMPDIR:-/tmp}/cyo-openapi-wsf.json"
+uv run python -c "import json; from cyo_adventure.app import app; print(json.dumps(app.openapi()))" > "$CYO_OPENAPI_JSON"
 ```
 Expected: exit 0; file is non-empty JSON.
 Abort if: the import fails (endpoint wiring is broken; fix before regenerating).
@@ -1476,7 +1477,7 @@ Abort if: the import fails (endpoint wiring is broken; fix before regenerating).
 
 Run:
 ```bash
-cd frontend && npm ci && OPENAPI_INPUT=/tmp/cyo-openapi-wsf.json npm run generate-client
+cd frontend && npm ci && OPENAPI_INPUT="$CYO_OPENAPI_JSON" npm run generate-client
 ```
 Expected: generator exits 0; `git status` shows changes under `frontend/src/client/` including
 new types `ModerationDashboardView`, `SuggestionListView`, `ThresholdSuggestionView`,
@@ -1677,6 +1678,13 @@ Create `frontend/src/guardian/ModerationDashboardPage.tsx`, following the struct
 `ModerationThresholdsPage.tsx` (cancelled-guard load, `classifyApiError`, scoped action
 error):
 
+> **Note (post-review sync)**: the shipped file
+> `frontend/src/guardian/ModerationDashboardPage.tsx` is authoritative over this block.
+> The block below reflects the post-review shape: the in-flight guard is a per-suggestion
+> `ReadonlySet` keyed by `JSON.stringify([age_band, category])` (an earlier draft used a
+> single shared string, which had a concurrent-apply race), and a failed post-apply
+> refresh keeps the last-good data instead of wiping the page.
+
 ```tsx
 import { useEffect, useMemo, useState } from 'react'
 import type {
@@ -1704,7 +1712,9 @@ export function ModerationDashboardPage() {
   const thresholdsApi = useMemo(() => makeThresholdsApi(api), [api])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [actionError, setActionError] = useState<string | null>(null)
-  const [applying, setApplying] = useState<string | null>(null)
+  // Per-suggestion in-flight guard: a shared single value would re-enable
+  // suggestion A's button when B starts and clear B's guard when A settles.
+  const [applying, setApplying] = useState<ReadonlySet<string>>(new Set())
   const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
@@ -1728,8 +1738,10 @@ export function ModerationDashboardPage() {
   }, [dashboardApi, reloadKey])
 
   async function applySuggestion(suggestion: ThresholdSuggestionView) {
-    const key = `${suggestion.age_band}:${suggestion.category}`
-    setApplying(key)
+    // JSON.stringify (not a `${age_band}:${category}` join): category is an
+    // open-ended provider-defined string that may itself contain ':'.
+    const key = JSON.stringify([suggestion.age_band, suggestion.category])
+    setApplying((prev) => new Set(prev).add(key))
     setActionError(null)
     try {
       await thresholdsApi.upsert(suggestion.age_band, suggestion.category, {
@@ -1738,9 +1750,17 @@ export function ModerationDashboardPage() {
       })
       setReloadKey((k) => k + 1)
     } catch (err) {
-      setActionError(classifyApiError(err).message)
+      setActionError(
+        classifyApiError(err, {
+          transient: `We could not apply the suggestion for ${suggestion.category} in ${suggestion.age_band}. Please try again.`,
+        }).message
+      )
     } finally {
-      setApplying(null)
+      setApplying((prev) => {
+        const next = new Set(prev)
+        next.delete(key)
+        return next
+      })
     }
   }
 
@@ -1774,7 +1794,8 @@ export function ModerationDashboardPage() {
         ) : (
           <ul>
             {suggestions.suggestions.map((suggestion) => {
-              const key = `${suggestion.age_band}:${suggestion.category}`
+              // Same encoding as applySuggestion's in-flight guard key.
+              const key = JSON.stringify([suggestion.age_band, suggestion.category])
               return (
                 <li key={key}>
                   <strong>
@@ -1782,15 +1803,16 @@ export function ModerationDashboardPage() {
                   </strong>
                   : released {suggestion.released_versions} of{' '}
                   {suggestion.decided_versions} times despite the finding (
-                  {Math.round(suggestion.override_rate * 100)}%). Raise to{' '}
-                  {suggestion.suggested_min_verdict} (currently{' '}
+                  {Math.round(suggestion.override_rate * 100)}%). Suggested new
+                  surfacing level: {suggestion.suggested_min_verdict} (currently{' '}
                   {suggestion.current_min_verdict}).
                   <button
                     type="button"
-                    disabled={applying === key}
+                    disabled={applying.has(key)}
+                    aria-label={`Apply: raise ${suggestion.category} (${suggestion.age_band}) to ${suggestion.suggested_min_verdict}`}
                     onClick={() => void applySuggestion(suggestion)}
                   >
-                    {applying === key
+                    {applying.has(key)
                       ? 'Applying…'
                       : `Apply: raise to ${suggestion.suggested_min_verdict}`}
                   </button>
@@ -1892,7 +1914,7 @@ In `frontend/src/router.tsx`, inside the existing admin-only `ProtectedRoute` ch
 - [ ] **Step 6: Run the tests to verify they pass**
 
 Run: `npm run test:run -- src/guardian/ModerationDashboardPage.test.tsx`
-Expected: 4 tests PASS
+Expected: all tests in the file PASS (6 at initial delivery; later fix commits added more)
 
 Run: `npm run lint && npm run typecheck && npm run test:run`
 Expected: clean; no regressions in the full Vitest suite
