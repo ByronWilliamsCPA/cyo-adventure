@@ -18,6 +18,7 @@ import pytest
 from sqlalchemy.exc import IntegrityError
 
 from cyo_adventure.core.config import Settings
+from cyo_adventure.core.exceptions import BusinessLogicError
 from cyo_adventure.db.models import (
     Concept,
     Family,
@@ -314,6 +315,64 @@ async def test_embed_series_block_noop_for_non_series(
         row = await session.get(StorybookVersion, (story_id, 1))
         assert row is not None
         assert "series" not in row.blob.get("metadata", {})
+
+
+async def test_embed_series_block_refuses_published_blob(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The immutability guard rejects embedding into an approved (published) blob.
+
+    The approval gate's grandfather rule reasons that approved blobs can never
+    change; this pins that invariant structurally so a future backfill caller
+    cannot silently rewrite a published blob.
+    """
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=True,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        story_id = f"s_{uuid.uuid4().hex[:12]}"
+        await persist_storybook(
+            session,
+            StorybookParams(
+                story_id=story_id,
+                blob=_minimal_blob(),
+                family_id=family.id,
+                created_by=user.id,
+            ),
+        )
+        await link_series_position(session, story_id=story_id, concept_id=concept.id)
+
+        storybook = await session.get(Storybook, story_id)
+        assert storybook is not None
+        storybook.status = "published"
+        storybook.current_published_version = 1
+        await session.flush()
+
+        with pytest.raises(BusinessLogicError, match="immutable") as excinfo:
+            await embed_series_block(session, story_id=story_id, version=1)
+        assert excinfo.value.details["rule"] == "embed_into_approved_blob"
 
 
 def _pii() -> PiiContext:

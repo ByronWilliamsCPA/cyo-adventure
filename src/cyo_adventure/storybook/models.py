@@ -197,7 +197,9 @@ class Series(BaseModel):
     # The node continuation from the previous book lands on. ``None`` for the
     # first book (entered at ``start_node``); required for a continued-into book.
     series_entry_node: str | None = None
-    # ``True`` only for the last book in the chain (it continues to no next book).
+    # ``True`` marks a book that closes its chain (no next book). Only the
+    # top-index book may carry it (SR-4); since the WS-G relaxation the top
+    # book may also stay non-final, leaving the chain open for continuations.
     is_final: bool = False
     # The state-export contract: ``True`` carries declared state to the next book;
     # ``False`` is an episodic series (mandatory for young/Tier-1 bands).

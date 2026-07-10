@@ -576,8 +576,9 @@ async def _persist_and_moderate(
         # correct metadata.series afterward.
         await embed_series_block(session, story_id=story_id, version=_FIRST_VERSION)
     except Exception as exc:
-        # #CRITICAL: external-resource: a live review backend can raise
-        # (timeout, 5xx, auth). Roll back the unreviewed storybook persist
+        # #CRITICAL: external-resource + data-integrity: a live review backend
+        # can raise (timeout, 5xx, auth), and embed_series_block can raise on a
+        # malformed or over-budget blob. Roll back the unreviewed storybook persist
         # first: the per-job story_id (f"s_{job_id}") would otherwise collide
         # on an RQ retry of this same job. Then record the failure on a
         # re-fetched row and commit, so the committed job state is "failed"
