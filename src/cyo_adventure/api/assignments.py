@@ -165,7 +165,8 @@ async def _authorize_content_summary(
     # A child token can never read a content summary. Missing OR unpublished ->
     # 404 (not 403) so an unpublished story's existence is not revealed, matching
     # get_storybook_version's information-hiding rule.
-    # #VERIFY: child -> 403; cross-family guardian -> 403; missing/unpublished -> 404.
+    # #VERIFY: child -> 403; cross-family guardian on a family-visibility book ->
+    # 403 (catalog -> 200, per the #VERIFY above); missing/unpublished -> 404.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = "only a guardian or admin may read a content summary"
         raise AuthorizationError(msg)
