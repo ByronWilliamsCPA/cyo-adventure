@@ -90,6 +90,49 @@ describe('ProfileFormDialog', () => {
     expect(onSubmit).not.toHaveBeenCalled()
   })
 
+  it('allows a reading level cap of exactly 99 (the boundary)', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />)
+
+    await user.type(screen.getByLabelText(/name/i), 'Robin')
+    const capInput = screen.getByLabelText(/reading level cap/i)
+    await user.clear(capInput)
+    await user.type(capInput, '99')
+
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeEnabled()
+    await user.click(saveButton)
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({ reading_level_cap: 99 }),
+      )
+    )
+  })
+
+  it('blocks a reading level cap of 100 (one past the boundary)', () => {
+    const onSubmit = vi.fn()
+    const { container } = render(
+      <ProfileFormDialog title="Add child" onSubmit={onSubmit} onClose={vi.fn()} />
+    )
+
+    const nameInput = screen.getByLabelText(/name/i)
+    fireEvent.change(nameInput, { target: { value: 'Robin' } })
+    const capInput = screen.getByLabelText(/reading level cap/i)
+    fireEvent.change(capInput, { target: { value: '100' } })
+
+    const saveButton = screen.getByRole('button', { name: /save/i })
+    expect(saveButton).toBeDisabled()
+
+    // Guard the form-submit path too, not just the Save button's disabled
+    // attribute (see the "does not call onSubmit ... while invalid" test).
+    const form = container.querySelector('form.profile-form')
+    expect(form).not.toBeNull()
+    fireEvent.submit(form as HTMLFormElement)
+    expect(onSubmit).not.toHaveBeenCalled()
+  })
+
   it('selects an avatar via its radio input', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)

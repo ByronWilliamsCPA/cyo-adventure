@@ -317,6 +317,80 @@ async def test_embed_series_block_noop_for_non_series(
         assert "series" not in row.blob.get("metadata", {})
 
 
+async def test_embed_series_block_replaces_non_dict_metadata(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A blob whose ``metadata`` key is present but not a dict is replaced, not raised on.
+
+    ``embed_series_block`` reads ``raw_meta = blob.get("metadata")`` and only
+    treats it as a base to merge into when ``isinstance(raw_meta, dict)``;
+    otherwise it falls back to a fresh ``{}`` before writing ``metadata.series``
+    (see ``generation/series_link.py``). This pins that a corrupted/malformed
+    ``metadata`` value (a string here) is silently discarded and replaced with
+    a dict containing only the new ``series`` key, rather than raising or
+    preserving the non-dict value.
+    """
+    async with sessions() as session:
+        family, user = await _seed_family_and_user(session)
+        series = Series(
+            family_id=family.id,
+            title="Fox Tales",
+            age_band="8-11",
+            carries_state=False,
+            created_by=user.id,
+        )
+        session.add(series)
+        await session.flush()
+
+        concept = Concept(family_id=family.id, brief={}, created_by=user.id)
+        session.add(concept)
+        await session.flush()
+
+        story_request = StoryRequest(
+            family_id=family.id,
+            request_text="a story",
+            age_band="8-11",
+            concept_id=concept.id,
+            series_id=series.id,
+        )
+        session.add(story_request)
+        await session.flush()
+
+        story_id = f"s_{uuid.uuid4().hex[:12]}"
+        blob = _minimal_blob()
+        blob["metadata"] = "not-a-dict"
+        await persist_storybook(
+            session,
+            StorybookParams(
+                story_id=story_id,
+                blob=blob,
+                family_id=family.id,
+                created_by=user.id,
+            ),
+        )
+
+        await link_series_position(session, story_id=story_id, concept_id=concept.id)
+        # #ASSUME: data-integrity: a non-dict metadata value must not raise;
+        # the isinstance guard falls back to a fresh {} instead.
+        # #VERIFY: the resulting metadata is a dict with only "series" set,
+        # never the original string.
+        await embed_series_block(session, story_id=story_id, version=1)
+        await session.commit()
+
+    # Fresh session for the same identity-map reason as the tests above.
+    async with sessions() as session:
+        row = await session.get(StorybookVersion, (story_id, 1))
+        assert row is not None
+        meta = row.blob["metadata"]
+        assert isinstance(meta, dict)
+        assert set(meta) == {"series"}
+        block = meta["series"]
+        assert isinstance(block, dict)
+        storybook = await session.get(Storybook, story_id)
+        assert storybook is not None
+        assert block["series_id"] == str(storybook.series_id)
+
+
 async def test_embed_series_block_refuses_published_blob(
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:

@@ -130,6 +130,35 @@ def _verdict_review_provider(
     return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
 
 
+def _safety_block_review_provider() -> MockProvider:
+    """Build a review backend double whose Stage 1 safety call BLOCKs once.
+
+    Unlike ``_verdict_review_provider`` (always "safe"), this answers the
+    FIRST safety-stage prompt with a genuine ``"block"`` verdict and every
+    other stage with a passing verdict, so ``run_safety_stage`` (the real
+    stage function, not the Stage-0 classifier bright-line path) is what
+    produces the hard-block finding.
+
+    Returns:
+        A :class:`MockProvider` seeded with the dispatching responder.
+    """
+    state = {"safety_calls": 0}
+
+    def _respond(prompt: str) -> str:
+        if prompt.startswith("Age band:"):
+            state["safety_calls"] += 1
+            if state["safety_calls"] == 1:
+                return '{"verdict": "block", "reason": "unsafe content"}'
+            return '{"verdict": "safe", "reason": "ok"}'
+        # Never reached: a hard block short-circuits before readability/
+        # coherence/engagement run, but answer "pass" defensively so a future
+        # short-circuit regression fails on an assertion, not a starved
+        # MockProvider raising BusinessLogicError.
+        return '{"verdict": "pass", "reason": "ok"}'
+
+    return MockProvider(responses=[_respond] * _REVIEW_BUDGET)
+
+
 def _install_canned_classifier_http(
     monkeypatch: pytest.MonkeyPatch,
     handler: Callable[[httpx.Request], httpx.Response],
@@ -279,6 +308,52 @@ async def test_hard_block_routes_to_auto_reject(
     submit.assert_not_awaited()
     assert version.moderation_report is not None
     assert version.moderation_report["summary"]["hard_block"] is True
+
+
+@pytest.mark.unit
+async def test_safety_stage_block_routes_to_auto_reject(
+    mock_session: AsyncMock,
+    monkeypatch: pytest.MonkeyPatch,
+    review_seam: Callable[[MockProvider], dict[str, object]],
+) -> None:
+    """A Stage-1 LLM safety BLOCK verdict (not a Stage-0 classifier hit) also
+    routes to auto_reject.
+
+    ``test_hard_block_routes_to_auto_reject`` exercises the Stage-0
+    bright-line classifier short-circuit only; nothing in this module drove
+    the real ``run_safety_stage`` to a genuine ``Verdict.BLOCK``. Here Stage 0
+    passes (no classifier keys configured, so ``run_classifiers`` is a no-op),
+    and the real safety stage parses a "block" verdict on its first node,
+    which must: (1) short-circuit the remaining LLM stages (readability/
+    coherence/engagement never asked for a verdict beyond the padded budget),
+    (2) mark the persisted report hard_block=True with an ``llm_safety``
+    sourced block finding, and (3) drive ``auto_reject``, never ``submit``.
+    """
+    story, version = _story(), _version()
+    _load(mock_session, story, version)
+    review_seam(_safety_block_review_provider())
+    auto_reject = AsyncMock()
+    submit = AsyncMock()
+    monkeypatch.setattr("cyo_adventure.publishing.service.auto_reject", auto_reject)
+    monkeypatch.setattr("cyo_adventure.publishing.service.submit", submit)
+
+    await pipeline_mod.run_moderation_pipeline(
+        session=mock_session,
+        story_id="s1",
+        version=1,
+        settings=_settings(),
+        generation_provider=MockProvider(responses=[]),
+        pii=_pii(),
+    )
+
+    auto_reject.assert_awaited_once()
+    submit.assert_not_awaited()
+    assert version.moderation_report is not None
+    assert version.moderation_report["summary"]["hard_block"] is True
+    findings = cast("list[dict[str, object]]", version.moderation_report["findings"])
+    block_findings = [f for f in findings if f["verdict"] == "block"]
+    assert block_findings, "expected at least one block finding"
+    assert any(f["source"] == "llm_safety" for f in block_findings)
 
 
 @pytest.mark.unit

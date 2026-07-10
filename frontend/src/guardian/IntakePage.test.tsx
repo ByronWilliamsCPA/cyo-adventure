@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -141,6 +141,44 @@ describe('IntakePage', () => {
     expect(screen.getByRole('button', { name: /Retry/i })).toBeInTheDocument()
     // A failed load must NOT masquerade as a submit failure.
     expect(screen.queryByText(/could not send this request/i)).toBeNull()
+  })
+
+  it('guards against a rapid second click firing a duplicate concept POST while saving', async () => {
+    // The Request Story button is disabled while `saving` is true (canSubmit
+    // includes !saving); a rapid second click on the same render must not slip
+    // through and fire a second createConcept + generate pair.
+    let resolveGenerate: (() => void) | undefined
+    mockPost.mockImplementation((url: string) => {
+      if (url === '/v1/concepts') return Promise.resolve({ data: { concept_id: 'c1' } })
+      if (url === '/v1/concepts/c1/generate')
+        return new Promise((resolve) => {
+          resolveGenerate = () => resolve({ data: { job_id: 'j1', status: 'queued' } })
+        })
+      throw new Error(`unexpected POST ${url}`)
+    })
+    const user = userEvent.setup()
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /Reader A/i }))
+    await user.type(screen.getByLabelText(/What's it about/i), 'A quiet walk.')
+
+    const submitButton = screen.getByRole('button', { name: /Request Story/i })
+    fireEvent.click(submitButton)
+    fireEvent.click(submitButton)
+
+    expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
+    expect(submitButton).toBeDisabled()
+
+    // Let the in-flight generate settle so the test does not leave a dangling
+    // promise; the premise field clearing confirms the single submit landed.
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/concepts/c1/generate')
+    )
+    resolveGenerate?.()
+    await waitFor(() =>
+      expect(screen.getByLabelText(/What's it about/i)).toHaveValue('')
+    )
+    expect(mockPost.mock.calls.filter((c) => c[0] === '/v1/concepts')).toHaveLength(1)
   })
 
   it('shows a submit error when creating the concept fails', async () => {

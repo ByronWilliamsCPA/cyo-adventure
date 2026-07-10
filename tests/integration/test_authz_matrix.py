@@ -674,3 +674,85 @@ async def test_protected_endpoint_role_matrix(
                 f"disallowed role={role.value}, got {resp.status_code}: "
                 f"{resp.text}"
             )
+
+
+# ---------------------------------------------------------------------------
+# Cross-family IDOR checks
+# ---------------------------------------------------------------------------
+#
+# The role matrix above proves that an out-of-role token is rejected; it never
+# proves that an in-role token from a DIFFERENT family is rejected for the
+# SAME resource (an IDOR: a guardian in family B is ``Role.GUARDIAN``, so it
+# passes every role gate, and only the ownership check -- authorize_profile /
+# authorize_family / the book visibility gate -- can stop it). The seed
+# fixture already mints ``other_guardian_token`` (family B's guardian) for
+# exactly this purpose but, until now, nothing in this module ever sent a
+# request with it. The routes below are a representative sample of every
+# ownership-check shape in ROUTE_TABLE: a path-param profile id
+# (ratings/reading-state/profiles), a query-param profile id (library), a
+# request-body profile id (completions), and a path-param storybook/family id
+# with no profile at all (assignments, content-summary). Every id the spec's
+# builders produce belongs to family A (the ``seed`` fixture); resolving them
+# with family B's guardian token is the cross-family attack this section pins.
+
+_CROSS_FAMILY_ROUTE_KEYS: list[tuple[str, str]] = [
+    ("GET", "/api/v1/ratings/{profile_id}"),
+    ("POST", "/api/v1/ratings"),
+    ("GET", "/api/v1/library"),
+    ("PATCH", "/api/v1/profiles/{profile_id}"),
+    ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("POST", "/api/v1/completions"),
+    ("GET", "/api/v1/storybooks/{storybook_id}/assignments"),
+    ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
+    ("GET", "/api/v1/storybooks/{storybook_id}/content-summary"),
+]
+
+# Every key referenced above must actually be an authorized (guardian-eligible)
+# route in ROUTE_TABLE, so this section fails loudly instead of silently
+# skipping a route that got renamed or removed.
+assert all(key in ROUTE_TABLE for key in _CROSS_FAMILY_ROUTE_KEYS), (
+    "a _CROSS_FAMILY_ROUTE_KEYS entry is missing from ROUTE_TABLE"
+)
+assert all(
+    Role.GUARDIAN in ROUTE_TABLE[key].allowed_roles for key in _CROSS_FAMILY_ROUTE_KEYS
+), "a _CROSS_FAMILY_ROUTE_KEYS entry is not guardian-eligible"
+
+_CROSS_FAMILY_IDS = [f"{method} {path}" for method, path in _CROSS_FAMILY_ROUTE_KEYS]
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"), _CROSS_FAMILY_ROUTE_KEYS, ids=_CROSS_FAMILY_IDS
+)
+async def test_cross_family_guardian_is_rejected(
+    client: AsyncClient, seed: Seed, method: str, path_template: str
+) -> None:
+    """A family-B guardian must never reach a family-A resource (IDOR).
+
+    ``other_guardian_token`` holds ``Role.GUARDIAN`` -- it passes every role
+    gate in ``test_protected_endpoint_role_matrix`` for these routes -- but its
+    ``Principal.family_id``/``profile_ids`` belong to family B, while every id
+    the spec resolves against ``seed`` belongs to family A. The only thing
+    that can reject this request is the endpoint's own ownership check
+    (``authorize_profile``/``authorize_family``/the assignments visibility
+    gate), which is exactly the code path this test exercises. Every route
+    handler here was confirmed by reading (see the module docstring and
+    ``api/assignments.py``/``api/ratings.py``/``api/library.py``/
+    ``api/reading.py``/``api/profiles.py``) to reject with 403 before loading
+    or mutating any row it does not own; 404 is accepted too (never asserted
+    away) because it is not a weaker outcome, just a different one this suite
+    also treats as "not authorized" for a route that hides existence.
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(seed.other_guardian_token)
+    )
+    assert resp.status_code in (403, 404), (
+        f"{method} {path_template} expected 403/404 for a cross-family "
+        f"guardian, got {resp.status_code}: {resp.text}"
+    )
+    assert not (200 <= resp.status_code < 300), (
+        f"{method} {path_template} let a cross-family guardian succeed: "
+        f"{resp.status_code} {resp.text}"
+    )

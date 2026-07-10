@@ -172,6 +172,25 @@ describe('RequestsPage', () => {
     expect(screen.queryByLabelText('Story style')).not.toBeInTheDocument()
   })
 
+  it('resets the story style back to prose after leaving and returning to a teen band', async () => {
+    // #VERIFY (RequestsPage.tsx setDecision): leaving a teen band resets the
+    // stored narrative_style to 'prose', not merely hiding the select. Returning
+    // to a teen band must show the reset value, not a stale 'gamebook' pick.
+    const user = userEvent.setup()
+    mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+
+    await user.selectOptions(screen.getByLabelText('Story style'), 'gamebook')
+    expect(screen.getByLabelText<HTMLSelectElement>('Story style').value).toBe('gamebook')
+
+    await user.selectOptions(screen.getByLabelText('Age band'), '8-11')
+    expect(screen.queryByLabelText('Story style')).not.toBeInTheDocument()
+
+    await user.selectOptions(screen.getByLabelText('Age band'), '13-16')
+    expect(screen.getByLabelText<HTMLSelectElement>('Story style').value).toBe('prose')
+  })
+
   it('changing the story style select updates the row and is included in the approve body', async () => {
     const user = userEvent.setup()
     mockPending([{ ...DRAGON_REQUEST, age_band: '13-16' }])

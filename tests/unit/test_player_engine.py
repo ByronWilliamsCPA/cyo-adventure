@@ -323,6 +323,79 @@ def test_dec_clamps_at_declared_min() -> None:
 
 
 @pytest.mark.unit
+def test_inc_lands_exactly_on_max_unclamped_then_one_past_stays_clamped() -> None:
+    """An inc landing exactly on the declared max passes through unchanged; the
+    next inc one past it stays clamped at max (RAD #VERIFY in ``_clamp``).
+
+    ``test_inc_clamps_at_declared_max`` only exercises a value that overshoots
+    the bound; it cannot distinguish a correct ``value > high`` clamp from an
+    off-by-one ``value >= high`` clamp that would wrongly pull the boundary
+    value itself down. This test observes the exact-boundary value first (via
+    a separate node entry, since var_state is only inspectable between
+    entries), then a second, one-past increment on a later entry.
+    """
+    node_a = {
+        "id": "n_a",
+        "body": "A.",
+        "is_ending": False,
+        "on_enter": [{"op": "inc", "var": "n", "value": 3}],
+        "choices": [{"id": "c_go", "label": "Go", "target": "n_b"}],
+    }
+    node_b = {
+        "id": "n_b",
+        "body": "B.",
+        "is_ending": False,
+        "on_enter": [{"op": "inc", "var": "n", "value": 1}],
+        "choices": [{"id": "c_end", "label": "End", "target": "n_end"}],
+    }
+    story = _build(
+        [node_a, node_b, _end()],
+        [{"name": "n", "type": "int", "initial": 0, "min": 0, "max": 3}],
+        start="n_a",
+    )
+    engine = StoryEngine(story)
+    state = engine.start()  # 0 + 3 = 3: exactly at max, must pass through unclamped
+    assert state.var_state["n"] == 3
+    state = engine.choose(state, "c_go")  # 3 + 1 = 4: one past max, clamps to 3
+    assert state.var_state["n"] == 3
+
+
+@pytest.mark.unit
+def test_dec_lands_exactly_on_min_unclamped_then_one_past_stays_clamped() -> None:
+    """A dec landing exactly on the declared min passes through unchanged; the
+    next dec one past it stays clamped at min (RAD #VERIFY in ``_clamp``).
+
+    Mirrors ``test_inc_lands_exactly_on_max_unclamped_then_one_past_stays_clamped``
+    for the lower bound, so an off-by-one ``value <= low`` clamp (which would
+    wrongly pull the boundary value itself up) is pinned too.
+    """
+    node_a = {
+        "id": "n_a",
+        "body": "A.",
+        "is_ending": False,
+        "on_enter": [{"op": "dec", "var": "n", "value": 3}],
+        "choices": [{"id": "c_go", "label": "Go", "target": "n_b"}],
+    }
+    node_b = {
+        "id": "n_b",
+        "body": "B.",
+        "is_ending": False,
+        "on_enter": [{"op": "dec", "var": "n", "value": 1}],
+        "choices": [{"id": "c_end", "label": "End", "target": "n_end"}],
+    }
+    story = _build(
+        [node_a, node_b, _end()],
+        [{"name": "n", "type": "int", "initial": 3, "min": 0, "max": 3}],
+        start="n_a",
+    )
+    engine = StoryEngine(story)
+    state = engine.start()  # 3 - 3 = 0: exactly at min, must pass through unclamped
+    assert state.var_state["n"] == 0
+    state = engine.choose(state, "c_go")  # 0 - 1 = -1: one past min, clamps to 0
+    assert state.var_state["n"] == 0
+
+
+@pytest.mark.unit
 def test_choose_to_missing_target_raises() -> None:
     """A choice that targets a non-existent node fails at entry time."""
     start = {
