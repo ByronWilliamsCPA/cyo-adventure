@@ -6,13 +6,13 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="A choose-your-own-adventure reading app for kids">
+        <meta name="description" content="Design spec for workstream E of the story lifecycle redesign: a Storybook visibility flag (family/catalog) set at release approval, guardian browsing and assignment of catalog books, and a server-side visibility check on assignment so a child is never assigned a book their guardian cannot see.">
       
       
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/authorization-matrix/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/ws-e-catalog-spec/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Authorization Matrix - CYO Adventure</title>
+        <title>WS-E: Catalog and Guardian Assignment Specification - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#authorization-matrix" class="md-skip">
+        <a href="#overview" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Authorization Matrix
+              WS-E: Catalog and Guardian Assignment Specification
             
           </span>
         </div>
@@ -2354,8 +2354,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2375,38 +2373,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#action-by-role-table" class="md-nav__link">
+  <a href="#decisions-ratified-2026-07-09" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action-by-Role Table
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Action-by-Role Table">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#catalog-visibility-ws-e" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Catalog visibility (WS-E)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#idor-negative-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IDOR Negative Tests
+        Decisions (RATIFIED 2026-07-09)
       
     </span>
   </a>
@@ -2414,10 +2384,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#state-machine-and-role-enforcement" class="md-nav__link">
+  <a href="#current-state-facts-verified-2026-07-09-against-b15ed15" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State Machine and Role Enforcement
+        Current-state facts (verified 2026-07-09 against b15ed15)
       
     </span>
   </a>
@@ -2425,10 +2395,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
+  <a href="#data-model" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related Documents
+        Data model
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#endpoint-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoint changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authorization-and-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization and security
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-umbrella-bar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing (umbrella bar)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#process" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Process
       
     </span>
   </a>
@@ -2455,191 +2491,216 @@
   
 
 
-<h1 id="authorization-matrix">Authorization Matrix<a class="headerlink" href="#authorization-matrix" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.3 | <strong>Updated</strong>: 2026-07-09</p>
-</blockquote>
+  <h1>WS-E: Catalog and Guardian Assignment Specification</h1>
+
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Authorization is enforced server-side on every endpoint. The Supabase OIDC (ADR-009)
-token subject maps to an allowed set of profiles. A guardian may act on any profile
-within their own family. A child token is scoped to reader and library endpoints and may
-only act on its own assigned profile. <code>profile_id</code> is never trusted alone.</p>
-<p>Approval is a single state-machine transition reserved for the global admin role
-(<code>Role.ADMIN</code> / <code>is_admin</code>). A guardian or child token that calls the approve endpoint
-receives 403 regardless of the <code>profile_id</code> in the request. There is no separate publish
-transition: the single approve action stamps <code>approved_by</code> and <code>published_at</code> and returns
-<code>status='published'</code> (approve and publish in one call).</p>
-<hr />
-<h2 id="action-by-role-table">Action-by-Role Table<a class="headerlink" href="#action-by-role-table" title="Permanent link">&para;</a></h2>
+<p>WS-E makes admin-approved books shareable to a global catalog that any guardian can assign from.
+It adds a <code>visibility</code> axis to <code>Storybook</code> (<code>family</code> or <code>catalog</code>), chosen by the admin at release
+approval and defaulting to <code>family</code>. Guardian book listing widens from own-family-only to
+own-family plus catalog, and the assignment path grows a server-side visibility check so a child
+can never be assigned a book their guardian is not entitled to see.</p>
+<p>WS-E is full-stack (backend model + endpoints, frontend guardian browse and admin approval toggle,
+both e2e tiers). Its only umbrella dependency is WS-B, which is merged, but see the dependency-gap
+note under Proposed decision E4.</p>
+<h2 id="decisions-ratified-2026-07-09">Decisions (RATIFIED 2026-07-09)<a class="headerlink" href="#decisions-ratified-2026-07-09" title="Permanent link">&para;</a></h2>
+<p>E1 through E5 below were ratified by the owner as proposed at the WS-E kickoff on 2026-07-09 (the
+umbrella's ten decisions remain settled and were not reopened). E4 ratified with the follow-up
+tracked as issue #173 (make <code>StoryRequest.family_id</code> nullable for catalog-origin requests).</p>
+<p>One additional coordination decision was ratified at kickoff:</p>
+<ul>
+<li><strong>E5 amendment (ratified 2026-07-09, post-review)</strong>: the final whole-branch review found that
+  "the child read gate (<code>StorybookAssignment</code>) is unchanged" was an incomplete premise: the child
+  read paths carry an own-family filter IN ADDITION to the assignment gate
+  (<code>api/library.py</code> listing and direct fetch, <code>api/ratings.py</code>), so an assigned cross-family
+  catalog book was unreachable by the child. The owner ratified fixing this inside WS-E (plan
+  Task 13): the family filters widen to own-family OR catalog on those three paths, while the
+  <code>StorybookAssignment</code> gate itself stays required for child reads, and catalog ratings
+  additionally require an assignment for the rating profile. Cross-family <code>family</code>-visibility
+  books remain blocked everywhere. Under the same ruling, the reading-state and completion
+  paths (<code>api/reading.py</code>, all three endpoints behind <code>_load_readable_storybook</code>) were widened
+  identically: an assigned cross-family catalog book accepts progress saves and completions,
+  while an unassigned one stays 403.</li>
+<li><strong>E-mig (migration chaining)</strong>: WS-C PR2 is concurrently in flight (branch
+  <code>feat/ws-c-skeleton-matching</code>) with migration revision <code>228c68e8f1e7</code>
+  (<code>20260709_0900_add_storybook_version_skeleton_slug.py</code>, <code>down_revision=b4c5d6e7f8a9</code>). The owner
+  chose to chain WS-E's single migration onto <code>228c68e8f1e7</code> from the start, assuming WS-C PR2
+  merges first. Consequence: WS-E's migration round-trip tests reference a revision not yet on
+  main, so WS-E CI stays red on migrations until WS-C PR2 lands; merge order is WS-C PR2 then
+  WS-E. If WS-C PR2 is abandoned or re-keyed, re-point WS-E's <code>down_revision</code> to the live head.</li>
+</ul>
 <table>
 <thead>
 <tr>
-<th>Action</th>
-<th>Admin</th>
-<th>Guardian</th>
-<th>Child (own profile)</th>
-<th>Enforcement</th>
+<th>#</th>
+<th>Decision</th>
+<th>Proposed choice</th>
+<th>Rationale</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Read own library / story / state</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td>Token subject maps to allowed-profile set; 403 otherwise</td>
+<td>E1</td>
+<td><code>visibility</code> storage</td>
+<td>New <code>visibility</code> column on <code>Storybook</code> (<code>String(16)</code>, CHECK <code>family</code>/<code>catalog</code>, <code>server_default='family'</code>), mirroring the <code>_STORYBOOK_STATUS_VALUES</code> + <code>CheckConstraint</code> pattern already on the table</td>
+<td>Umbrella decision 1 and Design 7 put visibility on the book, chosen at approval. String+CHECK matches every other enum on <code>db/models.py</code>; server_default makes the migration safe for existing rows (all become <code>family</code>).</td>
 </tr>
 <tr>
-<td>Write own reading state</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td>Same, plus <code>state_revision</code> and version guards on the PUT</td>
+<td>E2</td>
+<td>Where visibility is set</td>
+<td><code>visibility</code> is an argument to <code>publishing/service.py::approve</code>, supplied by the admin approval endpoint (<code>api/approval.py</code>), defaulting to <code>family</code></td>
+<td><code>approve</code> already stamps the release fields; visibility is an approval-time decision (decision 1). Keeping it in <code>approve</code> keeps the release transition atomic and single-sourced.</td>
 </tr>
 <tr>
-<td>Record a completion</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td><code>ending_id</code> must belong to the cited published version</td>
+<td>E3</td>
+<td>Guardian catalog read model</td>
+<td><code>GET /api/v1/guardian/books</code> returns own-family published books plus all <code>visibility='catalog'</code> published books; response marks each item's <code>visibility</code> so the UI can badge catalog books</td>
+<td>Decision 1 and Design 7: guardian library = family plus catalog. Badging lets the guardian tell shared books from their own without a second endpoint.</td>
 </tr>
 <tr>
-<td>Generate / submit concept</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>No (403)</td>
-<td>Guardian role required; child tokens are scoped to reader endpoints</td>
+<td>E4</td>
+<td>Admin catalog-request creation</td>
+<td><strong>Descope for WS-E v1.</strong> WS-E ships visibility-at-approval and catalog browse/assign only. Admin-initiated catalog requests with <strong>no family</strong> are NOT included, because <code>StoryRequest.family_id</code> is still non-nullable (WS-B delivered only nullable <code>profile_id</code>). File a WS-B follow-up to make <code>family_id</code> nullable before catalog-origin generation is built</td>
+<td>The umbrella's "depends on B for admin catalog requests" premise is only half-satisfied (see Current-state gap). Shipping the visibility/browse/assign slice delivers the guardian-facing value without blocking on a request-model change; catalog-origin authoring becomes its own tracked unit.</td>
 </tr>
 <tr>
-<td>Approve (and publish)</td>
-<td>Yes (global, cross-family)</td>
-<td>No (403)</td>
-<td>No (403)</td>
-<td>Global admin role (<code>Role.ADMIN</code> / <code>is_admin</code>) required; enforced in the state machine. <code>authorize_family</code> is not applied</td>
-</tr>
-<tr>
-<td>Access another family's data</td>
-<td>Yes (admin, cross-family)</td>
-<td>No (403)</td>
-<td>No (403)</td>
-<td>Family ownership is checked on every non-admin resource access; cross-family 403</td>
-</tr>
-<tr>
-<td>Edit a passage (Phase 4b)</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>No (403)</td>
-<td>Guardian role required; <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code></td>
-</tr>
-<tr>
-<td>Browse / assign a catalog book (cross-family, WS-E)</td>
-<td>No (403; browse and assignment endpoints are guardian-only)</td>
-<td>Any <code>visibility='catalog'</code> book, any family</td>
-<td>Own assigned profile only</td>
-<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
+<td>E5</td>
+<td>Assignment visibility check</td>
+<td><code>assign_storybook</code> accepts a book that is either own-family OR <code>visibility='catalog'</code>; the existing cross-family 403 is replaced by "not (own-family or catalog) -&gt; 403"; all other guards (published, foreign-profile) unchanged</td>
+<td>Design 7: assignment works on anything visible, verified server-side. This is the security core of WS-E; it must be a server check, never a UI-only filter.</td>
 </tr>
 </tbody>
 </table>
-<p>Key implementation rules:</p>
+<h2 id="current-state-facts-verified-2026-07-09-against-b15ed15">Current-state facts (verified 2026-07-09 against b15ed15)<a class="headerlink" href="#current-state-facts-verified-2026-07-09-against-b15ed15" title="Permanent link">&para;</a></h2>
 <ul>
-<li>The token subject is the canonical identity. <code>profile_id</code> in the query string or
-  request body is used only after the subject has been verified to own it.</li>
-<li>Child tokens are issued with a scope that excludes authoring, generation, review,
-  approval, and publish endpoints at the API gateway layer. The backend enforces the
-  same restriction independently (defense in depth).</li>
-<li>Family ownership is checked on every resource access, not only on listing endpoints.
-  A story that belongs to family A is inaccessible to a guardian from family B.</li>
+<li><strong><code>Storybook</code> ORM model</strong>: <code>db/models.py:192</code> (<code>__tablename__="storybook"</code>). PK is <code>id: str</code>
+  <code>String(120)</code> (NOT a <code>Uuid</code> PK; Storybook is the table-wide exception). Columns include
+  <code>family_id</code> (Uuid FK, indexed), <code>current_published_version: int | None</code>, <code>status: str</code>
+  (<code>String(20)</code>, default <code>draft</code>, CHECK <code>_STORYBOOK_STATUS_VALUES</code>/<code>ck_storybook_status</code>),
+  <code>created_by</code>, <code>series_id</code>, <code>book_index: int | None</code>, <code>created_at</code>. There is a second
+  <code>Storybook</code> at <code>storybook/models.py:458</code>, but that is the Pydantic content model, not the ORM
+  row; WS-E edits the <code>db/models.py</code> one.</li>
+<li><strong><code>visibility</code> does not exist yet</strong> anywhere on the model. Confirmed.</li>
+<li><strong><code>approved_by</code> and <code>published_at</code> live on <code>StorybookVersion</code></strong> (<code>db/models.py:255-258</code>), not on
+  <code>Storybook</code>. The umbrella text implies they might be on the book; they are not. <code>visibility</code>,
+  by contrast, belongs on <code>Storybook</code> (the book-level sharing decision), so E1 adds a new column
+  rather than reusing a version field.</li>
+<li><strong>Release approval</strong>: <code>publishing/service.py:111</code>,
+  <code>async def approve(session, principal, storybook, version) -&gt; StorybookVersion</code>. Stamps
+  <code>storybook.status="published"</code>, <code>storybook.current_published_version=version</code>,
+  <code>version_row.approved_by</code>, <code>version_row.published_at</code>, and records a <code>released</code> PipelineEvent
+  in-transaction. It requires <code>in_review</code> state and a non-null moderation report. It is <strong>not
+  admin-only at the function level</strong>; authorization is enforced at <code>api/approval.py</code>. E2 threads
+  <code>visibility</code> through this function and its caller.</li>
+<li><strong>Guardian book listing</strong>: <code>api/assignments.py:372</code>, <code>async def list_guardian_books(ctx)</code>, route
+  <code>GET /api/v1/guardian/books</code>. Today filters strictly to
+  <code>Storybook.family_id == ctx.principal.family_id</code>, <code>status=="published"</code>,
+  <code>current_published_version IS NOT NULL</code>, and joined <code>StorybookVersion.approved_by IS NOT NULL</code>.
+  Guardian-only (child and admin get 403). No catalog/cross-family concept exists yet.</li>
+<li><strong>Assignment</strong>: <code>api/assignments.py:190</code>, <code>async def assign_storybook(storybook_id, body, ctx)</code>,
+  route <code>POST /api/v1/storybooks/{storybook_id}/assignments</code>. Authorization runs through
+  <code>_require_guardian_family_book</code>: guardian (403) -&gt; missing book (404) -&gt; cross-family (403) -&gt;
+  non-published (400) -&gt; foreign profile (403). Writes are idempotent and emit one <code>book_assigned</code>
+  event per newly created row. <code>StorybookAssignment</code> (<code>db/models.py:376</code>) is the child read gate
+  (composite PK <code>(child_profile_id, storybook_id)</code>); <code>api/library.py</code> gates both listing and
+  direct-version fetch on it. E5 relaxes only the cross-family check to a visibility check.</li>
+<li><strong>Current-state gap (dependency)</strong>: <code>StoryRequest.family_id</code> is <strong>NOT nullable</strong>
+  (<code>db/models.py:549</code>, <code>Mapped[uuid.UUID]</code>, no default). WS-B made only <code>profile_id</code> nullable
+  (<code>db/models.py:550</code>). <code>initiator_role</code> exists (<code>'child'/'guardian'/'admin'</code>) so an
+  admin-initiated request is representable, but a <strong>family-less catalog request is not</strong>. This is
+  why E4 descopes catalog-origin request creation.</li>
+<li><strong>Migration head</strong>: single clean head <code>b4c5d6e7f8a9</code>
+  (<code>migrations/versions/20260709_1000_add_provider_model_allowlist.py</code>, WS-C PR1, #170). WS-E
+  chains onto this (or the live head at branch-cut time; see coordination).</li>
+<li><strong>Frontend</strong>: guardian/admin console pages live under <code>frontend/src/guardian/</code>
+  (<code>ConsolePage.tsx</code>, <code>ReviewDetailPage.tsx</code>, <code>ModerationThresholdsPage.tsx</code>); there is no
+  separate <code>src/admin/</code>. API adapters use the hand-typed <code>makeXApi(api: AxiosInstance)</code> pattern
+  (<code>assignApi.ts</code>, <code>reviewApi.ts</code>, <code>coverApi.ts</code>, <code>moderationThresholdsApi.ts</code>); the generated
+  <code>src/client/</code> is used for types by some adapters, never for requests.</li>
 </ul>
-<h3 id="catalog-visibility-ws-e">Catalog visibility (WS-E)<a class="headerlink" href="#catalog-visibility-ws-e" title="Permanent link">&para;</a></h3>
-<p>WS-E adds a <code>visibility</code> axis (<code>family</code> or <code>catalog</code>) on <code>Storybook</code>, set by the admin at
-approval. The plain family-ownership rule above still governs the default case; catalog
-visibility adds a narrow, server-checked exception on top of it. The contract is three-way:</p>
-<ol>
-<li><strong>Own-family</strong>: unchanged. A guardian or child acting within their own family reads,
-   writes, or is assigned any book in that family exactly as before; visibility never
-   restricts an own-family action.</li>
-<li><strong>Cross-family, <code>visibility='family'</code></strong>: unchanged. <code>authorize_family</code> still returns 403;
-   the catalog widening does not touch the default (private) visibility case.</li>
-<li><strong>Cross-family, <code>visibility='catalog'</code></strong>: a guardian may browse the book in
-   <code>GET /api/v1/guardian/books</code> and assign it to any of their own children's profiles
-   without a 403, but every child-facing read or write path still requires a
-   <code>StorybookAssignment</code> row for the acting profile. On an assignment mismatch the
-   responses differ by surface: ratings and reading-state (progress saves and
-   completions) return 403, while the direct version-blob fetch returns 404 to hide an
-   unassigned book's existence rather than leaking a 403. In short: the family filter
-   widens to admit catalog books, but the assignment gate that already governs child
-   access is never bypassed.</li>
-</ol>
-<p>See the E5 amendment in <a href="../ws-e-catalog-spec/">WS-E Catalog and Guardian Assignment Specification</a>
-for the decision record and the file/line-level implementation this contract is pinned against
-(<code>api/library.py</code>, <code>api/ratings.py</code>, <code>api/reading.py</code>).</p>
-<hr />
-<h2 id="idor-negative-tests">IDOR Negative Tests<a class="headerlink" href="#idor-negative-tests" title="Permanent link">&para;</a></h2>
-<p>Each test below expects a 403 response. These are acceptance-level tests that must be
-green before Phase 3 closes.</p>
-<ol>
-<li>
-<p><strong>Child A requests child B's library or reading state</strong>: a child token belonging to
-   profile A sends <code>GET /api/v1/library?profile_id={B}</code> or
-   <code>GET /api/v1/reading-state/{B}/{storybook_id}</code>. Expected: 403. The token subject does
-   not own profile B; the server must not return B's data.</p>
-</li>
-<li>
-<p><strong>Child mutates <code>profile_id</code> in a reading-state PUT</strong>: a child token belonging to
-   profile A sends <code>PUT /api/v1/reading-state/{B}/{storybook_id}</code> with a body that
-   includes <code>profile_id: B</code>. Expected: 403. The server must validate the subject against
-   the path parameter, not the body field.</p>
-</li>
-<li>
-<p><strong>Child (or guardian) calls approve</strong>: a child token sends
-   <code>POST /api/v1/storybooks/{id}/versions/{v}/approve</code>. Expected: 403. Note the reason is
-   "admin required," not "wrong family": approval is reserved for the global admin role,
-   so a guardian token calling the same endpoint also receives 403. A child token must not
-   escalate, and a guardian must not self-approve.</p>
-</li>
-<li>
-<p><strong>Guardian from another family accesses a story</strong>: a guardian token belonging to
-   family B sends any read or write request against a storybook owned by family A.
-   Expected: 403. Family ownership is checked independently of the role.</p>
-</li>
-</ol>
-<hr />
-<h2 id="state-machine-and-role-enforcement">State Machine and Role Enforcement<a class="headerlink" href="#state-machine-and-role-enforcement" title="Permanent link">&para;</a></h2>
-<p>The publish state machine transitions are enforced as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>GenerationJob:  queued -&gt; running -+-&gt; passed        (validator + moderation gates pass)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                   +-&gt; needs_review  (safety flag; a human must clear it)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                   +-&gt; failed        (hard validation failure)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Storybook:      draft -&gt; in_review -+-&gt; published -&gt; archived
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                    +-&gt; needs_revision -&gt; (repair / regenerate)
-</span></code></pre></div>
+<h2 id="data-model">Data model<a class="headerlink" href="#data-model" title="Permanent link">&para;</a></h2>
+<p><code>Storybook</code> gains one column:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>visibility</code></td>
+<td><code>String(16)</code>, CHECK (<code>family</code>/<code>catalog</code>), <code>server_default='family'</code>, not null</td>
+<td>E1; <code>_STORYBOOK_VISIBILITY_VALUES</code> constant + <code>ck_storybook_visibility</code>, mirroring the existing status enum</td>
+</tr>
+</tbody>
+</table>
+<p>A <code>Visibility</code> Python <code>StrEnum</code> (<code>family</code>, <code>catalog</code>) is coerced at the application boundary, as
+with the other string enums.</p>
+<h2 id="endpoint-changes">Endpoint changes<a class="headerlink" href="#endpoint-changes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><code>in_review -&gt; published</code>: global admin role required (<code>Role.ADMIN</code> / <code>is_admin</code>). This
-  is a single approve-and-publish transition: the approve action stamps both
-  <code>storybook_version.approved_by</code> and <code>storybook_version.published_at</code> and returns
-  <code>status='published'</code>. The check is cross-family: <code>authorize_family</code> is not applied to
-  approval, so an admin from any family may approve. There is no separate <code>approved</code>
-  resting state and no separate publish endpoint in the current code. A two-step
-  approve-then-publish split (with an intermediate <code>approved</code> state audited independently)
-  remains a not-yet-built future design if separate audit of approval and publish is
-  later required.</li>
-<li><code>running -&gt; passed</code>: automated; the GenerationJob's validator and moderation gates pass,
-  and the resulting draft version becomes reviewable. No role check because no human initiates it.</li>
-<li><code>running -&gt; needs_review</code> / <code>running -&gt; failed</code>: automated on gate outcome. A safety flag
-  routes the job to <code>needs_review</code> (a person must clear it); a hard validation failure routes
-  to <code>failed</code> for repair or regeneration.</li>
+<li><strong><code>approve</code></strong> (<code>publishing/service.py</code>) and its caller <code>api/approval.py</code>: accept an optional
+  <code>visibility</code> (default <code>family</code>), validate against the allowlist, set <code>storybook.visibility</code>, and
+  include <code>visibility</code> in the <code>released</code> event payload (the event already carries <code>visibility</code> per
+  the WS-D instrumentation map, so verify the value is now populated rather than defaulted).</li>
+<li><strong><code>list_guardian_books</code></strong> (<code>api/assignments.py</code>): widen the query to
+  <code>family_id == principal.family_id OR visibility == 'catalog'</code> (both still gated on published +
+  approved). Add <code>visibility</code> to the response item shape so the UI can badge catalog entries.</li>
+<li><strong><code>assign_storybook</code></strong> (<code>api/assignments.py</code>): in <code>_require_guardian_family_book</code>, replace the
+  cross-family 403 with "book is neither own-family nor catalog -&gt; 403". Keep the published and
+  foreign-profile guards. This is the server-side enforcement of decision 1 and Design 7.</li>
 </ul>
-<p>A story is visible in a child's library only in the <code>published</code> state.</p>
-<hr />
-<h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<p>Any change to these endpoints or their response models changes the OpenAPI schema, so
+<code>frontend/src/client/</code> must be regenerated in the same PR (CI drift gate; in-process dump, never
+sort keys).</p>
+<h2 id="frontend">Frontend<a class="headerlink" href="#frontend" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="../tech-spec/#security">Tech Spec: Security</a></li>
-<li><a href="../tech-spec/#api-specification">Tech Spec: API Specification</a></li>
-<li><a href="../adr/adr-005-mandatory-human-approval/">ADR-005: Mandatory human approval</a> (amended 2026-06-30: approver is the global admin role)</li>
-<li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase as the managed platform for auth, database, and storage</a></li>
-<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
-<li><a href="../ws-e-catalog-spec/">WS-E Catalog and Guardian Assignment Specification</a> (E5 amendment: catalog visibility contract)</li>
+<li>Guardian library view (under <code>frontend/src/guardian/</code>) renders catalog books alongside family
+  books with a visibility badge; assignment uses the existing assign adapter.</li>
+<li>The admin approval surface (<code>ReviewDetailPage.tsx</code>) gains a family/catalog choice at release,
+  wired through the approval adapter.</li>
+<li>Adapters follow the hand-typed <code>makeXApi</code> house style; do not convert siblings to the generated
+  client.</li>
 </ul>
+<h2 id="authorization-and-security">Authorization and security<a class="headerlink" href="#authorization-and-security" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The visibility check is server-side and authoritative (E5). A catalog book is assignable by any
+  guardian; a family book only by its owning family. The UI badge is a convenience, never the gate.</li>
+<li>The admin approval UI carries the umbrella's reminder that catalog books must be free of personal
+  details; that human gate is what the admin-gated catalog model relies on (Design 7).</li>
+<li>Threshold-style audit is not required for visibility, but the <code>released</code> event already records
+  the chosen <code>visibility</code>, giving an audit trail through the pipeline log.</li>
+</ul>
+<h2 id="testing-umbrella-bar">Testing (umbrella bar)<a class="headerlink" href="#testing-umbrella-bar" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Migration round-trip</strong> with the pinned revision id via <code>tests/integration/_migration_utils.py</code>;
+  assert existing rows default to <code>family</code>.</li>
+<li><strong>Contract test</strong>: <code>list_guardian_books</code> returns catalog books from other families and own-family
+  books, and never returns another family's <code>family</code>-visibility book.</li>
+<li><strong>Authorization test</strong>: a guardian can assign a catalog book they do not own; a guardian cannot
+  assign another family's <code>family</code>-visibility book (403); the child read gate is unchanged.</li>
+<li><strong>Approval test</strong>: approving with <code>visibility='catalog'</code> sets the column and the <code>released</code> event
+  payload; default approval yields <code>family</code>.</li>
+<li><strong>e2e</strong>: update <code>frontend/e2e/guardian-books.spec.ts</code> and <code>assignments.spec.ts</code> for the catalog
+  browse-and-assign flow; <code>library.spec.ts</code> and <code>guardian-console.spec.ts</code> may need touch-ups. The
+  <code>e2e-real/</code> tier has no guardian-books or assignment specs today; add coverage only if the
+  session decides the real tier needs it.</li>
+</ul>
+<h2 id="scope-boundaries">Scope boundaries<a class="headerlink" href="#scope-boundaries" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>In scope</strong>: <code>visibility</code> column, approval-time setting, guardian catalog browse, assignment
+  visibility check, the frontend for those, tests.</li>
+<li><strong>Out of scope (v1)</strong>: admin-initiated <strong>catalog-origin requests</strong> with no family (blocked on the
+  <code>StoryRequest.family_id</code> nullability gap, E4; tracked as issue #173); guardian-defined book groups
+  by age and topic (umbrella says future phase); any re-moderation of existing books (visibility is
+  orthogonal to moderation).</li>
+</ul>
+<h2 id="process">Process<a class="headerlink" href="#process" title="Permanent link">&para;</a></h2>
+<p>Signed commits (<code>git commit -S</code>), Conventional Commits, no em-dash characters (pre-commit hook),
+CHANGELOG entry or skip-changelog label, owner-gated merge (never auto-merge), merge queue only.
+Every new async DB function carries RAD markers per <code>src/cyo_adventure/CLAUDE.md</code>. Cycle: ratify the
+proposed decisions above, then writing-plans for a task-level plan, then subagent-driven development
+with per-task reviews and an Opus whole-branch review before the PR opens.</p>
 
 
 
@@ -2672,7 +2733,7 @@ green before Phase 3 closes.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 12:08:07 UTC">July 10, 2026</span>
   </span>
 
     
