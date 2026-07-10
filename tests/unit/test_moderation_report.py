@@ -98,7 +98,7 @@ def test_finding_stage_at_boundary_does_not_raise(stage: int) -> None:
     ids=["below_range", "above_range"],
 )
 def test_finding_score_out_of_range_raises_value_error(score: float) -> None:
-    with pytest.raises(ValueError, match=r"Finding.score must be in \[0.0, 1.0\]"):
+    with pytest.raises(ValueError, match=r"Finding\.score must be in \[0\.0, 1\.0\]"):
         Finding(
             stage=1,
             source=Source.LLM_SAFETY,

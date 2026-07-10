@@ -12,7 +12,9 @@ import re
 
 import pytest
 
-_SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+")
+# Anchored to the full string (with optional SemVer prerelease/build suffix)
+# so a malformed version like "1.2.3garbage" fails instead of prefix-matching.
+_SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$")
 
 
 class TestPackageInitialization:

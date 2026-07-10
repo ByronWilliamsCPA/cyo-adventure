@@ -140,8 +140,9 @@ def test_storybook_null_pair_rows_unlimited(
             ),
             {"a": first_id, "b": second_id},
         ).scalar_one()
-    # Both NULL-pair rows must coexist; the partial unique index only
-    # applies when series_id IS NOT NULL.
+    # Both NULL-pair rows must coexist. uq_storybook_series_book_index is a
+    # plain UNIQUE constraint (not a partial index); Postgres treats NULLs as
+    # distinct in unique comparisons, so (NULL, NULL) rows never collide.
     assert count == 2
 
 

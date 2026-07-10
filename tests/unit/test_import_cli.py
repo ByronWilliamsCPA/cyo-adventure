@@ -225,7 +225,7 @@ async def test_run_standalone_import_commits_and_returns_story_id_none_status() 
     fake_session = MagicMock(spec=AsyncSession)
     fake_session.commit = AsyncMock()
 
-    family_id = "fam-uuid"
+    family_id = str(uuid.uuid4())
     blob: dict[str, object] = {"x": 1}
     model = "m"
 
@@ -269,7 +269,7 @@ async def test_run_resumes_manual_fill_job_when_job_id_given() -> None:
     fake_session = MagicMock(spec=AsyncSession)
     fake_session.commit = AsyncMock()
 
-    job_id = "job-uuid"
+    job_id = str(uuid.uuid4())
     blob: dict[str, object] = {"x": 1}
     model = "m"
 
