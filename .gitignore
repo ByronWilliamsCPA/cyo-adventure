@@ -44,6 +44,7 @@ htmlcov/
 .cache
 nosetests.xml
 coverage.xml
+coverage.json
 *.cover
 *.py,cover
 .hypothesis/
@@ -183,6 +184,12 @@ htmlcov/
 .coverage.*
 htmlcov/
 coverage.xml
+
+# qlty local cache (regenerable symlinks into ~/.qlty/cache; qlty.toml/configs/sources stay tracked)
+.qlty/logs
+.qlty/out
+.qlty/plugin_cachedir
+.qlty/results
 
 # Database files
 *.db
