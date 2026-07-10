@@ -137,10 +137,6 @@
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/completion-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/condition-evaluator-spec/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
@@ -154,6 +150,10 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/evaluator-runtime-equivalence/</loc>
+         <lastmod>2026-07-10</lastmod>
+    </url>
+    <url>
+         <loc>https://cyo-adventure.readthedocs.io/planning/naive-user-ux-testing-design/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
@@ -173,19 +173,7 @@
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/r1-gap-closure-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/r1-handoff-2026-07-04/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/r1-live-e2e-checklist/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/r1-remediation-plan-2026-07-05/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
@@ -201,15 +189,7 @@
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/skeleton-authoring-handoff/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/skeleton-corpus-story-generation-test-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/skeleton-library-expansion-plan/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
@@ -229,83 +209,7 @@
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-a-admin-noise-floor/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-a-moderation-thresholds-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-b-pr1-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-b-pr2-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-b-pr3-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-b-request-lifecycle-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-c-admin-processing-spec/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-c-pr1-provider-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-c-pr2-skeleton-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-d-pipeline-event-log-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-d-pipeline-event-log-spec/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-e-catalog-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-e-catalog-spec/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-e-handoff-2026-07-09/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-f-suggestion-dashboard-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-f-suggestion-dashboard-spec/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-g-pr1-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-g-pr2-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
          <loc>https://cyo-adventure.readthedocs.io/planning/ws-g-pr3-implementation-plan/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/planning/ws-g-series-chaining-spec/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
     <url>
@@ -390,66 +294,6 @@
     </url>
     <url>
          <loc>https://cyo-adventure.readthedocs.io/security/red-team-design-review-2026-07/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-23-modal-generation-tiers-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-23-ratings-and-family-sharing-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-24-typed-story-metadata-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-29-phase-3-safety-review-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-30-phase-3-slice-2-review-pipeline-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-30-phase-4a-mobile-ui-wireframes-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-30-skeleton-structure-diagrams-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-01-phase-3-slice-3-backend-closeout-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-03-reader-storybook-styling-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-04-modal-generation-leg-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-04-playwright-e2e-suite-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-05-landing-page-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-05-naive-user-ux-testing-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-05-skeleton-authoring-path-routing-design/</loc>
-         <lastmod>2026-07-10</lastmod>
-    </url>
-    <url>
-         <loc>https://cyo-adventure.readthedocs.io/superpowers/specs/2026-07-08-book-covers-nano-banana-design/</loc>
          <lastmod>2026-07-10</lastmod>
     </url>
 </urlset>

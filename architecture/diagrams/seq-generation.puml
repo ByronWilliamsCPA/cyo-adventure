@@ -5,11 +5,20 @@
 ' and validation gate outcomes
 '
 ' Source files:
-'   src/cyo_adventure/generation/orchestrator.py  (module docstring + generate_story)
-'   src/cyo_adventure/generation/provider.py      (build_provider(): 3-leg cascade)
+'   src/cyo_adventure/generation/orchestrator.py  (module docstring +
+'     generate_story(); this diagram covers the fresh_generation method.
+'     The skeleton_fill method (fill_skeleton(), worker.py::_run_skeleton_fill)
+'     is a separate, not-yet-diagrammed path used for skeleton-matched jobs
+'     -- see component-generation.puml for both methods at component level.)
+'   src/cyo_adventure/generation/provider.py      (build_provider(): resolves
+'     mock|ollama|anthropic|openrouter[+3-leg cascade]|modal, with optional
+'     per-job provider_override/model_override, WS-C PR1)
 '   src/cyo_adventure/generation/providers/fallback.py  (FallbackProvider cascade)
 '   src/cyo_adventure/core/config.py  (openrouter_model, openrouter_fallback_model)
-'   src/cyo_adventure/generation/pii.py
+'   src/cyo_adventure/generation/pii.py           (assert_prompt_pii_safe)
+'   src/cyo_adventure/generation/guarded.py       (PiiGuardedProvider: wraps
+'     the resolved provider so pii.assert_prompt_pii_safe runs on every
+'     complete() call, rather than as separate orchestrator-level steps)
 '   src/cyo_adventure/generation/prompts.py
 '   src/cyo_adventure/validator/gate.py
 '   src/cyo_adventure/generation/worker.py
@@ -26,7 +35,7 @@ participant "API\ngeneration.py" as api
 participant "RQ Worker\nworker.py" as worker
 participant "Orchestrator\norchestrator.py" as orch
 participant "Prompt Builder\nprompts.py" as prompts
-participant "PII Guard\npii.py" as pii
+participant "PiiGuardedProvider\nguarded.py + pii.py" as pii
 participant "FallbackProvider\nfallback.py" as fallback
 participant "OpenRouter\n[leg 1: primary,\nclaude-haiku-4.5]" as or_provider
 participant "OpenRouter\n[leg 2: fallback,\nclaude-sonnet-4.6]" as or_provider_fb
@@ -41,14 +50,14 @@ api --> guardian : "202 Accepted\n{job_id, status:'queued'}"
 api -> worker : "[RQ] enqueue job_id"
 
 worker -> pg : "UPDATE status='running'"
-worker -> orch : "generate_story(brief, provider=fallback, pii)"
+worker -> orch : "generate_story(brief,\nprovider=PiiGuardedProvider(fallback),\npii)"
 
 ' --- Stage A ---
 orch -> prompts : "build_structure_prompt(brief)"
 prompts --> orch : "StagePrompt (system + user)"
-orch -> pii : "assert_prompt_pii_safe(system)\nassert_prompt_pii_safe(user)"
-pii --> orch : "OK (or raises ValidationError -> abort)"
-orch -> fallback : "provider.complete(system, user, max_tokens=16384)"
+orch -> pii : "provider.complete(system, user, max_tokens=16384)"
+pii -> pii : "assert_prompt_pii_safe(system)\nassert_prompt_pii_safe(user)\n(raises ValidationError -> abort\nbefore any provider call)"
+pii -> fallback : "complete(system, user, max_tokens=16384)\n[forwarded, PII-safe]"
 fallback -> or_provider : "attempt leg 1 (OpenRouter primary)"
 
 alt transient failure (429/5xx)
@@ -69,7 +78,8 @@ else leg-fatal failure (401/400)
   end
 end
 
-fallback --> orch : "raw text"
+fallback --> pii : "raw text"
+pii --> orch : "raw text"
 orch -> orch : "json.loads(raw)\n[parse error -> synthetic blocked gate]"
 orch -> gate : "run_gate(parsed_doc)"
 gate --> orch : "GateResult(blocked, safety_flagged)"
@@ -82,12 +92,13 @@ else Stage A clean
   ' --- Stage B ---
   orch -> prompts : "build_prose_prompt(skeleton_json, brief)"
   prompts --> orch : "StagePrompt"
-  orch -> pii : "assert_prompt_pii_safe(both blocks)"
-  pii --> orch : "OK"
-  orch -> fallback : "provider.complete(max_tokens=32000)"
+  orch -> pii : "provider.complete(max_tokens=32000)"
+  pii -> pii : "assert_prompt_pii_safe(both blocks)"
+  pii -> fallback : "complete()\n[forwarded, PII-safe]"
   fallback -> or_provider : "attempt (or next live leg)"
   or_provider --> fallback : "raw text"
-  fallback --> orch : "raw text"
+  fallback --> pii : "raw text"
+  pii --> orch : "raw text"
   orch -> gate : "run_gate(parsed_doc)"
   gate --> orch : "GateResult"
   orch -> orch : "stage_log: 'stage_b:gate_ok|blocked'"
@@ -97,10 +108,11 @@ end
 group "Stage C: Repair Loop [while blocked AND attempts < max_repairs=3]"
   orch -> prompts : "build_repair_prompt(current_json, failing_findings)"
   prompts --> orch : "StagePrompt"
-  orch -> pii : "assert_prompt_pii_safe()"
-  pii --> orch : "OK"
-  orch -> fallback : "provider.complete(max_tokens=32000)"
-  fallback --> orch : "raw text"
+  orch -> pii : "provider.complete(max_tokens=32000)"
+  pii -> pii : "assert_prompt_pii_safe()"
+  pii -> fallback : "complete()\n[forwarded, PII-safe]"
+  fallback --> pii : "raw text"
+  pii --> orch : "raw text"
   orch -> gate : "run_gate(new_doc)"
   gate --> orch : "GateResult"
   orch -> orch : "check no-progress signature\n(same findings + same doc hash -> abort)"

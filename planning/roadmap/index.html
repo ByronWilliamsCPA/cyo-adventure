@@ -1790,6 +1790,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#timeline-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2310,6 +2321,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -2505,7 +2526,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2566,6 +2587,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2974,6 +3170,17 @@
     <span class="md-ellipsis">
       
         Current Status (2026-07-03)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)
       
     </span>
   </a>
@@ -3489,7 +3696,7 @@
 
 <h1 id="development-roadmap-cyo-adventure">Development Roadmap: CYO Adventure<a class="headerlink" href="#development-roadmap-cyo-adventure" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Updated</strong>: 2026-07-03
+<p><strong>Status</strong>: Active | <strong>Updated</strong>: 2026-07-10
 <strong>Codename</strong>: Ariadne</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
@@ -3497,7 +3704,9 @@
 generation, then safety and review, then library/profiles, editor, and hardening, across
 six phases over roughly 16 to 25 weeks for a 1 to 2 developer team. The decided release
 cut puts generation in R1 (the internal release: web PWA only, Phases 0-3 plus the Phase 4a
-library-and-profiles slice, roughly 11 to 16 weeks).</p>
+library-and-profiles slice, roughly 11 to 16 weeks). R1 is feature-complete (2026-07-03);
+the WS-A through WS-G story-lifecycle redesign (see below) then hardened it through
+2026-07-10, and R2 planning follows.</p>
 <h2 id="current-status-2026-07-03">Current Status (2026-07-03)<a class="headerlink" href="#current-status-2026-07-03" title="Permanent link">&para;</a></h2>
 <p>Phases 0, 1, 2, 2b, and the <strong>Phase 3 backend</strong> are <strong>delivered and merged to <code>main</code></strong>.
 The reader plays hand-authored stories offline with multi-device 409 reconciliation; the
@@ -3515,8 +3724,8 @@ per-child profile management (#60), the kid library UI (#68), the guardian
 review-and-approve console (#76), concept intake (#69), and assign-to-profile (#75) are all
 merged. The Phase 3 backend guarantee is now reachable through the browser: a guardian can
 generate, review, approve, and assign a story, and a child reads it offline. See
-<a href="../completion-plan/"><code>completion-plan.md</code></a> for what remains toward full v1 (Phase 4b and
-Phase 5) and the later release rungs (R2/R3).</p>
+<a href="../r1-deferred-debt-register/"><code>r1-deferred-debt-register.md</code></a> for what remains toward
+full v1 (Phase 4b and Phase 5) and the later release rungs (R2/R3).</p>
 <table>
 <thead>
 <tr>
@@ -3568,6 +3777,61 @@ Phase 5) and the later release rungs (R2/R3).</p>
 </tr>
 </tbody>
 </table>
+<h2 id="story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1">Story-Lifecycle Redesign (2026-07-06 to 2026-07-10, post-R1)<a class="headerlink" href="#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1" title="Permanent link">&para;</a></h2>
+<p>Between R1 feature-complete (2026-07-03) and R2 planning, seven workstreams (WS-A through
+WS-G) hardened and extended the story lifecycle across moderation, request handling,
+generation matching, observability, catalog sharing, and series continuation. This work is
+orthogonal to the Phase 0-5 ladder above, refining capabilities already shipped in Phases
+2-4a rather than opening a new phase. All seven are merged; see
+<a href="../story-lifecycle-redesign/"><code>story-lifecycle-redesign.md</code></a> for the full design.</p>
+<table>
+<thead>
+<tr>
+<th>Workstream</th>
+<th>Scope</th>
+<th>PRs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WS-A</td>
+<td>Moderation thresholds + admin noise floor</td>
+<td>#141, #161, #162</td>
+</tr>
+<tr>
+<td>WS-B</td>
+<td>Story-request lifecycle</td>
+<td>#163, #164, #165, #167</td>
+</tr>
+<tr>
+<td>WS-C</td>
+<td>Provider selection + skeleton matching</td>
+<td>#170, #175</td>
+</tr>
+<tr>
+<td>WS-D</td>
+<td>Pipeline event log</td>
+<td>#168</td>
+</tr>
+<tr>
+<td>WS-E</td>
+<td>Catalog sharing + guardian assignment</td>
+<td>#180</td>
+</tr>
+<tr>
+<td>WS-F</td>
+<td>Suggestion dashboard</td>
+<td>#176</td>
+</tr>
+<tr>
+<td>WS-G</td>
+<td>Series chaining (continuation)</td>
+<td>#184, #192, #194</td>
+</tr>
+</tbody>
+</table>
+<p>WS-G's "PR3" (<code>AnchorContext</code> declared variable names + continuation prompts, #194)
+merged 2026-07-10, completing all seven workstreams.</p>
 <h2 id="timeline-overview">Timeline Overview<a class="headerlink" href="#timeline-overview" title="Permanent link">&para;</a></h2>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Phase 0: Foundations    ████░░░░░░░░░░░░░░░░░░░░  (1-2 wks)  - Gate: lock decisions
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Phase 1: Schema+Reader  ░░░░██████░░░░░░░░░░░░░░  (3-5 wks)  - Offline PWA, Layer-1 validator
@@ -4054,7 +4318,7 @@ and Tier-2 corpora.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

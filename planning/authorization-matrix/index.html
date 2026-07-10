@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2555,8 +2740,8 @@ transition: the single approve action stamps <code>approved_by</code> and <code>
 <td>Browse / assign a catalog book (cross-family, WS-E)</td>
 <td>No (403; browse and assignment endpoints are guardian-only)</td>
 <td>Any <code>visibility='catalog'</code> book, any family</td>
-<td>Own assigned profile only</td>
-<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
+<td>No (403)</td>
+<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child token gets 403 regardless of <code>profile_id</code>; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
 </tr>
 </tbody>
 </table>
@@ -2590,9 +2775,8 @@ visibility adds a narrow, server-checked exception on top of it. The contract is
    widens to admit catalog books, but the assignment gate that already governs child
    access is never bypassed.</li>
 </ol>
-<p>See the E5 amendment in <a href="../ws-e-catalog-spec/">WS-E Catalog and Guardian Assignment Specification</a>
-for the decision record and the file/line-level implementation this contract is pinned against
-(<code>api/library.py</code>, <code>api/ratings.py</code>, <code>api/reading.py</code>).</p>
+<p>This contract (the E5 amendment, ratified 2026-07-09, shipped in WS-E's PR #180) is pinned
+against <code>api/library.py</code>, <code>api/ratings.py</code>, and <code>api/reading.py</code>.</p>
 <hr />
 <h2 id="idor-negative-tests">IDOR Negative Tests<a class="headerlink" href="#idor-negative-tests" title="Permanent link">&para;</a></h2>
 <p>Each test below expects a 403 response. These are acceptance-level tests that must be
@@ -2658,7 +2842,6 @@ green before Phase 3 closes.</p>
 <li><a href="../adr/adr-005-mandatory-human-approval/">ADR-005: Mandatory human approval</a> (amended 2026-06-30: approver is the global admin role)</li>
 <li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase as the managed platform for auth, database, and storage</a></li>
 <li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
-<li><a href="../ws-e-catalog-spec/">WS-E Catalog and Guardian Assignment Specification</a> (E5 amendment: catalog visibility contract)</li>
 </ul>
 
 
@@ -2682,7 +2865,7 @@ green before Phase 3 closes.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 12:08:07 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

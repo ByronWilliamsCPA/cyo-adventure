@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2692,7 +2877,8 @@
   <h1>Adversarial Safety Evaluation of the Generation and Moderation Pipeline</h1>
 
 <h2 id="why-this-document-exists">Why this document exists<a class="headerlink" href="#why-this-document-exists" title="Permanent link">&para;</a></h2>
-<p>PROJECT-PLAN.md, completion-plan.md, and ADR-005 all record a <strong>checked</strong> Phase 3
+<p>PROJECT-PLAN.md, completion-plan.md (since archived; its open items migrated to
+r1-deferred-debt-register.md), and ADR-005 all record a <strong>checked</strong> Phase 3
 gate: "adversarial concept briefs verified to flag moderation and route to human
 review; no auto-publish path." The 2026-07-01 full-repository review found no
 adversarial test, corpus, or archived result anywhere in the repo backing that
@@ -3044,8 +3230,9 @@ at all). Two of its three implicit claims do hold and are worth stating precisel
   import or admin-submit seams (never screened).</li>
 </ul>
 <p>Action taken in this change: the checkbox is unchecked and reframed in
-PROJECT-PLAN.md, completion-plan.md, roadmap.md, and ADR-005's success criteria,
-pointing to this document. The gate becomes: (a) close Findings 1-2 so no
+PROJECT-PLAN.md, completion-plan.md (since archived; see the note under "Why
+this document exists"), roadmap.md, and ADR-005's success criteria, pointing to
+this document. The gate becomes: (a) close Findings 1-2 so no
 unmoderated path reaches <code>published</code>; (b) ship Finding 3's explicit unscreened
 signal into the C4a-4 console; &copy; run the credentialed adversarial harness and
 archive per-class results meeting the thresholds above; (d) record Finding 4 as an
@@ -3115,7 +3302,7 @@ code paths that can reach <code>submit</code>/<code>approve</code>, or the band 
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 6, 2026 16:16:00 UTC">July 6, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

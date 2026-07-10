@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2574,6 +2759,14 @@
 
   <h1>Story Development Lifecycle Redesign</h1>
 
+<blockquote>
+<p><strong>Status: Complete.</strong> All seven workstreams (WS-A through WS-G) are merged as of
+2026-07-10. See <a href="../roadmap/#story-lifecycle-redesign-2026-07-06-to-2026-07-10-post-r1">roadmap.md</a>
+and <a href="../PROJECT-PLAN/#1-executive-summary">PROJECT-PLAN.md</a> for the delivered-scope
+summary and merged-PR groupings. This document remains the design record; workstream-level
+implementation plans and handoffs have been retired now that their content is either
+shipped or migrated to a permanent home (ADRs, docstrings, or the debt register).</p>
+</blockquote>
 <h2 id="why-this-redesign">Why this redesign<a class="headerlink" href="#why-this-redesign" title="Permanent link">&para;</a></h2>
 <p>Skeletons were introduced because LLMs struggled to produce structurally sound
 branching stories from prompts alone: the skeleton predefines the paths and nodes,
@@ -2779,14 +2972,14 @@ one child.</p>
 <li>Guardian- and kid-facing serializers filter findings through the threshold
   for the book's band. Admin endpoints bypass the age-band threshold entirely
   and return every finding.</li>
-<li>Addendum (implemented in PR #162, in review): a separate, global,
+<li>Addendum (implemented in PR #162): a separate, global,
   admin-editable noise floor (seeded 0.05) denoises only the admin storybook
   review surface by hiding low-score ADVISORY findings; FLAG and BLOCK
   findings (including bright-line score-0.0 blocks) and unscored findings
   always surface. This floor is orthogonal to the per-band threshold: the
   age-band policy governs the guardian/kid surfaces, the noise floor governs
-  admin denoising. See <code>docs/planning/ws-a-admin-noise-floor.md</code>, which lands
-  with PR #162.</li>
+  admin denoising. Landed in PR #162; see the <code>ModerationSetting</code> model
+  docstring (<code>db/models.py</code>) for the design rationale.</li>
 <li>Because the filter lives at the serialization boundary, it applies
   retroactively to every already-moderated book the moment it ships; no
   re-moderation pass is needed.</li>
@@ -2925,7 +3118,7 @@ state section before building.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 8, 2026 02:55:08 UTC">July 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

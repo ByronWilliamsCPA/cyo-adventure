@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/superpowers/specs/2026-06-29-phase-3-safety-review-design/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/naive-user-ux-testing-design/">
       
       
       
@@ -20,19 +20,19 @@
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Phase 3: Safety and Approval Workflow (Design) - CYO Adventure</title>
+        <title>Naive-User UX Test Design: Playwright Misuse Regressions and Claude-for-Chrome Comprehension Prompts - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#1-problem-and-scope" class="md-skip">
+        <a href="#1-problem" class="md-skip">
           Skip to content
         </a>
       
@@ -102,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Phase 3: Safety and Approval Workflow (Design)
+              Naive-User UX Test Design: Playwright Misuse Regressions and Claude-for-Chrome Comprehension Prompts
             
           </span>
         </div>
@@ -235,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+        <a href="../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -278,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -322,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -344,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../planning/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   
@@ -388,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -410,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -446,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -476,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -572,7 +572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../../guides/overview/" class="md-nav__link">
         
   
   
@@ -607,7 +607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -642,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../../guides/usage/" class="md-nav__link">
         
   
   
@@ -742,7 +742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -821,7 +821,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -872,7 +872,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -907,7 +907,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -942,7 +942,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -977,7 +977,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1012,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1047,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1122,7 +1122,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1171,7 +1171,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1206,7 +1206,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1243,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1278,7 +1278,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1382,7 +1382,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1417,7 +1417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1452,7 +1452,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -1529,7 +1529,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../planning/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1580,7 +1580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/project-vision/" class="md-nav__link">
+      <a href="../project-vision/" class="md-nav__link">
         
   
   
@@ -1615,7 +1615,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/tech-spec/" class="md-nav__link">
+      <a href="../tech-spec/" class="md-nav__link">
         
   
   
@@ -1650,7 +1650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1685,7 +1685,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/roadmap/" class="md-nav__link">
+      <a href="../roadmap/" class="md-nav__link">
         
   
   
@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1757,7 +1767,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../planning/adr/" class="md-nav__link ">
+            <a href="../adr/" class="md-nav__link ">
               
   
   
@@ -1808,7 +1818,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1843,7 +1853,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1878,7 +1888,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1913,7 +1923,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1948,7 +1958,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -1983,7 +1993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2097,7 +2282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2132,7 +2317,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2167,7 +2352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2202,7 +2387,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../template_feedback/" class="md-nav__link">
+      <a href="../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2271,7 +2456,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2322,7 +2507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2382,10 +2567,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#1-problem-and-scope" class="md-nav__link">
+  <a href="#1-problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Problem and scope
+        1. Problem
       
     </span>
   </a>
@@ -2393,10 +2578,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#2-current-state-what-exists" class="md-nav__link">
+  <a href="#2-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Current state (what exists)
+        2. Goals
       
     </span>
   </a>
@@ -2404,22 +2589,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#3-slice-1-design-the-approval-spine" class="md-nav__link">
+  <a href="#3-non-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3. Slice 1 design: the approval spine
+        3. Non-goals
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="3. Slice 1 design: the approval spine">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-existing-surface-and-coverage-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Existing surface and coverage baseline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Existing surface and coverage baseline">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#31-state-machine-publishingstate_machinepy" class="md-nav__link">
+  <a href="#41-kid-routes-frontendsrcroutertsx-path-constants-in-frontendsrcroutests" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.1 State machine (publishing/state_machine.py)
+        4.1 Kid routes (frontend/src/router.tsx, path constants in frontend/src/routes.ts)
       
     </span>
   </a>
@@ -2427,10 +2623,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#32-service-publishingservicepy" class="md-nav__link">
+  <a href="#42-guardian-routes-all-under-guardian-protectedroute-roles-guardianadmin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.2 Service (publishing/service.py)
+        4.2 Guardian routes (all under /guardian/*, ProtectedRoute roles ['guardian','admin'])
       
     </span>
   </a>
@@ -2438,10 +2634,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#33-api-apiapprovalpy" class="md-nav__link">
+  <a href="#43-admin-surface" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.3 API (api/approval.py)
+        4.3 Admin surface
       
     </span>
   </a>
@@ -2449,32 +2645,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#34-the-enforced-invariant" class="md-nav__link">
+  <a href="#44-what-the-existing-suite-already-covers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        3.4 The enforced invariant
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#35-tests-tdd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.5 Tests (TDD)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#36-files-touched-slice-1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3.6 Files touched (slice 1)
+        4.4 What the existing suite already covers
       
     </span>
   </a>
@@ -2487,22 +2661,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#4-slice-2-design-deferred-staged-moderation-and-editorial-review" class="md-nav__link">
+  <a href="#5-track-a-playwright-misuse-regressions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4. Slice 2 design (deferred): staged moderation and editorial review
+        5. Track A: Playwright misuse regressions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="4. Slice 2 design (deferred): staged moderation and editorial review">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-track-b-claude-for-chrome-comprehension-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Track B: Claude-for-Chrome comprehension prompts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Track B: Claude-for-Chrome comprehension prompts">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#41-stage-0-classifier-pre-filter-deterministic-free" class="md-nav__link">
+  <a href="#61-scenario-list" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.1 Stage 0: classifier pre-filter (deterministic, free)
+        6.1 Scenario list
       
     </span>
   </a>
@@ -2510,76 +2695,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#42-stage-1-safety-and-age-policy-review-llm-hard-gate" class="md-nav__link">
+  <a href="#62-prompt-format-worked-example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        4.2 Stage 1: safety and age-policy review (LLM, hard gate)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#43-stage-2-age-fit-and-readability-llm-soft-gate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.3 Stage 2: age-fit and readability (LLM, soft gate)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#44-stage-3-narrative-and-branch-coherence-llm-soft-gate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.4 Stage 3: narrative and branch coherence (LLM, soft gate)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#45-stage-4-engagement-choice-quality-and-voice-llm-advisory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.5 Stage 4: engagement, choice quality, and voice (LLM, advisory)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#46-aggregation-gating-and-remediation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.6 Aggregation, gating, and remediation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#47-provider-abstraction-and-independence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.7 Provider abstraction and independence
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#48-open-questions-slice-2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4.8 Open questions (slice 2)
+        6.2 Prompt format (worked example)
       
     </span>
   </a>
@@ -2592,10 +2711,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#5-slice-3-design-deferred-review-surface-read-api" class="md-nav__link">
+  <a href="#7-the-naive-ux-check-skill" class="md-nav__link">
     <span class="md-ellipsis">
       
-        5. Slice 3 design (deferred): review-surface read API
+        7. The /naive-ux-check skill
       
     </span>
   </a>
@@ -2603,10 +2722,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#6-sequencing-and-out-of-scope" class="md-nav__link">
+  <a href="#8-documentation-follow-through" class="md-nav__link">
     <span class="md-ellipsis">
       
-        6. Sequencing and out of scope
+        8. Documentation follow-through
       
     </span>
   </a>
@@ -2614,10 +2733,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#7-open-questions" class="md-nav__link">
+  <a href="#9-delivery" class="md-nav__link">
     <span class="md-ellipsis">
       
-        7. Open questions
+        9. Delivery
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Risks
       
     </span>
   </a>
@@ -2644,385 +2774,406 @@
   
 
 
-  <h1>Phase 3: Safety and Approval Workflow (Design)</h1>
+  <h1>Naive-User UX Test Design: Playwright Misuse Regressions and Claude-for-Chrome Comprehension Prompts</h1>
 
 <blockquote>
-<p>Branch: <code>feat/phase-3-safety-review</code> | Date: 2026-06-29 | Author: Byron Williams (with Claude)
-Implements: <a href="../../../planning/roadmap/#phase-3-safety-and-review-workflow-3-4-weeks-overlaps-phase-2">roadmap Phase 3</a>,
-<a href="../../../planning/completion-plan/">completion-plan C3-1..C3-6</a>, <a href="../../../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a>.</p>
+<p><strong>Status (2026-07-10)</strong>: Partially superseded. The Section 4 route map and the
+Track B expected observations describe the app as of 2026-07-05. PR #140 (the
+landing page at <code>/</code> and the <code>/kids</code> profile picker) and PR #185 (the persistent
+KidNav bar, the reader "Leave" control, and the reordered library) have since
+changed the kid surface those sections describe. Two further points have moved
+since 2026-07-05: (1) the Track A specs this doc plans as future work already
+exist on <code>main</code> (<code>frontend/e2e/naive-user/*</code>, added by PR #132 and kept current
+through PR #185), so Sections 5, 8, and 9 read as a plan for work that has since
+been delivered; (2) the Section 5 and Section 10 analysis of <code>approval.py</code>'s
+storybook-approve as an unguarded concurrency gap is no longer accurate. A
+<code>SELECT ... FOR UPDATE</code> row lock was added to close issue #129 (see
+<code>_load_admin_story</code> in <code>src/cyo_adventure/api/approval.py</code>), so both "approve"
+endpoints are now guarded; the <code>story_requests.py</code> half of that comparison, and
+the backend code line citations (which reflect 2026-07-05), are otherwise
+unchanged in substance. The Track A and Track B methodology, the scenario
+inventory, and the promotion rules remain live.</p>
+<p>Date: 2026-07-05 | Author: Byron Williams (with Claude)</p>
 </blockquote>
-<h2 id="1-problem-and-scope">1. Problem and scope<a class="headerlink" href="#1-problem-and-scope" title="Permanent link">&para;</a></h2>
-<p>Generated stories currently land in the database as <code>storybook.status = "draft"</code> and
-nothing ever moves them forward. The library read path only shows <code>published</code> books, so
-in practice no generated story can reach a child at all, and there is no mechanism to make
-one reachable <em>safely</em>. Phase 3 makes the kids-facing guarantee real and enforced: <strong>no
-story reaches a child profile without a recorded human approval</strong> (in slice 1 the approver is
-a dedicated global admin, the backend safety operator), and machine-generated content is
-screened before a human ever sees it.</p>
-<p>The database is already Phase-3-ready (<code>storybook.status</code>, <code>current_published_version</code>,
-<code>storybook_version.approved_by</code> / <code>published_at</code> / <code>moderation_report</code>). The deterministic
-age-band policy gate (<code>validator/policy.py</code>, PL-15..18) already runs inside the validation
-gate. What is missing is the <em>workflow</em>: state transitions, admin approval endpoints, the
-enforced invariant, and the moderation pass.</p>
-<p>Phase 3 is delivered in three slices, each its own PR:</p>
+<h2 id="1-problem">1. Problem<a class="headerlink" href="#1-problem" title="Permanent link">&para;</a></h2>
+<p>The existing Playwright suite (<code>frontend/e2e/*</code>, hardened through PR #112) is a
+<strong>functional-correctness suite</strong>: for each journey it proves the happy path
+completes and, in a few places, that one deliberate error case is handled
+(the reader's 409 conflict in <code>reader-conflict.spec.ts</code>, the ADR-005
+guardian-403 case in <code>guardian-review.spec.ts</code>). Every spec is written and run
+by someone who already knows the intended flow.</p>
+<p>Nobody has designed tests from the other side: what does a person who has
+<strong>never seen this app and received no instructions</strong> actually try to do? Kids
+share tablets and mash buttons; a first-time guardian doesn't know that
+"requests," "review," and "books" are three different concepts; nobody has
+checked whether the admin surface is even visually distinguishable from the
+guardian surface it's built on top of, since no dedicated admin UI exists.</p>
+<p>This class of gap splits into two kinds that need different tools:</p>
+<ol>
+<li><strong>Deterministic misuse</strong>: the correct behavior is known and stable
+   (double-submitting a form should not create two records; a stale session
+   token should fail closed). These are ordinary regression tests once
+   written; Playwright is the right tool.</li>
+<li><strong>Comprehension and discoverability</strong>: whether a behavior is "confusing" or
+   "discoverable" is not a DOM assertion, it requires judgment about what a
+   human would understand. Playwright cannot express "the user didn't realize
+   what to click next." An agent driving a real browser off a persona prompt,
+   and reporting back a narrative, can.</li>
+</ol>
+<h2 id="2-goals">2. Goals<a class="headerlink" href="#2-goals" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Enumerate naive-user scenarios across all three personas (kid, guardian,
+   admin), grounded in the routes and endpoints that actually exist today
+   (Section 4), not a hypothetical future UI.</li>
+<li>Split scenarios into Track A (Playwright, Section 5) and Track B
+   (Claude for Chrome, Section 6) by which kind of correctness they test, and
+   avoid duplicating anything the existing suite (Section 4.4) already covers.</li>
+<li>Define a reusable skill (Section 7) that surfaces the Track B prompt set on
+   demand, so this becomes a repeatable pre-release routine rather than a
+   one-off exercise.</li>
+</ol>
+<h2 id="3-non-goals">3. Non-goals<a class="headerlink" href="#3-non-goals" title="Permanent link">&para;</a></h2>
 <ul>
-<li><strong>Slice 1 (this plan): the approval spine.</strong> State machine + admin approve/send-back/
-  archive endpoints + the enforced no-unapproved-publish invariant + authz/IDOR tests.</li>
-<li><strong>Slice 2: the CYO-native review pipeline.</strong> A classifier pre-filter, a hard safety/age-policy
-  gate, soft readability and branch-coherence gates, and an advisory engagement pass, all
-  feeding one report; hard blocks auto-reject, everything else routes to guardian review.</li>
-<li><strong>Slice 3: the review-surface read API.</strong> One endpoint returning the story plus flagged
-  passages plus the moderation report, shaped for the Phase-4a guardian review UI.</li>
+<li>Not replacing or restructuring the existing functional e2e suite; this work
+  adds a parallel <code>frontend/e2e/naive-user/</code> tree, it does not touch
+  <code>frontend/e2e/*</code> or <code>frontend/e2e-real/*</code>.</li>
+<li>Not automating the Claude-for-Chrome runs themselves. No browser-driving
+  tool is available to this session; the skill hands a human a ready-to-paste
+  prompt and a place to log the response, it does not invoke the extension.</li>
+<li>Not covering native mobile or non-Chromium browsers; both tracks target the
+  same web app the existing suite already targets.</li>
+<li>Not scoring or gating CI on Track B results. Track B findings are read by a
+  person and, where they reveal a genuine repeatable bug, get promoted into a
+  new Track A spec in a follow-up change; Track B itself never blocks a merge.</li>
 </ul>
-<h2 id="2-current-state-what-exists">2. Current state (what exists)<a class="headerlink" href="#2-current-state-what-exists" title="Permanent link">&para;</a></h2>
+<h2 id="4-existing-surface-and-coverage-baseline">4. Existing surface and coverage baseline<a class="headerlink" href="#4-existing-surface-and-coverage-baseline" title="Permanent link">&para;</a></h2>
+<h3 id="41-kid-routes-frontendsrcroutertsx-path-constants-in-frontendsrcroutests">4.1 Kid routes (<code>frontend/src/router.tsx</code>, path constants in <code>frontend/src/routes.ts</code>)<a class="headerlink" href="#41-kid-routes-frontendsrcroutertsx-path-constants-in-frontendsrcroutests" title="Permanent link">&para;</a></h3>
+<p>Since PR #140 the root <code>/</code> is the audience-neutral landing page (the Kids and
+Grown-ups doors), not the profile picker. The kid surface now begins one level
+in: <code>/kids</code> (<code>ProfilePickerPage</code>, the <code>KID_PICKER_PATH</code> constant) →
+<code>/library/:profileId</code> (<code>LibraryPage</code>, includes <code>RequestStory.tsx</code>) →
+<code>/read/:profileId/:storybookId/:version</code> (<code>ReaderRoute</code>), all mounted under the
+pathless <code>KidShell</code> wrapper. Backend: <code>POST /v1/story-requests</code>
+(<code>api/story_requests.py:149</code>), <code>GET /library</code> (<code>api/library.py:243</code>), reading
+state and completions (<code>api/reading.py:120/154/285</code>), ratings
+(<code>api/ratings.py:38/93</code>).</p>
+<h3 id="42-guardian-routes-all-under-guardian-protectedroute-roles-guardianadmin">4.2 Guardian routes (all under <code>/guardian/*</code>, <code>ProtectedRoute</code> roles <code>['guardian','admin']</code>)<a class="headerlink" href="#42-guardian-routes-all-under-guardian-protectedroute-roles-guardianadmin" title="Permanent link">&para;</a></h3>
+<p><code>LoginPage</code>, <code>ConsolePage</code> (review-queue landing), <code>IntakePage</code>
+(<code>/guardian/intake</code>, concept intake and generation trigger), <code>BooksPage</code>
+(<code>/guardian/books</code>, sibling assignment), <code>RequestsPage</code>
+(<code>/guardian/requests</code>, approve/decline kid requests), <code>ProfilesPage</code>
+(<code>/guardian/profiles</code>, child CRUD), <code>ReviewDetailPage</code>
+(<code>/guardian/review/:storybookId</code>, approve/send-back/archive per ADR-005).</p>
+<h3 id="43-admin-surface">4.3 Admin surface<a class="headerlink" href="#43-admin-surface" title="Permanent link">&para;</a></h3>
+<p>No dedicated admin route tree exists. Admins reuse every <code>/guardian/*</code> page
+under role <code>admin</code>; the only differences are server-side gates on specific
+actions (the review queue's contents, the approve action in
+<code>ReviewDetailPage</code>, per <code>approval.py:105</code>). Generation is triggered from
+<code>IntakePage</code> (<code>POST /concepts</code>, <code>POST /concepts/{id}/generate</code>,
+<code>api/generation.py:123/179</code>) and polled via <code>GET /generation-jobs/{job_id}</code>
+(<code>api/generation.py:338</code>).</p>
+<h3 id="44-what-the-existing-suite-already-covers">4.4 What the existing suite already covers<a class="headerlink" href="#44-what-the-existing-suite-already-covers" title="Permanent link">&para;</a></h3>
+<p><code>frontend/e2e/</code>: <code>profiles.spec.ts</code>, <code>library.spec.ts</code>, <code>reader.spec.ts</code>,
+<code>reader-conflict.spec.ts</code> (deliberate offline/409 handling),
+<code>story-requests-kid.spec.ts</code>, <code>story-requests.spec.ts</code>, <code>guardian-auth.spec.ts</code>,
+<code>guardian-console.spec.ts</code> (auth redirect guard), <code>guardian-books.spec.ts</code>,
+<code>guardian-profiles.spec.ts</code> (guardian's own profile CRUD only, three tests:
+create with preset avatar, edit reading cap, avatar presets-only; does not
+visit any kid-side <code>/library/:profileId</code> route), <code>guardian-review.spec.ts</code>
+(includes the ADR-005 guardian-403-on-approve case), <code>intake.spec.ts</code>,
+<code>assignments.spec.ts</code>.
+<code>frontend/e2e-real/</code>: <code>approval-flow.spec.ts</code>, <code>kid-reads.spec.ts</code>.</p>
+<p>This is the baseline the two tracks below are diffed against: any scenario
+already exercised by one of these files is dropped rather than duplicated.</p>
+<h2 id="5-track-a-playwright-misuse-regressions">5. Track A: Playwright misuse regressions<a class="headerlink" href="#5-track-a-playwright-misuse-regressions" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>Delivered (PR #132, kept current through PR #185): the plan below described
+a directory yet to be created; <code>frontend/e2e/naive-user/</code> and its four spec
+files now exist on <code>main</code> as planned. Retained as historical planning
+context per the status banner above.</p>
+</blockquote>
+<p>New directory <code>frontend/e2e/naive-user/</code>, one file per persona plus one
+shared file, mocked-network style matching the existing suite.</p>
 <table>
 <thead>
 <tr>
-<th>Component</th>
-<th>State</th>
-<th>Location</th>
+<th>Spec file</th>
+<th>Persona</th>
+<th>Scenario</th>
+<th>Assertion</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Story lifecycle column</td>
-<td><code>status</code> defaults <code>"draft"</code>; only <code>"published"</code> is read</td>
-<td><code>db/models.py</code> Storybook</td>
+<td><code>naive-kid-misuse.spec.ts</code></td>
+<td>Kid</td>
+<td>Double-submit a story request</td>
+<td>Exactly one request record created; second submit is a no-op or disabled control</td>
 </tr>
 <tr>
-<td>Approval provenance columns</td>
-<td><code>approved_by</code>, <code>published_at</code>, <code>moderation_report</code> exist, never written</td>
-<td><code>db/models.py</code> StorybookVersion</td>
+<td><code>naive-kid-misuse.spec.ts</code></td>
+<td>Kid</td>
+<td>Refresh mid-reader (accidental, not the deliberate offline case in <code>reader-conflict.spec.ts</code>)</td>
+<td>Reading position is not lost on a clean refresh</td>
 </tr>
 <tr>
-<td>Library visibility</td>
-<td>filters <code>status == "published"</code> and <code>current_published_version is not None</code></td>
-<td><code>api/library.py</code></td>
+<td><code>naive-kid-misuse.spec.ts</code></td>
+<td>Kid</td>
+<td>Rate a story before finishing it, then rate it again</td>
+<td>Only the latest rating persists; no duplicate rating rows</td>
 </tr>
 <tr>
-<td>Deterministic age-band policy gate</td>
-<td>implemented (PL-15..18)</td>
-<td><code>validator/policy.py</code>, <code>validator/band_profile.py</code></td>
+<td><code>frontend/e2e-real/naive-kid-misuse-real.spec.ts</code> (real-backend tier, not mocked)</td>
+<td>Kid</td>
+<td>Hand-edit <code>/library/:otherProfileId</code> to a sibling's or stranger's profile</td>
+<td>The mocked tier cannot test this: <code>library.py:262</code>'s <code>authorize_profile(principal, parsed)</code> is the actual guard and only runs against a real backend. Moved out of <code>naive-kid-misuse.spec.ts</code> for that reason</td>
 </tr>
 <tr>
-<td>LLM moderation seam</td>
-<td>stub returning an empty report (<code>SAFE-14</code>)</td>
-<td><code>validator/safety.py</code></td>
+<td><code>naive-guardian-misuse.spec.ts</code></td>
+<td>Guardian</td>
+<td>Two guardian sessions approve the same story <em>request</em> concurrently (<code>POST /story-requests/{id}/approve</code>)</td>
+<td>Second approver gets 409 (stale transition); confirmed guarded server-side by a <code>SELECT ... FOR UPDATE</code> row lock in <code>_load_scoped_request(..., for_update=True)</code></td>
 </tr>
 <tr>
-<td>Auth seam</td>
-<td><code>Principal</code> (role, family, profiles), <code>is_guardian</code>, <code>authorize_family</code>, <code>authorize_profile</code></td>
-<td><code>api/deps.py</code></td>
+<td><code>naive-guardian-misuse.spec.ts</code></td>
+<td>Guardian</td>
+<td>Visit <code>/guardian/books</code> or <code>/guardian/requests</code> with zero child profiles</td>
+<td>Page renders a coherent empty state, not an unhandled error</td>
 </tr>
 <tr>
-<td>Story persistence</td>
-<td>creates <code>Storybook(status="draft")</code> + first version</td>
-<td><code>generation/persistence.py</code></td>
+<td><code>naive-admin-misuse.spec.ts</code></td>
+<td>Admin</td>
+<td>Navigate away mid-generation-job, return later without the job ID</td>
+<td>The job is still locatable from the console/queue by content, not just by URL</td>
+</tr>
+<tr>
+<td><code>naive-admin-misuse.spec.ts</code></td>
+<td>Admin</td>
+<td>Attempt approve as a guardian-role session (re-confirms <code>guardian-review.spec.ts</code>'s existing 403 case from this suite's angle)</td>
+<td>403, fails closed, no partial state change</td>
+</tr>
+<tr>
+<td><code>naive-admin-misuse.spec.ts</code></td>
+<td>Admin</td>
+<td>Two admin sessions approve the same <em>storybook</em> concurrently (ADR-005 gate, <code>approval.py</code>'s <code>/approve</code>, distinct from the request-approve endpoint above)</td>
+<td>Confirmed gap, not a guarded path: <code>approve_storybook</code> loads the row with a plain <code>session.get</code>, no <code>FOR UPDATE</code>/version check, so both calls silently succeed (last-write-wins on <code>approved_by</code>/<code>published_at</code>). Test is a characterization of current behavior, not an assertion of a guard that doesn't exist; pair with a filed backend issue recommending the same row-lock pattern already used in <code>story_requests.py</code>. <strong>Superseded (2026-07-10):</strong> this gap is now closed. <code>approve_storybook</code> loads through <code>_load_admin_story</code>, which issues <code>SELECT ... FOR UPDATE</code> (<code>src/cyo_adventure/api/approval.py</code>, per issue #129), so concurrent approvals no longer race. The characterization test should now assert the guard (the second approver gets a 409), and the recommended backend issue is unnecessary.</td>
+</tr>
+<tr>
+<td><code>naive-misuse-shared.spec.ts</code></td>
+<td>All (parametrized)</td>
+<td>Double-click every primary submit button (request, approve, generate, assign)</td>
+<td>No duplicate record from any of the four actions</td>
+</tr>
+<tr>
+<td><code>naive-misuse-shared.spec.ts</code></td>
+<td>All (parametrized)</td>
+<td>Browser back after a successful submit, then resubmit</td>
+<td>No duplicate record (re-POST protection)</td>
+</tr>
+<tr>
+<td><code>naive-misuse-shared.spec.ts</code></td>
+<td>All (parametrized)</td>
+<td>Hand-typed URL directly into a mid-flow page, skipping the preceding step</td>
+<td>Redirects to the correct starting point or shows a clear guard, not a broken page</td>
+</tr>
+<tr>
+<td><code>naive-misuse-shared.spec.ts</code></td>
+<td>All (parametrized)</td>
+<td>Session/token expiry mid-task, form partially filled</td>
+<td>User is redirected to sign-in without a silent data loss the UI never mentions</td>
 </tr>
 </tbody>
 </table>
-<h2 id="3-slice-1-design-the-approval-spine">3. Slice 1 design: the approval spine<a class="headerlink" href="#3-slice-1-design-the-approval-spine" title="Permanent link">&para;</a></h2>
-<p>A new isolated package <code>publishing/</code> holds the lifecycle logic, keeping it out of the API
-and generation layers so it is testable in isolation.</p>
-<h3 id="31-state-machine-publishingstate_machinepy">3.1 State machine (<code>publishing/state_machine.py</code>)<a class="headerlink" href="#31-state-machine-publishingstate_machinepy" title="Permanent link">&para;</a></h3>
-<p>A pure, dependency-free transition table over <code>storybook.status</code>. No DB, no I/O.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>draft ──submit──▶ in_review ──approve──▶ published ──archive──▶ archived
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  │                  │  ▲
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  └──auto_reject──┐  send_back │ resubmit
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                  ▼  ▼  │
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                 needs_revision
+<p><strong>Verified during implementation planning:</strong> <code>guardian-profiles.spec.ts</code>
+exercises only the guardian's own profile CRUD page; nothing in the existing
+suite visits a kid-side <code>/library/:otherProfileId</code> route for a profile the
+signed-in session does not own. The hand-edit cross-profile scenario is
+confirmed net-new, and (per the table above) belongs in the real-backend
+tier rather than the mocked one, since the guard it exercises is
+server-side authorization, not frontend behavior a mock can stand in for.</p>
+<h2 id="6-track-b-claude-for-chrome-comprehension-prompts">6. Track B: Claude-for-Chrome comprehension prompts<a class="headerlink" href="#6-track-b-claude-for-chrome-comprehension-prompts" title="Permanent link">&para;</a></h2>
+<p>One markdown file per persona under
+<code>.claude/skills/naive-ux-check/prompts/</code>, each containing one prompt block per
+scenario. Every prompt follows the same shape: a persona framing with an
+explicit knowledge boundary, a task with no hints beyond what's on screen, and
+a fixed four-question rubric so responses are comparable across runs.</p>
+<h3 id="61-scenario-list">6.1 Scenario list<a class="headerlink" href="#61-scenario-list" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Persona</th>
+<th>Scenario</th>
+<th>What the response should reveal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kid</td>
+<td>Cold start, zero profiles exist yet</td>
+<td>Whether there's any usable next step at all</td>
+</tr>
+<tr>
+<td>Kid</td>
+<td>Empty library, first action is "request a story"</td>
+<td>Whether the concept of a request is understandable with zero context</td>
+</tr>
+<tr>
+<td>Kid</td>
+<td>Garbage-input request (single word, mashed keys)</td>
+<td>Whether the resulting pending-approval state reads as sensible to a child</td>
+</tr>
+<tr>
+<td>Kid</td>
+<td>Sibling switches profile mid-session</td>
+<td>Whether the switch feels like a clean reset or a confusing leftover state</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>First login, zero children</td>
+<td>Whether the nudge toward creating a profile is discoverable unaided</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Edge-case profile creation (long name, emoji, duplicate name)</td>
+<td>Whether feedback on unusual input is clear</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Requests vs. review vs. books</td>
+<td>Whether the three concepts read as distinct or get conflated</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Approve a kid's request, unaware a second review step exists later</td>
+<td>Whether the two-step approval flow is surfaced anywhere</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Use intake thinking it approves the kid's request</td>
+<td>Whether intake vs. request-approval is distinguishable from the page alone</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Decline a story, then try to find it again</td>
+<td>Whether the declined item's fate is discoverable</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>Hand the device to your kid after your own setup</td>
+<td>Whether the path from guardian console to child reading screen is discoverable unaided</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Compare the admin console to a guardian's</td>
+<td>Whether elevated capability is visible at all</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Minimum-viable intake, every optional field skipped</td>
+<td>Whether the flow still makes sense with nothing but the required fields</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Approve a just-generated story without opening any flagged passage</td>
+<td>Whether the review UI resists a zero-look rubber-stamp approval</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-prompt-format-worked-example">6.2 Prompt format (worked example)<a class="headerlink" href="#62-prompt-format-worked-example" title="Permanent link">&para;</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Persona: You are a 7-year-old using this app for the first time, unsupervised,
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>with no instructions. You don&#39;t know what &quot;profile,&quot; &quot;story request,&quot; or
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&quot;guardian approval&quot; mean beyond ordinary vocabulary.
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Task: Go to &lt;URL&gt;. Try to find and read a story. If none is available, try
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>to get one made for you, using only what&#39;s visible on screen, no guessing
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>at hidden menus or URLs.
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>Report back:
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>1. What you clicked, in order, and why at each step.
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>2. Any point you were unsure what to do, or what a label/button meant.
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>3. Any dead end you hit.
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>4. If you succeeded, how many steps it took and whether any felt unnecessary.
 </span></code></pre></div>
-<p>States: <code>draft</code>, <code>in_review</code>, <code>needs_revision</code>, <code>published</code>, <code>archived</code>. The documented
-<code>approved</code> state is collapsed into the <code>approve</code> action (see 3.2); it is not a distinct
-resting state. (The <code>generating</code> / <code>auto_check</code> states from the PROJECT-PLAN diagram are
-generation-job concerns tracked on <code>generation_job.status</code>, not story lifecycle states.)</p>
-<p>Legal transitions:</p>
+<p>A second worked example, for the guardian three-page conflation scenario:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Persona: You are a parent who just created an account. Nobody explained the
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>app to you. You know your child wants to read a story you haven&#39;t seen yet.
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Task: Go to &lt;URL&gt;, sign in, and do whatever seems necessary so your child can
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>read something new. Stop as soon as you believe you&#39;ve either succeeded or
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>hit a wall.
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>Report back:
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>1. Which pages you visited, in order, and what you expected each one to do
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>   before you clicked into it.
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>2. Whether you could tell &quot;requests,&quot; &quot;review,&quot; and &quot;books&quot; apart, or thought
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>   any two of them did the same thing.
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>3. Whether you found the thing you were looking for, and how long it took.
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>4. Anything you clicked that turned out to do something you didn&#39;t expect.
+</span></code></pre></div>
+<p>The remaining eleven prompts follow this shape; the full set is authored
+during implementation, not in this design doc.</p>
+<h2 id="7-the-naive-ux-check-skill">7. The <code>/naive-ux-check</code> skill<a class="headerlink" href="#7-the-naive-ux-check-skill" title="Permanent link">&para;</a></h2>
+<p>New project-local skill at <code>.claude/skills/naive-ux-check/</code>:</p>
+<ul>
+<li><code>SKILL.md</code>: describes the skill, takes an optional target URL (default
+  local dev), and on invocation lists the Track B scenarios with a run/not-run
+  status, then prints the next unrun prompt ready to paste into the
+  Claude-for-Chrome extension.</li>
+<li><code>prompts/{kid,guardian,admin}.md</code>: the persona prompt files from Section 6.</li>
+<li>After the user pastes back a response, the skill appends it to
+  <code>docs/qa/naive-ux-reports/YYYY-MM-DD.md</code>: one row per scenario with a
+  pass / friction-found / dead-end verdict and the verbatim narrative.</li>
+<li>No browser-driving tool is invoked by the skill itself (Non-goals, Section
+  3); it is a prompt organizer and a findings log, not an automation harness.</li>
+</ul>
+<h2 id="8-documentation-follow-through">8. Documentation follow-through<a class="headerlink" href="#8-documentation-follow-through" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Now that the Track A specs are delivered (see status banner above), no
+  coverage-diagram change was needed; they are additive regression coverage,
+  not new user-facing journeys.</li>
+<li>Track B findings that reveal a confirmed, repeatable bug get filed as a
+  normal GitHub issue and, where warranted, promoted into a new Track A spec
+  in a follow-up change (Non-goals, Section 3).</li>
+<li>CHANGELOG entry per the repo's changelog gate once implementation lands.</li>
+</ul>
+<h2 id="9-delivery">9. Delivery<a class="headerlink" href="#9-delivery" title="Permanent link">&para;</a></h2>
+<ul>
+<li>This design doc: branch <code>docs/naive-user-ux-testing-design</code>, based on
+  <code>main</code> at the current HEAD.</li>
+<li>Suggested implementation order: Track A specs first (self-contained,
+  mechanical, matches the existing suite's style), then the Track B prompt
+  files, then the skill that wires them together, since the skill's only job
+  is to surface files that need to exist first.</li>
+<li>Each Track A step lands with the full frontend gate green: <code>npm run lint</code>,
+  <code>npm run typecheck</code>, <code>npm run test:run</code>, <code>npm run test:e2e</code>.</li>
+</ul>
+<h2 id="10-risks">10. Risks<a class="headerlink" href="#10-risks" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
-<th>From</th>
-<th>Action</th>
-<th>To</th>
-<th>Who</th>
+<th>Risk</th>
+<th>Mitigation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>draft</code></td>
-<td>submit</td>
-<td><code>in_review</code></td>
-<td>guardian or system</td>
+<td>Track B narrative feedback is inherently subjective, findings could be noise</td>
+<td>The fixed four-question rubric keeps responses comparable; only findings that reproduce on a second run get promoted to Track A</td>
 </tr>
 <tr>
-<td><code>draft</code></td>
-<td>auto_reject</td>
-<td><code>needs_revision</code></td>
-<td>system (slice-2 moderation)</td>
+<td>The two "approve" endpoints in this domain behave differently under concurrency and are easy to conflate</td>
+<td>Verified directly: <code>story_requests.py</code>'s request-approve uses <code>.with_for_update()</code> and is properly guarded (409 on stale transition); <code>approval.py</code>'s ADR-005 storybook-approve has no such guard. Section 5 keeps them as two separate table rows, targeting the correct endpoint by name rather than a shared "approve" scenario. <strong>Superseded (2026-07-10):</strong> <code>approval.py</code>'s storybook-approve is now also guarded by a <code>SELECT ... FOR UPDATE</code> lock (issue #129); the "has no such guard" statement above reflected the 2026-07-05 code only</td>
 </tr>
 <tr>
-<td><code>needs_revision</code></td>
-<td>submit</td>
-<td><code>in_review</code></td>
-<td>guardian or system</td>
+<td>The cross-profile kid-route scenario may already be covered, wasting effort if duplicated</td>
+<td>Section 5 explicitly calls out checking <code>guardian-profiles.spec.ts</code> first</td>
 </tr>
 <tr>
-<td><code>in_review</code></td>
-<td>approve</td>
-<td><code>published</code></td>
-<td>admin only</td>
-</tr>
-<tr>
-<td><code>in_review</code></td>
-<td>send_back</td>
-<td><code>needs_revision</code></td>
-<td>admin only</td>
-</tr>
-<tr>
-<td><code>published</code></td>
-<td>archive</td>
-<td><code>archived</code></td>
-<td>admin only</td>
+<td>The skill's manual paste-and-log loop is friction-heavy compared to full automation</td>
+<td>Accepted for now (Non-goals, Section 3); revisit if a Claude-for-Chrome automation tool becomes available to this session</td>
 </tr>
 </tbody>
 </table>
-<p>The <code>draft → auto_reject → needs_revision</code> hop is added now (even though slice 1 has no
-caller for it) so the slice-2 moderation pipeline can route an automatically-rejected story
-without it ever passing through <code>in_review</code> or reaching a human. Including it in the slice-1
-matrix keeps the state machine complete and avoids a slice-2 schema/contract change. The
-moderation pipeline (slice 2) sits between generation and <code>in_review</code>: a clean story is
-<code>submit</code>-ed to <code>in_review</code>; a hard-blocked one is <code>auto_reject</code>-ed to <code>needs_revision</code>.</p>
-<p><code>assert_transition(current, action)</code> returns the target state or raises
-<code>BusinessLogicError</code> on any illegal hop. A frozen mapping is the single source of truth;
-the matrix is exhaustively unit-tested (every legal hop succeeds, every other pair raises).</p>
-<h3 id="32-service-publishingservicepy">3.2 Service (<code>publishing/service.py</code>)<a class="headerlink" href="#32-service-publishingservicepy" title="Permanent link">&para;</a></h3>
-<p>DB-touching operations that wrap a transition and stamp provenance. They flush, not commit
-(the request unit-of-work in <code>api/deps.py</code> commits once at request end).</p>
-<ul>
-<li><code>approve(session, principal, storybook, version)</code>: asserts <code>in_review → published</code>,
-  sets <code>storybook.status = "published"</code>, <code>storybook.current_published_version = version</code>,
-  and stamps <code>storybook_version.approved_by = principal.user_id</code> and
-  <code>published_at = now()</code>. <strong>This is the only path that may set <code>published</code>.</strong> Collapsing
-  approve and publish into one admin action is deliberate: for a four-child family app,
-  "approve" is "make visible."</li>
-<li><code>submit(session, storybook)</code>: <code>draft|needs_revision → in_review</code>.</li>
-<li><code>send_back(session, principal, storybook, reason)</code>: <code>in_review → needs_revision</code>,
-  recording the reason (persisted in slice 2 alongside the moderation report; in slice 1 it
-  is logged and returned).</li>
-<li><code>archive(session, principal, storybook)</code>: <code>published → archived</code>.</li>
-</ul>
-<h3 id="33-api-apiapprovalpy">3.3 API (<code>api/approval.py</code>)<a class="headerlink" href="#33-api-apiapprovalpy" title="Permanent link">&para;</a></h3>
-<p>An admin-only router following the existing <code>Context</code> / <code>Principal</code> pattern. Approval is a
-backend safety process owned by a global admin (the safety-review operator), so authority is
-cross-family. Routes:</p>
-<ul>
-<li><code>POST /api/v1/storybooks/{storybook_id}/submit</code></li>
-<li><code>POST /api/v1/storybooks/{storybook_id}/approve</code></li>
-<li><code>POST /api/v1/storybooks/{storybook_id}/send-back</code> (body: <code>{ "reason": str }</code>)</li>
-<li><code>POST /api/v1/storybooks/{storybook_id}/archive</code></li>
-</ul>
-<p>Every handler, in order: require <code>principal.is_admin</code> (403 for child or guardian) <strong>before</strong>
-the load so a non-admin never learns whether a story exists -&gt; load the storybook (404 if
-absent) -&gt; call the service (409 <code>BusinessLogicError</code> on an illegal transition).
-<code>authorize_family</code> is intentionally NOT called because admin authority is cross-family. All
-handlers are <code>async def</code> and carry RAD markers (security: admin-only mutation; data
-integrity: ORM boundary) per the package CLAUDE.md.</p>
-<h3 id="34-the-enforced-invariant">3.4 The enforced invariant<a class="headerlink" href="#34-the-enforced-invariant" title="Permanent link">&para;</a></h3>
-<p><strong>No <code>published</code> storybook without a recorded approver.</strong> Three reinforcing layers:</p>
-<ol>
-<li><strong>Single write path.</strong> <code>service.approve</code> is the only code that sets <code>status="published"</code>,
-   and it always stamps <code>approved_by</code> in the same operation. No other path writes
-   <code>published</code>.</li>
-<li><strong>Read-path defense.</strong> The library query is tightened so a story is visible to a child
-   only if its <code>current_published_version</code> row has <code>approved_by IS NOT NULL</code> (defends
-   against any future or manual status write that skips the service).</li>
-<li><strong>Test lock.</strong> A test asserts that across every reachable transition path, any storybook
-   in <code>published</code> has a <code>current_published_version</code> whose <code>approved_by</code> is non-null, and
-   that no endpoint sequence can publish without stamping it.</li>
-</ol>
-<p>A DB CHECK constraint cannot express this (it spans <code>storybook</code> and <code>storybook_version</code>); a
-trigger is deferred as optional hardening (Phase 5). The single-write-path plus read-path
-defense plus the test is the enforcement for slice 1.</p>
-<h3 id="35-tests-tdd">3.5 Tests (TDD)<a class="headerlink" href="#35-tests-tdd" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Unit: the full transition matrix (legal succeed, illegal raise).</li>
-<li>Unit: <code>service.approve</code> stamps <code>approved_by</code> + <code>published_at</code> + <code>current_published_version</code>
-  and sets <code>published</code>.</li>
-<li>Integration: an admin approves an <code>in_review</code> story -&gt; <code>published</code> + stamped.</li>
-<li>Integration (IDOR/authz): a child or guardian token gets 403 on
-  approve/submit/send-back/archive (approval is admin-only); a non-admin acting on an unknown
-  id gets 403 (not 404) because the role check precedes the load; an illegal transition
-  returns 409.</li>
-<li>Integration (invariant): no endpoint sequence reaches <code>published</code> without <code>approved_by</code>.</li>
-</ul>
-<h3 id="36-files-touched-slice-1">3.6 Files touched (slice 1)<a class="headerlink" href="#36-files-touched-slice-1" title="Permanent link">&para;</a></h3>
-<ul>
-<li>New: <code>src/cyo_adventure/publishing/__init__.py</code>, <code>state_machine.py</code>, <code>service.py</code></li>
-<li>New: <code>src/cyo_adventure/api/approval.py</code> (router) + registration in <code>app.py</code></li>
-<li>Edit: <code>api/library.py</code> (tighten the read path to require <code>approved_by</code>)</li>
-<li>New tests under <code>tests/unit/</code> and <code>tests/integration/</code></li>
-</ul>
-<p>No schema migration is needed: all columns already exist.</p>
-<h2 id="4-slice-2-design-deferred-staged-moderation-and-editorial-review">4. Slice 2 design (deferred): staged moderation and editorial review<a class="headerlink" href="#4-slice-2-design-deferred-staged-moderation-and-editorial-review" title="Permanent link">&para;</a></h2>
-<p>Captured now so the slice-1 seam is shaped correctly; built in a follow-up PR (slice 2 or 3).
-The validator gate already calls a <code>SAFE-14</code> seam (<code>validator/safety.py</code>); this work replaces
-the stub with a CYO-native multi-stage review pipeline.</p>
-<p>The pipeline <strong>borrows the mechanism</strong> of an internal reference-library writing pipeline:
-sequential stages, each emitting a structured verdict
-that accumulates into one report, gated progression, a bounded remediation loop, and human
-escalation as the terminal gate. It does <strong>not</strong> copy that pipeline's four doc-editing stages;
-those are an example of the pattern from a professional document-review setting. The <em>reviews
-themselves are designed for this domain</em>, branching choose-your-own-adventure stories for
-children, and target what the deterministic gate (Layer-1/Layer-2 validator plus the PL-15..18
-policy gate) cannot judge: age-relative safety, readability fit, cross-branch narrative
-coherence, and choice quality. Two differences from the source pattern: the stages run
-<strong>server-side</strong> inside the generation/moderation pipeline (LLM calls behind a provider
-abstraction, emitting verdicts rather than rewriting in place), not as interactive subagents;
-and human escalation is not a bolted-on fallback but the mandatory human approval ADR-005
-already requires (the admin approval gate built in slice 1).</p>
-<p>The pipeline runs between generation and <code>in_review</code>: after a story passes the deterministic
-gate (status <code>draft</code>), the review pipeline runs; a clean result is <code>submit</code>-ed to <code>in_review</code>
-for the admin reviewer, a hard-blocked one is <code>auto_reject</code>-ed to <code>needs_revision</code> (the
-slice-1 state-machine hops added in 3.1).</p>
-<h3 id="41-stage-0-classifier-pre-filter-deterministic-free">4.1 Stage 0: classifier pre-filter (deterministic, free)<a class="headerlink" href="#41-stage-0-classifier-pre-filter-deterministic-free" title="Permanent link">&para;</a></h3>
-<p>Run <strong>OpenAI Moderation</strong> (<code>omni-moderation-latest</code>) and <strong>Google Perspective</strong> over each
-node's prose. We leverage the full taxonomy, not one category, splitting it by role:</p>
-<table>
-<thead>
-<tr>
-<th>Classifier category</th>
-<th>Policy dimension</th>
-<th>Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>OpenAI <code>sexual</code>, <code>sexual/minors</code>; Perspective <code>SEXUALLY_EXPLICIT</code></td>
-<td>sexual</td>
-<td><strong>Hard block</strong> (any band)</td>
-</tr>
-<tr>
-<td>OpenAI <code>self-harm/instructions</code>, <code>self-harm/intent</code></td>
-<td>self-harm</td>
-<td><strong>Hard block</strong></td>
-</tr>
-<tr>
-<td>OpenAI <code>illicit/violent</code>, <code>hate/threatening</code>, <code>harassment/threatening</code></td>
-<td>hate / unsafe instruction</td>
-<td><strong>Hard block</strong></td>
-</tr>
-<tr>
-<td>OpenAI <code>violence</code>, <code>violence/graphic</code>; Perspective <code>THREAT</code></td>
-<td>violence / peril</td>
-<td><strong>Graded</strong> (vs band ceiling)</td>
-</tr>
-<tr>
-<td>OpenAI <code>self-harm</code> (non-instructional); Perspective <code>SEVERE_TOXICITY</code></td>
-<td>scariness / peril</td>
-<td><strong>Graded</strong></td>
-</tr>
-<tr>
-<td>OpenAI <code>hate</code>, <code>harassment</code>, <code>illicit</code>; Perspective <code>IDENTITY_ATTACK</code>, <code>INSULT</code></td>
-<td>hate / harassment</td>
-<td><strong>Graded</strong></td>
-</tr>
-<tr>
-<td>Perspective <code>TOXICITY</code>, <code>PROFANITY</code></td>
-<td>language / tone</td>
-<td><strong>Graded</strong> (advisory-leaning)</td>
-</tr>
-</tbody>
-</table>
-<p>Bright-line hits route straight to <code>needs_revision</code> with no LLM spend. Graded scores are not
-auto-blocking; they are passed forward as inputs to the band reviewer. Each classifier result
-becomes a moderation finding <code>(source, category, score, node_id)</code>. Both keys are optional: a
-missing key skips that classifier and the pipeline relies on the remaining stages.</p>
-<p>The review set below is the proposed CYO pipeline: one deterministic pre-filter, one hard
-safety gate, two soft quality gates, and one advisory pass. The two domain-unique reviews,
-which a general document pipeline does not have, are <strong>branch coherence</strong> and <strong>choice
-quality</strong>, because branching is where LLM story generation most often breaks.</p>
-<h3 id="42-stage-1-safety-and-age-policy-review-llm-hard-gate">4.2 Stage 1: safety and age-policy review (LLM, hard gate)<a class="headerlink" href="#42-stage-1-safety-and-age-policy-review-llm-hard-gate" title="Permanent link">&para;</a></h3>
-<p>An independent LLM-reviewer takes each node's prose <strong>plus the Stage-0 graded signals</strong> plus
-the <code>band_profile</code> ceilings, and returns a per-node verdict (<code>safe</code> / <code>flag</code> / <code>block</code>) scored
-against that band's violence / scariness / peril ceilings and forbidden ending kinds. It also
-applies a small set of <strong>values red-lines</strong> appropriate to children's content (e.g. cruelty
-rewarded as the "good" outcome, self-harm or dangerous real-world acts modeled as achievable),
-which a category classifier does not capture. This is the age-relative judgment a fixed-taxonomy
-classifier structurally cannot make. Any <code>block</code>, or an unresolved <code>flag</code>, forces human review;
-nothing here can auto-publish. This is the only <strong>hard safety gate</strong>.</p>
-<h3 id="43-stage-2-age-fit-and-readability-llm-soft-gate">4.3 Stage 2: age-fit and readability (LLM, soft gate)<a class="headerlink" href="#43-stage-2-age-fit-and-readability-llm-soft-gate" title="Permanent link">&para;</a></h3>
-<p>Vocabulary, sentence complexity, and Flesch-Kincaid grade vs the band's <code>reading_level_cap</code>
-(textstat is already in the stack), plus thematic maturity fit. A story far off its
-reading-level target is a <strong>soft gate</strong>: it gets one bounded auto-repair pass and, if still
-off, is surfaced to the guardian (per the owner decision: reading level is a quality, not a
-safety, property, so it never hard-blocks on its own).</p>
-<h3 id="44-stage-3-narrative-and-branch-coherence-llm-soft-gate">4.4 Stage 3: narrative and branch coherence (LLM, soft gate)<a class="headerlink" href="#44-stage-3-narrative-and-branch-coherence-llm-soft-gate" title="Permanent link">&para;</a></h3>
-<p>The CYOA keystone review. Across <strong>all paths</strong>, not just one: plot, character, setting, and
-tracked state (items/variables) stay consistent; each choice's stated consequence actually
-follows; no branch contradicts an earlier passage; every ending is reachable in tone and
-sensible for the path that led there. The deterministic Layer-2 validator proves the graph is
-<em>structurally</em> sound (reachable, terminating, no traps); this stage judges whether the prose is
-<em>semantically</em> coherent across that graph, which determinism cannot. Severe incoherence is a
-<strong>soft gate</strong> (auto-repair once, then surface); minor inconsistencies are flagged.</p>
-<h3 id="45-stage-4-engagement-choice-quality-and-voice-llm-advisory">4.5 Stage 4: engagement, choice quality, and voice (LLM, advisory)<a class="headerlink" href="#45-stage-4-engagement-choice-quality-and-voice-llm-advisory" title="Permanent link">&para;</a></h3>
-<p>Are the choices meaningful, distinct, and consequential (not "go left / go right" with
-identical outcomes); is pacing and stakes appropriate and fun for the band; does the prose read
-as written-for-children rather than generic AI boilerplate (AI-tell detection folded in here).
-Advisory to the guardian and may feed a regeneration request, but does not gate on its own.</p>
-<h3 id="46-aggregation-gating-and-remediation">4.6 Aggregation, gating, and remediation<a class="headerlink" href="#46-aggregation-gating-and-remediation" title="Permanent link">&para;</a></h3>
-<p>All five stages append to one findings list persisted on <code>storybook_version.moderation_report</code>,
-mirroring the reference-library accumulating status block. Gating, by stage role:</p>
-<ul>
-<li><strong>Hard safety gate.</strong> Stage 0 hard block <strong>or</strong> Stage 1 <code>block</code> -&gt; <code>auto_reject</code> to
-  <code>needs_revision</code> immediately, no human spend.</li>
-<li><strong>Soft quality gates.</strong> Stage 1 <code>flag</code>, Stage 2 (reading level) far-off, or Stage 3 (branch
-  coherence) severe -&gt; one bounded auto-repair pass (reuse the orchestrator's existing
-  3-attempt repair cap and no-progress abort), then <code>submit</code> to <code>in_review</code> with the findings
-  attached for the guardian.</li>
-<li><strong>Advisory.</strong> Stage 4 findings, and any minor Stage &#8532; flags, never gate; they ride along
-  in the report for the guardian to weigh.</li>
-<li>A clean (or repaired) story is <code>submit</code>-ed to <code>in_review</code>, <strong>never</strong> <code>published</code>. The
-  human approver (the admin in slice 1) is always the final gate (ADR-005); the pipeline only
-  decides what to surface and pre-flag.</li>
-</ul>
-<p>One finding has the shape:
-<code>{ stage, source: openai|perspective|llm_safety|llm_readability|llm_coherence|llm_engagement, category, score|severity, node_id, verdict: block|flag|advisory|pass, message }</code>.</p>
-<h3 id="47-provider-abstraction-and-independence">4.7 Provider abstraction and independence<a class="headerlink" href="#47-provider-abstraction-and-independence" title="Permanent link">&para;</a></h3>
-<p>The four LLM stages (1-4) run behind a <code>ReviewProvider</code> mirroring <code>GenerationProvider</code>'s
-backend optionality: <strong>local Ollama, OpenRouter, and Modal</strong>. <code>build_review_provider</code> enforces
-<strong>reviewer != generator</strong>: it compares against <code>storybook_version.model</code> /
-<code>generation_job.provider</code> and selects a different backend so a model never reviews its own
-output. Every review prompt flows through the existing PII egress guard
-(<code>generation/guarded.py</code>) before any external call, exactly as generation does.</p>
-<h3 id="48-open-questions-slice-2">4.8 Open questions (slice 2)<a class="headerlink" href="#48-open-questions-slice-2" title="Permanent link">&para;</a></h3>
-<ol>
-<li>Confirm "Modal" means Modal.com auto-endpoints (as in
-   <code>2026-06-23-modal-generation-tiers-design.md</code>).</li>
-<li>Classifier behavior when a key is unset: skip that classifier (current plan) or hard-require.</li>
-<li>Exact reading-level thresholds per band for Stage 2 (reuse <code>band_profile.reading_level_cap</code>;
-   confirm the Flesch-Kincaid grade bands).</li>
-<li>Exact OpenAI/Perspective category-to-dimension thresholds (verify at integration time, RAD
-   external-resource; the 4.1 table is the starting map).</li>
-<li>Whether Stage 4 (engagement/choice quality) belongs in slice 2 or is split into slice 3,
-   given it is the only purely-advisory stage and adds the most prompt-tuning cost.</li>
-</ol>
-<h2 id="5-slice-3-design-deferred-review-surface-read-api">5. Slice 3 design (deferred): review-surface read API<a class="headerlink" href="#5-slice-3-design-deferred-review-surface-read-api" title="Permanent link">&para;</a></h2>
-<p>A guardian-only <code>GET /api/v1/storybooks/{id}/versions/{version}/review</code> returning the story
-blob, the flagged passages (derived from <code>moderation_report</code>), and the validation +
-moderation reports, shaped for the Phase-4a guardian review UI. Read-only; reuses the
-family-ownership authorization. Detailed in its own slice once slices 1 and 2 land.</p>
-<h2 id="6-sequencing-and-out-of-scope">6. Sequencing and out of scope<a class="headerlink" href="#6-sequencing-and-out-of-scope" title="Permanent link">&para;</a></h2>
-<p>Order: slice 1 (approval spine) -&gt; slice 2 (moderation) -&gt; slice 3 (review-surface API).
-Slice 1 has no dependency on slices 2 or 3 and delivers the irreducible safety guarantee on
-its own. Out of scope for all of Phase 3: any frontend (the guardian review UI is Phase 4a,
-which consumes slice 3's API); the deferred trigger-based invariant hardening (Phase 5); the
-<code>generation_job.stage_log</code> retention column (Phase 5).</p>
-<h2 id="7-open-questions">7. Open questions<a class="headerlink" href="#7-open-questions" title="Permanent link">&para;</a></h2>
-<p>Slice-2 moderation/editorial questions are listed in section 4.8. The remaining cross-slice
-question:</p>
-<ol>
-<li>Slice 1 <code>send_back</code> reason: persist where in slice 1 (a lightweight audit row), or log
-   only until slice 2 adds the moderation report? Current plan: log + return in slice 1.</li>
-</ol>
 
 
 
@@ -3045,7 +3196,7 @@ question:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 1, 2026 02:06:14 UTC">July 1, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:47:44 UTC">July 10, 2026</span>
   </span>
 
     
@@ -3055,7 +3206,7 @@ question:</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 30, 2026 20:41:22 UTC">June 30, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:47:44 UTC">July 10, 2026</span>
   </span>
 
     
@@ -3132,10 +3283,10 @@ question:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

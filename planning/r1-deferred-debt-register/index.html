@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Consolidated register of the accepted Minors and deferred items from the R1 gap-closure final reviews (PRs #105-#109, #111, #112), with severity, source, and the R2 gate flags.">
+        <meta name="description" content="Consolidated register of the accepted Minors and deferred items from the R1 gap-closure final reviews (PRs #105-#109, #111, #112), plus the pre-R1 generation/safety/tooling debt carried in completion-plan.md (merged, doc archived), with severity, source, and the R2 gate flags.">
       
       
         <meta name="author" content="Byron Williams">
@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2415,6 +2600,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#generation-and-safety-debts-pre-r1-migrated-from-completion-planmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generation and safety debts (pre-R1, migrated from completion-plan.md)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ux-debts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2496,8 +2692,8 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <tbody>
 <tr>
 <td>G1</td>
-<td>Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per Task C4 of the remediation plan, since a real child-scoped session is architecture work, not a mechanical fix.</td>
-<td>R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in Task C4, docs/planning/r1-remediation-plan-2026-07-05.md</td>
+<td>Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per the remediation plan's Task C4 decision record: the kid surface has no principal of its own, so removing the token breaks every kid read; the real fix is child-scoped sessions, tracked here as G1.</td>
+<td>R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in the R1 remediation plan's Task C4 (merged, doc archived)</td>
 <td>Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users</td>
 </tr>
 <tr>
@@ -2553,6 +2749,41 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <td>PR #108/#109 reviews</td>
 <td>Low</td>
 <td>Add a two-session integration test with a barrier, or accept the lock as sufficient</td>
+</tr>
+<tr>
+<td>C5</td>
+<td><code>choice_path</code> is optional in reading-state saves this slice; absent it, only the structural floor runs, not full deterministic replay (<code>api/reading.py</code>)</td>
+<td>Slice 3 (#45) accepted design; migrated from <code>completion-plan.md</code> (merged, doc archived)</td>
+<td>Medium</td>
+<td>Update the React player to send <code>choice_path</code>, regenerate the client, then make the field required so replay runs on every save</td>
+</tr>
+</tbody>
+</table>
+<h2 id="generation-and-safety-debts-pre-r1-migrated-from-completion-planmd">Generation and safety debts (pre-R1, migrated from completion-plan.md)<a class="headerlink" href="#generation-and-safety-debts-pre-r1-migrated-from-completion-planmd" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Debt</th>
+<th>Source</th>
+<th>Severity</th>
+<th>Suggested action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GS1</td>
+<td>Tier-2 generation yield weak (3/7 on the 2026-06-22 live run vs Tier-1's 11/13); dominant failure was L1-7 "budget" (branch depth over the band cap, ending count off-brief)</td>
+<td>Phase 2b live run, <code>yield-results/phase-2b-2026-06-22-analysis.md</code></td>
+<td>Medium</td>
+<td>Tighten the Stage A structure prompt to state band budgets inline and numerically (highest-leverage, model-independent lever per <code>phase-2b-live-provider.md</code>); re-measure before relying on Tier-2 generation in production</td>
+</tr>
+<tr>
+<td>GS2</td>
+<td>Adversarial safety gate's "flag and route to human review" claim is unverified for the model-dependent classes: no live-model adversarial run has been executed (blocked on credential availability in this environment, not code)</td>
+<td><code>safety/adversarial-safety-evaluation.md</code>, Findings A/B/E</td>
+<td>Medium</td>
+<td>Run the credentialed adversarial harness (<code>scripts/adversarial_harness.py</code>) against a live review model and archive per-class results</td>
 </tr>
 </tbody>
 </table>
@@ -2659,6 +2890,20 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 <td>Info</td>
 <td>Revisit if a staging environment appears; not a defect</td>
 </tr>
+<tr>
+<td>T8</td>
+<td><code>esbuild</code> Renovate re-proposal: no <code>renovate.json</code> rule pins/groups <code>esbuild</code> to Vite's range, so the #22 bump keeps getting re-proposed</td>
+<td>Carried TODO; migrated from <code>completion-plan.md</code> (merged, doc archived)</td>
+<td>Low</td>
+<td>Open a <code>renovate.json</code> rule pinning/grouping <code>esbuild</code> to Vite's range</td>
+</tr>
+<tr>
+<td>T9</td>
+<td>markdownlint whole-repo table/heading debt (non-gating, pre-push only)</td>
+<td>Carried TODO; migrated from <code>completion-plan.md</code> (merged, doc archived)</td>
+<td>Low</td>
+<td>Address opportunistically; do not block planning-doc updates on it</td>
+</tr>
 </tbody>
 </table>
 <h2 id="policy-and-architecture-deferrals-adjacent-pre-r1">Policy and architecture deferrals (adjacent, pre-R1)<a class="headerlink" href="#policy-and-architecture-deferrals-adjacent-pre-r1" title="Permanent link">&para;</a></h2>
@@ -2728,7 +2973,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 7, 2026 02:07:10 UTC">July 7, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

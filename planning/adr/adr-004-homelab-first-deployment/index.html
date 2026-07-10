@@ -1749,6 +1749,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1951,7 +1961,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1976,7 +1986,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2324,6 +2334,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -3005,15 +3190,22 @@
 
 <h1 id="adr-004-homelab-first-deployment-azure-as-the-scale-out-alternative">ADR-004: Homelab-first deployment, Azure as the scale-out alternative<a class="headerlink" href="#adr-004-homelab-first-deployment-azure-as-the-scale-out-alternative" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Proposed
+<p><strong>Status</strong>: Accepted (2026-07-10; deployed and live behind Pangolin at
+<code>cyo.williamshome.family</code> since the R1 rollout on 2026-07-05, with nightly Postgres
+backups running on docker-host; guardian auth on this deployment runs on Supabase per
+<a href="../adr-009-supabase-platform/">ADR-009</a> rather than Authentik as originally decided
+here; the MinIO object-storage leg and a formal restore drill remain outstanding under
+Phase 5 hardening)
 <strong>Date</strong>: 2026-06-20
 <strong>Amended by</strong>: ADR-008 (public-tier hosting), ADR-009 (Supabase platform); ADR-004 still governs the dev and family/homelab tier</p>
 </blockquote>
 <h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
 <p>Deploy to the homelab first (containers behind Pangolin zero-trust ingress, Authentik
-for SSO and roles, with Postgres, Redis, and MinIO as services), keeping containers
-cloud-portable so Azure Container Apps is a drop-in alternative, because self-hosting
-keeps minors' data on hardware we control.</p>
+for internal homelab-service SSO, with Postgres, Redis, and MinIO as services), keeping
+containers cloud-portable so Azure Container Apps is a drop-in alternative, because
+self-hosting keeps minors' data on hardware we control. App-level guardian and child
+authentication runs on Supabase Auth (OIDC) per <a href="../adr-009-supabase-platform/">ADR-009</a>,
+not Authentik.</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
 <p>The data is the children's reading activity, which argues for a strong privacy posture.
@@ -3030,10 +3222,12 @@ instead deploy to Azure.</p>
 <p>Provider-specific services would create lock-in. Using plain containers and the S3 API
 keeps a move to Azure cheap if we ever outgrow the homelab.</p>
 <h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>We will deploy to the homelab first, behind Pangolin and Authentik, with Postgres,
-Redis, and MinIO as services, because self-hosting keeps minors' data private and
-reuses infrastructure we already run well.</strong> Containers stay cloud-portable so Azure
-Container Apps is a drop-in alternative.</p>
+<p><strong>We will deploy to the homelab first, behind Pangolin (with Authentik for internal
+homelab-service SSO), with Postgres, Redis, and MinIO as services, because self-hosting
+keeps minors' data private and reuses infrastructure we already run well.</strong> App-level
+guardian and child authentication is Supabase Auth (OIDC) per
+<a href="../adr-009-supabase-platform/">ADR-009</a>, not Authentik. Containers stay cloud-portable
+so Azure Container Apps is a drop-in alternative.</p>
 <h3 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h3>
 <p>Self-hosting keeps minors' data on controlled hardware, the right privacy posture, and
 avoids third-party telemetry on children. The existing stack already provides ingress
@@ -3078,8 +3272,9 @@ always-on uptime and managed backups if the need arises.</p>
 <h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
 <h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Ingress and auth</strong>: Pangolin (zero-trust) and Authentik (OIDC, guardian and child
-   roles).</li>
+<li><strong>Ingress and auth</strong>: Pangolin (zero-trust ingress) and Authentik (internal
+   homelab-service SSO only); app-level guardian and child authentication is Supabase
+   Auth (OIDC) per <a href="../adr-009-supabase-platform/">ADR-009</a>.</li>
 <li><strong>Stateful services</strong>: Postgres, Redis, MinIO as containers orchestrated via Dockge.</li>
 <li><strong>Storage abstraction</strong>: S3 API for story blobs.</li>
 </ol>
@@ -3092,7 +3287,8 @@ always-on uptime and managed backups if the need arises.</p>
 <h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
 <h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Deployed behind Pangolin with Authentik login.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Deployed behind Pangolin with Supabase Auth login for guardians/children (live
+  since 2026-07-05; Authentik remains internal homelab-service SSO only).</li>
 <li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> A restore from backup succeeds in a drill.</li>
 </ul>
 <h3 id="review-schedule">Review Schedule<a class="headerlink" href="#review-schedule" title="Permanent link">&para;</a></h3>
@@ -3132,7 +3328,7 @@ always-on uptime and managed backups if the need arises.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 17:20:24 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

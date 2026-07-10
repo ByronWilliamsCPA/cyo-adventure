@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2450,6 +2635,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#policy-gate-age-band-all-stories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Gate (Age-Band, All Stories)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rule-application-order" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2709,10 +2905,54 @@ the closure of reachable configurations. The default configuration cap is 100,00
 </tbody>
 </table>
 <hr />
+<h2 id="policy-gate-age-band-all-stories">Policy Gate (Age-Band, All Stories)<a class="headerlink" href="#policy-gate-age-band-all-stories" title="Permanent link">&para;</a></h2>
+<p>Runs after Layer 1 passes and the Storybook parses, on the typed model plus the choice
+graph (<code>validator/policy.py</code>). Most findings are ERROR-severity and blocking; PL-19 is
+advisory (WARNING). PL-15..PL-18 are defined below; PL-19 (words-per-node), PL-20
+(fastest-finish arc floor), and PL-21 (off-matrix rejection) are specified in
+<a href="../adr/adr-011-story-scale-framework/">ADR-011</a> rather than duplicated here.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Layer</th>
+<th>Description</th>
+<th>Failure Message Template</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PL-15</td>
+<td>Policy</td>
+<td><strong>Ending-kind policy</strong>: no ending whose <code>kind</code> is in the band's <code>forbidden_ending_kinds</code> (the no-death / no-capture rule).</td>
+<td><code>PL-15 policy: ending kind '{kind}' is forbidden for band '{age_band}' in story '{story_id}'</code></td>
+</tr>
+<tr>
+<td>PL-16</td>
+<td>Policy</td>
+<td><strong>Content ceiling</strong>: each <code>metadata.content_flags</code> value must not exceed the band's <code>content_ceiling</code> for that flag (ordered-enum comparison).</td>
+<td><code>PL-16 policy: {flag} '{level}' exceeds band '{age_band}' ceiling '{ceiling}' in story '{story_id}'</code></td>
+</tr>
+<tr>
+<td>PL-17</td>
+<td>Policy</td>
+<td><strong>Floors</strong>: distinct endings must meet <code>min_endings</code>; decision nodes (non-ending nodes with &gt;= 2 choices) must meet <code>min_decisions</code>, both possibly scaled and counted from the graph.</td>
+<td><code>PL-17 floor: {n} ending(s)/decision node(s) below {scope} minimum {min} in story '{story_id}'</code></td>
+</tr>
+<tr>
+<td>PL-18</td>
+<td>Policy</td>
+<td><strong>Topology verify</strong>: declared <code>metadata.topology</code> must be admissible for the class inferred from graph metrics (networkx classifier).</td>
+<td><code>PL-18 topology: declared '{topology}' is not admissible for the graph (admissible: {admissible}) in story '{story_id}'</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
 <h2 id="rule-application-order">Rule Application Order<a class="headerlink" href="#rule-application-order" title="Permanent link">&para;</a></h2>
 <p>The validator applies rules in this order:</p>
 <ol>
 <li>L1-1 through L1-7 (graph; all stories). Stop if any L1 rule fails.</li>
+<li>PL-15 through PL-21 (age-policy gate; all stories). PL-19 is advisory; the rest block.</li>
 <li>L2-8 through L2-12 (state-space; Tier-2 only). Stop if any L2 rule fails.</li>
 <li>RL-13 (advisory; all stories). Log warnings; continue.</li>
 <li>SAFE-14 (moderation; all stories). Flag nodes; block auto-publish if flagged.</li>
@@ -2765,7 +3005,7 @@ to address only the flagged node ids and rule violations, changing nothing else.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

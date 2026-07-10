@@ -1744,6 +1744,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1936,7 +1946,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1997,6 +2007,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -3462,14 +3647,14 @@
 
   <h1>Python Compatibility</h1>
 
-<p>This project supports <strong>Python 3.10, 3.11, 3.12, 3.13, and 3.14</strong> with full testing across all versions.</p>
+<p>This project requires <strong>Python 3.11+</strong> (<code>requires-python = "&gt;=3.11"</code> in <code>pyproject.toml</code>, no upper bound). Python 3.12 is the primary local development target. CI coverage is split across two workflows with different scope: <code>ci.yml</code> runs the full quality gate (tests, lint, type checking) on <strong>Python 3.12 only</strong>; <code>python-compatibility.yml</code> runs a pytest-only compatibility check on Python 3.11-3.13 (Ubuntu), plus Python 3.12 on macOS and Windows. Python 3.10 and 3.14 appear only in the local <code>nox -s test</code> / <code>lint</code> / <code>typecheck</code> matrix (3.10-3.14); <strong>no GitHub Actions workflow invokes <code>nox</code></strong>, so those two versions have no CI coverage, and 3.10 in particular falls below the project's <code>requires-python</code> floor (see the note under <a href="#python-310-support-backports-needed">Python 3.10 Support</a> below).</p>
 <h2 id="version-support-matrix">Version Support Matrix<a class="headerlink" href="#version-support-matrix" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
 <tr>
 <th>Python Version</th>
 <th>Support Status</th>
-<th>Nox Testing</th>
+<th>Nox Testing (local only)</th>
 <th>CI Testing</th>
 <th>Notes</th>
 </tr>
@@ -3477,38 +3662,38 @@
 <tbody>
 <tr>
 <td>3.10</td>
-<td>✅ Supported</td>
-<td>✅ All versions</td>
-<td>✅ Full CI/CD</td>
-<td>Minimum version, requires backports</td>
+<td>❌ Not supported</td>
+<td>⚠️ Listed in <code>noxfile.py</code>'s <code>test</code>/<code>lint</code>/<code>typecheck</code> matrix</td>
+<td>❌ None</td>
+<td>Below <code>requires-python = "&gt;=3.11"</code>; not installable via <code>uv sync</code></td>
 </tr>
 <tr>
 <td>3.11</td>
 <td>✅ Supported</td>
-<td>✅ All versions</td>
-<td>✅ Full CI/CD</td>
+<td>✅ test/lint/typecheck</td>
+<td>✅ <code>python-compatibility.yml</code> (Ubuntu only)</td>
 <td>LTS version (EOL Oct 2027)</td>
 </tr>
 <tr>
 <td>3.12</td>
 <td>✅ Supported</td>
-<td>✅ All versions</td>
-<td>✅ Full CI/CD</td>
-<td>Default/recommended version</td>
+<td>✅ test/lint/typecheck</td>
+<td>✅ Full quality gate (<code>ci.yml</code>) + <code>python-compatibility.yml</code> (Ubuntu, macOS, Windows)</td>
+<td>Primary/default local dev target; only version covered by the main CI gate</td>
 </tr>
 <tr>
 <td>3.13</td>
 <td>✅ Supported</td>
-<td>✅ All versions</td>
-<td>✅ Full CI/CD</td>
+<td>✅ test/lint/typecheck</td>
+<td>✅ <code>python-compatibility.yml</code> (Ubuntu only)</td>
 <td>Latest stable, PEP 594 removals</td>
 </tr>
 <tr>
 <td>3.14</td>
-<td>✅ Supported</td>
-<td>✅ All versions</td>
-<td>✅ Full CI/CD</td>
-<td>Latest (Oct 2025), free-threaded, JIT</td>
+<td>⚠️ Locally tested only</td>
+<td>✅ test/lint/typecheck</td>
+<td>❌ None</td>
+<td>Not covered by any GitHub Actions workflow</td>
 </tr>
 <tr>
 <td>3.15+</td>
@@ -3520,7 +3705,15 @@
 </tbody>
 </table>
 <h2 id="python-310-support-backports-needed">Python 3.10 Support (Backports Needed)<a class="headerlink" href="#python-310-support-backports-needed" title="Permanent link">&para;</a></h2>
-<p>Since Python 3.10 is the minimum version, some features from newer versions require backport packages:</p>
+<blockquote>
+<p><strong>Note:</strong> This project's actual <code>requires-python</code> floor is <code>&gt;=3.11</code> (verified in
+<code>pyproject.toml</code>), so Python 3.10 is <strong>not currently supported</strong> and the backport
+dependencies below are not active (they exist only as commented-out illustrative
+examples in <code>pyproject.toml</code>). This section is retained as generic reference
+guidance in case the floor is lowered again in the future; it does not describe
+this project's current dependency set.</p>
+</blockquote>
+<p>If this project's floor were lowered back to Python 3.10, some features from newer versions would require backport packages:</p>
 <h3 id="required-backports-for-310">Required Backports for 3.10<a class="headerlink" href="#required-backports-for-310" title="Permanent link">&para;</a></h3>
 <div class="language-toml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dependencies</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="c1"># TOML support (tomllib added in 3.11)</span>
@@ -3740,7 +3933,7 @@
 <p><strong><code>from __future__ import annotations</code> is deprecated:</strong>
 - This template's <code>check_type_hints.py</code> currently enforces this import
 - Deprecation in 3.14, removal not before Python 3.13 EOL (2029)
-- Continue using it for now (required for 3.10 compatibility)
+- Continue using it for now (enforced by <code>scripts/check_type_hints.py</code>, independent of the 3.10/3.11 floor)
 - We'll update the template before 2029</p>
 <p><strong>NotImplemented Boolean Context:</strong>
 - Using <code>NotImplemented</code> in boolean contexts now raises <code>TypeError</code>
@@ -3894,78 +4087,112 @@
 </ul>
 <h2 id="testing-across-versions">Testing Across Versions<a class="headerlink" href="#testing-across-versions" title="Permanent link">&para;</a></h2>
 <h3 id="nox-sessions">Nox Sessions<a class="headerlink" href="#nox-sessions" title="Permanent link">&para;</a></h3>
-<p>Test across all supported versions:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Run tests on all Python versions (3.10, 3.11, 3.12, 3.13, 3.14)</span>
+<p><code>nox</code>'s <code>test</code>, <code>lint</code>, and <code>typecheck</code> sessions run a wide local matrix
+(3.10, 3.11, 3.12, 3.13, 3.14). This is a <strong>local-only parity check</strong>: no
+GitHub Actions workflow invokes <code>nox</code>, so running these sessions is the only
+way to exercise 3.10 or 3.14 at all, and the only way to run lint/typecheck
+against anything other than 3.12.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Run tests locally across the nox matrix (3.10, 3.11, 3.12, 3.13, 3.14)</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>nox<span class="w"> </span>-s<span class="w"> </span><span class="nb">test</span>
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Run linting on all versions</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Run linting locally across the nox matrix</span>
 </span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>nox<span class="w"> </span>-s<span class="w"> </span>lint
 </span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Run type checking on all versions</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Run type checking locally across the nox matrix</span>
 </span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>nox<span class="w"> </span>-s<span class="w"> </span>typecheck
 </span></code></pre></div>
 <h3 id="cicd-matrix">CI/CD Matrix<a class="headerlink" href="#cicd-matrix" title="Permanent link">&para;</a></h3>
-<p>Our GitHub Actions workflow tests on all supported versions:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">strategy</span><span class="p">:</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nt">matrix</span><span class="p">:</span>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;3.10&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;3.11&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;3.13&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;3.14&quot;</span><span class="p p-Indicator">]</span>
+<p>CI coverage is split across two separate workflows, neither of which matches
+the local <code>nox</code> matrix exactly:</p>
+<p><strong><code>ci.yml</code></strong> (the main quality gate: tests, lint, type checking) runs on
+Python 3.12 only:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="nt">env</span><span class="p">:</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">  </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.12&quot;</span>
 </span></code></pre></div>
+<p><strong><code>python-compatibility.yml</code></strong> (a pytest-only compatibility check, no lint or
+type checking) runs a matrix of 3.11-3.13 on Ubuntu, plus 3.12 on macOS and
+Windows:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nt">strategy</span><span class="p">:</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="nt">matrix</span><span class="p">:</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;3.11&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;3.13&#39;</span><span class="p p-Indicator">]</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">ubuntu-latest</span><span class="p p-Indicator">]</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">macos-latest</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">os</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">windows-latest</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">        </span><span class="nt">python-version</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;3.12&#39;</span>
+</span></code></pre></div>
+<p>Neither workflow covers Python 3.10 or 3.14; those two versions are exercised
+only by the local <code>nox</code> matrix described above.</p>
 <h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
 <h3 id="migrating-to-python-310">Migrating to Python 3.10+<a class="headerlink" href="#migrating-to-python-310" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p><strong>Note:</strong> This project has already moved past this stage; its current
+<code>requires-python</code> floor is <code>&gt;=3.11</code> with no upper bound. This walkthrough is
+retained as generic reference guidance for other projects (or a future
+re-lowering of the floor), not a description of this project's current
+state.</p>
+</blockquote>
 <p>If migrating from Python 3.9 or earlier:</p>
 <ol>
 <li><strong>Update Python version</strong>:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Install Python 3.10+</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.10
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Update requires-python in pyproject.toml</span>
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>requires-python<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.10,&lt;3.15&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Install Python 3.10+</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.10
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># Update requires-python in pyproject.toml</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>requires-python<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.10&quot;</span>
 </span></code></pre></div>
 <ol>
 <li><strong>Add backport packages</strong> for 3.10 compatibility:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;tomli&gt;=2.0.0; python_version &lt; &#39;3.11&#39;&quot;</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;exceptiongroup&gt;=1.1.0; python_version &lt; &#39;3.11&#39;&quot;</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;typing-extensions&gt;=4.12.0&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;tomli&gt;=2.0.0; python_version &lt; &#39;3.11&#39;&quot;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;exceptiongroup&gt;=1.1.0; python_version &lt; &#39;3.11&#39;&quot;</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;typing-extensions&gt;=4.12.0&quot;</span>
 </span></code></pre></div>
 <ol>
 <li><strong>Use conditional imports</strong> for 3.10/3.11+ compatibility:</li>
 </ol>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># TOML parsing - works on 3.10 and 3.11+</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="k">try</span><span class="p">:</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomli</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tomllib</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># TOML parsing - works on 3.10 and 3.11+</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomli</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tomllib</span>
 </span></code></pre></div>
 <ol>
 <li><strong>Test across versions</strong>:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>nox<span class="w"> </span>-s<span class="w"> </span><span class="nb">test</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>nox<span class="w"> </span>-s<span class="w"> </span><span class="nb">test</span>
 </span></code></pre></div>
 <h3 id="upgrading-from-python-310-to-311">Upgrading from Python 3.10 to 3.11+<a class="headerlink" href="#upgrading-from-python-310-to-311" title="Permanent link">&para;</a></h3>
-<p>When dropping 3.10 support in the future:</p>
+<blockquote>
+<p><strong>Note:</strong> This project has already dropped 3.10 support; <code>requires-python</code>
+in <code>pyproject.toml</code> is <code>&gt;=3.11</code> today with no upper bound. This section is
+kept as reference guidance for the steps that were taken (and for other
+projects following the same path).</p>
+</blockquote>
+<p>When dropping 3.10 support:</p>
 <ol>
 <li><strong>Remove backport packages</strong>:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>uv<span class="w"> </span>remove<span class="w"> </span>tomli<span class="w"> </span>exceptiongroup
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>uv<span class="w"> </span>remove<span class="w"> </span>tomli<span class="w"> </span>exceptiongroup
 </span></code></pre></div>
 <ol>
 <li><strong>Update imports</strong> to use native modules:</li>
 </ol>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="c1"># Before (3.10 compat)</span>
-</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="k">try</span><span class="p">:</span>
-</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
-</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
-</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomli</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tomllib</span>
-</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
-</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="c1"># After (3.11+ only)</span>
-</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Before (3.10 compat)</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>    <span class="kn">import</span><span class="w"> </span><span class="nn">tomli</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tomllib</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># After (3.11+ only)</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="kn">import</span><span class="w"> </span><span class="nn">tomllib</span>
 </span></code></pre></div>
 <ol>
 <li><strong>Update requires-python</strong>:</li>
 </ol>
-<div class="language-toml highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.11,&lt;3.15&quot;</span>
+<div class="language-toml highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="n">requires-python</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;&gt;=3.11&quot;</span>
 </span></code></pre></div>
 <h3 id="preparing-for-python-314">Preparing for Python 3.14<a class="headerlink" href="#preparing-for-python-314" title="Permanent link">&para;</a></h3>
 <p>Python 3.14 (expected October 2025):</p>
@@ -3978,29 +4205,29 @@
 <h3 id="import-errors-on-python-313">Import Errors on Python 3.13<a class="headerlink" href="#import-errors-on-python-313" title="Permanent link">&para;</a></h3>
 <p><strong>Problem:</strong> <code>ModuleNotFoundError: No module named 'cgi'</code></p>
 <p><strong>Solution:</strong> Add the replacement package:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;legacy-cgi&gt;=2.6.1; python_version &gt;= &#39;3.13&#39;&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;legacy-cgi&gt;=2.6.1; python_version &gt;= &#39;3.13&#39;&quot;</span>
 </span></code></pre></div>
 <h3 id="type-hint-syntax-errors">Type Hint Syntax Errors<a class="headerlink" href="#type-hint-syntax-errors" title="Permanent link">&para;</a></h3>
 <p><strong>Problem:</strong> <code>TypeError: unsupported operand type(s) for |: 'type' and 'type'</code></p>
 <p><strong>Solution:</strong> Add future import:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 </span></code></pre></div>
 <p>Or run auto-fix:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>python<span class="w"> </span>scripts/check_type_hints.py<span class="w"> </span>--fix
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>python<span class="w"> </span>scripts/check_type_hints.py<span class="w"> </span>--fix
 </span></code></pre></div>
 <h3 id="version-detection">Version Detection<a class="headerlink" href="#version-detection" title="Permanent link">&para;</a></h3>
 <p>Check which Python version is active:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># Show active Python version</span>
-</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>python<span class="w"> </span>--version
-</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
-</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># Show all available Python versions (with UV)</span>
-</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>uv<span class="w"> </span>python<span class="w"> </span>list
-</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
-</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Install specific version</span>
-</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.13
-</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>
-</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="c1"># Use specific version</span>
-</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>uv<span class="w"> </span>run<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>pytest
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># Show active Python version</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>python<span class="w"> </span>--version
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="c1"># Show all available Python versions (with UV)</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>uv<span class="w"> </span>python<span class="w"> </span>list
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="c1"># Install specific version</span>
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>uv<span class="w"> </span>python<span class="w"> </span>install<span class="w"> </span><span class="m">3</span>.13
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a>
+</span><span id="__span-30-10"><a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a><span class="c1"># Use specific version</span>
+</span><span id="__span-30-11"><a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a>uv<span class="w"> </span>run<span class="w"> </span>--python<span class="w"> </span><span class="m">3</span>.13<span class="w"> </span>pytest
 </span></code></pre></div>
 <h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
 <ul>
@@ -4033,7 +4260,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

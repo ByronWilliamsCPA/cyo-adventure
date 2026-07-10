@@ -1744,6 +1744,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1936,7 +1946,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1997,6 +2007,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -3400,7 +3585,7 @@
 <p><strong>Change Control</strong> (3/3):</p>
 <ul>
 <li>✅ Public version-controlled repository</li>
-<li>✅ Unique version numbering (semantic versioning)</li>
+<li>⚠️ Unique version numbering (SemVer scheme is used, but the automated version-bump has not run successfully since project creation; see "Release Process" below)</li>
 <li>✅ Release notes (CHANGELOG.md)</li>
 </ul>
 <p><strong>Reporting</strong> (2/2):</p>
@@ -3432,20 +3617,41 @@
 <hr />
 <h2 id="security-workflows">Security Workflows<a class="headerlink" href="#security-workflows" title="Permanent link">&para;</a></h2>
 <h3 id="release-process">Release Process<a class="headerlink" href="#release-process" title="Permanent link">&para;</a></h3>
+<blockquote>
+<p>⚠️ <strong>Currently broken</strong>: <code>release.yml</code> ("Semantic Release") triggers on every push to <code>main</code> and
+uses <a href="https://python-semantic-release.readthedocs.io/">python-semantic-release</a> (PSR) to compute
+the next SemVer bump from Conventional Commits and push a version-bump commit and tag back to
+<code>main</code>. That push is rejected with <code>GH013: Repository rule violations</code>, because the branch
+protection ruleset on <code>main</code> requires changes to land through the merge queue (required CI Gate
+check, signed commits) rather than a direct push. As a result, the version has never advanced
+past the initial <code>0.1.0</code>, despite substantial functionality being merged since project creation
+(2026-06-20). Tracked in <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/183">issue #183</a>.
+A separate, earlier bug (an invalid <code>commit_parser</code> config value that failed PSR at the
+config-load step on every run) was already fixed in PR #152; the GH013 branch-ruleset rejection
+is the current, distinct blocker. Because releases never complete, the downstream
+<code>slsa-provenance.yml</code> workflow (which triggers on a successful <code>Semantic Release</code> run) and the
+PyPI publish step have also not executed for any post-<code>0.1.0</code> version.</p>
+</blockquote>
+<p><strong>Intended flow</strong> (once #183 is resolved):</p>
 <ol>
-<li><strong>Tag Release</strong>:</li>
-</ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>v1.0.0<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Release 1.0.0&quot;</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>v1.0.0
-</span></code></pre></div>
-<ol>
-<li><strong>Automated Actions</strong>:</li>
-<li>Build distribution packages</li>
-<li>Sign with Cosign</li>
-<li>Generate SLSA provenance</li>
-<li>Create GitHub release</li>
+<li><strong>Automated release</strong> (normal path):</li>
+<li>Merge Conventional-Commit PRs to <code>main</code> via the merge queue.</li>
+<li><code>release.yml</code> runs PSR, which computes the next version from commit history and pushes a
+     version-bump commit and tag.</li>
+<li><code>slsa-provenance.yml</code> runs, generating build hashes and SLSA Level 3 attestations.</li>
 <li>
-<p>Upload signed artifacts</p>
+<p><code>release.yml</code> publishes to PyPI (OIDC trusted publishing) when a release occurs.</p>
+</li>
+<li>
+<p><strong>Manual dispatch</strong> (fallback, does not depend on PSR's direct push to <code>main</code>):
+   <code>release.yml</code> also triggers on <code>workflow_dispatch</code> with an optional <code>force_release</code>
+   input (patch/minor/major/prerelease); run it manually from the Actions tab or
+   <code>gh workflow run release.yml -f force_release=patch</code> to produce a signed, attested
+   release without a push to <code>main</code>. Pushing a bare git tag (<code>git push origin v1.0.0</code>)
+   does <strong>not</strong> trigger this workflow: <code>release.yml</code>'s only triggers are <code>push</code> to
+   <code>main</code>/<code>master</code> and <code>workflow_dispatch</code>, with no tag-push trigger configured. A bare
+   tag push creates the git ref only; it produces no signed artifacts, no SLSA
+   provenance, and no PyPI publish.</p>
 </li>
 <li>
 <p><strong>Verification</strong>:</p>
@@ -3532,7 +3738,7 @@
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:00:48 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2404,6 +2589,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#skeleton-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Skeleton selection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#data-dictionary" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2733,19 +2929,58 @@ by narrative role.</p>
 </table>
 <!-- END GENERATED: skeleton-catalog -->
 
-<p>Three of the six catalogued skeletons (The Clocktower Cipher, The Sunken Signal, The
-Lost Mitten) declare <code>production_eligible: false</code> and no <code>length</code> or <code>narrative_style</code>:
-they are ADR-011 section 1a MVP/Test-tier development seeds (a band-independent 8-45
-node envelope, budgeted with <code>mvp_node_budget</code> in <code>validator/band_profile.py</code>), not
-examples of a production <code>(age_band, length, narrative_style)</code> cell. The other three
-(The Midnight Museum, The Lantern Festival, The Cave of Echoes) are the first
-production-eligible seeds: each declares <code>length: short</code>, <code>narrative_style: prose</code>,
-and <code>production_eligible: true</code> for one ADR-011 launch cell. The "Length (min)" column
-above is <code>estimated_minutes</code> (a read-time estimate), not the ADR-011 <code>length</code> scale
-tier described below; per-cell production node budgets live in
+<p>Of the 21 catalogued skeletons, 18 are production-eligible and give full-matrix
+coverage: one skeleton per <code>(age_band, length, narrative_style)</code> cell of the ADR-011
+production matrix (18 cells total), each declaring its <code>length</code>, <code>narrative_style</code>
+(where the band is style-aware), and <code>production_eligible: true</code>. The remaining three
+(The Clocktower Cipher, The Sunken Signal, The Lost Mitten) declare
+<code>production_eligible: false</code> and no <code>length</code> or <code>narrative_style</code>: they are ADR-011
+section 1a MVP/Test-tier development seeds (a band-independent 8-45 node envelope,
+budgeted with <code>mvp_node_budget</code> in <code>validator/band_profile.py</code>), not examples of a
+production cell, and are excluded from the cell-aware selection described below. The
+"Length (min)" column above is <code>estimated_minutes</code> (a read-time estimate), not the
+ADR-011 <code>length</code> scale tier described below; per-cell production node budgets live in
 <code>validator/band_profile.py</code> (<code>_PRODUCTION_CELLS</code>), not a single fixed per-band range.
 The "Tier" column is the generation <code>tier</code> field (<code>1</code> forbids state variables, <code>2</code>
 allows them), a separate concept from the MVP/Test tier.</p>
+<h2 id="skeleton-selection">Skeleton selection<a class="headerlink" href="#skeleton-selection" title="Permanent link">&para;</a></h2>
+<p>When an admin builds the authoring plan for an approved story request
+(<code>story_requests/authoring_plan.py</code>), the skeleton for a <code>skeleton_fill</code> plan is chosen
+by <strong>cell-aware matching</strong>, not by band alone (<code>generation/skeleton_match.py</code>). This
+replaced an earlier band-only, style/length-blind <code>select_skeleton_for_band</code> helper as
+part of the skeleton-matching rework (workstream WS-C, PR #175).</p>
+<ol>
+<li><strong>Cell match.</strong> <code>candidates_for_cell(band, length, style)</code> scans every
+   production-eligible skeleton file under <code>skeletons/&lt;band&gt;/</code> and keeps only those
+   whose metadata matches the request's <code>(age_band, length, narrative_style)</code> cell
+   (<code>skeleton_matches_cell</code>). A skeleton that declares no <code>length</code> is a wildcard that
+   matches any request length. <code>narrative_style</code> is checked only for the two
+   style-aware bands, <code>13-16</code> and <code>16+</code>; every other band is implicitly <code>prose</code>. If no
+   skeleton matches the cell, the authoring plan is rejected (422) rather than falling
+   back to a different cell.</li>
+<li><strong>Recency-weighted pick.</strong> Among the in-cell candidates, <code>select_skeleton_for_cell</code>
+   draws a weighted-random slug so a family does not keep seeing the same skeleton
+   repeated. The weight is inverse-frequency, <code>1 / (1 + recent_count)</code>, where
+   <code>recent_count</code> (from <code>recent_skeleton_usage</code>) is how many of the family's most
+   recent 20 <code>storybook_version</code> rows used that slug, counted across every status and
+   every storybook (skeleton diversity reflects authoring activity, not delivery). An
+   unused skeleton gets weight <code>1.0</code>; a recently-used one is discounted but never
+   reaches zero, so no candidate is ever fully excluded. A family-less (admin or
+   catalog-origin) request has no recency history and gets a uniform pick.</li>
+<li><strong>Admin override.</strong> An admin may set <code>skeleton_slug</code> directly on the authoring plan
+   (decision C-6); the override is unconstrained and may name a skeleton outside the
+   request's own cell or band. <code>find_skeleton_metadata</code> resolves it by scanning every
+   band directory, rejects any path-traversal attempt (<code>resolve_skeleton_path</code>), and
+   the caller records the skeleton's <em>real</em> band rather than the request's band. An
+   out-of-cell or non-production-eligible override is accepted but attaches a
+   non-blocking warning to the authoring-plan result instead of failing.</li>
+</ol>
+<p>Skeleton selection is a distinct concern from <strong>provider selection</strong>: which LLM
+backend (Anthropic, OpenRouter, Modal, or Ollama) fills the chosen skeleton's
+<code>&lt;&lt;FILL&gt;&gt;</code> directives is governed separately by the admin-editable provider/model
+allowlist (<code>generation/allowlist.py</code>, workstream WS-C PR #170) and
+<code>generation/provider.py::build_provider</code>. Which skeleton is picked and which provider
+fills it are independent decisions within the same authoring plan.</p>
 <h2 id="data-dictionary">Data dictionary<a class="headerlink" href="#data-dictionary" title="Permanent link">&para;</a></h2>
 <p>Sourced from <code>src/cyo_adventure/storybook/models.py</code> (the enforced schema), with one
 exception: node <code>role</code> is a FILL-directive convention read by
@@ -2871,7 +3106,7 @@ see template feedback for the doc-correction follow-up.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 00:12:48 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

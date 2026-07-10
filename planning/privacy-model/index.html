@@ -1738,6 +1738,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1930,7 +1940,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -1991,6 +2001,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2472,11 +2657,28 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#blocker-2-homelab-reachability-through-pangolin-p0-10" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolved-blockers" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Blocker 2: Homelab Reachability Through Pangolin (P0-10)
+        Resolved Blockers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resolved Blockers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)
       
     </span>
   </a>
@@ -2532,7 +2734,7 @@
 
 <h1 id="privacy-and-provider-data-handling-model">Privacy and Provider Data-Handling Model<a class="headerlink" href="#privacy-and-provider-data-handling-model" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.2 | <strong>Updated</strong>: 2026-07-03</p>
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.2 | <strong>Updated</strong>: 2026-07-10</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>CYO Adventure serves children across deployment tiers. Because stories are
@@ -2658,8 +2860,10 @@ skips moderation.</p>
 </ul>
 <hr />
 <h2 id="open-blockers">OPEN BLOCKERS<a class="headerlink" href="#open-blockers" title="Permanent link">&para;</a></h2>
-<p>The following items gate both the Phase 0 exit and the first Phase 2 LLM call. No
-generation call may be made with a real concept brief until both are resolved.</p>
+<p>The following item gates both the Phase 0 exit and the first Phase 2 LLM call. No
+generation call may be made with a real concept brief until it is resolved. A second
+former blocker (homelab reachability through Pangolin) has since been resolved; see
+<a href="#resolved-blockers">Resolved Blockers</a> below.</p>
 <h3 id="blocker-1-llm-provider-data-handling-terms-openrouter">Blocker 1: LLM Provider Data-Handling Terms (OpenRouter)<a class="headerlink" href="#blocker-1-llm-provider-data-handling-terms-openrouter" title="Permanent link">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># #CRITICAL: external resource: OpenRouter data-handling terms (standard retention</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#            vs zero-data-retention) for the generation leg are unconfirmed.</span>
@@ -2681,23 +2885,24 @@ Phase 0 exit gate (plan item P0-09).</p>
 <p><strong>Status</strong>: OPEN. Phase 2 cannot begin until this entry is completed and this file is
 committed with the resolution.</p>
 <hr />
-<h3 id="blocker-2-homelab-reachability-through-pangolin-p0-10">Blocker 2: Homelab Reachability Through Pangolin (P0-10)<a class="headerlink" href="#blocker-2-homelab-reachability-through-pangolin-p0-10" title="Permanent link">&para;</a></h3>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># #CRITICAL: external resource: homelab hosting reachability through Pangolin has not</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">#            been verified for this project&#39;s deployment.</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># #VERIFY: confirm that a bare environment is reachable through Pangolin before the</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">#          Phase 0 exit gate; record the verification outcome in TECHNICAL_BASELINE.md</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">#          and cross-reference here.</span>
-</span></code></pre></div>
-<p>The homelab must be reachable through the Pangolin zero-trust ingress before Phase 1
-begins, so that integration tests and the CI environment can reach the deployed stack.
-This is plan item P0-10 and a Phase 0 exit condition.</p>
-<p><strong>Required action</strong>: stand up the bare homelab / family-tier environment (Postgres and
-Redis behind Pangolin). Verify reachability. Record the outcome in
-<code>TECHNICAL_BASELINE.md</code> and update this entry with a cross-reference date. Note this
-blocker is scoped to the homelab / family tier only. On the public tier, Supabase is the
-identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the datastore,
-so Pangolin ingress and a self-hosted IdP do not apply there.</p>
-<p><strong>Status</strong>: OPEN. Phase 1 cannot begin until this entry is completed.</p>
+<h2 id="resolved-blockers">Resolved Blockers<a class="headerlink" href="#resolved-blockers" title="Permanent link">&para;</a></h2>
+<h3 id="blocker-2-resolved-homelab-reachability-through-pangolin-p0-10">Blocker 2 (resolved): Homelab Reachability Through Pangolin (P0-10)<a class="headerlink" href="#blocker-2-resolved-homelab-reachability-through-pangolin-p0-10" title="Permanent link">&para;</a></h3>
+<p>The homelab needed to be reachable through the Pangolin zero-trust ingress before
+integration tests and the CI environment could reach the deployed stack. This was plan
+item P0-10 and a Phase 0 exit condition.</p>
+<p><strong>Resolution</strong>: the homelab stack is reachable through Pangolin and has been live in
+production since 2026-07-05 at <code>https://cyo.williamshome.family</code> (Cloudflare, Pangolin
+VPS, WireGuard tunnel, docker-host Traefik). R1 (the internal web release) is
+feature-complete as of 2026-07-03 and has been exercised end to end against this live
+URL, including guardian email/password sign-in through Supabase (ADR-009), <code>/health/live</code>
+and <code>/health/ready</code> returning 200 (verified 2026-07-07), and the full guardian-authoring
+to kid-reading journey. See <code>docs/planning/roadmap.md</code> (Phase 5 success criteria: "✅
+Deployed behind Pangolin with Supabase guardian login (ADR-009)") and
+<code>docs/planning/r1-live-e2e-checklist.md</code> for the live verification record. Note this
+blocker was scoped to the homelab / family tier only; on the public tier, Supabase is the
+identity provider (Supabase OIDC, ADR-009) and Supabase-managed Postgres is the
+datastore, so Pangolin ingress and a self-hosted IdP do not apply there.</p>
+<p><strong>Status</strong>: RESOLVED (2026-07-05, verified live 2026-07-07).</p>
 <hr />
 <h2 id="if-shared-beyond-family">If Shared Beyond Family<a class="headerlink" href="#if-shared-beyond-family" title="Permanent link">&para;</a></h2>
 <p>The controls above are calibrated for private family use and the homelab / family tier.
@@ -2748,7 +2953,7 @@ counsel:</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     

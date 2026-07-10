@@ -1747,6 +1747,16 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
@@ -1939,7 +1949,7 @@
     
   
   
-    <span class="md-status md-status--proposed"></span>
+    <span class="md-status md-status--accepted"></span>
   
 
   
@@ -2000,6 +2010,181 @@
     
   
     ADR-006
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-007
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-008
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-009
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--accepted"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-010
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--proposed"></span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ADR-011
   
 
     
@@ -2498,7 +2683,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 </tr>
 <tr>
 <td><a href="data-model/">Data Model</a></td>
-<td>9 ORM tables, ER diagram, relationships</td>
+<td>19 ORM tables, ER diagram, relationships</td>
 </tr>
 <tr>
 <td><a href="story-skeletons/">Story Skeletons</a></td>
@@ -2529,12 +2714,12 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 <tr>
 <td>Kid-Surface Journey</td>
 <td><a href="diagrams/journey-kid.puml">journey-kid.puml</a> / <a href="diagrams/journey-kid.svg">.svg</a></td>
-<td>Zoomed child-facing flow: picker, library, reader, offline/conflict, error exits</td>
+<td>Zoomed child-facing flow: picker, library, story request, reader, offline/conflict, error exits</td>
 </tr>
 <tr>
 <td>Guardian Surface Journey</td>
 <td><a href="diagrams/journey-guardian.puml">journey-guardian.puml</a> / <a href="diagrams/journey-guardian.svg">.svg</a></td>
-<td>Zoomed parent flow: login, intake, review/approve (ADR-005), assign</td>
+<td>Zoomed parent flow: login, intake, child story-request approval, review/approve (ADR-005), assign</td>
 </tr>
 <tr>
 <td>Journey Test Coverage</td>
@@ -2572,6 +2757,21 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 <td>Routers, auth seam, ORM</td>
 </tr>
 <tr>
+<td>Moderation Pipeline</td>
+<td><a href="diagrams/component-moderation.puml">component-moderation.puml</a> / <a href="diagrams/component-moderation.svg">.svg</a></td>
+<td>Stage 0-4 review, auto-repair, admin thresholds</td>
+</tr>
+<tr>
+<td>Publishing</td>
+<td><a href="diagrams/component-publishing.puml">component-publishing.puml</a> / <a href="diagrams/component-publishing.svg">.svg</a></td>
+<td>Approval state machine, admin-only approve (ADR-005)</td>
+</tr>
+<tr>
+<td>Pipeline Event Log</td>
+<td><a href="diagrams/component-events.puml">component-events.puml</a> / <a href="diagrams/component-events.svg">.svg</a></td>
+<td>Append-only PipelineEvent writers across every workflow</td>
+</tr>
+<tr>
 <td>Generation Sequence</td>
 <td><a href="diagrams/seq-generation.puml">seq-generation.puml</a> / <a href="diagrams/seq-generation.svg">.svg</a></td>
 <td>Stage A/B/C with provider fallback</td>
@@ -2589,7 +2789,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 <tr>
 <td>ER Diagram</td>
 <td><a href="diagrams/er-diagram.puml">er-diagram.puml</a> / <a href="diagrams/er-diagram.svg">.svg</a></td>
-<td>9 ORM tables and FK relationships</td>
+<td>19 ORM tables and FK relationships</td>
 </tr>
 <tr>
 <td>Deployment</td>
@@ -2613,25 +2813,39 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  v
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>FastAPI backend (Python 3.12)
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  - api/: health, library, reading, generation (guardian-only)
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  - api/deps.py: Principal (role/family/profile) auth seam
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>  - storybook/: Pydantic models, condition DSL, evaluator
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  - player/: StoryEngine (Runtime Semantics v1, pure)
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  - validator/: gate (L1+L2+RL+SAFE), walk, report
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  - generation/: orchestrator (Stage A-&gt;B-&gt;C), prompts, PII guard,
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>                 providers (3-leg cascade: OpenRouter haiku primary,
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>                 OpenRouter sonnet fallback, then Ollama local),
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>                 FallbackProvider cascade, queue, worker
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>  |
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  +-- PostgreSQL 16 (async SQLAlchemy 2, 9 tables, Alembic)
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>  +-- Redis 7 (RQ job queue)
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>  |
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>  +-- [worker container] RQ worker
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>        -&gt; OpenRouter haiku (leg 1, primary)
-</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>        -&gt; OpenRouter sonnet (leg 2, fallback)
-</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>        -&gt; Ollama (leg 3, local fallback)
-</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>        -&gt; [Phase 5] MinIO (blob_ref object storage)
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>  - api/: 15 routers -- health, library, reading, generation, profiles,
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                 families, ratings, assignments, approval (global admin),
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>                 covers, moderation_thresholds, moderation_dashboard,
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>                 provider_allowlist, me, story_requests
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  - api/deps.py: Principal (role/family/profile) auth seam
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  - storybook/: Pydantic models, condition DSL, evaluator
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>  - player/: StoryEngine (Runtime Semantics v1, pure)
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>  - validator/: gate (L1+L2+RL+SAFE), walk, report
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>  - generation/: orchestrator (Stage A-&gt;B-&gt;C fresh_generation, or
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>                 skeleton_fill via fill_skeleton), prompts, PII guard
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>                 (guarded.PiiGuardedProvider wrapper), skeleton
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>                 catalog + cell-aware matching (WS-C PR2), series
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>                 continuation chaining (WS-G),
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>                 providers (default 3-leg cascade: OpenRouter haiku
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>                 primary, OpenRouter sonnet fallback, then Ollama local;
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>                 Anthropic and Modal are additional per-job-selectable
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>                 legs behind the admin ProviderModelAllowlist, WS-C PR1),
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a>                 FallbackProvider cascade, queue, worker
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a>  - moderation/: classifiers, fidelity review, thresholds (per-band/
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>                 category overrides + admin noise floor), repair
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>  - events/: append-only pipeline_event writer (WS-D)
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a>  - publishing/: approve -&gt; publish state machine
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a>  - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a>  |
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>  +-- PostgreSQL 16 (async SQLAlchemy 2, 19 tables, Alembic)
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a>  +-- Redis 7 (RQ job queue)
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>  |
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>  +-- [worker container] RQ worker
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>        -&gt; OpenRouter haiku (leg 1, primary)
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>        -&gt; OpenRouter sonnet (leg 2, fallback)
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>        -&gt; Ollama (leg 3, local fallback)
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a>        -&gt; Anthropic / Modal (admin-selectable, per job)
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a>        -&gt; [Phase 5] MinIO (blob_ref object storage)
 </span></code></pre></div>
 <h2 id="key-design-decisions">Key Design Decisions<a class="headerlink" href="#key-design-decisions" title="Permanent link">&para;</a></h2>
 <table>
@@ -2732,7 +2946,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:31:56 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 22:14:45 UTC">July 10, 2026</span>
   </span>
 
     
