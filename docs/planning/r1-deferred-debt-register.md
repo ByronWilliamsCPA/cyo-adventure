@@ -11,11 +11,12 @@ status: active
 owner: core-maintainer
 authors:
   - name: "Byron Williams"
-purpose: "Task 4.2 of the R1 gap-closure plan: one place to triage everything consciously deferred while
-  shipping R1, so R2 planning starts from a complete debt inventory instead of scattered review ledgers."
+purpose: "One place to triage everything consciously deferred while shipping R1, so R2 planning starts
+  from a complete debt inventory instead of scattered review ledgers. Originated as Task 4.2 of the R1
+  gap-closure plan (merged, doc archived)."
 component: Strategy
 source: "SDD ledgers (.superpowers/sdd/progress.md) for story-requests-kid-ui and playwright-e2e; final
-  review verdicts for PRs #105, #106, #107, #108, #109, #111, #112; docs/planning/r1-handoff-2026-07-04.md"
+  review verdicts for PRs #105, #106, #107, #108, #109, #111, #112"
 ---
 
 ## Reading this register
@@ -27,7 +28,7 @@ left unfixed through R2. "R2 gate" marks items that block the limited-iOS rung p
 
 | # | Debt | Source | Why it gates R2 |
 | --- | --- | --- | --- |
-| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per Task C4 of the remediation plan, since a real child-scoped session is architecture work, not a mechanical fix. | R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in Task C4, docs/planning/r1-remediation-plan-2026-07-05.md | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
+| G1 | Child-session scoping: the kid surface runs under the guardian's token; there is no child-scoped session or role separation on the wire. Cross-reference: safety-eval Finding 6 (kid surface sends the guardian token) is the same gap, deliberately left unfixed in R1 per the remediation plan's Task C4 decision record: the kid surface has no principal of its own, so removing the token breaks every kid read; the real fix is child-scoped sessions, tracked here as G1. | R1 architecture (accepted for family-internal web); Finding 6 deferral recorded in the R1 remediation plan's Task C4 (merged, doc archived) | Outside a trusted household, any kid can act with guardian privileges. Must land before non-family users |
 | G2 | **[Closed]** Issue #57: residual admin-submit gap (accepted for R1 local testing only). Closed by the Task E4 hardening pass: `submit()` (`publishing/service.py`) now refuses the draft/needs_revision -> in_review transition when the story's latest version has `moderation_report is None`, mirroring the gate `approve()` already enforced. | PR #55 closeout | Explicitly scoped as R1-only acceptance (resolved) |
 | G3 | **[Closed]** Issue #64 (safety-eval Finding 5: a documented control-character strip in concept.py does not exist; accepted for R1 local testing only, same ruling as #57). Closed by the Task E4 hardening pass: `ConceptBrief` now strips control characters from every string field at intake (`generation/concept.py`). | C4a review cycle | Same acceptance boundary (resolved) |
 

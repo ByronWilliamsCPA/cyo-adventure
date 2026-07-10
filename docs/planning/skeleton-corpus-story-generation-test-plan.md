@@ -10,7 +10,7 @@ tags:
   - skeleton-library
   - content-pipeline
 component: Content-Pipeline
-source: "docs/planning/skeleton-authoring-handoff.md; docs/planning/skeleton-library-expansion-plan.md; src/cyo_adventure/generation/skeleton_match.py; src/cyo_adventure/story_requests/authoring_plan.py; src/cyo_adventure/generation/import_cli.py; src/cyo_adventure/generation/import_story.py; src/cyo_adventure/generation/orchestrator.py; src/cyo_adventure/generation/persistence.py; src/cyo_adventure/moderation/pipeline.py; .claude/skills/cyo-author"
+source: "src/cyo_adventure/generation/skeleton_match.py; src/cyo_adventure/story_requests/authoring_plan.py; src/cyo_adventure/generation/import_cli.py; src/cyo_adventure/generation/import_story.py; src/cyo_adventure/generation/orchestrator.py; src/cyo_adventure/generation/persistence.py; src/cyo_adventure/moderation/pipeline.py; .claude/skills/cyo-author; originated from the (now-archived) skeleton-authoring-handoff.md and skeleton-library-expansion-plan.md"
 ---
 
 ## Why this doc exists
@@ -21,9 +21,9 @@ actually be **authored** end to end: that its `<<FILL ...>>` directives can be t
 into real prose, that the filled story still passes the gate, that it clears (or
 correctly trips) moderation, and that it lands in the database as a readable
 `Storybook` row. The gate is a necessary but not sufficient check. `main` now carries
-18 `production_eligible: true` skeletons across all 6 bands (see
-[skeleton-library-expansion-plan.md](skeleton-library-expansion-plan.md), now
-superseded/completed) and 3 non-production MVP seeds; none of them has been proven
+18 `production_eligible: true` skeletons across all 6 bands (built out by the
+skeleton-library expansion plan, now complete and its doc archived) and 3
+non-production MVP seeds; none of them has been proven
 through a real prose-fill + persist + moderate cycle as a corpus. This plan is that
 proof pass.
 

@@ -15,7 +15,7 @@ tags:
 
 # ADR-009: Supabase as the managed platform for auth, database, and storage
 
-> **Status**: Accepted (2026-07-03; auth decision ratified and implemented. Decision 2 (Supabase Postgres) was implemented for the R1 family instance on 2026-07-05 via session-mode pooling, pulled forward from Phase 9 for durability (r1-gap-closure-plan Task 1.7, homelab-infra #576); explicit pool sizing (P9-03) and the P6/P7/P9 items (native Apple sign-in, Supabase Storage, pgmq queue) remain outstanding)
+> **Status**: Accepted (2026-07-03; auth decision ratified and implemented. Decision 2 (Supabase Postgres) was implemented for the R1 family instance on 2026-07-05 via session-mode pooling, pulled forward from Phase 9 for durability (R1 gap-closure plan Task 1.7, doc archived; homelab-infra #576); explicit pool sizing (P9-03) and the P6/P7/P9 items (native Apple sign-in, Supabase Storage, pgmq queue) remain outstanding)
 > **Date**: 2026-07-02
 > **Amends**: [ADR-008](./adr-008-public-app-store-launch.md) (auth broker and public-tier
 > hosting; the distribution, monetization, and compliance decisions in ADR-008 stand)
