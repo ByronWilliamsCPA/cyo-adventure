@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
+import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
 import { BookCard } from './BookCard'
 import { makeLibraryApi, type LibraryItemView } from './libraryApi'
 import { pickHero } from './pickHero'
 import { RequestStory, type ContinueAnchor } from './RequestStory'
 import './library.css'
 
+// `unauthenticated` and `forbidden` are stable, expected gates (no grown-up
+// signed in / this profile isn't the signed-in child's), not a flaky fetch;
+// `error` stays the transient-only label so its existing retry copy keeps
+// meaning "this should have worked, try again".
 type LibraryState =
   | { status: 'loading' }
+  | { status: 'unauthenticated' }
+  | { status: 'forbidden' }
   | { status: 'error' }
   | { status: 'ready'; items: LibraryItemView[] }
 
@@ -79,8 +87,13 @@ export function LibraryPage() {
       try {
         const items = await libraryApi.list(id)
         if (!cancelled && isMountedRef.current) setState({ status: 'ready', items })
-      } catch {
-        if (!cancelled && isMountedRef.current) setState({ status: 'error' })
+      } catch (err) {
+        if (!cancelled && isMountedRef.current) {
+          const { kind } = classifyApiError(err)
+          if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
+          else if (kind === 'forbidden') setState({ status: 'forbidden' })
+          else setState({ status: 'error' })
+        }
       }
     }
     void fetchItems()
@@ -121,6 +134,43 @@ export function LibraryPage() {
       <p className="library__status" role="status" aria-live="polite">
         Loading your books…
       </p>
+    )
+  }
+  if (state.status === 'unauthenticated') {
+    return (
+      <div className="library">
+        <EmptyState
+          title="Time to find your grown-up"
+          description="Your grown-up needs to sign in again before your books can load."
+          icon={<Mascot size={96} />}
+          actions={
+            <>
+              <Link className="picker-tile__add-link" to={KID_PICKER_PATH}>
+                Back to Who&apos;s reading?
+              </Link>
+              <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+                I am a grown-up
+              </Link>
+            </>
+          }
+        />
+      </div>
+    )
+  }
+  if (state.status === 'forbidden') {
+    return (
+      <div className="library">
+        <EmptyState
+          title="This bookshelf isn't yours"
+          description="Let's go back and pick your own name."
+          icon={<Mascot size={96} />}
+          actions={
+            <Link className="picker-tile__add-link" to={KID_PICKER_PATH}>
+              Back to Who&apos;s reading?
+            </Link>
+          }
+        />
+      </div>
     )
   }
   if (state.status === 'error') {
