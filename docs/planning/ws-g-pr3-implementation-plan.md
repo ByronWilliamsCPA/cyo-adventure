@@ -312,6 +312,13 @@ depends-on: Task1 [output] (the prompt test constructs an `AnchorContext` with `
 
 **Files:**
 - Modify: `src/cyo_adventure/generation/templates/structure.md`
+- Modify: `src/cyo_adventure/generation/templates/drafting_guide.md` (added during execution: the
+  same stale `ending.type` vocabulary lives here, and `build_structure_prompt` injects this file
+  into `stage.system`, so `test_structure_prompt_instructs_valid_ending_shape` cannot pass unless
+  it is corrected too; this file also carried a false "the validator does not restrict ending
+  types" claim, now removed)
+- Modify: `src/cyo_adventure/generation/templates/prose.md` (added during execution: same stale
+  `ending.type` in Stage B prose rule 5)
 - Test: `tests/unit/test_prompts.py`
 
 - [ ] **Step 1: Write the failing tests**
@@ -753,10 +760,11 @@ Add under `## [Unreleased]` / `### Added` in `CHANGELOG.md`:
 ```markdown
 - Generation continuity for series (WS-G PR 3): `AnchorContext` now carries the anchor book's
   declared variable names, and the structure prompt instructs continuations to reuse those exact
-  names so reader progress carries across books; stale ending/metadata guidance in the structure
-  template corrected to the enforced schema (`kind`/`valence`, `topology`); worker-path
-  integration tests now drive `_persist_and_moderate` directly (repair round-trip and
-  embed-failure rollback, PR #184 F11).
+  names so reader progress carries across books; stale ending/metadata guidance in the generation
+  prompt templates (`structure.md`, `drafting_guide.md`, `prose.md`) corrected to the enforced
+  schema (`kind`/`valence`, `topology`), including removal of a false "the validator does not
+  restrict ending types" claim; worker-path integration tests now drive `_persist_and_moderate`
+  directly (repair round-trip and embed-failure rollback, PR #184 F11).
 ```
 
 - [ ] **Step 4: Pre-commit and commit**
