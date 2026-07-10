@@ -1302,7 +1302,7 @@
           "response": []
         },
         {
-          "name": "GET guardian/books lists both published books",
+          "name": "GET guardian/books lists all published books",
           "event": [
             {
               "listen": "test",
@@ -1311,7 +1311,7 @@
                   "pm.test(\"status is 200\", function () { pm.response.to.have.status(200); });",
                   "var schema = {\"properties\": {\"books\": {\"items\": {\"properties\": {\"storybook_id\": {\"type\": \"string\"}, \"title\": {\"type\": \"string\"}, \"version\": {\"type\": \"integer\"}, \"age_band\": {\"type\": \"string\"}, \"screened\": {\"type\": \"boolean\"}, \"flagged_count\": {\"type\": \"integer\", \"minimum\": 0.0}, \"assigned_profile_ids\": {\"items\": {\"type\": \"string\"}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"storybook_id\", \"title\", \"version\", \"age_band\", \"screened\", \"flagged_count\", \"assigned_profile_ids\"]}, \"type\": \"array\"}}, \"type\": \"object\", \"required\": [\"books\"]};",
                   "pm.test(\"response matches schema\", function () { pm.response.to.have.jsonSchema(schema); });",
-                  "pm.test(\"both published books are listed\", function () { var body = pm.response.json(); pm.expect(body.books.length).to.eql(2); });"
+                  "pm.test(\"all four published books are listed\", function () { var body = pm.response.json(); pm.expect(body.books.length).to.eql(4); });"
                 ],
                 "type": "text/javascript"
               }
