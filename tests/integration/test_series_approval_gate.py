@@ -276,3 +276,56 @@ async def test_self_legacy_book_is_grandfathered(
         principal = _principal(admin_id, series.family_id)
         row = await approve(session, principal, book1, 1)
         assert row.approved_by is not None
+
+
+async def test_unparseable_sibling_blob_is_grandfathered(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    # Book 1 is PUBLISHED but its blob fails schema validation outright (not
+    # merely missing the series block): _series_chain_docs must hit the
+    # `except PydanticValidationError` branch and skip the gate, same as the
+    # legacy-chain grandfather rule, so approval of book 2 succeeds.
+    async with sessions() as session:
+        series, admin_id = await _seed_series(session)
+        sid = str(series.id)
+        await _seed_book(
+            session,
+            series,
+            story_id="b1",
+            book_index=1,
+            status="published",
+            blob={"id": "b1"},
+        )
+        book2 = await _seed_book(
+            session,
+            series,
+            story_id="b2",
+            book_index=2,
+            status="in_review",
+            blob=_doc("b2", series_id=sid, book_index=2, entry="n0"),
+        )
+        principal = _principal(admin_id, series.family_id)
+        row = await approve(session, principal, book2, 1)
+        assert row.approved_by is not None
+
+
+async def test_single_book_series_approves_cleanly(
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    # New-series common case: book_index=1 with its own embedded series block
+    # and zero published siblings. The chain is just the book under approval.
+    async with sessions() as session:
+        series, admin_id = await _seed_series(session)
+        sid = str(series.id)
+        book1 = await _seed_book(
+            session,
+            series,
+            story_id="b1",
+            book_index=1,
+            status="in_review",
+            blob=_doc("b1", series_id=sid, book_index=1),
+        )
+        principal = _principal(admin_id, series.family_id)
+        row = await approve(session, principal, book1, 1)
+        assert row.approved_by is not None
+        assert book1.status == "published"
