@@ -123,6 +123,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the request's own cell has no eligible skeleton; unreadable, schema-invalid, and
   band-ambiguous skeletons are logged and surfaced as distinct errors rather than
   silently treated as absent.
+- Series chaining (WS-G PR 1): generated series books embed their document
+  `Series` metadata block; SR-4 accepts open-ended chains; release approval
+  validates the chain-so-far and blocks on SR errors (legacy pre-WS-G chains
+  are grandfathered).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from
