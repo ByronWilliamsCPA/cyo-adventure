@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+- Landed the skeleton corpus story-generation test plan
+  (`docs/planning/skeleton-corpus-story-generation-test-plan.md`): a proof-pass
+  design for authoring every committed skeleton end to end (prose fill, post-fill
+  gate, persist, moderate) rather than only passing the structural gate. Refreshed
+  for the current 21-file corpus and for WS-C PR2 (#175) skeleton matching, which
+  makes the story-request `skeleton_fill` pipeline a live production path from the
+  corpus to the database; inlined the previously memory-only mock-generation
+  canned-story hazard (the `MockProvider` "Forest Path" default) and dev-run recipe.
+
 ### Added
 - Postman/newman API test suite (`docs/api/postman-collection.json`): 75
   requests across 16 resource folders with status, JSON Schema, and
