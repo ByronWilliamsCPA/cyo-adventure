@@ -35,6 +35,7 @@ export interface GuardianBookItem {
   title: string
   version: number
   age_band: string
+  visibility: 'family' | 'catalog'
   screened: boolean
   flagged_count: number
   assigned_profile_ids: string[]

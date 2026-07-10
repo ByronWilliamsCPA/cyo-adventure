@@ -130,6 +130,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the request's own cell has no eligible skeleton; unreadable, schema-invalid, and
   band-ambiguous skeletons are logged and surfaced as distinct errors rather than
   silently treated as absent.
+- Story catalog: at release approval an admin now chooses whether a book stays
+  family-only or joins the shared catalog (`visibility` on `Storybook`). Guardian
+  browse lists catalog books from every family with a "Catalog" badge, and
+  assignment enforces visibility server-side: any guardian may assign a catalog
+  book, while another family's private book stays 403. Assignment sets returned
+  to a guardian are always scoped to their own family's children. Children can
+  read and rate an assigned catalog book from another family; unassigned
+  catalog books stay hidden from child accounts. Admin-initiated catalog-origin
+  requests are deferred (#173).
 
 ### Changed
 - Removed the unwired `.semgrep.yml` config: it was never invoked from

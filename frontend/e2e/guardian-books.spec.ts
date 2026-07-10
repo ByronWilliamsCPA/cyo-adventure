@@ -69,6 +69,7 @@ const BOOKS = {
       screened: true,
       flagged_count: 0,
       assigned_profile_ids: ['p1'],
+      visibility: 'family',
     },
   ],
 }
@@ -125,6 +126,64 @@ test('guardian browses published books and assigns a sibling', async ({ page }) 
   await dialog.getByRole('checkbox', { name: /Reader A2/ }).click()
   await dialog.getByRole('button', { name: /^Assign$/ }).click()
   await expect.poll(() => body).toEqual({ profile_ids: ['p2'] })
+})
+
+test('guardian sees a catalog badge and assigns a shared book', async ({ page }) => {
+  const CATALOG_BOOKS = {
+    books: [
+      {
+        storybook_id: 'story-cat',
+        title: 'The Shared Lantern',
+        version: 1,
+        age_band: '10-13',
+        screened: true,
+        flagged_count: 0,
+        assigned_profile_ids: [],
+        visibility: 'catalog',
+      },
+    ],
+  }
+  const CATALOG_SUMMARY = {
+    storybook_id: 'story-cat',
+    version: 1,
+    screened: true,
+    summary: null,
+    flagged_count: 0,
+    findings: [],
+  }
+
+  await page.route('**/api/v1/me', (route) => route.fulfill({ json: ME }))
+  await page.route('**/api/v1/guardian/books', (route) =>
+    route.fulfill({ json: CATALOG_BOOKS })
+  )
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: PROFILES })
+  )
+  await page.route('**/api/v1/storybooks/story-cat/content-summary', (route) =>
+    route.fulfill({ json: CATALOG_SUMMARY })
+  )
+  let body: unknown = null
+  await page.route('**/api/v1/storybooks/story-cat/assignments', (route) => {
+    if (route.request().method() === 'POST') {
+      body = route.request().postDataJSON()
+      return route.fulfill({
+        json: { storybook_id: 'story-cat', profile_ids: ['p1'] },
+      })
+    }
+    return route.fulfill({
+      json: { storybook_id: 'story-cat', profile_ids: [] },
+    })
+  })
+
+  await page.goto('/guardian/books')
+  await expect(page.getByText('The Shared Lantern')).toBeVisible()
+  await expect(page.getByText('Catalog')).toBeVisible()
+
+  await page.getByRole('button', { name: /^Assign The Shared Lantern$/ }).click()
+  const dialog = page.getByRole('dialog')
+  await dialog.getByRole('checkbox', { name: /^Reader A$/ }).click()
+  await dialog.getByRole('button', { name: /^Assign$/ }).click()
+  await expect.poll(() => body).toEqual({ profile_ids: ['p1'] })
 })
 
 test('the Books nav link reaches the page', async ({ page }) => {

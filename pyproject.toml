@@ -433,6 +433,12 @@ known-first-party = ["cyo_adventure"]
 # A config object would obscure the failure-recording contract.
 "**/generation/worker.py" = ["PLR0913"]
 
+# approve carries session, principal, storybook, version, and the keyword-only
+# visibility (WS-E E2); each a distinct concern (unit-of-work, the approving
+# admin, the target row, which version to publish, and who may browse/assign
+# the result). A config object would obscure the sole-publish-path contract.
+"**/publishing/service.py" = ["PLR0913"]
+
 # Test files (relaxed rules for test code)
 "tests/**/*.py" = [
     "ANN",    # Type annotations not required in tests

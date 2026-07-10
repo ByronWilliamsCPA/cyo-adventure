@@ -130,6 +130,53 @@ async def test_admin_approves_in_review_story(
     assert body["approved_by"] is not None
 
 
+async def test_approve_default_visibility_is_family(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Approving without a body publishes with visibility=family."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-a")
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["visibility"] == "family"
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.visibility == "family"
+
+
+async def test_approve_with_catalog_visibility_sets_column(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """Approving with visibility=catalog stamps the column and the response."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={"visibility": "catalog"},
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["visibility"] == "catalog"
+    async with sessions() as session:
+        book = await session.get(Storybook, story_id)
+        assert book is not None
+        assert book.visibility == "catalog"
+
+
+async def test_approve_rejects_unknown_visibility(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
+) -> None:
+    """An unmodeled visibility value is a 422, not a silent default."""
+    story_id = await _seed_in_review(sessions)
+    resp = await client.post(
+        f"/api/v1/storybooks/{story_id}/approve",
+        headers=auth("admin-a"),
+        json={"visibility": "public"},
+    )
+    assert resp.status_code == 422, resp.text
+
+
 async def test_child_cannot_approve(
     client: AsyncClient, sessions: async_sessionmaker[AsyncSession]
 ) -> None:

@@ -30,7 +30,7 @@ _PAYLOAD_ALLOWLIST: dict[EventType, frozenset[str]] = {
     ),
     EventType.REPAIR_APPLIED: frozenset({"stage"}),
     EventType.SENT_BACK: frozenset(),
-    EventType.RELEASED: frozenset(),
+    EventType.RELEASED: frozenset({"visibility"}),
     EventType.THRESHOLD_CHANGED: frozenset(
         {"age_band", "category", "action", "min_verdict", "min_score"}
     ),

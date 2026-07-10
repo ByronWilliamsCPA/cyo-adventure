@@ -34,12 +34,23 @@ describe('makeReviewApi', () => {
     expect(api.get).toHaveBeenCalledWith('/v1/storybooks/s1/review', undefined)
   })
 
-  it('approves via POST /v1/storybooks/:id/approve', async () => {
+  it('approves via POST /v1/storybooks/:id/approve with the chosen visibility', async () => {
     const api = fakeAxios()
     api.post.mockResolvedValue({ data: { id: 's1', status: 'published' } })
-    const result = await makeReviewApi(api as never).approve('s1')
-    expect(api.post).toHaveBeenCalledWith('/v1/storybooks/s1/approve')
+    const result = await makeReviewApi(api as never).approve('s1', 'family')
+    expect(api.post).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+      visibility: 'family',
+    })
     expect(result.status).toBe('published')
+  })
+
+  it('approves with catalog visibility when selected', async () => {
+    const api = fakeAxios()
+    api.post.mockResolvedValue({ data: { id: 's1', status: 'published' } })
+    await makeReviewApi(api as never).approve('s1', 'catalog')
+    expect(api.post).toHaveBeenCalledWith('/v1/storybooks/s1/approve', {
+      visibility: 'catalog',
+    })
   })
 
   it('sends back via POST /v1/storybooks/:id/send-back with a reason', async () => {

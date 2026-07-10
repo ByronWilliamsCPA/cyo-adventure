@@ -11,7 +11,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from cyo_adventure.db.models import Storybook, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
+from tests.conftest import make_clean_moderation_report
 
 from .conftest import Seed, auth
 
@@ -231,3 +237,120 @@ async def test_corrupt_report_row_degrades_not_500(
     row = next(b for b in resp.json()["books"] if b["storybook_id"] == "corrupt-books")
     assert row["screened"] is False
     assert row["flagged_count"] == 0
+
+
+async def test_catalog_book_from_other_family_is_listed_with_badge(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A published catalog book owned by family B appears in family A's browse."""
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id="catalog-book",
+                family_id=profile_b.family_id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="catalog-book",
+                version=1,
+                blob={
+                    "id": "catalog-book",
+                    "title": "Catalog Tale",
+                    "metadata": {"age_band": "8-11"},
+                },
+                approved_by=seed.admin_user_id,
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    books = {b["storybook_id"]: b for b in resp.json()["books"]}
+    assert "catalog-book" in books
+    assert books["catalog-book"]["visibility"] == "catalog"
+    assert books[seed.storybook_id]["visibility"] == "family"
+
+
+async def test_other_family_private_book_stays_hidden(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """Family B's visibility=family book never appears in family A's browse."""
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id="other-family-book",
+                family_id=profile_b.family_id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="other-family-book",
+                version=1,
+                blob={"id": "other-family-book", "title": "Hidden Tale"},
+                approved_by=seed.admin_user_id,
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    ids = [b["storybook_id"] for b in resp.json()["books"]]
+    # the fixture's other-family book has default visibility=family
+    assert all(i != "other-family-book" for i in ids)
+
+
+async def test_catalog_book_assignment_set_is_family_scoped(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """assigned_profile_ids on a catalog book excludes other families' children.
+
+    #CRITICAL security regression guard: without the ChildProfile.family_id
+    join, family B's child profile UUIDs would leak into family A's browse.
+    """
+    async with sessions() as session:
+        profile_b = await session.get(ChildProfile, seed.other_child_profile_id)
+        assert profile_b is not None
+        session.add(
+            Storybook(
+                id="catalog-book",
+                family_id=profile_b.family_id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="catalog-book",
+                version=1,
+                blob={"id": "catalog-book", "title": "Catalog Tale"},
+                approved_by=seed.admin_user_id,
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.child_profile_id,
+                storybook_id="catalog-book",
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=seed.other_child_profile_id,
+                storybook_id="catalog-book",
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
+    books = {b["storybook_id"]: b for b in resp.json()["books"]}
+    assert books["catalog-book"]["assigned_profile_ids"] == [str(seed.child_profile_id)]

@@ -9,16 +9,19 @@ reading-state and offline-cache implications deferred past the first release.
 
 Error ordering follows the repo convention in ``ratings.py`` and
 ``library.py`` (``get_storybook_version``): an unknown storybook id is 404,
-while an EXISTING storybook owned by another family is 403 via
-``authorize_family``.
+while an EXISTING storybook that is neither own-family nor catalog-visibility
+is 403 (WS-E's visibility gate, ``_require_guardian_visible_book``). A
+catalog-visibility book owned by another family IS assignable; the returned
+assignment set is always scoped to the caller's own family regardless of the
+book's visibility.
 """
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, cast
 
 from fastapi import APIRouter
-from sqlalchemy import and_, select
+from sqlalchemy import Select, and_, or_, select
 
 from cyo_adventure.api.deps import (
     Context,
@@ -40,12 +43,19 @@ from cyo_adventure.core.exceptions import (
     ResourceNotFoundError,
     ValidationError,
 )
-from cyo_adventure.db.models import Storybook, StorybookAssignment, StorybookVersion
+from cyo_adventure.db.models import (
+    ChildProfile,
+    Storybook,
+    StorybookAssignment,
+    StorybookVersion,
+)
 from cyo_adventure.events import Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
+from cyo_adventure.publishing.state_machine import Visibility
 from cyo_adventure.utils.logging import get_logger
 
 if TYPE_CHECKING:
+    import uuid
     from collections.abc import Iterable
 
 router = APIRouter(prefix="/api/v1", tags=["assignments"])
@@ -64,27 +74,52 @@ def _assignment_list(
     )
 
 
-async def _require_guardian_family_book(ctx: Context, storybook_id: str) -> Storybook:
-    """Return the storybook after guardian-only and same-family checks.
+def _family_assignment_ids_stmt(
+    storybook_id: str, family_id: uuid.UUID
+) -> Select[tuple[uuid.UUID]]:
+    """Select the book's assigned profile ids belonging to one family.
+
+    #CRITICAL: security: every assignment set returned to a guardian must be
+    scoped to their own family; a catalog book's global set would leak other
+    families' child profile UUIDs (WS-E plan deviation 2).
+    #VERIFY: test_catalog_assignment_listing_is_family_scoped.
+    """
+    return (
+        select(StorybookAssignment.child_profile_id)
+        .join(
+            ChildProfile,
+            StorybookAssignment.child_profile_id == ChildProfile.id,
+        )
+        .where(
+            StorybookAssignment.storybook_id == storybook_id,
+            ChildProfile.family_id == family_id,
+        )
+    )
+
+
+async def _require_guardian_visible_book(ctx: Context, storybook_id: str) -> Storybook:
+    """Return the storybook after guardian-only and visibility checks.
 
     Args:
         ctx: The request context (principal + session).
         storybook_id: The story id from the path.
 
     Returns:
-        Storybook: The story owned by the guardian's family.
+        Storybook: A story that is either owned by the guardian's family or
+            shared to the catalog.
 
     Raises:
-        AuthorizationError: If the caller is not a guardian, or the story
-            belongs to another family (403).
+        AuthorizationError: If the caller is not a guardian, or the story is
+            neither own-family nor catalog (403).
         ResourceNotFoundError: If the story does not exist (404).
     """
-    # #CRITICAL: security: guardian-only; a child token cannot read or widen
-    # assignments, and an admin (a cross-family safety reviewer, not a family
-    # assigner) is rejected here too. Error ordering matches ratings.py and
-    # library.py (get_storybook_version): 404-if-missing precedes
-    # authorize_family, so an unknown id is 404 and a cross-family book is 403.
-    # #VERIFY: is_guardian gate -> 403; None -> 404; authorize_family -> 403.
+    # #CRITICAL: security: E5's server-side visibility gate; the UI badge is a
+    # convenience, never the gate. Guard order is unchanged from the pre-WS-E
+    # helper: guardian-only (403) -> missing (404) -> visibility (403). A
+    # cross-family book is assignable ONLY when visibility='catalog'; the
+    # child read gate (StorybookAssignment in library.py) is untouched.
+    # #VERIFY: test_guardian_assigns_other_family_catalog_book (allow) and
+    # test_guardian_cannot_assign_other_family_private_book (deny).
     if not ctx.principal.is_guardian:
         msg = "only a guardian may manage assignments"
         raise AuthorizationError(msg)
@@ -92,7 +127,12 @@ async def _require_guardian_family_book(ctx: Context, storybook_id: str) -> Stor
     if book is None:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    authorize_family(ctx.principal, book.family_id)
+    if (
+        book.family_id != ctx.principal.family_id
+        and book.visibility != Visibility.CATALOG.value
+    ):
+        msg = "storybook is not visible to this family"
+        raise AuthorizationError(msg, resource=storybook_id)
     return book
 
 
@@ -110,19 +150,23 @@ async def _authorize_content_summary(
             version number.
 
     Raises:
-        AuthorizationError: If the caller is a child, or a guardian from another
-            family (403).
+        AuthorizationError: If the caller is a child, or a guardian from
+            another family reading a non-catalog (family-visibility) book
+            (403).
         ResourceNotFoundError: If the story does not exist, is not published,
             its current published version row is missing, or that row lacks
             approved_by (defense-in-depth; the sole publish path is expected
             to stamp it) (404).
     """
-    # #CRITICAL: security: guardian-or-admin only; a child token can never read a
-    # content summary. A guardian is family-scoped (cross-family -> 403); an admin
-    # is global and skips the family check (mirrors library.py's is_admin bypass).
-    # Missing OR unpublished -> 404 (not 403) so an unpublished story's existence
-    # is not revealed, matching get_storybook_version's information-hiding rule.
-    # #VERIFY: child -> 403; cross-family guardian -> 403; missing/unpublished -> 404.
+    # #CRITICAL: security: a guardian may read a cross-family summary ONLY for a
+    # catalog-shared book (WS-E E3: the assign dialog needs the badge detail for
+    # anything assignable); a family-visibility book keeps the family gate. An
+    # admin remains global. #VERIFY: catalog summary 200 / private cross-family 403.
+    # A child token can never read a content summary. Missing OR unpublished ->
+    # 404 (not 403) so an unpublished story's existence is not revealed, matching
+    # get_storybook_version's information-hiding rule.
+    # #VERIFY: child -> 403; cross-family guardian on a family-visibility book ->
+    # 403 (catalog -> 200, per the #VERIFY above); missing/unpublished -> 404.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = "only a guardian or admin may read a content summary"
         raise AuthorizationError(msg)
@@ -130,7 +174,7 @@ async def _authorize_content_summary(
     if book is None or book.status != _PUBLISHED:
         msg = f"storybook '{storybook_id}' not found"
         raise ResourceNotFoundError(msg)
-    if not ctx.principal.is_admin:
+    if not ctx.principal.is_admin and book.visibility != Visibility.CATALOG.value:
         authorize_family(ctx.principal, book.family_id)
     version = book.current_published_version
     if version is None:
@@ -170,7 +214,8 @@ async def get_content_summary(storybook_id: str, ctx: Context) -> ContentSummary
         ContentSummaryView: The redacted guardian content summary.
 
     Raises:
-        AuthorizationError: Child caller or cross-family guardian (403).
+        AuthorizationError: Child caller, or a guardian from another family
+            reading a non-catalog (family-visibility) book (403).
         ResourceNotFoundError: Unknown or unpublished story, or a missing
             published version row (404).
         ValidationError: If the stored moderation report is corrupt at rest.
@@ -202,17 +247,17 @@ async def assign_storybook(
         AssignmentListView: The full current set of assigned profile ids.
 
     Raises:
-        AuthorizationError: Non-guardian caller, a cross-family storybook, or a
-            profile outside the family.
+        AuthorizationError: Non-guardian caller, a storybook that is neither
+            own-family nor catalog, or a profile outside the family.
         ResourceNotFoundError: Unknown storybook id.
         BusinessLogicError: The story is not published.
         ValidationError: A profile id is not a UUID.
     """
     # #CRITICAL: security: validate role/family/profile scope BEFORE any write so
     # a guardian cannot assign a non-published story or a foreign profile.
-    # #VERIFY: order is guardian(403) -> missing book(404) -> cross-family(403)
+    # #VERIFY: order is guardian(403) -> missing book(404) -> not-visible(403)
     # -> non-published(400) -> foreign profile(403).
-    book = await _require_guardian_family_book(ctx, storybook_id)
+    book = await _require_guardian_visible_book(ctx, storybook_id)
     if book.status != _PUBLISHED:
         msg = "only a published story can be assigned"
         raise BusinessLogicError(msg)
@@ -225,9 +270,7 @@ async def assign_storybook(
     # locking. #VERIFY: switch to INSERT ... ON CONFLICT DO NOTHING if it recurs.
     existing = set(
         await ctx.session.scalars(
-            select(StorybookAssignment.child_profile_id).where(
-                StorybookAssignment.storybook_id == storybook_id
-            )
+            _family_assignment_ids_stmt(storybook_id, ctx.principal.family_id)
         )
     )
     # Guarding each insert on ``existing`` (updated in-loop) makes the write
@@ -272,17 +315,16 @@ async def list_assignments(storybook_id: str, ctx: Context) -> AssignmentListVie
         AssignmentListView: The current assigned profile ids.
 
     Raises:
-        AuthorizationError: Non-guardian caller or cross-family storybook.
+        AuthorizationError: Non-guardian caller, or a storybook that is
+            neither own-family nor catalog.
         ResourceNotFoundError: Unknown storybook id.
     """
-    # #CRITICAL: security: same guardian-only/same-family gate as the POST path.
-    # #VERIFY: _require_guardian_family_book raises 403 (role or cross-family)
+    # #CRITICAL: security: same guardian-only/visibility gate as the POST path.
+    # #VERIFY: _require_guardian_visible_book raises 403 (role or visibility)
     # or 404 (missing) before any read.
-    await _require_guardian_family_book(ctx, storybook_id)
+    await _require_guardian_visible_book(ctx, storybook_id)
     rows = await ctx.session.scalars(
-        select(StorybookAssignment.child_profile_id).where(
-            StorybookAssignment.storybook_id == storybook_id
-        )
+        _family_assignment_ids_stmt(storybook_id, ctx.principal.family_id)
     )
     return _assignment_list(storybook_id, rows)
 
@@ -363,6 +405,7 @@ def _guardian_book_item(
         title=title if isinstance(title, str) and title else book.id,
         version=version,
         age_band=_book_age_band(version_row.blob),
+        visibility=cast("Literal['family', 'catalog']", book.visibility),
         screened=screened,
         flagged_count=flagged_count,
         assigned_profile_ids=sorted(assigned_profile_ids),
@@ -403,12 +446,20 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
     if not ctx.principal.is_guardian:
         msg = "only a guardian may browse the family library"
         raise AuthorizationError(msg)
-    # #CRITICAL: security: match library.py's visibility gate exactly: same
-    # family, status published, a current published version, and approved_by IS
-    # NOT NULL. An unapproved or unpublished version must never surface here.
+    # #CRITICAL: security: match library.py's visibility gate, widened for
+    # catalog books (WS-E decision E3): same family OR globally-browsable
+    # catalog, status published, a current published version, and approved_by
+    # IS NOT NULL. Family isolation for `family`-visibility books is the
+    # `or_` clause's first arm; `catalog` books are globally browsable BY
+    # DESIGN, so the second arm intentionally has no family_id filter. An
+    # unapproved or unpublished version must never surface here regardless of
+    # visibility.
     # #VERIFY: the join pins version == current_published_version and the WHERE
     # requires approved_by IS NOT NULL (test_unapproved_published_book_is_excluded,
-    # test_unpublished_book_is_excluded).
+    # test_unpublished_book_is_excluded); a catalog book from another family is
+    # listed (test_catalog_book_from_other_family_is_listed_with_badge) while a
+    # family-visibility book from another family stays hidden
+    # (test_other_family_private_book_stays_hidden).
     # #ASSUME: external-resources: load every published version's blob and report
     # in ONE join query and all assignments in ONE IN query, so the listing stays
     # two queries total regardless of how large the family library grows.
@@ -424,7 +475,10 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
                 ),
             )
             .where(
-                Storybook.family_id == ctx.principal.family_id,
+                or_(
+                    Storybook.family_id == ctx.principal.family_id,
+                    Storybook.visibility == Visibility.CATALOG.value,
+                ),
                 Storybook.status == _PUBLISHED,
                 Storybook.current_published_version.is_not(None),
                 StorybookVersion.approved_by.is_not(None),
@@ -435,16 +489,27 @@ async def list_guardian_books(ctx: Context) -> GuardianBooksView:
     if not rows:
         return GuardianBooksView(books=[])
     book_ids = [book.id for book, _ in rows]
-    assign_rows = await ctx.session.scalars(
-        select(StorybookAssignment).where(
-            StorybookAssignment.storybook_id.in_(book_ids)
+    # #CRITICAL: security: scope the assignment projection to the CALLER's
+    # family. A catalog book may be assigned by many families; projecting the
+    # global set would leak other families' child profile UUIDs (WS-E plan
+    # deviation 2). #VERIFY: test_catalog_book_assignment_set_is_family_scoped.
+    assign_rows = await ctx.session.execute(
+        select(
+            StorybookAssignment.storybook_id,
+            StorybookAssignment.child_profile_id,
+        )
+        .join(
+            ChildProfile,
+            StorybookAssignment.child_profile_id == ChildProfile.id,
+        )
+        .where(
+            StorybookAssignment.storybook_id.in_(book_ids),
+            ChildProfile.family_id == ctx.principal.family_id,
         )
     )
     assigned: dict[str, list[str]] = {}
-    for assignment in assign_rows:
-        assigned.setdefault(assignment.storybook_id, []).append(
-            str(assignment.child_profile_id)
-        )
+    for assignment_storybook_id, child_profile_id in assign_rows:
+        assigned.setdefault(assignment_storybook_id, []).append(str(child_profile_id))
     # #ASSUME: external-resources: one threshold-policy load for the whole
     # listing, not per-row, so the per-row query count stays fixed regardless
     # of library size (mirrors the two-query assumption above).
