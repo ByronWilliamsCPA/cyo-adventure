@@ -315,3 +315,6 @@ docs/superpowers/plans/
 # children's/guardians' names, emails, or account details. Keep them local;
 # the tracked .gitkeep preserves the directory.
 docs/qa/naive-ux-reports/*.md
+
+# Staging environment secrets (template: .env.staging.example)
+.env.staging
