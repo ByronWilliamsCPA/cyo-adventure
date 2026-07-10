@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   makes the story-request `skeleton_fill` pipeline a live production path from the
   corpus to the database; inlined the previously memory-only mock-generation
   canned-story hazard (the `MockProvider` "Forest Path" default) and dev-run recipe.
+- Landed the naive-user UX test design spec
+  (`docs/superpowers/specs/2026-07-05-naive-user-ux-testing-design.md`), the
+  design rationale behind the `frontend/e2e/naive-user/*` suite and the
+  `naive-ux-check` skill. It documents the two-track methodology (Track A
+  Playwright misuse regressions, Track B Claude-for-Chrome comprehension
+  prompts) and the B-to-A promotion rule. Added a staleness banner and a
+  refreshed Section 4.1 route map reflecting PR #140 (landing page at `/`,
+  `/kids` profile picker) and PR #185 (KidNav, reader Leave control, library
+  reorder).
 
 ### Added
 - Postman/newman API test suite (`docs/api/postman-collection.json`): 75
