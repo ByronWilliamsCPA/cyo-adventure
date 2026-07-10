@@ -147,6 +147,26 @@ def test_wrong_final_flag_is_sr4():
     assert any(f.rule_id == "SR-4" for f in report.errors)
 
 
+def test_open_chain_all_not_final_is_valid():
+    # WS-G G4: an open-ended chain (no book marked final) is a first-class
+    # state; only a NON-top book marked final is an SR-4 error.
+    books = [
+        _book(book_index=1),
+        _book(book_index=2, entry="n0"),
+    ]
+    report = validate_series(books)
+    assert not any(f.rule_id == "SR-4" for f in report.errors)
+
+
+def test_closed_chain_top_final_is_valid():
+    books = [
+        _book(book_index=1),
+        _book(book_index=2, entry="n0", is_final=True),
+    ]
+    report = validate_series(books)
+    assert not any(f.rule_id == "SR-4" for f in report.errors)
+
+
 def test_non_final_book_without_win_is_sr5():
     books = [
         _book(book_index=1, is_final=False, win=False),  # only a setback ending
