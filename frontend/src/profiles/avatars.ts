@@ -2,14 +2,20 @@
  * The illustrated avatar catalog (C4a-2, expanded in issue #65 phase 1
  * "Bucket B").
  *
- * Deliberately NOT child photos: the photo privacy decision (wireframe 4.1
- * open flag) is unresolved, so profiles store one of these opaque preset ids
- * in ChildProfile.avatar, or null for the initial-letter fallback.
+ * Deliberately NOT child photos: issue #65 resolved the photo privacy
+ * question (2026-07-02) as preset-only, permanently. Profiles store one of
+ * these opaque preset ids in ChildProfile.avatar, or null for the
+ * initial-letter fallback.
  *
- * The original 8 ids (fox through frog) predate this file and are stored in
- * existing ChildProfile rows; they are kept exactly as-is so existing
- * profiles are not orphaned. The 14 new ids were added alongside illustrated
- * artwork replacing the emoji glyphs used before this catalog.
+ * #ASSUME: data-integrity: the original 8 ids (fox through frog) predate
+ * this file and are stored in existing ChildProfile rows, so renaming or
+ * removing any of them would silently orphan those profiles onto the
+ * initial-letter fallback.
+ * #VERIFY: treat ids as append-only; the backend AvatarId Literal in
+ * src/cyo_adventure/api/schemas.py must list the same ids in the same order,
+ * enforced by tests/unit/test_frontend_contract_parity.py (CI fails on
+ * drift). The 14 new ids were added alongside illustrated artwork replacing
+ * the emoji glyphs used before this catalog.
  */
 
 import alicornSrc from '../assets/avatars/alicorn.webp'
@@ -68,6 +74,10 @@ export const AVATARS: readonly AvatarOption[] = [
   { id: 'cheer-kid', src: cheerKidSrc, label: 'Cheerleader' },
 ]
 
+// The null-in / undefined-out asymmetry is deliberate: callers pass
+// ChildProfile.avatar (null means "no avatar chosen"), while an unknown id
+// falls through Array.find to undefined. Both render AvatarCircle's
+// initial-letter fallback.
 export function avatarSrc(id: string | null): string | undefined {
   return AVATARS.find((a) => a.id === id)?.src
 }

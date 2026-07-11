@@ -717,3 +717,36 @@ documented command matches the enforced pre-commit/CI invocation and never produ
 failure on a freshly generated project.
 
 **Affected Files**: template `CLAUDE.md` (Quick Start Commands and Project Requirements sections)
+
+---
+
+### FIPS checker flags any method named `seed()` as the SEED block cipher
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-11
+
+**Issue**: `scripts/check_fips_compatibility.py` includes `"seed"` in its `NON_FIPS_CIPHERS`
+set (the Korean SEED block cipher, RFC 4269) and its AST visitor matches call names without
+any crypto-library context. Any domain function or method named `seed()` is therefore reported
+as a FIPS error. In this project, five `seed_staging.seed()` calls in
+`tests/unit/test_seed_staging.py` (database seeding, no cryptography anywhere near them)
+produce "FIPS Compliance: FAILED, 5 error(s)" and the `fips-compatibility.yml` workflow posts
+a failure comment on every PR whose base contains that file. Compounding the confusion, the
+workflow job itself still concludes success, so the check is green while the PR comment says
+FAILED; contributors learn to ignore the comment, which defeats the checker.
+
+**Context**: Found on PR #210 (a frontend avatar PR touching no Python crypto at all) when a
+github-actions comment reported "FIPS Compatibility Check: Errors 5, Status FAILED". Tracing
+run 29160427214 showed all five errors pointing at `seed_staging.seed()` calls introduced to
+`main` by PR #205; `grep -n "seed" scripts/check_fips_compatibility.py` confirmed the bare
+name-list match.
+
+**Suggested Fix**: Only flag `seed` (and similarly ambiguous cipher names) when the call
+target resolves to a known crypto module or import (e.g. `Crypto.Cipher.SEED`,
+`cryptography.hazmat`), or at minimum require the attribute chain to include a crypto-library
+root before matching bare cipher names. Also align the workflow's PR-comment verdict with the
+job conclusion so the two cannot disagree.
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`,
+`.github/workflows/fips-compatibility.yml`
