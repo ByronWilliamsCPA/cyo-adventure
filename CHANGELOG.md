@@ -120,7 +120,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   minted it (no `alg=none` forgery and no RS256/HS256 confusion in either
   direction). The child `User.id` is embedded at mint so the resulting principal
   is attributable on the append-only pipeline event log without a database read,
-  keeping verification offline-friendly. New settings (`core/config.py`):
+  keeping verification offline-friendly. Because profiles created through
+  `POST /api/v1/profiles` get no `User` row (only the seed scripts ever created
+  child accounts), the mint endpoint JIT-provisions the child account when it
+  is absent: a `role="child"` `User` row with a deterministic synthetic subject
+  (`child-profile:{profile_id}`, which cannot collide with a Supabase UUID sub
+  or the seed scripts' opaque subjects), created inside the same unit of work
+  under the family authorization that already ran. A concurrent double-mint
+  from two guardian devices converges on one row: both compute the same
+  subject, the loser's INSERT hits the unique `authn_subject` index inside a
+  savepoint (the `begin_nested` pattern from `generation/series_link.py`), and
+  it recovers by reading the winner's committed row. New settings
+  (`core/config.py`):
   `CHILD_SESSION_SECRET` (required outside `local`, validated at startup) and
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
