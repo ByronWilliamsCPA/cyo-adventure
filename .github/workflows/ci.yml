@@ -537,20 +537,21 @@ jobs:
       # Applies the real Supabase migration chain against the compose db (not
       # Base.metadata.create_all): the collection exercises the migrated
       # schema, matching what staging/production deploys actually run.
-      # #ASSUME: external resources: CLI 2.109.1's non-debug db push path
-      # intermittently fails a local Postgres with "tls error (server refused
-      # TLS connection)" even against a plain, non-TLS db-url; --debug avoids
-      # it (verified locally: 100% failure without --debug, 100% success
-      # with it, same db-url, same target). --yes answers the push
-      # confirmation prompt non-interactively.
-      # #VERIFY: re-check this workaround against newer supabase-cli releases
-      # and drop --debug once the upstream connection bug is fixed.
+      # #ASSUME: external resources: CLI 2.109.1 attempts a TLS handshake by
+      # default against plain Postgres with no plaintext fallback, and
+      # ignores ?sslmode=disable in the db-url, so pushing to the non-TLS
+      # compose db fails with "tls error (server refused TLS connection)"
+      # unless the standard libpq env var PGSSLMODE=disable is set (verified
+      # locally against a scratch postgres:16-alpine). --yes answers the
+      # push confirmation prompt non-interactively.
+      # #VERIFY: on future supabase-cli upgrades, re-check whether the CLI
+      # honors sslmode in the db-url and drop PGSSLMODE once it does.
       - name: Apply database migrations
+        env:
+          PGSSLMODE: disable
+          SUPABASE_DB_URL: postgresql://cyo_adventure:password@localhost:5432/cyo_adventure
         run: |
-          supabase db push \
-            --db-url postgresql://cyo_adventure:password@localhost:5432/cyo_adventure \
-            --yes \
-            --debug
+          supabase db push --db-url "$SUPABASE_DB_URL" --yes
 
       # Seeds the family/profiles/published+in-review stories the collection
       # asserts on. Idempotent (scripts/seed_dev_data.py), and runs AFTER the
