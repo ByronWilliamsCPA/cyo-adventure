@@ -93,7 +93,6 @@ dev = [
     "hypothesis>=6.82.0",
     "testcontainers>=4",  # Ephemeral Postgres for integration tests
     "psycopg[binary]>=3",  # Sync driver used by testcontainers readiness checks
-
     # Code Quality (always included)
     "ruff>=0.9.0",
     "basedpyright>=1.18.0",  # Stricter type checker (replaces mypy)
@@ -101,7 +100,6 @@ dev = [
     "vulture>=2.11",  # Dead code detection
     "pip-audit>=2.7.0",  # Python vulnerability scanning
     "pydoclint>=0.8.4",  # Docstring argument validation
-
     # Pre-commit
     "pre-commit>=3.3.0",
     # Documentation
@@ -127,6 +125,7 @@ dev = [
     # "google-cloud-assured-oss>=0.1.0",  # Package not yet available in PyPI
     "google-api-core>=2.0.0",
     "python-dotenv>=1.0.0",  # For loading .env files
+    "boto3-stubs[s3]>=1.34",
 ]
 
 
@@ -140,6 +139,7 @@ api = [
     "asyncpg>=0.29.0",  # Async PostgreSQL driver for SQLAlchemy
     "httpx>=0.27",
     "anthropic>=0.116.0",
+    "boto3>=1.34",
 ]
 
 

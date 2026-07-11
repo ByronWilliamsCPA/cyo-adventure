@@ -19,19 +19,18 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 _CONFIGURED = SimpleNamespace(
     gemini_api_key="g",
-    supabase_service_key="svc",
-    supabase_url="https://p.supabase.co",
+    r2_account_id="acct123",
+    r2_access_key_id="AKIDEXAMPLE",
+    r2_secret_access_key="svc",
+    r2_public_base_url="https://images.example.com",
 )
-_UNCONFIGURED = SimpleNamespace(
-    gemini_api_key=None,
-    supabase_service_key="svc",
-    supabase_url="https://p.supabase.co",
-)
-_MISSING_URL = SimpleNamespace(
-    gemini_api_key="g",
-    supabase_service_key="svc",
-    supabase_url=None,
-)
+
+
+def _settings_missing(field: str) -> SimpleNamespace:
+    """Build a `_CONFIGURED`-equivalent settings namespace with one field unset."""
+    values = dict(vars(_CONFIGURED))
+    values[field] = None
+    return SimpleNamespace(**values)
 
 
 async def test_non_admin_forbidden(
@@ -74,14 +73,25 @@ async def test_admin_enqueues(
         assert row.cover_status == "generating"
 
 
-@pytest.mark.parametrize("settings_ns", [_UNCONFIGURED, _MISSING_URL])
+@pytest.mark.parametrize(
+    "missing_field",
+    [
+        "gemini_api_key",
+        "r2_account_id",
+        "r2_access_key_id",
+        "r2_secret_access_key",
+        "r2_public_base_url",
+    ],
+)
 async def test_missing_config_returns_400(
     client: AsyncClient,
     seed: Seed,
     monkeypatch: pytest.MonkeyPatch,
-    settings_ns: SimpleNamespace,
+    missing_field: str,
 ) -> None:
-    monkeypatch.setattr("cyo_adventure.api.covers.settings", settings_ns)
+    monkeypatch.setattr(
+        "cyo_adventure.api.covers.settings", _settings_missing(missing_field)
+    )
     resp = await client.post(
         f"/api/v1/storybooks/{seed.storybook_id}/versions/{seed.version}/cover",
         headers=auth(seed.admin_token),

@@ -41,9 +41,9 @@ hardcoded, so the suite is stable across reseeded databases.
 
 ### Externals policy
 
-CI runs with no Supabase, Gemini, or LLM credentials and no Redis. Endpoints whose happy path calls an
+CI runs with no Supabase, Gemini, R2, or LLM credentials and no Redis. Endpoints whose happy path calls an
 external service are covered by auth negatives and side-effect-free reads only: `POST
-/storybooks/{id}/versions/{v}/cover` (Gemini + Supabase Storage) is never triggered, and generation
+/storybooks/{id}/versions/{v}/cover` (Gemini + Cloudflare R2) is never triggered, and generation
 enqueue failures are tolerated by design (the job row is still created).
 
 ### Auth model
@@ -102,7 +102,7 @@ example a running dev stack), run the suite under an isolated project with remap
 ## Required environment
 
 No secrets are required to run the suite. The compose defaults are sufficient: `ENVIRONMENT=local` (dev
-auth), `DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/LLM/Redis
+auth), `DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/R2/LLM/Redis
 configuration. The only non-default env used in CI is `DATABASE_URL` for the runner-side migrate and
 seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
 step uses the repo-level `CODECOV_TOKEN` secret for optional, non-blocking Test Analytics reporting

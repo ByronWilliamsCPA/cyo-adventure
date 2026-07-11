@@ -51,7 +51,7 @@ def run_cover_job_sync(
 
 async def _run(storybook_id: str, version: int) -> None:
     # #CRITICAL: external resources: opens its own DB session and drives the
-    # Gemini + Supabase calls via generate_cover; runs outside request context.
+    # Gemini + R2 calls via generate_cover; runs outside request context.
     # #VERIFY: generate_cover never raises and always lands a terminal status.
     from cyo_adventure.core.config import settings
     from cyo_adventure.core.database import get_session
