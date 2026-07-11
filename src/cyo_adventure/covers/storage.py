@@ -57,31 +57,40 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     # budget.
     # #VERIFY: covers/service.py optimizes before calling upload_cover; a
     # PutObject at an existing key silently overwrites it.
-    client: S3Client = boto3.client(
-        "s3",
-        endpoint_url=_r2_endpoint_url(settings.r2_account_id),
-        aws_access_key_id=settings.r2_access_key_id,
-        aws_secret_access_key=settings.r2_secret_access_key,
-        # R2 has no region concept; "auto" is Cloudflare's documented value.
-        region_name="auto",
-        config=BotoConfig(
-            signature_version="s3v4",
-            connect_timeout=_UPLOAD_TIMEOUT_SECONDS,
-            read_timeout=_UPLOAD_TIMEOUT_SECONDS,
-        ),
-    )
     bucket = settings.r2_bucket
-    # #CRITICAL: timing dependencies: boto3's S3 client is synchronous; run the
-    # blocking network call off the event loop so a slow/unavailable R2 upload
-    # cannot stall other async work sharing this process.
-    # #VERIFY: asyncio.to_thread offloads put_object to a worker thread.
-    await asyncio.to_thread(
-        client.put_object,
-        Bucket=bucket,
-        Key=key,
-        Body=image_bytes,
-        ContentType="image/webp",
-    )
+    account_id = settings.r2_account_id
+    access_key_id = settings.r2_access_key_id
+    secret_access_key = settings.r2_secret_access_key
+
+    def _build_client_and_put() -> None:
+        client: S3Client = boto3.client(
+            "s3",
+            endpoint_url=_r2_endpoint_url(account_id),
+            aws_access_key_id=access_key_id,
+            aws_secret_access_key=secret_access_key,
+            # R2 has no region concept; "auto" is Cloudflare's documented value.
+            region_name="auto",
+            config=BotoConfig(
+                signature_version="s3v4",
+                connect_timeout=_UPLOAD_TIMEOUT_SECONDS,
+                read_timeout=_UPLOAD_TIMEOUT_SECONDS,
+            ),
+        )
+        client.put_object(
+            Bucket=bucket,
+            Key=key,
+            Body=image_bytes,
+            ContentType="image/webp",
+        )
+
+    # #CRITICAL: timing dependencies: boto3's S3 client is synchronous, and
+    # constructing it does blocking disk I/O (service-model JSON, credential
+    # file reads) in addition to the blocking put_object network call; run
+    # both off the event loop so a slow/unavailable R2 upload cannot stall
+    # other async work sharing this process.
+    # #VERIFY: asyncio.to_thread offloads client construction and put_object
+    # to a worker thread together.
+    await asyncio.to_thread(_build_client_and_put)
     # #CRITICAL: external resources: this URL is only browser-reachable if the
     # owner has connected a custom domain to this R2 bucket in the Cloudflare
     # dashboard and pointed r2_public_base_url at it; the raw R2 S3 endpoint
