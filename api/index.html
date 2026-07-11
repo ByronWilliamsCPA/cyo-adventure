@@ -2838,20 +2838,26 @@ desktop Runner instead of newman, set its own Delay setting to 1100 ms; the CLI 
 there. If the suite grows enough to hurt CI latency, raise the app's limit for CI instead of shrinking
 the delay.</p>
 <h2 id="running-locally">Running locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h2>
-<p>Prerequisites: Docker with the compose plugin, <code>uv</code>, Node.js, and <code>npm install -g newman</code>. From the repo
-root:</p>
+<p>Prerequisites: Docker with the compose plugin, <code>uv</code>, Node.js, <code>npm install -g newman</code>, and the
+<a href="https://supabase.com/docs/guides/local-development/cli/getting-started">Supabase CLI</a> (pinned to 2.109.1
+in CI via <code>supabase/setup-cli</code>). From the repo root:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docker<span class="w"> </span>compose<span class="w"> </span>down<span class="w"> </span>-v<span class="w"> </span>--remove-orphans<span class="w">          </span><span class="c1"># fresh database (this project&#39;s stack only)</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d<span class="w"> </span>--build<span class="w"> </span>app<span class="w"> </span>db
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="k">until</span><span class="w"> </span>curl<span class="w"> </span>-fsS<span class="w"> </span>http://localhost:8000/health/live<span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>sleep<span class="w"> </span><span class="m">2</span><span class="p">;</span><span class="w"> </span><span class="k">done</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>uv<span class="w"> </span>run<span class="w"> </span>alembic<span class="w"> </span>upgrade<span class="w"> </span>head<span class="w">                      </span><span class="c1"># real migration chain, not create_all</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/seed_dev_data.py<span class="w">           </span><span class="c1"># idempotent seed (users, stories, assignments)</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>newman<span class="w"> </span>run<span class="w"> </span>docs/api/postman-collection.json<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span>--env-var<span class="w"> </span><span class="s2">&quot;base_url=http://localhost:8000&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span>--delay-request<span class="w"> </span><span class="m">1100</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span>--reporters<span class="w"> </span>cli,junit<span class="w"> </span>--reporter-junit-export<span class="w"> </span>newman-junit.xml<span class="w"> </span>--bail
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nv">PGSSLMODE</span><span class="o">=</span>disable<span class="w"> </span>supabase<span class="w"> </span>db<span class="w"> </span>push<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span>--db-url<span class="w"> </span>postgresql://cyo_adventure:password@localhost:5432/cyo_adventure<span class="w"> </span>--yes
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">                                                  </span><span class="c1"># real migration chain, not create_all;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">                                                  </span><span class="c1"># PGSSLMODE=disable works around the CLI&#39;s</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">                                                  </span><span class="c1"># TLS-by-default pgx driver against this</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">                                                  </span><span class="c1"># plain, non-TLS compose Postgres (ADR-012)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>scripts/seed_dev_data.py<span class="w">           </span><span class="c1"># idempotent seed (users, stories, assignments)</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>newman<span class="w"> </span>run<span class="w"> </span>docs/api/postman-collection.json<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span>--env-var<span class="w"> </span><span class="s2">&quot;base_url=http://localhost:8000&quot;</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span>--delay-request<span class="w"> </span><span class="m">1100</span><span class="w"> </span><span class="se">\</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span>--reporters<span class="w"> </span>cli,junit<span class="w"> </span>--reporter-junit-export<span class="w"> </span>newman-junit.xml<span class="w"> </span>--bail
 </span></code></pre></div>
 <p>If another compose project already occupies the default ports or the pinned <code>172.25.0.0/16</code> subnet (for
 example a running dev stack), run the suite under an isolated project with remapped ports and point
@@ -2866,8 +2872,11 @@ step uses the repo-level <code>CODECOV_TOKEN</code> secret for optional, non-blo
 <h2 id="ci-integration">CI integration<a class="headerlink" href="#ci-integration" title="Permanent link">&para;</a></h2>
 <p><code>.github/workflows/ci.yml</code> gates the <code>api-tests</code> job on this collection existing
 (<code>detect-api-collection</code>), then: builds and starts <code>app</code> + <code>db</code> from the repo compose file, waits on
-<code>/health/live</code>, installs the backend (<code>uv sync --extra api</code>), runs <code>alembic upgrade head</code> and
-<code>scripts/seed_dev_data.py</code> against the compose database, runs newman with the JUnit reporter, and uploads
+<code>/health/live</code>, installs the backend (<code>uv sync --extra api</code>), sets up the pinned Supabase CLI
+(<code>supabase/setup-cli</code>, version 2.109.1) and applies the real migration chain with
+<code>PGSSLMODE=disable supabase db push --db-url ... --yes</code> (ADR-012; <code>PGSSLMODE=disable</code> works around the
+CLI's TLS-by-default driver against the plain compose Postgres) followed by <code>scripts/seed_dev_data.py</code>
+against the migrated compose database, runs newman with the JUnit reporter, and uploads
 <code>newman-junit.xml</code> via <code>codecov/test-results-action</code> under the <code>api</code> flag (org standard: one report, one
 flag). Results appear in the Codecov Tests tab for the PR.</p>
 <h2 id="maintenance">Maintenance<a class="headerlink" href="#maintenance" title="Permanent link">&para;</a></h2>
@@ -2897,7 +2906,7 @@ pushing.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 14:30:22 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
   </span>
 
     
