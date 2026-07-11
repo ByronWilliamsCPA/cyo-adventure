@@ -273,10 +273,12 @@ async def seed(
     Refuses to run unless ENVIRONMENT=staging (the hard guard against an
     accidental run against production). Creates two Supabase Auth users
     (guardian, admin), a Test Family, matching User rows, a Test Reader child
-    profile, and publishes the two fixture stories to it. Skips all of it
-    (Auth-user creation included) when the guardian's User row already
-    exists, so re-running against an already-seeded staging project is a
-    no-op.
+    profile, and publishes the two fixture stories to it. On a re-run against
+    an already-seeded project it still performs the two idempotent GoTrue
+    lookups (which find the existing Auth users and create nothing), then
+    detects the guardian's User row and returns before writing any database
+    rows, so no duplicate Auth users, families, profiles, or stories are
+    created.
 
     Args:
         engine: Async engine to create the schema on. Defaults to the app's
@@ -300,6 +302,18 @@ async def seed(
     admin_password = os.environ["SEED_ADMIN_PASSWORD"]
     supabase_url = os.environ["SUPABASE_URL"]
     service_key = os.environ["SUPABASE_SERVICE_KEY"]
+
+    # #CRITICAL: security: the service key is attached to every request sent to
+    # ``supabase_url``; a non-https URL would transmit that full-privilege
+    # admin key in cleartext, and a wrong scheme usually signals a mistyped or
+    # tampered .env.staging. Refuse before the key is ever put on the wire.
+    # #VERIFY: test_seed_exits_when_supabase_url_not_https.
+    if not supabase_url.startswith("https://"):
+        sys.exit(
+            "seed_staging: refusing to run because SUPABASE_URL is not an "
+            "https:// URL. The Supabase service key must never be sent over "
+            "an unencrypted or unexpected transport."
+        )
 
     async with httpx.AsyncClient(
         base_url=supabase_url,
