@@ -67,7 +67,9 @@ test('avatar choices are presets only; no photo upload exists', async ({ page })
   await page.goto('/guardian/profiles')
   await page.getByRole('button', { name: 'Add child' }).click()
 
-  // None + the 8 preset animals/objects (fox, owl, dragon, cat, unicorn, robot, rocket, frog).
-  await expect(page.getByRole('group', { name: 'Avatar' }).getByRole('radio')).toHaveCount(9)
+  // None + the 22 illustrated presets (issue #65 phase 1 "Bucket B": the
+  // original 8 animals/objects plus 14 new naturalistic/aspirational/sports
+  // presets).
+  await expect(page.getByRole('group', { name: 'Avatar' }).getByRole('radio')).toHaveCount(23)
   await expect(page.locator('input[type="file"]')).toHaveCount(0)
 })
