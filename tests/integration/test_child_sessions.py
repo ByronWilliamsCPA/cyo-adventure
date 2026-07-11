@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from cyo_adventure.db.models import ChildProfile
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -213,6 +213,144 @@ async def test_child_token_rejected_on_other_profile_library(
     resp = await client.get(
         "/api/v1/library",
         params={"profile_id": str(seed.other_child_profile_id)},
+        headers=auth(token),
+    )
+    assert resp.status_code in (403, 404), resp.text
+    assert not (200 <= resp.status_code < 300)
+
+
+# ---------------------------------------------------------------------------
+# P6-10: third, stranger-family IDOR extension
+# ---------------------------------------------------------------------------
+#
+# Everything above proves the mint-authorization gate and the minted-token
+# round-trip against family B (the seed fixture's second family). Neither
+# proves the SAME real, backend-signed JWT mechanism holds against a third
+# family with zero relationship to A or B: a bug that happens to key off
+# "family B's id" specifically (e.g. an id comparison against the wrong
+# constant, or a filter that special-cases the one other family the tests
+# know about) would still pass every test above. The ``stranger`` fixture
+# (family C: no shared storybook, assignment, or profile with A or B) closes
+# that gap for both mint-time authorization and the minted token's own
+# family/profile scoping.
+
+
+async def _mint_token_for(
+    client: AsyncClient, profile_id: object, guardian_token: str
+) -> str:
+    """Mint a child token for an arbitrary profile/guardian pair.
+
+    Generalizes ``_mint_child_token`` so the stranger-family tests below can
+    mint against ``stranger.child_profile_id``/``stranger.guardian_token``
+    without duplicating the request/assert boilerplate.
+    """
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(profile_id)},
+        headers=auth(guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    token = resp.json()["token"]
+    assert isinstance(token, str)
+    return token
+
+
+@pytest.mark.asyncio
+async def test_guardian_cannot_mint_stranger_family_profile(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """Family A's guardian naming family C's profile is rejected with 403.
+
+    Mirrors ``test_guardian_cannot_mint_other_family_profile`` (family B)
+    with a third, unrelated family, so a mint-time check that happens to
+    reject only the specific family B id cannot slip through.
+    """
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(stranger.child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_stranger_guardian_cannot_mint_family_a_profile(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """Family C's guardian naming family A's profile is rejected with 403.
+
+    The reverse direction of the check above: an unrelated family's guardian
+    must not be able to mint a session for family A's child either.
+    """
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(stranger.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_stranger_family_minted_token_rejected_on_family_a_library(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """A real, minted family-C child JWT cannot read family A's library.
+
+    Unlike the dev-stub role tokens used elsewhere in this module, this
+    exercises the actual backend-signed HS256 JWT
+    (``core/child_session.py::mint_child_session_token`` /
+    ``verify_child_session_token``): the token is self-contained (family_id
+    and profile_id are signed claims, verified with no database round-trip),
+    so this proves the real mint/verify mechanism enforces family isolation,
+    not just the dev-stub token-to-subject lookup the rest of the suite uses.
+    """
+    token = await _mint_token_for(
+        client, stranger.child_profile_id, stranger.guardian_token
+    )
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(seed.child_profile_id)},
+        headers=auth(token),
+    )
+    assert resp.status_code in (403, 404), resp.text
+    assert not (200 <= resp.status_code < 300)
+
+
+@pytest.mark.asyncio
+async def test_stranger_family_minted_token_rejected_on_family_a_guardian_endpoint(
+    client: AsyncClient, stranger: Stranger
+) -> None:
+    """A real, minted family-C child JWT cannot reach a guardian-only route.
+
+    The role gate (``ctx.principal.is_guardian``) must reject a CHILD
+    principal built from a verified third-family token exactly as it rejects
+    the dev-stub child token in ``test_child_token_rejected_on_guardian_endpoint``.
+    """
+    token = await _mint_token_for(
+        client, stranger.child_profile_id, stranger.guardian_token
+    )
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "New Kid", "age_band": "10-13"},
+        headers=auth(token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_family_a_minted_token_rejected_on_stranger_family_library(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """A real, minted family-A child JWT cannot read family C's library.
+
+    The reverse direction of
+    ``test_stranger_family_minted_token_rejected_on_family_a_library``: the
+    isolation the signed claims provide must hold symmetrically.
+    """
+    token = await _mint_child_token(client, seed)
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(stranger.child_profile_id)},
         headers=auth(token),
     )
     assert resp.status_code in (403, 404), resp.text

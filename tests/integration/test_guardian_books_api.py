@@ -19,7 +19,7 @@ from cyo_adventure.db.models import (
 )
 from tests.conftest import make_clean_moderation_report
 
-from .conftest import Seed, auth
+from .conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -354,3 +354,89 @@ async def test_catalog_book_assignment_set_is_family_scoped(
     resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
     books = {b["storybook_id"]: b for b in resp.json()["books"]}
     assert books["catalog-book"]["assigned_profile_ids"] == [str(seed.child_profile_id)]
+
+
+async def test_stranger_family_private_book_stays_hidden(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A third, unrelated family's private book never appears in A's browse.
+
+    P6-10: ``test_other_family_private_book_stays_hidden`` above proves this
+    against family B; this repeats it against family C (the ``stranger``
+    fixture, zero relationship to A or B) so the `or_(Storybook.family_id ==
+    ctx.principal.family_id, ...)` visibility clause is proven to key on "is
+    the caller's family", not "is not the one other family this suite
+    seeds".
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id="stranger-family-book",
+                family_id=stranger.family_id,
+                status="published",
+                current_published_version=1,
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="stranger-family-book",
+                version=1,
+                blob={"id": "stranger-family-book", "title": "Stranger's Tale"},
+                approved_by=seed.admin_user_id,
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    ids = [b["storybook_id"] for b in resp.json()["books"]]
+    # the fixture's stranger-family book has default visibility=family
+    assert all(i != "stranger-family-book" for i in ids)
+
+
+async def test_stranger_family_catalog_assignment_set_excludes_its_profiles(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A stranger family's assignments never leak into A's catalog-book view.
+
+    P6-10 companion to ``test_catalog_book_assignment_set_is_family_scoped``
+    (family B): a catalog book assigned by family C must show its assignment
+    set to family A's browse as empty (family A has not assigned it), never
+    family C's child profile UUIDs.
+    """
+    async with sessions() as session:
+        session.add(
+            Storybook(
+                id="stranger-catalog-book",
+                family_id=stranger.family_id,
+                status="published",
+                current_published_version=1,
+                visibility="catalog",
+            )
+        )
+        session.add(
+            StorybookVersion(
+                storybook_id="stranger-catalog-book",
+                version=1,
+                blob={"id": "stranger-catalog-book", "title": "Stranger Catalog Tale"},
+                approved_by=seed.admin_user_id,
+                moderation_report=make_clean_moderation_report(),
+            )
+        )
+        session.add(
+            StorybookAssignment(
+                child_profile_id=stranger.child_profile_id,
+                storybook_id="stranger-catalog-book",
+            )
+        )
+        await session.commit()
+    resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    books = {b["storybook_id"]: b for b in resp.json()["books"]}
+    assert books["stranger-catalog-book"]["assigned_profile_ids"] == []
