@@ -1182,6 +1182,67 @@ export type NoiseFloorView = {
 };
 
 /**
+ * OnboardingBody
+ *
+ * First-login onboarding request body.
+ *
+ * All identity comes from the verified token, so the body is optional and
+ * carries only the P7-02 consent seam. The endpoint accepts an empty request
+ * (no body) equally.
+ */
+export type OnboardingBody = {
+    consent?: OnboardingConsent | null;
+};
+
+/**
+ * OnboardingConsent
+ *
+ * Consent-capture seam for onboarding (accepted, recorded by P7-02).
+ *
+ * This is the extension point P7-02 (consent capture) fills; onboarding
+ * accepts it today but records nothing. Keep it minimal: do NOT add consent
+ * business logic here.
+ */
+export type OnboardingConsent = {
+    /**
+     * Accepted
+     */
+    accepted?: boolean | null;
+    /**
+     * Policy Version
+     */
+    policy_version?: string | null;
+};
+
+/**
+ * OnboardingView
+ *
+ * The family/guardian identity resolved or created by onboarding.
+ *
+ * ``created`` is ``True`` only when this request provisioned the row; a
+ * retry (idempotent) or an already-provisioned guardian/admin returns
+ * ``False``. The HTTP status mirrors it: 201 when created, 200 otherwise.
+ */
+export type OnboardingView = {
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * User Id
+     */
+    user_id: string;
+    /**
+     * Role
+     */
+    role: string;
+    /**
+     * Created
+     */
+    created: boolean;
+};
+
+/**
  * ProfileCreateBody
  *
  * A guardian's request to create a child profile.
@@ -3989,3 +4050,37 @@ export type CreateChildSessionApiV1ChildSessionsPostResponses = {
 };
 
 export type CreateChildSessionApiV1ChildSessionsPostResponse = CreateChildSessionApiV1ChildSessionsPostResponses[keyof CreateChildSessionApiV1ChildSessionsPostResponses];
+
+export type OnboardApiV1OnboardingPostData = {
+    /**
+     * Body
+     */
+    body?: OnboardingBody | null;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/onboarding';
+};
+
+export type OnboardApiV1OnboardingPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type OnboardApiV1OnboardingPostError = OnboardApiV1OnboardingPostErrors[keyof OnboardApiV1OnboardingPostErrors];
+
+export type OnboardApiV1OnboardingPostResponses = {
+    /**
+     * Successful Response
+     */
+    200: OnboardingView;
+};
+
+export type OnboardApiV1OnboardingPostResponse = OnboardApiV1OnboardingPostResponses[keyof OnboardApiV1OnboardingPostResponses];

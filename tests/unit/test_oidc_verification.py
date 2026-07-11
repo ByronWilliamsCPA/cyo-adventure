@@ -311,3 +311,30 @@ async def test_resolve_subject_verifies_outside_local(
     monkeypatch.setattr(deps.settings, "environment", "staging")
     token = _sign(_claims())
     assert await deps._resolve_subject(token) == _SUBJECT
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_verify_oidc_identity_captures_email_when_present() -> None:
+    """The email contact claim is returned alongside the subject when present."""
+    token = _sign(_claims(email="guardian@example.com"))
+    subject, email = await deps._verify_oidc_identity(token)
+    assert subject == _SUBJECT
+    assert email == "guardian@example.com"
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_verify_oidc_identity_email_none_when_absent() -> None:
+    """A token with no email claim yields a None email, not an error."""
+    subject, email = await deps._verify_oidc_identity(_sign(_claims()))
+    assert subject == _SUBJECT
+    assert email is None
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_verify_oidc_identity_email_none_when_blank() -> None:
+    """An empty-string email claim degrades to None (contact data, not a key)."""
+    _subject, email = await deps._verify_oidc_identity(_sign(_claims(email="")))
+    assert email is None

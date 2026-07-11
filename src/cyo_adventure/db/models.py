@@ -169,6 +169,13 @@ class User(Base):
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     role: Mapped[str] = mapped_column(String(16))
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    # Contact data ONLY, never an identity key. Populated from the Supabase
+    # user's email claim at JIT onboarding (P6-03) for receipts and consent
+    # records (P7-02 fills consent); may be an Apple private-relay address and
+    # may change. ``authn_subject`` is the sole key: nothing joins, authorizes,
+    # or de-duplicates on this column, and it is nullable so a subject with no
+    # email claim still provisions.
+    email: Mapped[str | None] = mapped_column(String(320), default=None)
     # Null for guardians; set for a child user to the single profile it may act on.
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE), default=None
