@@ -19,6 +19,12 @@ export default defineConfig({
         start_url: '/',
       },
       workbox: {
+        // Default globPatterns only precache js/css/html; the illustrated
+        // avatar set (issue #65 phase 1) ships as WebP imports bundled into
+        // the app, so extend the pattern to include images (webp plus the
+        // usual raster/vector formats) so profile pickers render avatars
+        // offline instead of showing broken images.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         // Story version blobs are immutable: cache-first, long-lived.
         // Reading state and other API calls: network-first with a cache fallback
         // so a downloaded story still plays offline.
