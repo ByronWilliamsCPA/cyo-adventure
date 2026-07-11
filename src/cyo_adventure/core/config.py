@@ -127,10 +127,11 @@ class Settings(BaseSettings):
     # the stranded-job reclaim sweep's re-enqueue).
     generation_job_timeout_seconds: int = 1800
     # Provider selection. "mock" remains the default so CI and local runs never
-    # make live LLM calls; production/staging set this to "openrouter" (the
-    # primary per ADR-003 as amended 2026-06-22). Live adapters are constructed
-    # lazily in build_provider(), so an unset live key fails at call time, not
-    # startup.
+    # make live LLM calls; production sets this to "openrouter" (the primary
+    # per ADR-003 as amended 2026-06-22), while staging defaults to "ollama"
+    # so staging test runs place no billed LLM calls (see .env.staging.example).
+    # Live adapters are constructed lazily in build_provider(), so an unset
+    # live key fails at call time, not startup.
     generation_provider: Literal[
         "mock", "anthropic", "ollama", "openrouter", "modal"
     ] = "mock"
