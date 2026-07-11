@@ -303,6 +303,25 @@ def _mock_session_factory(
     return session_factory, session
 
 
+def _assert_scalar_filters_on_authn_subject(
+    session: MagicMock, expected_subject: str
+) -> None:
+    """Assert the statement passed to session.scalar() is a WHERE on
+    User.authn_subject with the expected bound value.
+
+    A fixed session.scalar() return value alone would let a regression that
+    filters on the wrong column (e.g. User.id or User.email) pass silently;
+    this inspects the actual Select statement's WHERE clause structure.
+    """
+    session.scalar.assert_awaited_once()
+    (stmt,), _ = session.scalar.call_args
+    where_clause = stmt.whereclause
+    assert where_clause is not None
+    assert where_clause.left.name == "authn_subject"
+    assert where_clause.left.table.name == seed_staging.User.__tablename__
+    assert where_clause.right.value == expected_subject
+
+
 @pytest.mark.asyncio
 async def test_seed_skips_when_guardian_already_exists(
     monkeypatch: pytest.MonkeyPatch,
@@ -314,6 +333,7 @@ async def test_seed_skips_when_guardian_already_exists(
     with patch.object(seed_staging.httpx, "AsyncClient", return_value=_auth_ctx()):
         await seed_staging.seed(engine=engine, session_factory=session_factory)
 
+    _assert_scalar_filters_on_authn_subject(session, "guardian-auth-id")
     session.add.assert_not_called()
     session.commit.assert_not_called()
 
@@ -329,6 +349,7 @@ async def test_seed_inserts_fixtures_when_absent(
     with patch.object(seed_staging.httpx, "AsyncClient", return_value=_auth_ctx()):
         await seed_staging.seed(engine=engine, session_factory=session_factory)
 
+    _assert_scalar_filters_on_authn_subject(session, "guardian-auth-id")
     session.commit.assert_awaited_once()
     # family, profile, guardian, admin, then (storybook, version, assignment)
     # per fixture story (2 stories) = 4 + 2 * 3 = 10 inserts.
