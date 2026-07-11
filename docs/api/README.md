@@ -102,7 +102,7 @@ example a running dev stack), run the suite under an isolated project with remap
 ## Required environment
 
 No secrets are required to run the suite. The compose defaults are sufficient: `ENVIRONMENT=local` (dev
-auth), `DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/LLM/Redis
+auth), `DATABASE_URL` pointing at the compose `db` service, and no Supabase/Gemini/R2/LLM/Redis
 configuration. The only non-default env used in CI is `DATABASE_URL` for the runner-side migrate and
 seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
 step uses the repo-level `CODECOV_TOKEN` secret for optional, non-blocking Test Analytics reporting
