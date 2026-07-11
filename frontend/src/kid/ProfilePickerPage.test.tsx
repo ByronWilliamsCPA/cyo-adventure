@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -151,5 +151,55 @@ describe('ProfilePickerPage', () => {
     )
     expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
     expect(screen.queryByText(/hit a snag/i)).not.toBeInTheDocument()
+  })
+
+  it('logs the raw fallback value for a non-Error, non-axios rejection', async () => {
+    // A thrown string has no .message and is not an AxiosError, so the
+    // redacted-logging ternary must pass it through as-is.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockGet.mockRejectedValue('socket hangup')
+    renderPicker()
+
+    expect(await screen.findByText(/Oops, we hit a snag/i)).toBeInTheDocument()
+    expect(errorSpy).toHaveBeenCalledWith('profile list failed', 'socket hangup')
+    errorSpy.mockRestore()
+  })
+
+  it('ignores a load that fails after unmount (cancelled guard)', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    let rejectList!: (err: unknown) => void
+    mockGet.mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectList = reject
+        })
+    )
+    const { unmount } = renderPicker()
+    unmount()
+    rejectList(new Error('late boom'))
+
+    // The redacted log still fires (it precedes the cancelled check); the
+    // point is that no state write follows on the unmounted component.
+    await waitFor(() =>
+      expect(errorSpy).toHaveBeenCalledWith('profile list failed', 'late boom')
+    )
+    errorSpy.mockRestore()
+  })
+
+  it('ignores a load that resolves after unmount (cancelled guard)', async () => {
+    let resolveList!: (value: unknown) => void
+    mockGet.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveList = resolve
+        })
+    )
+    const { unmount } = renderPicker()
+    unmount()
+    resolveList({ data: { profiles: [] } })
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mockGet).toHaveBeenCalledTimes(1)
+    expect(document.body.textContent).toBe('')
   })
 })
