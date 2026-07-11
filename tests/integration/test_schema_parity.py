@@ -5,6 +5,11 @@ same Postgres server: one by applying every ``supabase/migrations/*.sql``
 file in lexicographic order (the simple-query protocol handles
 multi-statement files), one from ``Base.metadata.create_all``. Their
 inspected structure must be identical.
+
+Known blind spots (currently vacuous, revisit if the schema grows them):
+FK ON DELETE/ON UPDATE actions, index access methods, native enum types,
+sequences, and triggers/functions (the ``pipeline_event`` append-only
+trigger is covered behaviorally in ``test_pipeline_event_append_only.py``).
 """
 
 from __future__ import annotations

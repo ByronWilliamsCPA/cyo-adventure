@@ -163,6 +163,7 @@ path = [
     ".dockerignore",  # Docker build context exclusions
     ".editorconfig",  # Editor configuration
     ".env.example",  # Environment variable template
+    ".env.staging.example",  # Staging environment template
     ".infisical.json",  # Infisical secrets manager config
     ".markdownlint.json",  # Markdownlint configuration
     ".mutmut_config",  # Mutmut mutation testing config
