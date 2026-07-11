@@ -68,7 +68,10 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
             endpoint_url=_r2_endpoint_url(account_id),
             aws_access_key_id=access_key_id,
             aws_secret_access_key=secret_access_key,
-            # R2 has no region concept; "auto" is Cloudflare's documented value.
+            # Sonar python:S6262 false positive: R2 has no region concept and
+            # Cloudflare's S3-compatibility docs REQUIRE the literal "auto"
+            # ("the region for an R2 bucket is `auto`"); there is nothing to
+            # configure per environment.
             region_name="auto",
             config=BotoConfig(
                 signature_version="s3v4",
@@ -76,6 +79,11 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
                 read_timeout=_UPLOAD_TIMEOUT_SECONDS,
             ),
         )
+        # Sonar python:S7608 false positive: ExpectedBucketOwner is an AWS
+        # cross-account bucket-confusion safeguard. Cloudflare R2 does not
+        # implement x-amz-expected-bucket-owner (marked unsupported in the R2
+        # S3-api docs), and the endpoint above is already scoped to a single
+        # Cloudflare account id, so cross-account confusion cannot occur.
         client.put_object(
             Bucket=bucket,
             Key=key,
