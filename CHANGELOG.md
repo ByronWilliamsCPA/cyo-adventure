@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Supabase multi-environment pipeline scaffold: CLI project config, baseline
+  SQL migration squashed from the Alembic head, PR migration validation, and
+  staging/production deploy workflows (staging auto on merge, production
+  human-gated) (#TBD-PR1)
 - Generation continuity for series (WS-G PR 3): `AnchorContext` now carries the anchor book's
   declared variable names, and the structure prompt instructs continuations to reuse those exact
   names so a reader's state carries across books; stale ending/metadata guidance in the generation
