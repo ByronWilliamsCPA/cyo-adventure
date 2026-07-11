@@ -680,14 +680,16 @@ more children. This is the **R1 release line**.
 - A child sees only stories permitted for their profile (age band and reading level enforced).
 - A guardian can assign an approved generated story to one or more children.
 
-**Quality gates**:
+**Quality gates** (retro-verified 2026-07-11: every C4a PR merged through the required
+"CI Gate" aggregator, and a full local run measured 98.03% total coverage with
+`api/library.py` at 99.36% and `api/profiles.py` at 95.52%, 2414 tests passing):
 
-- [ ] 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths
-- [ ] Integration tests: child cannot see unapproved or off-band story; guardian assigns story
+- [x] 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths
+- [x] Integration tests: child cannot see unapproved or off-band story; guardian assigns story
       to profile and child library updates
-- [ ] No high or critical security findings
-- [ ] Ruff clean; BasedPyright strict clean
-- [ ] Pre-commit green; all commits signed with conventional messages
+- [x] No high or critical security findings
+- [x] Ruff clean; BasedPyright strict clean
+- [x] Pre-commit green; all commits signed with conventional messages
 
 **Dependencies**: Requires Phases 2 and 3. This phase closes R1 (the internal web release);
 Phase 4b and Phase 5 follow.
