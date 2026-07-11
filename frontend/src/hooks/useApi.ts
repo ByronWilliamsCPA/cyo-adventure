@@ -1,7 +1,81 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  AxiosRequestConfig,
+  InternalAxiosRequestConfig,
+} from 'axios'
 import { useMemo } from 'react'
 import { clearChildSession, getChildSession, getValidChildSession, isKidTokenRoute } from '../auth/childSession'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
+
+/**
+ * A request config that may carry the one-shot retry marker set by the
+ * guardian 401 refresh-and-retry path (P6-06). The marker guarantees a
+ * request is retried at most once: a 401 on the retry itself falls through
+ * to the normal failure path instead of looping.
+ */
+interface RetriableRequestConfig extends InternalAxiosRequestConfig {
+  guardianRetryAttempted?: boolean
+}
+
+// #CRITICAL: concurrency: this in-flight promise is module-scoped ON PURPOSE
+// so it is shared by every axios instance useApi() creates. A page whose
+// guardian token just expired typically fails several requests at once; all
+// of those 401 handlers must await the SAME refreshSession() call (Supabase
+// refresh tokens are rotated on use, so racing parallel refreshes can
+// invalidate each other and sign the guardian out). The first 401 creates
+// the promise, later concurrent 401s reuse it, and it self-clears once
+// settled so a later, independent 401 can trigger a fresh refresh.
+// #VERIFY: useApi.test.ts "concurrent guardian 401s share a single refresh".
+let guardianRefreshInFlight: Promise<string | null> | null = null
+
+/**
+ * Refresh the guardian's Supabase session once, returning the new access
+ * token, or null when the refresh fails for any reason (no session, refresh
+ * token expired/revoked, Supabase unreachable, or the Supabase client module
+ * itself unavailable). Callers treat null as "fall through to the existing
+ * 401 failure path".
+ */
+function refreshGuardianToken(): Promise<string | null> {
+  guardianRefreshInFlight ??= (async (): Promise<string | null> => {
+    try {
+      // Dynamic import, not static: supabaseClient throws at import time
+      // when VITE_SUPABASE_* is missing and is deliberately kept out of the
+      // kid bundle (see its #CRITICAL header comment). useApi is shared by
+      // the kid surface, so the module may only be pulled in at the moment
+      // a guardian refresh is actually needed; on the guardian surface it
+      // is already loaded and this resolves from the module cache.
+      const { supabase } = await import('../auth/supabaseClient')
+      const { data, error } = await supabase.auth.refreshSession()
+      const token = data.session?.access_token ?? null
+      if (error !== null || token === null) return null
+      // #ASSUME: security: AuthContext's onAuthStateChange also writes this
+      // key on the TOKEN_REFRESHED event this refresh emits, but that write
+      // is async (it happens inside syncPrincipal, alongside a /me refetch)
+      // and may land after the retry below needs the token. Writing the same
+      // access token here first is an idempotent write-through, not a
+      // conflicting double-write; whichever runs second stores an identical
+      // value.
+      // #VERIFY: useApi.test.ts "stores the refreshed token" retry cases.
+      try {
+        localStorage.setItem('auth_token', token)
+      } catch {
+        // #EDGE: browser-compat: storage unavailable (private/locked-down
+        // mode); the retry still carries the fresh token explicitly, and
+        // AuthContext's own setItem attempt owns any user-facing fallout.
+      }
+      return token
+    } catch {
+      // A failed refresh is not an error to surface from here: the caller
+      // falls through to the pre-existing 401 handling (clear + redirect on
+      // guardian paths), which is the correct terminal state.
+      return null
+    }
+  })().finally(() => {
+    guardianRefreshInFlight = null
+  })
+  return guardianRefreshInFlight
+}
 
 /**
  * Creates and returns a configured Axios instance for API calls.
@@ -71,7 +145,7 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
     // Response interceptor for error handling
     instance.interceptors.response.use(
       (response) => response,
-      (error: AxiosError) => {
+      async (error: AxiosError) => {
         // Handle common errors
         if (error.response?.status === 401) {
           // #CRITICAL: security: determine which bearer the FAILING request
@@ -99,6 +173,38 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
             // session), never automatically from here.
             clearChildSession()
           } else {
+            // Guardian-token 401 (P6-06): before tearing the session down,
+            // try ONE refresh-and-retry. The typical cause is an access
+            // token that expired before supabase-js's background refresh
+            // caught it; a refresh recovers that silently. Only requests
+            // that actually carried a bearer qualify (a 401 on an
+            // unauthenticated request has nothing to refresh), and only if
+            // this request has not already been retried (loop guard). Child
+            // tokens are handled above and are never refreshed: they are
+            // not refreshable by design (fixed TTL; expiry means hand the
+            // device back to a grown-up).
+            const failedConfig = error.config as RetriableRequestConfig | undefined
+            const authHeaderValue = typeof authHeader === 'string' ? authHeader : null
+            const carriedBearer =
+              authHeaderValue !== null && authHeaderValue.startsWith('Bearer ')
+            if (
+              failedConfig !== undefined &&
+              carriedBearer &&
+              failedConfig.guardianRetryAttempted !== true
+            ) {
+              const freshToken = await refreshGuardianToken()
+              if (freshToken !== null) {
+                failedConfig.guardianRetryAttempted = true
+                failedConfig.headers.Authorization = `Bearer ${freshToken}`
+                // Re-dispatch through the instance so the request
+                // interceptor runs again; it re-reads localStorage (already
+                // holding the fresh token) and preserves the child-vs-
+                // guardian selection rules for the route.
+                return instance.request(failedConfig)
+              }
+              // Refresh failed: fall through to the pre-existing teardown
+              // below, exactly as if no retry machinery existed.
+            }
             // #ASSUME: security: an expired/invalid guardian session token
             // means the guardian is no longer authenticated for
             // guardian-only routes. Kid paths intentionally do NOT navigate

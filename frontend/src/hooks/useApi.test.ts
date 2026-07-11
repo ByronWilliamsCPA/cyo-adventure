@@ -5,13 +5,51 @@ import { getChildSession, setChildSession } from '../auth/childSession'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { useApi } from './useApi'
 
+// useApi's guardian 401 handler dynamically imports the Supabase client to
+// call refreshSession() (P6-06). Mock the whole module: the real one throws
+// at import time when VITE_SUPABASE_* is unset, and no test here should ever
+// hit the network. vi.hoisted lets the hoisted factory close over the mock.
+const { refreshSessionMock } = vi.hoisted(() => ({
+  refreshSessionMock: vi.fn(),
+}))
+
+vi.mock('../auth/supabaseClient', () => ({
+  supabase: { auth: { refreshSession: refreshSessionMock } },
+}))
+
+/** Config shape carrying the one-shot retry marker set by the P6-06 path. */
+type RetriableRequestConfig = InternalAxiosRequestConfig & {
+  guardianRetryAttempted?: boolean
+}
+
+// Default every test to a FAILING refresh so the pre-P6-06 guardian 401
+// behavior (clear token, redirect off guardian paths) stays the observable
+// outcome unless a test explicitly opts into a successful refresh.
+beforeEach(() => {
+  refreshSessionMock.mockReset()
+  refreshSessionMock.mockResolvedValue({
+    data: { user: null, session: null },
+    error: { name: 'AuthApiError', message: 'refresh failed' },
+  })
+})
+
+function mockRefreshSuccess(token = 'refreshed-token') {
+  refreshSessionMock.mockResolvedValue({
+    data: { user: null, session: { access_token: token } },
+    error: null,
+  })
+}
+
 /**
  * Pulls the response interceptor's rejection handler out of an axios
  * instance so tests can exercise it directly without a real network call.
+ * The handler usually re-rejects, but the guardian refresh-and-retry path
+ * can also RESOLVE with the retried request's response, hence
+ * Promise<unknown> rather than Promise<never>.
  */
 function getResponseRejectedHandler(api: AxiosInstance) {
   const handlers = api.interceptors.response as unknown as {
-    handlers: Array<{ rejected: (error: AxiosError) => Promise<never> } | null>
+    handlers: Array<{ rejected: (error: AxiosError) => Promise<unknown> } | null>
   }
   const handler = handlers.handlers[0]
   if (!handler) {
@@ -218,6 +256,143 @@ describe('useApi 401 interceptor child session clearing (G1 / P6-04)', () => {
     // Not a child-bearer 401 (no Authorization matched the stored child
     // token), so the child session itself is left untouched here.
     expect(getChildSession()).not.toBeNull()
+  })
+})
+
+describe('useApi guardian 401 refresh-and-retry (P6-06)', () => {
+  beforeEach(() => {
+    localStorage.setItem('auth_token', 'test-token')
+  })
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+    localStorage.clear()
+  })
+
+  it('refreshes the session once and retries the request with the new token', async () => {
+    const location = setPathname('/guardian/console')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi
+      .spyOn(result.current, 'request')
+      .mockResolvedValue({ status: 200, data: { ok: true } })
+    const rejected = getResponseRejectedHandler(result.current)
+
+    const response = await rejected(makeUnauthorizedError('Bearer test-token'))
+
+    expect(refreshSessionMock).toHaveBeenCalledTimes(1)
+    expect(requestSpy).toHaveBeenCalledTimes(1)
+    const retriedConfig = requestSpy.mock.calls[0][0] as RetriableRequestConfig
+    expect(retriedConfig.headers.Authorization).toBe('Bearer refreshed-token')
+    expect(retriedConfig.guardianRetryAttempted).toBe(true)
+    expect(response).toEqual({ status: 200, data: { ok: true } })
+    // The interceptor stores the refreshed token so the request interceptor
+    // (and AuthContext, until its own TOKEN_REFRESHED write lands) sees it.
+    expect(localStorage.getItem('auth_token')).toBe('refreshed-token')
+    // A recovered 401 must not tear the session down or bounce to login.
+    expect(location.replace).not.toHaveBeenCalled()
+  })
+
+  it('falls through to the existing failure path when the refresh fails', async () => {
+    const location = setPathname('/guardian/console')
+    // Default mock: refresh fails.
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(makeUnauthorizedError('Bearer test-token'))).rejects.toBeInstanceOf(
+      AxiosError
+    )
+
+    expect(refreshSessionMock).toHaveBeenCalledTimes(1)
+    expect(requestSpy).not.toHaveBeenCalled()
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+  })
+
+  it('does not refresh or retry again when the retried request itself 401s', async () => {
+    const location = setPathname('/guardian/console')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    // Simulate the 401 coming back on a request the interceptor already
+    // retried once: its config carries the one-shot marker.
+    const secondFailure = makeUnauthorizedError('Bearer refreshed-token')
+    ;(secondFailure.config as RetriableRequestConfig).guardianRetryAttempted = true
+
+    await expect(rejected(secondFailure)).rejects.toBeInstanceOf(AxiosError)
+
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+  })
+
+  it('shares a single refresh across concurrent guardian 401s', async () => {
+    setPathname('/guardian/console')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi
+      .spyOn(result.current, 'request')
+      .mockResolvedValue({ status: 200, data: { ok: true } })
+    const rejected = getResponseRejectedHandler(result.current)
+
+    // Two requests fail with 401 in the same tick, before either handler's
+    // refresh resolves: both must await the SAME in-flight refresh.
+    const first = rejected(makeUnauthorizedError('Bearer test-token'))
+    const second = rejected(makeUnauthorizedError('Bearer test-token'))
+    await Promise.all([first, second])
+
+    expect(refreshSessionMock).toHaveBeenCalledTimes(1)
+    expect(requestSpy).toHaveBeenCalledTimes(2)
+    for (const call of requestSpy.mock.calls) {
+      const config = call[0] as RetriableRequestConfig
+      expect(config.headers.Authorization).toBe('Bearer refreshed-token')
+    }
+  })
+
+  it('never attempts a refresh for a child-token 401', async () => {
+    setChildSession({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    const location = setPathname('/library/p1')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(makeUnauthorizedError('Bearer child-token'))).rejects.toBeInstanceOf(
+      AxiosError
+    )
+
+    // Child tokens are not refreshable by design (fixed TTL); the existing
+    // clear-and-gate behavior must be byte-for-byte what it was pre-P6-06.
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
+    expect(getChildSession()).toBeNull()
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+    expect(location.replace).not.toHaveBeenCalled()
+  })
+
+  it('never attempts a refresh when the failing request carried no bearer', async () => {
+    setPathname('/guardian/console')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
+
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
+    expect(localStorage.getItem('auth_token')).toBeNull()
   })
 })
 

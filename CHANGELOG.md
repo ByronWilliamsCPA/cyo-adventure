@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Guardian 401 retry-with-refresh (P6-06): when a request that carried the
+  guardian bearer gets a 401 (typically an access token that expired before
+  supabase-js's background refresh caught it), `useApi`'s response
+  interceptor now calls `supabase.auth.refreshSession()` once, writes the
+  new access token to `localStorage['auth_token']` (an idempotent
+  write-through; `AuthContext`'s `TOKEN_REFRESHED` handler later stores the
+  same value), and retries the original request exactly once with the fresh
+  token. Concurrent 401s from parallel requests share a single in-flight
+  refresh promise (Supabase rotates refresh tokens on use, so racing
+  parallel refreshes could invalidate each other), and retried requests
+  carry a one-shot config marker so a second 401 falls through to the
+  pre-existing failure path (clear token, redirect off guardian paths)
+  instead of looping. The Supabase client is loaded via dynamic import so
+  the kid bundle still omits it entirely. Child-token 401s are deliberately
+  untouched: child session tokens are not refreshable by design (fixed TTL;
+  expiry means hand the device back to a grown-up), so they keep the
+  existing clear-session-and-gate behavior, and 401s on requests that
+  carried no bearer at all are also unchanged.
+
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
