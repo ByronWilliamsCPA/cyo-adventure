@@ -11,6 +11,16 @@
   --color-ink-secondary:   #5a3e28;
   --color-ink-muted:       #8c6f56;
 
+  /* Border: warm neutral hairline for card, row, and form-field boundaries
+     (ink at low opacity). Consolidates 6+ former inline
+     rgb(44 26 14 / 12%) declarations in the guardian surface. */
+  --color-border-soft:     rgb(44 26 14 / 12%);
+
+  /* Surface: translucent white card fill for raised rows/panels sitting on
+     the parchment wash. Consolidates 4 former inline
+     rgb(255 255 255 / 55%) declarations in the guardian surface. */
+  --surface-raised:        rgb(255 255 255 / 55%);
+
   /* Amber: primary interactive accent (brightened to a sunnier tangerine for
      the kid surface; still warm enough to sit on parchment) */
   --color-amber:           #e07f2e;

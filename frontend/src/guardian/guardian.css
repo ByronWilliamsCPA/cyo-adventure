@@ -1,3 +1,17 @@
+/* ============================================================================
+   Guardian console: shell chrome, shared surface patterns, per-page styles.
+
+   1. Shell chrome: page background, sticky header/nav, sign-in card.
+   2. Shared surface patterns (C2): grouped :is() rules give the five
+      card/list-item families and four form-field stacks one consistent
+      visual treatment, plus two text-tone groups (error, muted/notice).
+      Kept ahead of the per-page sections below so a page's own rule only
+      has to add its layout-specific spacing, not repeat the shared radius,
+      border, background, input, or text-color declarations.
+   3. Per-page sections: profiles, intake, console/review queue, review
+      detail, assignment, authored request form, books, admin tables.
+   ============================================================================ */
+
 /* ── Z-index ladder ────────────────────────────────────────────
    .guardian-shell__header  (sticky top)      10
    .review-actionbar        (sticky bottom)    5
@@ -125,11 +139,9 @@
   outline-offset: 2px;
 }
 
-.guardian-login__error,
-.guardian-shell__error {
-  margin: 1rem 1.5rem 0;
-  color: var(--color-error, #b3261e);
-  font-size: var(--text-sm, 0.9375rem);
+.guardian-login__provider:disabled {
+  opacity: 0.6;
+  cursor: progress;
 }
 
 .guardian-login__divider {
@@ -156,26 +168,17 @@
   text-align: left;
 }
 
+/* Layout/gap/font-weight for this field stack live in the shared grouped
+   rule below; only the extra color override stays here. */
 .guardian-login__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-weight: var(--weight-semibold, 600);
   color: var(--color-ink-secondary, #5a3e28);
 }
 
-.guardian-login__field input {
-  padding: 0.6rem 0.75rem;
-  border-radius: 8px;
-  border: 1px solid var(--color-amber, #e07f2e);
-  background: rgb(255 255 255 / 70%);
-  font: inherit;
-  color: var(--color-ink, #2c1a0e);
-}
-
-.guardian-login__provider:disabled {
-  opacity: 0.6;
-  cursor: progress;
+/* margin/font-size stay local; text color moves to the shared error group. */
+.guardian-login__error,
+.guardian-shell__error {
+  margin: 1rem 1.5rem 0;
+  font-size: var(--text-sm, 0.9375rem);
 }
 
 .guardian-stub {
@@ -190,7 +193,7 @@
   flex-wrap: wrap;
   gap: var(--space-2, 0.5rem);
   padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
-  border-bottom: 1px solid rgb(44 26 14 / 12%);
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
 .guardian-shell__nav a {
@@ -228,6 +231,102 @@
   font-size: var(--text-lg, 1.25rem);
 }
 
+/* ============================================================================
+   Shared surface patterns (C2 consolidation)
+   ============================================================================ */
+
+/* Raised-card treatment shared by the console feed, profile list, intake
+   requests, review findings, and books list. Each family's own rule below
+   keeps only its layout (flex direction, gaps, per-row padding). */
+:is(.console-row, .profiles__card, .intake-request, .review-card, .books__row) {
+  border-radius: var(--radius-lg, 12px);
+  background: var(--surface-raised, rgb(255 255 255 / 55%));
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+/* Only the console feed row is a single whole-row link; the other four
+   families host their own interactive controls (buttons, selects) that
+   already carry their own hover/focus states, so only this one lifts. */
+.console-row:hover {
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(44, 26, 14, 0.1));
+}
+
+/* Field-stack layout shared by every labeled input across the login, profile,
+   intake, and authored-request forms. */
+:is(.guardian-login__field, .profile-form label, .intake-form__field, .request-form__field) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-weight: var(--weight-semibold, 600);
+}
+
+/* Shared input box treatment for the same four field-stack families.
+   Checkbox/radio inputs (profile avatar picker, TTS toggle) are excluded so
+   they keep their native control appearance. */
+:is(
+    .guardian-login__field input,
+    .profile-form label input,
+    .profile-form label select,
+    .intake-form__field input,
+    .intake-form__field textarea,
+    .request-form__field input,
+    .request-form__field select,
+    .request-form__field textarea
+  ):not([type='checkbox']):not([type='radio']) {
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  background: rgb(255 255 255 / 70%);
+  font: inherit;
+  color: var(--color-ink, #2c1a0e);
+}
+
+:is(
+    .guardian-login__field input,
+    .profile-form label input,
+    .profile-form label select,
+    .intake-form__field input,
+    .intake-form__field textarea,
+    .request-form__field input,
+    .request-form__field select,
+    .request-form__field textarea
+  ):not([type='checkbox']):not([type='radio']):focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+  border-color: var(--color-amber-deep, #c17b2a);
+}
+
+/* Error-toned inline text: form/field/action errors across every page. */
+:is(
+  .profile-form__error,
+  .intake-form__error,
+  .console__error,
+  .console-row__error,
+  .review-detail__action-error,
+  .review-detail__visibility-warning,
+  .request-form__error
+) {
+  color: var(--color-error, #b3261e);
+}
+
+/* font-size stays local; text color moves to the shared error group above. */
+.intake-request__error {
+  color: var(--color-error, #9b2c2c);
+  font-size: 0.875rem;
+}
+
+/* Muted/notice-toned inline text: secondary, non-error informational copy. */
+:is(.console__notice, .console__muted, .console-row__series-note) {
+  color: var(--color-ink-muted, #8c6f56);
+}
+
+/* color moves to the shared muted group above; font-size/margin stay local. */
+.intake-form__hint {
+  color: var(--color-ink-muted, #8c6f56);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
 .profiles__header {
   display: flex;
   align-items: center;
@@ -247,8 +346,6 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
-  background: rgb(255 255 255 / 55%);
 }
 
 .profiles__card-body {
@@ -273,15 +370,8 @@
   gap: 0.75rem;
 }
 
-.profile-form label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-weight: 600;
-}
-
 .profile-form__avatars {
-  border: 1px solid rgb(44 26 14 / 12%);
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
   border-radius: 8px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -295,10 +385,6 @@
   font-weight: 400;
 }
 
-.profile-form__error {
-  color: var(--color-error, #9b2c2c);
-}
-
 .intake-form {
   display: flex;
   flex-direction: column;
@@ -307,29 +393,12 @@
 }
 
 .intake-form__chips {
-  border: 1px solid rgb(44 26 14 / 12%);
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
   border-radius: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.75rem;
-}
-
-.intake-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-weight: 600;
-}
-
-.intake-form__error {
-  color: var(--color-error, #9b2c2c);
-}
-
-.intake-form__hint {
-  color: var(--color-ink-muted, #8c6f56);
-  font-size: 0.875rem;
-  margin: 0;
 }
 
 .intake-retry {
@@ -341,8 +410,12 @@
   cursor: pointer;
 }
 
+/* Bright amber (--color-amber) only clears the WCAG 1.4.11 non-text 3:1
+   minimum, not the 4.5:1 normal-text minimum, so it stays reserved for
+   hover-only boundaries (kid.css idiom). This chip's resting border is a
+   permanent, non-hover boundary, so it uses --color-amber-deep instead. */
 .intake-chip {
-  border: 1px solid var(--color-amber, #e07f2e);
+  border: 1px solid var(--color-amber-deep, #c17b2a);
   background: transparent;
   color: var(--color-ink, #2c1a0e);
   border-radius: 999px;
@@ -350,9 +423,20 @@
   cursor: pointer;
 }
 
+.intake-chip:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+/* White text on an amber-deep fill only clears 4.5:1 at large-text sizes
+   (matching the sign-out / nav-active / provider-button treatment above),
+   so the selected chip is bumped to text-lg + bold along with the fill. */
 .intake-chip--on {
-  background: var(--color-amber, #e07f2e);
+  background: var(--color-amber-deep, #c17b2a);
+  border-color: var(--color-amber-deep, #c17b2a);
   color: white;
+  font-size: var(--text-lg, 1.25rem);
+  font-weight: var(--weight-bold, 700);
 }
 
 .intake-requests {
@@ -369,18 +453,11 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  border-radius: 12px;
-  background: rgb(255 255 255 / 55%);
 }
 
 .intake-request__body {
   display: flex;
   flex-direction: column;
-}
-
-.intake-request__error {
-  color: var(--color-error, #9b2c2c);
-  font-size: 0.875rem;
 }
 
 .intake-pill {
@@ -390,6 +467,32 @@
   background: var(--color-parchment-dark, #ede6d0);
   color: var(--color-ink-secondary, #5a3e28);
   white-space: nowrap;
+}
+
+/* This pill's text can't clear 4.5:1 with amber-deep at any font weight
+   without growing past its compact inline size, so it uses an amber-deep
+   fill with ink text (4.86:1) instead of the white-on-amber-deep pairing
+   used where text can be sized large (see .intake-chip--on above). */
+.intake-request__assign {
+  border: 1px solid var(--color-amber-deep, #c17b2a);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: var(--weight-semibold, 600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.intake-request__assign:hover {
+  background: var(--color-amber-hover, #c4681c);
+  border-color: var(--color-amber-hover, #c4681c);
+}
+
+.intake-request__assign:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
 }
 
 .flag-badge {
@@ -409,9 +512,15 @@
   color: var(--color-error, #b3261e);
 }
 
+/* Same small-text contrast constraint as .intake-request__assign above: a
+   solid amber-deep fill with ink text (4.86:1), not a light amber-deep tint
+   with amber-deep text (the other tones' pattern, which cannot clear 4.5:1
+   at this badge's fixed size). This tone also renders inside
+   ReviewDetailPage, whose density guardrail rules out a compensating
+   font-size bump, so the fill+ink-text swap is the only lever available. */
 .flag-badge--flag {
-  background: rgb(193 123 42 / 14%);
-  color: var(--color-amber, #e07f2e);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
 }
 
 .flag-badge--advisory {
@@ -447,11 +556,6 @@
   gap: 0.5rem;
 }
 
-.console-row {
-  border-radius: 12px;
-  background: rgb(255 255 255 / 55%);
-}
-
 .console-row__link {
   display: flex;
   align-items: center;
@@ -460,6 +564,11 @@
   padding: 0.75rem 1rem;
   text-decoration: none;
   color: var(--color-ink, #2c1a0e);
+}
+
+.console-row__link:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
 }
 
 .console-row__title {
@@ -485,21 +594,8 @@
   padding: 0 1rem 0.75rem;
 }
 
-.console__notice,
-.console__muted {
-  color: var(--color-ink-muted, #8c6f56);
-}
-
-.console__error {
-  color: var(--color-error, #b3261e);
-}
-
-.console-row__error {
-  color: var(--color-error, #b3261e);
-}
-
+/* color moves to the shared muted group above; italic stays local. */
 .console-row__series-note {
-  color: var(--color-ink-muted, #8c6f56);
   font-style: italic;
 }
 
@@ -512,11 +608,8 @@
 }
 
 .review-card {
-  border: 1px solid rgb(44 26 14 / 12%);
-  border-radius: 12px;
   padding: 0.75rem 1rem;
   margin-bottom: 0.75rem;
-  background: rgb(255 255 255 / 55%);
 }
 
 .review-findings {
@@ -560,12 +653,8 @@
   font-weight: 600;
 }
 
-.review-detail__action-error {
-  color: var(--color-error, #b3261e);
-}
-
 .review-detail__visibility {
-  border: 1px solid rgb(44 26 14 / 12%);
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -582,8 +671,8 @@
   font-weight: 400;
 }
 
+/* color moves to the shared error group above; margin stays local. */
 .review-detail__visibility-warning {
-  color: var(--color-error, #b3261e);
   margin: 0;
 }
 
@@ -597,29 +686,15 @@
   padding: 0.75rem 1rem;
   margin-top: 1.5rem;
   background: var(--color-parchment-dark, #ede6d0);
-  border-top: 1px solid rgb(44 26 14 / 12%);
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
+/* color moves to the shared muted group above; the rest stays local. */
 .review-actionbar__hint {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;
   color: var(--color-ink-muted, #8c6f56);
   text-align: center;
-}
-
-.intake-request__assign {
-  border: 1px solid var(--color-amber, #e07f2e);
-  background: transparent;
-  color: var(--color-amber, #e07f2e);
-  border-radius: 999px;
-  padding: 0.2rem 0.7rem;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.intake-request__assign:hover {
-  background: var(--color-amber-subtle, #fdf3e6);
 }
 
 .assign__list {
@@ -641,7 +716,7 @@
 .assign__content-summary {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--color-border, #d0d0d0);
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
 .assign__findings {
@@ -661,7 +736,7 @@
   max-width: 32rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid rgb(44 26 14 / 12%);
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
 .request-form__heading {
@@ -670,22 +745,11 @@
   margin: 0;
 }
 
-.request-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-weight: 600;
-}
-
 .request-form__notice {
   color: var(--color-forest, #2d5a3d);
 }
 
 .request-form__notice--blocked {
-  color: var(--color-error, #9b2c2c);
-}
-
-.request-form__error {
   color: var(--color-error, #9b2c2c);
 }
 
@@ -706,8 +770,6 @@
   flex-direction: column;
   gap: 0.35rem;
   padding: 0.85rem 1rem;
-  border: 1px solid var(--color-border, #d0d5dd);
-  border-radius: 0.6rem;
 }
 
 .books__main {
@@ -723,6 +785,37 @@
 
 .books__assigned {
   margin: 0;
-  color: var(--color-text-muted, #667085);
+  color: var(--color-ink-muted, #8c6f56);
   font-size: 0.9rem;
+}
+
+/* ============================================================================
+   Admin tables (ModerationDashboardPage, ModerationThresholdsPage): both
+   render a bare <table> rather than a styled component, so they are styled
+   contextually inside the shell's main region, giving any future admin table
+   the same treatment for free. Information density is deliberately
+   unchanged (no font-size increase, no added row height beyond a few px).
+   `.guardian-table` is an additive fallback class for either <table> element
+   if a future specificity conflict ever needs it; no existing markup is
+   renamed to use it.
+   ============================================================================ */
+.guardian-shell__main table,
+.guardian-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm, 0.9375rem);
+}
+
+.guardian-shell__main thead tr,
+.guardian-table thead tr {
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
+.guardian-shell__main th,
+.guardian-shell__main td,
+.guardian-table th,
+.guardian-table td {
+  padding: 0.3rem 0.6rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
