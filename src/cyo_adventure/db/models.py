@@ -7,7 +7,7 @@ inline on ``storybook_version.blob`` for Phase 1 (the MinIO ``blob_ref`` path is
 deferred); see the module note on the blob column.
 
 Enumerated columns (role, status, age band) are stored as strings validated at
-the application boundary rather than native Postgres enums, which keeps Alembic
+the application boundary rather than native Postgres enums, which keeps schema
 migrations simple and avoids enum-type churn.
 """
 

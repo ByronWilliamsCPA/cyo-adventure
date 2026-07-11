@@ -138,26 +138,30 @@ def _snapshot(sync_conn: Any) -> dict[str, Any]:
                 c["nullable"],
                 c.get("default"),
             )
-            for c in insp.get_columns(table)
+            for c in insp.get_columns(table, schema="public")
         }
-        pk = tuple(insp.get_pk_constraint(table)["constrained_columns"])
+        pk = tuple(
+            insp.get_pk_constraint(table, schema="public")["constrained_columns"]
+        )
         fks = sorted(
             (
                 tuple(fk["constrained_columns"]),
                 fk["referred_table"],
                 tuple(fk["referred_columns"]),
             )
-            for fk in insp.get_foreign_keys(table)
+            for fk in insp.get_foreign_keys(table, schema="public")
         )
         uniques = sorted(
-            tuple(u["column_names"]) for u in insp.get_unique_constraints(table)
+            tuple(u["column_names"])
+            for u in insp.get_unique_constraints(table, schema="public")
         )
         indexes = sorted(
             (tuple(i["column_names"]), bool(i["unique"]))
-            for i in insp.get_indexes(table)
+            for i in insp.get_indexes(table, schema="public")
         )
         checks = sorted(
-            _norm_check(c["sqltext"]) for c in insp.get_check_constraints(table)
+            _norm_check(c["sqltext"])
+            for c in insp.get_check_constraints(table, schema="public")
         )
         snap[table] = {
             "columns": cols,
@@ -170,6 +174,7 @@ def _snapshot(sync_conn: Any) -> dict[str, Any]:
     return snap
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_migrations_match_orm_models(pg_url: str) -> None:
     """Applying every migration must produce the same schema as the ORM models.
