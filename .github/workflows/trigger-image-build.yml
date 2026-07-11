@@ -1,0 +1,63 @@
+# Trigger Homelab Image Build
+# Fires a repository_dispatch (event type cyo-adventure-push) at
+# ByronWilliamsCPA/homelab-infra so its cyo-adventure-build.yml rebuilds and
+# publishes the backend/frontend images from the exact commit just pushed to
+# main. Before this existed, homelab-infra's build only ran on manual
+# workflow_dispatch or a weekly schedule, so merges here could sit unpublished
+# for days (the "why is the live site stale" gap); the weekly schedule remains
+# over there as a safety net if this sender or its token breaks.
+#
+# Auth: HOMELAB_INFRA_DISPATCH_TOKEN must be a fine-grained PAT (or GitHub App
+# token) with Actions read/write (and metadata read) on the homelab-infra
+# repo, stored as an Actions secret in THIS repo. If the secret is missing or
+# expired, the gh call fails loudly (401/404) rather than silently skipping,
+# so a broken dispatch shows up as a red run on main, not a stale deploy.
+#
+# #ASSUME external-resource: homelab-infra's workflow listens for exactly
+# event_type cyo-adventure-push and reads client_payload.ref as the source
+# ref to build (see its `repository_dispatch` trigger and SOURCE_REF env).
+# #VERIFY if either name changes there, change it here in the same PR.
+name: Trigger Homelab Image Build
+
+on:
+  push:
+    branches: [main]
+    # Doc-only merges don't change image content; skip the dispatch (the
+    # image build would succeed but publish a byte-identical app). Anything
+    # not listed here (src/, frontend/, Dockerfiles, pyproject/uv.lock, ...)
+    # still triggers.
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - 'mkdocs.yml'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  # Never cancel an in-flight dispatch: each one is a near-instant API call,
+  # and homelab-infra's own concurrency group handles superseded builds.
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Dispatch to homelab-infra
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Fire repository_dispatch (cyo-adventure-push)
+        env:
+          GH_TOKEN: ${{ secrets.HOMELAB_INFRA_DISPATCH_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          gh api repos/ByronWilliamsCPA/homelab-infra/dispatches \
+            -f event_type=cyo-adventure-push \
+            -f "client_payload[ref]=${SHA}"
+          echo "Dispatched image build for ${SHA} to homelab-infra" >> "$GITHUB_STEP_SUMMARY"

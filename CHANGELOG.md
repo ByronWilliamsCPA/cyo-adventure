@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
+  every push to `main` that touches image content now fires a
+  `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
+  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`, whose
+  `cyo-adventure-build.yml` rebuilds and publishes the backend/frontend images
+  from exactly that commit. Previously images were only built on manual
+  dispatch or a weekly schedule, so merges could sit unpublished for days
+  while the live deploy served a stale build. Doc-only paths (`docs/`,
+  `**.md`, `.claude/`, `mkdocs.yml`) are ignored. Requires the
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Actions
+  read/write on homelab-infra); a missing/expired token fails the run loudly
+  rather than silently skipping the dispatch.
+
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
