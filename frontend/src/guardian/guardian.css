@@ -252,7 +252,14 @@
 }
 
 /* Field-stack layout shared by every labeled input across the login, profile,
-   intake, and authored-request forms. */
+   intake, and authored-request forms.
+   Specificity note: :is() takes the weight of its most specific argument, and
+   `.profile-form label` (class + type) is the heaviest one here, so this
+   whole rule resolves to (0,1,1), not the (0,1,0) a single class selector
+   would carry. A later same-file override written as a single class (e.g.
+   `.request-form__field { ... }`) is LOWER specificity and will silently lose
+   to this rule regardless of source order; override with an equally or more
+   specific selector instead. */
 :is(.guardian-login__field, .profile-form label, .intake-form__field, .request-form__field) {
   display: flex;
   flex-direction: column;
@@ -262,7 +269,12 @@
 
 /* Shared input box treatment for the same four field-stack families.
    Checkbox/radio inputs (profile avatar picker, TTS toggle) are excluded so
-   they keep their native control appearance. */
+   they keep their native control appearance.
+   Specificity note: the heaviest :is() argument here is
+   `.profile-form label input` (0,1,2), plus the two chained
+   :not([type=...]) exclusions (0,1,0 each), for a resolved (0,3,2). Same
+   caution as the field-stack rule above: a later single-class or
+   single-class-plus-element override needs at least this weight to win. */
 :is(
     .guardian-login__field input,
     .profile-form label input,

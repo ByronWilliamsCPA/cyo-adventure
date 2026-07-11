@@ -29,7 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `.intake-chip`, `.intake-chip--on`, `.intake-request__assign`, and
   `FlagBadge`'s "flag" tone (now a solid amber-deep fill with ink text
   rather than amber-deep text on a light tint, which could not clear
-  4.5:1 at a badge's fixed size). `.books__row` / `.books__assigned` and
+  4.5:1 at a badge's fixed size). One named exception:
+  `.review-node--flagged`'s decorative border-left stripe deliberately
+  stays bright amber, since it is a non-text accent and the flagged state
+  is redundantly conveyed by the adjacent FlagBadge text, so WCAG 1.4.11
+  is already satisfied without changing this element.
+  `.books__row` / `.books__assigned` and
   `.assign__content-summary` no longer fall back to nonexistent
   `--color-border` / `--color-text-muted` tokens (a silent cold-gray
   render), and now use the new `--color-border-soft` / `--color-ink-muted`
