@@ -11,14 +11,21 @@ import type { AxiosInstance } from 'axios'
 import type { ChildSessionCreateBody, ChildSessionView } from '../client/types.gen'
 
 export interface ChildSessionApi {
-  /** Mint a child session token for one profile (guardian/admin bearer required). */
-  mint(profileId: string): Promise<ChildSessionView>
+  /**
+   * Mint a child session token for one profile (guardian/admin bearer
+   * required). `pin` is the profile's picker PIN (P6-07); pass it only when
+   * the profile has one, and never persist it anywhere.
+   */
+  mint(profileId: string, pin?: string): Promise<ChildSessionView>
 }
 
 export function makeChildSessionApi(api: AxiosInstance): ChildSessionApi {
   return {
-    async mint(profileId: string): Promise<ChildSessionView> {
-      const body: ChildSessionCreateBody = { profile_id: profileId }
+    async mint(profileId: string, pin?: string): Promise<ChildSessionView> {
+      const body: ChildSessionCreateBody =
+        pin === undefined
+          ? { profile_id: profileId }
+          : { profile_id: profileId, pin }
       const res = await api.post<ChildSessionView>('/v1/child-sessions', body)
       return res.data
     },

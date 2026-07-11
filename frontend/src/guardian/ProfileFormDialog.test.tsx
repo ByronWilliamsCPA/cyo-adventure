@@ -2,7 +2,21 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
+import type { ProfileView } from '../profiles/profilesApi'
 import { ProfileFormDialog } from './ProfileFormDialog'
+
+function existingProfile(hasPin: boolean): ProfileView {
+  return {
+    id: 'p1',
+    display_name: 'Robin',
+    age_band: '5-8',
+    reading_level_cap: 99,
+    avatar: null,
+    tts_enabled: false,
+    has_pin: hasPin,
+    created_at: '2026-07-02T00:00:00Z',
+  }
+}
 
 describe('ProfileFormDialog', () => {
   it('explains that a reading-level cap of 99 means no limit', () => {
@@ -149,5 +163,136 @@ describe('ProfileFormDialog', () => {
     await waitFor(() =>
       expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ avatar: 'fox' }))
     )
+  })
+})
+
+describe('ProfileFormDialog picker PIN controls (P6-07)', () => {
+  it('hides the PIN controls entirely in create mode', () => {
+    render(<ProfileFormDialog title="Add child" onSubmit={vi.fn()} onClose={vi.fn()} />)
+    expect(screen.queryByText(/picker pin/i)).not.toBeInTheDocument()
+  })
+
+  it('sets a PIN on a PIN-less profile via Set a PIN', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(false)}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText(/picker pin/i)).toBeInTheDocument()
+    // A PIN-less profile offers No PIN / Set a PIN, never Remove.
+    expect(screen.getByRole('radio', { name: /no pin/i })).toBeChecked()
+    expect(screen.queryByRole('radio', { name: /remove pin/i })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('radio', { name: /set a pin/i }))
+    await user.type(screen.getByLabelText(/new pin/i), '4321')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ pin: '4321' }))
+    )
+  })
+
+  it('omits the pin field when Keep current PIN is left selected', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(true)}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    expect(screen.getByRole('radio', { name: /keep current pin/i })).toBeChecked()
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+    const body = onSubmit.mock.calls[0][0] as Record<string, unknown>
+    expect('pin' in body).toBe(false)
+  })
+
+  it('sends an explicit null pin when Remove PIN is chosen', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(true)}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('radio', { name: /remove pin/i }))
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ pin: null }))
+    )
+  })
+
+  it('sends the new value when Change PIN is chosen', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(true)}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('radio', { name: /change pin/i }))
+    await user.type(screen.getByLabelText(/new pin/i), '87654321')
+    await user.click(screen.getByRole('button', { name: /save/i }))
+
+    await waitFor(() =>
+      expect(onSubmit).toHaveBeenCalledWith(expect.objectContaining({ pin: '87654321' }))
+    )
+  })
+
+  it('disables Save while a chosen PIN is shorter than 4 digits', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn()
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(false)}
+        onSubmit={onSubmit}
+        onClose={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('radio', { name: /set a pin/i }))
+    await user.type(screen.getByLabelText(/new pin/i), '123')
+    expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
+
+    await user.type(screen.getByLabelText(/new pin/i), '4')
+    expect(screen.getByRole('button', { name: /save/i })).toBeEnabled()
+  })
+
+  it('strips non-digit input from the PIN field', async () => {
+    const user = userEvent.setup()
+    render(
+      <ProfileFormDialog
+        title="Edit Robin"
+        initial={existingProfile(false)}
+        onSubmit={vi.fn()}
+        onClose={vi.fn()}
+      />
+    )
+
+    await user.click(screen.getByRole('radio', { name: /set a pin/i }))
+    const input = screen.getByLabelText(/new pin/i)
+    await user.type(input, '1a2b3c4d')
+    expect(input).toHaveValue('1234')
   })
 })

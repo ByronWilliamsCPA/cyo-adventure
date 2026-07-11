@@ -23,6 +23,7 @@ from sqlalchemy import (
     ForeignKeyConstraint,
     Index,
     String,
+    Text,
     UniqueConstraint,
     Uuid,
     func,
@@ -191,6 +192,12 @@ class ChildProfile(Base):
     )
     tts_enabled: Mapped[bool] = mapped_column(default=False)
     avatar: Mapped[str | None] = mapped_column(String(255), default=None)
+    # #CRITICAL: security: write-only PIN credential material (P6-07), encoded
+    # as pbkdf2_sha256$iters$salt$hash by core/pin.py. No API response may ever
+    # serialize this column; profile views expose a derived has_pin bool only.
+    # #VERIFY: tests/integration/test_profiles.py::test_pin_hash_never_serialized
+    # asserts the raw response JSON never contains "pin_hash".
+    pin_hash: Mapped[str | None] = mapped_column(Text, default=None)
     created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
 
 

@@ -290,3 +290,161 @@ describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
     await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
   })
 })
+
+describe('ProfilePickerPage PIN gate (P6-07)', () => {
+  const PIN_PROFILE = {
+    profiles: [
+      {
+        id: 'p1',
+        display_name: 'Reader A',
+        age_band: '10-13',
+        reading_level_cap: 99,
+        avatar: 'fox',
+        tts_enabled: false,
+        has_pin: true,
+        created_at: '2026-07-02T00:00:00Z',
+      },
+    ],
+  }
+
+  async function openPinPrompt(user: ReturnType<typeof userEvent.setup>) {
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+    return screen.getByLabelText(/secret pin/i)
+  }
+
+  it('shows the PIN prompt instead of minting when the profile has a PIN', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+
+    expect(input).toBeInTheDocument()
+    expect(input).toHaveAttribute('type', 'password')
+    expect(input).toHaveAttribute('autocomplete', 'off')
+    expect(input).toHaveAttribute('inputmode', 'numeric')
+    expect(mockPost).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
+  })
+
+  it('does not show the PIN prompt for a PIN-less profile', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockResolvedValue({
+      data: { token: 't', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    expect(screen.queryByLabelText(/secret pin/i)).not.toBeInTheDocument()
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/child-sessions', { profile_id: 'p1' })
+    )
+  })
+
+  it('mints with the typed PIN and navigates on success', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/child-sessions', {
+        profile_id: 'p1',
+        pin: '4321',
+      })
+    )
+    expect(getChildSession()).toEqual({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
+  })
+
+  it('shows a gentle retry message and does not navigate when the PIN is wrong', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 403, data: { code: 'PIN_MISMATCH' } },
+    })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '9999')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent(/didn't work.*try/i)
+    // Gentle retry only: never the ask-a-grown-up gate, never a navigation
+    // that would fall back to the guardian token and bypass the lock.
+    expect(screen.queryByText(/ask a grown-up/i)).not.toBeInTheDocument()
+    expect(mockNavigate).not.toHaveBeenCalled()
+    expect(getChildSession()).toBeNull()
+    // The prompt stays up for another try, with the field cleared.
+    expect(screen.getByLabelText(/secret pin/i)).toHaveValue('')
+    errorSpy.mockRestore()
+  })
+
+  it('never persists the typed PIN anywhere', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 403, data: { code: 'PIN_MISMATCH' } },
+    })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '9999')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+    await screen.findByRole('alert')
+
+    const stores = [localStorage, sessionStorage]
+    for (const store of stores) {
+      for (let i = 0; i < store.length; i += 1) {
+        const key = store.key(i)
+        expect(key === null ? '' : (store.getItem(key) ?? '')).not.toContain('9999')
+      }
+    }
+    errorSpy.mockRestore()
+  })
+
+  it('keeps the mint button disabled until at least 4 digits are typed', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    const go = screen.getByRole('button', { name: /let's read/i })
+    expect(go).toBeDisabled()
+    await user.type(input, '123')
+    expect(go).toBeDisabled()
+    await user.type(input, '4')
+    expect(go).toBeEnabled()
+  })
+
+  it('returns to the grid via Go back without minting', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    renderPicker()
+
+    await openPinPrompt(user)
+    await user.click(screen.getByRole('button', { name: /go back/i }))
+
+    expect(await screen.findByRole('link', { name: /Reader A/ })).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+})

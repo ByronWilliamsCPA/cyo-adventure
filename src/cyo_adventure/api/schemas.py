@@ -723,6 +723,10 @@ DisplayName = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=120)
 ]
 
+# A guardian-set profile PIN (P6-07): exactly 4-8 ASCII digits. Enforced at
+# the API boundary so core/pin.py only ever hashes well-formed values.
+PinCode = Annotated[str, StringConstraints(pattern=r"^[0-9]{4,8}$")]
+
 # #CRITICAL: security: avatars must stay opaque glyph ids, never photos or free
 # text (the child-photo privacy decision is unresolved; see the frontend
 # avatar catalog's module docstring). A closed vocabulary here is what
@@ -757,7 +761,12 @@ AvatarId = Literal[
 
 
 class ProfileView(BaseModel):
-    """A child profile as seen by its guardian or the child themself."""
+    """A child profile as seen by its guardian or the child themself.
+
+    ``has_pin`` is the ONLY PIN-related field any view exposes; the stored
+    ``pin_hash`` is write-only credential material and must never be
+    serialized (see the ``#CRITICAL`` note on ``ChildProfile.pin_hash``).
+    """
 
     id: str
     display_name: str
@@ -765,6 +774,7 @@ class ProfileView(BaseModel):
     reading_level_cap: float
     avatar: str | None
     tts_enabled: bool
+    has_pin: bool
     created_at: datetime
 
 
@@ -789,11 +799,13 @@ class ProfileCreateBody(BaseModel):
 class ProfileUpdateBody(BaseModel):
     """A guardian's partial update to a child profile.
 
-    ``avatar`` distinguishes "omitted" from "explicit null" via
-    ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar.
-    The other four fields have no legitimate "clear" semantics, so an explicit
-    ``null`` on them is a deliberate no-op (the router only applies non-null
-    values); see ``update_profile`` and
+    ``avatar`` and ``pin`` distinguish "omitted" from "explicit null" via
+    ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar,
+    and an explicit ``"pin": null`` removes the profile's picker PIN (a
+    4-8 digit string sets or replaces it). The other four fields have no
+    legitimate "clear" semantics, so an explicit ``null`` on them is a
+    deliberate no-op (the router only applies non-null values); see
+    ``update_profile`` and
     ``test_update_ignores_explicit_null_on_non_avatar_fields``.
     """
 
@@ -804,6 +816,7 @@ class ProfileUpdateBody(BaseModel):
     reading_level_cap: float | None = Field(default=None, ge=0.0, le=99.0)
     avatar: AvatarId | None = None
     tts_enabled: bool | None = None
+    pin: PinCode | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -1034,11 +1047,20 @@ class MeResponse(BaseModel):
 
 
 class ChildSessionCreateBody(BaseModel):
-    """A guardian's (or admin's) request to mint a child session for one profile."""
+    """A guardian's (or admin's) request to mint a child session for one profile.
+
+    ``pin`` is required (and checked) only when the target profile has a
+    guardian-set picker PIN (P6-07); for a PIN-less profile it is ignored.
+    Deliberately NOT ``PinCode``-constrained: a malformed candidate ("abc",
+    three digits) must fail as an ordinary wrong PIN (403), not a 422 that
+    leaks whether the profile has a PIN of a different shape. The length cap
+    only bounds the hashing work.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
     profile_id: str
+    pin: Annotated[str, StringConstraints(max_length=64)] | None = None
 
 
 class ChildSessionView(BaseModel):

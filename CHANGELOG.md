@@ -104,6 +104,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Optional per-profile PIN for the kid profile picker (P6-07, second half:
+  the picker itself already existed). A guardian can set (4-8 digits), change,
+  or remove a picker PIN per child profile from the guardian console's profile
+  edit dialog; `PATCH /api/v1/profiles/{id}` gains a `pin` field with
+  omitted-vs-null semantics matching `avatar` (a digit string sets or
+  replaces, an explicit `null` removes, omitted leaves unchanged). The PIN is
+  stored write-only as `child_profile.pin_hash` (new nullable column, Supabase
+  migration `20260711233452_add_child_profile_pin_hash.sql`), encoded
+  `pbkdf2_sha256$<iterations>$<salt_b64>$<hash_b64>` by the new
+  `core/pin.py` (stdlib `hashlib.pbkdf2_hmac("sha256", ...)`, 600k iterations
+  stored per hash so the default can be raised without invalidating rows, a
+  per-profile random salt via `secrets.token_bytes`, and constant-time
+  verification via `hmac.compare_digest`; FIPS-safe by construction, no
+  bcrypt/md5). No API response ever contains the hash: profile views expose a
+  derived `has_pin` bool only, and an integration test asserts on the raw
+  response JSON. `POST /api/v1/child-sessions` is PIN-gated: when the target
+  profile has a `pin_hash`, the body must carry the correct `pin` or the mint
+  fails 403 with the distinct, kid-safe `PIN_MISMATCH` code (admins are
+  checked too; a PIN-less profile ignores any supplied `pin`, so existing
+  behavior is unchanged). This is a convenience lock behind an
+  already-authenticated guardian token, not a security boundary, so no
+  endpoint-local rate limiting was added (the app-wide
+  `RateLimitMiddleware` applies). On the kid picker, choosing a
+  `has_pin` profile now shows a kid-friendly numeric PIN prompt
+  (`type=password`, `inputMode=numeric`, `autoComplete=off`; the typed PIN
+  lives only in transient component state and is never persisted) before the
+  child session is minted; a wrong PIN keeps the child on a gentle
+  try-again message and deliberately does NOT navigate (navigating would
+  fall back to the guardian token and bypass the lock), and never shows the
+  ask-a-grown-up gate. The generated API client was regenerated from the
+  updated OpenAPI schema.
 - Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
   admin) exchanges a child profile id for a short-lived, backend-signed HS256
   JWT scoped to `role=child` and that single `profile_id`; the kid surface uses

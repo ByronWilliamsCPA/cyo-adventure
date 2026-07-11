@@ -24,6 +24,20 @@ describe('makeChildSessionApi', () => {
     })
   })
 
+  it('includes the pin in the body only when one is passed (P6-07)', async () => {
+    const post = vi.fn().mockResolvedValue({
+      data: { token: 'tok-1', expires_at: '2026-07-11T12:00:00Z', profile_id: 'p1' },
+    })
+    const api = makeChildSessionApi(fakeAxios({ post }))
+
+    await api.mint('p1', '4321')
+
+    expect(post).toHaveBeenCalledWith('/v1/child-sessions', {
+      profile_id: 'p1',
+      pin: '4321',
+    })
+  })
+
   it('propagates a rejection unchanged', async () => {
     const error = new Error('mint failed')
     const post = vi.fn().mockRejectedValue(error)

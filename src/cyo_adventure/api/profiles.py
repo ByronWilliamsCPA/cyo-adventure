@@ -24,6 +24,7 @@ from cyo_adventure.core.exceptions import (
     AuthorizationError,
     ResourceNotFoundError,
 )
+from cyo_adventure.core.pin import hash_pin
 from cyo_adventure.db.models import ChildProfile
 from cyo_adventure.storybook.models import AgeBand
 
@@ -39,6 +40,10 @@ def _view(row: ChildProfile) -> ProfileView:
     Returns:
         ProfileView: The wire-safe view.
     """
+    # #CRITICAL: security: pin_hash is write-only credential material; the view
+    # exposes only the derived has_pin bool, never the encoded hash (P6-07).
+    # #VERIFY: test_profiles.py::test_pin_hash_never_serialized asserts the raw
+    # response JSON never contains "pin_hash".
     return ProfileView(
         id=str(row.id),
         display_name=row.display_name,
@@ -46,6 +51,7 @@ def _view(row: ChildProfile) -> ProfileView:
         reading_level_cap=row.reading_level_cap,
         avatar=row.avatar,
         tts_enabled=row.tts_enabled,
+        has_pin=row.pin_hash is not None,
         created_at=row.created_at,
     )
 
@@ -141,8 +147,8 @@ async def update_profile(
     Args:
         profile_id: The profile to update.
         body: The fields to change; omitted fields are untouched. An explicit
-            ``null`` clears only ``avatar``; on the other fields it is a no-op
-            (see ProfileUpdateBody).
+            ``null`` clears only ``avatar`` and ``pin``; on the other fields
+            it is a no-op (see ProfileUpdateBody).
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
@@ -185,5 +191,10 @@ async def update_profile(
     if "avatar" in fields:
         # Explicit null clears; omitted leaves unchanged (model_fields_set).
         row.avatar = body.avatar
+    if "pin" in fields:
+        # P6-07: a PinCode-validated 4-8 digit string sets or replaces the
+        # picker PIN; an explicit null removes it; omitted leaves it unchanged.
+        # Only the derived hash is stored; the raw PIN is discarded here.
+        row.pin_hash = hash_pin(body.pin) if body.pin is not None else None
     await ctx.session.flush()
     return _view(row)

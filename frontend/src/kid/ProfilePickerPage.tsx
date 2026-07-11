@@ -25,6 +25,14 @@ type PickerState =
   | { status: 'error' }
   | { status: 'ready'; profiles: ProfileView[] }
 
+// P6-07: the PIN prompt shown after picking a PIN-protected profile. `wrong`
+// is deliberately gentle-retry-only copy; a failed PIN never routes to the
+// ask-a-grown-up gate (the child just mistyped, a grown-up already signed in).
+type PinPrompt = {
+  profile: ProfileView
+  status: 'idle' | 'checking' | 'wrong'
+}
+
 /**
  * Kid-surface entry point (wireframe 4.1): a 2-column avatar grid; picking a
  * profile lands the child in their own library. The book-status pill
@@ -40,6 +48,11 @@ export function ProfilePickerPage() {
   const navigate = useNavigate()
   const [state, setState] = useState<PickerState>({ status: 'loading' })
   const [reloadKey, setReloadKey] = useState(0)
+  // The typed PIN lives ONLY in this transient state: cleared after every
+  // attempt and never written to localStorage, sessionStorage, or anywhere
+  // else (setChildSession stores the minted token, not the PIN).
+  const [pinPrompt, setPinPrompt] = useState<PinPrompt | null>(null)
+  const [pin, setPin] = useState('')
 
   // #ASSUME: external-resources: minting the child session (G1 / P6-04) can
   // fail (network blip, a guardian session that expired between page load
@@ -69,6 +82,36 @@ export function ProfilePickerPage() {
     },
     [childSessionApi, navigate]
   )
+
+  // #ASSUME: security: unlike the pin-less path above, a PIN-gated mint must
+  // NOT navigate on failure: useApi's interceptor would fall back to the
+  // guardian token on the library route, silently bypassing the lock. So this
+  // flow stays on the prompt and shows a gentle retry message. Every failure
+  // (wrong PIN 403, network blip) gets the same kid-safe copy, and a failed
+  // PIN never shows the ask-a-grown-up gate (a grown-up already signed in).
+  // #VERIFY: ProfilePickerPage.test.tsx "shows a gentle retry message and does
+  // not navigate when the PIN is wrong".
+  const submitPin = useCallback(async () => {
+    if (!pinPrompt || pin.length === 0 || pinPrompt.status === 'checking') return
+    const target = pinPrompt.profile
+    const attempt = pin
+    setPinPrompt({ profile: target, status: 'checking' })
+    setPin('')
+    try {
+      const session = await childSessionApi.mint(target.id, attempt)
+      setChildSession({
+        token: session.token,
+        expiresAt: session.expires_at,
+        profileId: session.profile_id,
+      })
+      setPinPrompt(null)
+      void navigate(`/library/${target.id}`)
+    } catch (err) {
+      // Redacted shape only, never the raw axios error; see logApiError.
+      logApiError('child session mint failed', err)
+      setPinPrompt({ profile: target, status: 'wrong' })
+    }
+  }, [childSessionApi, navigate, pin, pinPrompt])
 
   useEffect(() => {
     let cancelled = false
@@ -176,6 +219,69 @@ export function ProfilePickerPage() {
     )
   }
 
+  if (pinPrompt) {
+    const busy = pinPrompt.status === 'checking'
+    return (
+      <section className="picker">
+        <div className="picker__hello">
+          <Mascot size={88} />
+          <h1 className="picker__title">Hi {pinPrompt.profile.display_name}!</h1>
+        </div>
+        <form
+          className="picker-pin"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void submitPin()
+          }}
+        >
+          <label className="picker-pin__label" htmlFor="picker-pin-input">
+            Type your secret PIN
+          </label>
+          {/* type=password keeps siblings from shoulder-reading; numeric
+              inputMode brings up the digit pad; autoComplete=off so no
+              browser or password manager ever offers to store the PIN. */}
+          <input
+            id="picker-pin-input"
+            className="picker-pin__input"
+            type="password"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            autoComplete="off"
+            maxLength={8}
+            value={pin}
+            onChange={(e) => setPin(e.target.value.replace(/[^0-9]/g, ''))}
+            disabled={busy}
+          />
+          {pinPrompt.status === 'wrong' ? (
+            <p role="alert" className="picker-pin__retry">
+              Hmm, that PIN didn&apos;t work. Give it another try!
+            </p>
+          ) : null}
+          <div className="picker-pin__actions">
+            <button
+              type="button"
+              className="picker-retry picker-pin__back"
+              disabled={busy}
+              onClick={() => {
+                setPin('')
+                setPinPrompt(null)
+              }}
+            >
+              Go back
+            </button>
+            <button
+              type="submit"
+              className="picker-retry"
+              disabled={busy || pin.length < 4}
+            >
+              Let&apos;s read!
+            </button>
+          </div>
+        </form>
+      </section>
+    )
+  }
+
   return (
     <section className="picker">
       <div className="picker__hello">
@@ -192,9 +298,16 @@ export function ProfilePickerPage() {
               // (see pickProfile above), so the default immediate Link
               // navigation is suppressed in favor of the async flow; `to`
               // is kept so the tile still renders a real, inspectable href.
+              // A PIN-protected profile (P6-07) detours through the PIN
+              // prompt instead of minting straight away.
               onClick={(e) => {
                 e.preventDefault()
-                void pickProfile(profile.id)
+                if (profile.has_pin) {
+                  setPin('')
+                  setPinPrompt({ profile, status: 'idle' })
+                } else {
+                  void pickProfile(profile.id)
+                }
               }}
             >
               <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
