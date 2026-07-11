@@ -37,6 +37,31 @@
 - Render check: playwright is NOT in this package's node_modules; install `playwright@1.61`
   into `.ds-sync/` (matches the cached chromium-1228 in ~/.cache/ms-playwright).
 
+## Third sync: 2026-07-11 (manual)
+
+- Added Card, Chip, FormField (promoted from the guardian console, PR pending);
+  project now holds 10 components. Completed the AvatarCircle removal the previous
+  partial cleanup left behind (deleted its component files, preview, and
+  `_ds_sync.json` entries; the bundle no longer exports it).
+- Performed MANUALLY via the harness DesignSync tool, not the /design-sync skill
+  (the skill is user-invocation-only). Artifacts were rebuilt to match the
+  converter's byte format; all 21 regenerated stub hashes for the 7 pre-existing
+  components matched the remote `_ds_sync.json` values (recipe: sha256 hex,
+  first 12 chars). `renderHashes`/`sourceKeys` were deliberately left stale for
+  Button (its source changed) and omitted for the new three, so the next real
+  /design-sync run re-renders and re-keys them. `styleSha` was set to
+  sha256(_ds_bundle.css); that recipe is assumed, not verified; a mismatch just
+  causes one spurious CSS re-push on the next skill run.
+- GOTCHA (vite 8 / rolldown): with only react/react-dom external, rolldown
+  inlines react/jsx-runtime with a runtime `require("react")` that throws in
+  browsers consuming the ESM dist. Fixed by adding `react/jsx-runtime` to
+  `rollupOptions.external` in `vite.config.ts`. Verify after any build:
+  `grep -c 'react-stack-top-frame' dist/cyo-design-system.js` must be 0.
+- Remote `readme.md` / `SKILL.md` component indexes still enumerate 7 components
+  and describe `#c17b2a` as the amber (now `--color-amber-deep`; `--color-amber`
+  is `#e07f2e`). Left for the next skill run or the design agent; whole-file
+  rewrites of design-agent-authored narrative were out of scope for a manual sync.
+
 ## Known render warns
 
 - `[FONT_MISSING]` "Palatino Linotype", "Palatino", "Book Antiqua": accepted by design.
