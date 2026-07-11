@@ -310,10 +310,13 @@
 
 /* Error-toned inline text: form/field/action errors across every page. */
 :is(
+  .guardian-login__error,
+  .guardian-shell__error,
   .profile-form__error,
   .intake-form__error,
   .console__error,
   .console-row__error,
+  .intake-request__error,
   .review-detail__action-error,
   .review-detail__visibility-warning,
   .request-form__error
@@ -323,18 +326,22 @@
 
 /* font-size stays local; text color moves to the shared error group above. */
 .intake-request__error {
-  color: var(--color-error, #9b2c2c);
   font-size: 0.875rem;
 }
 
 /* Muted/notice-toned inline text: secondary, non-error informational copy. */
-:is(.console__notice, .console__muted, .console-row__series-note) {
+:is(
+  .console__notice,
+  .console__muted,
+  .console-row__series-note,
+  .intake-form__hint,
+  .review-actionbar__hint
+) {
   color: var(--color-ink-muted, #8c6f56);
 }
 
 /* color moves to the shared muted group above; font-size/margin stay local. */
 .intake-form__hint {
-  color: var(--color-ink-muted, #8c6f56);
   font-size: 0.875rem;
   margin: 0;
 }
@@ -705,7 +712,6 @@
 .review-actionbar__hint {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;
-  color: var(--color-ink-muted, #8c6f56);
   text-align: center;
 }
 

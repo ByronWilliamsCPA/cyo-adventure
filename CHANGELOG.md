@@ -20,7 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `frontend/design-system/src/tokens.css`. `ModerationDashboardPage` and
   `ModerationThresholdsPage` now get contextual table styling
   (parchment-dark header, hairline row separators) without any density
-  change. No class was renamed and no test file was touched.
+  change. No class was renamed; `GuardianShell.test.tsx` gains role-hint
+  coverage, and no other test file was touched.
 
 ### Fixed
 - WCAG AA contrast sweep on the guardian console: every remaining
