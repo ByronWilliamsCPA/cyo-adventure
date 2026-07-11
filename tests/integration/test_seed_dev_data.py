@@ -17,16 +17,21 @@ import uuid
 from typing import TYPE_CHECKING
 
 import pytest
-from sqlalchemy import and_, delete, exists, select
+from sqlalchemy import and_, delete, exists, func, select
 
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
+    ProviderModelAllowlist,
     Series,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
     User,
+)
+from cyo_adventure.generation.allowlist import (
+    DEFAULT_ALLOWLIST,
+    is_enabled_allowlist_pair,
 )
 from cyo_adventure.storybook.models import Storybook as StorybookDoc
 from scripts.seed_dev_data import seed_dev_data
@@ -219,6 +224,45 @@ async def test_seed_dev_data_seeds_unrelated_family_profile(
         assert unrelated_family is not None
         assert guardian_family is not None
         assert unrelated_family.id != guardian_family.id
+
+
+async def test_seed_dev_data_seeds_provider_allowlist(
+    engine: AsyncEngine,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The seed populates provider_model_allowlist to exactly DEFAULT_ALLOWLIST.
+
+    Guards the ADR-012 regression: the schema-only Supabase baseline no longer
+    carries the allowlist seed rows the retired Alembic migration inserted, so
+    without this seeding a fresh environment rejects every generation request at
+    the authoring-plan gate. Asserts every declared pair is present, enabled,
+    and accepted by the runtime read path is_enabled_allowlist_pair, that a
+    non-allowlisted pair (mock) is rejected, and that a second seed run neither
+    duplicates rows nor errors (idempotent).
+    """
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        rows = await session.scalars(select(ProviderModelAllowlist))
+        seeded = {(row.provider, row.model_id): row for row in rows.all()}
+
+        assert len(seeded) == len(DEFAULT_ALLOWLIST)
+        for seed in DEFAULT_ALLOWLIST:
+            row = seeded.get((seed.provider, seed.model_id))
+            assert row is not None
+            assert row.enabled is True
+            assert row.display_name == seed.display_name
+            assert await is_enabled_allowlist_pair(
+                session, seed.provider, seed.model_id
+            )
+
+        assert not await is_enabled_allowlist_pair(session, "mock", "mock-model")
+
+    await seed_dev_data(engine=engine, session_factory=sessions)
+    async with sessions() as session:
+        count = await session.scalar(
+            select(func.count()).select_from(ProviderModelAllowlist)
+        )
+        assert count == len(DEFAULT_ALLOWLIST)
 
 
 async def test_seed_dev_data_seeds_series_chain(

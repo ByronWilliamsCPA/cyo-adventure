@@ -30,12 +30,14 @@ from cyo_adventure.core.database import Base, get_engine, get_session
 from cyo_adventure.db.models import (
     ChildProfile,
     Family,
+    ProviderModelAllowlist,
     Series,
     Storybook,
     StorybookAssignment,
     StorybookVersion,
     User,
 )
+from cyo_adventure.generation.allowlist import DEFAULT_ALLOWLIST
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -315,6 +317,53 @@ async def _seed_unrelated_family(session: AsyncSession) -> bool:
     return True
 
 
+async def _seed_provider_allowlist(session: AsyncSession) -> bool:
+    """Idempotently seed the provider/model allowlist from ``DEFAULT_ALLOWLIST``.
+
+    Restores the rows the retired Alembic migration inserted. ADR-012 moved the
+    schema to a schema-only Supabase baseline, so a database provisioned from
+    the migration chain alone (a fresh Supabase project, a CI compose db, a new
+    local dev stack) has an empty ``provider_model_allowlist`` and rejects every
+    generation request at the authoring-plan gate. Guarded per
+    ``(provider, model_id)`` so it self-heals a database seeded before this was
+    added and never duplicates on a re-run.
+
+    Returns True when it inserted at least one row, False when every pair
+    already existed.
+
+    Args:
+        session: Open async session bound to the seed target database.
+
+    Returns:
+        Whether any allowlist row was inserted.
+    """
+    # #CRITICAL: security: these rows gate which (provider, model_id) pairs may
+    # bill against a generation backend; generation/allowlist.py::
+    # is_enabled_allowlist_pair is the single read path the authoring-plan
+    # endpoint trusts. Seeding exactly the enabled DEFAULT_ALLOWLIST pairs keeps
+    # the code-side mirror and the database in sync, the invariant the retired
+    # test_seed_matches_default_allowlist guarded.
+    # #VERIFY: test_seed_dev_data_seeds_provider_allowlist.
+    rows = await session.execute(
+        select(ProviderModelAllowlist.provider, ProviderModelAllowlist.model_id)
+    )
+    existing = {(provider, model_id) for provider, model_id in rows.all()}
+    inserted = False
+    for seed in DEFAULT_ALLOWLIST:
+        if (seed.provider, seed.model_id) in existing:
+            continue
+        session.add(
+            ProviderModelAllowlist(
+                provider=seed.provider,
+                model_id=seed.model_id,
+                enabled=True,
+                display_name=seed.display_name,
+            )
+        )
+        inserted = True
+    return inserted
+
+
 async def seed_dev_data(
     *,
     engine: AsyncEngine | None = None,
@@ -360,6 +409,12 @@ async def seed_dev_data(
         # #VERIFY: test_seed_dev_data_seeds_unrelated_family_profile.
         unrelated_profile_seeded = await _seed_unrelated_family(session)
 
+        # Seeded here (before the guardian early return) with its own per-row
+        # existence check so an already-seeded dev/CI database, or one built
+        # from the schema-only Supabase baseline, still gains the allowlist rows
+        # on a re-run; gating on guardian-absence would skip them forever.
+        allowlist_seeded = await _seed_provider_allowlist(session)
+
         existing = await session.scalar(
             select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
         )
@@ -371,11 +426,12 @@ async def seed_dev_data(
             # database still gains them on a re-run; gating them on
             # guardian-absence would skip them forever.
             series_chain_seeded = await _seed_series_chain(session)
-            if unrelated_profile_seeded or series_chain_seeded:
+            if unrelated_profile_seeded or series_chain_seeded or allowlist_seeded:
                 await session.commit()
             print(
                 "Dev data already seeded; refreshed late-added fixtures "
-                "(cross-family profile, series chain) if missing."
+                "(cross-family profile, series chain, provider allowlist) "
+                "if missing."
             )
             return
 
@@ -496,8 +552,8 @@ async def seed_dev_data(
         print(
             f"Seeded family {family.id}, profile {profile.id}, admin user, "
             f"{len(_STORIES)} published stories, 1 in-review story "
-            f"({review_id}) awaiting approval, and the 2-book '{_SERIES_TITLE}' "
-            "series."
+            f"({review_id}) awaiting approval, the 2-book '{_SERIES_TITLE}' "
+            f"series, and {len(DEFAULT_ALLOWLIST)} provider-allowlist rows."
         )
 
 

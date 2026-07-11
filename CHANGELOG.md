@@ -73,8 +73,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Schema migrations moved from Alembic to Supabase CLI SQL migrations
-  (ADR-012): baseline squash, forward-only policy, schema-parity CI gate
-  (#201)
+  (ADR-012): baseline squash, forward-only policy, schema-parity CI gate.
+  The provider/model allowlist rows the retired Alembic migration seeded are
+  now seeded idempotently by `scripts/seed_dev_data.py`, so an environment
+  built from the schema-only baseline can still generate stories (#201)
 
 ### Security
 - The backend now trusts proxy headers only from an explicit boundary:
