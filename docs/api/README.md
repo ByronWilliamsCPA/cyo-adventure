@@ -41,9 +41,9 @@ hardcoded, so the suite is stable across reseeded databases.
 
 ### Externals policy
 
-CI runs with no Supabase, Gemini, or LLM credentials and no Redis. Endpoints whose happy path calls an
+CI runs with no Supabase, Gemini, R2, or LLM credentials and no Redis. Endpoints whose happy path calls an
 external service are covered by auth negatives and side-effect-free reads only: `POST
-/storybooks/{id}/versions/{v}/cover` (Gemini + Supabase Storage) is never triggered, and generation
+/storybooks/{id}/versions/{v}/cover` (Gemini + Cloudflare R2) is never triggered, and generation
 enqueue failures are tolerated by design (the job row is still created).
 
 ### Auth model

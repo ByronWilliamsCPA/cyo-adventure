@@ -8,6 +8,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
+  (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
+  client against R2's endpoint (`https://{account_id}.r2.cloudflarestorage.com`)
+  instead of an `httpx` POST to the Supabase Storage REST API; the blocking
+  boto3 call runs inside `asyncio.to_thread` to stay off the event loop.
+  `boto3` was chosen over a hand-rolled SigV4 signer (security-sensitive: use
+  a vetted library) and over lighter alternatives like `minio` because
+  `boto3-stubs[s3]` gives complete, already-published type stubs that pass
+  BasedPyright strict mode with no custom typing shims. New settings
+  (`core/config.py`): `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
+  `R2_SECRET_ACCESS_KEY`, `R2_BUCKET` (default unchanged: `"covers"`,
+  replacing the old `covers_bucket` field), and `R2_PUBLIC_BASE_URL` (the
+  Cloudflare custom domain connected to the bucket; covers are served to
+  browsers from that domain, not from the S3-compatible endpoint, which is
+  not publicly reachable). S3 `PutObject` is inherently an upsert, so the
+  re-roll-overwrites-prior-cover behavior at a given
+  `{storybook_id}/{version}.webp` key is unchanged. The stale `#CRITICAL`
+  comment about Supabase Storage's 500MB total cap is replaced with R2's
+  free-tier 10GB cap. The now-fully-dead `supabase_url` /
+  `supabase_service_key` settings fields are removed: a repo-wide grep found
+  no reader of them outside the covers module (the same-named
+  `SUPABASE_URL` env var read directly by `scripts/seed_staging.py` for the
+  Supabase Auth admin API is a separate, unrelated env lookup and is
+  untouched). `api/covers.py`'s pre-enqueue config guard now checks the four
+  R2 settings instead of the two Supabase ones.
+  **No migration**: covers already generated and stored in Supabase Storage
+  keep their existing Supabase public URLs in `storybook_version.cover_image_url`;
+  this PR does not backfill or re-upload them to R2, so old covers keep
+  loading from Supabase until a future backfill (not scoped here) moves them.
 - Guardian console visual refresh (C1+C2): the shell chrome from the C0
   design-direction spike is now the permanent implementation, with an
   explicit sticky-chrome z-index ladder (header above the review action
