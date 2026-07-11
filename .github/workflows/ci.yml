@@ -168,7 +168,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/coverage/lcov.info
@@ -237,7 +237,7 @@ jobs:
         if: ${{ env.QLTY_COVERAGE_TOKEN != '' && hashFiles('frontend/design-system/coverage/lcov.info') != '' }}
         # See the coverage-upload job: a Qlty hiccup must not block a merge.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: frontend/design-system/coverage/lcov.info
@@ -396,7 +396,7 @@ jobs:
         # A Qlty upload hiccup must not fail the job or block a merge, matching
         # the Codecov steps' fail_ci_if_error: false.
         continue-on-error: true
-        uses: qltysh/qlty-action/coverage@fd52dc852530a708d68c3b7342f8d33d1df4cd55 # v2.2.1
+        uses: qltysh/qlty-action/coverage@dafbc1e328f1f92525f1a3916724bd5fa01498e8 # v2.2.3
         with:
           token: ${{ env.QLTY_COVERAGE_TOKEN }}
           files: coverage-reports/coverage-unit.xml,coverage-reports/coverage-integration.xml,coverage-reports/coverage-security.xml
@@ -520,7 +520,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install UV
-        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        uses: astral-sh/setup-uv@f98e06938123ccabd21905ea5d0069192241f9f1 # v8.3.1
         with:
           enable-cache: true
 
