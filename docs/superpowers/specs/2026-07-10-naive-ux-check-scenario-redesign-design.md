@@ -86,7 +86,8 @@ The remaining gaps are:
 
 ### A. Scenario set changes
 
-Three new scenarios, added in place to the existing persona files:
+Three new scenarios, added in place to the existing persona files (paths below
+are relative to the skill's directory, `.claude/skills/naive-ux-check/`):
 
 | ID | File | Scenario | What it reveals |
 | --- | --- | --- | --- |
@@ -118,13 +119,20 @@ Two consequences of the merged workstreams that the prompt rewrite must absorb:
   UI rather than trusting descriptions written before those PRs.
 
 Scenario count goes from 14 to 17. IDs are additive (`K0`/`G0`/`A0` as new
-zero-indexed entries), so `docs/qa/naive-ux-reports/2026-07-10.md`'s existing `K1`/`K2`
-entries stay valid without renumbering.
+zero-indexed entries), so the `K1`/`K2` IDs the 2026-07-10 findings were recorded
+under keep their meaning without renumbering. (No report file from those runs is
+committed; `docs/qa/naive-ux-reports/` currently holds only a `.gitkeep`, and
+future run reports there will use the extended numbering.)
 
-### B. Skill operational changes (`SKILL.md`)
+### B. Skill operational changes (`.claude/skills/naive-ux-check/SKILL.md`)
 
 - **Run order**: `K0` before `K1`-`K4`, `G0` before `G1`-`G7`, `A0` before `A1`-`A3`.
-  Full order: `K0`-`K4`, `G0`-`G7`, `A0`-`A3`.
+  Full order: `K0`-`K4`, `G0`-`G7`, `A0`-`A3`. Each of `K0`/`G0`/`A0` must start
+  from a fresh browser context (a new browser profile, or site data and
+  `localStorage` cleared for the target origin) so it actually observes the
+  signed-out state: `K1`-`K4`'s operator sign-in leaves a live session in the
+  browser, and running `G0` or `A0` in that same context would silently skip the
+  auth gate those scenarios exist to test.
 - **Target URL default** changes from "local dev, typically `http://localhost:5173`"
   to "local dev, pointed at the staging Supabase project via `.env.staging`" (the
   committed `.env.staging.example` documents the required variables; see Section C).
@@ -178,8 +186,9 @@ sign-in verified (issue #204's Gate C). What the scenarios can rely on:
   entry (matching its existing amendment pattern) summarizing this change and
   pointing at this spec. Section 6.1's scenario table gets three new rows (`K0`,
   `G0`, `A0`).
-- `SKILL.md`'s header comment ("14 scenarios total: K1-K4, G1-G7, A1-A3") updates to
-  17 scenarios / `K0`-`K4`, `G0`-`G7`, `A0`-`A3`, plus the Section B changes.
+- `.claude/skills/naive-ux-check/SKILL.md`'s header comment ("14 scenarios total:
+  K1-K4, G1-G7, A1-A3") updates to 17 scenarios / `K0`-`K4`, `G0`-`G7`, `A0`-`A3`,
+  plus the Section B changes.
 - A CHANGELOG entry, per the repo's changelog gate.
 
 ## Follow-ups (both resolved since the original draft)
