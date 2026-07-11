@@ -1029,6 +1029,32 @@ class MeResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Child-scoped session tokens (G1 / P6-04)
+# ---------------------------------------------------------------------------
+
+
+class ChildSessionCreateBody(BaseModel):
+    """A guardian's (or admin's) request to mint a child session for one profile."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile_id: str
+
+
+class ChildSessionView(BaseModel):
+    """A minted child session token and its expiry.
+
+    The token is a backend-signed, short-lived JWT the kid surface uses as its
+    own bearer (role=child, scoped to ``profile_id``). No PII beyond ids
+    crosses this boundary; see ``core/child_session.py`` for the trust model.
+    """
+
+    token: str
+    expires_at: datetime
+    profile_id: str
+
+
+# ---------------------------------------------------------------------------
 # Moderation threshold admin CRUD (WS-A)
 # ---------------------------------------------------------------------------
 

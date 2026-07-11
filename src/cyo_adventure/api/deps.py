@@ -26,6 +26,11 @@ from fastapi import Depends, Header
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy import select
 
+from cyo_adventure.core.child_session import (
+    CHILD_SESSION_AUDIENCE,
+    unverified_audience,
+    verify_child_session_token,
+)
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.database import get_session
 from cyo_adventure.core.exceptions import (
@@ -295,10 +300,25 @@ async def require_principal(
         Principal: The authenticated principal.
 
     Raises:
-        AuthenticationError: If the token is missing, fails OIDC verification
-            outside ``local``, or the subject is unknown.
+        AuthenticationError: If the token is missing, fails OIDC or child-session
+            verification, or the subject is unknown.
     """
-    subject = await _resolve_subject(_extract_subject(authorization))
+    token = _extract_subject(authorization)
+    # #CRITICAL: security: the verification branch is selected by the token's
+    # UNVERIFIED audience claim, which is safe ONLY because each branch then
+    # fully verifies the signature and its own claims before any principal is
+    # built. The child branch pins HS256 + the child audience/issuer against the
+    # backend secret; the guardian branch pins RS256/ES256 + the Supabase
+    # audience/issuer via JWKS. A token can therefore only ever verify through
+    # the branch that minted it: a guardian token routed here fails the child
+    # audience, a child token routed to the guardian path fails the Supabase
+    # audience, and neither algorithm is accepted by the other branch. Routing
+    # on unverified data widens nothing; it only picks which verifier runs.
+    # #VERIFY: test_child_session.py exercises alg-confusion in both directions,
+    # wrong-audience, wrong-issuer, and a forged child token.
+    if unverified_audience(token) == CHILD_SESSION_AUDIENCE:
+        return _child_principal(token)
+    subject = await _resolve_subject(token)
     user = await session.scalar(select(User).where(User.authn_subject == subject))
     if user is None:
         msg = "unknown subject"
@@ -315,6 +335,44 @@ async def require_principal(
         role=Role(user.role),
         family_id=user.family_id,
         profile_ids=profile_ids,
+    )
+
+
+def _child_principal(token: str) -> Principal:
+    """Build a CHILD :class:`Principal` from a verified child session token.
+
+    No database round-trip: a child session token is backend-signed and
+    self-contained (guardian-minted, with every id in the signed claims), so
+    verification alone yields the principal. This keeps the child auth path
+    independent of a live database read, matching the offline-session design
+    (the token is valid for its full lifetime and cannot be refreshed). The
+    embedded ``user_id`` is a real ``User.id`` resolved at mint time, so the
+    resulting principal is still attributable on the append-only pipeline_event
+    log without a lookup here.
+
+    Args:
+        token: The raw bearer token, already routed here by its child audience.
+
+    Returns:
+        Principal: A ``Role.CHILD`` principal scoped to exactly one profile.
+
+    Raises:
+        AuthenticationError: If the token fails child-session verification.
+    """
+    claims = verify_child_session_token(token)
+    # #CRITICAL: security: a child principal is scoped to EXACTLY its one
+    # profile; profile_ids is the singleton from the signed claim, never a
+    # family-wide set, so authorize_profile confines every downstream read to
+    # that single profile (a child cannot reach a sibling's library/reading).
+    # #VERIFY: test_child_session.py::test_require_principal_child_branch_scopes
+    # asserts profile_ids is the singleton; the integration suite asserts a
+    # child token is 403/404 on another profile's resource.
+    return Principal(
+        subject=claims.subject,
+        user_id=claims.user_id,
+        role=Role.CHILD,
+        family_id=claims.family_id,
+        profile_ids=frozenset({claims.profile_id}),
     )
 
 

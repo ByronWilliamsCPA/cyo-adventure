@@ -104,6 +104,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
+  admin) exchanges a child profile id for a short-lived, backend-signed HS256
+  JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
+  it as its own bearer. Children are deliberately NOT Supabase users (ADR-009
+  keeps guardians on Supabase): this is a distinct, self-contained credential.
+  New endpoint `POST /api/v1/child-sessions` (guardian-or-admin only; a child
+  token is refused at the role gate, a cross-family guardian at the ownership
+  check) returns `{token, expires_at, profile_id}`. `require_principal` gains a
+  second verification branch (`core/child_session.py`): it routes on the token's
+  unverified `aud` claim, but each branch then fully verifies its own family of
+  token, the child branch pinning `algorithms=["HS256"]` plus a fixed, distinct
+  issuer/audience (`cyo-adventure` / `cyo-child-session`) against
+  `CHILD_SESSION_SECRET`, so a token can only ever verify through the branch that
+  minted it (no `alg=none` forgery and no RS256/HS256 confusion in either
+  direction). The child `User.id` is embedded at mint so the resulting principal
+  is attributable on the append-only pipeline event log without a database read,
+  keeping verification offline-friendly. New settings (`core/config.py`):
+  `CHILD_SESSION_SECRET` (required outside `local`, validated at startup) and
+  `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
+  since a child session cannot be refreshed). The dev-stub token path is
+  unchanged and remains local-only.
 - Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
   8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
   quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8

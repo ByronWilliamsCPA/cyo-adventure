@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field, model_validator
+from pydantic import AliasChoices, Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -325,6 +325,27 @@ class Settings(BaseSettings):
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
 
+    # --- Child-scoped session tokens (G1 / PROJECT-PLAN P6-04) ---
+    # The kid surface does NOT use Supabase users. A guardian mints a short-lived,
+    # backend-signed (HS256) JWT scoped to role=child and one profile; api/deps.py
+    # verifies it in a second branch (see core/child_session.py). This secret signs
+    # and verifies those tokens; it is a backend secret the browser never sees, and
+    # is DISTINCT from the Supabase JWKS used for guardians. Optional here so local
+    # dev needs no config; _require_child_session_secret_outside_local below fails
+    # fast outside "local", mirroring the OIDC validator.
+    # #CRITICAL: security: this is the child-session signing key; never log its
+    # value or echo it in an error message, and never reuse a Supabase key for it.
+    # #VERIFY: core/child_session.py reads it only via get_secret_value() at
+    # mint/verify time; no error message includes the secret.
+    child_session_secret: SecretStr | None = Field(
+        default=None, validation_alias="CHILD_SESSION_SECRET"
+    )
+    # Child-session lifetime in seconds. Default 43200 (12h) comfortably covers a
+    # single offline reading session; a child session cannot be refreshed, so it
+    # reads a downloaded story for the token's full lifetime (debt-register
+    # offline-reading requirement).
+    child_session_ttl_seconds: int = 43_200
+
     # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
     # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
     # It is consumed by uvicorn's --forwarded-allow-ips CLI flag (set from this same
@@ -469,6 +490,29 @@ class Settings(BaseSettings):
                 "OIDC_ISSUER and OIDC_JWKS_URL must both be set in non-local "
                 f"environments; refusing to start in '{self.environment}' with no "
                 "way to verify a bearer token (ADR-009)."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_child_session_secret_outside_local(self) -> Settings:
+        """Fail fast if the child-session signing secret is missing outside local.
+
+        Mirrors _require_oidc_config_outside_local (G1 / P6-04): outside "local"
+        the kid surface authenticates with backend-signed child JWTs, which can
+        neither be minted nor verified without this secret, so a non-local
+        process with no secret could not authenticate any child session; refuse
+        to start rather than silently disable the kid surface.
+
+        Raises:
+            ConfigurationError: when ``environment`` is not ``local`` and
+                ``child_session_secret`` is unset.
+        """
+        if self.environment != "local" and self.child_session_secret is None:
+            msg = (
+                "CHILD_SESSION_SECRET must be set in non-local environments; "
+                f"refusing to start in '{self.environment}' with no way to sign "
+                "or verify child session tokens (G1 / P6-04)."
             )
             raise ConfigurationError(msg)
         return self

@@ -157,6 +157,29 @@ def _reset_rate_limiter() -> None:
         node = getattr(node, "app", None)
 
 
+@pytest.fixture(autouse=True)
+def _child_session_secret(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Configure a child-session signing secret on the shared app singleton.
+
+    The module-level ``settings`` singleton carries no secret by default (local
+    dev needs none), so any endpoint that mints or verifies a child session
+    would raise ConfigurationError. Applying it suite-wide keeps mint/verify
+    deterministic for every integration test (including the authz matrix). The
+    value is >=32 bytes to avoid PyJWT's InsecureKeyLengthWarning, which the
+    suite's ``filterwarnings = ["error"]`` would otherwise escalate to a
+    failure.
+    """
+    from pydantic import SecretStr
+
+    from cyo_adventure.core.config import settings
+
+    monkeypatch.setattr(
+        settings,
+        "child_session_secret",
+        SecretStr("integration-child-session-secret-0123456789ab"),
+    )
+
+
 @pytest_asyncio.fixture
 async def client(
     sessions: async_sessionmaker[AsyncSession],

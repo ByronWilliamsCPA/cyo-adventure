@@ -20,6 +20,9 @@ _PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventu
 _POOLER_DB_URL = (
     "postgresql+asyncpg://appuser:testpass@pooler.example.com:6543/postgres"
 )
+# A >=32-byte child-session signing secret, required alongside OIDC config in
+# every non-local environment (see the _require_child_session_secret validator).
+_CHILD_SECRET = "test-child-session-secret-0123456789abcd"
 
 
 class TestSettingsDefaults:
@@ -194,6 +197,7 @@ class TestValidatorRejectDevUrlOutsideLocal:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert settings.database_url == _PROD_DB_URL
         assert settings.environment == environment
@@ -264,6 +268,7 @@ class TestEnvironmentAlias:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert s.environment == "staging"
 
@@ -280,6 +285,7 @@ class TestEnvironmentAlias:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert s.environment == "production"
 
@@ -562,6 +568,7 @@ class TestValidatorRequireOidcConfigOutsideLocal:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert settings.oidc_issuer == "https://project.supabase.co/auth/v1"
         assert (
