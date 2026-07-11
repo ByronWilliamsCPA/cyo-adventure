@@ -52,11 +52,13 @@ Constraints and context:
 
 ## Effort 2: naive-ux scenario redesign (issue #204)
 
-- **Spec exists but is on a LOCAL-ONLY, unpushed branch**:
-  `docs/naive-ux-check-scenario-redesign-design` at `2fcf657`, one file:
-  `docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`
-  (159 lines). First step: read the spec, then get it merged as a small docs
-  PR so it stops rotting (pushing needs owner approval, as does every push).
+- **Spec and implementation are both in open PRs**: PR #216 pushes the spec
+  (`docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`,
+  211 lines after revision; the branch history was rewritten, so any older SHA
+  citation for `docs/naive-ux-check-scenario-redesign-design` no longer
+  resolves), and PR #220 implements the redesigned scenarios. First step:
+  review and land #216 then #220 (merges are owner-gated); do not restart from
+  the spec.
 - **The blocker is gone**: the spec was written when scenarios could only run
   against local dev. The Supabase environments workstream is COMPLETE:
   staging and prod are migrated, staging is seeded and sign-in verified. #204
@@ -64,9 +66,10 @@ Constraints and context:
   fully unblocked.
 - **What changed since the scenarios were written**: the auth-gate findings
   that motivated the redesign are largely FIXED. F1 (one generic error for
-  auth/permission/empty states) was closed by PR #198 on the kid surface
-  (differentiated gates in ProfilePickerPage/LibraryPage via classifyApiError)
-  and the guardian surface already used classifyApiError. The redesigned
+  auth/permission/empty states, tracked as issue #137, which remains open) was
+  addressed on the kid surface by PR #198 (differentiated gates in
+  ProfilePickerPage/LibraryPage via classifyApiError); the guardian surface
+  already used classifyApiError. The redesigned
   scenarios must assert the NEW gate copy, not the old "Oops, we hit a snag".
   Known intentional behavior: admin gets 403 on profile-create BY DESIGN.
 - Scenario tiers: mocked Playwright tier runs in CI (`frontend/e2e/`);
@@ -98,8 +101,8 @@ Constraints and context:
 > the two remaining efforts: (1) /design-sync promotions of the guardian
 > console patterns into @ds (Card, FormField, Chip, text tones) plus the
 > cross-surface Button amber-contrast decision; (2) the naive-ux scenario
-> redesign per the spec on local branch
-> docs/naive-ux-check-scenario-redesign-design (merge the spec doc first),
-> now unblocked by the live staging environment (issue #204). Plan both,
+> redesign per the spec in PR #216, with the implementation in PR #220
+> (review and land those PRs first), now unblocked by the live staging
+> environment (issue #204). Plan both,
 > confirm sequencing with me, then execute with the usual worktree and
 > owner-gated-push discipline.

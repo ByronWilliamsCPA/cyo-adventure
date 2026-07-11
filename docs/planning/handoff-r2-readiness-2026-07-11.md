@@ -16,14 +16,14 @@ release-relevant subset.
 Note the naming collision that recurs in this repo: "R2" means two different
 things depending on context. On the **release ladder** (roadmap.md, ADR-008/009)
 R2 is the TestFlight rung (Phase 6 + Phase 8). Separately, "R2" is shorthand for
-**Cloudflare R2** object storage (PR #209/#210/#213), a already-merged, unrelated
+**Cloudflare R2** object storage (PR #209/#210/#213), an already-merged, unrelated
 piece of infrastructure. This doc is entirely about the release-ladder meaning.
 
 ## R1 status: verdict
 
-**No genuine leftover R1 build work exists.** Both of Phase 4a's literal
-acceptance criteria ("child sees only permitted stories," "guardian can assign
-story to children") are delivered and merged. There is no R1 git tag, milestone,
+**No genuine leftover R1 build work exists.** Both of Phase 4a's acceptance
+criteria (a child sees only permitted stories; a guardian can assign stories
+to their children) are delivered and merged. There is no R1 git tag, milestone,
 or CHANGELOG release entry (only `v0.1.0`/backup tags exist, version is stuck at
 0.1.0 due to issue #183/#157, see below) - R1's "done" status is asserted in
 `roadmap.md`/`PROJECT-PLAN.md` prose, not in a formal release artifact, but the
@@ -31,23 +31,23 @@ underlying feature work checks out.
 
 Two loose ends found, both documentation hygiene rather than functional gaps:
 
-- **Issue #73** (401 interceptor never redirects to login) is cited in
+- **Issue #73** (401 interceptor never redirects to login) was cited in
   `PROJECT-PLAN.md` as a pending R1 release-readiness item. It is actually
   **closed** (completed 2026-07-06, superseded by the naive-UX inline-retry
-  design). The `PROJECT-PLAN.md` citation is stale and should be corrected so a
+  design). The stale `PROJECT-PLAN.md` citation is corrected in this PR so a
   future reader doesn't chase a closed issue.
-- Phase 4a's quality-gate checklist in `PROJECT-PLAN.md` still shows unchecked
+- Phase 4a's quality-gate checklist in `PROJECT-PLAN.md` showed unchecked
   `[ ]` boxes (coverage, integration tests, security scan, lint/typecheck,
   pre-commit) despite the phase having merged through the required "CI Gate"
-  aggregator. Read as a stale checkbox artifact, not unmet work - no open issue
-  documents an actual Phase-4a gate failure. `[VERIFY]` if this matters before
-  citing Phase 4a as complete in any external-facing doc.
+  aggregator. That was a stale checkbox artifact, not unmet work; this PR
+  ticks the boxes after verifying the CI Gate merges and a 98% local
+  coverage run.
 
 **Issue #52** (sync `project-vision.md`/`tech-spec.md`/`roadmap.md` to Track 2 /
 ADR-008-010) is open and real, but it is a documentation-sync task for the
 public-launch track, not an R1 acceptance-criterion gap.
 
-## Full open-issue catalog (23 issues, 2 PRs, reviewed 2026-07-11)
+## Full open-issue catalog (23 issues reviewed 2026-07-11; PR snapshot below)
 
 ### Release-tooling / CI (5) - the closest thing to a true release blocker
 
@@ -59,8 +59,8 @@ public-launch track, not an R1 acceptance-criterion gap.
 | #187 | Promote Postman/newman `api-tests` into the required `ci-gate` once proven stable | Explicit, non-urgent gating condition |
 | #172 | Codecov Bundle Analysis blocked by Vite 8 vs vite-plugin peer range 4-6 | CI nice-to-have, not blocking |
 
-**These two (#183, #157) are the single clearest "must fix before a real release"
-item in the whole catalog** - a TestFlight build needs a meaningful version tag,
+**These two (#183, #157) are the clearest "must fix before a real release"
+items in the whole catalog** - a TestFlight build needs a meaningful version tag,
 and right now nothing can bump past 0.1.0.
 
 ### Security / RLS / auth (4)
@@ -91,7 +91,7 @@ and right now nothing can bump past 0.1.0.
 | # | Summary | Note |
 |---|---|---|
 | #214 | Backfill pre-R2-migration cover URLs from Supabase Storage into Cloudflare R2 | Storage-R2 cleanup (the *other* R2), should close before calling that cutover finished |
-| #204 | Redesign naive-ux-check scenarios against the real staging pipeline | Unblocked now (Supabase environments workstream complete); spec exists on unpushed local branch `docs/naive-ux-check-scenario-redesign-design`, see the design-sync handoff doc |
+| #204 | Redesign naive-ux-check scenarios against the real staging pipeline | Unblocked now (Supabase environments workstream complete); spec is in PR #216 and the implementation in PR #220, see the design-sync handoff doc |
 | #88 | Decide/document whether `generation_job.report` stays guardian-visible | Docs-vs-behavior mismatch, low urgency |
 | #74 | Guardian console "Still processing" section inert for admins | Shipped intentionally as a safe placeholder |
 | #52 | Sync vision/tech-spec/roadmap docs to Track 2 (ADR-008-010) | Real, but doc-hygiene not code |
@@ -100,7 +100,7 @@ and right now nothing can bump past 0.1.0.
 
 #25 - Renovate Dependency Dashboard, auto-managed housekeeping meta-issue.
 
-### Open PRs (2, both Renovate automation, re-verified 2026-07-11 after this doc's first draft)
+### Open PRs (snapshot: 2 Renovate PRs at review time; #216/#219/#220 opened later the same day)
 
 - **#212** `chore(deps)!: Update dependency typescript to v7` - breaking-change
   label, `mergeStateStatus: BEHIND`, 3 failing checks among ~36. Needs a real
@@ -126,7 +126,7 @@ Source: `docs/planning/r1-deferred-debt-register.md` (added via PR #197,
 **Everything else in the register is either resolved, informational, or
 explicitly scoped as R2-planning input rather than a blocker**: correctness
 items C1-C5 (one resolved via PR #145), generation/safety GS1-GS2, UX items
-U1-U4, test/tooling T1-T9 (two resolved), policy/architecture P1-P4, and the
+U1-U4, test/tooling T1-T9 (T2 resolved), policy/architecture P1-P4, and the
 story-lifecycle-redesign SL1-SL10 series (all merged 2026-07-10, all Low/Info
 severity or v2-scoped). None of these carries a stated severity or gate above
 "decide before/during R2," and none blocks starting Phase 6 work.
@@ -154,21 +154,22 @@ In priority order:
 6. **Issue #214** - finish the Cloudflare R2 cover-art backfill so the storage
    cutover is genuinely complete before more R2-storage-dependent work lands.
 
-Everything else in this doc (the other 17 open issues, the rest of the debt
+Everything else in this doc (the other 19 open issues, the rest of the debt
 register) is real backlog worth triaging but does not block Phase 6/8 kickoff.
 
 ## Repo hygiene noted during this review (no dependency on the above)
 
-- `docs/planning/handoff-design-sync-naive-ux-2026-07-11.md` is untracked in
+- `docs/planning/handoff-design-sync-naive-ux-2026-07-11.md` was untracked in
   the working tree - it documents finished, already-merged work (design-sync
-  promotions + naive-ux redesign follow-ons) and should be committed as-is,
-  not treated as in-flight work.
+  promotions + naive-ux redesign follow-ons) and is committed alongside this
+  doc in the same PR, not treated as in-flight work.
 - `.worktrees/lifecycle-debt-backlog` is stale (PR #197 already merged) - safe
   to remove.
-- `.worktrees/naive-ux-spec` is active (issue #204 spec branch) - keep.
-- `known-vulnerabilities.md`'s two dev-only entries (PYSEC-2022-42969,
-  PYSEC-2026-89) hit their reassessment date 2026-07-20 - unrelated to R2 but
-  close enough to flag.
+- `.worktrees/naive-ux-spec` holds the issue #204 spec branch, now pushed as
+  PR #216 - keep until that PR merges.
+- `docs/known-vulnerabilities.md`'s two dev-only entries (PYSEC-2022-42969,
+  PYSEC-2026-89) reach their reassessment date on 2026-07-20 - unrelated to R2
+  but close enough to flag.
 
 ## How to resume
 
@@ -186,8 +187,8 @@ review's writing.
 
 - Don't conflate the two "R2"s in conversation or in issue titles; #214 is
   about *storage* R2, everything else here is about *release* R2.
-- `PROJECT-PLAN.md`'s citation of #73 as a pending R1 item is stale
-  `[VERIFY]` - confirm before repeating it elsewhere.
+- `PROJECT-PLAN.md`'s former citation of #73 as a pending R1 item was stale;
+  it is corrected in this PR. Do not reintroduce it.
 - CodeRabbit skips PRs whose base isn't the default branch; a green check
   after rate-limiting does not mean a review ran (carried over from the
   design-sync handoff, still true).
