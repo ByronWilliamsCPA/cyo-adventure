@@ -18,15 +18,15 @@
 # #VERIFY: rotate the PAT before expiry; a red run of this workflow on main
 # means dispatches are NOT reaching homelab-infra.
 #
-# #ASSUME: external resources: the receiver is homelab-infra PR #591, which
-# adds a `repository_dispatch` trigger for event_type cyo-adventure-push and
-# reads client_payload.ref as the source ref to build. Until that PR merges,
-# POST /dispatches still returns 204 (GitHub accepts the event whether or
-# not anything listens), so this sender goes green while no build runs; the
-# receiver's weekly schedule bounds that silent window.
-# #VERIFY: merge homelab-infra#591 before (or together with) this workflow's
-# first run on main; if the event_type or payload field ever changes there,
-# change it here in the same PR.
+# #ASSUME: external resources: the receiver (homelab-infra's
+# cyo-adventure-build.yml, live on its main since PR #591 merged) listens
+# for exactly event_type cyo-adventure-push and reads client_payload.ref as
+# the source ref to build. POST /dispatches returns 204 whether or not
+# anything listens, so if the receiver's trigger is ever renamed or removed
+# this sender goes green while no build runs; the receiver's weekly
+# schedule bounds that silent window.
+# #VERIFY: if the event_type or payload field ever changes there, change it
+# here in the same PR.
 name: Trigger Homelab Image Build
 
 on:
