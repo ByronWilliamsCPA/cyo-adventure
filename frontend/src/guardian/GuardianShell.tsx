@@ -25,10 +25,26 @@ export function GuardianShell() {
     }
   }
 
+  // Role is 'guardian' | 'child' | 'admin' (see auth/types.ts); GuardianShell
+  // only ever mounts for a guardian or admin principal in practice (routed
+  // behind ProtectedRoute's role gate), but the hint is written to degrade to
+  // nothing rather than mislabel a 'child' principal if that ever changes.
+  const roleHint =
+    principal === null
+      ? null
+      : principal.role === 'admin'
+        ? 'Admin'
+        : principal.role === 'guardian'
+          ? 'Guardian'
+          : null
+
   return (
     <div className="guardian-shell">
       <header className="guardian-shell__header">
-        <span className="guardian-shell__title">CYO Adventure</span>
+        <span className="guardian-shell__brand">
+          <span className="guardian-shell__title">CYO Adventure</span>
+          {roleHint ? <span className="guardian-shell__role">{roleHint}</span> : null}
+        </span>
         {principal ? (
           <button
             type="button"

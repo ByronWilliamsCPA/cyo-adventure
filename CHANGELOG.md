@@ -7,7 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Guardian console visual refresh (C1+C2): the shell chrome from the C0
+  design-direction spike is now the permanent implementation, with an
+  explicit sticky-chrome z-index ladder (header above the review action
+  bar) and a muted "Guardian"/"Admin" role hint beside the brand title.
+  Five card families (console feed, profiles, intake requests, review
+  findings, books), four form-field stacks, and the error/muted text
+  styles are consolidated onto shared `:is()` rules in
+  `frontend/src/guardian/guardian.css`, backed by two new design tokens
+  (`--color-border-soft`, `--surface-raised`) in
+  `frontend/design-system/src/tokens.css`. `ModerationDashboardPage` and
+  `ModerationThresholdsPage` now get contextual table styling
+  (parchment-dark header, hairline row separators) without any density
+  change. No class was renamed; `GuardianShell.test.tsx` gains role-hint
+  coverage, and no other test file was touched.
+
 ### Fixed
+- WCAG AA contrast sweep on the guardian console: every remaining
+  resting-state (non-hover) use of the bright amber token as a border or
+  text color moved to the contrast-safe `--color-amber-deep`, including
+  `.intake-chip`, `.intake-chip--on`, `.intake-request__assign`, and
+  `FlagBadge`'s "flag" tone (now a solid amber-deep fill with ink text
+  rather than amber-deep text on a light tint, which could not clear
+  4.5:1 at a badge's fixed size). One named exception:
+  `.review-node--flagged`'s decorative border-left stripe deliberately
+  stays bright amber, since it is a non-text accent and the flagged state
+  is redundantly conveyed by the adjacent FlagBadge text, so WCAG 1.4.11
+  is already satisfied without changing this element.
+  `.books__row` / `.books__assigned` and
+  `.assign__content-summary` no longer fall back to nonexistent
+  `--color-border` / `--color-text-muted` tokens (a silent cold-gray
+  render), and now use the new `--color-border-soft` / `--color-ink-muted`
+  tokens.
 - The kid surface no longer collapses every fetch failure into one generic
   retryable error: the profile picker (`/kids`) and library
   (`/library/:profileId`) now distinguish an unauthenticated session (an
