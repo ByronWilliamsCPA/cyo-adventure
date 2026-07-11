@@ -21,11 +21,15 @@ so it hands you a prompt to paste into the extension by hand.
    `SEED_ADMIN_EMAIL`, provisioned by `scripts/seed_staging.py`) live there;
    live production has no account this skill should use. Targeting live
    production is an explicit, occasional, deliberate choice the user must
-   state up front, and the standing rule still applies: the mutating personas
-   (G4/G5/G6, A2/A3) submit, approve, or decline real content, so run them
-   only against the seeded staging environment (or another disposable,
-   seeded, non-production environment); never point them at production,
-   where the browsing agent could approve or alter real stories.
+   state up front, and it supports only the non-credentialed, non-mutating
+   scenario: K0, which observes the signed-out auth gate without ever
+   signing in. Every other scenario either signs in with the seeded
+   credentials (which exist only on staging) or mutates content, and the
+   standing rule still applies: the mutating personas (G4/G5/G6, A2/A3)
+   submit, approve, or decline real content, so run them only against the
+   seeded staging environment (or another disposable, seeded,
+   non-production environment); never point them at production, where the
+   browsing agent could approve or alter real stories.
 2. Read `docs/qa/naive-ux-reports/` and find the most recent dated report, if
    any. Collect which of the 17 scenario ids (K0-K4, G0-G7, A0-A3) already
    have an entry in it.
