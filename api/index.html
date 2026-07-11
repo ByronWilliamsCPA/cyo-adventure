@@ -2794,9 +2794,9 @@ list contents guaranteed by seed data).</p>
 <p>All resource IDs are discovered dynamically from prior responses (<code>pm.collectionVariables.set</code>), never
 hardcoded, so the suite is stable across reseeded databases.</p>
 <h3 id="externals-policy">Externals policy<a class="headerlink" href="#externals-policy" title="Permanent link">&para;</a></h3>
-<p>CI runs with no Supabase, Gemini, or LLM credentials and no Redis. Endpoints whose happy path calls an
+<p>CI runs with no Supabase, Gemini, R2, or LLM credentials and no Redis. Endpoints whose happy path calls an
 external service are covered by auth negatives and side-effect-free reads only: <code>POST
-/storybooks/{id}/versions/{v}/cover</code> (Gemini + Supabase Storage) is never triggered, and generation
+/storybooks/{id}/versions/{v}/cover</code> (Gemini + Cloudflare R2) is never triggered, and generation
 enqueue failures are tolerated by design (the job row is still created).</p>
 <h3 id="auth-model">Auth model<a class="headerlink" href="#auth-model" title="Permanent link">&para;</a></h3>
 <p>The stack runs with <code>ENVIRONMENT=local</code>, which enables the dev-auth path: the bearer token string is
@@ -2864,7 +2864,7 @@ example a running dev stack), run the suite under an isolated project with remap
 <code>base_url</code>/<code>DATABASE_URL</code> at them (<code>docker compose -p cyo-adventure-apitest ...</code>).</p>
 <h2 id="required-environment">Required environment<a class="headerlink" href="#required-environment" title="Permanent link">&para;</a></h2>
 <p>No secrets are required to run the suite. The compose defaults are sufficient: <code>ENVIRONMENT=local</code> (dev
-auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, and no Supabase/Gemini/LLM/Redis
+auth), <code>DATABASE_URL</code> pointing at the compose <code>db</code> service, and no Supabase/Gemini/R2/LLM/Redis
 configuration. The only non-default env used in CI is <code>DATABASE_URL</code> for the runner-side migrate and
 seed steps, which targets the published Postgres port. Separately from running the tests, CI's upload
 step uses the repo-level <code>CODECOV_TOKEN</code> secret for optional, non-blocking Test Analytics reporting
@@ -2906,7 +2906,7 @@ pushing.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 16:40:41 UTC">July 11, 2026</span>
   </span>
 
     
