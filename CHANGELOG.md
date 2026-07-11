@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   SQL migration squashed from the Alembic head, PR migration validation, and
   staging/production deploy workflows (staging auto on merge, production
   human-gated) (#199)
+- Staging environment template (`.env.staging.example`) and an idempotent
+  staging seed script (`scripts/seed_staging.py`) that creates disposable
+  Supabase Auth test accounts (guardian, admin), a Test Family, and an
+  age-band 5-8 child profile with two published fixture stories, guarded so
+  it refuses to run unless `ENVIRONMENT=staging` (#TBD-PR3)
 - Generation continuity for series (WS-G PR 3): `AnchorContext` now carries the anchor book's
   declared variable names, and the structure prompt instructs continuations to reuse those exact
   names so a reader's state carries across books; stale ending/metadata guidance in the generation
