@@ -14,7 +14,7 @@ from __future__ import annotations
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field, model_validator
+from pydantic import AliasChoices, Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -324,6 +324,69 @@ class Settings(BaseSettings):
         default="authenticated", validation_alias="OIDC_AUDIENCE"
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
+    # Signature-algorithm allowlist for bearer-token verification (ADR-013:
+    # hybrid PQC readiness). Config-driven rather than hardcoded in
+    # api/deps.py so a future post-quantum JOSE algorithm (e.g. ML-DSA, once
+    # Supabase issues it and PyJWT verifies it) is an env change, not a code
+    # change. Env form is a JSON list: OIDC_ALLOWED_ALGS='["RS256","ES256"]'.
+    # #CRITICAL: security: the explicit allowlist is what defeats alg=none and
+    # HS256 key-confusion forgeries; making it configurable must not reopen
+    # them, so _reject_forgeable_jwt_algorithms below refuses an empty list,
+    # "none", and the symmetric HS* family at startup, never at request time.
+    # #VERIFY: tests/unit/test_config.py::TestOidcAllowedAlgs covers all three
+    # rejections plus the PQC-name acceptance path.
+    oidc_allowed_algs: list[str] = Field(
+        default_factory=lambda: ["RS256", "ES256"],
+        validation_alias="OIDC_ALLOWED_ALGS",
+    )
+
+    @field_validator("oidc_allowed_algs")
+    @classmethod
+    def _reject_forgeable_jwt_algorithms(cls, algs: list[str]) -> list[str]:
+        """Refuse allowlist values that would enable classic JWT forgeries.
+
+        Deliberately a denylist (``none`` and ``HS*``), not an allowlist of
+        known algorithm names: the point of the setting (ADR-013) is that a
+        finalized post-quantum JOSE algorithm can be enabled by env var
+        without touching this code.
+
+        Args:
+            algs: The configured algorithm allowlist.
+
+        Returns:
+            list[str]: The validated allowlist, unchanged.
+
+        Raises:
+            ConfigurationError: If the list is empty (every token would be
+                rejected), or contains ``none`` (unsigned tokens) or an
+                ``HS*`` algorithm (symmetric HMAC; with an asymmetric JWKS
+                this enables public-key-as-HMAC-secret confusion).
+        """
+        if not algs:
+            msg = (
+                "OIDC_ALLOWED_ALGS must not be empty; with no accepted "
+                "signature algorithm every bearer token would fail "
+                "verification (ADR-013)."
+            )
+            raise ConfigurationError(msg)
+        # Compare against a whitespace-stripped form so a padded entry like
+        # " HS256" cannot slip past the denylist. PyJWT's own exact-string
+        # registry lookup would make such an entry inert anyway (fail-safe),
+        # but this validator exists to catch config typos loudly at startup.
+        forbidden = [
+            alg
+            for alg in algs
+            if (norm := alg.strip()).lower() == "none" or norm.upper().startswith("HS")
+        ]
+        if forbidden:
+            msg = (
+                f"OIDC_ALLOWED_ALGS contains forbidden algorithm(s) {forbidden}: "
+                "'none' accepts unsigned tokens and the symmetric HS* family "
+                "enables public-key-as-HMAC-secret confusion against a JWKS "
+                "verifier; only asymmetric algorithms are allowed (ADR-013)."
+            )
+            raise ConfigurationError(msg)
+        return algs
 
     # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
     # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
