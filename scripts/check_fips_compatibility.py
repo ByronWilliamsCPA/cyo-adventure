@@ -6,7 +6,12 @@ running on FIPS-enabled systems (like Ubuntu LTS with fips-updates).
 
 FIPS mode restricts cryptographic algorithms to NIST-approved ones:
 - Approved: AES, SHA-256/384/512, RSA (2048+), ECDSA, etc.
+- Approved post-quantum (ADR-013): ML-KEM (FIPS 203), ML-DSA (FIPS 204),
+  SLH-DSA (FIPS 205), and hybrid key exchange combining an approved classical
+  scheme with ML-KEM (e.g. the X25519MLKEM768 TLS group).
 - Prohibited: MD5, SHA-1 (for signatures), DES, RC4, Blowfish, etc.
+- Flagged for migration: pre-standardization PQC names (Kyber, Dilithium,
+  SPHINCS+); use the finalized FIPS 203/204/205 parameter sets instead.
 
 Usage:
     python scripts/check_fips_compatibility.py [--strict] [--fix-hints]
@@ -44,8 +49,14 @@ FIPS_INCOMPATIBLE_PACKAGES: dict[str, str] = {
 
 # Packages that need verification but may be OK
 FIPS_VERIFY_PACKAGES: dict[str, str] = {
-    "cryptography": "Ensure version >= 3.4.6 and OpenSSL FIPS provider is enabled.",
-    "pyca/cryptography": "Ensure version >= 3.4.6 and OpenSSL FIPS provider is enabled.",
+    "cryptography": (
+        "Ensure version >= 3.4.6 and OpenSSL FIPS provider is enabled; "
+        ">= 45 adds ML-DSA/SLH-DSA (FIPS 204/205) primitives (ADR-013)."
+    ),
+    "pyca/cryptography": (
+        "Ensure version >= 3.4.6 and OpenSSL FIPS provider is enabled; "
+        ">= 45 adds ML-DSA/SLH-DSA (FIPS 204/205) primitives (ADR-013)."
+    ),
     "requests": "Uses urllib3; TLS settings should use FIPS-compliant ciphers.",
     "urllib3": "Ensure TLS 1.2+ with FIPS-approved cipher suites.",
     "httpx": "Verify TLS configuration uses FIPS-approved algorithms.",
@@ -53,8 +64,16 @@ FIPS_VERIFY_PACKAGES: dict[str, str] = {
     "boto3": "AWS SDK; ensure FIPS endpoints are used for gov/compliance.",
     "azure-identity": "Azure SDK; ensure FIPS-compliant configuration.",
     "google-cloud-core": "GCP SDK; verify crypto configuration.",
-    "jwt": "PyJWT; ensure RS256/ES256 algorithms (not HS256 with weak keys).",
-    "pyjwt": "Ensure RS256/ES256 algorithms (not HS256 with weak keys).",
+    "jwt": (
+        "PyJWT; ensure asymmetric algorithms (not HS256 with weak keys). "
+        "This project's allowlist is config-driven via OIDC_ALLOWED_ALGS "
+        "(ADR-013), ready for ML-DSA JOSE algorithms once registered."
+    ),
+    "pyjwt": (
+        "Ensure asymmetric algorithms (not HS256 with weak keys). "
+        "This project's allowlist is config-driven via OIDC_ALLOWED_ALGS "
+        "(ADR-013), ready for ML-DSA JOSE algorithms once registered."
+    ),
     "python-jose": "Verify algorithm configuration for FIPS compliance.",
 }
 
@@ -73,6 +92,35 @@ NON_FIPS_CIPHERS = {
     "idea",
     "cast5",
     "seed",
+}
+
+# NIST-finalized post-quantum algorithms (FIPS 203/204/205) and the hybrid TLS
+# key-exchange group built on them. These are FIPS-approved (ADR-013) and must
+# never be flagged, including by any future substring or name-list matching.
+FIPS_PQC_APPROVED = {
+    "ml-kem",
+    "ml_kem",
+    "mlkem",
+    "ml-dsa",
+    "ml_dsa",
+    "mldsa",
+    "slh-dsa",
+    "slh_dsa",
+    "slhdsa",
+    "x25519mlkem768",
+}
+
+# Pre-standardization names for the FIPS 203/204/205 algorithms. Round-3
+# submissions are not the finalized parameter sets and carry no FIPS
+# validation; flag them with a migration hint rather than an error.
+PQC_PRE_STANDARD_NAMES: dict[str, str] = {
+    "kyber": "Use ML-KEM (FIPS 203); round-3 Kyber is not the finalized parameter set.",
+    "dilithium": (
+        "Use ML-DSA (FIPS 204); round-3 Dilithium is not the finalized parameter set."
+    ),
+    "sphincs": (
+        "Use SLH-DSA (FIPS 205); SPHINCS+ round 3 is not the finalized parameter set."
+    ),
 }
 
 
@@ -134,6 +182,34 @@ class FipsCodeVisitor(ast.NodeVisitor):
             )
         )
 
+    def _check_pqc_pre_standard_name(self, node: ast.Call, name: str) -> bool:
+        """Flag pre-standardization PQC names (Kyber, Dilithium, SPHINCS+).
+
+        Emits a warning-severity FipsIssue pointing at the finalized FIPS
+        203/204/205 name when ``name`` contains a pre-standard PQC algorithm
+        name. Finalized names (ML-KEM, ML-DSA, SLH-DSA) are exempted first.
+
+        Returns:
+            True when ``name`` was handled as a PQC name (approved or
+            pre-standard), so the caller skips its own matching.
+        """
+        if name in FIPS_PQC_APPROVED:
+            return True
+        for legacy, hint in PQC_PRE_STANDARD_NAMES.items():
+            if legacy in name:
+                self.issues.append(
+                    FipsIssue(
+                        file_path=self.file_path,
+                        line_number=node.lineno,
+                        severity="warning",
+                        category="pqc",
+                        message=f"Pre-standardization PQC algorithm name: {name}",
+                        fix_hint=hint,
+                    )
+                )
+                return True
+        return False
+
     def _check_cipher_call(self, node: ast.Call) -> None:
         """Detect non-FIPS cipher constructor calls (DES, RC4, Blowfish, etc.).
 
@@ -143,6 +219,8 @@ class FipsCodeVisitor(ast.NodeVisitor):
         if not isinstance(node.func, ast.Attribute):
             return
         func_name = node.func.attr.lower()
+        if self._check_pqc_pre_standard_name(node, func_name):
+            return
         if func_name not in NON_FIPS_CIPHERS:
             return
         self.issues.append(
@@ -168,6 +246,8 @@ class FipsCodeVisitor(ast.NodeVisitor):
             if not (isinstance(arg, ast.Constant) and isinstance(arg.value, str)):
                 continue
             algo = arg.value.lower()
+            if self._check_pqc_pre_standard_name(node, algo):
+                continue
             if algo not in NON_FIPS_HASHES and algo not in NON_FIPS_CIPHERS:
                 continue
             self.issues.append(
