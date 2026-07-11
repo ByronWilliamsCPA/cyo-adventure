@@ -1,6 +1,6 @@
 """Schema parity: Supabase SQL migrations must match the ORM models.
 
-Replaces the retired ``alembic check`` gate. Two databases are built on the
+Replaces the retired schema-migration-tool check gate. Two databases are built on the
 same Postgres server: one by applying every ``supabase/migrations/*.sql``
 file in lexicographic order (the simple-query protocol handles
 multi-statement files), one from ``Base.metadata.create_all``. Their

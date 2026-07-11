@@ -68,27 +68,6 @@ class Seed:
     version: int
 
 
-@pytest.fixture(scope="module")
-def migration_pg_url() -> Iterator[str]:
-    """Start a fresh Postgres 16 container for a migration round-trip test module.
-
-    Module-scoped (unlike the session-scoped ``_pg_url`` below, which backs the
-    ORM-level integration suite): each migration test module runs its own
-    ``alembic upgrade``/``downgrade`` sequence against a dedicated schema, so
-    sharing a container across modules would let one file's migrated schema
-    leak into another's round trip.
-    """
-    try:
-        container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
-        container.start()
-    except (DockerException, OSError) as exc:
-        pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
-    try:
-        yield container.get_connection_url()
-    finally:
-        container.stop()
-
-
 @pytest.fixture(scope="session")
 def _pg_url() -> Iterator[str]:
     """Start a Postgres 16 container for the test session.
