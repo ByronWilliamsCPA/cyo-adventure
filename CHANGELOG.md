@@ -20,8 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   weekly schedule, so merges could sit unpublished for days while the live
   deploy served a stale build. Doc-only paths (`docs/**`, `**.md`,
   `.claude/**`, `mkdocs.yml`) are ignored. Requires the
-  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Actions
-  read/write on homelab-infra); a missing/empty secret fails the run via an
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Contents
+  read/write on homelab-infra, the permission `POST /dispatches` requires;
+  Actions permissions are not sufficient); a missing/empty secret fails the run via an
   explicit guard step, and an invalid/expired token fails the `gh` call
   loudly (HTTP 401) rather than silently skipping the dispatch.
 
