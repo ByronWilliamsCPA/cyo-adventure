@@ -41,7 +41,7 @@ env:
 jobs:
   sbom:
     name: SBOM & Security
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-sbom.yml@4cdd072803fc6582c7c0fc9bc0b1b0a343a51bf7  # main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-sbom.yml@58fbe6e08975bf4b276a960cd62608a443d2f8d6  # main
     with:
       python-version: '3.12'
       # cyo_adventure ships a build backend (it is an installable package), so the

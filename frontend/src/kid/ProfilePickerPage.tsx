@@ -2,14 +2,24 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
+import { classifyApiError } from '../hooks/classifyApiError'
+import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { Mascot } from './Mascot'
 
+// `unauthenticated` is the stable, expected no-grown-up-signed-in gate, not a
+// flaky fetch. `forbidden` is defensive: GET /v1/profiles does not authorize
+// per role today (the backend never returns 403 on list), so that branch only
+// fires if a future backend change adds one. `error` stays the transient-only
+// label so its existing role="alert" and retry copy keep meaning "this should
+// have worked, try again".
 type PickerState =
   | { status: 'loading' }
+  | { status: 'unauthenticated' }
+  | { status: 'forbidden' }
   | { status: 'error' }
   | { status: 'ready'; profiles: ProfileView[] }
 
@@ -35,8 +45,15 @@ export function ProfilePickerPage() {
         const profiles = await profilesApi.list()
         if (!cancelled) setState({ status: 'ready', profiles })
       } catch (err) {
-        console.error('profile list failed', err)
-        if (!cancelled) setState({ status: 'error' })
+        // Redacted shape only, never the raw axios error (its `config` carries
+        // the Authorization header); see logApiError.
+        logApiError('profile list failed', err)
+        if (!cancelled) {
+          const { kind } = classifyApiError(err)
+          if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
+          else if (kind === 'forbidden') setState({ status: 'forbidden' })
+          else setState({ status: 'error' })
+        }
       }
     }
     void load()
@@ -49,6 +66,40 @@ export function ProfilePickerPage() {
     return (
       <div role="status" aria-live="polite" className="picker-loading">
         Loading profiles…
+      </div>
+    )
+  }
+
+  if (state.status === 'unauthenticated') {
+    return (
+      <div role="status" aria-live="polite">
+        <EmptyState
+          title="Ask a grown-up to help"
+          description="A grown-up needs to sign in before you can pick who's reading."
+          icon={<Mascot size={96} />}
+          actions={
+            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+              I am a grown-up
+            </Link>
+          }
+        />
+      </div>
+    )
+  }
+
+  if (state.status === 'forbidden') {
+    return (
+      <div role="status" aria-live="polite">
+        <EmptyState
+          title="We can't show this right now"
+          description="Ask a grown-up to take a look."
+          icon={<Mascot size={96} />}
+          actions={
+            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+              I am a grown-up
+            </Link>
+          }
+        />
       </div>
     )
   }
