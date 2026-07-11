@@ -51,6 +51,8 @@ _ORM_ENUM_ARRAY_RE = re.compile(
 # Within a matched element list: the ``::character varying`` cast that ends
 # one element, i.e. one followed by the ``, '`` separator of the next quoted
 # literal or by the end of the list.
+# #EDGE: data-integrity: the lookahead (?=, '|$) assumes enum literals never
+# contain the byte sequence ::character varying, '; spurious mismatch if violated.
 _ELEM_CAST_RE = re.compile(r"::character varying(?=, '|$)")
 
 
