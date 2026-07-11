@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react'
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { getChildSession, setChildSession } from '../auth/childSession'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { useApi } from './useApi'
 
@@ -51,11 +52,18 @@ function makeRequestConfig(): InternalAxiosRequestConfig {
   return { headers: {} } as unknown as InternalAxiosRequestConfig
 }
 
-function makeUnauthorizedError(): AxiosError {
+/**
+ * @param authorization The Authorization header the FAILING request actually
+ * carried (used by the response interceptor to decide which token to clear).
+ * Omitted to match a request that carried no bearer at all.
+ */
+function makeUnauthorizedError(authorization?: string): AxiosError {
   return new AxiosError(
     'Unauthorized',
     'ERR_BAD_REQUEST',
-    {} as InternalAxiosRequestConfig,
+    {
+      headers: authorization ? { Authorization: authorization } : {},
+    } as InternalAxiosRequestConfig,
     undefined,
     {
       status: 401,
@@ -136,6 +144,161 @@ describe('useApi 401 interceptor', () => {
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     expect(location.replace).not.toHaveBeenCalled()
+  })
+})
+
+describe('useApi 401 interceptor child session clearing (G1 / P6-04)', () => {
+  beforeEach(() => {
+    localStorage.setItem('auth_token', 'test-token')
+    setChildSession({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+  })
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+    localStorage.clear()
+  })
+
+  it('clears only the child session when the failing request carried the child bearer', async () => {
+    setPathname('/library/p1')
+    const { result } = renderHook(() => useApi())
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(
+      rejected(makeUnauthorizedError('Bearer child-token'))
+    ).rejects.toBeInstanceOf(AxiosError)
+
+    expect(getChildSession()).toBeNull()
+    // The guardian's own, unrelated session must survive: only the token
+    // that actually failed gets cleared.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+  })
+
+  it('does not navigate off a kid-token route when clearing the child session', async () => {
+    const location = setPathname('/read/p1/story-1/2')
+    const { result } = renderHook(() => useApi())
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(
+      rejected(makeUnauthorizedError('Bearer child-token'))
+    ).rejects.toBeInstanceOf(AxiosError)
+
+    expect(getChildSession()).toBeNull()
+    expect(location.replace).not.toHaveBeenCalled()
+  })
+
+  it('clears the guardian token (not the child session) when the failing request carried the guardian bearer', async () => {
+    setPathname('/guardian/console')
+    const { result } = renderHook(() => useApi())
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(
+      rejected(makeUnauthorizedError('Bearer test-token'))
+    ).rejects.toBeInstanceOf(AxiosError)
+
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    // An unrelated, still-valid child session must survive a guardian 401.
+    expect(getChildSession()).not.toBeNull()
+  })
+
+  it('clears the guardian token when a kid-token-route request carried no bearer at all', async () => {
+    setPathname('/library/p1')
+    const { result } = renderHook(() => useApi())
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
+
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    // Not a child-bearer 401 (no Authorization matched the stored child
+    // token), so the child session itself is left untouched here.
+    expect(getChildSession()).not.toBeNull()
+  })
+})
+
+describe('useApi request interceptor child-token selection (G1 / P6-04)', () => {
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+    localStorage.clear()
+  })
+
+  it('attaches the child session token on a library route when a valid session exists', () => {
+    setPathname('/library/p1')
+    setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer child-token')
+  })
+
+  it('attaches the child session token on a reader route when a valid session exists', () => {
+    setPathname('/read/p1/story-1/2')
+    setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer child-token')
+  })
+
+  it('falls back to the guardian token on a kid-token route when no child session exists', () => {
+    setPathname('/library/p1')
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+
+  it('falls back to the guardian token, and clears storage, when the child session is expired', () => {
+    setPathname('/library/p1')
+    setChildSession({ token: 'child-token', expiresAt: '2000-01-01T00:00:00Z', profileId: 'p1' })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    expect(getChildSession()).toBeNull()
+  })
+
+  it('always uses the guardian token on the profile picker path, even with a valid child session', () => {
+    setPathname('/kids')
+    setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+
+  it('always uses the guardian token on a guardian route, even with a valid child session', () => {
+    setPathname('/guardian/console')
+    setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
   })
 })
 
