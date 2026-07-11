@@ -13,11 +13,17 @@ export default defineConfig({
       cssFileName: 'cyo-design-system',
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      // #CRITICAL: external resource: react/jsx-runtime must stay external.
+      // Vite 8 (rolldown) inlines it otherwise, and its CJS interop leaves a
+      // runtime require("react") that throws in browsers consuming the ESM
+      // dist without a bundler (the design-sync converter is one).
+      // #VERIFY: after a build, `grep -c 'react-stack-top-frame' dist/cyo-design-system.js` must be 0.
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'react/jsx-runtime': 'ReactJSXRuntime',
         },
       },
     },
