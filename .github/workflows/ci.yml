@@ -534,6 +534,17 @@ jobs:
         with:
           version: 2.109.1
 
+      # The baseline dump carries Supabase's `OWNER TO "postgres"` statements;
+      # the compose db runs as `cyo_adventure` with no postgres role, so the
+      # push fails with SQLSTATE 42704 unless the role exists. Duplicate-
+      # tolerant, mirroring tests/integration/test_schema_parity.py; a
+      # superuser may reassign ownership to any existing role, so the bare
+      # role is sufficient.
+      - name: Create postgres role for baseline OWNER statements
+        run: |
+          docker compose exec -T db psql -U cyo_adventure -d cyo_adventure -c \
+            'DO $$ BEGIN CREATE ROLE "postgres"; EXCEPTION WHEN duplicate_object THEN NULL; END $$;'
+
       # Applies the real Supabase migration chain against the compose db (not
       # Base.metadata.create_all): the collection exercises the migrated
       # schema, matching what staging/production deploys actually run.
