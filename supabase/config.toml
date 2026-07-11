@@ -64,8 +64,11 @@ enabled = true
 schema_paths = []
 
 [db.seed]
-# If enabled, seeds the database after migrations during a db reset.
-enabled = true
+# Disabled: seeding is handled in Python (scripts/seed_dev_data.py for local,
+# scripts/seed_staging.py for staging), not via supabase/seed.sql, per
+# docs/superpowers/specs/2026-07-10-supabase-environments-pipeline-design.md.
+# Leaving this enabled makes `supabase db reset` fail on the missing seed file below.
+enabled = false
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
 sql_paths = ["./seed.sql"]
