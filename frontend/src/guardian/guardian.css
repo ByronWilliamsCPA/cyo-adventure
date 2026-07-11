@@ -1,3 +1,11 @@
+/* ── Z-index ladder ────────────────────────────────────────────
+   .guardian-shell__header  (sticky top)      10
+   .review-actionbar        (sticky bottom)    5
+   The header must stay above the pinned action bar so a guardian scrolling a
+   long review never sees the action bar render over the header at the
+   scroll boundary. The design system's Dialog (z-index 1000) sits above
+   both when a confirm dialog is open. */
+
 .guardian-shell {
   min-height: 100vh;
   background:
@@ -20,11 +28,24 @@
   z-index: 10;
 }
 
+.guardian-shell__brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2, 0.5rem);
+}
+
 .guardian-shell__title {
   font-family: var(--font-serif, Georgia, serif);
   font-weight: var(--weight-bold, 700);
   font-size: var(--text-lg, 1.25rem);
   letter-spacing: 0.01em;
+}
+
+.guardian-shell__role {
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-weight: var(--weight-semibold, 600);
+  font-size: var(--text-sm, 0.9375rem);
+  color: var(--color-ink-muted, #8c6f56);
 }
 
 .guardian-shell__sign-out {
@@ -569,6 +590,7 @@
 .review-actionbar {
   position: sticky;
   bottom: 0;
+  z-index: 5;
   display: flex;
   justify-content: space-between;
   gap: 1rem;

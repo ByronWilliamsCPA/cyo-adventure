@@ -28,7 +28,14 @@ export function GuardianShell() {
   return (
     <div className="guardian-shell">
       <header className="guardian-shell__header">
-        <span className="guardian-shell__title">CYO Adventure</span>
+        <span className="guardian-shell__brand">
+          <span className="guardian-shell__title">CYO Adventure</span>
+          {principal ? (
+            <span className="guardian-shell__role">
+              {principal.role === 'admin' ? 'Admin' : 'Guardian'}
+            </span>
+          ) : null}
+        </span>
         {principal ? (
           <button
             type="button"
