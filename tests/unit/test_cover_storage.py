@@ -38,6 +38,13 @@ async def test_uploads_and_returns_public_url() -> None:
     assert boto_kwargs["endpoint_url"] == "https://acct123.r2.cloudflarestorage.com"
     assert boto_kwargs["aws_access_key_id"] == "AKIDEXAMPLE"
     assert boto_kwargs["aws_secret_access_key"] == "secret"
+    assert boto_kwargs["region_name"] == "auto"
+    boto_config = boto_kwargs["config"]
+    assert boto_config.connect_timeout == 30.0
+    assert boto_config.read_timeout == 30.0
+    assert boto_config.request_checksum_calculation == "when_required"
+    assert boto_config.response_checksum_validation == "when_required"
+    assert boto_config.s3 == {"addressing_style": "path"}
     mock_client.put_object.assert_called_once_with(
         Bucket="covers",
         Key="s1/2.webp",

@@ -365,7 +365,8 @@ class Settings(BaseSettings):
 
     # --- Cover generation (nano banana) + Cloudflare R2 storage ---
     # #CRITICAL: security: nano banana + R2 credentials; never log values.
-    # #VERIFY: only referenced in covers/provider.py and covers/storage.py.
+    # #VERIFY: referenced in covers/provider.py, covers/storage.py, and the
+    # api/covers.py pre-enqueue config guard.
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
     # R2 account id; the S3-compatible endpoint is derived as
     # f"https://{r2_account_id}.r2.cloudflarestorage.com" (covers/storage.py).

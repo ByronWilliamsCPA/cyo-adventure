@@ -77,6 +77,18 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
                 signature_version="s3v4",
                 connect_timeout=_UPLOAD_TIMEOUT_SECONDS,
                 read_timeout=_UPLOAD_TIMEOUT_SECONDS,
+                # #EDGE: external resources: botocore >=1.36 defaults to
+                # mandatory request/response checksums that R2 does not
+                # support the same way AWS S3 does; Cloudflare's R2 docs
+                # direct clients to opt back to "when_required".
+                # #VERIFY: manual smoke-test upload against live R2 confirms
+                # PutObject succeeds with these settings.
+                request_checksum_calculation="when_required",
+                response_checksum_validation="when_required",
+                # Path-style addressing avoids a 2-level subdomain
+                # (<bucket>.<account>.r2.cloudflarestorage.com) that can fall
+                # outside R2's wildcard TLS certificate scope.
+                s3={"addressing_style": "path"},
             ),
         )
         # Sonar python:S7608 false positive: ExpectedBucketOwner is an AWS
@@ -98,6 +110,13 @@ async def upload_cover(image_bytes: bytes, key: str, settings: Settings) -> str:
     # other async work sharing this process.
     # #VERIFY: asyncio.to_thread offloads client construction and put_object
     # to a worker thread together.
+    # #ASSUME: concurrency: RQ's UnixSignalDeathPenalty delivers SIGALRM to
+    # the main thread only, so a job timeout cannot interrupt this worker
+    # thread; a slow upload plus botocore's default retries can keep running
+    # past cover_job_timeout_seconds after the job is already marked failed.
+    # #VERIFY: bound worst-case thread lifetime (e.g. a stricter retry
+    # policy) or move upload cancellation to a mechanism that can reach a
+    # background thread; tracked as a follow-up, not fixed here.
     await asyncio.to_thread(_build_client_and_put)
     # #CRITICAL: external resources: this URL is only browser-reachable if the
     # owner has connected a custom domain to this R2 bucket in the Cloudflare
