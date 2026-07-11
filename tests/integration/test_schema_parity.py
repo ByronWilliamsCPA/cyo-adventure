@@ -19,6 +19,11 @@ from sqlalchemy import inspect, text
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.pool import NullPool
 
+# Imported for its side effect of registering every ORM table on
+# Base.metadata, so this module's create_all does not silently depend on
+# conftest.py happening to import the models first. (Without it the failure
+# would still be loud, an empty ORM table set, but explicit is better.)
+import cyo_adventure.db.models  # noqa: F401
 from cyo_adventure.core.database import Base
 
 _MIGRATIONS = sorted(
@@ -28,78 +33,78 @@ _MIGRATIONS = sorted(
 # Tables owned by tooling, not the ORM.
 _IGNORED_TABLES = {"schema_migrations"}
 
-# Matches a Postgres type cast (``::text``, ``::charactervarying``,
-# ``::text[]``) once the surrounding text has been lowercased and had all
-# whitespace stripped.
-_CAST_RE = re.compile(r"::[a-z_]+(\[\])?")
+# Matches ONLY the SQLAlchemy-side rendering of a string-enum membership
+# array: every element is a quoted literal cast to exactly
+# ``::character varying``, and the whole ARRAY carries a single trailing
+# ``::text[]`` cast, e.g.
+# ``ARRAY['draft'::character varying, 'published'::character varying]::text[]``.
+# An element cast to any OTHER type, an array cast to anything but
+# ``text[]``, or a non-literal element does not match, so such expressions
+# are compared verbatim and any type-level difference stays visible.
+_ORM_ENUM_ARRAY_RE = re.compile(
+    r"ARRAY\["
+    r"(?P<elems>'(?:[^']|'')*'::character varying"
+    r"(?:, '(?:[^']|'')*'::character varying)*)"
+    r"\]::text\[\]"
+)
+
+# Within a matched element list: the ``::character varying`` cast that ends
+# one element, i.e. one followed by the ``, '`` separator of the next quoted
+# literal or by the end of the list.
+_ELEM_CAST_RE = re.compile(r"::character varying(?=, '|$)")
 
 
 def _norm_check(sqltext: str) -> str:
-    """Normalize a CHECK constraint's expression text for parity comparison.
+    """Canonicalize one known cast-placement spelling in a CHECK expression.
 
-    Postgres re-serializes a CHECK expression's cast chain differently
-    depending on how the constraint was originally declared: a pg_dump
-    baseline casts each array literal individually
-    (``'x'::charactervarying::text``), while SQLAlchemy's compiled DDL casts
-    the whole array once at the end (``'x'::charactervarying]::text[]``).
-    Both produce the same runtime comparison (``status::text = ANY(...)``
-    against a set of string literals), so stripping every cast annotation
-    collapses the two spellings to the same normalized form without
-    touching the literal values or operators being compared.
+    Postgres stores a parsed expression tree per CHECK constraint, and both
+    parity databases are read back through the same ``pg_get_constraintdef``
+    deparser, so constraint text compares byte-for-byte between the two
+    catalogs with a single exception: the string-enum membership pattern
+    ``col::text = ANY (ARRAY[...])``. The pg_dump baseline declares the cast
+    at the array level (``(ARRAY[...])::text[]``), which the parser pushes
+    down into each element (deparsed as ``'x'::character varying::text``,
+    no array-level cast), while SQLAlchemy's compiled ``IN`` produces
+    elements without the push-down (``'x'::character varying``) plus an
+    array-level ``::text[]``. The two trees are semantically identical:
+    every varchar literal cast to text, elementwise versus arraywise.
 
-    # #ASSUME: data-integrity: stripping casts loosens formatting only; two
-    # constraints that differ in their literal values, columns, or operators
-    # (not merely in cast spelling) must still compare unequal.
-    # #VERIFY: covered by test_migrations_match_orm_models comparing the
-    # normalized checks list per table.
+    This function rewrites exactly that one SQLAlchemy-side spelling into
+    the pushed-down form: for an ``ARRAY[...]::text[]`` whose every element
+    is a quoted literal cast to ``::character varying``, it appends
+    ``::text`` to each element and drops the array-level ``::text[]``.
+    Nothing else is touched: no case folding, no quote or whitespace
+    stripping, and no cast removal, so constraints that differ in literal
+    values (including their case), column names, operators, or cast types
+    still compare unequal verbatim.
+
+    # #ASSUME: data-integrity: the rewrite fires only on the exact spelling
+    # matched by _ORM_ENUM_ARRAY_RE and is meaning-preserving there
+    # (casting each varchar element to text equals casting the varchar[]
+    # array to text[]); expressions with any other cast type or shape pass
+    # through unmodified and must match byte-for-byte on their own.
+    # #VERIFY: _ORM_ENUM_ARRAY_RE requires the literal token
+    # "::character varying" on every element and "::text[]" on the array,
+    # so a differing cast type on either side leaves that side unrewritten
+    # and the comparison fails loudly; literal values are carried into the
+    # output verbatim (no lowercasing, no quote stripping) by construction
+    # of _ELEM_CAST_RE, which only inserts "::text" after an element's
+    # closing cast.
 
     Args:
         sqltext: The raw ``sqltext`` reported by
             ``Inspector.get_check_constraints``.
 
     Returns:
-        The normalized, cast-free constraint text.
+        The constraint text with only the enum-array cast spelling
+        canonicalized; all other text is preserved byte-for-byte.
     """
-    collapsed = sqltext.replace(" ", "").lower()
-    return _CAST_RE.sub("", collapsed)
 
+    def _push_down(match: re.Match[str]) -> str:
+        elems = _ELEM_CAST_RE.sub("::character varying::text", match.group("elems"))
+        return f"ARRAY[{elems}]"
 
-def _norm_default(value: str | None) -> str | None:
-    """Normalize a column server default across dump vs create_all spellings.
-
-    A pg_dump-format migration and ``create_all`` render the same default
-    differently even though both are inspected from a real Postgres catalog:
-    a dump writes ``'{}'::jsonb`` while SQLAlchemy's DDL compiler emits
-    ``'{}'``, and string defaults may differ in quoting or an explicit
-    ``::text`` cast. Stripping the cast, quotes, and case differences
-    collapses these to the same normalized form without touching the
-    underlying default value itself.
-
-    # #ASSUME: data-integrity: this normalization only strips formatting
-    # (casts, quotes, case, whitespace); it must never make two genuinely
-    # different default values compare equal.
-    # #VERIFY: covered by test_migrations_match_orm_models failing loudly on
-    # any drift that survives normalization.
-
-    Args:
-        value: The raw ``server_default`` string reported by SQLAlchemy's
-            ``Inspector.get_columns``, or ``None`` if the column has no
-            default.
-
-    Returns:
-        The normalized default string, or ``None`` if there is no default.
-    """
-    if value is None:
-        return None
-    normalized = value
-    for cast in (
-        "::jsonb",
-        "::text",
-        "::character varying",
-        "::timestamp with time zone",
-    ):
-        normalized = normalized.replace(cast, "")
-    return normalized.replace("'", "").strip().lower()
+    return _ORM_ENUM_ARRAY_RE.sub(_push_down, sqltext)
 
 
 def _snapshot(sync_conn: Any) -> dict[str, Any]:
@@ -111,8 +116,12 @@ def _snapshot(sync_conn: Any) -> dict[str, Any]:
 
     Returns:
         A mapping of table name to its columns, primary key, foreign keys,
-        unique constraints, indexes, and check constraints, all normalized
-        for cross-database comparison.
+        unique constraints, indexes, and check constraints. Server defaults
+        are compared verbatim (both catalogs deparse a stored default
+        expression through the same ``pg_get_expr``, so identical defaults
+        render identically and no normalization is applied); check
+        constraints get only the single cast-spelling canonicalization
+        documented on ``_norm_check``.
     """
     insp = inspect(sync_conn)
     snap: dict[str, Any] = {}
@@ -123,7 +132,7 @@ def _snapshot(sync_conn: Any) -> dict[str, Any]:
             c["name"]: (
                 str(c["type"]).lower(),
                 c["nullable"],
-                _norm_default(c.get("default")),
+                c.get("default"),
             )
             for c in insp.get_columns(table)
         }
@@ -192,18 +201,29 @@ async def test_migrations_match_orm_models(pg_url: str) -> None:
         # "postgres" and the dump's "ALTER ... OWNER TO postgres" statements
         # would fail with "role postgres does not exist". Creating the role
         # here mirrors the target environment's prerequisite rather than
-        # editing the baseline SQL, since ownership plays no part in the
+        # editing the baseline SQL; ownership plays no part in the
         # schema-parity comparison below (Inspector snapshots do not include
         # object owner).
+        # #EDGE: concurrency: roles are cluster-global, so a check-then-create
+        # from Python would race if two sessions on the same server ran it
+        # concurrently (pytest-xdist workers each start their own
+        # session-scoped container today, but that is a fixture detail this
+        # statement should not depend on). The DO block below is a single
+        # server-side statement that swallows exactly duplicate_object, so a
+        # concurrent creator cannot make it fail, and any OTHER error
+        # (permissions, syntax) still propagates.
         # #VERIFY: a superuser (the testcontainers "test" role) may reassign
         # ownership to any existing role without being a member of it, so no
         # further grants are required for the migration's OWNER TO statements
-        # to succeed.
-        role_exists = await conn.execute(
-            text("SELECT 1 FROM pg_roles WHERE rolname = 'postgres'")
+        # to succeed; verified by this test applying the full baseline dump.
+        await conn.execute(
+            text(
+                "DO $$ BEGIN "
+                'CREATE ROLE "postgres"; '
+                "EXCEPTION WHEN duplicate_object THEN NULL; "
+                "END $$"
+            )
         )
-        if role_exists.scalar() is None:
-            await conn.execute(text('CREATE ROLE "postgres"'))
     await admin.dispose()
 
     base = pg_url.replace("postgresql+asyncpg://", "postgresql://")
