@@ -51,11 +51,14 @@
   line-height: var(--leading-tight);
 }
 
-/* Primary: amber fill */
+/* Primary: amber-deep fill. Parchment text on the bright --color-amber fill
+   sits at 2.90:1, below the 4.5:1 WCAG 1.4.3 AA normal-text minimum; the
+   deeper --color-amber-deep fill raises it to a passing ratio (matches the
+   guardian sign-out/nav-active/provider-button precedent in guardian.css). */
 .cyo-btn--primary {
-  background-color: var(--color-amber);
+  background-color: var(--color-amber-deep);
   color: var(--color-parchment);
-  border-color: var(--color-amber);
+  border-color: var(--color-amber-deep);
   box-shadow: var(--shadow-sm);
 }
 
@@ -65,11 +68,14 @@
   box-shadow: var(--shadow-md);
 }
 
-/* Ghost: outlined */
+/* Ghost: outlined. Bright --color-amber text/border on the parchment
+   background sits at 2.62:1, below the 4.5:1 WCAG 1.4.3 AA normal-text
+   minimum; --color-amber-deep raises the text and border to a passing
+   ratio while the hover fill stays unchanged. */
 .cyo-btn--ghost {
   background-color: transparent;
-  color: var(--color-amber);
-  border-color: var(--color-amber);
+  color: var(--color-amber-deep);
+  border-color: var(--color-amber-deep);
 }
 
 .cyo-btn--ghost:hover:not(:disabled) {

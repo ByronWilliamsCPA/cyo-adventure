@@ -1,0 +1,13 @@
+/* Text-tone utilities: shared inline text colors for error and muted/notice
+   copy. Consumers apply these classes directly to their own elements (e.g.
+   an inline validation message or a secondary hint); no component wraps
+   them because the surrounding markup (p, span, alert role) varies too much
+   page to page to standardize. */
+
+.cyo-text-error {
+  color: var(--color-error);
+}
+
+.cyo-text-muted {
+  color: var(--color-ink-muted);
+}
