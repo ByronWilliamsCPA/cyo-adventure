@@ -22,7 +22,7 @@ function isFlagged(item: ReviewQueueItem): boolean {
 
 function QueueRow({ item }: { item: ReviewQueueItem }) {
   return (
-    <li className="console-row">
+    <li className="console-row cyo-card cyo-card--interactive">
       <Link className="console-row__link" to={`/guardian/review/${item.storybook_id}`}>
         <span className="console-row__title">{item.title}</span>
         {!item.screened ? (
@@ -118,7 +118,7 @@ export function ConsolePage() {
     content = (
       <section className="console">
         <h1>Review queue</h1>
-        <p className="console__notice">
+        <p className="console__notice cyo-text-muted">
           Reviews are handled by your family&apos;s safety reviewer. You do not need to
           approve stories here.
         </p>
@@ -126,7 +126,7 @@ export function ConsolePage() {
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         We could not load the review queue. Please reload.
       </p>
     )
@@ -175,11 +175,11 @@ export function ConsolePage() {
             <div className="console-group">
               <h2 className="console-group__heading">Still processing</h2>
               {state.processing.length === 0 ? (
-                <p className="console__muted">No stories are generating right now.</p>
+                <p className="console__muted cyo-text-muted">No stories are generating right now.</p>
               ) : (
                 <ul className="console-list">
                   {state.processing.map((job) => (
-                    <li key={job.job_id} className="console-row">
+                    <li key={job.job_id} className="console-row cyo-card cyo-card--interactive">
                       <span className="console-row__title">{job.title}</span>
                       <FlagBadge tone="processing" />
                     </li>

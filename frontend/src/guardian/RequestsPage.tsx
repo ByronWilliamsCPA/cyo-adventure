@@ -178,14 +178,14 @@ export function RequestsPage() {
     content = (
       <section className="console">
         <h1>Story requests</h1>
-        <p className="console__notice">
+        <p className="console__notice cyo-text-muted">
           Story requests are reviewed by your family&apos;s safety reviewer.
         </p>
       </section>
     )
   } else if (state.kind === 'error') {
     content = (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         We could not load story requests. Please reload.
       </p>
     )
@@ -214,7 +214,11 @@ export function RequestsPage() {
             const isActionable = req.status === 'pending'
             const decision = decisionFor(req)
             return (
-              <li key={req.id} className="console-row" data-testid={`request-${req.id}`}>
+              <li
+                key={req.id}
+                className="console-row cyo-card cyo-card--interactive"
+                data-testid={`request-${req.id}`}
+              >
                 <div className="console-row__body">
                   {/* request_text is nulled server-side only for blocked rows,
                       which the pending queue never returns; the fallback is
@@ -234,7 +238,7 @@ export function RequestsPage() {
                     </div>
                   ) : null}
                   {rowErrors[req.id] ? (
-                    <p role="alert" className="console-row__error">
+                    <p role="alert" className="console-row__error cyo-text-error">
                       Could not update the request. Try again.
                     </p>
                   ) : null}
@@ -294,7 +298,7 @@ export function RequestsPage() {
                       />
                     </label>
                   ) : (
-                    <p id={`series-note-${req.id}`} className="console-row__series-note">
+                    <p id={`series-note-${req.id}`} className="console-row__series-note cyo-text-muted">
                       Continues an existing series
                     </p>
                   )}

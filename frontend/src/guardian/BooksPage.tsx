@@ -137,7 +137,7 @@ export function BooksPage() {
     return (
       <section className="books">
         <h1>Books</h1>
-        <p className="console__notice">
+        <p className="console__notice cyo-text-muted">
           Assigning books is handled by a guardian. You do not manage
           assignments here.
         </p>
@@ -147,7 +147,7 @@ export function BooksPage() {
 
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         We could not load your family&apos;s books. Please reload.
       </p>
     )
@@ -166,7 +166,7 @@ export function BooksPage() {
       ) : (
         <ul className="books__list">
           {books.map((book) => (
-            <li key={book.storybook_id} className="books__row">
+            <li key={book.storybook_id} className="books__row cyo-card">
               <div className="books__main">
                 <span className="books__title">{book.title}</span>
                 {book.visibility === 'catalog' && (
