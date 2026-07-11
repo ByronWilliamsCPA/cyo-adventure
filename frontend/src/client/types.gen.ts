@@ -1163,7 +1163,7 @@ export type ProfileCreateBody = {
     /**
      * Avatar
      */
-    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | null;
+    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | 'wolf' | 'panther' | 'ember-dragon' | 'hawk' | 'raven' | 'pegasus' | 'alicorn' | 'butterfly' | 'shark' | 'soccer' | 'baseball-gear' | 'cheer-gear' | 'baseball-kid' | 'cheer-kid' | null;
     /**
      * Tts Enabled
      */
@@ -1207,7 +1207,7 @@ export type ProfileUpdateBody = {
     /**
      * Avatar
      */
-    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | null;
+    avatar?: 'fox' | 'owl' | 'dragon' | 'cat' | 'unicorn' | 'robot' | 'rocket' | 'frog' | 'wolf' | 'panther' | 'ember-dragon' | 'hawk' | 'raven' | 'pegasus' | 'alicorn' | 'butterfly' | 'shark' | 'soccer' | 'baseball-gear' | 'cheer-gear' | 'baseball-kid' | 'cheer-kid' | null;
     /**
      * Tts Enabled
      */
