@@ -408,6 +408,7 @@ These rules catch bugs that standard linting misses and enforce production-quali
 This project includes a `.claude/` directory with project-specific Claude Code configuration:
 
 **Directory Structure**:
+
 ```text
 .claude/
 ├── agents/            # Specialized subagent definitions
@@ -560,6 +561,8 @@ cyo_adventure/
 ├── pyproject.toml              # Dependencies & tool config
 ├── README.md                   # This file
 ├── CONTRIBUTING.md             # Contribution guidelines
+├── SECURITY.md                 # Security policy and vulnerability reporting
+├── CHANGELOG.md                # Release history
 └── LICENSE                     # License
 ```
 
@@ -576,7 +579,7 @@ cyo_adventure/
 - Use Markdown for all documentation
 - Include code examples for clarity
 - Update README.md when adding major features
-- Maintain architecture documentation (see [docs/ADRs/](docs/ADRs/))
+- Maintain architecture documentation (see [docs/planning/adr/](docs/planning/adr/))
 
 ## Testing
 
