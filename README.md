@@ -7,6 +7,8 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=ByronWilliamsCPA_cyo-adventure&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=ByronWilliamsCPA_cyo-adventure)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=ByronWilliamsCPA_cyo-adventure&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=ByronWilliamsCPA_cyo-adventure)
 [![REUSE Compliance](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/reuse.yml/badge.svg)](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/reuse.yml)
+[![Dependency Review](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/dependency-review.yml/badge.svg)](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/dependency-review.yml)
+[![Container Security](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/container-security.yml/badge.svg?branch=main)](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/container-security.yml?query=branch%3Amain)
 
 ## CI/CD Status
 [![CI Pipeline](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ByronWilliamsCPA/cyo-adventure/actions/workflows/ci.yml?query=branch%3Amain)
