@@ -104,6 +104,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
+  `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
+  text-tone utilities and the amber token split: `--color-amber` stays the
+  bright brand hue, `--color-amber-deep` is the WCAG-safe text/border shade),
+  and the guardian console now consumes them instead of its bespoke
+  `guardian.css` equivalents (the orphaned `.intake-chip` styles are removed).
+  `FlagBadge` deliberately stays bespoke per ADR-005. The library's Vite 8
+  build also externalizes `react/jsx-runtime`, since rolldown otherwise
+  inlines it with a runtime `require("react")` that breaks browser consumers
+  of the ESM dist.
 - Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
   8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
   quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8
