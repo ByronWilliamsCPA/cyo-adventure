@@ -159,7 +159,13 @@ export function ProfileFormDialog({
                 checked={avatar === option.id}
                 onChange={() => setAvatar(option.id)}
               />
-              <span aria-hidden="true">{option.glyph}</span> {option.label}
+              <img
+                className="profile-form__avatar-thumb"
+                src={option.src}
+                alt=""
+                draggable={false}
+              />{' '}
+              {option.label}
             </label>
           ))}
         </fieldset>

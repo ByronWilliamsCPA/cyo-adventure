@@ -52,12 +52,11 @@ composing a component you have not used yet.
 ## Idiomatic example
 
 ```jsx
-const { AvatarCircle, Button, ProgressBar } = window.CYO;
+const { Button, ProgressBar } = window.CYO;
 
 <div style={{ background: 'var(--color-parchment)', padding: 'var(--space-6)',
               borderRadius: 'var(--radius-lg)', display: 'grid',
               gap: 'var(--space-4)', justifyItems: 'center' }}>
-  <AvatarCircle avatar="fox" name="Remy" />
   <ProgressBar value={40} label="Chapter 2 of 5" showLabel />
   <Button variant="primary" size="lg">Keep reading</Button>
 </div>

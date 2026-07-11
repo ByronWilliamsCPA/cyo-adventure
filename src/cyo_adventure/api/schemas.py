@@ -730,7 +730,30 @@ DisplayName = Annotated[
 # #VERIFY: tests/integration/test_profiles.py::test_create_rejects_unknown_avatar
 # asserts 422 for an id outside this catalog. Keep in sync with
 # frontend/src/profiles/avatars.ts AVATARS.
-AvatarId = Literal["fox", "owl", "dragon", "cat", "unicorn", "robot", "rocket", "frog"]
+AvatarId = Literal[
+    "fox",
+    "owl",
+    "dragon",
+    "cat",
+    "unicorn",
+    "robot",
+    "rocket",
+    "frog",
+    "wolf",
+    "panther",
+    "ember-dragon",
+    "hawk",
+    "raven",
+    "pegasus",
+    "alicorn",
+    "butterfly",
+    "shark",
+    "soccer",
+    "baseball-gear",
+    "cheer-gear",
+    "baseball-kid",
+    "cheer-kid",
+]
 
 
 class ProfileView(BaseModel):

@@ -1,6 +1,6 @@
 import './profiles.css'
 
-import { avatarGlyph } from './avatars'
+import { avatarSrc } from './avatars'
 
 interface AvatarCircleProps {
   avatar: string | null
@@ -8,15 +8,15 @@ interface AvatarCircleProps {
 }
 
 /**
- * Bordered avatar circle (wireframe 4.1): an illustrated glyph when the
- * profile has one, otherwise the name's first letter in a dashed circle.
+ * Bordered avatar circle (wireframe 4.1): an illustrated avatar image when
+ * the profile has one, otherwise the name's first letter in a dashed circle.
  */
 export function AvatarCircle({ avatar, name }: AvatarCircleProps) {
-  const glyph = avatarGlyph(avatar)
-  if (glyph) {
+  const src = avatarSrc(avatar)
+  if (src) {
     return (
       <span className="avatar-circle" aria-hidden="true">
-        {glyph}
+        <img className="avatar-circle__img" src={src} alt="" draggable={false} />
       </span>
     )
   }

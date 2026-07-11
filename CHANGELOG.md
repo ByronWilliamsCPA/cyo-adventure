@@ -104,6 +104,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
+  8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
+  quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8
+  preset ids (`fox` through `frog`) are unchanged so existing
+  `ChildProfile.avatar` values are not orphaned. `avatarGlyph()` is renamed
+  to `avatarSrc()` (`frontend/src/profiles/avatars.ts`), `AvatarCircle`
+  renders an `<img alt="">` instead of a glyph span, and the offline
+  precache (`vite.config.ts` workbox `globPatterns`) now includes `.webp` so
+  avatars still render while offline. The unused, never-imported
+  design-system copy of `AvatarCircle` (extracted from `frontend/src/profiles/`
+  after C4a-2 but not wired into any consumer) is removed.
 - Supabase multi-environment pipeline scaffold: CLI project config, baseline
   SQL migration squashed from the Alembic head, PR migration validation, and
   staging/production deploy workflows (staging auto on merge, production
