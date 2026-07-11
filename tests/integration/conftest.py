@@ -120,6 +120,20 @@ def _pg_url() -> Iterator[str]:
         container.stop()
 
 
+@pytest.fixture(scope="session")
+def pg_url(_pg_url: str) -> str:
+    """Public alias for the session-scoped ``_pg_url`` container fixture.
+
+    ``_pg_url`` is named with a leading underscore by this module's own
+    convention; consuming it directly as a test parameter trips Ruff's PT019
+    (a leading-underscore parameter is treated as fixture-for-side-effect-only,
+    not a value the test reads). Tests that need the actual URL string (e.g.
+    the schema-parity gate in ``test_schema_parity.py``, which builds sibling
+    databases on the same container) should depend on this alias instead.
+    """
+    return _pg_url
+
+
 @pytest_asyncio.fixture
 async def engine(_pg_url: str) -> AsyncIterator[AsyncEngine]:
     """Provide an async engine with a freshly-created schema per test.
