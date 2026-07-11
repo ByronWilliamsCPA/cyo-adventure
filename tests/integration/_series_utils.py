@@ -1,7 +1,7 @@
 """Shared anchor-seeding helper for series/soft-continuation integration tests.
 
 Underscore-prefixed module name so pytest does not collect it as a test
-module (mirrors ``_migration_utils.py``). Both the service-layer series tests
+module (mirrors ``_event_assertions.py``). Both the service-layer series tests
 (WS-B PR 3, Task 4) and the series-request endpoint tests (Task 5) need a
 published, series-linked anchor storybook to exercise
 ``story_requests.anchoring.resolve_anchor``/``load_anchor_context``, so the
