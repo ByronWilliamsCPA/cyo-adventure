@@ -53,6 +53,8 @@ _ORM_ENUM_ARRAY_RE = re.compile(
 # literal or by the end of the list.
 # #EDGE: data-integrity: the lookahead (?=, '|$) assumes enum literals never
 # contain the byte sequence ::character varying, '; spurious mismatch if violated.
+# #VERIFY: violation produces a loud parity mismatch in
+# test_migrations_match_orm_models, never a silent pass.
 _ELEM_CAST_RE = re.compile(r"::character varying(?=, '|$)")
 
 
