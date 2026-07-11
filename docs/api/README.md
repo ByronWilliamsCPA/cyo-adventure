@@ -71,8 +71,9 @@ the delay.
 
 ## Running locally
 
-Prerequisites: Docker with the compose plugin, `uv`, Node.js, and `npm install -g newman`. From the repo
-root:
+Prerequisites: Docker with the compose plugin, `uv`, Node.js, `npm install -g newman`, and the
+[Supabase CLI](https://supabase.com/docs/guides/local-development/cli/getting-started) (pinned to 2.109.1
+in CI via `supabase/setup-cli`). From the repo root:
 
 ```bash
 docker compose down -v --remove-orphans          # fresh database (this project's stack only)
@@ -80,7 +81,12 @@ docker compose up -d --build app db
 until curl -fsS http://localhost:8000/health/live >/dev/null 2>&1; do sleep 2; done
 
 export DATABASE_URL=postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
-uv run alembic upgrade head                      # real migration chain, not create_all
+PGSSLMODE=disable supabase db push \
+  --db-url postgresql://cyo_adventure:password@localhost:5432/cyo_adventure --yes
+                                                  # real migration chain, not create_all;
+                                                  # PGSSLMODE=disable works around the CLI's
+                                                  # TLS-by-default pgx driver against this
+                                                  # plain, non-TLS compose Postgres (ADR-012)
 uv run python scripts/seed_dev_data.py           # idempotent seed (users, stories, assignments)
 
 newman run docs/api/postman-collection.json \
@@ -106,8 +112,11 @@ step uses the repo-level `CODECOV_TOKEN` secret for optional, non-blocking Test 
 
 `.github/workflows/ci.yml` gates the `api-tests` job on this collection existing
 (`detect-api-collection`), then: builds and starts `app` + `db` from the repo compose file, waits on
-`/health/live`, installs the backend (`uv sync --extra api`), runs `alembic upgrade head` and
-`scripts/seed_dev_data.py` against the compose database, runs newman with the JUnit reporter, and uploads
+`/health/live`, installs the backend (`uv sync --extra api`), sets up the pinned Supabase CLI
+(`supabase/setup-cli`, version 2.109.1) and applies the real migration chain with
+`PGSSLMODE=disable supabase db push --db-url ... --yes` (ADR-012; `PGSSLMODE=disable` works around the
+CLI's TLS-by-default driver against the plain compose Postgres) followed by `scripts/seed_dev_data.py`
+against the migrated compose database, runs newman with the JUnit reporter, and uploads
 `newman-junit.xml` via `codecov/test-results-action` under the `api` flag (org standard: one report, one
 flag). Results appear in the Codecov Tests tab for the PR.
 

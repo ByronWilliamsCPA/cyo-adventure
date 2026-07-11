@@ -1,42 +1,26 @@
 """Integration tests for the Concept and GenerationJob ORM models.
 
-Two tests are included:
-
-1. ORM round-trip: inserts a Family + User, then a Concept and a GenerationJob
-   referencing it, commits, reads both back, and asserts fields round-trip
-   correctly including the FK relationship from generation_job.concept_id.
-
-2. Migration round-trip: runs ``alembic upgrade head`` then
-   ``alembic downgrade -1`` against a clean testcontainers Postgres DB in a
-   subprocess, asserts exit codes are 0, and verifies the migration file itself
-   imports cleanly with ``upgrade`` and ``downgrade`` callable attributes.
+ORM round-trip: inserts a Family + User, then a Concept and a GenerationJob
+referencing it, commits, reads both back, and asserts fields round-trip
+correctly including the FK relationship from generation_job.concept_id.
 
 The harness uses the ``engine`` and ``sessions`` fixtures from
 ``tests/integration/conftest.py``, which start a testcontainers Postgres 16
-container and skip automatically when Docker is unavailable.
+container and skip automatically when Docker is unavailable. Schema is built
+via ``Base.metadata.create_all``; schema/migration parity itself is covered by
+``test_schema_parity.py`` against ``supabase/migrations/*.sql``.
 """
 
 from __future__ import annotations
 
-import importlib
-import importlib.util
-import os
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
 
 from cyo_adventure.db.models import Concept, Family, GenerationJob, User
-from tests.integration._migration_utils import PROJECT_ROOT, run_alembic
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-
-# Pin the round-trip to the concept/generation_job revision explicitly. A
-# relative "head"/"-1" target silently retargets whenever a later migration is
-# added on top, so the round-trip would stop exercising this migration.
-_GEN_HEAD = "78336bfff81e"
-_GEN_PREV = "ddf3f6d1346f"
 
 
 # ---------------------------------------------------------------------------
@@ -177,82 +161,3 @@ async def test_generation_job_status_update(
         assert job.storybook_id == "story-abc-123"
         assert job.version == 1
         assert job.report == {"gate": "pass", "score": 0.95}
-
-
-# ---------------------------------------------------------------------------
-# Migration round-trip tests
-# ---------------------------------------------------------------------------
-
-
-@pytest.mark.integration
-def test_migration_file_imports_and_has_upgrade_downgrade() -> None:
-    """Assert the migration file is importable with upgrade/downgrade defined.
-
-    This is a lightweight structural check that does not require a live DB.
-    It verifies the file at least parses and exports the expected callables,
-    which would catch syntax errors or accidental stub functions.  It also
-    confirms the down_revision chain points to the initial schema revision.
-    """
-    migration_dir = Path(__file__).resolve().parents[2] / "migrations" / "versions"
-    migration_files = list(migration_dir.glob("*add_concept_and_generation_job*.py"))
-    assert migration_files, (
-        f"Could not find the concept/generation_job migration file in {migration_dir}"
-    )
-
-    migration_path = migration_files[0]
-    spec = importlib.util.spec_from_file_location(
-        "_migration_under_test", migration_path
-    )
-    assert spec is not None
-    mod = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(mod)  # type: ignore[union-attr]
-
-    assert callable(getattr(mod, "upgrade", None)), (
-        "Migration file has no callable 'upgrade'"
-    )
-    assert callable(getattr(mod, "downgrade", None)), (
-        "Migration file has no callable 'downgrade'"
-    )
-    assert mod.down_revision == "ddf3f6d1346f", (
-        f"Expected down_revision 'ddf3f6d1346f', got {mod.down_revision!r}"
-    )
-
-
-@pytest.mark.integration
-def test_migration_upgrade_downgrade_on_clean_db(
-    migration_pg_url: str,
-) -> None:
-    """Run alembic upgrade head then downgrade -1 against a clean Postgres DB.
-
-    This verifies that both ``upgrade()`` and ``downgrade()`` execute without
-    error on a live Postgres instance, confirming the SQL is syntactically and
-    semantically correct.
-
-    The test uses a subprocess invocation of ``uv run alembic`` with the
-    ``CYO_ADVENTURE_DATABASE_URL`` env var set to the testcontainers URL.
-    This matches the env.py pattern, which reads from settings.database_url.
-
-    Args:
-        migration_pg_url: Async DSN for the testcontainers Postgres DB.
-    """
-    project_root = PROJECT_ROOT
-    env = {**os.environ, "CYO_ADVENTURE_DATABASE_URL": migration_pg_url}
-
-    # Apply migrations through the concept/generation_job revision.
-    up = run_alembic(project_root, env, "upgrade", _GEN_HEAD)
-    assert up.returncode == 0, (
-        f"alembic upgrade {_GEN_HEAD} failed:\nstdout={up.stdout}\nstderr={up.stderr}"
-    )
-    assert "Running upgrade" in up.stderr, (
-        "Expected 'Running upgrade' in alembic stderr"
-    )
-
-    # Roll back the concept/generation_job migration to the initial schema.
-    down = run_alembic(project_root, env, "downgrade", _GEN_PREV)
-    assert down.returncode == 0, (
-        f"alembic downgrade {_GEN_PREV} failed:\nstdout={down.stdout}\nstderr={down.stderr}"
-    )
-    assert "Running downgrade" in down.stderr, (
-        "Expected 'Running downgrade' in alembic stderr"
-    )

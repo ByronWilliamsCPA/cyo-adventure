@@ -9,10 +9,11 @@ tags:
   - reference
 ---
 
-CYO Adventure has nineteen PostgreSQL tables managed by SQLAlchemy 2 async ORM and
-Alembic migrations. All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like columns
-(`role`, `status`, `age_band`) are stored as strings and validated at the application
-boundary, which keeps Alembic migrations simple and avoids enum-type churn.
+CYO Adventure has nineteen PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
+ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
+columns (`role`, `status`, `age_band`) are stored as strings and validated at the
+application boundary, which keeps schema migrations simple and avoids enum-type churn.
 
 > **Note (2026-07-10):** the ER diagram below still shows only the original 9 tables
 > (`docs/architecture/diagrams/er-diagram.puml`); it needs regeneration to add the

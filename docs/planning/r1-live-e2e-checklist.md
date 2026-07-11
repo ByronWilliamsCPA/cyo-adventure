@@ -58,7 +58,9 @@ account will correctly get a 403 on approve.
       return 404; the health router is mounted without the `/api/v1` prefix.)
 - [ ] Redis and the RQ worker containers are up (`docker ps` on docker-host; worker listens on queue
       `generation`)
-- [ ] Alembic migrations current (migrate profile ran; `alembic current` matches head)
+- [ ] Migrations current (migrate profile ran; `supabase migration list --linked` shows no pending
+      migrations). As of 2026-07-10 this replaces the prior `alembic current` check: schema migrations
+      moved from Alembic to Supabase CLI SQL migrations (ADR-012).
 - [ ] Backups confirmed: the local `db-backup` container is healthy (`docker ps` on docker-host)
       AND a fresh `.dump` file is present under
       `/mnt/unraid/appdata/cyo-adventure/backups`. As of 2026-07-07 this container runs a daily

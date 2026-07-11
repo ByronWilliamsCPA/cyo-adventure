@@ -36,6 +36,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-009](./adr-009-supabase-platform.md) | Supabase as the managed platform for auth, database, and storage | Accepted | 2026-07-02 |
 | [ADR-010](./adr-010-modal-review-and-gated-generation.md) | Modal for moderation review and an evidence-gated generation leg | Proposed | 2026-07-02 |
 | [ADR-011](./adr-011-story-scale-framework.md) | Story-scale framework (reading band x length x style) | Accepted | 2026-07-02 |
+| [ADR-012](./adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted | 2026-07-10 |
 
 ## Creating ADRs
 

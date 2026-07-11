@@ -68,27 +68,6 @@ class Seed:
     version: int
 
 
-@pytest.fixture(scope="module")
-def migration_pg_url() -> Iterator[str]:
-    """Start a fresh Postgres 16 container for a migration round-trip test module.
-
-    Module-scoped (unlike the session-scoped ``_pg_url`` below, which backs the
-    ORM-level integration suite): each migration test module runs its own
-    ``alembic upgrade``/``downgrade`` sequence against a dedicated schema, so
-    sharing a container across modules would let one file's migrated schema
-    leak into another's round trip.
-    """
-    try:
-        container = PostgresContainer("postgres:16-alpine", driver="asyncpg")
-        container.start()
-    except (DockerException, OSError) as exc:
-        pytest.skip(f"Docker/Postgres testcontainer unavailable: {exc}")
-    try:
-        yield container.get_connection_url()
-    finally:
-        container.stop()
-
-
 @pytest.fixture(scope="session")
 def _pg_url() -> Iterator[str]:
     """Start a Postgres 16 container for the test session.
@@ -118,6 +97,20 @@ def _pg_url() -> Iterator[str]:
         yield container.get_connection_url()
     finally:
         container.stop()
+
+
+@pytest.fixture(scope="session")
+def pg_url(_pg_url: str) -> str:
+    """Public alias for the session-scoped ``_pg_url`` container fixture.
+
+    ``_pg_url`` is named with a leading underscore by this module's own
+    convention; consuming it directly as a test parameter trips Ruff's PT019
+    (a leading-underscore parameter is treated as fixture-for-side-effect-only,
+    not a value the test reads). Tests that need the actual URL string (e.g.
+    the schema-parity gate in ``test_schema_parity.py``, which builds sibling
+    databases on the same container) should depend on this alias instead.
+    """
+    return _pg_url
 
 
 @pytest_asyncio.fixture

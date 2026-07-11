@@ -7,7 +7,7 @@ inline on ``storybook_version.blob`` for Phase 1 (the MinIO ``blob_ref`` path is
 deferred); see the module note on the blob column.
 
 Enumerated columns (role, status, age band) are stored as strings validated at
-the application boundary rather than native Postgres enums, which keeps Alembic
+the application boundary rather than native Postgres enums, which keeps schema
 migrations simple and avoids enum-type churn.
 """
 
@@ -70,7 +70,8 @@ _STORY_REQUEST_STATUS_VALUES = "'pending', 'approved', 'declined', 'blocked'"
 
 # Derived from the AgeBand enum so the at-rest CHECK can never drift from the
 # application vocabulary; adding a band changes this SQL and thereby forces a
-# migration (alembic autogenerate flags the constraint difference).
+# new Supabase migration (the schema-parity gate in
+# tests/integration/test_schema_parity.py flags the constraint difference).
 _AGE_BAND_VALUES = ", ".join(f"'{band.value}'" for band in AgeBand)
 
 # The three story-request initiator roles, length bands, and narrative styles

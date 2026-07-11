@@ -102,8 +102,8 @@ class Settings(BaseSettings):
     # reused, or have its name collide, under another. Disabling the cache and
     # giving each prepared statement a unique name is the SQLAlchemy-documented
     # fix. Leave False for a direct PostgreSQL connection (local dev, or
-    # Supabase's :5432 session/direct DSN that Alembic uses), where server-side
-    # prepared statements are safe and faster.
+    # Supabase's :5432 session/direct DSN used for direct connections and CLI
+    # migrations), where server-side prepared statements are safe and faster.
     # #CRITICAL: concurrency: with a transaction pooler and this flag unset,
     # the first reused/renamed prepared statement raises asyncpg
     # DuplicatePreparedStatementError / InvalidSQLStatementNameError and the

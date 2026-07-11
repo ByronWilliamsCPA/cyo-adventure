@@ -67,7 +67,8 @@ in the same repository.
 - **Package Manager**: UV
 - **Web Framework**: FastAPI (async), Pydantic v2 / Pydantic Settings
 - **Database**: async SQLAlchemy 2.x over PostgreSQL (`core/database.py`),
-  migrations via Alembic (`api` extra)
+  migrations via Supabase CLI SQL migrations (`supabase/migrations/`, ADR-012;
+  Alembic retired)
 - **Auth**: Supabase (guardian OIDC/JWT via `pyjwt[crypto]`); see
   `docs/planning/adr/adr-009-supabase-platform.md`
 - **Story generation**: staged LLM pipeline behind a deterministic

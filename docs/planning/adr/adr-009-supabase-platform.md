@@ -99,6 +99,10 @@ The decision decomposes as follows:
    anonymous users are not used.
 2. **Database: Supabase Postgres.** Async SQLAlchemy and Alembic migrations unchanged;
    connect via a direct connection or session-mode pooling (asyncpg constraint above).
+   **Superseded in part (2026-07-10):** the Alembic clause of this point is replaced by
+   [ADR-012](./adr-012-supabase-cli-migrations.md); schema migrations now ship as plain
+   SQL under `supabase/migrations/`, applied by the Supabase CLI, with Alembic retired.
+   The Postgres-hosting decision in this point is otherwise unchanged.
    Automated backups/PITR on the Pro plan; the restore drill remains ours to run.
 3. **Storage: deferred adoption of Supabase Storage.** Story blobs are currently
    stored inline in Postgres (`storybook_version.blob` JSONB; the `blob_ref` column

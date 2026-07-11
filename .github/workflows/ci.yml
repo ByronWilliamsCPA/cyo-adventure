@@ -524,18 +524,45 @@ jobs:
         with:
           enable-cache: true
 
-      # The `api` extra (FastAPI, SQLAlchemy, alembic) is enough to migrate and
-      # seed the compose db; no `dev` extra test/lint tooling is needed here.
+      # The `api` extra (FastAPI, SQLAlchemy) is enough to seed the compose
+      # db; no `dev` extra test/lint tooling is needed here.
       - name: Install backend (api extra)
         run: uv sync --extra api
 
-      # Runs the real alembic chain against the compose db (not
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+        with:
+          version: 2.109.1
+
+      # The baseline dump carries Supabase's `OWNER TO "postgres"` statements;
+      # the compose db runs as `cyo_adventure` with no postgres role, so the
+      # push fails with SQLSTATE 42704 unless the role exists. Duplicate-
+      # tolerant, mirroring tests/integration/test_schema_parity.py; a
+      # superuser may reassign ownership to any existing role, so the bare
+      # role is sufficient.
+      - name: Create postgres role for baseline OWNER statements
+        run: |
+          docker compose exec -T db psql -U cyo_adventure -d cyo_adventure -c \
+            'DO $$ BEGIN CREATE ROLE "postgres"; EXCEPTION WHEN duplicate_object THEN NULL; END $$;'
+
+      # Applies the real Supabase migration chain against the compose db (not
       # Base.metadata.create_all): the collection exercises the migrated
-      # schema, matching what production deploys actually run.
+      # schema, matching what staging/production deploys actually run.
+      # #ASSUME: external resources: CLI 2.109.1 attempts a TLS handshake by
+      # default against plain Postgres with no plaintext fallback, and
+      # ignores ?sslmode=disable in the db-url, so pushing to the non-TLS
+      # compose db fails with "tls error (server refused TLS connection)"
+      # unless the standard libpq env var PGSSLMODE=disable is set (verified
+      # locally against a scratch postgres:16-alpine). --yes answers the
+      # push confirmation prompt non-interactively.
+      # #VERIFY: on future supabase-cli upgrades, re-check whether the CLI
+      # honors sslmode in the db-url and drop PGSSLMODE once it does.
       - name: Apply database migrations
         env:
-          DATABASE_URL: postgresql+asyncpg://cyo_adventure:password@localhost:5432/cyo_adventure
-        run: uv run alembic upgrade head
+          PGSSLMODE: disable
+          SUPABASE_DB_URL: postgresql://cyo_adventure:password@localhost:5432/cyo_adventure
+        run: |
+          supabase db push --db-url "$SUPABASE_DB_URL" --yes
 
       # Seeds the family/profiles/published+in-review stories the collection
       # asserts on. Idempotent (scripts/seed_dev_data.py), and runs AFTER the

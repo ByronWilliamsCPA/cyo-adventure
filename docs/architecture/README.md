@@ -96,7 +96,7 @@ FastAPI backend (Python 3.12)
   - publishing/: approve -> publish state machine
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |
-  +-- PostgreSQL 16 (async SQLAlchemy 2, 19 tables, Alembic)
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 19 tables, Supabase CLI SQL migrations)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker

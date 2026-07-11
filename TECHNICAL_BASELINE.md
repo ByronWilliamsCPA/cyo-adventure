@@ -28,7 +28,7 @@ Container images are pinned by tag; `latest` is never used in production.
 | pydantic | 2.13.4 | Schema and validation (Storybook schema v1) |
 | pydantic-settings | 2.14.2 | Configuration |
 | sqlalchemy | 2.0.51 | ORM (async) |
-| alembic | 1.18.4 | Migrations |
+| supabase CLI | 2.109.1 | Migrations (ADR-012) |
 | uvicorn | 0.49.0 | ASGI server |
 | structlog | 26.1.0 | Structured logging |
 | rich | 15.0.0 | Console logging (dev) |
@@ -83,22 +83,22 @@ lands in Phase 1).
 | cyo_adventure (app) | `${VERSION:-latest}` | **Finding**: `latest` fallback in `docker-compose.yml`. Set `VERSION` explicitly in every environment; flagged in `docs/template_feedback.md`. |
 | cyo_adventure-frontend | `${VERSION:-latest}` | Same finding as above. |
 
-## Alembic migration convention (P0-13)
+## Supabase migration convention (ADR-012)
 
-- **Location**: `migrations/` (Alembic env), with versions under `migrations/versions/`.
-- **Naming**: revision files use the slug form `YYYYMMDD_HHMM_<short_slug>.py`; set
-  Alembic's `file_template = %%(year)d%%(month).2d%%(day).2d_%%(hour).2d%%(minute).2d_%%(slug)s`.
-- **Revision ids**: Alembic's default 12-char hex; never hand-edit a `revision`
-  or `down_revision` once it is on a shared branch.
-- **Down-revision policy**: every migration declares an explicit `down_revision`;
-  the chain is linear on `main`. Branch merges resolve to a single head before
-  merge (no multiple heads on `main`).
-- **Reversibility**: every migration implements `downgrade()`. Data migrations that
-  cannot be reversed must say so in a docstring and provide a documented manual
-  recovery note.
-- **CI migration check**: CI runs `alembic upgrade head` against a throwaway
-  Postgres, then asserts `alembic check` reports no pending model changes (schema
-  and models agree) and that there is exactly one head.
+- **Location**: `supabase/migrations/`, plain SQL, applied by the pinned
+  Supabase CLI.
+- **Naming**: `<YYYYMMDDHHMMSS>_<short_slug>.sql` (CLI-generated via
+  `supabase migration new <slug>`); never rename or edit a migration once it
+  is on `main`.
+- **Ordering**: lexicographic by timestamp; the chain is linear on `main`.
+- **Forward-only**: no downgrade scripts. Recovery is roll-forward; every
+  migration is rehearsed on staging (merge to `main`) before production
+  (approved dispatch). Destructive data migrations must document a manual
+  recovery note in a leading SQL comment.
+- **Drift guard**: `tests/integration/test_schema_parity.py` fails CI when
+  the migrated schema and `Base.metadata` disagree.
+- **CI migration check**: `supabase-ci.yml` applies the full chain to a fresh
+  local stack on every PR touching `supabase/`.
 
 ## How to refresh this file
 

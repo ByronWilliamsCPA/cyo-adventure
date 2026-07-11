@@ -23,7 +23,6 @@ path = [
     "*.py",
     "noxfile.py",
     "schema/**",  # JSON Schema generated from the MIT-licensed Pydantic models
-    "migrations/**",  # Alembic migration environment, templates, and versions
     "supabase/migrations/**",  # Supabase CLI SQL migrations
 ]
 SPDX-License-Identifier = "MIT"
@@ -173,7 +172,6 @@ path = [
     ".yamllint",  # yamllint configuration
     "Dockerfile",  # Container build definition
     "uv.lock",  # UV dependency lockfile for reproducible builds
-    "alembic.ini",  # Alembic migration tool configuration
     "supabase/config.toml",  # Supabase CLI project configuration
     "supabase/.gitignore",  # Supabase CLI-generated ignore rules
 ]

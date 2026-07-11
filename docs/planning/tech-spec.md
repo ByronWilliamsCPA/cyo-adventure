@@ -43,7 +43,8 @@ Supabase OIDC, all deployable to the homelab behind Pangolin.
 
 ### Data Layer
 
-- **Database**: PostgreSQL 16 + SQLAlchemy + Alembic. See
+- **Database**: PostgreSQL 16 + SQLAlchemy; schema migrations via Supabase CLI
+  SQL migrations (ADR-012; Alembic retired). See
   [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 - **Story blob storage**: inline in Postgres JSONB (`storybook_version.blob`) at launch
   per [ADR-009](./adr/adr-009-supabase-platform.md). MinIO via the S3 API (Azure
@@ -83,7 +84,7 @@ Supabase OIDC, all deployable to the homelab behind Pangolin.
 
 > Versions shown as "current major" are placeholders. Phase 0 produces a
 > `TECHNICAL_BASELINE.md` pinning exact versions (React, Vite, TypeScript, XState,
-> vite-plugin-pwa/Workbox, FastAPI, Pydantic, SQLAlchemy/Alembic, Postgres, Redis,
+> vite-plugin-pwa/Workbox, FastAPI, Pydantic, SQLAlchemy, Postgres, Redis,
 > MinIO container tags, Node via `.nvmrc`). Container images are pinned by tag, never
 > `latest`.
 
