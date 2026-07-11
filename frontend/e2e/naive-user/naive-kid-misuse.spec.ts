@@ -156,6 +156,58 @@ test.describe('refresh mid-reader', () => {
   })
 })
 
+test.describe('fresh browser, no grown-up signed in', () => {
+  // Deliberately no addInitScript seeding auth_token (unlike the sibling
+  // blocks above): this is issue #196/#137 F1's naive-UX scenario, a kid
+  // opening the app on a browser/tab where no one has signed in yet, so
+  // every profiles/library fetch comes back 401 with no token attached.
+
+  test('the profile picker shows an ask-a-grown-up gate, not a retryable error', async ({
+    page,
+  }) => {
+    await page.route('**/api/v1/profiles', (route) =>
+      route.fulfill({ status: 401, json: { detail: 'Not authenticated' } })
+    )
+
+    await page.goto('/kids')
+
+    await expect(page.getByText('Ask a grown-up to help')).toBeVisible()
+    await expect(page.getByRole('link', { name: 'I am a grown-up' })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    await expect(page.getByText(/hit a snag/i)).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /try again/i })).toHaveCount(0)
+  })
+
+  test('the library shows an ask-a-grown-up gate, not a retryable error', async ({ page }) => {
+    // KidNav (mounted alongside LibraryPage) fetches profiles too, on the same
+    // no-token request; it swallows that failure into a generic "My books"
+    // label (see KidNav.tsx), so only the page-level gate below is expected
+    // to render even though both routes 401.
+    await page.route('**/api/v1/profiles', (route) =>
+      route.fulfill({ status: 401, json: { detail: 'Not authenticated' } })
+    )
+    await page.route('**/api/v1/library*', (route) =>
+      route.fulfill({ status: 401, json: { detail: 'Not authenticated' } })
+    )
+
+    await page.goto('/library/p1')
+
+    await expect(page.getByText('Time to find your grown-up')).toBeVisible()
+    await expect(page.getByRole('link', { name: /Who's reading/i })).toHaveAttribute(
+      'href',
+      '/kids'
+    )
+    await expect(page.getByRole('link', { name: 'I am a grown-up' })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    await expect(page.getByText(/lost the bookshelf/i)).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /try again/i })).toHaveCount(0)
+  })
+})
+
 test.describe('rating twice', () => {
   test.beforeEach(async ({ context, page }) => {
     await context.addInitScript(() => {

@@ -93,6 +93,7 @@ describe('LibraryPage', () => {
     renderLibrary()
     expect(await screen.findByText(/no books yet/i)).toBeInTheDocument()
     expect(screen.getByText(/ask a grown-up/i)).toBeInTheDocument()
+    expect(screen.queryByText(/lost the bookshelf/i)).not.toBeInTheDocument()
   })
 
   it('shows an error state with retry on fetch failure', async () => {
@@ -102,6 +103,31 @@ describe('LibraryPage', () => {
     const retry = await screen.findByRole('button', { name: /try again/i })
     fireEvent.click(retry)
     expect(await screen.findByRole('region', { name: /continue reading/i })).toBeInTheDocument()
+  })
+
+  it('shows the ask-a-grown-up gate on a 401, with no retry', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 401 } })
+    renderLibrary()
+
+    expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Who's reading/i })).toHaveAttribute('href', '/kids')
+    expect(screen.getByRole('link', { name: /I am a grown-up/i })).toHaveAttribute(
+      'href',
+      '/guardian/login'
+    )
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+  })
+
+  it('shows the forbidden copy on a 403, with a link back to the picker', async () => {
+    mockGet.mockRejectedValue({ isAxiosError: true, response: { status: 403 } })
+    renderLibrary()
+
+    expect(await screen.findByText(/This bookshelf isn't yours/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Who's reading/i })).toHaveAttribute('href', '/kids')
+    expect(screen.queryByRole('button', { name: /try again/i })).not.toBeInTheDocument()
+    // Pins forbidden as distinct from unauthenticated: no grown-up sign-in
+    // link, just the way back to the picker.
+    expect(screen.queryByRole('link', { name: /I am a grown-up/i })).not.toBeInTheDocument()
   })
 
   it('posts a rating and re-renders the new value', async () => {
@@ -141,6 +167,180 @@ describe('LibraryPage', () => {
     const five = await screen.findByRole('button', { name: /5 stars/i })
     expect(five).toHaveAttribute('aria-pressed', 'false')
     expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('a 401 on the rating POST surfaces the ask-a-grown-up gate', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 401 } })
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+
+    expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /stars/i })).not.toBeInTheDocument()
+  })
+
+  it('a non-auth rating failure keeps the shelf and the previous rating', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce({ isAxiosError: true, response: { status: 500 } })
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+
+    const five = await screen.findByRole('button', { name: /5 stars/i })
+    expect(five).toHaveAttribute('aria-pressed', 'false')
+    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.queryByText(/Time to find your grown-up/i)).not.toBeInTheDocument()
+  })
+
+  it('renders nothing when the route carries no profileId', () => {
+    const { container } = render(
+      <MemoryRouter initialEntries={['/library']}>
+        <Routes>
+          <Route path="/library" element={<LibraryPage />} />
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(container.firstChild).toBeNull()
+    expect(mockGet).not.toHaveBeenCalled()
+  })
+
+  it('logs the raw fallback value for a non-Error, non-axios fetch rejection', async () => {
+    // A thrown string has no .message and is not an AxiosError, so the
+    // redacted-logging ternary must pass it through as-is.
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockGet.mockRejectedValue('socket hangup')
+    renderLibrary()
+
+    expect(await screen.findByText(/We lost the bookshelf/i)).toBeInTheDocument()
+    expect(errorSpy).toHaveBeenCalledWith('library list failed', 'socket hangup')
+    errorSpy.mockRestore()
+  })
+
+  it('ignores a fetch that fails after unmount (cancelled guard)', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    let rejectList!: (err: unknown) => void
+    mockGet.mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectList = reject
+        })
+    )
+    const { unmount } = renderLibrary()
+    unmount()
+    rejectList(new Error('late boom'))
+
+    // The redacted log still fires (it precedes the cancelled check); the
+    // point is that no state write follows on the unmounted component.
+    await waitFor(() => expect(errorSpy).toHaveBeenCalledWith('library list failed', 'late boom'))
+    errorSpy.mockRestore()
+  })
+
+  it('ignores a fetch that resolves after unmount (cancelled guard)', async () => {
+    let resolveList!: (value: unknown) => void
+    mockGet.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveList = resolve
+        })
+    )
+    const { unmount } = renderLibrary()
+    unmount()
+    resolveList({ data: { stories: [] } })
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(mockGet).toHaveBeenCalledTimes(1)
+    expect(document.body.textContent).toBe('')
+  })
+
+  it('logs the raw fallback value when a rating fails with a non-Error value', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    mockPost.mockRejectedValueOnce('rate socket hangup')
+    renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+
+    await waitFor(() =>
+      expect(errorSpy).toHaveBeenCalledWith('rating save failed', 'rate socket hangup')
+    )
+    expect(screen.getByRole('button', { name: /3 stars/i })).toHaveAttribute('aria-pressed', 'true')
+    errorSpy.mockRestore()
+  })
+
+  it('ignores a rating 401 that lands after unmount (mounted guard)', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    let rejectRate!: (err: unknown) => void
+    mockPost.mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectRate = reject
+        })
+    )
+    const { unmount } = renderLibrary()
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    unmount()
+    rejectRate({ isAxiosError: true, response: { status: 401 } })
+
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(document.body.textContent).toBe('')
+  })
+
+  it('discards a rating that resolves after the page has left the ready state', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [NOT_STARTED] } })
+    let resolveFirst!: (value: unknown) => void
+    mockPost
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            resolveFirst = resolve
+          })
+      )
+      .mockRejectedValueOnce({ isAxiosError: true, response: { status: 401 } })
+    renderLibrary()
+
+    // First rating hangs in flight; the second hits a 401 and swaps the page
+    // to the ask-a-grown-up gate before the first resolves.
+    fireEvent.click(await screen.findByRole('button', { name: /5 stars/i }))
+    fireEvent.click(screen.getByRole('button', { name: /4 stars/i }))
+    expect(await screen.findByText(/Time to find your grown-up/i)).toBeInTheDocument()
+
+    resolveFirst({
+      data: {
+        child_profile_id: 'p1',
+        storybook_id: 's3',
+        value: 5,
+        rated_at: '2026-07-02T00:00:00Z',
+        updated_at: '2026-07-02T00:00:00Z',
+      },
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    // The stale success must not resurrect the shelf over the gate.
+    expect(screen.getByText(/Time to find your grown-up/i)).toBeInTheDocument()
+  })
+
+  it('rating one book leaves the other books untouched', async () => {
+    mockGet.mockResolvedValue({ data: { stories: [IN_PROGRESS, NOT_STARTED] } })
+    mockPost.mockResolvedValue({
+      data: {
+        child_profile_id: 'p1',
+        storybook_id: 's3',
+        value: 5,
+        rated_at: '2026-07-02T00:00:00Z',
+        updated_at: '2026-07-02T00:00:00Z',
+      },
+    })
+    renderLibrary()
+    const shelf = await screen.findByRole('region', { name: /more to explore/i })
+    fireEvent.click(within(shelf).getByRole('button', { name: /5 stars/i }))
+
+    await waitFor(() =>
+      expect(within(shelf).getByRole('button', { name: /5 stars/i })).toHaveAttribute(
+        'aria-pressed',
+        'true'
+      )
+    )
+    // The hero (a different book) went through the non-matching map arm and
+    // is untouched by the shelf book's rating.
+    const hero = screen.getByRole('region', { name: /continue reading/i })
+    expect(hero).toHaveTextContent('The Lantern')
   })
 
   it('renders the shelf non-hero started book with a plain progress bar and no pages-explored label', async () => {
