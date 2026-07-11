@@ -47,8 +47,10 @@ async def request_cover(
     _require_admin(principal)
     if (
         not settings.gemini_api_key
-        or not settings.supabase_service_key
-        or not settings.supabase_url
+        or not settings.r2_account_id
+        or not settings.r2_access_key_id
+        or not settings.r2_secret_access_key
+        or not settings.r2_public_base_url
     ):
         msg = "cover generation is not configured"
         raise ConfigurationError(msg)

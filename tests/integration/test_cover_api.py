@@ -19,18 +19,24 @@ pytestmark = [pytest.mark.integration, pytest.mark.asyncio]
 
 _CONFIGURED = SimpleNamespace(
     gemini_api_key="g",
-    supabase_service_key="svc",
-    supabase_url="https://p.supabase.co",
+    r2_account_id="acct123",
+    r2_access_key_id="AKIDEXAMPLE",
+    r2_secret_access_key="svc",
+    r2_public_base_url="https://images.example.com",
 )
 _UNCONFIGURED = SimpleNamespace(
     gemini_api_key=None,
-    supabase_service_key="svc",
-    supabase_url="https://p.supabase.co",
+    r2_account_id="acct123",
+    r2_access_key_id="AKIDEXAMPLE",
+    r2_secret_access_key="svc",
+    r2_public_base_url="https://images.example.com",
 )
 _MISSING_URL = SimpleNamespace(
     gemini_api_key="g",
-    supabase_service_key="svc",
-    supabase_url=None,
+    r2_account_id="acct123",
+    r2_access_key_id="AKIDEXAMPLE",
+    r2_secret_access_key="svc",
+    r2_public_base_url=None,
 )
 
 

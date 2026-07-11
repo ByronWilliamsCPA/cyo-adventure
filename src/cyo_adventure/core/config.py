@@ -363,15 +363,29 @@ class Settings(BaseSettings):
         default="172.16.0.0/12", validation_alias="FORWARDED_ALLOW_IPS"
     )
 
-    # --- Cover generation (nano banana) + Supabase Storage ---
-    # #CRITICAL: security: nano banana + Supabase credentials; never log values.
+    # --- Cover generation (nano banana) + Cloudflare R2 storage ---
+    # #CRITICAL: security: nano banana + R2 credentials; never log values.
     # #VERIFY: only referenced in covers/provider.py and covers/storage.py.
     gemini_api_key: str | None = Field(default=None, validation_alias="GEMINI_API_KEY")
-    supabase_url: str | None = Field(default=None, validation_alias="SUPABASE_URL")
-    supabase_service_key: str | None = Field(
-        default=None, validation_alias="SUPABASE_SERVICE_KEY"
+    # R2 account id; the S3-compatible endpoint is derived as
+    # f"https://{r2_account_id}.r2.cloudflarestorage.com" (covers/storage.py).
+    r2_account_id: str | None = Field(default=None, validation_alias="R2_ACCOUNT_ID")
+    r2_access_key_id: str | None = Field(
+        default=None, validation_alias="R2_ACCESS_KEY_ID"
     )
-    covers_bucket: str = "covers"
+    r2_secret_access_key: str | None = Field(
+        default=None, validation_alias="R2_SECRET_ACCESS_KEY"
+    )
+    r2_bucket: str = Field(default="covers", validation_alias="R2_BUCKET")
+    # #CRITICAL: external resources: covers are served to browsers from this
+    # custom-domain base, not from the *.r2.cloudflarestorage.com S3 endpoint
+    # (which is not public). The owner must connect a custom domain to the R2
+    # bucket in the Cloudflare dashboard and set this to that domain's origin.
+    # #VERIFY: covers/storage.py returns f"{r2_public_base_url}/{key}"; a
+    # bucket with no connected public domain yields broken cover image URLs.
+    r2_public_base_url: str | None = Field(
+        default=None, validation_alias="R2_PUBLIC_BASE_URL"
+    )
     covers_backup_dir: str | None = None
     # #ASSUME: external resources: the "-preview" alias was retired on the
     # Gemini API (shutdown 2026-06-25); the stable Nano Banana Pro id is used.
