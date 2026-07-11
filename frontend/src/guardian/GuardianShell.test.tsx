@@ -10,7 +10,7 @@ vi.mock('../auth/useAuth', () => ({
   useAuth: (): unknown => mockUseAuth(),
 }))
 
-function principal(role: 'guardian' | 'admin') {
+function principal(role: 'guardian' | 'admin' | 'child') {
   return { subject: 's', role, familyId: 'f', profileIds: [] }
 }
 
@@ -85,5 +85,31 @@ describe('GuardianShell', () => {
     mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
     renderShell()
     expect(screen.getByText('console content')).toBeInTheDocument()
+  })
+
+  it('shows an "Admin" role hint for an admin principal', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.getByText('Admin')).toBeInTheDocument()
+  })
+
+  it('shows a "Guardian" role hint for a guardian principal', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.getByText('Guardian')).toBeInTheDocument()
+  })
+
+  it('shows no role hint when there is no principal', () => {
+    mockUseAuth.mockReturnValue({ principal: null, signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByText('Admin')).not.toBeInTheDocument()
+    expect(screen.queryByText('Guardian')).not.toBeInTheDocument()
+  })
+
+  it('shows no role hint for a child principal (defensive; GuardianShell never mounts for one)', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('child'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByText('Admin')).not.toBeInTheDocument()
+    expect(screen.queryByText('Guardian')).not.toBeInTheDocument()
   })
 })
