@@ -160,6 +160,7 @@ nav:
       - Overview: guides/overview.md
       - Configuration: guides/configuration.md
       - Usage: guides/usage.md
+      - Supabase environments: guides/supabase-environments.md
 
   - API Reference:
       - Overview: api-reference.md

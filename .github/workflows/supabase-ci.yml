@@ -1,0 +1,37 @@
+# Validates that the Supabase migration chain applies cleanly to a fresh
+# local stack before it can merge. Non-required check initially; promotion
+# to ci-gate is deferred until it proves stable (same policy as api-tests).
+name: Supabase Migrations CI
+
+on:
+  pull_request:
+    paths:
+      - "supabase/**"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-migrations:
+    name: Validate migration chain
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Harden the runner
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@46f7f98c7f948ad727d22c1e67fab04c223a0520 # v3.0.0
+        with:
+          version: 2.109.1
+
+      - name: Start local database and apply migrations
+        run: |
+          supabase db start
+          supabase migration up
+          supabase migration list --local

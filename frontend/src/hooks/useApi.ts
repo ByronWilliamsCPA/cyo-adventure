@@ -58,8 +58,10 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
         if (error.response?.status === 401) {
           // #ASSUME: security: an expired/invalid session token means the
           // guardian is no longer authenticated for guardian-only routes.
-          // Kid paths (`/`, `/library/*`) intentionally do NOT navigate here;
-          // the profile-picker's own error UI owns kid-surface 401 recovery.
+          // Kid paths (`/kids`, `/library/*`) intentionally do NOT navigate here;
+          // the profile-picker's and library page's own ask-a-grown-up gate
+          // (classifyApiError's `unauthenticated` state) owns kid-surface 401
+          // recovery.
           // #VERIFY: only navigate off a guardian path, and never navigate
           // away from the login page itself (redirect-loop guard).
           localStorage.removeItem('auth_token')

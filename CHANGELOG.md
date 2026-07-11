@@ -39,6 +39,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `--color-border` / `--color-text-muted` tokens (a silent cold-gray
   render), and now use the new `--color-border-soft` / `--color-ink-muted`
   tokens.
+- The kid surface no longer collapses every fetch failure into one generic
+  retryable error: the profile picker (`/kids`) and library
+  (`/library/:profileId`) now distinguish an unauthenticated session (an
+  ask-a-grown-up gate linking to guardian sign-in, with no dead-end "Try
+  again"), a forbidden response (a way back to the profile picker), transient
+  failures (retry, now with an in-page route back to the picker), and the
+  existing zero-items empty states. A 401 on a rating save surfaces the same
+  gate instead of failing silently. Kid-surface fetch and rating logging is
+  redacted through a shared `logApiError` helper to `{status, url}` only, so
+  neither the Authorization header nor the response body can reach the console.
+  The auth-gate states announce to assistive tech via `role="status"`. Covered
+  by Vitest state tests, a `logApiError` redaction test, and a no-token
+  Playwright scenario in the naive-user suite. Fixes #196 and the kid half of
+  naive-UX finding F1 (#137).
 
 ### Documentation
 - Landed the skeleton corpus story-generation test plan
@@ -60,6 +74,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Supabase multi-environment pipeline scaffold: CLI project config, baseline
+  SQL migration squashed from the Alembic head, PR migration validation, and
+  staging/production deploy workflows (staging auto on merge, production
+  human-gated) (#199)
 - Generation continuity for series (WS-G PR 3): `AnchorContext` now carries the anchor book's
   declared variable names, and the structure prompt instructs continuations to reuse those exact
   names so a reader's state carries across books; stale ending/metadata guidance in the generation
