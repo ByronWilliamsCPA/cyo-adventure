@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { AuthProvider } from './AuthContext'
+import { getChildSession, setChildSession } from './childSession'
 import { useAuth } from './useAuth'
 
 const mockGet = vi.fn()
@@ -122,6 +123,24 @@ describe('AuthProvider', () => {
     expect(localStorage.getItem('auth_token')).toBeNull()
   })
 
+  it('clears an active child session (G1 / P6-04) when there is no guardian session at all', async () => {
+    // Covers the "no guardian ever signed in on this device load" path, not
+    // just an explicit sign-out click: safeRemoveToken() runs here too.
+    setChildSession({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+    expect(getChildSession()).toBeNull()
+  })
+
   it('resolves the principal via /me when a session exists', async () => {
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
@@ -150,6 +169,11 @@ describe('AuthProvider', () => {
     // A session that establishes but cannot resolve a Principal must fail closed
     // AND record authError, so LoginPage can tell the user their account could
     // not be loaded instead of stranding them on an idle form.
+    setChildSession({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
     mockGetSession.mockResolvedValue({
       data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
     })
@@ -163,6 +187,9 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('role')).toHaveTextContent('none')
     expect(screen.getByTestId('authError')).toHaveTextContent('principal-unresolved')
     expect(localStorage.getItem('auth_token')).toBeNull()
+    // A guardian session that never resolves to a principal also ends
+    // whatever child session shared this device's storage (G1 / P6-04).
+    expect(getChildSession()).toBeNull()
   })
 
   it('re-syncs from an onAuthStateChange event (e.g. sign-out elsewhere)', async () => {
@@ -190,6 +217,40 @@ describe('AuthProvider', () => {
 
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
     expect(localStorage.getItem('auth_token')).toBeNull()
+  })
+
+  it('sign-out clears an active child session (G1 / P6-04) alongside the guardian token', async () => {
+    setChildSession({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    let changeHandler: ((event: string, session: unknown) => void) | undefined
+    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
+      changeHandler = cb
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(getChildSession()).not.toBeNull()
+
+    act(() => {
+      changeHandler?.('SIGNED_OUT', null)
+    })
+
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(getChildSession()).toBeNull()
   })
 
   it('fails closed to signed-out when /me returns an unrecognized role', async () => {
