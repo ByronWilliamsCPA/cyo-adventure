@@ -3,7 +3,7 @@ title: "Supabase Multi-Environment Pipeline: Operator Runbook"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "Operator runbook for the local / staging / production Supabase environment topology and its CLI-driven migration pipeline (ADR-012)."
+purpose: "Operator runbook for the local / staging / production Supabase environment topology and its CLI-driven migration pipeline (planned ADR-012, ratified in the design spec)."
 tags:
   - deployment
   - guide
@@ -94,9 +94,11 @@ production ever sees it.
 
 3. Update the SQLAlchemy models in `src/cyo_adventure/db/models.py` (or the relevant module)
    to match the new schema.
-4. The schema-parity integration test fails CI if the SQLAlchemy models and the applied
-   migration chain disagree (mismatched tables, columns, types, nullability, primary keys,
-   foreign keys, uniques, or indexes). Fix the drift before the PR can merge.
+4. The schema-parity integration test (added with the Alembic-retirement PR; see the design
+   spec, Section 4) fails CI if the SQLAlchemy models and the applied migration chain disagree
+   (mismatched tables, columns, types, nullability, primary keys, foreign keys, uniques, or
+   indexes). Until that PR lands, `alembic check` remains the model-drift guard. Fix the drift
+   before the PR can merge.
 
 Any PR that touches `supabase/migrations/**` also triggers **Supabase Migrations CI**
 (`.github/workflows/supabase-ci.yml`), which starts a fresh local stack and applies the
