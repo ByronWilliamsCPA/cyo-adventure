@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Schema migrations moved from Alembic to Supabase CLI SQL migrations
   (ADR-012): baseline squash, forward-only policy, schema-parity CI gate
-  (#TBD-PR2)
+  (#201)
 
 ### Security
 - The backend now trusts proxy headers only from an explicit boundary:
