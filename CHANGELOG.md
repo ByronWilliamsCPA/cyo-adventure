@@ -15,10 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   again"), a forbidden response (a way back to the profile picker), transient
   failures (retry, now with an in-page route back to the picker), and the
   existing zero-items empty states. A 401 on a rating save surfaces the same
-  gate instead of failing silently, and kid-surface fetch logging is redacted
-  to status/url/body so the Authorization header can never reach the console.
-  Covered by Vitest state tests and a no-token Playwright scenario in the
-  naive-user suite. Fixes #196 and the kid half of naive-UX finding F1 (#137).
+  gate instead of failing silently. Kid-surface fetch and rating logging is
+  redacted through a shared `logApiError` helper to `{status, url}` only, so
+  neither the Authorization header nor the response body can reach the console.
+  The auth-gate states announce to assistive tech via `role="status"`. Covered
+  by Vitest state tests, a `logApiError` redaction test, and a no-token
+  Playwright scenario in the naive-user suite. Fixes #196 and the kid half of
+  naive-UX finding F1 (#137).
 
 ### Documentation
 - Landed the skeleton corpus story-generation test plan

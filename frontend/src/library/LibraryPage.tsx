@@ -1,9 +1,9 @@
-import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
+import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { Mascot } from '../kid/Mascot'
 import { GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from '../routes'
@@ -89,23 +89,9 @@ export function LibraryPage() {
         const items = await libraryApi.list(id)
         if (!cancelled && isMountedRef.current) setState({ status: 'ready', items })
       } catch (err) {
-        // Log a redacted shape, never the raw axios error: its `config`
-        // carries the Authorization header, which must never land in console
-        // output.
-        console.error(
-          'library list failed',
-          isAxiosError(err)
-            ? {
-                status: err.response?.status,
-                url: err.config?.url,
-                // Cast: axios types response bodies as `any`; unknown keeps
-                // the log while satisfying no-unsafe-assignment.
-                data: err.response?.data as unknown,
-              }
-            : err instanceof Error
-              ? err.message
-              : err
-        )
+        // Redacted shape only, never the raw axios error (its `config` carries
+        // the Authorization header); see logApiError.
+        logApiError('library list failed', err)
         if (!cancelled && isMountedRef.current) {
           const { kind } = classifyApiError(err)
           if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
@@ -149,22 +135,9 @@ export function LibraryPage() {
             return
           }
           // Otherwise keep the previous rating; a transient failure must not
-          // break browsing. Log a redacted shape, never the raw axios error
-          // (its `config` carries the Authorization header).
-          console.error(
-            'rating save failed',
-            isAxiosError(err)
-              ? {
-                  status: err.response?.status,
-                  url: err.config?.url,
-                  // Cast: axios types response bodies as `any`; unknown keeps
-                  // the log while satisfying no-unsafe-assignment.
-                  data: err.response?.data as unknown,
-                }
-              : err instanceof Error
-                ? err.message
-                : err
-          )
+          // break browsing. Redacted shape only, never the raw axios error
+          // (its `config` carries the Authorization header); see logApiError.
+          logApiError('rating save failed', err)
         })
     },
     [libraryApi, profileId]
@@ -180,7 +153,7 @@ export function LibraryPage() {
   }
   if (state.status === 'unauthenticated') {
     return (
-      <div className="library">
+      <div className="library" role="status" aria-live="polite">
         <EmptyState
           title="Time to find your grown-up"
           description="Your grown-up needs to sign in again before your books can load."
@@ -201,7 +174,7 @@ export function LibraryPage() {
   }
   if (state.status === 'forbidden') {
     return (
-      <div className="library">
+      <div className="library" role="status" aria-live="polite">
         <EmptyState
           title="This bookshelf isn't yours"
           description="Let's go back and pick your own name."

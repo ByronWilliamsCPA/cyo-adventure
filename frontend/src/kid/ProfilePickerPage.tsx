@@ -1,9 +1,9 @@
-import { isAxiosError } from 'axios'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
+import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
@@ -45,23 +45,9 @@ export function ProfilePickerPage() {
         const profiles = await profilesApi.list()
         if (!cancelled) setState({ status: 'ready', profiles })
       } catch (err) {
-        // Log a redacted shape, never the raw axios error: its `config`
-        // carries the Authorization header, which must never land in console
-        // output.
-        console.error(
-          'profile list failed',
-          isAxiosError(err)
-            ? {
-                status: err.response?.status,
-                url: err.config?.url,
-                // Cast: axios types response bodies as `any`; unknown keeps the
-                // log while satisfying no-unsafe-assignment.
-                data: err.response?.data as unknown,
-              }
-            : err instanceof Error
-              ? err.message
-              : err
-        )
+        // Redacted shape only, never the raw axios error (its `config` carries
+        // the Authorization header); see logApiError.
+        logApiError('profile list failed', err)
         if (!cancelled) {
           const { kind } = classifyApiError(err)
           if (kind === 'unauthenticated') setState({ status: 'unauthenticated' })
@@ -86,31 +72,35 @@ export function ProfilePickerPage() {
 
   if (state.status === 'unauthenticated') {
     return (
-      <EmptyState
-        title="Ask a grown-up to help"
-        description="A grown-up needs to sign in before you can pick who's reading."
-        icon={<Mascot size={96} />}
-        actions={
-          <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
-            I am a grown-up
-          </Link>
-        }
-      />
+      <div role="status" aria-live="polite">
+        <EmptyState
+          title="Ask a grown-up to help"
+          description="A grown-up needs to sign in before you can pick who's reading."
+          icon={<Mascot size={96} />}
+          actions={
+            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+              I am a grown-up
+            </Link>
+          }
+        />
+      </div>
     )
   }
 
   if (state.status === 'forbidden') {
     return (
-      <EmptyState
-        title="We can't show this right now"
-        description="Ask a grown-up to take a look."
-        icon={<Mascot size={96} />}
-        actions={
-          <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
-            I am a grown-up
-          </Link>
-        }
-      />
+      <div role="status" aria-live="polite">
+        <EmptyState
+          title="We can't show this right now"
+          description="Ask a grown-up to take a look."
+          icon={<Mascot size={96} />}
+          actions={
+            <Link className="picker-tile__add-link" to={GUARDIAN_LOGIN_PATH}>
+              I am a grown-up
+            </Link>
+          }
+        />
+      </div>
     )
   }
 
