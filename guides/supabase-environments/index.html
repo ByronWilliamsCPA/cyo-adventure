@@ -12,31 +12,31 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-005-mandatory-human-approval/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/guides/supabase-environments/">
       
       
-        <link rel="prev" href="../adr-004-homelab-first-deployment/">
+        <link rel="prev" href="../usage/">
       
       
-        <link rel="next" href="../adr-006-conditions-inhouse-evaluator/">
+        <link rel="next" href="../../api-reference/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>ADR-005: Mandatory human approval before any story reaches a child - CYO Adventure</title>
+        <title>Supabase Multi-Environment Pipeline: Operator Runbook - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +55,9 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#adr-005-mandatory-human-approval-before-any-story-reaches-a-child" class="md-skip">
+        <a href="#1-environment-topology" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +106,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +126,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ADR-005: Mandatory human approval before any story reaches a child
+              Supabase Multi-Environment Pipeline: Operator Runbook
             
           </span>
         </div>
@@ -239,7 +239,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../../.." class="md-tabs__link">
+      <a href="../.." class="md-tabs__link">
         
   
   
@@ -256,11 +256,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../../guides/overview/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +284,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../api-reference/" class="md-tabs__link">
+        <a href="../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +306,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../architecture/" class="md-tabs__link">
+        <a href="../../architecture/" class="md-tabs__link">
           
   
   
@@ -326,7 +328,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../development/architecture/" class="md-tabs__link">
+        <a href="../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +350,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../project/roadmap/" class="md-tabs__link">
+        <a href="../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,13 +368,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../planning/" class="md-tabs__link">
           
   
   
@@ -394,7 +394,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +416,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../ADRs/" class="md-tabs__link">
+        <a href="../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +452,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +482,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../.." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -513,8 +513,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -530,21 +532,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
-        
-          
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
             
   
   
@@ -562,7 +565,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -580,7 +583,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         
   
   
@@ -615,7 +618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/configuration/" class="md-nav__link">
+      <a href="../configuration/" class="md-nav__link">
         
   
   
@@ -650,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../guides/usage/" class="md-nav__link">
+      <a href="../usage/" class="md-nav__link">
         
   
   
@@ -682,10 +685,42 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../guides/supabase-environments/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supabase environments
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--published"></span>
+  
+
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -708,6 +743,90 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-environment-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Environment topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-local-development" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Local development
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-authoring-a-migration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Authoring a migration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Promotion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-one-time-setup-gate-a-gate-b-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. One-time setup (Gate A / Gate B checklist)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -785,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../api-reference/" class="md-nav__link">
+      <a href="../../api-reference/" class="md-nav__link">
         
   
   
@@ -864,7 +983,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../architecture/" class="md-nav__link ">
+            <a href="../../architecture/" class="md-nav__link ">
               
   
   
@@ -915,7 +1034,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -950,7 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -985,7 +1104,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1020,7 +1139,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1055,7 +1174,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/data-model/" class="md-nav__link">
+      <a href="../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1090,7 +1209,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../architecture/deployment/" class="md-nav__link">
+      <a href="../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1165,7 +1284,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../api/" class="md-nav__link ">
+            <a href="../../api/" class="md-nav__link ">
               
   
   
@@ -1214,7 +1333,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/architecture/" class="md-nav__link">
+      <a href="../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1249,7 +1368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/testing/" class="md-nav__link">
+      <a href="../../development/testing/" class="md-nav__link">
         
   
   
@@ -1286,7 +1405,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/code-quality/" class="md-nav__link">
+      <a href="../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1321,7 +1440,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../development/contributing/" class="md-nav__link">
+      <a href="../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1425,7 +1544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/roadmap/" class="md-nav__link">
+      <a href="../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1460,7 +1579,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/changelog/" class="md-nav__link">
+      <a href="../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1495,7 +1614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../project/license/" class="md-nav__link">
+      <a href="../../project/license/" class="md-nav__link">
         
   
   
@@ -1534,8 +1653,6 @@
       
   
   
-    
-  
   
   
     
@@ -1559,23 +1676,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../planning/" class="md-nav__link ">
               
   
   
@@ -1600,13 +1716,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1626,7 +1742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project-vision/" class="md-nav__link">
+      <a href="../../planning/project-vision/" class="md-nav__link">
         
   
   
@@ -1661,7 +1777,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tech-spec/" class="md-nav__link">
+      <a href="../../planning/tech-spec/" class="md-nav__link">
         
   
   
@@ -1696,7 +1812,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1731,7 +1847,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../roadmap/" class="md-nav__link">
+      <a href="../../planning/roadmap/" class="md-nav__link">
         
   
   
@@ -1763,8 +1879,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1802,21 +1916,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../planning/adr/" class="md-nav__link ">
               
   
   
@@ -1841,13 +1954,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1867,7 +1980,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1902,7 +2015,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-002-client-pwa/" class="md-nav__link">
+      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1937,7 +2050,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1972,7 +2085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2004,44 +2117,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    ADR-005
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--accepted"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2064,304 +2143,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Amendment (2026-06-30): the approver is a global admin, not the child's parent
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        TL;DR
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Context
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Constraints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#significance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Significance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Decision
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rationale
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#options-considered" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options Considered
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Options Considered">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-state-machine-with-a-mandatory-guardian-approval-transition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: State machine with a mandatory guardian approval transition ✓
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-automated-moderation-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Automated moderation only
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Consequences
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Positive
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trade-offs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#technical-debt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Debt
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#components-affected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Components Affected
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#success-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Success Criteria
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#review-schedule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Review Schedule
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -2374,7 +2155,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2409,7 +2190,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2444,7 +2225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2479,7 +2260,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2514,7 +2295,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2549,7 +2330,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2663,7 +2444,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2698,7 +2479,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2733,7 +2514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2768,7 +2549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../template_feedback/" class="md-nav__link">
+      <a href="../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2837,7 +2618,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../ADRs/" class="md-nav__link ">
+            <a href="../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2888,7 +2669,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2940,8 +2721,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2950,10 +2729,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent" class="md-nav__link">
+  <a href="#1-environment-topology" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Amendment (2026-06-30): the approver is a global admin, not the child's parent
+        1. Environment topology
       
     </span>
   </a>
@@ -2961,10 +2740,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tldr" class="md-nav__link">
+  <a href="#2-local-development" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TL;DR
+        2. Local development
       
     </span>
   </a>
@@ -2972,255 +2751,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#context" class="md-nav__link">
+  <a href="#3-authoring-a-migration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Context
+        3. Authoring a migration
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Context">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#problem" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Problem
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#constraints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Constraints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#significance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Significance
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#decision" class="md-nav__link">
+  <a href="#4-promotion" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decision
+        4. Promotion
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Decision">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rationale" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Rationale
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#options-considered" class="md-nav__link">
+  <a href="#5-one-time-setup-gate-a-gate-b-checklist" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Options Considered
+        5. One-time setup (Gate A / Gate B checklist)
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Options Considered">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#option-1-state-machine-with-a-mandatory-guardian-approval-transition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 1: State machine with a mandatory guardian approval transition ✓
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#option-2-automated-moderation-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Option 2: Automated moderation only
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#consequences" class="md-nav__link">
+  <a href="#6-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Consequences
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Consequences">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#positive" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Positive
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Trade-offs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#technical-debt" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Debt
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Implementation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#components-affected" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Components Affected
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#testing-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Testing Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Validation
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Validation">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#success-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Success Criteria
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#review-schedule" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Review Schedule
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related
+        6. Operations
       
     </span>
   </a>
@@ -3247,145 +2814,181 @@
   
 
 
-<h1 id="adr-005-mandatory-human-approval-before-any-story-reaches-a-child">ADR-005: Mandatory human approval before any story reaches a child<a class="headerlink" href="#adr-005-mandatory-human-approval-before-any-story-reaches-a-child" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>Status</strong>: Accepted (2026-07-03; amended 2026-06-30, see Amendment below)
-<strong>Date</strong>: 2026-06-20</p>
-</blockquote>
-<h2 id="amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent">Amendment (2026-06-30): the approver is a global admin, not the child's parent<a class="headerlink" href="#amendment-2026-06-30-the-approver-is-a-global-admin-not-the-childs-parent" title="Permanent link">&para;</a></h2>
-<p>In Phase 3 slice 1 the recorded human approver is a dedicated <strong>global admin</strong> (the backend
-safety operator) rather than the child's own parent/guardian. This is an intentional design
-evolution, confirmed by the project owner, of the original "a parent approves it" framing
-below.</p>
-<p>The admin screens content <strong>cross-family</strong>: the approval router requires <code>principal.is_admin</code>
-(child and guardian tokens receive 403), and <code>authorize_family</code> is intentionally not called
-on approval routes because the safety-review authority spans families. Guardians retain their
-own family-scoped powers elsewhere; they are simply not the publish approver in this phase.</p>
-<p>The core invariant is <strong>unchanged and in fact strengthened</strong>: no story reaches a child
-without a recorded human approval, encoded in a state machine with no bypass to a child
-profile, with the approver stamped per published version (<code>storybook_version.approved_by</code>).
-Centralizing the screen in a trained safety operator raises the floor on review consistency
-versus a per-parent approval, while keeping the human-in-the-loop guarantee absolute. Where
-the sections below say "parent" or "guardian" as the approver, read "global admin (safety
-operator)"; the structural guarantee they describe is otherwise as written.</p>
-<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
-<p>A story can enter a child's library only after a human approves it, encoded as a state
-machine with no path from generation to a child profile that bypasses the recorded
-admin-approval step, because automated moderation helps but cannot be the only line for
-machine-generated content read by children.</p>
-<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
-<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
-<p>The content is machine-generated and read by children. Automated moderation reduces
-risk but cannot be the sole safeguard; a person who knows the child must make the
-publish decision.</p>
-<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Technical</strong>: the guarantee must be structural, not a convention a future code
-  change can erode.</li>
-<li><strong>Business</strong>: at family volume a manual step per story is acceptable; the design
-  should also future-proof a possible move beyond one family.</li>
-</ul>
-<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
-<p>This is the central child-safety guarantee. Getting it wrong means a generated story
-could reach a child unreviewed.</p>
-<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
-<p><strong>We will allow a story to enter a child's library only after a guardian approves it,
-encoded as a publish state machine with no bypass path to a child profile, because
-defense in depth requires an irreplaceable human layer.</strong> Automated moderation and the
-validation gate run first and gate entry to review; they do not replace the human step.</p>
-<h3 id="rationale">Rationale<a class="headerlink" href="#rationale" title="Permanent link">&para;</a></h3>
-<p>The irreplaceable layer is a person who knows the child. Automated classifiers reduce
-what reaches review and flag riskier passages, but the publish decision stays human.
-This matches a sound child-safety stance and future-proofs the design if the app is
-ever shared beyond the family.</p>
-<h2 id="options-considered">Options Considered<a class="headerlink" href="#options-considered" title="Permanent link">&para;</a></h2>
-<h3 id="option-1-state-machine-with-a-mandatory-guardian-approval-transition">Option 1: State machine with a mandatory guardian approval transition ✓<a class="headerlink" href="#option-1-state-machine-with-a-mandatory-guardian-approval-transition" title="Permanent link">&para;</a></h3>
-<p><strong>Pros</strong>:</p>
-<ul>
-<li>✅ A hard guarantee that a parent saw every story.</li>
-<li>✅ A clean audit trail (who approved which version, by which model and prompt).</li>
-</ul>
-<p><strong>Cons</strong>:</p>
-<ul>
-<li>❌ A manual step per story. Acceptable at family volume; the Phase 3 review UI makes
-  it a few minutes.</li>
-</ul>
-<h3 id="option-2-automated-moderation-only">Option 2: Automated moderation only<a class="headerlink" href="#option-2-automated-moderation-only" title="Permanent link">&para;</a></h3>
-<p><strong>Pros</strong>:</p>
-<ul>
-<li>✅ Zero manual effort.</li>
-</ul>
-<p><strong>Cons</strong>:</p>
-<ul>
-<li>❌ No human who knows the child in the loop; a single classifier miss reaches a kid.
-  Rejected on child-safety grounds.</li>
-</ul>
-<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
-<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
-<ul>
-<li>✅ A guaranteed parent review of every story, with provenance recorded per version.</li>
-</ul>
-<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
-<ul>
-<li>⚠️ The publish state machine and an approver role are core, not optional. Mitigation:
-  the review surface (Phase 3) keeps each approval to a few minutes.</li>
-</ul>
-<h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Automated checks (validator plus moderation) run on the GenerationJob
-  (<code>running -&gt; passed | needs_review | failed</code>) and gate whether a Storybook may enter
-  <code>in_review</code>; the approve action then moves the Storybook directly to <code>published</code> (there
-  is no separate <code>approved</code> resting state), and a rejected review routes to
-  <code>needs_revision</code>. A story is visible to a child only in <code>published</code>.</li>
-</ul>
-<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
-<h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
+  <h1>Supabase environments</h1>
+
+<p>This is the day-to-day and one-time-setup reference for the Supabase multi-environment
+pipeline. It covers three tiers built from one migration history: a local <code>supabase start</code>
+stack, a staging Cloud project, and the production Cloud project, with schema promoted by
+GitHub Actions rather than by hand-running a migration tool against whichever database is
+targeted. See
+<code>docs/superpowers/specs/2026-07-10-supabase-environments-pipeline-design.md</code> for the full
+design rationale; this document is the operational how-to.</p>
+<h2 id="1-environment-topology">1. Environment topology<a class="headerlink" href="#1-environment-topology" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Backing</th>
+<th>Schema applied by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local</td>
+<td><code>supabase start</code> stack (Postgres <code>:54322</code>, Auth, Studio <code>:54323</code>)</td>
+<td><code>supabase db reset</code> / <code>supabase migration up</code></td>
+</tr>
+<tr>
+<td>Staging</td>
+<td>New Supabase Cloud project</td>
+<td><code>Deploy Supabase Migrations (staging)</code> on merge to <code>main</code></td>
+</tr>
+<tr>
+<td>Production</td>
+<td>Existing live project</td>
+<td><code>Deploy Supabase Migrations (production)</code>, <code>workflow_dispatch</code> + required-reviewer GitHub Environment</td>
+</tr>
+</tbody>
+</table>
+<p>The docker-compose <code>db</code> service used by the <code>api-tests</code> (newman) CI job stays; it receives its
+schema from the same <code>supabase/migrations/*.sql</code> files via <code>supabase db push --db-url</code>, so
+there is a single schema source across every tier, including that compose service.</p>
+<h2 id="2-local-development">2. Local development<a class="headerlink" href="#2-local-development" title="Permanent link">&para;</a></h2>
+<p>Install the pinned Supabase CLI (2.109.1). The release tarball contains two binaries,
+<code>supabase</code> and <code>supabase-go</code>; extracting only <code>supabase</code> breaks <code>supabase start</code> (it shells
+out to <code>supabase-go</code> for some local-stack operations), so extract both into the same
+directory on your <code>PATH</code>:</p>
+<div class="language-text highlight"><pre><span></span><code>curl -fsSL &quot;https://github.com/supabase/cli/releases/download/v2.109.1/supabase_linux_amd64.tar.gz&quot; \
+  | tar -xz -C ~/.local/bin
+</code></pre></div>
+<p>On macOS or Windows, <code>brew install supabase/tap/supabase</code> or <code>scoop install supabase</code> install
+the same pinned-compatible releases without the manual tarball step; pin the version
+explicitly if the package manager does not default to 2.109.1.</p>
+<p>Confirm the install; it must print <code>2.109.1</code>:</p>
+<div class="language-text highlight"><pre><span></span><code>supabase --version
+</code></pre></div>
+<p>Start the local stack from the repository root:</p>
+<div class="language-text highlight"><pre><span></span><code>supabase start
+supabase db reset
+</code></pre></div>
+<p><code>supabase start</code> brings up Postgres, GoTrue (Auth), and Studio in Docker containers.
+<code>supabase db reset</code> drops and recreates the local database, then applies every migration in
+<code>supabase/migrations/</code> in order, starting from the baseline
+(<code>supabase/migrations/20260710000000_baseline.sql</code>).</p>
+<p>Local stack ports:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Port</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Postgres</td>
+<td>54322</td>
+</tr>
+<tr>
+<td>API (GoTrue, PostgREST, Storage)</td>
+<td>54321</td>
+</tr>
+<tr>
+<td>Studio</td>
+<td>54323</td>
+</tr>
+</tbody>
+</table>
+<p>Point the backend at the local stack:</p>
+<div class="language-text highlight"><pre><span></span><code>CYO_ADVENTURE_DATABASE_URL=postgresql+asyncpg://postgres:postgres@127.0.0.1:54322/postgres
+</code></pre></div>
+<p>The docker-compose <code>db</code> service (port 5432, used by the containerized dev stack and the
+<code>api-tests</code> newman job) remains in place; it is a separate Postgres instance from the CLI
+stack above and is not affected by <code>supabase start</code>.</p>
+<h2 id="3-authoring-a-migration">3. Authoring a migration<a class="headerlink" href="#3-authoring-a-migration" title="Permanent link">&para;</a></h2>
+<p>Migrations are forward-only: there are no downgrade scripts. Recovery from a bad migration is
+roll-forward (a new migration that corrects the previous one), rehearsed on staging before
+production ever sees it.</p>
 <ol>
-<li><strong>Two lifecycles, not one pipeline</strong>: a <strong>GenerationJob</strong> state machine
-   (<code>queued -&gt; running -&gt; passed | needs_review | failed</code>) drives generation and the
-   automated gate, and a separate <strong>Storybook</strong> state machine
-   (<code>draft -&gt; in_review -&gt; published | needs_revision | archived</code>) drives review and
-   publication. There is no single <code>approved</code> resting state: <code>approved</code> is collapsed into
-   the approve action, which publishes in one step. A story is visible to a child only in
-   the Storybook <code>published</code> state.</li>
-<li><strong>Authorization</strong>: the approver is a <strong>global admin</strong> (<code>principal.is_admin</code>) who
-   screens cross-family; child and guardian tokens cannot approve or publish.</li>
-<li><strong>Provenance</strong>: model, provider, prompt version, and approver persisted per
-   published version.</li>
+<li>
+<p>Create a new migration file:</p>
+<p>supabase migration new <slug></p>
+</li>
 </ol>
-<h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
-<ul>
-<li>Integration: attempt every transition path and verify no route reaches a child
-  profile without a recorded guardian approval.</li>
-<li>Safety: adversarial briefs are flagged and cannot be auto-published.</li>
-</ul>
-<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
-<h3 id="success-criteria">Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h3>
+<p>or capture schema changes made interactively in local Studio:</p>
+<div class="language-text highlight"><pre><span></span><code>   supabase db diff -f &lt;slug&gt;
+</code></pre></div>
+<ol>
+<li>
+<p>Prove the full chain applies cleanly from scratch:</p>
+<p>supabase db reset</p>
+</li>
+<li>
+<p>Update the SQLAlchemy models in <code>src/cyo_adventure/db/models.py</code> (or the relevant module)
+   to match the new schema.</p>
+</li>
+<li>The schema-parity integration test (added with the Alembic-retirement PR; see the design
+   spec, Section 4) fails CI if the SQLAlchemy models and the applied migration chain disagree
+   (mismatched tables, columns, types, nullability, primary keys, foreign keys, uniques, or
+   indexes). Until that PR lands, <code>alembic check</code> remains the model-drift guard. Fix the drift
+   before the PR can merge.</li>
+</ol>
+<p>Any PR that touches <code>supabase/migrations/**</code> also triggers <strong>Supabase Migrations CI</strong>
+(<code>.github/workflows/supabase-ci.yml</code>), which starts a fresh local stack and applies the
+migration chain (<code>supabase db start</code> + <code>supabase migration up</code>) to catch a broken chain before
+merge.</p>
+<h2 id="4-promotion">4. Promotion<a class="headerlink" href="#4-promotion" title="Permanent link">&para;</a></h2>
+<p>Promotion is a one-way ratchet: local, then staging, then production, in that order.</p>
+<ol>
+<li>Merge a PR containing new migrations to <code>main</code>. <strong>Deploy Supabase Migrations (staging)</strong>
+   (<code>.github/workflows/supabase-staging.yml</code>) triggers automatically on <code>push</code> to <code>main</code> when
+   the change touches <code>supabase/migrations/**</code>, links the staging project, and runs
+   <code>supabase db push</code> against it.</li>
+<li>Confirm the staging workflow run is green before promoting further.</li>
+<li>Dispatch <strong>Deploy Supabase Migrations (production)</strong>
+   (<code>.github/workflows/supabase-production.yml</code>) manually (<code>workflow_dispatch</code>) once staging is
+   green for the same migration set. The job is bound to the <code>production</code> GitHub Environment,
+   which requires an approving reviewer before the job runs; this is the human gate between a
+   rehearsed migration and the live database.</li>
+</ol>
+<h2 id="5-one-time-setup-gate-a-gate-b-checklist">5. One-time setup (Gate A / Gate B checklist)<a class="headerlink" href="#5-one-time-setup-gate-a-gate-b-checklist" title="Permanent link">&para;</a></h2>
+<p>These steps run once, with the user present, before the pipeline can move schema anywhere
+but the local stack:</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No story reaches a child profile without a recorded guardian approval (no auto-publish
-  path; verified by the state machine and the published-requires-approver invariant).</li>
-<li>[~] Adversarial briefs are flagged and cannot be auto-published. "Cannot auto-publish"
-  holds; the import and admin-submit paths no longer reach a publishable state unmoderated
-  (closed structurally: the import path now runs moderation before returning, and <code>approve</code>
-  refuses to publish a version with no moderation report). What remains unmet is the flagging
-  half for the model-dependent classes, which has no live-model run yet, see
-  <a href="../../safety/adversarial-safety-evaluation/">adversarial-safety-evaluation.md</a>.</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Create the staging project</strong> in the Supabase dashboard (a new Cloud project; the
+      free plan allows two projects, and the existing live project remains production).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Create GitHub Environments</strong> named <code>staging</code> and <code>production</code> under the repository's
+      Settings -&gt; Environments. Configure <code>production</code> with a required-reviewer protection
+      rule; <code>staging</code> needs no reviewer gate (it deploys automatically on merge to <code>main</code>).</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Set three secrets per environment</strong> (<code>staging</code> and <code>production</code>, six secrets total):</li>
+<li><code>SUPABASE_ACCESS_TOKEN</code></li>
+<li><code>SUPABASE_PROJECT_ID</code></li>
+<li><code>SUPABASE_DB_PASSWORD</code></li>
+<li class="task-list-item">
+<p><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> <strong>Adopt production onto the migration chain.</strong> With the nightly <code>pg_dump</code> backup
+      verified fresh, run against production:</p>
+<div class="language-text highlight"><pre><span></span><code>supabase migration repair --status applied 20260710000000
+</code></pre></div>
+<p>This is a metadata-only write to <code>supabase_migrations.schema_migrations</code>; the baseline
+  migration's SQL never executes against production (the schema it describes already
+  exists there). Only after this step can <code>supabase db push</code> promote future migrations to
+  production without attempting to replay the baseline.</p>
+</li>
 </ul>
-<h3 id="review-schedule">Review Schedule<a class="headerlink" href="#review-schedule" title="Permanent link">&para;</a></h3>
+<h2 id="6-operations">6. Operations<a class="headerlink" href="#6-operations" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Initial: Phase 3 acceptance.</li>
-<li>Ongoing: on any change to the publish or authorization model.</li>
-</ul>
-<h2 id="related">Related<a class="headerlink" href="#related" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="../adr-001-story-format-json-storybook/">ADR-001</a>: the validatable format the gate
-  depends on.</li>
-<li><a href="../adr-003-frontier-llm-generation/">ADR-003</a>: the generator whose output this
-  gate reviews.</li>
-<li><a href="../../safety/adversarial-safety-evaluation/">Adversarial safety evaluation</a>: the failure
-  taxonomy, the structural bypass findings, and the status of the adversarial-brief criterion
-  above.</li>
-<li><a href="../../tech-spec/#publish-state-machine">Tech Spec: Publish state machine</a></li>
+<li><strong>Free-plan staging pauses</strong> after roughly a week of inactivity. If the staging deploy
+  workflow fails with a connection error, check the Supabase dashboard for a paused-project
+  banner and unpause it there before re-running the workflow.</li>
+<li><strong>Recovery is roll-forward.</strong> There is no downgrade path; a bad migration is corrected by
+  authoring and promoting a new migration, not by reverting the old one in place.</li>
+<li><strong>Backups</strong> are nightly <code>pg_dump</code> (application-level) plus Supabase's built-in
+  point-in-time recovery (PITR) on the Cloud projects. Verify the nightly <code>pg_dump</code> is fresh
+  before the Gate B production-adoption step above; PITR is the fallback for anything the
+  dump misses.</li>
+<li><strong>Failed staging push blocks production by convention</strong>, not by a technical lock: the
+  production workflow's run instructions require a green staging run for the same migration
+  set, and the required-reviewer approval on the <code>production</code> GitHub Environment is the hard
+  stop if that convention is not followed.</li>
 </ul>
 
 
@@ -3409,7 +3012,7 @@ ever shared beyond the family.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 3, 2026 22:35:07 UTC">July 3, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 05:01:14 UTC">July 11, 2026</span>
   </span>
 
     
@@ -3419,7 +3022,7 @@ ever shared beyond the family.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 05:16:41 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 05:01:14 UTC">July 11, 2026</span>
   </span>
 
     
@@ -3496,10 +3099,10 @@ ever shared beyond the family.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
