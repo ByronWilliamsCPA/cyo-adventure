@@ -60,7 +60,7 @@ Generate a type-safe API client from the FastAPI OpenAPI schema:
 
 ```bash
 # Make sure backend is running first
-cd .. && uv run uvicorn cyo_adventure.main:app &
+cd .. && uv run uvicorn cyo_adventure.app:app &
 
 # Generate client
 npm run generate-client

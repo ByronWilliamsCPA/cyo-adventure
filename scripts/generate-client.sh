@@ -20,7 +20,7 @@ if ! curl -s "$API_URL/openapi.json" > /dev/null 2>&1; then
     echo "" >&2
     echo "Make sure the backend is running:" >&2
     echo "  cd $(dirname "$0")/.." >&2
-    echo "  uv run uvicorn cyo_adventure.main:app --reload" >&2
+    echo "  uv run uvicorn cyo_adventure.app:app --reload" >&2
     echo "" >&2
     exit 1
 fi
