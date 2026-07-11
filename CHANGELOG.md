@@ -50,6 +50,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   busy-wait; the suite and its local run loop are documented in
   `docs/api/README.md`.
 
+### Changed
+- Schema migrations moved from Alembic to Supabase CLI SQL migrations
+  (ADR-012): baseline squash, forward-only policy, schema-parity CI gate
+  (#TBD-PR2)
+
 ### Security
 - The backend now trusts proxy headers only from an explicit boundary:
   uvicorn's `forwarded_allow_ips` is threaded through Settings, the dev

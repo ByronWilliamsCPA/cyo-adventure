@@ -34,12 +34,12 @@ COPY --from=ghcr.io/astral-sh/uv:0.8.17@sha256:db99140470350437166de1fc646323ecb
 # #CRITICAL: external resources: the DHI runtime stage keeps its interpreter at
 # /opt/python/bin and ships NO /usr/local/bin, so a venv created against this
 # builder's /usr/local/bin/python3.12 arrives with a dangling python symlink
-# and a stale pyvenv.cfg home; every console script (uvicorn, rq, alembic)
+# and a stale pyvenv.cfg home; every console script (uvicorn, rq)
 # then exec-fails at runtime with a misleading "no such file or directory"
 # (first observed as the cyo-adventure-worker crash-loop on docker-host).
 # Mirror the builder's interpreter at the runtime path and pin uv to it so the
 # venv's symlink chain and pyvenv.cfg resolve identically in BOTH stages.
-# #VERIFY: `docker run --rm <image> rq --version` (plus uvicorn/alembic
+# #VERIFY: `docker run --rm <image> rq --version` (plus uvicorn
 # --version) must succeed on the built image before publishing.
 RUN mkdir -p /opt/python/bin && ln -s /usr/local/bin/python3.12 /opt/python/bin/python3.12
 ENV UV_PYTHON=/opt/python/bin/python3.12
@@ -54,9 +54,10 @@ COPY README.md ./
 
 # Install dependencies to a virtual environment
 # This creates .venv/ which we'll copy to the final stage.
-# --extra api is REQUIRED: fastapi/uvicorn/alembic/sqlalchemy/asyncpg live in
+# --extra api is REQUIRED: fastapi/uvicorn/sqlalchemy/asyncpg live in
 # the [project.optional-dependencies] api extra, not main dependencies, so a
-# plain --no-dev sync ships an image that cannot serve HTTP or run migrations.
+# plain --no-dev sync ships an image that cannot serve HTTP. Schema migrations
+# are applied separately by the Supabase CLI (ADR-012), not from this image.
 RUN uv sync --frozen --no-dev --no-install-project --extra api
 
 # Copy application code
