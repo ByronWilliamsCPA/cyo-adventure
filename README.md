@@ -1,6 +1,7 @@
 # CYO Adventure
 
 ## Quality & Security
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/13575/badge)](https://www.bestpractices.dev/projects/13575)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ByronWilliamsCPA/cyo-adventure/badge)](https://securityscorecards.dev/viewer/?uri=github.com/ByronWilliamsCPA/cyo-adventure)
 [![codecov](https://codecov.io/gh/ByronWilliamsCPA/cyo-adventure/graph/badge.svg)](https://codecov.io/gh/ByronWilliamsCPA/cyo-adventure)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=ByronWilliamsCPA_cyo-adventure&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=ByronWilliamsCPA_cyo-adventure)
