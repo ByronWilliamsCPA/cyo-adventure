@@ -12,6 +12,19 @@ tags:
   - project
 ---
 
+> **Status (2026-07-11)**: Amended. The Track B scenario set grew from 14 to
+> 17: a new auth-gate tier (`K0`, `G0`, `A0`, added to the Section 6.1 table)
+> tests the sign-in/auth-gate step itself, giving the differentiated kid
+> gates shipped in PR #198 their first naive-user coverage. The
+> `/naive-ux-check` skill now defaults to the local dev frontend pointed at
+> the seeded Supabase staging project via `.env.staging` (live production is
+> demoted to an explicit, deliberate operator choice; mutating personas
+> still never target it), `K1`-`K4` gained a documented operator
+> precondition (sign in as the seeded test guardian first), and zero-state
+> scenario premises were annotated for the seeded "Test Reader" fixtures.
+> Design and rationale:
+> `docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`.
+>
 > **Status (2026-07-10)**: Partially superseded. The Section 4 route map and the
 > Track B expected observations describe the app as of 2026-07-05. PR #140 (the
 > landing page at `/` and the `/kids` profile picker) and PR #185 (the persistent
@@ -180,10 +193,12 @@ a fixed four-question rubric so responses are comparable across runs.
 
 | Persona | Scenario | What the response should reveal |
 | --- | --- | --- |
+| Kid | Fresh device, no guardian has ever signed in (`K0`) | Whether the differentiated auth gate ("Ask a grown-up to help", with an "I am a grown-up" path) reads as a friendly invitation rather than an error |
 | Kid | Cold start, zero profiles exist yet | Whether there's any usable next step at all |
 | Kid | Empty library, first action is "request a story" | Whether the concept of a request is understandable with zero context |
 | Kid | Garbage-input request (single word, mashed keys) | Whether the resulting pending-approval state reads as sensible to a child |
 | Kid | Sibling switches profile mid-session | Whether the switch feels like a clean reset or a confusing leftover state |
+| Guardian | Find and complete sign-in unaided (`G0`) | Whether sign-in is discoverable at all and its success/failure feedback is clear |
 | Guardian | First login, zero children | Whether the nudge toward creating a profile is discoverable unaided |
 | Guardian | Edge-case profile creation (long name, emoji, duplicate name) | Whether feedback on unusual input is clear |
 | Guardian | Requests vs. review vs. books | Whether the three concepts read as distinct or get conflated |
@@ -191,6 +206,7 @@ a fixed four-question rubric so responses are comparable across runs.
 | Guardian | Use intake thinking it approves the kid's request | Whether intake vs. request-approval is distinguishable from the page alone |
 | Guardian | Decline a story, then try to find it again | Whether the declined item's fate is discoverable |
 | Guardian | Hand the device to your kid after your own setup | Whether the path from guardian console to child reading screen is discoverable unaided |
+| Admin | "You were just told you're an admin," applied to sign-in (`A0`) | Whether sign-in gives any admin-distinct signal before or after login |
 | Admin | Compare the admin console to a guardian's | Whether elevated capability is visible at all |
 | Admin | Minimum-viable intake, every optional field skipped | Whether the flow still makes sense with nothing but the required fields |
 | Admin | Approve a just-generated story without opening any flagged passage | Whether the review UI resists a zero-look rubber-stamp approval |
