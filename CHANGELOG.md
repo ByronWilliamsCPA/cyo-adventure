@@ -24,6 +24,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   inventory ships at `docs/security/crypto-inventory.md`. Key-exchange
   enablement (hybrid X25519+ML-KEM on the ingress legs) is owned by the
   `homelab-infra` repo per the ADR; nothing in this repo pins TLS groups.
+- Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
+  every push to `main` that touches image content now fires a
+  `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
+  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`. Once
+  homelab-infra#591 lands its matching `repository_dispatch` trigger, its
+  `cyo-adventure-build.yml` will rebuild and publish the backend/frontend
+  images from exactly that commit; until then GitHub accepts the dispatch
+  (204) but nothing consumes it, and the receiver's weekly schedule remains
+  the build path. Previously images were only built on manual dispatch or a
+  weekly schedule, so merges could sit unpublished for days while the live
+  deploy served a stale build. Doc-only paths (`docs/**`, `**.md`,
+  `.claude/**`, `mkdocs.yml`) are ignored. Requires the
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Actions
+  read/write on homelab-infra); a missing/empty secret fails the run via an
+  explicit guard step, and an invalid/expired token fails the `gh` call
+  loudly (HTTP 401) rather than silently skipping the dispatch.
 
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
