@@ -122,7 +122,7 @@ export function LoginPage() {
         </button>
       ) : null}
       {signInError ? (
-        <p role="alert" className="guardian-login__error">
+        <p role="alert" className="guardian-login__error cyo-text-error">
           Sign-in didn&apos;t start. Check your connection and try again.
         </p>
       ) : null}
@@ -138,24 +138,26 @@ export function LoginPage() {
           void submitPassword()
         }}
       >
-        <label className="guardian-login__field">
+        <label className="guardian-login__field cyo-field">
           <span>Email</span>
           <input
             type="email"
             name="email"
             autoComplete="email"
             required
+            className="cyo-field__control"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </label>
-        <label className="guardian-login__field">
+        <label className="guardian-login__field cyo-field">
           <span>Password</span>
           <input
             type="password"
             name="password"
             autoComplete="current-password"
             required
+            className="cyo-field__control"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -164,17 +166,17 @@ export function LoginPage() {
           {busy ? 'Signing in...' : 'Sign in'}
         </button>
         {!busy && formError === 'credentials' ? (
-          <p role="alert" className="guardian-login__error">
+          <p role="alert" className="guardian-login__error cyo-text-error">
             That email and password didn&apos;t match. Please try again.
           </p>
         ) : null}
         {!busy && formError === 'connection' ? (
-          <p role="alert" className="guardian-login__error">
+          <p role="alert" className="guardian-login__error cyo-text-error">
             We couldn&apos;t reach the server. Check your connection and try again.
           </p>
         ) : null}
         {!busy && !formError && authError ? (
-          <p role="alert" className="guardian-login__error">
+          <p role="alert" className="guardian-login__error cyo-text-error">
             You&apos;re signed in, but we couldn&apos;t load your account. Please try again.
           </p>
         ) : null}

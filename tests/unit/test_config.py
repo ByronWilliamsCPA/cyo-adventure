@@ -622,3 +622,87 @@ class TestAnthropicGenerationSettings:
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
         settings = Settings()
         assert settings.anthropic_api_key == "sk-ant-test"
+
+
+class TestOidcAllowedAlgs:
+    """The config-driven JWT signature-algorithm allowlist (ADR-013).
+
+    The allowlist moved from a hardcoded list in api/deps.py into Settings so
+    a future post-quantum JOSE algorithm (e.g. ML-DSA) is an env change, not a
+    code change. The validator must keep that agility from reopening the
+    classic JWT forgeries: empty list, alg=none, and the symmetric HS* family
+    are all startup failures.
+    """
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_default_is_rs256_es256(self) -> None:
+        """The default allowlist matches what Supabase issues today."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().oidc_allowed_algs == ["RS256", "ES256"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_empty_list_raises(self) -> None:
+        """An empty allowlist would make every token unverifiable; fail fast."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=[])
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("alg", ["none", "None", "NONE", " none "])
+    def test_oidc_allowed_algs_none_algorithm_raises(self, alg: str) -> None:
+        """alg=none in the allowlist would accept unsigned tokens; fail fast."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=["RS256", alg])
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("alg", ["HS256", "hs384", "HS512", " HS256 "])
+    def test_oidc_allowed_algs_symmetric_hs_family_raises(self, alg: str) -> None:
+        """HS* in the allowlist reopens public-key-as-HMAC-secret confusion."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=[alg])
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_accepts_future_pqc_algorithm(self) -> None:
+        """A post-quantum JOSE alg name passes validation (the ADR-013 point).
+
+        The validator is a denylist (none/HS*), not an allowlist of known
+        names, precisely so a finalized ML-DSA JOSE registration can be
+        enabled by env var without touching this code.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(oidc_allowed_algs=["ES256", "ML-DSA-44"])
+        assert settings.oidc_allowed_algs == ["ES256", "ML-DSA-44"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_reads_unprefixed_env_var(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """OIDC_ALLOWED_ALGS (unprefixed, JSON list) populates the allowlist."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("OIDC_ALLOWED_ALGS", '["ES256"]')
+        assert Settings().oidc_allowed_algs == ["ES256"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_strips_surrounding_whitespace(self) -> None:
+        """A padded but valid alg is normalized, not silently left unusable.
+
+        Regression guard: the validator must return the stripped form, not the
+        raw input. Returning " ES256 " unchanged would pass startup and then
+        fail PyJWT's exact-string registry match on every request, breaking
+        auth in production while the process still boots healthy (ADR-013).
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(oidc_allowed_algs=[" ES256 ", "RS256\t"])
+        assert settings.oidc_allowed_algs == ["ES256", "RS256"]

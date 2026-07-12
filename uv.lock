@@ -818,6 +818,7 @@ name = "cyo-adventure"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "cryptography" },
     { name = "google-genai" },
     { name = "jsonschema" },
     { name = "networkx" },
@@ -897,6 +898,7 @@ requires-dist = [
     { name = "basedpyright", marker = "extra == 'dev'", specifier = ">=1.18.0" },
     { name = "boto3", marker = "extra == 'api'", specifier = ">=1.34" },
     { name = "boto3-stubs", extras = ["s3"], marker = "extra == 'dev'", specifier = ">=1.34" },
+    { name = "cryptography", specifier = ">=45" },
     { name = "cyclonedx-bom", marker = "extra == 'supply-chain'", specifier = ">=4.6.0" },
     { name = "fastapi", marker = "extra == 'api'", specifier = ">=0.120.1" },
     { name = "google-api-core", marker = "extra == 'dev'", specifier = ">=2.0.0" },
