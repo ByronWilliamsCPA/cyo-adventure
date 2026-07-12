@@ -276,6 +276,24 @@ async def test_hs256_confusion_rejected() -> None:
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_algorithm_allowlist_is_config_driven(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Narrowing settings.oidc_allowed_algs rejects an otherwise-valid token.
+
+    ADR-013: the algorithm allowlist lives in Settings (OIDC_ALLOWED_ALGS),
+    not hardcoded in _verify_oidc_jwt, so a future post-quantum JOSE alg is
+    an env change. This test proves the setting actually drives verification:
+    with only ES256 allowed, the suite's valid RS256 token must fail.
+    """
+    monkeypatch.setattr(deps.settings, "oidc_allowed_algs", ["ES256"])
+    token = _sign(_claims())
+    with pytest.raises(AuthenticationError):
+        await deps._verify_oidc_jwt(token)
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_jwks_fetch_failure_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
     """A JWKS lookup failure (network, unknown kid) raises AuthenticationError."""
 

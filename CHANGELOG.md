@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Hybrid post-quantum cryptography readiness (ADR-013). The JWT
+  signature-algorithm allowlist in `api/deps.py` is now configuration
+  (`Settings.oidc_allowed_algs`, env `OIDC_ALLOWED_ALGS`, default
+  `["RS256", "ES256"]`) instead of a hardcoded list, so a future
+  post-quantum JOSE algorithm (e.g. ML-DSA) is an env change, not a code
+  change; a startup validator refuses an empty list, `none`, and the
+  symmetric `HS*` family so the new knob cannot reopen the alg=none or
+  HS256-confusion forgeries. `scripts/check_fips_compatibility.py` now
+  recognizes the finalized FIPS 203/204/205 algorithm names (ML-KEM,
+  ML-DSA, SLH-DSA, and the hybrid `X25519MLKEM768` TLS group) as approved
+  and warns on pre-standardization names (Kyber, Dilithium, SPHINCS+) with
+  migration hints. An explicit `cryptography>=45` floor (the ML-DSA/SLH-DSA
+  primitives) is pinned in `pyproject.toml`, and a living cryptographic
+  inventory ships at `docs/security/crypto-inventory.md`. Key-exchange
+  enablement (hybrid X25519+ML-KEM on the ingress legs) is owned by the
+  `homelab-infra` repo per the ADR; nothing in this repo pins TLS groups.
 - Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
   every push to `main` that touches image content now fires a
   `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
