@@ -31,6 +31,11 @@ UNRELEASED_LINK_RE = re.compile(
 )
 
 
+def _version_heading_re(version: str) -> re.Pattern[str]:
+    """Return a line-anchored matcher for ``## [version]`` headings."""
+    return re.compile(rf"^## \[{re.escape(version)}\]", re.MULTILINE)
+
+
 def promote(version: str, changelog: Path = CHANGELOG) -> bool:
     """Promote the Unreleased section to ``version``.
 
@@ -47,7 +52,11 @@ def promote(version: str, changelog: Path = CHANGELOG) -> bool:
     """
     text = changelog.read_text(encoding="utf-8")
 
-    if f"## [{version}]" in text:
+    # #ASSUME data-integrity: CHANGELOG is Keep-a-Changelog with one
+    # '## [version]' heading per release, at line start.
+    # #VERIFY match the heading line-anchored so a version string appearing
+    # mid-sentence in an entry cannot be mistaken for an existing release.
+    if _version_heading_re(version).search(text):
         return False
 
     if UNRELEASED_HEADING not in text:

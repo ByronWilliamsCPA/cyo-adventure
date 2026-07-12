@@ -42,6 +42,10 @@ def extract(version: str, changelog: Path = CHANGELOG) -> str:
         msg = f"{changelog.name} has no '{heading_prefix}' section"
         raise SystemExit(msg) from None
 
+    # #ASSUME data-integrity: the section ends at the next '## [' heading or
+    # the trailing link-reference block ('[version]:' / '[Unreleased]:').
+    # #VERIFY these boundary markers stay in sync with promote_changelog.py;
+    # a drift would spill later sections into the release notes.
     body: list[str] = []
     for line in lines[start + 1 :]:
         if line.startswith(("## [", f"[{version}]:", "[Unreleased]:")):
