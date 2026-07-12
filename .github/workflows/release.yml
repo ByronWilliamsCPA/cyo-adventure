@@ -1,24 +1,49 @@
 ---
-# Release Workflow
-# Handles automated releases with semantic versioning or
-# manual tag-based releases.
+# Release Workflow (two-phase, ruleset-compatible)
 #
-# Features:
-#   - Pre-release testing
-#   - Semantic versioning (if enabled) or manual tag-based releases
-#   - PyPI publishing with OIDC trusted publishing
-#   - GitHub Release creation
+# The default-branch rulesets (PRs required, merge queue, required
+# signatures, required status checks) reject any direct push to main, so
+# python-semantic-release's built-in "commit the bump to main" flow can
+# never work here (issue #157; GH013 on every run). This workflow splits
+# the release into two phases that respect the rulesets:
+#
+#   1. propose  - on every push to main (except release-bump merges):
+#      compute the next version from conventional commits
+#      (python-semantic-release is used ONLY as the version calculator;
+#      it never writes files), bump pyproject.toml + uv.lock, promote the
+#      hand-curated CHANGELOG "[Unreleased]" section to the new version,
+#      then open a version-bump PR and enable auto-merge so it flows
+#      through the merge queue like any other change.
+#   2. publish  - when that release PR's squash commit
+#      ("chore(release): vX.Y.Z") lands on main: create the vX.Y.Z tag
+#      and the GitHub Release with the promoted CHANGELOG section as the
+#      release notes.
+#
+# CHANGELOG.md stays hand-curated (Keep a Changelog); semantic-release's
+# generated changelog is deliberately not used.
+#
+# The PyPI publish step was removed: this app is not a PyPI package and
+# the step never had a dist/ to upload (issue #158).
+#
+# Requires the RELEASE_TOKEN secret (fine-grained PAT: contents write +
+# pull requests write on this repo). The propose phase must create its
+# branch and PR with a token other than GITHUB_TOKEN, because events
+# created with GITHUB_TOKEN do not trigger workflows and the release PR
+# would sit forever with no CI Gate to satisfy the merge queue.
+#
+# Injection note: github.event.head_commit.message appears ONLY inside
+# `if:` expressions (never interpolated into run: shell); all dynamic
+# values reach shell steps via env vars.
 name: Semantic Release
 
 "on":
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
     inputs:
-      force_release:
-        description: 'Force release type (leave empty for auto)'
+      force_level:
+        description: 'Force bump level (leave empty for auto)'
         required: false
         type: choice
         options:
@@ -26,7 +51,11 @@ name: Semantic Release
           - patch
           - minor
           - major
-          - prerelease
+      dry_run:
+        description: 'Compute and print the release plan without opening a PR'
+        required: false
+        type: boolean
+        default: false
 
 # Prevent concurrent releases
 concurrency:
@@ -34,16 +63,18 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
-  attestations: write
+  contents: read
 
-# Standalone release workflow
 jobs:
-  test:
-    name: Pre-Release Tests
+  propose:
+    name: Propose Release PR
+    # Skip when the push IS the release-bump merge landing on main; that
+    # push is handled by the publish job below. (Belt and braces: even
+    # without this guard the computed next version would equal the
+    # just-bumped current version and the job would no-op.)
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      !startsWith(github.event.head_commit.message, 'chore(release):')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -54,10 +85,34 @@ jobs:
         with:
           egress-policy: audit
 
+      - name: Require RELEASE_TOKEN
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          if [ -z "${RELEASE_TOKEN}" ]; then
+            {
+              echo "::error::RELEASE_TOKEN secret is not configured."
+              echo "Create a fine-grained PAT (contents: read/write and"
+              echo "pull requests: read/write on this repository) and add it"
+              echo "as the RELEASE_TOKEN repository secret. The release PR"
+              echo "must be created with a non-GITHUB_TOKEN credential;"
+              echo "otherwise its CI checks never run and the merge queue"
+              echo "cannot accept it."
+            }
+            exit 1
+          fi
+
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           fetch-depth: 0
+          fetch-tags: true
+          token: ${{ secrets.RELEASE_TOKEN }}
+          # #CRITICAL security: do not leave RELEASE_TOKEN in .git/config
+          # while third-party code (uvx, uv lock) runs later in this job; the
+          # push step re-supplies it via a one-shot http.extraheader instead.
+          # #VERIFY persist-credentials stays false; the push uses extraheader.
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
@@ -67,23 +122,124 @@ jobs:
       - name: Set up Python
         run: uv python install 3.12
 
-      - name: Install dependencies
-        run: uv sync --all-extras
+      - name: Compute next version
+        id: version
+        env:
+          # semantic-release's [tool.semantic_release.remote] config reads
+          # GH_TOKEN at config-load time; version --print never calls the API.
+          GH_TOKEN: ${{ github.token }}
+          FORCE_LEVEL: ${{ inputs.force_level }}
+        run: |
+          CURRENT="$(uv version --short)"
+          FORCE_FLAG=""
+          if [ -n "${FORCE_LEVEL}" ]; then
+            FORCE_FLAG="--${FORCE_LEVEL}"
+          fi
+          # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
+          NEXT="$(uvx --from 'python-semantic-release==10.6.1' \
+            semantic-release version --print ${FORCE_FLAG})"
+          # #ASSUME external: semantic-release prints a bare X.Y.Z(-pre)?
+          # #VERIFY reject non-semver before it reaches git refs/tags/titles.
+          if ! printf '%s' "${NEXT}" \
+            | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-+.][0-9A-Za-z.-]+)*$'; then
+            echo "::error::Computed version '${NEXT}' is not valid semver."
+            exit 1
+          fi
+          echo "current=${CURRENT}" >> "$GITHUB_OUTPUT"
+          echo "next=${NEXT}" >> "$GITHUB_OUTPUT"
+          if [ "${NEXT}" = "${CURRENT}" ]; then
+            echo "released=false" >> "$GITHUB_OUTPUT"
+            echo "No release-worthy commits since v${CURRENT}; nothing to do."
+          else
+            echo "released=true" >> "$GITHUB_OUTPUT"
+            echo "Next version: v${NEXT} (current v${CURRENT})"
+          fi
 
-      - name: Run tests
-        run: uv run pytest -v --cov=src --cov-report=xml --cov-fail-under=80
+      - name: Bump version and promote CHANGELOG
+        if: steps.version.outputs.released == 'true'
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          uv version "${NEXT}"
+          uv lock
+          uv run python scripts/promote_changelog.py "${NEXT}"
 
-  release:
-    name: Semantic Release
-    needs: test
+      - name: Open release PR
+        if: steps.version.outputs.released == 'true' && !inputs.dry_run
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          BRANCH="release/v${NEXT}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "${BRANCH}"
+          git add pyproject.toml uv.lock CHANGELOG.md
+          git commit -m "chore(release): v${NEXT}"
+          # Release branches are machine-owned; force-push makes re-runs and
+          # recomputed versions idempotent. Checkout ran with
+          # persist-credentials:false, so supply RELEASE_TOKEN as a one-shot
+          # http.extraheader here, after every third-party step has finished,
+          # rather than leaving it resident in .git/config for that window.
+          # #CRITICAL security: the token reaches git only at push time.
+          # #VERIFY auth travels via extraheader; nothing is written to config.
+          AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' \
+            "${RELEASE_TOKEN}" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=${AUTH}" \
+            push --force origin "${BRANCH}"
+          # Reuse an existing open release PR for this branch, else create one.
+          PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
+            --json number --jq '.[0].number // empty')"
+          if [ -z "${PR_NUMBER}" ]; then
+            gh pr create \
+              --base main \
+              --head "${BRANCH}" \
+              --title "chore(release): v${NEXT}" \
+              --body "$(printf '%s\n' \
+                "Automated version bump to v${NEXT}." \
+                "" \
+                "Promotes the hand-curated CHANGELOG [Unreleased] section and" \
+                "bumps pyproject.toml plus uv.lock. When this PR merges, the" \
+                "publish job in release.yml creates the tag and GitHub Release." \
+                "" \
+                "Closes #183" \
+                "Closes #157" \
+                "Closes #158")"
+            PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
+              --json number --jq '.[0].number // empty')"
+          fi
+          # #CRITICAL external: an empty PR number means the release silently
+          # stalls; fail loudly instead of feeding "null" to gh pr merge.
+          # #VERIFY empty PR_NUMBER is a hard error, not a swallowed warning.
+          if [ -z "${PR_NUMBER}" ]; then
+            echo "::error::Could not resolve the release PR for ${BRANCH}."
+            exit 1
+          fi
+          if ! gh pr merge "${PR_NUMBER}" --auto; then
+            echo "::warning::Could not enable auto-merge on release PR" \
+              "#${PR_NUMBER}; merge it manually to publish v${NEXT}."
+          fi
+
+      - name: Dry-run summary
+        if: steps.version.outputs.released == 'true' && inputs.dry_run
+        env:
+          NEXT: ${{ steps.version.outputs.next }}
+        run: |
+          echo "Dry run: would open a release PR for v${NEXT}." >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          git diff --stat >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    name: Tag and GitHub Release
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.event.head_commit.message, 'chore(release):')
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 10
     permissions:
       contents: write
-      issues: write
-      pull-requests: write
-      id-token: write
-      attestations: write
     steps:
       - name: Harden the runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -92,29 +248,18 @@ jobs:
 
       - name: Checkout repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          fetch-depth: 0
-          token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: true
-
-      - name: Set up Python
-        run: uv python install 3.12
-
-      - name: Install dependencies
-        run: uv sync --all-extras
-
-      - name: Python Semantic Release
-        id: release
-        uses: python-semantic-release/python-semantic-release@39dd2052f2ce8282a5d932c31d58a2ca06d2550e # v10.6.1
-        with:
-          github_token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Publish to PyPI
-        if: steps.release.outputs.released == 'true'
-        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # release/v1
-        with:
-          attestations: true
+      - name: Create tag and GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION="$(grep -m1 -Po '^version = "\K[^"]+' pyproject.toml)"
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo "Release v${VERSION} already exists; nothing to do."
+            exit 0
+          fi
+          python scripts/extract_changelog_section.py "${VERSION}" > release-notes.md
+          gh release create "v${VERSION}" \
+            --target "${GITHUB_SHA}" \
+            --title "v${VERSION}" \
+            --notes-file release-notes.md
