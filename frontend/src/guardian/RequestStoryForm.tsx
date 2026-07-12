@@ -206,7 +206,7 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
   }
   if (loadState.kind === 'error') {
     return (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         We could not load {mode === 'guardian' ? 'your children' : 'families'}. Please reload.
       </p>
     )
@@ -232,16 +232,17 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         </p>
       ) : null}
       {result.kind === 'error' ? (
-        <p role="alert" className="request-form__error">
+        <p role="alert" className="request-form__error cyo-text-error">
           {result.message}
         </p>
       ) : null}
 
       {mode === 'guardian' ? (
-        <label className="request-form__field" htmlFor="request-form-child">
+        <label className="request-form__field cyo-field" htmlFor="request-form-child">
           Child (optional)
           <select
             id="request-form-child"
+            className="cyo-field__control"
             value={profileId}
             onChange={(e) => selectChild(e.target.value)}
           >
@@ -254,11 +255,12 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
           </select>
         </label>
       ) : (
-        <label className="request-form__field" htmlFor="request-form-family">
+        <label className="request-form__field cyo-field" htmlFor="request-form-family">
           Family
           <select
             id="request-form-family"
             required
+            className="cyo-field__control"
             value={familyId}
             onChange={(e) => setFamilyId(e.target.value)}
           >
@@ -272,10 +274,11 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         </label>
       )}
 
-      <label className="request-form__field" htmlFor="request-form-text">
+      <label className="request-form__field cyo-field" htmlFor="request-form-text">
         What should the story be about?
         <textarea
           id="request-form-text"
+          className="cyo-field__control"
           value={requestText}
           onChange={(e) => setRequestText(e.target.value)}
           rows={4}
@@ -284,11 +287,12 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         />
       </label>
 
-      <label className="request-form__field" htmlFor="request-form-band">
+      <label className="request-form__field cyo-field" htmlFor="request-form-band">
         Age band
         <select
           id="request-form-band"
           required
+          className="cyo-field__control"
           value={band}
           onChange={(e) => changeBand(e.target.value)}
         >
@@ -301,11 +305,12 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         </select>
       </label>
 
-      <label className="request-form__field" htmlFor="request-form-length">
+      <label className="request-form__field cyo-field" htmlFor="request-form-length">
         Story length
         <select
           id="request-form-length"
           required
+          className="cyo-field__control"
           value={length}
           onChange={(e) => setLength(e.target.value as Length | '')}
         >
@@ -319,10 +324,11 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
       </label>
 
       {isTeenBand ? (
-        <label className="request-form__field" htmlFor="request-form-style">
+        <label className="request-form__field cyo-field" htmlFor="request-form-style">
           Story style
           <select
             id="request-form-style"
+            className="cyo-field__control"
             value={narrativeStyle}
             onChange={(e) => setNarrativeStyle(e.target.value as NarrativeStyle)}
           >
@@ -332,11 +338,12 @@ export function RequestStoryForm({ mode }: RequestStoryFormProps) {
         </label>
       ) : null}
 
-      <label className="request-form__field" htmlFor="request-form-series-title">
+      <label className="request-form__field cyo-field" htmlFor="request-form-series-title">
         Series title (optional)
         <input
           id="request-form-series-title"
           type="text"
+          className="cyo-field__control"
           value={seriesTitle}
           maxLength={120}
           onChange={(e) => setSeriesTitle(e.target.value)}

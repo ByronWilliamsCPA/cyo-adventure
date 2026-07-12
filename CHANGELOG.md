@@ -73,6 +73,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coverage, and no other test file was touched.
 
 ### Fixed
+- Design-system library build (Vite 8/rolldown): `react/jsx-runtime` is now
+  externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
+  inlines the jsx runtime with a CJS-interop shim whose runtime
+  `require("react")` throws in browser consumers of the ESM dist.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -124,6 +128,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
+  `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
+  text-tone utilities, consuming the pre-existing amber token pair:
+  `--color-amber` stays the bright brand hue, `--color-amber-deep` is the
+  deeper shade that clears the 3:1 WCAG non-text/large-text threshold,
+  though not the 4.5:1 AA normal-text minimum), and the guardian console
+  now consumes them instead of its bespoke `guardian.css` equivalents (the
+  `.intake-chip` styles, orphaned by this same swap, are removed).
+  `FlagBadge` deliberately stays bespoke: its flag/info tones belong to the
+  moderation-review surface, which this promotion pass excluded.
 - Auth-gate scenario tier for the `naive-ux-check` skill (issue #204): three
   new Track B comprehension scenarios (`K0` fresh-device kid gate, `G0`
   guardian sign-in discovery, `A0` admin sign-in signal) grow the prompt set

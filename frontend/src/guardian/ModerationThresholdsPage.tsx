@@ -111,7 +111,7 @@ export function ModerationThresholdsPage() {
   }
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         {state.message}
       </p>
     )
@@ -199,13 +199,13 @@ export function ModerationThresholdsPage() {
         above. Overrides below change that for one age band and category.
       </p>
       {actionError ? (
-        <p role="alert" className="console__error">
+        <p role="alert" className="console__error cyo-text-error">
           {actionError}
         </p>
       ) : null}
       <section>
         <h2>Admin noise floor</h2>
-        <p id="noise-floor-help" className="console__muted">
+        <p id="noise-floor-help" className="console__muted cyo-text-muted">
           Advisory findings scoring below this value are hidden from the admin review surface.
           Flag and block findings always show.
         </p>
@@ -226,7 +226,7 @@ export function ModerationThresholdsPage() {
         </button>
       </section>
       {data.rows.length === 0 ? (
-        <p className="console__muted">
+        <p className="console__muted cyo-text-muted">
           No overrides yet. Every age band and category uses the default above.
         </p>
       ) : (
@@ -314,7 +314,7 @@ export function ModerationThresholdsPage() {
             aria-describedby="threshold-score-help"
           />
         </label>
-        <p id="threshold-score-help" className="console__muted">
+        <p id="threshold-score-help" className="console__muted cyo-text-muted">
           Leave blank for no score floor.
         </p>
         <button type="submit" disabled={!canSave}>
