@@ -207,6 +207,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- JIT guardian provisioning (P6-03): new endpoint `POST /api/v1/onboarding`
+  (`api/onboarding.py`, wired in `app.py`). A guardian's first authenticated
+  call creates their `Family` plus a guardian `User` row keyed on the verified
+  Supabase `sub` and returns 201; every later call is idempotent, returning
+  the existing `{family_id, user_id, role, created: false}` with 200. This is
+  the only endpoint that accepts a fully verified token whose subject has no
+  `User` row yet: a new `require_onboarding_identity` dependency in
+  `api/deps.py` verifies the token through the same shared OIDC decode path
+  (`_decode_oidc_payload`, factored out of and now also backing
+  `_verify_oidc_jwt`) and additionally extracts the optional `email` claim;
+  `require_principal` and every other endpoint keep rejecting unknown
+  subjects with 401 exactly as before. A child session token (child audience)
+  is refused with 403: a reading credential can never provision a guardian
+  account. Admin and guardian are disjoint roles (an admin holds no family
+  membership and resolves to an empty profile set), and onboarding cannot
+  tell an intended admin apart from a guardian: a seeded admin resolves to
+  its existing row and is returned unchanged (no family is created), so
+  admin accounts must be seeded before their first sign-in. Two racing
+  first-login requests are resolved via the repo's savepoint-retry pattern
+  (both inserts inside `begin_nested()`; on the `ix_user_authn_subject`
+  `IntegrityError` the savepoint unwinds and the loser re-reads and returns
+  the winner's row, never a 500). The request body carries only a
+  consent-capture seam (`OnboardingConsent`, accepted but not recorded;
+  `_record_consent` is the documented no-op hook P7-02 fills). Schema: new
+  nullable `email` varchar(320) contact column on `public."user"`
+  (`supabase/migrations/20260711204606_add_user_email.sql` plus the ORM
+  column in `db/models.py`), populated from the Supabase user's email claim
+  when present (it may be an Apple relay address) and NEVER used as an
+  identity key; `authn_subject` remains the sole key. The generated frontend
+  client (`frontend/src/client/`) is regenerated for the new contract.
 - Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
   fixture (`tests/integration/conftest.py::seed`, family A and B) is now
   joined by a third, completely unrelated `stranger` fixture (family C, no

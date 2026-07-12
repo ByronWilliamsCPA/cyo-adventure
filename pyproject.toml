@@ -332,6 +332,7 @@ known-first-party = ["cyo_adventure"]
 "**/api/moderation_dashboard.py" = ["TC001"]
 "**/api/families.py" = ["TC001"]
 "**/api/covers.py" = ["TC001"]
+"**/api/onboarding.py" = ["TC001"]
 
 # provider_allowlist.py imports Context alone (TC001, same reasoning as above)
 # and types its path params directly as uuid.UUID (TC003): with `from __future__
