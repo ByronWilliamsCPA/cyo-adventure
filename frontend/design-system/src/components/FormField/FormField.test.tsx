@@ -10,7 +10,9 @@ describe('FormField', () => {
       </FormField>,
     )
     expect(screen.getByText('Name')).toBeInTheDocument()
-    expect(screen.getByRole('textbox')).toHaveValue('Alex')
+    // Name-filtered query proves the label is associated with the control
+    // (via label nesting), not merely rendered next to it.
+    expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Alex')
   })
 
   it('carries the cyo-field class on the wrapping label', () => {
