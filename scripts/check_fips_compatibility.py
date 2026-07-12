@@ -189,6 +189,16 @@ class FipsCodeVisitor(ast.NodeVisitor):
         203/204/205 name when ``name`` contains a pre-standard PQC algorithm
         name. Finalized names (ML-KEM, ML-DSA, SLH-DSA) are exempted first.
 
+        The pre-standard match is a substring test (``legacy in name``), so an
+        identifier that merely embeds ``kyber``/``dilithium``/``sphincs`` also
+        warns. That is intentional: this is a warn-only migration nudge, and a
+        false positive costs a benign warning, not a blocked build.
+
+        Args:
+            node: The AST call node; supplies the line number for any issue.
+            name: The lowercased algorithm identifier under inspection (both
+                call sites pass an already ``.lower()``-ed string).
+
         Returns:
             True when ``name`` was handled as a PQC name (approved or
             pre-standard), so the caller skips its own matching.

@@ -332,7 +332,7 @@ class Settings(BaseSettings):
     # #CRITICAL: security: the explicit allowlist is what defeats alg=none and
     # HS256 key-confusion forgeries; making it configurable must not reopen
     # them, so _reject_forgeable_jwt_algorithms below refuses an empty list,
-    # "none", and the symmetric HS* family at startup, never at request time.
+    # "none", and the symmetric HMAC family at startup, never at request time.
     # #VERIFY: tests/unit/test_config.py::TestOidcAllowedAlgs covers all three
     # rejections plus the PQC-name acceptance path.
     oidc_allowed_algs: list[str] = Field(
@@ -345,22 +345,24 @@ class Settings(BaseSettings):
     def _reject_forgeable_jwt_algorithms(cls, algs: list[str]) -> list[str]:
         """Refuse allowlist values that would enable classic JWT forgeries.
 
-        Deliberately a denylist (``none`` and ``HS*``), not an allowlist of
-        known algorithm names: the point of the setting (ADR-013) is that a
-        finalized post-quantum JOSE algorithm can be enabled by env var
-        without touching this code.
+        Deliberately a denylist (``none`` and the ``HS256``/``HS384``/``HS512``
+        HMAC family), not an allowlist of known algorithm names: the point of
+        the setting (ADR-013) is that a finalized post-quantum JOSE algorithm
+        can be enabled by env var without touching this code.
 
         Args:
             algs: The configured algorithm allowlist.
 
         Returns:
-            list[str]: The validated allowlist, unchanged.
+            list[str]: The validated allowlist with surrounding whitespace
+                stripped from each entry.
 
         Raises:
             ConfigurationError: If the list is empty (every token would be
-                rejected), or contains ``none`` (unsigned tokens) or an
-                ``HS*`` algorithm (symmetric HMAC; with an asymmetric JWKS
-                this enables public-key-as-HMAC-secret confusion).
+                rejected), or contains ``none`` (unsigned tokens) or one of
+                ``HS256``/``HS384``/``HS512`` (symmetric HMAC; with an
+                asymmetric JWKS this enables public-key-as-HMAC-secret
+                confusion).
         """
         if not algs:
             msg = (
@@ -369,24 +371,31 @@ class Settings(BaseSettings):
                 "verification (ADR-013)."
             )
             raise ConfigurationError(msg)
-        # Compare against a whitespace-stripped form so a padded entry like
-        # " HS256" cannot slip past the denylist. PyJWT's own exact-string
-        # registry lookup would make such an entry inert anyway (fail-safe),
-        # but this validator exists to catch config typos loudly at startup.
+        # Normalize once: surrounding whitespace is stripped so a padded entry
+        # like " ES256 " is both checked against the denylist AND stored in its
+        # usable form. Returning the raw list would let " ES256 " pass startup
+        # and then fail PyJWT's exact-string registry lookup on every request
+        # (fail-closed at runtime while healthy at boot: the worst failure mode).
+        normalized = [alg.strip() for alg in algs]
+        # The forbidden set is exactly "none" plus the JWS HMAC family (RFC 7518
+        # section 3.1). Enumerating HS256/384/512 rather than an "HS" prefix keeps
+        # a future asymmetric JOSE algorithm that happens to start with "HS" (e.g.
+        # a hash-based HSS registration) enable-able by env var per ADR-013.
         forbidden = [
             alg
-            for alg in algs
-            if (norm := alg.strip()).lower() == "none" or norm.upper().startswith("HS")
+            for alg in normalized
+            if alg.lower() == "none" or alg.upper() in {"HS256", "HS384", "HS512"}
         ]
         if forbidden:
             msg = (
                 f"OIDC_ALLOWED_ALGS contains forbidden algorithm(s) {forbidden}: "
-                "'none' accepts unsigned tokens and the symmetric HS* family "
-                "enables public-key-as-HMAC-secret confusion against a JWKS "
-                "verifier; only asymmetric algorithms are allowed (ADR-013)."
+                "'none' accepts unsigned tokens and the symmetric HMAC family "
+                "(HS256/HS384/HS512) enables public-key-as-HMAC-secret confusion "
+                "against a JWKS verifier; only asymmetric algorithms are allowed "
+                "(ADR-013)."
             )
             raise ConfigurationError(msg)
-        return algs
+        return normalized
 
     # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
     # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.

@@ -692,3 +692,17 @@ class TestOidcAllowedAlgs:
 
         monkeypatch.setenv("OIDC_ALLOWED_ALGS", '["ES256"]')
         assert Settings().oidc_allowed_algs == ["ES256"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_strips_surrounding_whitespace(self) -> None:
+        """A padded but valid alg is normalized, not silently left unusable.
+
+        Regression guard: the validator must return the stripped form, not the
+        raw input. Returning " ES256 " unchanged would pass startup and then
+        fail PyJWT's exact-string registry match on every request, breaking
+        auth in production while the process still boots healthy (ADR-013).
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(oidc_allowed_algs=[" ES256 ", "RS256\t"])
+        assert settings.oidc_allowed_algs == ["ES256", "RS256"]

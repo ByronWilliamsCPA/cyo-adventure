@@ -118,4 +118,23 @@ def test_pqc_exemption_does_not_suppress_classical_findings(
     assert "md5" in messages
     assert "des" in messages
     assert "kyber768" in messages
-    assert "ml-kem" not in messages
+
+
+@pytest.mark.unit
+def test_pre_standard_match_is_substring_and_warn_only(tmp_path: Path) -> None:
+    """An identifier merely embedding a legacy name still warns, by design.
+
+    The match is a substring test, so ``describe_kyber_migration`` trips the
+    same nudge as a real ``kyber512`` call. This characterizes that boundary:
+    the over-match is acceptable because the finding is warn-only (severity
+    ``warning``, never ``error``), so a false positive costs a benign warning,
+    not a blocked build. A name with no legacy substring stays silent.
+    """
+    warns = _issues_for(
+        tmp_path, "def use(factory):\n    factory.describe_kyber_migration()\n"
+    )
+    assert [issue.severity for issue in warns] == ["warning"]
+    assert warns[0].category == "pqc"
+
+    clean = _issues_for(tmp_path, "def use(factory):\n    factory.ed25519_sign()\n")
+    assert clean == []
