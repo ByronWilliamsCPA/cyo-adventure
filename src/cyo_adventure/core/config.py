@@ -14,7 +14,13 @@ from __future__ import annotations
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field, SecretStr, model_validator
+from pydantic import (
+    AliasChoices,
+    Field,
+    SecretStr,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -324,6 +330,78 @@ class Settings(BaseSettings):
         default="authenticated", validation_alias="OIDC_AUDIENCE"
     )
     oidc_jwks_url: str | None = Field(default=None, validation_alias="OIDC_JWKS_URL")
+    # Signature-algorithm allowlist for bearer-token verification (ADR-013:
+    # hybrid PQC readiness). Config-driven rather than hardcoded in
+    # api/deps.py so a future post-quantum JOSE algorithm (e.g. ML-DSA, once
+    # Supabase issues it and PyJWT verifies it) is an env change, not a code
+    # change. Env form is a JSON list: OIDC_ALLOWED_ALGS='["RS256","ES256"]'.
+    # #CRITICAL: security: the explicit allowlist is what defeats alg=none and
+    # HS256 key-confusion forgeries; making it configurable must not reopen
+    # them, so _reject_forgeable_jwt_algorithms below refuses an empty list,
+    # "none", and the symmetric HMAC family at startup, never at request time.
+    # #VERIFY: tests/unit/test_config.py::TestOidcAllowedAlgs covers all three
+    # rejections plus the PQC-name acceptance path.
+    oidc_allowed_algs: list[str] = Field(
+        default_factory=lambda: ["RS256", "ES256"],
+        validation_alias="OIDC_ALLOWED_ALGS",
+    )
+
+    @field_validator("oidc_allowed_algs")
+    @classmethod
+    def _reject_forgeable_jwt_algorithms(cls, algs: list[str]) -> list[str]:
+        """Refuse allowlist values that would enable classic JWT forgeries.
+
+        Deliberately a denylist (``none`` and the ``HS256``/``HS384``/``HS512``
+        HMAC family), not an allowlist of known algorithm names: the point of
+        the setting (ADR-013) is that a finalized post-quantum JOSE algorithm
+        can be enabled by env var without touching this code.
+
+        Args:
+            algs: The configured algorithm allowlist.
+
+        Returns:
+            list[str]: The validated allowlist with surrounding whitespace
+                stripped from each entry.
+
+        Raises:
+            ConfigurationError: If the list is empty (every token would be
+                rejected), or contains ``none`` (unsigned tokens) or one of
+                ``HS256``/``HS384``/``HS512`` (symmetric HMAC; with an
+                asymmetric JWKS this enables public-key-as-HMAC-secret
+                confusion).
+        """
+        if not algs:
+            msg = (
+                "OIDC_ALLOWED_ALGS must not be empty; with no accepted "
+                "signature algorithm every bearer token would fail "
+                "verification (ADR-013)."
+            )
+            raise ConfigurationError(msg)
+        # Normalize once: surrounding whitespace is stripped so a padded entry
+        # like " ES256 " is both checked against the denylist AND stored in its
+        # usable form. Returning the raw list would let " ES256 " pass startup
+        # and then fail PyJWT's exact-string registry lookup on every request
+        # (fail-closed at runtime while healthy at boot: the worst failure mode).
+        normalized = [alg.strip() for alg in algs]
+        # The forbidden set is exactly "none" plus the JWS HMAC family (RFC 7518
+        # section 3.1). Enumerating HS256/384/512 rather than an "HS" prefix keeps
+        # a future asymmetric JOSE algorithm that happens to start with "HS" (e.g.
+        # a hash-based HSS registration) enable-able by env var per ADR-013.
+        forbidden = [
+            alg
+            for alg in normalized
+            if alg.lower() == "none" or alg.upper() in {"HS256", "HS384", "HS512"}
+        ]
+        if forbidden:
+            msg = (
+                f"OIDC_ALLOWED_ALGS contains forbidden algorithm(s) {forbidden}: "
+                "'none' accepts unsigned tokens and the symmetric HMAC family "
+                "(HS256/HS384/HS512) enables public-key-as-HMAC-secret confusion "
+                "against a JWKS verifier; only asymmetric algorithms are allowed "
+                "(ADR-013)."
+            )
+            raise ConfigurationError(msg)
+        return normalized
 
     # --- Child-scoped session tokens (G1 / PROJECT-PLAN P6-04) ---
     # The kid surface does NOT use Supabase users. A guardian mints a short-lived,
