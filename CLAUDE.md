@@ -884,7 +884,7 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 20 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 24 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.12, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.13 Ubuntu
