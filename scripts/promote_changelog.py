@@ -59,9 +59,18 @@ def promote(version: str, changelog: Path = CHANGELOG) -> bool:
     if _version_heading_re(version).search(text):
         return False
 
-    if UNRELEASED_HEADING not in text:
+    # #ASSUME data-integrity: exactly one line is the bare '## [Unreleased]'
+    # heading (Keep-a-Changelog). #VERIFY match it line-anchored, consistent
+    # with the version-heading check above, so a bare occurrence of the string
+    # in prose cannot be mistaken for the heading and misplace the insertion.
+    lines = text.split("\n")
+    try:
+        unreleased_idx = next(
+            i for i, line in enumerate(lines) if line == UNRELEASED_HEADING
+        )
+    except StopIteration:
         msg = f"{changelog.name} has no '{UNRELEASED_HEADING}' heading"
-        raise SystemExit(msg)
+        raise SystemExit(msg) from None
 
     link_match = UNRELEASED_LINK_RE.search(text)
     if link_match is None:
@@ -69,11 +78,8 @@ def promote(version: str, changelog: Path = CHANGELOG) -> bool:
         raise SystemExit(msg)
 
     today = datetime.datetime.now(tz=datetime.UTC).date().isoformat()
-    text = text.replace(
-        UNRELEASED_HEADING,
-        f"{UNRELEASED_HEADING}\n\n## [{version}] - {today}",
-        1,
-    )
+    lines[unreleased_idx] = f"{UNRELEASED_HEADING}\n\n## [{version}] - {today}"
+    text = "\n".join(lines)
 
     base = link_match.group("base")
     prev = link_match.group("prev")

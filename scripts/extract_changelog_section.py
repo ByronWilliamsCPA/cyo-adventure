@@ -46,9 +46,15 @@ def extract(version: str, changelog: Path = CHANGELOG) -> str:
     # the trailing link-reference block ('[version]:' / '[Unreleased]:').
     # #VERIFY these boundary markers stay in sync with promote_changelog.py;
     # a drift would spill later sections into the release notes.
+    # #EDGE data-integrity: a '## [' line inside a fenced code block (e.g. an
+    # entry that documents the changelog format) is body text, not a section
+    # boundary. #VERIFY track ``` fences and only break outside a fence.
     body: list[str] = []
+    in_fence = False
     for line in lines[start + 1 :]:
-        if line.startswith(("## [", f"[{version}]:", "[Unreleased]:")):
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+        if not in_fence and line.startswith(("## [", f"[{version}]:", "[Unreleased]:")):
             break
         body.append(line)
     return "\n".join(body).strip()
