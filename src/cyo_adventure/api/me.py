@@ -34,6 +34,7 @@ async def whoami(ctx: Context) -> MeResponse:
     return MeResponse(
         subject=principal.subject,
         role=principal.role.value,
+        is_admin=principal.is_admin,
         family_id=str(principal.family_id),
         profile_ids=[str(pid) for pid in principal.profile_ids],
     )

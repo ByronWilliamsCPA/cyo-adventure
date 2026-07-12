@@ -26,10 +26,20 @@ check; see ``api/deps.py`` for ``Principal``, ``authorize_profile``, and
 * **Ownership-scoped, no role gate** (``authorize_profile`` /
   ``authorize_family`` only, e.g. ``reading.py``, ``ratings.py``,
   ``library.py::list_library``): both guardian and child may act on a
-  profile/family they own; admin structurally never owns a child profile
-  (``_resolve_profiles`` in ``api/deps.py`` returns an empty set for admin),
-  so admin deterministically gets 403 here too, but via the ownership check,
-  not a role gate.
+  profile/family they own; an admin-only adult structurally never owns a
+  child profile (``_resolve_profiles`` in ``api/deps.py`` returns an empty
+  set for the admin base role), so an admin-only token deterministically
+  gets 403 here too, but via the ownership check, not a role gate.
+
+Dual-role capability model
+---------------------------
+``role`` is the base persona and the admin capability is the orthogonal
+``Principal.is_admin`` flag (``User.is_admin``), so one adult can be a
+guardian, an admin, or both. The three base-persona tokens above pin the
+single-role behavior unchanged; ``seed.dual_token`` (guardian base role +
+admin capability) additionally pins that a dual-role principal passes the
+UNION of the guardian and admin gates (see
+``test_dual_role_token_passes_guardian_and_admin_gates``).
 
 Every one of these gates runs *before* any database row is loaded (confirmed
 by reading each handler), so a caller outside ``allowed_roles`` always gets
@@ -696,6 +706,39 @@ async def test_protected_endpoint_role_matrix(
                 f"disallowed role={role.value}, got {resp.status_code}: "
                 f"{resp.text}"
             )
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"), sorted(ROUTE_TABLE), ids=_ROUTE_IDS
+)
+async def test_dual_role_token_passes_guardian_and_admin_gates(
+    client: AsyncClient, seed: Seed, method: str, path_template: str
+) -> None:
+    """A guardian-with-admin-capability passes the union of both role gates.
+
+    ``seed.dual_token`` resolves to ``(role=guardian, is_admin=True)``: its
+    guardian base role resolves the family's profile set (so ownership-scoped
+    routes work) and passes guardian-only gates, while the capability flag
+    passes admin-only gates. Any route that admits guardian OR admin must
+    therefore never reject this token for privilege; a route that admits
+    neither (child-only, none exist today) must still 403 it exactly.
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(seed.dual_token)
+    )
+    if spec.allowed_roles & {Role.GUARDIAN, Role.ADMIN}:
+        assert resp.status_code not in (401, 403), (
+            f"{method} {path_template} rejected the dual-role principal, "
+            f"which holds both capabilities: {resp.status_code} {resp.text}"
+        )
+    else:
+        assert resp.status_code == 403, (
+            f"{method} {path_template} expected exactly 403 for the "
+            f"dual-role principal on a route admitting neither guardian nor "
+            f"admin, got {resp.status_code}: {resp.text}"
+        )
 
 
 # ---------------------------------------------------------------------------

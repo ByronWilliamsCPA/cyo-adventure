@@ -1019,11 +1019,16 @@ class MeResponse(BaseModel):
     The frontend has no way to inspect a bearer token itself (it may be an
     opaque dev-stub string locally, or a signed Supabase JWT it should not
     parse); this is the sole source of truth for which shell (kid vs
-    guardian) and nav to render for the current session.
+    guardian vs admin) and nav to render for the current session.
+
+    ``role`` is the base persona (guardian/child/admin); ``is_admin`` is the
+    orthogonal admin capability, so one adult can be a guardian, an admin,
+    or both (role='guardian' with is_admin=true).
     """
 
     subject: str
     role: str
+    is_admin: bool
     family_id: str
     profile_ids: list[str]
 

@@ -48,11 +48,17 @@ if TYPE_CHECKING:
 
 
 class Role(StrEnum):
-    """The closed set of authenticated principal roles.
+    """The closed set of authenticated base personas.
 
     Coercing the ORM ``user.role`` string through ``Role(...)`` at the auth
     boundary rejects any value the database holds outside this set
     (closed-world): an unmodeled role raises rather than silently authorizing.
+
+    ``role`` is the single base persona; the global admin capability is the
+    orthogonal ``is_admin`` flag on :class:`Principal` (backed by
+    ``User.is_admin``), so one adult can be a guardian, an admin, or both.
+    ``ADMIN`` as a base role means an admin-only adult with no family
+    guardianship; it implies the capability regardless of the stored flag.
     """
 
     GUARDIAN = "guardian"
@@ -89,9 +95,15 @@ class Principal:
         subject: The verified token subject (OIDC ``sub`` in production).
         user_id: The resolved ``User.id`` for the subject, used to stamp
             creator provenance (``created_by``) on rows this principal writes.
-        role: ``"guardian"``, ``"child"``, or ``"admin"``.
+        role: The base persona: ``"guardian"``, ``"child"``, or ``"admin"``.
         family_id: The family the principal belongs to.
         profile_ids: The child-profile ids this principal may read or write.
+        is_admin: Whether the principal holds the global admin (approver)
+            capability. Orthogonal to ``role`` so one adult can be a guardian,
+            an admin, or both: a ``(role=guardian, is_admin=True)`` principal
+            passes both guardian-only and admin-only gates. ``__post_init__``
+            derives it for the ``admin`` base role, so a legacy admin-only
+            user (or a hand-built test principal) never loses the capability.
     """
 
     subject: str
@@ -99,16 +111,24 @@ class Principal:
     role: Role
     family_id: uuid.UUID
     profile_ids: frozenset[uuid.UUID]
+    is_admin: bool = False
+
+    def __post_init__(self) -> None:
+        """Derive the admin capability from the admin base role.
+
+        # #CRITICAL: security: the invariant "base role ADMIN implies the
+        # admin capability" is enforced here at construction, not left to
+        # every caller; a Principal(role=Role.ADMIN) with the flag unset
+        # would otherwise be a half-admin that fails admin gates.
+        # #VERIFY: tests/unit/test_api_deps.py pins role=ADMIN -> is_admin.
+        """
+        if self.role == Role.ADMIN and not self.is_admin:
+            object.__setattr__(self, "is_admin", True)
 
     @property
     def is_guardian(self) -> bool:
-        """Return whether the principal holds the guardian role."""
+        """Return whether the principal holds the guardian base role."""
         return self.role == Role.GUARDIAN
-
-    @property
-    def is_admin(self) -> bool:
-        """Return whether the principal holds the global admin (approver) role."""
-        return self.role == Role.ADMIN
 
     def can_access_profile(self, profile_id: uuid.UUID) -> bool:
         """Return whether the principal may act on the given profile.
@@ -339,6 +359,11 @@ async def require_principal(
         role=Role(user.role),
         family_id=user.family_id,
         profile_ids=profile_ids,
+        # The stored capability flag; __post_init__ additionally derives it
+        # for the admin base role, so a legacy (role='admin', is_admin=false)
+        # row keeps its capability without a data backfill. bool() coerces an
+        # unflushed row's None (ORM column defaults apply at flush) to False.
+        is_admin=bool(user.is_admin),
     )
 
 
@@ -388,8 +413,10 @@ async def _resolve_profiles(session: AsyncSession, user: User) -> frozenset[uuid
         user: The resolved user row.
 
     Returns:
-        frozenset[uuid.UUID]: All family profiles for a guardian; the single
-            assigned profile for a child; empty if a child has none.
+        frozenset[uuid.UUID]: All family profiles for a guardian (including a
+            guardian who also holds the admin capability); the single assigned
+            profile for a child; empty for an admin-only adult or a child
+            with no assigned profile.
     """
     if user.role == Role.GUARDIAN:
         rows = await session.scalars(

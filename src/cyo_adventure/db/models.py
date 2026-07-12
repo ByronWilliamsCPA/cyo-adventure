@@ -154,20 +154,36 @@ class Series(Base):
 
 
 class User(Base):
-    """An authenticated user (guardian, child, or admin) within a family."""
+    """An authenticated user (guardian, child, or admin) within a family.
+
+    ``role`` is the single base persona; the ``is_admin`` flag is an
+    orthogonal capability so one adult can be a guardian, an admin, or both:
+    ``('guardian', false)`` is a plain guardian, ``('guardian', true)`` is a
+    guardian who also holds the global admin capability, and ``('admin', *)``
+    is an admin-only adult (the auth boundary treats the admin base role as
+    implying the capability regardless of the flag).
+    """
 
     __tablename__ = "user"
     # #CRITICAL: security: ``role`` is coerced to the closed Role enum at the auth
     # boundary (api/deps.py); this CHECK is the at-rest backstop so a non-API write
     # path cannot persist an unmodeled role that would then drive authorization.
-    # #VERIFY: api/deps.Role(user.role) raises on any value outside this set.
+    # The second CHECK keeps the admin capability off child rows: a child user
+    # must never carry is_admin, since the flag grants global review/approval
+    # power at the auth boundary.
+    # #VERIFY: api/deps.Role(user.role) raises on any value outside this set;
+    # api/deps.Principal.__post_init__ derives is_admin for the admin base role.
     __table_args__ = (
         CheckConstraint("role IN ('guardian', 'child', 'admin')", name="ck_user_role"),
+        CheckConstraint(
+            "role <> 'child' OR is_admin = false", name="ck_user_child_not_admin"
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     role: Mapped[str] = mapped_column(String(16))
+    is_admin: Mapped[bool] = mapped_column(default=False)
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     # Null for guardians; set for a child user to the single profile it may act on.
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(

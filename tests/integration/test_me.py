@@ -21,6 +21,7 @@ async def test_me_returns_guardian_identity(client: AsyncClient, seed: Seed) -> 
     body = resp.json()
     assert body["subject"] == seed.guardian_token
     assert body["role"] == "guardian"
+    assert body["is_admin"] is False
     assert body["family_id"] == str(seed.family_id)
     assert str(seed.child_profile_id) in body["profile_ids"]
 
@@ -41,10 +42,29 @@ async def test_me_returns_child_identity_scoped_to_own_profile(
 @pytest.mark.integration
 @pytest.mark.asyncio
 async def test_me_returns_admin_identity(client: AsyncClient, seed: Seed) -> None:
-    """An admin's /me reflects the admin role."""
+    """An admin-only adult's /me reflects the admin base role and capability."""
     resp = await client.get("/api/v1/me", headers=auth(seed.admin_token))
     assert resp.status_code == 200, resp.text
-    assert resp.json()["role"] == "admin"
+    body = resp.json()
+    assert body["role"] == "admin"
+    assert body["is_admin"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_me_returns_dual_role_identity(client: AsyncClient, seed: Seed) -> None:
+    """A dual-role adult's /me carries the guardian persona AND the capability.
+
+    The frontend picks the guardian shell from ``role`` and shows the admin
+    console entry from ``is_admin``; both must be present on one identity.
+    """
+    resp = await client.get("/api/v1/me", headers=auth(seed.dual_token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["role"] == "guardian"
+    assert body["is_admin"] is True
+    assert body["family_id"] == str(seed.family_id)
+    assert str(seed.child_profile_id) in body["profile_ids"]
 
 
 @pytest.mark.integration

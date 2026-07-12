@@ -281,6 +281,35 @@ class TestRequirePrincipal:
         assert result.role == "guardian"
         assert result.profile_ids == frozenset({p1, p2})
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_dual_role_user_resolves_guardian_principal_with_admin(
+        self,
+    ) -> None:
+        """A (role=guardian, is_admin=True) row yields a dual-capability principal.
+
+        The guardian base role still resolves the family profile set, and the
+        stored flag carries the admin capability onto the same principal.
+        """
+        from cyo_adventure.db.models import User
+
+        p1 = uuid.uuid4()
+        user = User(
+            id=uuid.uuid4(),
+            family_id=uuid.uuid4(),
+            role="guardian",
+            is_admin=True,
+            authn_subject="dual-token",
+        )
+        session = _FakeDepSession(scalar_return=user, scalars_items=[p1])
+        result = await deps.require_principal(
+            session,  # pyright: ignore[arg-type]
+            authorization="Bearer dual-token",
+        )
+        assert result.is_guardian is True
+        assert result.is_admin is True
+        assert result.profile_ids == frozenset({p1})
+
 
 # ---------------------------------------------------------------------------
 # get_context
@@ -426,7 +455,7 @@ class TestAuthStubGuard:
 
 @pytest.mark.unit
 def test_principal_is_admin_role() -> None:
-    """is_admin is true only for the admin role; is_guardian stays false for it."""
+    """The admin base role derives the capability; a plain guardian has neither."""
     admin = Principal(
         subject="s",
         user_id=uuid.uuid4(),
@@ -434,6 +463,8 @@ def test_principal_is_admin_role() -> None:
         family_id=uuid.uuid4(),
         profile_ids=frozenset(),
     )
+    # __post_init__ derives the capability from the admin base role even when
+    # the flag is not passed, so a legacy admin-only row keeps its power.
     assert admin.is_admin is True
     assert admin.is_guardian is False
     guardian = Principal(
@@ -444,6 +475,21 @@ def test_principal_is_admin_role() -> None:
         profile_ids=frozenset(),
     )
     assert guardian.is_admin is False
+
+
+@pytest.mark.unit
+def test_principal_dual_role_holds_both_capabilities() -> None:
+    """A guardian with the admin flag is both guardian and admin."""
+    dual = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="guardian",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset(),
+        is_admin=True,
+    )
+    assert dual.is_guardian is True
+    assert dual.is_admin is True
 
 
 class TestJwksClient:

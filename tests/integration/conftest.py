@@ -56,12 +56,19 @@ _LANTERN = (
 
 @dataclass(frozen=True)
 class Seed:
-    """Identifiers and tokens for the seeded fixture data."""
+    """Identifiers and tokens for the seeded fixture data.
+
+    ``dual_token`` belongs to a family-A adult with the guardian base role
+    AND the admin capability (``is_admin=True``), pinning the dual-role
+    model: one login identity that passes both guardian-only and admin-only
+    gates.
+    """
 
     family_id: uuid.UUID
     admin_user_id: uuid.UUID
     admin_token: str
     guardian_token: str
+    dual_token: str
     child_token: str
     child_profile_id: uuid.UUID
     other_guardian_token: str
@@ -234,6 +241,12 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
                 User(family_id=fam_a.id, role="guardian", authn_subject="guardian-a"),
                 User(
                     family_id=fam_a.id,
+                    role="guardian",
+                    is_admin=True,
+                    authn_subject="dual-a",
+                ),
+                User(
+                    family_id=fam_a.id,
                     role="child",
                     authn_subject="child-a",
                     child_profile_id=profile_a.id,
@@ -287,6 +300,7 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
             admin_user_id=admin_a.id,
             admin_token="admin-a",
             guardian_token="guardian-a",
+            dual_token="dual-a",
             child_token="child-a",
             child_profile_id=profile_a.id,
             other_guardian_token="guardian-b",
