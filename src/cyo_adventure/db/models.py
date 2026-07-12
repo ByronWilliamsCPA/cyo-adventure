@@ -183,7 +183,9 @@ class User(Base):
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     role: Mapped[str] = mapped_column(String(16))
-    is_admin: Mapped[bool] = mapped_column(default=False)
+    is_admin: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     # Null for guardians; set for a child user to the single profile it may act on.
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(

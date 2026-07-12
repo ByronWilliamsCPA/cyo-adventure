@@ -616,13 +616,23 @@ async def list_story_requests(
     # #VERIFY: test_guardian_lists_family_requests,
     # test_list_is_family_scoped_for_every_caller.
     stmt = stmt.where(StoryRequest.family_id == ctx.principal.family_id)
+    # #CRITICAL: security: a child session is scoped to its own profile(s), never
+    # the whole family. Without this, a child token listing with no profile_id
+    # would read every sibling's request text (only the family filter above
+    # would apply). Guardians and admins legitimately see the whole family; a
+    # child's profile_ids is the singleton from its signed session claim (an
+    # empty set for a profileless child, which then correctly sees nothing).
+    # #VERIFY: test_child_lists_only_own_profile_requests.
+    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
+        stmt = stmt.where(StoryRequest.profile_id.in_(ctx.principal.profile_ids))
     _validate_status_filter(status)
     if status is not None:
         stmt = stmt.where(StoryRequest.status == status)
     if profile_id is not None:
         profile_uuid = parse_uuid(profile_id, "profile_id")
-        # A guardian may only filter to a profile it can access; the family
-        # WHERE above already bounds the rows for an admin-only caller.
+        # A guardian may only filter to a profile it can access; a child is
+        # already constrained to its own profile(s) above; the family WHERE
+        # bounds an admin-only caller.
         if not ctx.principal.is_admin:
             authorize_profile(ctx.principal, profile_uuid)
         stmt = stmt.where(StoryRequest.profile_id == profile_uuid)
@@ -665,7 +675,7 @@ async def list_story_requests_admin(
     # #VERIFY: test_authz_matrix.py pins GET /api/v1/admin/story-requests
     # as admin-only.
     if not ctx.principal.is_admin:
-        msg = "admin role required"
+        msg = "admin access required"
         raise AuthorizationError(msg)
     stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
     _validate_status_filter(status)
@@ -842,7 +852,7 @@ async def create_authoring_plan(
     # rejected by is_guardian/is_admin below, matching the approve endpoint).
     # #VERIFY: test_guardian_forbidden, test_child_forbidden.
     if not ctx.principal.is_admin:
-        msg = "admin role required"
+        msg = "admin access required"
         raise AuthorizationError(msg)
 
     request = await _load_scoped_request(ctx, request_id, for_update=True)

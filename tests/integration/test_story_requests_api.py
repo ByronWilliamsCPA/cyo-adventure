@@ -200,6 +200,47 @@ async def test_admin_surface_lists_all_families(
     assert denied.status_code == 403
 
 
+async def test_child_lists_only_own_profile_requests(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A child token listing with no profile_id sees only its own requests.
+
+    A child session is scoped to its own profile: it must never read a
+    sibling's request text just by omitting the profile_id filter. This pins
+    the family filter alone is insufficient for a child; the own-profile
+    constraint is what confines the list.
+    """
+    own_id = await _create_pending_request(client, seed)
+    # A sibling profile in the SAME family, with its own request inserted
+    # directly (the child cannot create for a profile it does not own).
+    async with sessions() as session:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Reader A2", age_band="8-11"
+        )
+        session.add(sibling)
+        await session.flush()
+        sibling_request = StoryRequest(
+            family_id=seed.family_id,
+            profile_id=sibling.id,
+            request_text="a sibling's secret idea",
+            status="pending",
+            moderation_flags={"blocked": False, "flags": []},
+            age_band="8-11",
+            initiator_role="child",
+        )
+        session.add(sibling_request)
+        await session.commit()
+        sibling_request_id = str(sibling_request.id)
+
+    res = await client.get(_CREATE, headers=auth(seed.child_token))
+    assert res.status_code == 200, res.text
+    ids = {r["id"] for r in res.json()["requests"]}
+    assert own_id in ids
+    assert sibling_request_id not in ids, "child leaked a sibling's request"
+
+
 async def test_list_rejects_inaccessible_profile_filter(
     client: AsyncClient, seed: Seed
 ) -> None:

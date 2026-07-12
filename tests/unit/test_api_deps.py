@@ -492,6 +492,26 @@ def test_principal_dual_role_holds_both_capabilities() -> None:
     assert dual.is_admin is True
 
 
+@pytest.mark.unit
+def test_principal_child_cannot_hold_admin_capability() -> None:
+    """A CHILD principal force-clears is_admin (defense in depth).
+
+    The ck_user_child_not_admin CHECK blocks this at rest, but a mistakenly
+    constructed Principal(role=CHILD, is_admin=True) must never escalate
+    in-memory: __post_init__ clears the flag for a child base role.
+    """
+    child = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="child",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset({uuid.uuid4()}),
+        is_admin=True,
+    )
+    assert child.is_admin is False
+    assert child.is_guardian is False
+
+
 class TestJwksClient:
     """Direct tests for the lazily-constructed JWKS client and its guards.
 

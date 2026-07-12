@@ -114,7 +114,7 @@ class Principal:
     is_admin: bool = False
 
     def __post_init__(self) -> None:
-        """Normalize the role and derive the admin capability.
+        """Normalize the role and reconcile the admin capability.
 
         # #CRITICAL: security: the invariant "base role ADMIN implies the
         # admin capability" is enforced here at construction, not left to
@@ -122,11 +122,17 @@ class Principal:
         # would otherwise be a half-admin that fails admin gates. The
         # Role(...) coercion also rejects any unmodeled role string a
         # caller passes (closed-world), instead of authorizing nothing
-        # and nobody noticing.
-        # #VERIFY: tests/unit/test_api_deps.py pins role=ADMIN -> is_admin.
+        # and nobody noticing. A CHILD principal can never hold the admin
+        # capability: the flag is force-cleared here (defense in depth
+        # behind the ck_user_child_not_admin DB CHECK) so a mistakenly
+        # constructed Principal(role=CHILD, is_admin=True) never escalates.
+        # #VERIFY: tests/unit/test_api_deps.py pins role=ADMIN -> is_admin
+        # and role=CHILD -> not is_admin.
         """
         object.__setattr__(self, "role", Role(self.role))
-        if self.role == Role.ADMIN and not self.is_admin:
+        if self.role == Role.CHILD:
+            object.__setattr__(self, "is_admin", False)
+        elif self.role == Role.ADMIN and not self.is_admin:
             object.__setattr__(self, "is_admin", True)
 
     @property

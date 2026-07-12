@@ -7,11 +7,13 @@
 -- treats the 'admin' base role as implying the capability regardless of the
 -- flag, so the backfill below is for at-rest consistency, not correctness.
 
-alter table "public"."user" add column "is_admin" boolean;
+-- NOT NULL DEFAULT false: existing rows are filled with false immediately, and
+-- any insert path that omits is_admin (raw SQL, external tooling, an older app
+-- version mid-deploy that predates this column) gets false rather than a NOT
+-- NULL violation. The backfill below then flips admins to true.
+alter table "public"."user" add column "is_admin" boolean not null default false;
 
-update "public"."user" set "is_admin" = ("role" = 'admin');
-
-alter table "public"."user" alter column "is_admin" set not null;
+update "public"."user" set "is_admin" = true where "role" = 'admin';
 
 -- #CRITICAL: security: a child user must never carry the admin capability;
 -- the flag grants global review/approval power at the auth boundary.
