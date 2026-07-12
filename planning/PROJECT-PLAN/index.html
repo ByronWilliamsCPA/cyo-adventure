@@ -3718,7 +3718,7 @@ Follow-on enabler refinements are tracked in issues #77, #78, and #79.</p>
 </tr>
 <tr>
 <td>4a Library + Profiles</td>
-<td>✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); <strong>R1 feature-complete</strong>, pending release-readiness (#73 auth redirect, docs sync #52)</td>
+<td>✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); <strong>R1 feature-complete</strong> (#73 auth redirect closed 2026-07-06; remaining doc sync #52 is Track 2 hygiene, not an R1 gap)</td>
 </tr>
 <tr>
 <td>Story-lifecycle redesign (WS-A..G, post-R1)</td>
@@ -3753,8 +3753,9 @@ Follow-on enabler refinements are tracked in issues #77, #78, and #79.</p>
 <p>With <strong>Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
 feature-complete as of 2026-07-03</strong>: the approval, moderation, and review APIs are
 enforced, and the guardian-facing app shell, library, per-child profiles, guardian
-console, and concept intake are built and merged (C4a-1..6). What remains for R1 is
-release-readiness, not new build (#73 auth redirect, docs sync #52). Between R1
+console, and concept intake are built and merged (C4a-1..6). No R1 build work
+remains: issue #73 (auth redirect) closed 2026-07-06, and issue #52 (docs sync)
+is Track 2 hygiene rather than an R1 gap. Between R1
 feature-complete and R2 planning, the seven-workstream story-lifecycle redesign (WS-A
 through WS-G) hardened moderation, request handling, generation matching, observability,
 catalog sharing, and series continuation; all seven merged by 2026-07-10. The public rungs
@@ -4502,7 +4503,8 @@ profiles #60, library #68, guardian console #76, concept intake #69, assign-to-p
 The <code>library</code> API (published, profile-scoped browsing) and the child <code>ratings</code> API
 were joined by a full guardian/parent frontend: routing, the kid library UI, per-child
 profile management, the guardian review-and-approval console, and the concept-intake form.
-What remains for R1 is release-readiness, not new build (#73 auth redirect, docs sync #52).</p>
+No R1 build work remains: issue #73 (auth redirect) closed 2026-07-06, and issue #52
+(docs sync) is Track 2 hygiene rather than an R1 gap.</p>
 <p><strong>Objective</strong>: Make the internal web release (R1) shippable. A child sees only the stories
 permitted for their profile; a guardian can assign an approved generated story to one or
 more children. This is the <strong>R1 release line</strong>.</p>
@@ -4522,14 +4524,16 @@ more children. This is the <strong>R1 release line</strong>.</p>
 <li>A child sees only stories permitted for their profile (age band and reading level enforced).</li>
 <li>A guardian can assign an approved generated story to one or more children.</li>
 </ul>
-<p><strong>Quality gates</strong>:</p>
+<p><strong>Quality gates</strong> (retro-verified 2026-07-11: every C4a PR merged through the required
+"CI Gate" aggregator, and a full local run measured 98.03% total coverage with
+<code>api/library.py</code> at 99.36% and <code>api/profiles.py</code> at 95.52%, 2414 tests passing):</p>
 <ul class="task-list">
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Integration tests: child cannot see unapproved or off-band story; guardian assigns story
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Integration tests: child cannot see unapproved or off-band story; guardian assigns story
       to profile and child library updates</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> No high or critical security findings</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Ruff clean; BasedPyright strict clean</li>
-<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Pre-commit green; all commits signed with conventional messages</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> No high or critical security findings</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Ruff clean; BasedPyright strict clean</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> Pre-commit green; all commits signed with conventional messages</li>
 </ul>
 <p><strong>Dependencies</strong>: Requires Phases 2 and 3. This phase closes R1 (the internal web release);
 Phase 4b and Phase 5 follow.</p>
@@ -5819,7 +5823,7 @@ sign-off and pre-submission (P9-10)
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 16:40:41 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 00:42:46 UTC">July 12, 2026</span>
   </span>
 
     
