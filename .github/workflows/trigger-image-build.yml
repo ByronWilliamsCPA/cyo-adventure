@@ -9,10 +9,18 @@
 #
 # Auth: HOMELAB_INFRA_DISPATCH_TOKEN must be a fine-grained PAT (or GitHub App
 # token) with Contents read/write on the homelab-infra repo (the permission
-# POST /dispatches actually requires per GitHub's fine-grained-PAT reference;
-# Metadata read is implied, Actions permissions are NOT needed and NOT
-# sufficient: an Actions-only PAT gets HTTP 403 "Resource not accessible"),
-# stored as an Actions secret in THIS repo.
+# POST /repos/{owner}/{repo}/dispatches actually requires per GitHub's
+# fine-grained-PAT reference; Metadata read is implied, Actions permissions
+# are NOT needed and NOT sufficient: an Actions-only PAT gets HTTP 403
+# "Resource not accessible by personal access token"), stored as an Actions
+# secret in THIS repo.
+# #ASSUME: security: Contents read/write is broader than this one dispatch
+# call needs (it also grants code write on homelab-infra); accepted risk from
+# the PR #218 review, since GitHub exposes no narrower fine-grained PAT
+# permission for this endpoint.
+# #VERIFY: a GitHub App installation token scoped to homelab-infra is the
+# tighter alternative; switch to one if the PAT's grant ever widens beyond
+# that single repo.
 # #ASSUME: external resources: the secret exists and is non-empty; an unset
 # secret renders as an empty env var, which the guard step below turns into
 # an explicit red run, and an invalid or expired token fails the gh call
