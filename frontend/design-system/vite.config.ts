@@ -20,6 +20,13 @@ export default defineConfig({
       // #VERIFY: after a build, `grep -c 'react-stack-top-frame' dist/cyo-design-system.js` must be 0.
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
+        // #EDGE: external resource: these globals only matter to a bare
+        // <script> consumer of the UMD build, which nothing in this repo is.
+        // 'ReactJSXRuntime' is a placeholder name no real React build
+        // exposes; require()-based consumers resolve through package.json's
+        // CJS branch and never read it.
+        // #VERIFY: if the UMD artifact ever gains a bare-script consumer,
+        // that consumer must define window.ReactJSXRuntime itself.
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',

@@ -53,6 +53,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coverage, and no other test file was touched.
 
 ### Fixed
+- Design-system library build (Vite 8/rolldown): `react/jsx-runtime` is now
+  externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
+  inlines the jsx runtime with a CJS-interop shim whose runtime
+  `require("react")` throws in browser consumers of the ESM dist.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -106,14 +110,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
   `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
-  text-tone utilities and the amber token split: `--color-amber` stays the
-  bright brand hue, `--color-amber-deep` is the WCAG-safe text/border shade),
-  and the guardian console now consumes them instead of its bespoke
-  `guardian.css` equivalents (the orphaned `.intake-chip` styles are removed).
-  `FlagBadge` deliberately stays bespoke per ADR-005. The library's Vite 8
-  build also externalizes `react/jsx-runtime`, since rolldown otherwise
-  inlines it with a runtime `require("react")` that breaks browser consumers
-  of the ESM dist.
+  text-tone utilities, consuming the pre-existing amber token pair:
+  `--color-amber` stays the bright brand hue, `--color-amber-deep` is the
+  deeper shade that clears the 3:1 WCAG non-text/large-text threshold,
+  though not the 4.5:1 AA normal-text minimum), and the guardian console
+  now consumes them instead of its bespoke `guardian.css` equivalents (the
+  `.intake-chip` styles, orphaned by this same swap, are removed).
+  `FlagBadge` deliberately stays bespoke: its flag/info tones belong to the
+  moderation-review surface, which this promotion pass excluded.
 - Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
   8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
   quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8

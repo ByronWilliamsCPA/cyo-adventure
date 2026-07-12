@@ -9,5 +9,10 @@
 }
 
 .cyo-text-muted {
+  /* --color-ink-muted (#8c6f56) on parchment computes ~4.20:1, below the
+     4.5:1 WCAG AA normal-text minimum. Carried over as-is from guardian.css;
+     use only for non-essential hint copy, and prefer full-contrast ink for
+     anything the reader must not miss. Raising the token to an AA-safe shade
+     is a design decision, not a promotion-pass change. */
   color: var(--color-ink-muted);
 }
