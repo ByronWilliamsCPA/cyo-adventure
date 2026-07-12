@@ -27,6 +27,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   explicit guard step, and an invalid/expired token fails the `gh` call
   loudly (HTTP 401) rather than silently skipping the dispatch.
 
+### Security
+- Enabled Row Level Security (RLS) on all 19 public tables as defense-in-depth
+  against the Supabase PostgREST anon/authenticated path (issue #125). The
+  FastAPI backend connects via the session pooler as the `postgres` role,
+  which Postgres always exempts from RLS, so app behavior is unaffected; the
+  exposure closed is that, with RLS off, anyone holding the project's anon
+  key could read or write every public table (including `child_profile`)
+  directly through PostgREST. No policies are added: this is deny-by-default
+  for anon/authenticated, since no client in this project uses PostgREST
+  (the frontend's `@supabase/supabase-js` client is Auth/GoTrue only:
+  `auth.getSession`, `auth.onAuthStateChange`, `auth.signInWithOAuth`,
+  `auth.signInWithPassword`, `auth.signOut`; a repo-wide grep of
+  `frontend/src/` found no `supabase.from(` or `supabase.rpc(` PostgREST
+  table access). `FORCE ROW
+  LEVEL SECURITY` is deliberately not used: the tables are owned by
+  `postgres`, and forcing RLS with zero policies would also lock out the
+  table owner, i.e. the application itself. See
+  `supabase/migrations/20260711200745_enable_rls_all_tables.sql`.
+
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
