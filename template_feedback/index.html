@@ -2817,6 +2817,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fips-checker-has-no-awareness-of-the-finalized-post-quantum-standards-fips-203204205" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -3291,6 +3302,17 @@
     <span class="md-ellipsis">
       
         FIPS checker flags any method named seed() as the SEED block cipher
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fips-checker-has-no-awareness-of-the-finalized-post-quantum-standards-fips-203204205" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)
       
     </span>
   </a>
@@ -3948,6 +3970,32 @@ root before matching bare cipher names. Also align the workflow's PR-comment ver
 job conclusion so the two cannot disagree.</p>
 <p><strong>Affected Files</strong>: template <code>scripts/check_fips_compatibility.py</code>,
 <code>.github/workflows/fips-compatibility.yml</code></p>
+<hr />
+<h3 id="fips-checker-has-no-awareness-of-the-finalized-post-quantum-standards-fips-203204205">FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)<a class="headerlink" href="#fips-checker-has-no-awareness-of-the-finalized-post-quantum-standards-fips-203204205" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Priority</strong>: Medium</li>
+<li><strong>Category</strong>: Tooling</li>
+<li><strong>Discovered</strong>: 2026-07-11</li>
+</ul>
+<p><strong>Issue</strong>: <code>scripts/check_fips_compatibility.py</code> predates the August 2024 NIST post-quantum
+standards. It has no concept of ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), or
+hybrid key-exchange groups such as <code>X25519MLKEM768</code>, and it gives no guidance when code uses
+pre-standardization names (Kyber, Dilithium, SPHINCS+), which are not the finalized,
+FIPS-validated parameter sets. Its package hints are also stale: <code>cryptography</code> gained
+ML-DSA/SLH-DSA primitives around version 45, which is exactly the floor a project planning a
+PQC migration needs to know about, and the checker's advice stops at "version &gt;= 3.4.6".</p>
+<p><strong>Context</strong>: Found while executing this project's hybrid PQC readiness plan (ADR-013 in this
+repo). The checker is the template's designated FIPS gate, so a template-generated project
+adopting NIST-approved PQC algorithms would get zero support (and, with naive name matching,
+possibly false flags) from the very tool meant to police algorithm choice.</p>
+<p><strong>Suggested Fix</strong>: Adopt this repo's extension upstream: (1) add an approved set for the FIPS
+203/204/205 names and <code>X25519MLKEM768</code>, exempted from all name matching; (2) warn on
+pre-standardization names (kyber/dilithium/sphincs) with a hint to the finalized FIPS name;
+(3) update the <code>cryptography</code> hint to mention the &gt;= 45 floor for ML-DSA/SLH-DSA primitives
+and the <code>pyjwt</code> hint to cover asymmetric-only allowlists. See this repo's
+<code>scripts/check_fips_compatibility.py</code> (<code>FIPS_PQC_APPROVED</code>, <code>PQC_PRE_STANDARD_NAMES</code>,
+<code>_check_pqc_pre_standard_name</code>) for a working implementation.</p>
+<p><strong>Affected Files</strong>: template <code>scripts/check_fips_compatibility.py</code></p>
 
 
 
@@ -3970,7 +4018,7 @@ job conclusion so the two cannot disagree.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 17:12:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 03:08:39 UTC">July 12, 2026</span>
   </span>
 
     

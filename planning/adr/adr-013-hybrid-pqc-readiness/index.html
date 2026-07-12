@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-013-hybrid-pqc-readiness/">
       
       
-        <link rel="prev" href="../roadmap/">
-      
-      
-        <link rel="next" href="adr-001-story-format-json-storybook/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Architecture Decision Records - CYO Adventure</title>
+        <title>ADR-013: Hybrid post-quantum cryptography readiness - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#what-are-adrs" class="md-skip">
+        <a href="#adr-013-hybrid-post-quantum-cryptography-readiness" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Architecture Decision Records
+              ADR-013: Hybrid post-quantum cryptography readiness
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -304,7 +300,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../architecture/" class="md-tabs__link">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -326,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -348,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -366,13 +362,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -580,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -615,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -650,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -685,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -785,7 +779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -864,7 +858,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../architecture/" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -915,7 +909,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/user-journeys/" class="md-nav__link">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -950,7 +944,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -985,7 +979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1020,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1055,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1090,7 +1084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../architecture/deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1165,7 +1159,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1214,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1249,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1286,7 +1280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1321,7 +1315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1425,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1460,7 +1454,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1495,7 +1489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1534,8 +1528,6 @@
       
   
   
-    
-  
   
   
     
@@ -1559,23 +1551,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1600,13 +1591,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1626,7 +1617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1661,7 +1652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1696,7 +1687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -1731,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -1763,8 +1754,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1802,21 +1791,20 @@
       
       
         
-          
-          
-        
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7_6" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -1841,13 +1829,13 @@
             </a>
             
               
-              <label class="md-nav__link md-nav__link--active" for="__nav_7_6" id="__nav_7_6_label" tabindex="">
+              <label class="md-nav__link " for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1867,7 +1855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -1902,7 +1890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -1937,7 +1925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -1972,7 +1960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2007,7 +1995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2042,7 +2030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2077,7 +2065,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2112,7 +2100,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2147,7 +2135,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2182,7 +2170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2217,7 +2205,7 @@
   
   
     <li class="md-nav__item">
-      <a href="adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2331,7 +2319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2366,7 +2354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2401,7 +2389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2436,7 +2424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2505,7 +2493,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2556,7 +2544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2608,6 +2596,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2616,10 +2606,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#what-are-adrs" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What Are ADRs?
+        TL;DR
       
     </span>
   </a>
@@ -2627,33 +2617,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-index" class="md-nav__link">
+  <a href="#context" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Index
+        Context
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-adrs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Creating ADRs
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Creating ADRs">
+    <nav class="md-nav" aria-label="Context">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#automatic-generation" class="md-nav__link">
+  <a href="#problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Automatic Generation
+        Problem
       
     </span>
   </a>
@@ -2661,10 +2640,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#manual-creation" class="md-nav__link">
+  <a href="#constraints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Manual Creation
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#significance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Significance
       
     </span>
   </a>
@@ -2677,10 +2667,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#naming-convention" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Naming Convention
+        Decision
       
     </span>
   </a>
@@ -2688,10 +2678,149 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#when-to-create-an-adr" class="md-nav__link">
+  <a href="#options-considered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        When to Create an ADR
+        Options Considered
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Options Considered">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-key-exchange-first-hybrid-posture-plus-crypto-agility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Key-exchange-first hybrid posture plus crypto agility ✓
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-full-simultaneous-migration-including-signatures" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Full simultaneous migration including signatures
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-3-wait-until-standards-and-vendors-fully-mature" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 3: Wait until standards and vendors fully mature
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consequences" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consequences
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consequences">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#positive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Positive
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trade-offs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trade-offs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#technical-debt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Debt
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#components-affected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Components Affected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation
       
     </span>
   </a>
@@ -2699,32 +2828,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#adr-lifecycle" class="md-nav__link">
+  <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ADR Lifecycle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#template-reference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Template Reference
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#more-information" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        More Information
+        References
       
     </span>
   </a>
@@ -2751,150 +2858,194 @@
   
 
 
-  <h1>Overview</h1>
-
-<p>This directory contains Architecture Decision Records (ADRs) for CYO Adventure.</p>
-<h2 id="what-are-adrs">What Are ADRs?<a class="headerlink" href="#what-are-adrs" title="Permanent link">&para;</a></h2>
-<p>ADRs document significant architectural decisions along with their context and consequences. They help:</p>
+<h1 id="adr-013-hybrid-post-quantum-cryptography-readiness">ADR-013: Hybrid post-quantum cryptography readiness<a class="headerlink" href="#adr-013-hybrid-post-quantum-cryptography-readiness" title="Permanent link">&para;</a></h1>
+<blockquote>
+<p><strong>Status</strong>: Accepted (2026-07-11)
+<strong>Date</strong>: 2026-07-11
+<strong>Relates to</strong>: <a href="../adr-009-supabase-platform/">ADR-009</a> (Supabase auth and JWKS verification),
+<a href="../adr-004-homelab-first-deployment/">ADR-004</a> (deployment topology and the external TLS layer)</p>
+</blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Adopt a key-exchange-first hybrid post-quantum posture. Hybrid X25519+ML-KEM-768 key agreement
+(the <code>X25519MLKEM768</code> TLS group) is the target for every TLS leg we control; enabling it is an
+infrastructure concern (Cloudflare edge and Tunnel, the Pangolin/nginx layer in the separate
+<code>homelab-infra</code> repo), not application code. This repo's contribution is crypto agility: the JWT
+signature-algorithm allowlist moves from a hardcoded list in <code>api/deps.py</code> into configuration
+(<code>OIDC_ALLOWED_ALGS</code>, validated at startup), the FIPS checker learns the finalized FIPS
+203/204/205 algorithm names, dependency floors are pinned, and a living cryptographic inventory
+is maintained at <code>docs/security/crypto-inventory.md</code>. The signature migration (ML-DSA JWTs,
+composite certificates) is explicitly deferred behind ecosystem gates and revisited quarterly.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
+<p>The application carries children's profile data, story content, and guardian credentials and
+bearer tokens over TLS. The relevant quantum threat today is harvest-now-decrypt-later (HNDL):
+an adversary recording classically-encrypted traffic now and decrypting it once a
+cryptographically relevant quantum computer exists. For a children's product whose data remains
+sensitive for a decade or more, HNDL is a present-tense recording risk, not a future one.</p>
+<p>NIST finalized the post-quantum standards in August 2024: FIPS 203 (ML-KEM, key encapsulation),
+FIPS 204 (ML-DSA, signatures), and FIPS 205 (SLH-DSA, hash-based signatures). Browsers and
+Cloudflare's edge already negotiate hybrid X25519+ML-KEM key agreement by default. Before this
+ADR, the repo had exactly one hardcoded algorithm decision (the <code>["RS256", "ES256"]</code> JWT
+allowlist in <code>api/deps.py</code>), a FIPS compatibility checker with no knowledge of the finalized PQC
+names, and no documented cryptographic inventory or PQC position.</p>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Prevent architectural drift during AI-assisted development</li>
-<li>Provide rationale for technical choices</li>
-<li>Enable future developers to understand why decisions were made</li>
-<li>Maintain consistency across coding sessions</li>
+<li><strong>Technical</strong>: TLS termination happens entirely outside this repo
+  (<code>docs/architecture/deployment.md</code>: Cloudflare or Tailscale into Pangolin, which forwards
+  plain HTTP to the backend), so the key-exchange work cannot land here. Supabase issues only
+  classical RS256/ES256 JWTs today, and the JOSE algorithm registrations for ML-DSA are still
+  in flight, so a signature migration is not actionable yet regardless of local readiness.</li>
+<li><strong>Operational</strong>: a solo operator; every posture claim must be mechanically verifiable
+  (negotiated-group checks, startup validators, CI) rather than assumed.</li>
+<li><strong>Regulatory</strong>: FIPS alignment is a template-level goal (<code>scripts/check_fips_compatibility.py</code>);
+  there is no hard PQC mandate for this project, but COPPA-adjacent duty of care motivates
+  treating children's data confidentiality on long horizons.</li>
 </ul>
-<h2 id="adr-index">ADR Index<a class="headerlink" href="#adr-index" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-<th>Date</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="adr-001-story-format-json-storybook/">ADR-001</a></td>
-<td>Story format is a versioned JSON Storybook graph</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-002-client-pwa/">ADR-002</a></td>
-<td>Client is a Progressive Web App</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-003-frontier-llm-generation/">ADR-003</a></td>
-<td>Frontier LLM for generation, local model as fallback</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-004-homelab-first-deployment/">ADR-004</a></td>
-<td>Homelab-first deployment, Azure as the scale-out alternative</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-005-mandatory-human-approval/">ADR-005</a></td>
-<td>Mandatory human approval before any story reaches a child</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-006-conditions-inhouse-evaluator/">ADR-006</a></td>
-<td>Conditions use the JSONLogic shape with an in-house whitelisted evaluator</td>
-<td>Accepted</td>
-<td>2026-06-20</td>
-</tr>
-<tr>
-<td><a href="adr-007-raw-output-retention/">ADR-007</a></td>
-<td>Raw LLM output retention policy for GenerationJob.report</td>
-<td>Proposed</td>
-<td>2026-06-29</td>
-</tr>
-<tr>
-<td><a href="adr-008-public-app-store-launch/">ADR-008</a></td>
-<td>Public App Store launch with tiered subscription monetization</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-009-supabase-platform/">ADR-009</a></td>
-<td>Supabase as the managed platform for auth, database, and storage</td>
-<td>Accepted</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-010-modal-review-and-gated-generation/">ADR-010</a></td>
-<td>Modal for moderation review and an evidence-gated generation leg</td>
-<td>Proposed</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-011-story-scale-framework/">ADR-011</a></td>
-<td>Story-scale framework (reading band x length x style)</td>
-<td>Accepted</td>
-<td>2026-07-02</td>
-</tr>
-<tr>
-<td><a href="adr-012-supabase-cli-migrations/">ADR-012</a></td>
-<td>Supabase CLI SQL migrations replace Alembic</td>
-<td>Accepted</td>
-<td>2026-07-10</td>
-</tr>
-<tr>
-<td><a href="adr-013-hybrid-pqc-readiness/">ADR-013</a></td>
-<td>Hybrid post-quantum cryptography readiness</td>
-<td>Accepted</td>
-<td>2026-07-11</td>
-</tr>
-</tbody>
-</table>
-<h2 id="creating-adrs">Creating ADRs<a class="headerlink" href="#creating-adrs" title="Permanent link">&para;</a></h2>
-<h3 id="automatic-generation">Automatic Generation<a class="headerlink" href="#automatic-generation" title="Permanent link">&para;</a></h3>
-<p>Run <code>/plan &lt;project description&gt;</code> to generate initial ADRs alongside other planning documents.</p>
-<h3 id="manual-creation">Manual Creation<a class="headerlink" href="#manual-creation" title="Permanent link">&para;</a></h3>
-<p>When making a new architectural decision:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Create an ADR for [decision topic].
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Use template: .claude/skills/project-planning/templates/adr-template.md
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Save to: docs/planning/adr/adr-NNN-[decision-slug].md
-</span></code></pre></div>
-<h2 id="naming-convention">Naming Convention<a class="headerlink" href="#naming-convention" title="Permanent link">&para;</a></h2>
-<p>ADRs follow this naming pattern:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>adr-NNN-short-description.md
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Examples:
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>- adr-001-database-choice.md
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>- adr-002-auth-strategy.md
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>- adr-003-api-design.md
-</span></code></pre></div>
-<h2 id="when-to-create-an-adr">When to Create an ADR<a class="headerlink" href="#when-to-create-an-adr" title="Permanent link">&para;</a></h2>
-<p>Create an ADR when:</p>
+<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
+<p>This decision sets the project's algorithm-transition posture generally, not just for PQC: the
+same agility (config-driven allowlists, JWKS key discovery, a maintained inventory, checker
+guardrails) is what makes any future migration cheap, including a hypothetical migration away
+from an algorithm broken classically.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
+<p><strong>Threat model and scope.</strong> HNDL against recorded traffic is the priority. Confidentiality
+   (key exchange) migrates first; authentication (signatures) is deferred. A signature forged
+   after a quantum computer exists cannot retroactively decrypt traffic recorded today, so
+   deferring signatures loses nothing against HNDL. This matches the sequencing in NIST and
+   CNSA 2.0 guidance.</p>
+</li>
+<li>
+<p><strong>Hybrid key exchange is the target for every TLS leg we control.</strong> The target group is
+   <code>X25519MLKEM768</code> (classical X25519 combined with ML-KEM-768; the hybrid construction keeps
+   classical security even if the ML-KEM half fails). Ownership:</p>
+</li>
+<li>Client to Cloudflare edge: already hybrid by default (Cloudflare edge plus modern
+     browsers); nothing to do beyond not disabling it.</li>
+<li>Cloudflare Tunnel leg: keep <code>cloudflared</code> current; Cloudflare ships PQC support in the
+     tunnel daemon.</li>
+<li>
+<p>Pangolin/nginx ingress (the <code>homelab-infra</code> repo): Pangolin components are Go, and Go's
+     <code>crypto/tls</code> enables <code>X25519MLKEM768</code> by default from Go 1.24; nginx requires an OpenSSL
+     3.5+ build. Enablement and a negotiated-group verification check (for example
+     <code>openssl s_client -groups X25519MLKEM768</code> against the live endpoint) are tracked in
+     <code>homelab-infra</code>, not here.</p>
+</li>
+<li>
+<p><strong>Crypto agility in this repo: no hardcoded algorithm lists.</strong> The JWT signature-algorithm
+   allowlist is configuration (<code>Settings.oidc_allowed_algs</code>, env <code>OIDC_ALLOWED_ALGS</code>, default
+   <code>["RS256", "ES256"]</code>). A startup validator refuses an empty list, <code>none</code>, and the symmetric
+   <code>HS*</code> family, so the agility cannot reopen the alg=none or key-confusion forgeries the
+   hardcoded list defended against. JWKS-based key discovery (ADR-009) is retained as the key
+   rotation mechanism; when the issuer adds a PQC key alongside a classical one, the verifier
+   picks it up once the algorithm is allowlisted.</p>
+</li>
+<li>
+<p><strong>Dependency floors.</strong> <code>cryptography</code> &gt;= 45 (ML-DSA/SLH-DSA primitives; currently 49.0.0 via
+   <code>pyjwt[crypto]</code>), runtime container on Debian 13 (OpenSSL 3.5.x, already true of
+   <code>dhi-python:3.12-debian13</code>), and Go 1.24+ builds for the Go proxies in <code>homelab-infra</code>.
+   Floors are recorded in the cryptographic inventory; downgrades are treated as regressions.</p>
+</li>
+<li>
+<p><strong>Signature migration is deferred behind explicit gates</strong>, revisited quarterly:</p>
+</li>
+<li>Supabase issues ML-DSA (or composite) signed tokens;</li>
+<li>the JOSE algorithm registrations for ML-DSA are finalized;</li>
+<li>PyJWT verifies them;</li>
+<li>
+<p>a header-size capacity test passes: an ML-DSA-44 signature is roughly 2.4 KB, the bearer
+     token rides in the <code>Authorization</code> header on every API request and is stored in
+     <code>localStorage</code>, so proxy and server header limits must be verified before enabling.</p>
+</li>
+<li>
+<p><strong>The FIPS checker recognizes PQC.</strong> <code>scripts/check_fips_compatibility.py</code> treats the
+   finalized FIPS 203/204/205 names (ML-KEM, ML-DSA, SLH-DSA) and <code>X25519MLKEM768</code> as approved,
+   and warns on pre-standardization names (Kyber, Dilithium, SPHINCS+) with a migration hint to
+   the finalized parameter sets.</p>
+</li>
+<li>
+<p><strong>A living cryptographic inventory</strong> is maintained at <code>docs/security/crypto-inventory.md</code>
+   (the CBOM). It is updated whenever a crypto-adjacent dependency, TLS leg, or algorithm
+   choice changes, and it is the input to every future transition decision.</p>
+</li>
+</ol>
+<p><strong>Out of scope (accepted classical third-party legs)</strong>: TLS to Supabase Postgres (session
+pooler) and Supabase Auth, which Supabase controls; Redis, which runs plaintext on the internal
+Docker network (a network-trust decision, not a PQC one); DNSSEC, which Cloudflare operates and
+for which no PQC standard exists yet. Each is recorded in the inventory with its rationale.</p>
+<h2 id="options-considered">Options Considered<a class="headerlink" href="#options-considered" title="Permanent link">&para;</a></h2>
+<h3 id="option-1-key-exchange-first-hybrid-posture-plus-crypto-agility">Option 1: Key-exchange-first hybrid posture plus crypto agility ✓<a class="headerlink" href="#option-1-key-exchange-first-hybrid-posture-plus-crypto-agility" title="Permanent link">&para;</a></h3>
+<p>Migrate confidentiality where we control it, make the one hardcoded algorithm choice
+configurable with guardrails, pin floors, and gate the signature migration on the ecosystem.
+Low cost now, directly addresses HNDL, and leaves no cliff when upstream support lands.</p>
+<h3 id="option-2-full-simultaneous-migration-including-signatures">Option 2: Full simultaneous migration including signatures<a class="headerlink" href="#option-2-full-simultaneous-migration-including-signatures" title="Permanent link">&para;</a></h3>
+<p>Rejected: not actionable. Supabase does not issue PQC-signed tokens, the JOSE registrations are
+unfinished, and oversized tokens have real header-size and storage costs. Against HNDL it adds
+no protection over Option 1.</p>
+<h3 id="option-3-wait-until-standards-and-vendors-fully-mature">Option 3: Wait until standards and vendors fully mature<a class="headerlink" href="#option-3-wait-until-standards-and-vendors-fully-mature" title="Permanent link">&para;</a></h3>
+<p>Rejected: leaves recorded traffic decryptable later and accrues agility debt. The cheap steps
+(config-driven allowlist, checker awareness, inventory, infra upgrades that are routine version
+bumps) cost little now and are exactly the steps that make the eventual mandatory migration
+routine instead of an emergency.</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Choosing technology stack or framework</li>
-<li>Deciding on architectural patterns</li>
-<li>Selecting third-party services or libraries</li>
-<li>Making security or performance trade-offs</li>
-<li>Any decision that would be expensive to reverse</li>
+<li>HNDL exposure on the legs we control shrinks to routine version upgrades plus one
+  verification check.</li>
+<li>A future PQC JOSE algorithm is an env change (<code>OIDC_ALLOWED_ALGS</code>), not a code change.</li>
+<li>The startup validator and the extended FIPS checker convert posture rules into mechanical
+  enforcement.</li>
+<li>The inventory makes the next transition (PQC or otherwise) a diff against a known baseline.</li>
 </ul>
-<h2 id="adr-lifecycle">ADR Lifecycle<a class="headerlink" href="#adr-lifecycle" title="Permanent link">&para;</a></h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Proposed → Accepted → [Deprecated | Superseded]
-</span></code></pre></div>
+<h3 id="trade-offs">Trade-offs<a class="headerlink" href="#trade-offs" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Proposed</strong>: Under discussion</li>
-<li><strong>Accepted</strong>: Decision made and in use</li>
-<li><strong>Deprecated</strong>: No longer relevant</li>
-<li><strong>Superseded</strong>: Replaced by another ADR</li>
+<li>A configurable allowlist is a new misconfiguration surface; mitigated by the startup
+  denylist validator (empty, <code>none</code>, <code>HS*</code> all refuse to boot) and tests.</li>
+<li>The decisive key-exchange work and its verification live in a different repo
+  (<code>homelab-infra</code>); this ADR records the target, but cross-repo tracking is manual.</li>
+<li>The quarterly gate review is operator discipline, not automation.</li>
 </ul>
-<h2 id="template-reference">Template Reference<a class="headerlink" href="#template-reference" title="Permanent link">&para;</a></h2>
-<p>For the full ADR template, see the ADR template documentation in the Reference section, or refer to <code>.claude/skills/project-planning/templates/adr-template.md</code> in the project repository.</p>
-<h2 id="more-information">More Information<a class="headerlink" href="#more-information" title="Permanent link">&para;</a></h2>
+<h3 id="technical-debt">Technical Debt<a class="headerlink" href="#technical-debt" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Document Guide: See <code>.claude/skills/project-planning/reference/document-guide.md</code> in the project repository</li>
-<li>Prompting Patterns: See <code>.claude/skills/project-planning/reference/prompting-patterns.md</code> in the project repository</li>
+<li><code>homelab-infra</code>: enable and verify <code>X25519MLKEM768</code> on Pangolin/nginx; keep <code>cloudflared</code>
+  current (tracked there).</li>
+<li>The header-size capacity test for oversized PQC tokens does not exist yet; required before
+  the signature gates can close.</li>
+</ul>
+<h2 id="implementation">Implementation<a class="headerlink" href="#implementation" title="Permanent link">&para;</a></h2>
+<h3 id="components-affected">Components Affected<a class="headerlink" href="#components-affected" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>src/cyo_adventure/core/config.py</code>: <code>oidc_allowed_algs</code> field plus the
+  <code>_reject_forgeable_jwt_algorithms</code> validator.</li>
+<li><code>src/cyo_adventure/api/deps.py</code>: <code>_verify_oidc_jwt</code> reads the configured allowlist.</li>
+<li><code>scripts/check_fips_compatibility.py</code>: FIPS 203/204/205 approved names, pre-standard-name
+  warnings, updated package hints.</li>
+<li><code>.env.example</code>: documents <code>OIDC_ALLOWED_ALGS</code>.</li>
+<li><code>docs/security/crypto-inventory.md</code>: the new inventory (created with this ADR).</li>
+</ul>
+<h3 id="testing-strategy">Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>tests/unit/test_config.py::TestOidcAllowedAlgs</code>: default value, empty-list rejection,
+  <code>none</code> rejection, <code>HS*</code> rejection, PQC-name acceptance, unprefixed env alias.</li>
+<li><code>tests/unit/test_oidc_verification.py::test_algorithm_allowlist_is_config_driven</code>: narrowing
+  the setting rejects an otherwise-valid token, proving the setting drives verification.</li>
+<li>The existing negative-token suite (expired, wrong issuer/audience/key, tampered, alg=none,
+  HS256 confusion) is unchanged and still green, demonstrating no security regression.</li>
+</ul>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Full unit suite green, including the new tests above.</li>
+<li><code>scripts/check_fips_compatibility.py</code> passes on <code>src/</code> with no new findings, and correctly
+  warns on synthetic pre-standard PQC names while accepting finalized ones.</li>
+<li>Negotiated-group verification against the live endpoints is the <code>homelab-infra</code> acceptance
+  check for the key-exchange half.</li>
+</ul>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>NIST FIPS 203 (ML-KEM), FIPS 204 (ML-DSA), FIPS 205 (SLH-DSA), August 2024.</li>
+<li><code>docs/architecture/deployment.md</code> (the TLS termination chain this ADR builds on).</li>
+<li><code>docs/security/crypto-inventory.md</code> (the living inventory this ADR mandates).</li>
+<li><a href="../adr-009-supabase-platform/">ADR-009</a> (JWKS verification design this ADR extends).</li>
 </ul>
 
 
@@ -2928,7 +3079,7 @@
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 21, 2026 03:49:04 UTC">June 21, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 03:08:39 UTC">July 12, 2026</span>
   </span>
 
     
@@ -3005,10 +3156,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
