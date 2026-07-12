@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { AuthProvider } from './AuthContext'
 import { getChildSession, setChildSession } from './childSession'
+import { coolParentalGate, parentalGateRemainingMs, warmParentalGate } from './parentalGateState'
 import { useAuth } from './useAuth'
 
 const mockGet = vi.fn()
@@ -99,6 +100,7 @@ function CatchingActionsProbe() {
 
 beforeEach(() => {
   localStorage.clear()
+  coolParentalGate()
   mockGet.mockReset()
   mockGetSession.mockReset()
   mockOnAuthStateChange
@@ -398,6 +400,45 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
     fireEvent.click(screen.getByText('sign out'))
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
+  })
+
+  it('sign-out drops warm parental-gate state', async () => {
+    // P6-08: an explicit sign-out hands the device over, so a warm parental
+    // gate must not survive it and greet the next sign-in already unlocked.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: null })
+    warmParentalGate('u1')
+    render(
+      <AuthProvider>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
+
+    fireEvent.click(screen.getByText('sign out'))
+
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
+    expect(parentalGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('keeps warm parental-gate state when sign-out itself fails', async () => {
+    // A failed sign-out leaves the session in place, so the gate state should
+    // stay consistent with it rather than half-clearing.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockSignOut.mockResolvedValue({ error: new Error('revoke failed') })
+    warmParentalGate('u1')
+    render(
+      <AuthProvider>
+        <CatchingActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+
+    fireEvent.click(screen.getByText('sign out'))
+
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('revoke failed'))
+    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
   })
 
   it('rejects signInWithOAuth when supabase reports an error', async () => {

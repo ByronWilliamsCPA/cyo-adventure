@@ -207,6 +207,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Parental gate on the guardian console's sensitive surfaces (P6-08), the gate
+  pattern Apple expects in Kids Category apps. A new `ParentalGate` component
+  (`frontend/src/auth/ParentalGate.tsx`) wraps, as a pathless layout route
+  inside the existing `ProtectedRoute`, the console review queue (`/guardian`),
+  review/approve detail (`/guardian/review/:id`), books/assignments
+  (`/guardian/books`), profile management (`/guardian/profiles`), and the
+  admin moderation pages (`/guardian/moderation-thresholds`,
+  `/guardian/moderation-dashboard`); future purchase routes (P8-06) join the
+  same group. When the gate is cold it renders a guardian re-auth challenge
+  (password re-entry via the existing Supabase client's `signInWithPassword`
+  against the current session user's email) instead of the wrapped page; a
+  correct password warms the gate for a 5-minute TTL held in module memory
+  only (`frontend/src/auth/parentalGateState.ts`, keyed by Supabase user id;
+  never `localStorage`, so a reload or new tab always re-challenges), a wrong
+  password shows an inline error and stays locked, and cancel navigates back.
+  Intake (`/guardian/intake`) and the request list (`/guardian/requests`)
+  deliberately stay outside the gate: viewing and asking are not the
+  high-stakes actions; approving, assigning, and settings are. Kid routes have
+  zero interaction with the gate (it ships in the guardian lazy chunk only).
+  A guardian who signed in via OAuth has no password to re-enter and
+  supabase-js offers no client-side OAuth re-auth challenge, so OAuth users
+  pass through with a console-visible warning rather than being locked out of
+  approval; a real challenge for them (gate PIN or backend re-auth grant) is
+  follow-up work. **Deferred, deliberately**: the plan's companion
+  "approval freshness guard" backend note (a bounded `auth_time`/`iat`
+  recency check on the approve endpoint) is not implemented because it is not
+  sound with Supabase sessions; the client's silent token refresh also mints
+  a fresh `iat`, so an `iat`-recency check cannot distinguish a
+  re-authenticated human from a walked-away auto-refreshing session.
+  Server-side freshness needs its own attestation design (candidate: a
+  backend-minted, short-lived re-auth grant demanded by the approve
+  endpoint), tracked as future work. Covered by a 12-case Vitest suite
+  (`ParentalGate.test.tsx`: cold challenge, unlock, wrong password,
+  connection failure, warm mount, cross-user warm entry, TTL expiry under
+  fake timers, OAuth pass-through, cancel, no-session fail-closed, no
+  storage persistence, in-flight lock) plus router-level tests that the cold
+  gate blocks the console, intake stays ungated, and the kid surface never
+  mounts the gate.
 - JIT guardian provisioning (P6-03): new endpoint `POST /api/v1/onboarding`
   (`api/onboarding.py`, wired in `app.py`). A guardian's first authenticated
   call creates their `Family` plus a guardian `User` row keyed on the verified
