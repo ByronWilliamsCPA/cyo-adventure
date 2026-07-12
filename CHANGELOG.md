@@ -8,6 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `scripts/backfill_covers_r2.py`: one-shot operator script that migrates
+  pre-R2 cover art from Supabase Storage to Cloudflare R2 (#214), closing the
+  gap the R2 cutover PR (#209) explicitly left open ("this PR does not
+  backfill or re-upload them to R2, so old covers keep loading from Supabase
+  until a future backfill"). Selects every `storybook_version` row with a
+  non-null `cover_image_url`, classifies each as `"r2"` (already migrated via
+  a `startswith(settings.r2_public_base_url)` check; skipped, not a
+  candidate), `"supabase"` (matches the pre-R2 public-URL shape
+  `https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>/<key>`,
+  tolerating an optional `?...` cache-busting suffix; a migration candidate),
+  or `"other"` (skipped). Each candidate is downloaded, re-uploaded to R2 via
+  the existing `covers.storage.upload_cover()` under the same
+  `{storybook_id}/{version}.webp` key the live generation path uses, then
+  downloaded back from the new R2 URL and compared byte-for-byte against the
+  original before the database row is touched at all; a mismatch, or any
+  download/upload exception, leaves the row untouched and counts it as
+  failed rather than risking a half-migrated or corrupted cover. Supports
+  `--dry-run` to log candidates and print a summary without writing
+  anything. Uses a browser-like User-Agent on both downloads: the
+  williamshome.family Cloudflare zone's bot protection returns 403 for the
+  default python-httpx User-Agent, which was observed in practice during the
+  PR #209/#210 R2 rollout smoke tests. Idempotent: re-running against an
+  already-migrated row is a no-op (classified `"r2"`, not a candidate).
 - Hybrid post-quantum cryptography readiness (ADR-013). The JWT
   signature-algorithm allowlist in `api/deps.py` is now configuration
   (`Settings.oidc_allowed_algs`, env `OIDC_ALLOWED_ALGS`, default
