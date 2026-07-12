@@ -587,6 +587,156 @@ class TestValidatorRequireOidcConfigOutsideLocal:
         assert settings.oidc_jwks_url is None
 
 
+def _non_local_settings(**overrides: object) -> object:
+    """Build a non-local Settings with valid OIDC + db, overriding as needed.
+
+    Centralizes the OIDC-config-plus-prod-db boilerplate every child-session
+    validator test needs so each case varies only child_session_secret. The
+    OIDC validator runs before the child-session validator, so without valid
+    OIDC config every case would raise for the wrong reason.
+    """
+    from cyo_adventure.core.config import Settings
+
+    kwargs: dict[str, object] = {
+        "environment": "production",
+        "database_url": _PROD_DB_URL,
+        "oidc_issuer": "https://project.supabase.co/auth/v1",
+        "oidc_jwks_url": ("https://project.supabase.co/auth/v1/.well-known/jwks.json"),
+        "child_session_secret": _CHILD_SECRET,
+    }
+    kwargs.update(overrides)
+    return Settings(**kwargs)  # type: ignore[arg-type]
+
+
+class TestValidatorRequireChildSessionSecretOutsideLocal:
+    """Tests for the _require_child_session_secret_outside_local validator.
+
+    Presence alone is insufficient: an empty secret 500s every mint, and a
+    short or placeholder secret signs forgeable child tokens. The validator is
+    the only runtime guard (PyJWT's InsecureKeyLengthWarning does not error
+    outside pytest), so these cases pin the forgery boundary.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_without_child_secret_raises(self, environment: str) -> None:
+        """Missing child_session_secret outside local raises ConfigurationError."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(environment=environment, child_session_secret=None)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "secret",
+        [
+            "",  # empty: SecretStr("") slips past a bare is-None check
+            "   ",  # whitespace only
+            "short-key",  # non-empty but under the 32-byte HS256 floor
+            "0123456789abcdef0123456789abcde",  # 31 bytes: one short of the floor
+            "REPLACE_ME",  # placeholder shipped in .env.staging.example
+            "changeme",  # common placeholder
+            "SECRET",  # placeholder (casefolded match)
+        ],
+    )
+    def test_non_local_with_weak_child_secret_raises(self, secret: str) -> None:
+        """Empty, short, or placeholder secrets are rejected outside local."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(child_session_secret=secret)
+
+    @pytest.mark.unit
+    def test_error_message_never_echoes_the_secret(self) -> None:
+        """The failure message must not leak the (weak) secret value."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        canary = "sekret-leak-canary"  # 18 bytes: fails the length check
+        with pytest.raises(ConfigurationError) as exc_info:
+            _non_local_settings(child_session_secret=canary)
+
+        message = str(exc_info.value)
+        assert canary not in message
+        assert "CHILD_SESSION_SECRET" in message
+        assert "production" in message
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_with_strong_child_secret_is_valid(
+        self, environment: str
+    ) -> None:
+        """A >=32-byte non-placeholder secret is accepted outside local."""
+        settings = _non_local_settings(environment=environment)
+        assert settings.child_session_secret is not None  # type: ignore[attr-defined]
+
+    @pytest.mark.unit
+    def test_local_environment_without_child_secret_is_valid(self) -> None:
+        """Local environment does not require a child-session secret (dev stub)."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(environment="local")
+        assert settings.child_session_secret is None
+
+
+class TestChildSessionTtlSetting:
+    """Tests for child_session_ttl_seconds env binding and its ge=1 bound.
+
+    The field declares validation_alias=AliasChoices(prefixed, unprefixed);
+    without it the unprefixed CHILD_SESSION_TTL_SECONDS the .env templates
+    document is silently ignored and every deploy keeps the 12h default.
+    """
+
+    @pytest.mark.unit
+    def test_ttl_defaults_to_twelve_hours(self) -> None:
+        """child_session_ttl_seconds defaults to 43200 (12h) when unset."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(environment="local").child_session_ttl_seconds == 43_200
+
+    @pytest.mark.unit
+    def test_ttl_reads_unprefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """child_session_ttl_seconds reads the unprefixed CHILD_SESSION_TTL_SECONDS."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", raising=False)
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", "3600")
+        assert Settings(environment="local").child_session_ttl_seconds == 3_600
+
+    @pytest.mark.unit
+    def test_ttl_reads_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The prefixed CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS name also binds."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CHILD_SESSION_TTL_SECONDS", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", "1800")
+        assert Settings(environment="local").child_session_ttl_seconds == 1_800
+
+    @pytest.mark.unit
+    def test_ttl_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", "3600")
+        monkeypatch.setenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", "1800")
+        assert Settings(environment="local").child_session_ttl_seconds == 1_800
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("ttl", ["0", "-1"])
+    def test_ttl_non_positive_is_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, ttl: str
+    ) -> None:
+        """A zero/negative TTL fails the ge=1 bound at construction time."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", ttl)
+        with pytest.raises(ValidationError):
+            Settings(environment="local")
+
+
 class TestAnthropicGenerationSettings:
     """Tests for the direct-Anthropic settings (WS-C PR1)."""
 
