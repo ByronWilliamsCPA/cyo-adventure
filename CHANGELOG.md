@@ -186,6 +186,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
+  fixture (`tests/integration/conftest.py::seed`, family A and B) is now
+  joined by a third, completely unrelated `stranger` fixture (family C, no
+  shared storybook, assignment, story request, or profile with A or B), so a
+  query that happens to reject only the one other family the suite knew
+  about (rather than correctly checking "belongs to the caller's family")
+  can no longer pass unnoticed. `test_authz_matrix.py` gains stranger-family
+  parametrized checks in both directions (family C's guardian/child tokens
+  against family A's resources, and family A's child token against family
+  C's profile) across every ownership-scoped route already covered for
+  family B, plus a leak-by-inclusion check on `GET /api/v1/profiles` (the
+  response body's id set, not just the status code, is asserted to exclude
+  both other families). `test_child_sessions.py` extends the same coverage
+  to the real, backend-signed child-session JWT mint/verify path (G1/P6-04):
+  a guardian cannot mint a session for a stranger family's profile in either
+  direction, and a minted third-family token is proven to fail against
+  family A's library/guardian routes and vice versa, closing the gap left by
+  testing only the dev-stub role tokens. `test_guardian_books_api.py` adds
+  the same third-family isolation and assignment-leak checks the file
+  already ran against family B. No cross-tenant leak was found; every new
+  check landed green against the existing implementation.
 - Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
   admin) exchanges a child profile id for a short-lived, backend-signed HS256
   JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
