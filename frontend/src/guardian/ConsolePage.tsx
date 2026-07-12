@@ -179,7 +179,7 @@ export function ConsolePage() {
               ) : (
                 <ul className="console-list">
                   {state.processing.map((job) => (
-                    <li key={job.job_id} className="console-row cyo-card cyo-card--interactive">
+                    <li key={job.job_id} className="console-row cyo-card">
                       <span className="console-row__title">{job.title}</span>
                       <FlagBadge tone="processing" />
                     </li>

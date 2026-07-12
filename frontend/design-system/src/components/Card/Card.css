@@ -9,7 +9,9 @@
 
 /* Hover-lift for a card that is itself a whole clickable row (e.g. the
    review-queue feed row), not a card that hosts its own interactive
-   controls with their own hover/focus states. */
-.cyo-card--interactive:hover {
+   controls with their own hover/focus states. :focus-within gives keyboard
+   users the same card-level affordance when the inner link takes focus. */
+.cyo-card--interactive:hover,
+.cyo-card--interactive:focus-within {
   box-shadow: var(--shadow-sm);
 }

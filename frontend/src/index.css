@@ -1,6 +1,7 @@
 @import '../design-system/src/tokens.css';
 @import '../design-system/src/utilities.css';
 @import '../design-system/src/components/Card/Card.css';
+@import '../design-system/src/components/Chip/Chip.css';
 @import '../design-system/src/components/FormField/FormField.css';
 
 *,

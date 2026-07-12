@@ -216,7 +216,7 @@ export function RequestsPage() {
             return (
               <li
                 key={req.id}
-                className="console-row cyo-card cyo-card--interactive"
+                className="console-row cyo-card"
                 data-testid={`request-${req.id}`}
               >
                 <div className="console-row__body">
