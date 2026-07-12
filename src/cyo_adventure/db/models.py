@@ -187,6 +187,22 @@ class User(Base):
         server_default=sa_text("false"), default=False
     )
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
+    # Contact data ONLY, never an identity key. Populated from the Supabase
+    # user's email claim at JIT onboarding (P6-03) for receipts and consent
+    # records (P7-02 fills consent); may be an Apple private-relay address and
+    # may change. ``authn_subject`` is the sole key: nothing joins, authorizes,
+    # or de-duplicates on this column, and it is nullable so a subject with no
+    # email claim still provisions.
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260711204606_add_user_email.sql must be applied
+    # BEFORE an image carrying this column deploys. Every full-entity
+    # select(User) (the auth path in api/deps.py runs one per request) emits
+    # this column; against a database without it, asyncpg raises
+    # UndefinedColumn and every authenticated endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    email: Mapped[str | None] = mapped_column(String(320), default=None)
     # Null for guardians; set for a child user to the single profile it may act on.
     child_profile_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey(_FK_CHILD_PROFILE), default=None

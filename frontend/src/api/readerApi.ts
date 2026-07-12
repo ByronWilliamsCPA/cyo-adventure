@@ -37,6 +37,13 @@ export function makeSyncApi(api: AxiosInstance): SyncApi {
             const data = error.response.data as ConflictBody
             return { status: 409, currentRow: data.current_row }
           }
+          // A 401 means the child session token expired/was revoked mid-read.
+          // Surface it as UnauthenticatedError so the reader stops persisting
+          // (every retry would 401 too) and shows the ask-a-grown-up gate,
+          // instead of the misleading "we'll keep trying" save banner.
+          if (error.response?.status === 401) {
+            throw new UnauthenticatedError()
+          }
           // No HTTP response means a transport failure (offline/timeout); signal
           // it distinctly so the sync layer queues only true offline writes. An
           // HTTP error response (auth/validation/server) propagates as itself.
@@ -70,6 +77,18 @@ export class ForbiddenError extends Error {
   }
 }
 
+/** Thrown on an HTTP 401: the bearer the request carried (a child session
+ * token, most commonly an expired one) is no longer valid. Distinct from
+ * ForbiddenError so the reader shows an ask-a-grown-up gate and STOPS, rather
+ * than a "Try again" or a "we'll keep trying" save banner that can never
+ * succeed until a grown-up signs in again. */
+export class UnauthenticatedError extends Error {
+  constructor(message = 'session expired') {
+    super(message)
+    this.name = 'UnauthenticatedError'
+  }
+}
+
 export function makeFetchStory(
   api: AxiosInstance
 ): (storybookId: string, version: number) => Promise<Storybook> {
@@ -84,6 +103,11 @@ export function makeFetchStory(
         }
         if (error.response?.status === 403) {
           throw new ForbiddenError()
+        }
+        // A 401 means the child session token is no longer valid; the reader
+        // maps this to an ask-a-grown-up gate, not the generic error screen.
+        if (error.response?.status === 401) {
+          throw new UnauthenticatedError()
         }
         // No HTTP response means a transport failure (offline/timeout); signal it
         // distinctly so the reader shows the offline screen, not "not found".

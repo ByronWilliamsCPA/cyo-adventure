@@ -11,6 +11,8 @@ import {
   type AuthError,
   type AuthStatus,
 } from './authContext'
+import { clearChildSession } from './childSession'
+import { coolParentalGate } from './parentalGateState'
 import { supabase } from './supabaseClient'
 import { isRole, type Principal } from './types'
 
@@ -21,6 +23,14 @@ const TOKEN_STORAGE_KEY = 'auth_token'
  * browsers throw from localStorage in private/locked-down modes. Clearing is a
  * best-effort cleanup on the fail-closed path, so a throw here must not mask
  * the sign-out it accompanies.
+ *
+ * #ASSUME: security: also clears any active child session (G1 / P6-04). Both
+ * call sites below represent "the guardian is no longer authenticated"
+ * (an explicit sign-out, or a Supabase session that never resolved to a
+ * principal), and a child session sharing this device's storage must not
+ * outlive the guardian session that made the device available for a kid to
+ * use. clearChildSession() is a no-op when no child session is stored.
+ * #VERIFY: AuthContext.test.tsx "sign-out clears an active child session".
  */
 function safeRemoveToken(): void {
   try {
@@ -28,6 +38,7 @@ function safeRemoveToken(): void {
   } catch {
     // #EDGE: browser-compat: storage unavailable; nothing to clean up.
   }
+  clearChildSession()
 }
 
 // Alias, not a hand-typed shadow interface: the shape is the generated
@@ -192,6 +203,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
+        // #ASSUME: security: an explicit sign-out hands the device over, so
+        // any warm parental-gate state (P6-08) must die with the session
+        // rather than surviving in module memory for the next sign-in within
+        // the TTL. Cool it here deterministically instead of relying on the
+        // async SIGNED_OUT event.
+        // #VERIFY: AuthContext.test.tsx "sign-out drops warm parental-gate
+        // state".
+        coolParentalGate()
       },
     }),
     [status, principal, authError]

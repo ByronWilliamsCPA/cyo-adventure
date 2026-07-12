@@ -46,6 +46,13 @@ export const GuardianAuthLayout = lazy(() =>
 export const GuardianShell = lazy(() =>
   import('./guardian/GuardianShell').then((m) => ({ default: m.GuardianShell }))
 )
+// Lazy like the rest of the guardian chunk, NOT imported eagerly in router.tsx
+// the way ProtectedRoute is: ParentalGate imports auth/supabaseClient, and an
+// eager import would pull @supabase/supabase-js (and its env requirement) into
+// the kid surface's bundle.
+export const ParentalGate = lazy(() =>
+  import('./auth/ParentalGate').then((m) => ({ default: m.ParentalGate }))
+)
 export const LoginPage = lazy(() =>
   import('./guardian/LoginPage').then((m) => ({ default: m.LoginPage }))
 )

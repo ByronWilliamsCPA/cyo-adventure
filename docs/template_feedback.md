@@ -751,6 +751,37 @@ job conclusion so the two cannot disagree.
 **Affected Files**: template `scripts/check_fips_compatibility.py`,
 `.github/workflows/fips-compatibility.yml`
 
+### Semantic-release workflow direct-pushes to `main`, incompatible with the template's own branch protections
+
+- **Priority**: High
+- **Category**: CI/CD
+- **Discovered**: 2026-07-11
+
+**Issue**: The template's `release.yml` runs python-semantic-release in its default mode:
+commit the version bump and CHANGELOG rewrite directly to `main` and push, then tag. Any
+repository that adopts the protection posture the template itself encourages (required PRs,
+required status checks, merge queue, required signatures) rejects that push with GH013, so
+the release workflow fails on every run and the project version never advances. The two
+failure modes compound: PSR's changelog writer also assumes it owns CHANGELOG.md, so on a
+repo with a hand-curated Keep-a-Changelog file the default mode would clobber curated
+content even if the push succeeded. The template also ships `publish-pypi.yml`
+unconditionally, which attempts a real PyPI upload on every GitHub Release even for
+application (non-package) projects.
+
+**Context**: This repo's version stayed at 0.1.0 through roughly 200 merged PRs (issues
+#183, #157, #158). Every push to `main` produced a failed release run rejected by the
+`pull_request`/`required_signatures`/`merge_queue` rulesets.
+
+**Suggested Fix**: Ship a two-phase, PR-based release flow instead: a `propose` job that
+uses PSR only as a version calculator (`semantic-release version --print`), applies the bump
+with `uv version` + `uv lock`, and opens an auto-merging `release/vX.Y.Z` PR; and a
+`publish` job that tags and creates the GitHub Release when the `chore(release):` commit
+lands. Document that the propose job needs a fine-grained PAT secret because
+`GITHUB_TOKEN`-created PRs do not trigger required workflows. Gate `publish-pypi.yml` behind
+the cookiecutter "is this a published package" flag.
+
+**Affected Files**: template `.github/workflows/release.yml`,
+`.github/workflows/publish-pypi.yml`, `pyproject.toml` (`[tool.semantic_release]`)
 ---
 
 ### FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)

@@ -19,6 +19,7 @@ import {
   ModerationDashboardPage,
   ModerationThresholdsPage,
   NotFoundPage,
+  ParentalGate,
   ProfilePickerPage,
   ProfilesPage,
   ReaderRoute,
@@ -111,11 +112,30 @@ export const routes = [
           {
             element: suspended(<GuardianShell />),
             children: [
-              { index: true, element: suspended(<ConsolePage />) },
+              // Outside the parental gate: requesting a story and watching the
+              // request list are viewing/asking surfaces, not the high-stakes
+              // actions (P6-08 gates approval, assignments, and profile
+              // management, not every guardian page).
               { path: 'intake', element: suspended(<IntakePage />) },
-              { path: 'books', element: suspended(<BooksPage />) },
               { path: 'requests', element: suspended(<RequestsPage />) },
-              { path: 'profiles', element: suspended(<ProfilesPage />) },
+              {
+                // Parental gate (P6-08): a pathless layout route wrapping the
+                // sensitive console surfaces so a kid holding a signed-in
+                // device cannot reach the family home (console), assignments
+                // (books), or profile management without a guardian re-auth.
+                // Sits INSIDE ProtectedRoute (a signed-in guardian/admin is a
+                // precondition of re-auth) and renders its challenge in place
+                // of the child route until warm. The admin-capability
+                // surfaces that P6-08 also gated (approval queue, review,
+                // moderation) moved to the parallel /admin tree below, which
+                // carries its own ParentalGate.
+                element: suspended(<ParentalGate />),
+                children: [
+                  { index: true, element: suspended(<ConsolePage />) },
+                  { path: 'books', element: suspended(<BooksPage />) },
+                  { path: 'profiles', element: suspended(<ProfilesPage />) },
+                ],
+              },
             ],
           },
         ],
@@ -138,16 +158,36 @@ export const routes = [
           {
             element: suspended(<AdminShell />),
             children: [
-              { index: true, element: suspended(<AdminConsolePage />) },
+              // Outside the parental gate: the global request queue is a
+              // viewing surface, mirroring how the guardian subtree leaves its
+              // own request list ungated. P6-08 gates the high-stakes actions,
+              // not every admin page.
               { path: 'requests', element: suspended(<AdminRequestsPage />) },
-              { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
               {
-                path: 'moderation-thresholds',
-                element: suspended(<ModerationThresholdsPage />),
-              },
-              {
-                path: 'moderation-dashboard',
-                element: suspended(<ModerationDashboardPage />),
+                // Parental gate (P6-08): the admin console's high-stakes
+                // surfaces (approval/review queue, review detail, moderation
+                // settings) moved here from the guardian subtree in the
+                // dual-role refactor, so the re-auth gate that P6-08 placed
+                // around approval/review/moderation follows them. The admin
+                // capability (is_admin, enforced by the ProtectedRoute above)
+                // proves the adult HAS admin rights; it does not prove a
+                // grown-up is holding the device right now, so a kid on a
+                // signed-in dual-role device would otherwise reach approval
+                // with no challenge. Nested inside the admin-only
+                // ProtectedRoute, so a signed-in admin is a precondition.
+                element: suspended(<ParentalGate />),
+                children: [
+                  { index: true, element: suspended(<AdminConsolePage />) },
+                  { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
+                  {
+                    path: 'moderation-thresholds',
+                    element: suspended(<ModerationThresholdsPage />),
+                  },
+                  {
+                    path: 'moderation-dashboard',
+                    element: suspended(<ModerationDashboardPage />),
+                  },
+                ],
               },
             ],
           },

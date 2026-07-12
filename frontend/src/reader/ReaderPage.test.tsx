@@ -9,7 +9,7 @@ import { StrictMode } from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ForbiddenError, StoryNotFoundError } from '../api/readerApi'
+import { ForbiddenError, StoryNotFoundError, UnauthenticatedError } from '../api/readerApi'
 import * as db from '../offline/db'
 import { _resetDbHandle, getReadingState, putReadingState } from '../offline/db'
 import type { PutResponse, SyncApi } from '../offline/sync'
@@ -183,7 +183,7 @@ describe('ReaderPage', () => {
     expect(await screen.findByTestId('download-needed')).toBeTruthy()
   })
 
-  it('navigates to the profile library from the offline screen\'s Back to my books button', async () => {
+  it("navigates to the profile library from the offline screen's Back to my books button", async () => {
     render(
       <MemoryRouter initialEntries={['/read/p_dl/s_lantern_cave/1']}>
         <Routes>
@@ -220,6 +220,37 @@ describe('ReaderPage', () => {
     expect(screen.getByRole('button', { name: 'Back to my books' })).toBeTruthy()
   })
 
+  it('shows the ask-a-grown-up gate on a 401 during load, with no retry', async () => {
+    renderPage(() => Promise.reject(new UnauthenticatedError()))
+    expect(await screen.findByText('Ask a grown-up to help')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'I am a grown-up' })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull()
+  })
+
+  it('shows the ask-a-grown-up gate and stops saving when a save 401s', async () => {
+    // The story loads fine (from cache/network), but the child token expires
+    // mid-read: the mount-time save 401s. That must surface the gate, not the
+    // misleading "we'll keep trying" save banner.
+    const putReadingState = vi.fn(() => Promise.reject(new UnauthenticatedError()))
+    const api: SyncApi = { putReadingState }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_expired"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    expect(await screen.findByText('Ask a grown-up to help')).toBeTruthy()
+    expect(screen.queryByTestId('save-warning')).toBeNull()
+    // The reader is torn down, so no further choices (hence no further saves)
+    // can fire once the gate is shown.
+    expect(screen.queryByTestId('reader')).toBeNull()
+  })
+
   it('warns immediately when a save is lost locally, not just server-side', async () => {
     vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
     render(
@@ -236,9 +267,7 @@ describe('ReaderPage', () => {
     // The mount-time save (Reader's initial progress report) hits the mocked
     // rejection; a single local-write failure is real loss, so it must not
     // wait for a second occurrence before surfacing.
-    expect(await screen.findByTestId('save-warning')).toHaveTextContent(
-      "couldn't save that step"
-    )
+    expect(await screen.findByTestId('save-warning')).toHaveTextContent("couldn't save that step")
   })
 
   it('warns after repeated remote save failures but not after just one', async () => {
@@ -346,9 +375,7 @@ describe('ReaderPage', () => {
     // The Reader remounted seeded from the adopted server state: the fork
     // passage renders, and the lantern-gated choice is visible because the
     // server's var_state (has_lantern: true) was adopted too.
-    await waitFor(() =>
-      expect(screen.getByTestId('passage-body').textContent).toContain('splits')
-    )
+    await waitFor(() => expect(screen.getByTestId('passage-body').textContent).toContain('splits'))
     expect(screen.getByTestId('choice-c_dark_passage')).toBeTruthy()
 
     // The adopted state was mirrored into the local cache so the next open

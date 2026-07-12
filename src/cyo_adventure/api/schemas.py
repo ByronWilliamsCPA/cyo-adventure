@@ -1060,6 +1060,56 @@ class ChildSessionView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# JIT guardian onboarding (P6-03)
+# ---------------------------------------------------------------------------
+
+
+class OnboardingConsent(BaseModel):
+    """Consent-capture seam for onboarding (accepted, recorded by P7-02).
+
+    This is the extension point P7-02 (consent capture) fills; onboarding
+    accepts it today but records nothing. Keep it minimal: do NOT add consent
+    business logic here.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    # #ASSUME: data integrity: these fields are the consent seam only. P6-03
+    # accepts and drops them; P7-02 will persist a consent record. Do not gate
+    # provisioning on them or treat them as authoritative until P7-02 lands.
+    # #VERIFY: onboarding._record_consent is a no-op referencing P7-02.
+    accepted: bool | None = None
+    policy_version: str | None = None
+
+
+class OnboardingBody(BaseModel):
+    """First-login onboarding request body.
+
+    All identity comes from the verified token, so the body is optional and
+    carries only the P7-02 consent seam. The endpoint accepts an empty request
+    (no body) equally.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    consent: OnboardingConsent | None = None
+
+
+class OnboardingView(BaseModel):
+    """The family/guardian identity resolved or created by onboarding.
+
+    ``created`` is ``True`` only when this request provisioned the row; a
+    retry (idempotent) or an already-provisioned guardian/admin returns
+    ``False``. The HTTP status mirrors it: 201 when created, 200 otherwise.
+    """
+
+    family_id: str
+    user_id: str
+    role: str
+    created: bool
+
+
+# ---------------------------------------------------------------------------
 # Moderation threshold admin CRUD (WS-A)
 # ---------------------------------------------------------------------------
 

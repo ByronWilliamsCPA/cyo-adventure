@@ -1,9 +1,10 @@
 """Unit tests for the child-user provisioning conflict discriminator (G1 / P6-04).
 
-Covers ``_is_authn_subject_conflict``: the pure predicate that decides whether
-an ``IntegrityError`` from the JIT child-user insert is the benign double-mint
-race (a unique violation on ``ix_user_authn_subject``, which the caller recovers
-from) or a real error (FK/CHECK, which must propagate). The endpoint's DB-backed
+Covers ``db.integrity.is_authn_subject_conflict``: the pure predicate that
+decides whether an ``IntegrityError`` from the JIT child-user insert is the
+benign double-mint race (a unique violation on ``ix_user_authn_subject``,
+which the caller recovers from) or a real error (FK/CHECK, which must
+propagate). The endpoint's DB-backed
 race recovery is covered in tests/integration/test_child_sessions.py; these
 cases pin the driver-aware SQLSTATE + constraint-name logic without a database.
 """
@@ -13,7 +14,7 @@ from __future__ import annotations
 import pytest
 from sqlalchemy.exc import IntegrityError
 
-from cyo_adventure.api.child_sessions import _is_authn_subject_conflict
+from cyo_adventure.db.integrity import is_authn_subject_conflict
 
 pytestmark = [pytest.mark.security]
 
@@ -55,7 +56,7 @@ def test_unique_violation_on_authn_subject_index_is_conflict() -> None:
         sqlstate="23505",
         constraint_name="ix_user_authn_subject",
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is True
+    assert is_authn_subject_conflict(_integrity_error(orig)) is True
 
 
 @pytest.mark.unit
@@ -66,7 +67,7 @@ def test_unique_violation_on_other_index_is_not_conflict() -> None:
         sqlstate="23505",
         constraint_name="ix_user_email",
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is False
+    assert is_authn_subject_conflict(_integrity_error(orig)) is False
 
 
 @pytest.mark.unit
@@ -77,7 +78,7 @@ def test_foreign_key_violation_is_not_conflict() -> None:
         sqlstate="23503",
         constraint_name="fk_user_family",
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is False
+    assert is_authn_subject_conflict(_integrity_error(orig)) is False
 
 
 @pytest.mark.unit
@@ -87,7 +88,7 @@ def test_message_text_fallback_when_constraint_name_absent() -> None:
         'duplicate key value violates unique constraint "ix_user_authn_subject"',
         sqlstate="23505",
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is True
+    assert is_authn_subject_conflict(_integrity_error(orig)) is True
 
 
 @pytest.mark.unit
@@ -98,7 +99,7 @@ def test_psycopg_pgcode_is_honored() -> None:
         pgcode="23505",
         constraint_name="ix_user_authn_subject",
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is True
+    assert is_authn_subject_conflict(_integrity_error(orig)) is True
 
 
 @pytest.mark.unit
@@ -107,4 +108,4 @@ def test_no_sqlstate_uses_message_text_superset() -> None:
     orig = _FakeOrigError(
         'duplicate key value violates unique constraint "ix_user_authn_subject"'
     )
-    assert _is_authn_subject_conflict(_integrity_error(orig)) is True
+    assert is_authn_subject_conflict(_integrity_error(orig)) is True

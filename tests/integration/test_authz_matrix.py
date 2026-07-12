@@ -474,6 +474,14 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.ADMIN}),
         json_body=_child_session_body,
     ),
+    # -- onboarding.py: JIT provisioning; any verified subject (P6-03) -------
+    # Onboarding runs BEFORE a principal exists (its whole purpose is to accept
+    # a verified subject that has no User row yet), so it has no role gate: each
+    # seed opaque token already resolves to a User row and returns 200. The one
+    # credential it does refuse (403) is a child SESSION JWT (child audience),
+    # not the opaque child token the matrix carries; that refusal is covered in
+    # test_onboarding_api.py::test_child_session_token_cannot_onboard.
+    RouteSpec("POST", "/api/v1/onboarding", ALL_ROLES),
     RouteSpec(
         "POST",
         "/api/v1/story-requests/authored",

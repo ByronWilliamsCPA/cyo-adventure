@@ -428,17 +428,32 @@ test('an expired session mid-intake redirects to sign-in rather than hanging sil
   await page.route('**/api/v1/concepts', (route) =>
     route.fulfill({ status: 401, json: { detail: 'token expired' } })
   )
+  // A fully expired session: the refresh token is dead too. useApi's 401 path
+  // (P6-06) tries ONE supabase.auth.refreshSession() before tearing the
+  // session down; mock that token endpoint to fail (invalid_grant) so the
+  // refresh resolves as "no recovery" immediately instead of hanging against
+  // the dummy Supabase URL until the client-side refresh deadline elapses.
+  // This is the branch where a redirect to sign-in is the correct terminal
+  // state; the recoverable-refresh case is covered in useApi.test.ts.
+  await page.route('**/auth/v1/token**', (route) =>
+    route.fulfill({
+      status: 400,
+      json: { code: 400, error_code: 'invalid_grant', msg: 'Invalid Refresh Token' },
+    })
+  )
 
   await page.goto('/guardian/intake')
   await page.getByTestId('child-chip-p1').click()
   await page.getByLabel(/What's it about/).fill('tide pools and brave crabs')
   await page.getByRole('button', { name: 'Request Story' }).click()
 
-  // useApi.ts's response interceptor now closes the gap this test used to
-  // characterize: on a 401 from a `/guardian/*` surface it clears `auth_token`
-  // AND redirects to the guardian login (via window.location.replace, so the
-  // expired URL does not linger in history). So an expired session mid-intake
-  // lands the naive user on sign-in instead of a retryable inline error that
-  // would fail identically on every retry.
+  // useApi.ts's response interceptor closes the gap this test characterizes:
+  // on a 401 from a `/guardian/*` surface it first attempts a single silent
+  // refresh-and-retry (P6-06), and when that refresh cannot recover the
+  // session it clears `auth_token` AND redirects to the guardian login (via
+  // window.location.replace, so the expired URL does not linger in history).
+  // So a fully expired session mid-intake lands the naive user on sign-in
+  // instead of a retryable inline error that would fail identically on every
+  // retry.
   await expect(page).toHaveURL(/\/guardian\/login$/)
 })

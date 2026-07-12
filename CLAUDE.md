@@ -891,7 +891,7 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
 
 ## CI/CD Pipeline
 
-**GitHub Actions Workflows** (`.github/workflows/`, 21 files):
+**GitHub Actions Workflows** (`.github/workflows/`, 24 files):
 
 - **Quality gate**: `ci.yml` (tests/lint/typecheck on Python 3.12, includes the
   frontend contract-drift check), `python-compatibility.yml` (3.11-3.13 Ubuntu
@@ -902,12 +902,17 @@ uv run pytest tests/unit/test_example.py::test_function_name -v
   `slsa-provenance.yml`, `scorecard.yml` (OpenSSF), `sonarcloud.yml`
 - **Testing depth**: `cifuzzy.yml` (fuzzing), `mutation-testing.yml`
 - **Compliance/release**: `sbom.yml`, `reuse.yml`, `validate-cruft.yml`,
-  `release.yml` (semantic-release; **currently broken**: branch rulesets
-  reject its direct version-bump push to `main` with GH013, so the version
-  has never bumped past `0.1.0` despite substantial functionality being
-  built; an earlier invalid `commit_parser` value was already fixed in
-  PR #152; tracked in issue #183),
-  `publish-pypi.yml`
+  `release.yml` (two-phase, ruleset-compatible flow, issues #183/#157/#158:
+  a `propose` job computes the next version with python-semantic-release as
+  a pure calculator, bumps `pyproject.toml`/`uv.lock`, promotes the
+  hand-curated CHANGELOG via `scripts/promote_changelog.py`, and opens an
+  auto-merging `release/vX.Y.Z` PR; a `publish` job tags and creates the
+  GitHub Release when that `chore(release):` commit merges, with notes from
+  `scripts/extract_changelog_section.py`. Requires the `RELEASE_TOKEN`
+  fine-grained PAT secret, contents + pull-requests write, because
+  `GITHUB_TOKEN`-created PRs do not trigger required CI workflows.
+  `publish-pypi.yml` was deleted: this is a deployed app, not a PyPI
+  package)
 - **Docs / review**: `docs.yml`, `claude-baseline-review.yml`
 
 **Quality Gates** (must pass):
