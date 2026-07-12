@@ -1,6 +1,59 @@
 # Guardian persona: naive-user Claude-for-Chrome prompts
 
+Paste one block below into the Claude-for-Chrome extension at a time. After
+each run, log the response via the naive-ux-check skill (see SKILL.md).
+
+Lines beginning "Operator setup:" or "Operator note:", and the "Expected
+observations" paragraphs, are instructions for the human running the
+extension; never paste them. When a task says "sign in", use the seeded test
+guardian credentials on staging (`SEED_GUARDIAN_EMAIL`, default
+`cyo-test-guardian@example.com`; password from the operator's shell
+environment), never a real production account.
+
+## G0: finding sign-in from scratch
+
+Operator setup: run this in a browser tab that is not signed in. Before
+pasting, replace `<EMAIL>` and `<PASSWORD>` with the seeded test guardian
+credentials (`SEED_GUARDIAN_EMAIL`, default `cyo-test-guardian@example.com`;
+password from the operator's shell environment). Never use a real production
+account for this run.
+
+Persona: You are a parent. Your co-parent set up a family account on this
+app and texted you an email and password, nothing else. You have never seen
+the app before.
+
+Task: Go to <URL>. Find where to sign in, sign in with the email <EMAIL>
+and the password <PASSWORD>, and stop once you're sure you either are or
+are not signed in.
+
+Report back:
+
+1. How you found the sign-in page, and whether any step made you hesitate.
+2. What sign-in options you saw, and which one you used.
+3. What the screen showed right after you submitted, and whether it clearly
+   told you sign-in worked or failed.
+4. Where you ended up, and whether you understood what that page was for.
+
+Expected observations (operator reference): from the landing page, the
+"Grown-ups / Guardian console" door leads to `/guardian`, whose route guard
+redirects a signed-out visitor to the "Guardian sign-in" page
+(`/guardian/login`): a "Continue with Google" button, an "or use your email"
+divider, and an email/password form with a "Sign in" button. On success the
+persona lands on the guardian console: a "Review queue" heading, navigation
+links (Console, Request a story, Books, Story requests, Profiles), and a
+muted "Guardian" role hint beside the "CYO Adventure" brand title. On bad
+credentials the form shows "That email and password didn't match. Please
+try again." A discoverable, correctly-working sign-in with clear feedback
+is a PASS; a confusing, mislabeled, or broken path is still friction-found
+or dead-end.
+
 ## G1: first login, zero children
+
+Operator note: this scenario's zero-children premise requires an
+operator-arranged empty family (a guardian account with no child profiles).
+The default seeded staging family already has a "Test Reader" profile with
+two published stories, so an unmodified seeded run will not show the
+zero-state nudge this scenario is designed to test.
 
 Persona: You are a parent who just created an account. You have not read any
 documentation.
