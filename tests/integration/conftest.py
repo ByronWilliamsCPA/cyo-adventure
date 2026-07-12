@@ -234,7 +234,9 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
         session.add_all([profile_a, profile_b])
         await session.flush()
 
-        admin_a = User(family_id=fam_a.id, role="admin", authn_subject="admin-a")
+        admin_a = User(
+            family_id=fam_a.id, role="admin", is_admin=True, authn_subject="admin-a"
+        )
         session.add_all(
             [
                 admin_a,

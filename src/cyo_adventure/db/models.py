@@ -178,11 +178,24 @@ class User(Base):
         CheckConstraint(
             "role <> 'child' OR is_admin = false", name="ck_user_child_not_admin"
         ),
+        CheckConstraint(
+            "role <> 'admin' OR is_admin = true", name="ck_user_admin_role_flag"
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     role: Mapped[str] = mapped_column(String(16))
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260712000000_user_is_admin.sql must be applied
+    # BEFORE an image carrying this column deploys. Every full-entity
+    # select(User) (the auth path in api/deps.py::require_principal runs one
+    # per authenticated request) emits this column; against a database
+    # without it, asyncpg raises UndefinedColumn and every authenticated
+    # endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
     is_admin: Mapped[bool] = mapped_column(
         server_default=sa_text("false"), default=False
     )

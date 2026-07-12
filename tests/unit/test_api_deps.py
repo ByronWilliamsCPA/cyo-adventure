@@ -211,6 +211,30 @@ class TestResolveProfiles:
         result = await _resolve_profiles(session, user)  # pyright: ignore[arg-type]
         assert result == frozenset()
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_admin_only_returns_empty_frozenset(self) -> None:
+        """An admin-only user (not a guardian) gets an empty frozenset.
+
+        Mirrors the docstring's "empty for an admin-only adult" case: the
+        admin base role skips the guardian branch entirely, and an admin row
+        carries no ``child_profile_id``, so the child branch also falls
+        through to the empty-set default.
+        """
+        from cyo_adventure.api.deps import _resolve_profiles
+        from cyo_adventure.db.models import User
+
+        user = User(
+            id=uuid.uuid4(),
+            family_id=uuid.uuid4(),
+            role="admin",
+            is_admin=True,
+            authn_subject="sub",
+        )
+        session = _FakeDepSession()
+        result = await _resolve_profiles(session, user)  # pyright: ignore[arg-type]
+        assert result == frozenset()
+
 
 # ---------------------------------------------------------------------------
 # require_principal

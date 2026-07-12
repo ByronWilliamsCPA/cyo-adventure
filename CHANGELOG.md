@@ -8,23 +8,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Dual admin/guardian roles with a parallel admin console: one adult account
-  can now be a guardian, an admin, or both. `role` stays the single base
-  persona and a new orthogonal `User.is_admin` capability flag (surfaced on
-  `GET /v1/me`) grants the global admin (approver) capability, so a
-  `(role='guardian', is_admin=true)` principal passes both guardian-only and
-  admin-only gates while its guardian base role keeps resolving family-scoped
-  ownership. Admin functions move onto a dedicated `/admin/*` frontend console
-  (review queue, cross-family story-request queue, moderation
-  dashboard/thresholds) running in parallel with `/guardian/*`, with a
-  capability-gated route guard and a shell switcher for dual-role adults. The
-  additive migration backfills `is_admin` from `role='admin'` (defaulting new
-  rows to false) and adds a `ck_user_child_not_admin` CHECK so a child row can
-  never carry the capability. Guardian surfaces stay strictly family-scoped for
-  every caller: the global review queue is the explicit admin surface
-  `GET /api/v1/admin/story-requests`, and pipeline-event audit stamps record
-  the capacity that authorized each action (admin-gated and cross-family
-  actions stamp `admin`, own-family actions the guardian base role).
+- Dual admin/guardian roles (#236; see
+  `docs/planning/admin-guardian-dual-roles-plan.md`). `User.role` stays the
+  single base persona (`guardian`/`child`/`admin`); a new orthogonal
+  `is_admin` boolean capability column lets one adult be a guardian, an
+  admin-only reviewer, or both (`role='guardian', is_admin=true`).
+  `supabase/migrations/20260712000000_user_is_admin.sql` adds the column
+  (`NOT NULL DEFAULT false`, backfilling `is_admin=true` for existing
+  `role='admin'` rows) plus a `ck_user_child_not_admin` CHECK constraint that
+  keeps the capability off child rows; `db/models.py::User` carries the
+  identical CHECK in its ORM `__table_args__`. `api/deps.py::Principal`
+  derives `is_admin=true` for the `admin` base role in `__post_init__`
+  regardless of the stored flag (so a legacy admin-only row never loses the
+  capability) and force-clears it for `child` (defense in depth behind the DB
+  CHECK). A new `Principal.acting_role(target_family_id)` method decides which
+  role an audit stamp records: the base role for an action within the
+  principal's own family, and `admin` for a dual-role adult acting on another
+  family, since only the admin capability can authorize that cross-family
+  write. Story-request creation, approval, and decline all stamp through
+  `acting_role()`, so a dual-role adult's cross-family actions are
+  attributable in the append-only pipeline event log as `admin`, not the
+  guardian base persona, while the same adult's own-family actions are
+  stamped with their base role. `GET /api/v1/story-requests` is now
+  family-scoped for every caller (guardian, admin, and child alike, with an
+  added child-profile narrowing so a child only ever sees their own profile's
+  requests); the admin base role previously could not list requests at all. A
+  new `GET /api/v1/admin/story-requests` endpoint adds a global,
+  cross-family queue restricted to the admin capability. `GET /v1/me` now
+  returns `is_admin` alongside `role`, so the frontend can branch on the
+  capability independent of the base persona
+  (`frontend/src/auth/types.ts::Principal.isAdmin`).
+- Parallel `/admin/*` frontend console (`frontend/src/admin/`), a companion
+  adult surface to the existing `/guardian/*` console for admin-capability
+  functions: an admin review queue (`AdminConsolePage`), the cross-family
+  request queue (`AdminRequestsPage`, with a family selector since it spans
+  families), review detail, and the moderation dashboard/thresholds pages
+  (relocated here from the guardian subtree). Gated on the `is_admin`
+  capability, not the base role, via `ProtectedRoute`, so a dual-role adult
+  reaches both `/guardian` and `/admin` from one login and the two shells
+  cross-link for it; a plain guardian who navigates to `/admin` is redirected
+  back to the guardian console rather than looping to the login page. The
+  admin console carries its own `ParentalGate` (P6-08) instance around every
+  surface, including the cross-family request queue: the admin capability
+  alone proves the adult HAS admin rights, not that a grown-up is holding the
+  device right now, and the request queue renders other families' child
+  request text, so it needed the same re-auth challenge as approval/review.
 - Guardian 401 retry-with-refresh (P6-06): when a request that carried the
   guardian bearer gets a 401 (typically an access token that expired before
   supabase-js's background refresh caught it), `useApi`'s response

@@ -22,3 +22,16 @@ update "public"."user" set "is_admin" = true where "role" = 'admin';
 alter table "public"."user"
     add constraint "ck_user_child_not_admin"
     check (("role" <> 'child') or ("is_admin" = false));
+
+-- #CRITICAL: security: an admin-role row must always carry the admin
+-- capability; the backfill above sets this for existing rows, and this
+-- constraint keeps a future admin-role insert from ever persisting with the
+-- flag unset, which would be a data-corruption state the auth boundary
+-- should never have to reason about (see the header comment: the boundary
+-- already treats the admin base role as implying the capability, so this
+-- constraint is at-rest consistency, not correctness).
+-- #VERIFY: ck_user_admin_role_flag rejects (role='admin', is_admin=false) at rest;
+-- the ORM mirror lives in src/cyo_adventure/db/models.py (User.__table_args__).
+alter table "public"."user"
+    add constraint "ck_user_admin_role_flag"
+    check (("role" <> 'admin') or ("is_admin" = true));

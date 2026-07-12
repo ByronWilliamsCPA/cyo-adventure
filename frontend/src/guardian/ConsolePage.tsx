@@ -17,13 +17,26 @@ import { ADMIN_CONSOLE_PATH } from '../routes'
 export function ConsolePage() {
   const api = useApi()
   const { principal } = useAuth()
+  // An admin-only adult (isAdmin without the guardian base role) has no
+  // guardian family surface here: /v1/profiles always resolves to an empty
+  // set for this role (api/deps.py::_resolve_profiles never scans a family's
+  // children for a non-guardian principal), and profile creation is
+  // guardian-only (api/profiles.py::_require_guardian), so both the
+  // onboarding nudge and the quick-link grid would be dead ends for this
+  // principal. A dual-role adult (role='guardian', isAdmin=true) is NOT
+  // admin-only and keeps the full guardian experience.
+  const isAdminOnly = principal !== null && principal.isAdmin && principal.role !== 'guardian'
   // #ASSUME: data integrity: /v1/profiles returns { profiles: [...] }. On any
-  // failure childCount stays null and the onboarding nudge simply does not
-  // render, so a first-time guardian is nudged but a load hiccup is silent.
-  // #VERIFY: ConsolePage.test.tsx nudge / no-nudge cases.
+  // failure childCount stays null; the onboarding nudge is gated on a
+  // confirmed-empty family (childCount === 0), so a guardian keeps their
+  // quick links over a transient load hiccup rather than being pushed into
+  // the childless-onboarding path. The admin-only dead-link case (I4) is
+  // handled by the isAdminOnly branch above, which never fetches at all.
+  // #VERIFY: ConsolePage.test.tsx nudge / no-nudge / load-failure / admin-only cases.
   const [childCount, setChildCount] = useState<number | null>(null)
 
   useEffect(() => {
+    if (isAdminOnly) return
     let cancelled = false
     async function loadChildren() {
       try {
@@ -38,7 +51,7 @@ export function ConsolePage() {
     return () => {
       cancelled = true
     }
-  }, [api])
+  }, [api, isAdminOnly])
 
   return (
     <section className="console">
@@ -55,7 +68,12 @@ export function ConsolePage() {
           you do not need to approve them here.
         </p>
       )}
-      {childCount === 0 ? (
+      {isAdminOnly ? (
+        <EmptyState
+          title="No family console for this account"
+          description="This account only has safety-reviewer access; family features like requesting stories and managing profiles aren't available here."
+        />
+      ) : childCount === 0 ? (
         <EmptyState
           title="Add your first reader"
           description="Create a child profile to start requesting stories."

@@ -28,7 +28,12 @@ async def _seed_in_review(
         await session.flush()
         session.add_all(
             [
-                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(
+                    family_id=fam.id,
+                    role="admin",
+                    authn_subject="admin-a",
+                    is_admin=True,
+                ),
                 User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam.id, role="child", authn_subject="child-a"),
             ]
@@ -65,7 +70,12 @@ async def _seed_draft(
         await session.flush()
         session.add_all(
             [
-                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(
+                    family_id=fam.id,
+                    role="admin",
+                    authn_subject="admin-a",
+                    is_admin=True,
+                ),
                 User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam.id, role="child", authn_subject="child-a"),
             ]
@@ -94,7 +104,12 @@ async def _seed_published(
         await session.flush()
         session.add_all(
             [
-                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(
+                    family_id=fam.id,
+                    role="admin",
+                    authn_subject="admin-a",
+                    is_admin=True,
+                ),
                 User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam.id, role="child", authn_subject="child-a"),
             ]
@@ -208,7 +223,11 @@ async def test_admin_can_approve_across_families(
         fam_b = Family(name="B")
         session.add(fam_b)
         await session.flush()
-        session.add(User(family_id=fam_b.id, role="admin", authn_subject="admin-b"))
+        session.add(
+            User(
+                family_id=fam_b.id, role="admin", authn_subject="admin-b", is_admin=True
+            )
+        )
         await session.commit()
     resp = await client.post(
         f"/api/v1/storybooks/{story_id}/approve", headers=auth("admin-b")
@@ -230,7 +249,9 @@ async def test_approve_unscreened_story_returns_400(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         story_id = "unscreened-me"
         session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
         session.add(
@@ -285,7 +306,14 @@ async def test_second_approve_rejected_and_approved_by_not_overwritten(
         fam_b = Family(name="B")
         session.add(fam_b)
         await session.flush()
-        session.add(User(family_id=fam_b.id, role="admin", authn_subject="admin-b"))
+        session.add(
+            User(
+                family_id=fam_b.id,
+                role="admin",
+                authn_subject="admin-b",
+                is_admin=True,
+            )
+        )
         await session.commit()
 
     first = await client.post(
@@ -529,7 +557,12 @@ async def _seed_two_family_queue(
         await session.flush()
         session.add_all(
             [
-                User(family_id=fam_a.id, role="admin", authn_subject="admin-a"),
+                User(
+                    family_id=fam_a.id,
+                    role="admin",
+                    authn_subject="admin-a",
+                    is_admin=True,
+                ),
                 User(family_id=fam_a.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam_a.id, role="child", authn_subject="child-a"),
                 User(family_id=fam_b.id, role="guardian", authn_subject="guardian-b"),
@@ -607,7 +640,9 @@ async def test_review_queue_excludes_needs_revision_and_published(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         session.add(Storybook(id="nr", family_id=fam.id, status="needs_revision"))
         session.add(StorybookVersion(storybook_id="nr", version=1, blob={"id": "nr"}))
         session.add(
@@ -682,7 +717,9 @@ async def test_review_queue_isolates_corrupt_report(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         session.add(Storybook(id="healthy", family_id=fam.id, status="in_review"))
         session.add(
             StorybookVersion(
@@ -721,7 +758,9 @@ async def test_review_queue_drops_story_with_no_version(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         session.add(Storybook(id="healthy", family_id=fam.id, status="in_review"))
         session.add(
             StorybookVersion(
@@ -753,7 +792,9 @@ async def test_review_queue_all_unversioned_returns_empty(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         session.add(Storybook(id="orphan", family_id=fam.id, status="in_review"))
         await session.commit()
     resp = await client.get("/api/v1/review-queue", headers=auth("admin-a"))

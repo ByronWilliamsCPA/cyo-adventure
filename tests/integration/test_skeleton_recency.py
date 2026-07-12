@@ -170,7 +170,12 @@ async def test_build_authoring_plan_deweights_recent_skeleton(
         family = Family(name="Weighted Fam")
         session.add(family)
         await session.flush()
-        admin = User(family_id=family.id, role="admin", authn_subject="admin-weighted")
+        admin = User(
+            family_id=family.id,
+            role="admin",
+            authn_subject="admin-weighted",
+            is_admin=True,
+        )
         profile = ChildProfile(family_id=family.id, display_name="Kid", age_band="8-11")
         session.add_all([admin, profile])
         await session.flush()

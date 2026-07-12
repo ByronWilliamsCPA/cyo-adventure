@@ -43,7 +43,7 @@ from cyo_adventure.moderation.stages import (
 )
 from tests.conftest import make_clean_moderation_report
 from tests.integration._event_assertions import assert_single_event, fetch_events
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, Stranger, auth
 from tests.integration.test_generation_worker import (
     _make_session_factory,
     gen_seed,  # noqa: F401 -- imported for pytest fixture discovery
@@ -161,7 +161,9 @@ async def _seed_in_review_storybook(
         fam = Family(name="Publishing Event Test Family")
         session.add(fam)
         await session.flush()
-        session.add(User(family_id=fam.id, role="admin", authn_subject="admin-a"))
+        session.add(
+            User(family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True)
+        )
         session.add(Storybook(id=story_id, family_id=fam.id, status="in_review"))
         session.add(
             StorybookVersion(
@@ -316,6 +318,141 @@ async def test_approve_writes_request_approved(
         entity_type="story_request",
         to_state="approved",
         actor_role="guardian",
+    )
+
+
+async def test_dual_role_same_family_decline_stamps_guardian(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A dual-role adult declining their own family's request acts as guardian.
+
+    ``acting_role()`` only escalates to admin for a cross-family action; a
+    dual-role adult (guardian base role + is_admin) declining within their
+    own family is stamped with the base role, exactly like a plain guardian.
+    """
+    create = await client.post(
+        _CREATE,
+        headers=auth(seed.child_token),
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a story about a brave fox",
+        },
+    )
+    request_id = create.json()["id"]
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/decline",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 200, resp.text
+    await assert_single_event(
+        sessions,
+        event_type="request_declined",
+        entity_type="story_request",
+        to_state="declined",
+        actor_role="guardian",
+    )
+
+
+async def test_dual_role_foreign_family_decline_stamps_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult declining a foreign family's request acts as admin.
+
+    Only the admin capability authorizes the cross-family decline, so the
+    audit stamp records admin, not the guardian base persona (mirrors
+    test_dual_role_foreign_family_is_stamped_admin in
+    test_story_requests_authored.py for the create path).
+    """
+    create = await client.post(
+        _CREATE,
+        headers=auth(stranger.guardian_token),
+        json={
+            "profile_id": str(stranger.child_profile_id),
+            "request_text": "a story about a brave fox",
+        },
+    )
+    request_id = create.json()["id"]
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/decline",
+        headers=auth(seed.dual_token),
+    )
+    assert resp.status_code == 200, resp.text
+    await assert_single_event(
+        sessions,
+        event_type="request_declined",
+        entity_type="story_request",
+        to_state="declined",
+        actor_role="admin",
+    )
+
+
+async def test_dual_role_same_family_approve_stamps_guardian(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A dual-role adult approving their own family's request acts as guardian."""
+    create = await client.post(
+        _CREATE,
+        headers=auth(seed.child_token),
+        json={
+            "profile_id": str(seed.child_profile_id),
+            "request_text": "a story about a brave fox",
+        },
+    )
+    request_id = create.json()["id"]
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/approve",
+        headers=auth(seed.dual_token),
+        # WS-B: approve requires a confirmation body; band matches the
+        # seeded profile's own band (conftest.Seed's profile_a, "10-13").
+        json={"age_band": "10-13", "length": "medium", "narrative_style": "prose"},
+    )
+    assert resp.status_code == 200, resp.text
+    await assert_single_event(
+        sessions,
+        event_type="request_approved",
+        entity_type="story_request",
+        to_state="approved",
+        actor_role="guardian",
+    )
+
+
+async def test_dual_role_foreign_family_approve_stamps_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult approving a foreign family's request acts as admin.
+
+    Only the admin capability authorizes the cross-family approval, so the
+    audit stamp records admin, not the guardian base persona.
+    """
+    create = await client.post(
+        _CREATE,
+        headers=auth(stranger.guardian_token),
+        json={
+            "profile_id": str(stranger.child_profile_id),
+            "request_text": "a story about a brave fox",
+        },
+    )
+    request_id = create.json()["id"]
+    resp = await client.post(
+        f"{_CREATE}/{request_id}/approve",
+        headers=auth(seed.dual_token),
+        # Matches the stranger family's own seeded profile band ("10-13"),
+        # per conftest.stranger's profile_c.
+        json={"age_band": "10-13", "length": "medium", "narrative_style": "prose"},
+    )
+    assert resp.status_code == 200, resp.text
+    await assert_single_event(
+        sessions,
+        event_type="request_approved",
+        entity_type="story_request",
+        to_state="approved",
+        actor_role="admin",
     )
 
 

@@ -194,6 +194,32 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('isAdmin')).toHaveTextContent('true')
   })
 
+  it('fails closed on a malformed truthy is_admin value', async () => {
+    // The strict `=== true` guard must reject any non-boolean truthy value
+    // (e.g. a stray "true" string or a 1/0 flag from a misbehaving backend),
+    // never coerce it to the capability. Fail closed, not open.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: {
+        subject: 'sub-1',
+        role: 'guardian',
+        is_admin: 'true',
+        family_id: 'fam-1',
+        profile_ids: ['p1'],
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(screen.getByTestId('role')).toHaveTextContent('guardian')
+    expect(screen.getByTestId('isAdmin')).toHaveTextContent('false')
+  })
+
   it('fails closed and sets authError when /me rejects a session', async () => {
     // A session that establishes but cannot resolve a Principal must fail closed
     // AND record authError, so LoginPage can tell the user their account could

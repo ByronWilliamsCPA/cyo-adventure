@@ -158,26 +158,28 @@ export const routes = [
           {
             element: suspended(<AdminShell />),
             children: [
-              // Outside the parental gate: the global request queue is a
-              // viewing surface, mirroring how the guardian subtree leaves its
-              // own request list ungated. P6-08 gates the high-stakes actions,
-              // not every admin page.
-              { path: 'requests', element: suspended(<AdminRequestsPage />) },
               {
-                // Parental gate (P6-08): the admin console's high-stakes
-                // surfaces (approval/review queue, review detail, moderation
-                // settings) moved here from the guardian subtree in the
-                // dual-role refactor, so the re-auth gate that P6-08 placed
-                // around approval/review/moderation follows them. The admin
-                // capability (is_admin, enforced by the ProtectedRoute above)
-                // proves the adult HAS admin rights; it does not prove a
-                // grown-up is holding the device right now, so a kid on a
-                // signed-in dual-role device would otherwise reach approval
-                // with no challenge. Nested inside the admin-only
-                // ProtectedRoute, so a signed-in admin is a precondition.
+                // Parental gate (P6-08): wraps every admin-console surface,
+                // including the global request queue. Unlike the guardian
+                // subtree's own request list (own-family only, left ungated
+                // above as a viewing surface), AdminRequestsPage renders
+                // CROSS-FAMILY child request text plus a family selector, so
+                // it is high-stakes on privacy grounds even though it is not
+                // an approval action: the admin capability (is_admin,
+                // enforced by the ProtectedRoute above) proves the adult HAS
+                // admin rights, but not that a grown-up is holding the
+                // device right now, so a kid on a signed-in dual-role device
+                // would otherwise read other families' child PII with no
+                // challenge. The approval/review queue, review detail, and
+                // moderation settings moved here from the guardian subtree in
+                // the dual-role refactor, so the re-auth gate that P6-08
+                // placed around approval/review/moderation follows them too.
+                // Nested inside the admin-only ProtectedRoute, so a
+                // signed-in admin is a precondition.
                 element: suspended(<ParentalGate />),
                 children: [
                   { index: true, element: suspended(<AdminConsolePage />) },
+                  { path: 'requests', element: suspended(<AdminRequestsPage />) },
                   { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
                   {
                     path: 'moderation-thresholds',

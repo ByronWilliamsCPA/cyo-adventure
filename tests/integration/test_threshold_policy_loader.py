@@ -120,7 +120,12 @@ async def test_audit_action_check_rejects_unknown_action(engine: AsyncEngine) ->
         fam = Family(name="AuditActionCheckFamily")
         session.add(fam)
         await session.flush()
-        admin = User(family_id=fam.id, role="admin", authn_subject="audit-check-admin")
+        admin = User(
+            family_id=fam.id,
+            role="admin",
+            authn_subject="audit-check-admin",
+            is_admin=True,
+        )
         session.add(admin)
         await session.flush()
         session.add(

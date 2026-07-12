@@ -41,16 +41,24 @@ describe('GuardianShell', () => {
     expect(screen.getByRole('link', { name: 'Console' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Request a story' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Story requests' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Profiles' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Sign out' })).not.toBeInTheDocument()
-    // Books is guardian-only; no principal means it's absent too.
+    // Books and Profiles are both guardian-only (family-management
+    // affordances an admin-only adult has no family for); no principal
+    // means they're absent too.
     expect(screen.queryByRole('link', { name: 'Books' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
   })
 
   it('shows the Books link only for a guardian principal, not admin', () => {
     mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
     renderShell()
     expect(screen.queryByRole('link', { name: 'Books' })).not.toBeInTheDocument()
+  })
+
+  it('shows the Profiles link only for a guardian principal, not admin', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByRole('link', { name: 'Profiles' })).not.toBeInTheDocument()
   })
 
   it('shows the Admin console link for a principal holding the admin capability', () => {
@@ -74,6 +82,7 @@ describe('GuardianShell', () => {
     mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
     renderShell()
     expect(screen.getByRole('link', { name: 'Books' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Profiles' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
   })
 

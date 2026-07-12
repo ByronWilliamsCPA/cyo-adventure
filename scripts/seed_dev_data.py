@@ -507,7 +507,12 @@ async def seed_dev_data(
             )
         )
         session.add(
-            User(family_id=family.id, role="admin", authn_subject=_ADMIN_SUBJECT)
+            User(
+                family_id=family.id,
+                role="admin",
+                is_admin=True,
+                authn_subject=_ADMIN_SUBJECT,
+            )
         )
         session.add(
             User(

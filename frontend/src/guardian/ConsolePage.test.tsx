@@ -105,4 +105,16 @@ describe('ConsolePage', () => {
     expect(screen.queryByText(/review queue/i)).not.toBeInTheDocument()
     expect(screen.queryByLabelText(/what should the story be about/i)).not.toBeInTheDocument()
   })
+
+  it('shows a dedicated message for an admin-only account instead of dead family links', async () => {
+    // role='admin', NOT dual: an admin-only adult has no guardian family
+    // surface (I4). It must not see the four quick-links (each 403s/empties
+    // for this role) or the "add your first reader" onboarding CTA.
+    mockUseAuth.mockReturnValue(principal('admin'))
+    renderPage()
+    expect(await screen.findByText(/no family console for this account/i)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /request a story/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /add a child profile/i })).not.toBeInTheDocument()
+    expect(mockGet).not.toHaveBeenCalled()
+  })
 })
