@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Guardian 401 retry-with-refresh (P6-06): when a request that carried the
+  guardian bearer gets a 401 (typically an access token that expired before
+  supabase-js's background refresh caught it), `useApi`'s response
+  interceptor now calls `supabase.auth.refreshSession()` once, writes the
+  new access token to `localStorage['auth_token']` (an idempotent
+  write-through; `AuthContext`'s `TOKEN_REFRESHED` handler later stores the
+  same value), and retries the original request exactly once with the fresh
+  token. Concurrent 401s from parallel requests share a single in-flight
+  refresh promise (Supabase rotates refresh tokens on use, so racing
+  parallel refreshes could invalidate each other), and retried requests
+  carry a one-shot config marker so a second 401 falls through to the
+  pre-existing failure path (clear token, redirect off guardian paths)
+  instead of looping. The Supabase client is loaded via dynamic import so
+  the kid bundle still omits it entirely. Child-token 401s are deliberately
+  untouched: child session tokens are not refreshable by design (fixed TTL;
+  expiry means hand the device back to a grown-up), so they keep the
+  existing clear-session-and-gate behavior, and 401s on requests that
+  carried no bearer at all are also unchanged. The refresh is bounded by a
+  client-side deadline, cannot run from a kid-token route (it never imports
+  the Supabase client on the kid surface), and a refresh whose write-through
+  to `localStorage` fails opens a short cooldown so a locked-down browser
+  cannot drive a refresh-token-rotation storm.
 - `scripts/backfill_covers_r2.py`: one-shot operator script that migrates
   pre-R2 cover art from Supabase Storage to Cloudflare R2 (#214), closing the
   gap the R2 cutover PR (#209) explicitly left open ("this PR does not
