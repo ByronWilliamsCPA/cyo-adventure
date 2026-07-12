@@ -8,6 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Dual admin/guardian roles with a parallel admin console: one adult account
+  can now be a guardian, an admin, or both. `role` stays the single base
+  persona and a new orthogonal `User.is_admin` capability flag (surfaced on
+  `GET /v1/me`) grants the global admin (approver) capability, so a
+  `(role='guardian', is_admin=true)` principal passes both guardian-only and
+  admin-only gates while its guardian base role keeps resolving family-scoped
+  ownership. Admin functions move onto a dedicated `/admin/*` frontend console
+  (review queue, cross-family story-request queue, moderation
+  dashboard/thresholds) running in parallel with `/guardian/*`, with a
+  capability-gated route guard and a shell switcher for dual-role adults. The
+  additive migration backfills `is_admin` from `role='admin'` (defaulting new
+  rows to false) and adds a `ck_user_child_not_admin` CHECK so a child row can
+  never carry the capability. Guardian surfaces stay strictly family-scoped for
+  every caller: the global review queue is the explicit admin surface
+  `GET /api/v1/admin/story-requests`, and pipeline-event audit stamps record
+  the capacity that authorized each action (admin-gated and cross-family
+  actions stamp `admin`, own-family actions the guardian base role).
 - Guardian 401 retry-with-refresh (P6-06): when a request that carried the
   guardian bearer gets a 401 (typically an access token that expired before
   supabase-js's background refresh caught it), `useApi`'s response

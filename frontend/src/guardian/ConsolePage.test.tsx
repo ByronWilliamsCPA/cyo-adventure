@@ -88,6 +88,15 @@ describe('ConsolePage', () => {
     )
   })
 
+  it('still renders quick links when the profiles fetch fails (childCount stays null)', async () => {
+    // The onboarding read is best-effort: on failure childCount stays null, so
+    // the nudge is suppressed but the quick links (childCount !== 0) still show.
+    mockGet.mockRejectedValue(new Error('profiles fetch failed'))
+    renderPage()
+    expect(await screen.findByRole('link', { name: /request a story/i })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /add a child profile/i })).not.toBeInTheDocument()
+  })
+
   it('does not render the review queue or the request-a-story form here', async () => {
     // Both moved to the admin console (AdminConsolePage / AdminRequestsPage)
     // when admin functions gained their own surface.

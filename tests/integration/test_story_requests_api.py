@@ -200,6 +200,50 @@ async def test_admin_surface_lists_all_families(
     assert denied.status_code == 403
 
 
+async def test_admin_surface_filters_by_status_and_family(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The admin queue honors the optional status and family_id filters.
+
+    Exercises both narrowing branches of GET /admin/story-requests: a status
+    filter and a single-family drill-down, plus the 422 on a bad status.
+    """
+    own_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    # Family drill-down: only family A's request comes back.
+    scoped = await client.get(
+        f"/api/v1/admin/story-requests?family_id={seed.family_id}",
+        headers=auth(seed.admin_token),
+    )
+    assert scoped.status_code == 200, scoped.text
+    scoped_ids = {r["id"] for r in scoped.json()["requests"]}
+    assert own_id in scoped_ids
+    assert other_id not in scoped_ids
+
+    # Status filter: both pending rows come back globally.
+    pending = await client.get(
+        "/api/v1/admin/story-requests?status=pending", headers=auth(seed.admin_token)
+    )
+    assert pending.status_code == 200, pending.text
+    assert {own_id, other_id} <= {r["id"] for r in pending.json()["requests"]}
+
+    # A malformed status is a 422, not a silent empty list.
+    bad = await client.get(
+        "/api/v1/admin/story-requests?status=nope", headers=auth(seed.admin_token)
+    )
+    assert bad.status_code == 422
+
+
 async def test_child_lists_only_own_profile_requests(
     client: AsyncClient,
     sessions: async_sessionmaker[AsyncSession],
