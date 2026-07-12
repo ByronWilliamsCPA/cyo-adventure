@@ -464,6 +464,9 @@ _ROUTE_SPECS: list[RouteSpec] = [
         json_body=_story_request_body,
     ),
     RouteSpec("GET", "/api/v1/story-requests", ALL_ROLES),
+    # The global review queue: the explicit admin surface for what used to be
+    # an is_admin scope fork inside GET /story-requests.
+    RouteSpec("GET", "/api/v1/admin/story-requests", frozenset({Role.ADMIN})),
     # -- child_sessions.py: guardian-or-admin mint (child rejected) ----------
     RouteSpec(
         "POST",

@@ -114,14 +114,18 @@ class Principal:
     is_admin: bool = False
 
     def __post_init__(self) -> None:
-        """Derive the admin capability from the admin base role.
+        """Normalize the role and derive the admin capability.
 
         # #CRITICAL: security: the invariant "base role ADMIN implies the
         # admin capability" is enforced here at construction, not left to
         # every caller; a Principal(role=Role.ADMIN) with the flag unset
-        # would otherwise be a half-admin that fails admin gates.
+        # would otherwise be a half-admin that fails admin gates. The
+        # Role(...) coercion also rejects any unmodeled role string a
+        # caller passes (closed-world), instead of authorizing nothing
+        # and nobody noticing.
         # #VERIFY: tests/unit/test_api_deps.py pins role=ADMIN -> is_admin.
         """
+        object.__setattr__(self, "role", Role(self.role))
         if self.role == Role.ADMIN and not self.is_admin:
             object.__setattr__(self, "is_admin", True)
 
@@ -129,6 +133,26 @@ class Principal:
     def is_guardian(self) -> bool:
         """Return whether the principal holds the guardian base role."""
         return self.role == Role.GUARDIAN
+
+    def acting_role(self, target_family_id: uuid.UUID) -> Role:
+        """Return the capacity in which this principal acts on a family.
+
+        Audit stamps (``initiator_role``, ``actor_role``) record the role
+        that AUTHORIZED an action, not merely the base persona: a dual-role
+        adult acting outside their own family can only be doing so via the
+        admin capability, so the stamp says ``admin``; the same adult acting
+        within their own family is stamped with their base role.
+
+        Args:
+            target_family_id: The family the action operates on.
+
+        Returns:
+            Role: ``Role.ADMIN`` for a cross-family action by an admin;
+            the base ``role`` otherwise.
+        """
+        if self.is_admin and target_family_id != self.family_id:
+            return Role.ADMIN
+        return self.role
 
     def can_access_profile(self, profile_id: uuid.UUID) -> bool:
         """Return whether the principal may act on the given profile.

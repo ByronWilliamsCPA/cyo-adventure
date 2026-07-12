@@ -2,15 +2,18 @@
 
 The kid surface runs under the guardian token in R1, so submission is
 guardian-scoped (the body carries the profile_id and authorize_profile gates it).
-List is family-scoped for a guardian (optional profile filter) and global for an
-admin. Approve and decline are guardian-own-family or admin-global; a request
-outside the caller's scope returns 404 (existence hiding), which deliberately
-diverges from generation.py's cross-family 403 for this lower-value, child-facing
-resource. Approve builds a ConceptBrief and enqueues generation through the
-service layer, so it never touches the guardian-only POST /concepts gate. The
+GET /story-requests is family-scoped for EVERY caller (the surface selects the
+scope, not the caller's maximal privilege); the global review queue is the
+explicit admin surface GET /admin/story-requests. Approve and decline are
+guardian-own-family or admin-global; a request outside the caller's scope
+returns 404 (existence hiding), which deliberately diverges from
+generation.py's cross-family 403 for this lower-value, child-facing resource.
+Approve builds a ConceptBrief and enqueues generation through the service
+layer, so it never touches the guardian-only POST /concepts gate. The
 authored-create endpoint (WS-B PR 2) lets a guardian or admin submit a
-pre-approved request, optionally on a child's behalf (profile_id may be null),
-targeting their own family (guardian) or a family named by id (admin).
+pre-approved request, optionally on a child's behalf (profile_id may be null);
+family_id is optional and defaults to the caller's own family, while naming a
+foreign family requires the admin capability.
 """
 
 from __future__ import annotations
@@ -48,7 +51,7 @@ from cyo_adventure.core.exceptions import (
     ValidationError,
 )
 from cyo_adventure.db.models import ChildProfile, Concept, Family, StoryRequest
-from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.generation.queue import enqueue_generation
 from cyo_adventure.moderation.report import Verdict
 from cyo_adventure.moderation.thresholds import ThresholdPolicy, load_threshold_policy
@@ -369,38 +372,51 @@ async def _resolve_authored_family(
 ) -> uuid.UUID:
     """Resolve the target family for an authored request (WS-B PR 2).
 
+    ``family_id`` is optional for every adult: omitted, it means the
+    caller's own family (which requires the guardian base role, since an
+    admin-only adult has no guardianship); supplied, it may name the
+    caller's own family (harmless self-reference for a guardian) or, with
+    the admin capability, any existing family. This replaces the earlier
+    either/or contract (guardian must omit, admin must supply), which had
+    no answer for an adult holding both roles.
+
     Args:
         ctx: The request context (principal and session).
         body: The authored-create body.
 
     Returns:
-        uuid.UUID: The principal's own family for a guardian, or the body's
-        named family for an admin.
+        uuid.UUID: The resolved target family.
 
     Raises:
+        AuthorizationError: If a caller without the admin capability names
+            a family other than their own (-> 403).
         ResourceNotFoundError: If an admin-named family does not exist.
-        ValidationError: If a guardian supplies ``family_id``, an admin omits
-            it, or the supplied id is malformed.
+        ValidationError: If an admin-only caller omits ``family_id``, or the
+            supplied id is malformed.
     """
-    # #CRITICAL: security: the target family comes from the principal for
-    # guardians and from the body for admins (decision B3); a guardian naming
-    # any family_id is rejected outright so cross-family authoring is
-    # impossible even with a correct-looking id.
-    # #VERIFY: test_guardian_must_omit_family_id, test_admin_requires_family_id.
-    if ctx.principal.is_admin:
-        if body.family_id is None:
+    # #CRITICAL: security: a guardian without the admin capability can never
+    # author into another family: naming a foreign family_id is 403 outright
+    # (existence is not probed first, so this is not a family-id oracle), and
+    # an omitted family_id always resolves to the caller's own family.
+    # #VERIFY: test_guardian_foreign_family_is_403,
+    # test_guardian_may_name_own_family, test_admin_requires_family_id,
+    # test_dual_role_omitted_family_targets_own.
+    if body.family_id is None:
+        if not ctx.principal.is_guardian:
             msg = "family_id is required for admin-initiated requests"
             raise ValidationError(msg, field="family_id", value=None)
-        family_uuid = parse_uuid(body.family_id, "family_id")
-        family = await ctx.session.get(Family, family_uuid)
-        if family is None:
-            msg = "family not found"
-            raise ResourceNotFoundError(msg)
+        return ctx.principal.family_id
+    family_uuid = parse_uuid(body.family_id, "family_id")
+    if family_uuid == ctx.principal.family_id and ctx.principal.is_guardian:
         return family_uuid
-    if body.family_id is not None:
-        msg = "family_id is server-derived for guardians"
-        raise ValidationError(msg, field="family_id", value=body.family_id)
-    return ctx.principal.family_id
+    if not ctx.principal.is_admin:
+        msg = "family_id is not accessible to this principal"
+        raise AuthorizationError(msg, resource=body.family_id)
+    family = await ctx.session.get(Family, family_uuid)
+    if family is None:
+        msg = "family not found"
+        raise ResourceNotFoundError(msg)
+    return family_uuid
 
 
 async def _resolve_authored_profile(
@@ -551,13 +567,34 @@ async def create_authored_story_request(
     )
 
 
+def _validate_status_filter(status: str | None) -> None:
+    """Reject an out-of-enum status filter with a 422-mapped error.
+
+    Args:
+        status: The raw status query parameter, or None for no filter.
+
+    Raises:
+        ValidationError: If ``status`` is outside the closed status set.
+    """
+    if status is not None and status not in _VALID_STATUSES:
+        msg = "status must be pending, approved, declined, or blocked"
+        raise ValidationError(msg, field="status", value=status)
+
+
 @router.get("/story-requests")
 async def list_story_requests(
     ctx: Context,
     status: str | None = None,
     profile_id: str | None = None,
 ) -> StoryRequestListView:
-    """List story requests visible to the caller, newest first.
+    """List the caller's own family's story requests, newest first.
+
+    This is the guardian/kid surface: it is family-scoped for EVERY caller,
+    including one holding the admin capability (the surface selects the
+    scope, not the caller's maximal privilege); the global queue lives at
+    ``GET /admin/story-requests``. Flag surfacing depth still follows the
+    capability: an admin sees every well-formed flag on their own family's
+    rows, per the invariant that thresholds only filter what guardians see.
 
     Args:
         ctx: The request context (principal and session).
@@ -565,26 +602,27 @@ async def list_story_requests(
         profile_id: Optional profile filter (the kid status view passes this).
 
     Returns:
-        StoryRequestListView: The visible requests.
+        StoryRequestListView: The caller's family's requests.
 
     Raises:
         AuthorizationError: If a guardian filters on an inaccessible profile.
         ValidationError: If ``status`` or ``profile_id`` is malformed (-> 422).
     """
     stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
-    # #CRITICAL: security: admin is global; a guardian is family-scoped. A child
-    # token (used directly) would also be family-scoped via family_id.
-    # #VERIFY: test_guardian_lists_family_requests.
-    if not ctx.principal.is_admin:
-        stmt = stmt.where(StoryRequest.family_id == ctx.principal.family_id)
+    # #CRITICAL: security: this surface is family-scoped for every caller.
+    # Before the dual-role change an admin token was global here, which
+    # would silently widen a dual-role guardian's everyday list to every
+    # family; the global queue is now an explicit admin surface below.
+    # #VERIFY: test_guardian_lists_family_requests,
+    # test_list_is_family_scoped_for_every_caller.
+    stmt = stmt.where(StoryRequest.family_id == ctx.principal.family_id)
+    _validate_status_filter(status)
     if status is not None:
-        if status not in _VALID_STATUSES:
-            msg = "status must be pending, approved, declined, or blocked"
-            raise ValidationError(msg, field="status", value=status)
         stmt = stmt.where(StoryRequest.status == status)
     if profile_id is not None:
         profile_uuid = parse_uuid(profile_id, "profile_id")
-        # A guardian may only filter to a profile it can access; admin is global.
+        # A guardian may only filter to a profile it can access; the family
+        # WHERE above already bounds the rows for an admin-only caller.
         if not ctx.principal.is_admin:
             authorize_profile(ctx.principal, profile_uuid)
         stmt = stmt.where(StoryRequest.profile_id == profile_uuid)
@@ -594,6 +632,50 @@ async def list_story_requests(
         _to_view(request, policy=policy, surface_all=ctx.principal.is_admin)
         for request in rows
     ]
+    return StoryRequestListView(requests=requests)
+
+
+@router.get("/admin/story-requests")
+async def list_story_requests_admin(
+    ctx: Context,
+    status: str | None = None,
+    family_id: str | None = None,
+) -> StoryRequestListView:
+    """List story requests across every family (the admin review queue).
+
+    The global counterpart of ``GET /story-requests``: the admin console's
+    request queue reads this surface, so holding the admin capability never
+    changes what the family-scoped guardian surface returns.
+
+    Args:
+        ctx: The request context (principal and session).
+        status: Optional status filter (pending/approved/declined/blocked).
+        family_id: Optional family filter for drilling into one family.
+
+    Returns:
+        StoryRequestListView: The matching requests, newest first, with
+        every well-formed moderation flag surfaced (no threshold filtering).
+
+    Raises:
+        AuthorizationError: If the caller lacks the admin capability (-> 403).
+        ValidationError: If ``status`` or ``family_id`` is malformed (-> 422).
+    """
+    # #CRITICAL: security: the admin capability gates the global scope; this
+    # runs before any row is loaded so a non-admin gets an exact 403.
+    # #VERIFY: test_authz_matrix.py pins GET /api/v1/admin/story-requests
+    # as admin-only.
+    if not ctx.principal.is_admin:
+        msg = "admin role required"
+        raise AuthorizationError(msg)
+    stmt = select(StoryRequest).order_by(StoryRequest.created_at.desc())
+    _validate_status_filter(status)
+    if status is not None:
+        stmt = stmt.where(StoryRequest.status == status)
+    if family_id is not None:
+        stmt = stmt.where(StoryRequest.family_id == parse_uuid(family_id, "family_id"))
+    rows = (await ctx.session.scalars(stmt)).all()
+    policy = await load_threshold_policy(ctx.session)
+    requests = [_to_view(request, policy=policy, surface_all=True) for request in rows]
     return StoryRequestListView(requests=requests)
 
 
@@ -776,7 +858,13 @@ async def create_authoring_plan(
         raise ResourceNotFoundError(msg)
 
     result = await build_authoring_plan(
-        ctx.session, request, concept, body, actor=Actor.from_principal(ctx.principal)
+        ctx.session,
+        request,
+        concept,
+        body,
+        # Admin-only endpoint: stamp the capacity that authorized the action,
+        # not a dual-role caller's guardian base persona.
+        actor=Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
     )
 
     if result.job.status == "queued":

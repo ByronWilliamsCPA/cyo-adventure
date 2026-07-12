@@ -59,6 +59,12 @@ class EventType(StrEnum):
 
 SYSTEM_ACTOR_ROLE = "system"
 
+# The acting-role stamp for admin-gated transitions. Passed to
+# Actor.from_principal by call sites whose authorization gate is the admin
+# capability, so a dual-role adult (guardian base role + is_admin) is audited
+# in the capacity that authorized the action.
+ADMIN_ACTOR_ROLE = "admin"
+
 
 @dataclass(frozen=True)
 class Actor:
@@ -86,15 +92,22 @@ class Actor:
             raise ValidationError(msg, field="actor_id", value=self.actor_id)
 
     @classmethod
-    def from_principal(cls, principal: _PrincipalLike) -> Actor:
+    def from_principal(
+        cls, principal: _PrincipalLike, *, acting_role: str | None = None
+    ) -> Actor:
         """Build an Actor from an api.deps.Principal (duck-typed to avoid an import cycle).
+
+        ``acting_role`` overrides the principal's base role for the stamp:
+        admin-gated call sites pass ``"admin"`` so a dual-role adult
+        (guardian base role + admin capability) is audited in the capacity
+        that authorized the action, not the persona they logged in with.
 
         # #ASSUME: data-integrity: principal exposes user_id (uuid) and role (StrEnum)
         # #VERIFY: covered by the per-transition integration tests that pass a real Principal
         """
         return cls(
             actor_id=principal.user_id,
-            actor_role=str(principal.role),
+            actor_role=acting_role if acting_role is not None else str(principal.role),
         )
 
     @classmethod

@@ -140,6 +140,66 @@ async def test_guardian_lists_family_requests(client: AsyncClient, seed: Seed) -
     assert len(res.json()["requests"]) == 1
 
 
+async def test_list_is_family_scoped_for_every_caller(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """GET /story-requests never widens past the caller's family.
+
+    The surface selects the scope: a family-B request must be invisible to
+    family A's guardian, to the dual-role adult (guardian + admin
+    capability), and to the admin-only user on THIS surface, even though
+    the latter two can read it on the admin surface. Before the dual-role
+    change an admin token was global here, which would have silently turned
+    a dual-role guardian's everyday request list into a cross-family view.
+    """
+    request_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    for token in (seed.guardian_token, seed.dual_token, seed.admin_token):
+        res = await client.get(_CREATE, headers=auth(token))
+        assert res.status_code == 200, res.text
+        ids = {r["id"] for r in res.json()["requests"]}
+        assert other_id not in ids, f"family-B row leaked to {token}"
+        assert request_id in ids, f"own-family row missing for {token}"
+
+
+async def test_admin_surface_lists_all_families(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """GET /admin/story-requests is the global queue, admin capability only."""
+    request_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    for token in (seed.admin_token, seed.dual_token):
+        res = await client.get("/api/v1/admin/story-requests", headers=auth(token))
+        assert res.status_code == 200, res.text
+        ids = {r["id"] for r in res.json()["requests"]}
+        assert {request_id, other_id} <= ids
+
+    denied = await client.get(
+        "/api/v1/admin/story-requests", headers=auth(seed.guardian_token)
+    )
+    assert denied.status_code == 403
+
+
 async def test_list_rejects_inaccessible_profile_filter(
     client: AsyncClient, seed: Seed
 ) -> None:

@@ -53,6 +53,9 @@ _REVIEW_STORY = "08_tier2_bridge_builder.json"
 _GUARDIAN_SUBJECT = "dev-guardian"
 _CHILD_SUBJECT = "dev-child"
 _ADMIN_SUBJECT = "dev-admin"
+# A guardian who ALSO holds the admin capability (dual-role): use this token
+# to exercise both the guardian console and the admin console as one adult.
+_DUAL_SUBJECT = "dev-dual"
 
 # Fixed id so naive-kid-misuse-real.spec.ts can request a known cross-family
 # profile. Kept in sync with UNRELATED_PROFILE_ID in that spec.
@@ -291,6 +294,42 @@ async def _seed_series_chain(session: AsyncSession) -> bool:
     return True
 
 
+async def _seed_dual_role_user(session: AsyncSession) -> bool:
+    """Idempotently seed the dual-role (guardian + admin capability) adult.
+
+    A late-added fixture with its own existence check, so a database seeded
+    before the dual-role model existed still gains the user on a re-run
+    (the guardian early return in ``seed_dev_data`` guards the base seed
+    only). Hangs off the base dev family; skips on a half-seeded database.
+
+    Args:
+        session: The active seed session.
+
+    Returns:
+        True when it inserted the user, False when it already existed or
+        the base dev family is absent.
+    """
+    existing = await session.scalar(
+        select(User).where(User.authn_subject == _DUAL_SUBJECT)
+    )
+    if existing is not None:
+        return False
+    guardian = await session.scalar(
+        select(User).where(User.authn_subject == _GUARDIAN_SUBJECT)
+    )
+    if guardian is None:
+        return False
+    session.add(
+        User(
+            family_id=guardian.family_id,
+            role="guardian",
+            is_admin=True,
+            authn_subject=_DUAL_SUBJECT,
+        )
+    )
+    return True
+
+
 async def _seed_unrelated_family(session: AsyncSession) -> bool:
     """Idempotently seed the cross-family fixture profile.
 
@@ -421,17 +460,23 @@ async def seed_dev_data(
         if existing is not None:
             # The early return below guards the BASE seed only. Seed groups
             # added after dev databases already existed (the cross-family
-            # fixture above, the Ember Trail series here) carry their own
-            # existence checks and run before it, so an already-seeded
-            # database still gains them on a re-run; gating them on
-            # guardian-absence would skip them forever.
+            # fixture above, the Ember Trail series here, the dual-role
+            # adult) carry their own existence checks and run before it, so
+            # an already-seeded database still gains them on a re-run;
+            # gating them on guardian-absence would skip them forever.
             series_chain_seeded = await _seed_series_chain(session)
-            if unrelated_profile_seeded or series_chain_seeded or allowlist_seeded:
+            dual_user_seeded = await _seed_dual_role_user(session)
+            if (
+                unrelated_profile_seeded
+                or series_chain_seeded
+                or allowlist_seeded
+                or dual_user_seeded
+            ):
                 await session.commit()
             print(
                 "Dev data already seeded; refreshed late-added fixtures "
-                "(cross-family profile, series chain, provider allowlist) "
-                "if missing."
+                "(cross-family profile, series chain, provider allowlist, "
+                "dual-role adult) if missing."
             )
             return
 
@@ -463,6 +508,14 @@ async def seed_dev_data(
         )
         session.add(
             User(family_id=family.id, role="admin", authn_subject=_ADMIN_SUBJECT)
+        )
+        session.add(
+            User(
+                family_id=family.id,
+                role="guardian",
+                is_admin=True,
+                authn_subject=_DUAL_SUBJECT,
+            )
         )
 
         # #ASSUME: data integrity: published_at must be timezone-aware to match
