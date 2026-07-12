@@ -1,3 +1,4 @@
+import { isAxiosError } from 'axios'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -26,11 +27,27 @@ type PickerState =
   | { status: 'ready'; profiles: ProfileView[] }
 
 // P6-07: the PIN prompt shown after picking a PIN-protected profile. `wrong`
-// is deliberately gentle-retry-only copy; a failed PIN never routes to the
-// ask-a-grown-up gate (the child just mistyped, a grown-up already signed in).
+// is deliberately gentle-retry-only copy (the child just mistyped, a grown-up
+// already signed in); `trouble` is the kid-safe transient copy for a network
+// blip or server error, so a correct-PIN child is never told their PIN was
+// wrong when the request itself failed. An expired guardian session (401)
+// leaves the prompt entirely for the ask-a-grown-up gate.
 type PinPrompt = {
   profile: ProfileView
-  status: 'idle' | 'checking' | 'wrong'
+  status: 'idle' | 'checking' | 'wrong' | 'trouble'
+}
+
+// The backend's mint endpoint signals a failed PIN check with a 403 whose
+// body carries the distinct PIN_MISMATCH code (api/child_sessions.py); any
+// other failure shape must NOT be presented as "wrong PIN".
+function isPinMismatch(error: unknown): boolean {
+  if (!isAxiosError(error) || error.response?.status !== 403) return false
+  const data: unknown = error.response.data
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { code?: unknown }).code === 'PIN_MISMATCH'
+  )
 }
 
 /**
@@ -101,13 +118,19 @@ export function ProfilePickerPage() {
   // #ASSUME: security: unlike the pin-less path above, a PIN-gated mint must
   // NOT navigate on failure: useApi's interceptor would fall back to the
   // guardian token on the library route, silently bypassing the lock. So this
-  // flow stays on the prompt and shows a gentle retry message. Every failure
-  // (wrong PIN 403, network blip) gets the same kid-safe copy, and a failed
-  // PIN never shows the ask-a-grown-up gate (a grown-up already signed in).
-  // #VERIFY: ProfilePickerPage.test.tsx "shows a gentle retry message and does
-  // not navigate when the PIN is wrong".
+  // flow stays on the prompt and classifies the failure: only the backend's
+  // explicit 403 PIN_MISMATCH shows the wrong-PIN retry copy; an expired
+  // guardian session (401) routes to the ask-a-grown-up gate exactly like a
+  // failed profile load; anything else (network blip, 5xx) gets its own
+  // kid-safe try-again-later copy, so a child typing the CORRECT PIN during
+  // an outage is never told the PIN was wrong.
+  // #VERIFY: ProfilePickerPage.test.tsx PIN-gate suite covers the wrong-PIN,
+  // expired-guardian (401), and network/5xx branches separately.
   const submitPin = useCallback(async () => {
-    if (!pinPrompt || pin.length === 0 || pinPrompt.status === 'checking') return
+    // The minimum PIN length is 4 (schemas.PinCode); a shorter submit (e.g.
+    // Enter with 1-3 digits typed) would be a guaranteed 403 shown as
+    // "wrong PIN", so it is refused here to match the button's disabled gate.
+    if (!pinPrompt || pin.length < 4 || pinPrompt.status === 'checking') return
     const target = pinPrompt.profile
     const attempt = pin
     setPinPrompt({ profile: target, status: 'checking' })
@@ -124,7 +147,25 @@ export function ProfilePickerPage() {
     } catch (err) {
       // Redacted shape only, never the raw axios error; see logApiError.
       logApiError('child session mint failed', err)
-      setPinPrompt({ profile: target, status: 'wrong' })
+      if (isPinMismatch(err)) {
+        setPinPrompt({ profile: target, status: 'wrong' })
+        return
+      }
+      const { kind } = classifyApiError(err)
+      if (kind === 'unauthenticated') {
+        // The guardian session expired between page load and this submit; no
+        // amount of correct-PIN retrying can succeed until a grown-up signs
+        // back in, so leave the prompt for the same gate a failed load shows.
+        setPinPrompt(null)
+        setState({ status: 'unauthenticated' })
+      } else if (kind === 'forbidden') {
+        // A non-PIN 403 (role/family rejection) is permanent for this
+        // session; retrying the PIN can never fix it.
+        setPinPrompt(null)
+        setState({ status: 'forbidden' })
+      } else {
+        setPinPrompt({ profile: target, status: 'trouble' })
+      }
     }
   }, [childSessionApi, navigate, pin, pinPrompt])
 
@@ -270,6 +311,11 @@ export function ProfilePickerPage() {
           {pinPrompt.status === 'wrong' ? (
             <p role="alert" className="picker-pin__retry">
               Hmm, that PIN didn&apos;t work. Give it another try!
+            </p>
+          ) : null}
+          {pinPrompt.status === 'trouble' ? (
+            <p role="alert" className="picker-pin__retry">
+              We couldn&apos;t check your PIN right now. Try again in a moment!
             </p>
           ) : null}
           <div className="picker-pin__actions">

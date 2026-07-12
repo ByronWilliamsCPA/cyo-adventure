@@ -479,6 +479,84 @@ describe('ProfilePickerPage PIN gate (P6-07)', () => {
     errorSpy.mockRestore()
   })
 
+  it('refuses an Enter-key submit with fewer than 4 digits (no mint fired)', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    // The button disables below 4 digits, but Enter submits the form
+    // directly; a 1-3 digit submit would be a guaranteed 403 shown as
+    // "wrong PIN", so submitPin must refuse it too.
+    await user.type(input, '123{Enter}')
+
+    expect(mockPost).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
+    // The typed digits stay in the field; nothing was consumed.
+    expect(input).toHaveValue('123')
+  })
+
+  it('routes an expired guardian session (401) to the ask-a-grown-up gate, not wrong-PIN copy', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 401 } })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    expect(await screen.findByText(/Ask a grown-up to help/i)).toBeInTheDocument()
+    expect(screen.queryByText(/didn't work/i)).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/secret pin/i)).not.toBeInTheDocument()
+    expect(mockNavigate).not.toHaveBeenCalled()
+    errorSpy.mockRestore()
+  })
+
+  it('routes a non-PIN 403 to the forbidden gate, not wrong-PIN copy', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    // A 403 WITHOUT the PIN_MISMATCH code (role/family rejection).
+    mockPost.mockRejectedValue({
+      isAxiosError: true,
+      response: { status: 403, data: { error: 'AuthorizationError' } },
+    })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    expect(await screen.findByText(/We can't show this right now/i)).toBeInTheDocument()
+    expect(screen.queryByText(/didn't work/i)).not.toBeInTheDocument()
+    expect(mockNavigate).not.toHaveBeenCalled()
+    errorSpy.mockRestore()
+  })
+
+  it('shows the kid-safe try-again-later copy on a network or server failure', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: PIN_PROFILE })
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+    renderPicker()
+
+    const input = await openPinPrompt(user)
+    await user.type(input, '4321')
+    await user.click(screen.getByRole('button', { name: /let's read/i }))
+
+    const alert = await screen.findByRole('alert')
+    // A correct-PIN child mid-outage must never read "that PIN didn't work".
+    expect(alert).toHaveTextContent(/couldn't check your PIN right now/i)
+    expect(screen.queryByText(/didn't work/i)).not.toBeInTheDocument()
+    // The prompt stays up for another try; no navigation, no session.
+    expect(screen.getByLabelText(/secret pin/i)).toBeInTheDocument()
+    expect(mockNavigate).not.toHaveBeenCalled()
+    expect(getChildSession()).toBeNull()
+    errorSpy.mockRestore()
+  })
+
   it('keeps the mint button disabled until at least 4 digits are typed', async () => {
     const user = userEvent.setup()
     mockGet.mockResolvedValue({ data: PIN_PROFILE })

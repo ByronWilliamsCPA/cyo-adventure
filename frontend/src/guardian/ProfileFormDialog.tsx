@@ -12,22 +12,44 @@ import {
 } from '../profiles/profilesApi'
 
 /**
- * The dialog's submit payload: the create fields plus the optional picker-PIN
+ * Create-mode submit payload: exactly the create fields. `pin` is
+ * unrepresentable here by design: POST /profiles has no pin field
+ * (extra=forbid on the backend), so the type keeps a create body that
+ * carries one from compiling at all.
+ */
+export type ProfileFormCreateBody = ProfileCreateBody
+
+/**
+ * Edit-mode submit payload: the create fields plus the optional picker-PIN
  * mutation (P6-07). `pin` is present only when the guardian chose to set,
  * change (a 4-8 digit string), or remove (null) the PIN; it is omitted
- * entirely otherwise, matching PATCH's omitted-vs-null semantics. The dialog
- * only ever emits it in edit mode (the PIN controls are hidden on create).
+ * entirely otherwise, matching PATCH's omitted-vs-null semantics.
  */
-export interface ProfileFormBody extends ProfileCreateBody {
+export interface ProfileFormEditBody extends ProfileCreateBody {
   pin?: string | null
 }
 
-interface ProfileFormDialogProps {
+interface ProfileFormDialogBaseProps {
   title: string
-  initial?: ProfileView
-  onSubmit: (body: ProfileFormBody) => Promise<void>
   onClose: () => void
 }
+
+/**
+ * Discriminated on `initial`: absent means create mode, whose `onSubmit` can
+ * only ever receive a pin-less body; present means edit mode, whose
+ * `onSubmit` may receive the PIN mutation. The compiler now enforces what
+ * used to be a runtime convention (a create body carrying `pin` was
+ * representable but rejected server-side by extra=forbid).
+ */
+type ProfileFormDialogProps =
+  | (ProfileFormDialogBaseProps & {
+      initial?: undefined
+      onSubmit: (body: ProfileFormCreateBody) => Promise<void>
+    })
+  | (ProfileFormDialogBaseProps & {
+      initial: ProfileView
+      onSubmit: (body: ProfileFormEditBody) => Promise<void>
+    })
 
 const PIN_SHAPE = /^[0-9]{4,8}$/
 
@@ -40,12 +62,8 @@ type PinChoice = 'keep' | 'set' | 'clear'
  * PIN (set/change/remove). Photos are deliberately absent; see the avatar
  * catalog's module docstring.
  */
-export function ProfileFormDialog({
-  title,
-  initial,
-  onSubmit,
-  onClose,
-}: ProfileFormDialogProps) {
+export function ProfileFormDialog(props: ProfileFormDialogProps) {
+  const { title, initial, onClose } = props
   const [displayName, setDisplayName] = useState(initial?.display_name ?? '')
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
@@ -67,18 +85,25 @@ export function ProfileFormDialog({
     setSaving(true)
     setErrorMsg(null)
     try {
-      const body: ProfileFormBody = {
+      const base: ProfileFormCreateBody = {
         display_name: displayName,
         age_band: ageBand,
         reading_level_cap: Number(cap),
         avatar,
         tts_enabled: tts,
       }
-      // Include `pin` only for an actual mutation: a string sets/changes,
-      // an explicit null removes, and omitting it keeps whatever is stored.
-      if (initial && pinChoice === 'set') body.pin = pinValue
-      if (initial && pinChoice === 'clear') body.pin = null
-      await onSubmit(body)
+      // Narrow on the discriminant so create mode structurally cannot emit
+      // a pin; only edit mode builds the wider body.
+      if (props.initial === undefined) {
+        await props.onSubmit(base)
+      } else {
+        const body: ProfileFormEditBody = { ...base }
+        // Include `pin` only for an actual mutation: a string sets/changes,
+        // an explicit null removes, and omitting it keeps whatever is stored.
+        if (pinChoice === 'set') body.pin = pinValue
+        if (pinChoice === 'clear') body.pin = null
+        await props.onSubmit(body)
+      }
       onClose()
     } catch (err) {
       console.error('profile save failed', err)

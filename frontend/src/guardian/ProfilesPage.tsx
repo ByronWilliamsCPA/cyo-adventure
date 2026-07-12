@@ -5,7 +5,11 @@ import { EmptyState } from '@ds/components/EmptyState'
 import { useApi } from '../hooks/useApi'
 import { AvatarCircle } from '../profiles/AvatarCircle'
 import { makeProfilesApi, type ProfileView } from '../profiles/profilesApi'
-import { ProfileFormDialog, type ProfileFormBody } from './ProfileFormDialog'
+import {
+  ProfileFormDialog,
+  type ProfileFormCreateBody,
+  type ProfileFormEditBody,
+} from './ProfileFormDialog'
 
 type Editing = { mode: 'create' } | { mode: 'edit'; profile: ProfileView } | null
 
@@ -38,20 +42,15 @@ export function ProfilesPage() {
     }
   }, [profilesApi])
 
-  async function create(body: ProfileFormBody) {
-    // POST /profiles has no pin field (extra=forbid); the dialog never emits
-    // one in create mode, and rebuilding the body here guarantees it.
-    const created = await profilesApi.create({
-      display_name: body.display_name,
-      age_band: body.age_band,
-      reading_level_cap: body.reading_level_cap,
-      avatar: body.avatar,
-      tts_enabled: body.tts_enabled,
-    })
+  async function create(body: ProfileFormCreateBody) {
+    // POST /profiles has no pin field (extra=forbid); the dialog's
+    // discriminated create/edit union makes a create body carrying `pin`
+    // uncompilable, so the body can be passed through as-is.
+    const created = await profilesApi.create(body)
     setProfiles((rows) => [...(rows ?? []), created])
   }
 
-  async function update(id: string, body: ProfileFormBody) {
+  async function update(id: string, body: ProfileFormEditBody) {
     const updated = await profilesApi.update(id, body)
     setProfiles((rows) =>
       (rows ?? []).map((row) => (row.id === updated.id ? updated : row))
