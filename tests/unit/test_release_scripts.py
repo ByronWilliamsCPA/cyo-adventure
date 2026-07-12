@@ -107,6 +107,32 @@ class TestPromote:
         with pytest.raises(SystemExit):
             promote_changelog.promote("0.2.0", path)
 
+    def test_insertion_is_line_anchored_not_prose(self, tmp_path: Path) -> None:
+        """A bare '## [Unreleased]' in prose does not misplace the insertion."""
+        text = (
+            "# Changelog\n\n"
+            "This project keeps a ## [Unreleased] section, described here.\n\n"
+            "## [Unreleased]\n\n"
+            "### Added\n- A new thing.\n\n"
+            "## [0.1.0] - TBD\n\n### Added\n- Initial release.\n\n"
+            f"[Unreleased]: {_REPO}/compare/v0.1.0...HEAD\n"
+            f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
+        )
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(text, encoding="utf-8")
+
+        assert promote_changelog.promote("0.2.0", path) is True
+        result = path.read_text(encoding="utf-8")
+
+        # The version heading lands under the real heading line, not the prose
+        # mention (an unanchored replace would insert it into the prose line).
+        real_heading_idx = result.index("\n## [Unreleased]\n")
+        version_idx = result.index("## [0.2.0] - ")
+        assert real_heading_idx < version_idx
+        assert result.count("## [0.2.0] - ") == 1
+        # The prose sentence is untouched.
+        assert "keeps a ## [Unreleased] section, described here." in result
+
 
 class TestExtract:
     """extract_changelog_section.extract behavior."""
@@ -139,6 +165,34 @@ class TestExtract:
         """Asking for a version that is not in the changelog is a hard error."""
         with pytest.raises(SystemExit):
             extract_changelog_section.extract("9.9.9", changelog)
+
+    def test_fenced_pseudo_heading_does_not_truncate(self, tmp_path: Path) -> None:
+        """A '## [' line inside a fenced code block is not a section boundary."""
+        text = (
+            "# Changelog\n\n"
+            "## [Unreleased]\n\n"
+            "## [0.2.0] - 2026-01-01\n\n"
+            "### Added\n"
+            "- Documented the changelog format:\n\n"
+            "```\n"
+            "## [Example] - not a real heading\n"
+            "```\n\n"
+            "- A trailing entry after the fence.\n\n"
+            "## [0.1.0] - 2025-01-01\n\n"
+            "### Added\n- Initial release.\n\n"
+            f"[Unreleased]: {_REPO}/compare/v0.2.0...HEAD\n"
+            f"[0.2.0]: {_REPO}/compare/v0.1.0...v0.2.0\n"
+            f"[0.1.0]: {_REPO}/releases/tag/v0.1.0\n"
+        )
+        path = tmp_path / "CHANGELOG.md"
+        path.write_text(text, encoding="utf-8")
+
+        section = extract_changelog_section.extract("0.2.0", path)
+        # The fenced pseudo-heading and the entry after it are both retained.
+        assert "## [Example] - not a real heading" in section
+        assert "A trailing entry after the fence." in section
+        # The genuine next release section is still excluded.
+        assert "Initial release." not in section
 
 
 class TestPromoteCLI:
@@ -230,3 +284,42 @@ class TestExtractCLI:
         monkeypatch.setattr(sys, "argv", ["extract_changelog_section.py", "0.2.0"])
         assert extract_changelog_section.main() == 0
         assert "_No curated changelog entries" in capsys.readouterr().out
+
+
+class TestRealChangelog:
+    """Smoke tests against the repository's actual CHANGELOG.md.
+
+    The synthetic fixtures above never exercise the ~1300-line file that is the
+    scripts' only real consumer; these tests catch format drift the scripts
+    could not otherwise detect until a live release run.
+    """
+
+    _REAL = Path(__file__).resolve().parents[2] / "CHANGELOG.md"
+
+    def test_real_changelog_promotes_and_extracts_bounded_section(
+        self, tmp_path: Path
+    ) -> None:
+        """Promoting then extracting the real file yields a bounded section."""
+        copied = tmp_path / "CHANGELOG.md"
+        copied.write_text(self._REAL.read_text(encoding="utf-8"), encoding="utf-8")
+
+        assert promote_changelog.promote("9.9.9", copied) is True
+        section = extract_changelog_section.extract("9.9.9", copied)
+
+        # Non-empty: the real Unreleased section currently carries entries.
+        assert section
+        # Bounded: no later release heading line or trailing link-block line
+        # leaked in. Checked line-anchored (a '## [' may appear inline in an
+        # entry's prose without being a section boundary).
+        lines = section.splitlines()
+        assert not any(line.startswith("## [") for line in lines)
+        assert not any(line.startswith("[Unreleased]:") for line in lines)
+        assert not any(line.startswith("[9.9.9]:") for line in lines)
+
+    def test_real_changelog_parses_cleanly_under_both_scripts(self) -> None:
+        """The real CHANGELOG satisfies the structure both scripts require."""
+        text = self._REAL.read_text(encoding="utf-8")
+        # Exactly one bare '## [Unreleased]' heading line for promote to anchor.
+        assert text.count("\n## [Unreleased]\n") == 1
+        # The [Unreleased] compare link promote rewrites is present.
+        assert promote_changelog.UNRELEASED_LINK_RE.search(text) is not None

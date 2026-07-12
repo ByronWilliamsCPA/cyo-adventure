@@ -161,6 +161,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coverage, and no other test file was touched.
 
 ### Fixed
+- Two-phase release pipeline hardening (follow-up to #227, which merged before
+  its review fixes landed): a failed auto-merge enable on the release PR now
+  fails the job hard instead of emitting a swallowed warning, so a stalled
+  release surfaces immediately; the `propose` job is pinned to `refs/heads/main`
+  so a prerelease `workflow_dispatch` from another branch cannot break the tag
+  and CHANGELOG contract; the semver guard now matches the whole computed
+  version in bash (the previous piped `grep` anchored per line and accepted
+  `1.2.3.4`); the bump commit is skipped cleanly when a re-run has nothing to
+  commit; `promote_changelog.py` inserts the version heading line-anchored and
+  `extract_changelog_section.py` is fenced-code aware, so a `## [` string in
+  prose or inside a code block can no longer misplace the insertion or truncate
+  the release notes; and the release scripts gained a smoke test over the real
+  `CHANGELOG.md`.
 - Design-system library build (Vite 8/rolldown): `react/jsx-runtime` is now
   externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
   inlines the jsx runtime with a CJS-interop shim whose runtime
