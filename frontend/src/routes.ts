@@ -16,3 +16,12 @@ export const KID_PICKER_PATH = '/kids'
  * signed-in guardian lands straight on the console.
  */
 export const GUARDIAN_CONSOLE_PATH = '/guardian'
+
+/**
+ * Admin console root: the parallel adult surface for admin-capability
+ * functions (review queue, global story-request queue, moderation admin).
+ * Shares the login page and AuthProvider with the guardian tree; an adult
+ * holding both capabilities switches between /guardian and /admin via the
+ * shell nav.
+ */
+export const ADMIN_CONSOLE_PATH = '/admin'

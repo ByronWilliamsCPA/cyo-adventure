@@ -11,12 +11,13 @@ import { requireBackend } from './real-stack'
  * REAL responses; unlike tier 1, no mockMe/route mocks appear anywhere here.
  * Serial: approve mutates the database and the next test observes it.
  *
- * Deviation from the original plan: GET /api/v1/review-queue and
- * GET /api/v1/storybooks/{id}/review are admin-only on the real backend (a
- * guardian token gets a 403; see src/cyo_adventure/api/approval.py). A plain
- * guardian can never see the real queue, so the first test below asserts the
- * ConsolePage 403 branch (the reviewer notice) instead, and a second test
- * covers the admin's real queue view before the shared admin-approve test.
+ * The review queue and per-story review are admin-capability-only on the real
+ * backend (a plain guardian token gets a 403; see
+ * src/cyo_adventure/api/approval.py) and now live on the parallel /admin
+ * console. So the first test asserts a plain guardian is bounced off /admin
+ * back to the family console, and the admin tests drive the real /admin queue
+ * before the shared admin-approve test. dev-admin is an admin-only adult;
+ * dev-dual is a guardian who also holds the is_admin capability.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -25,33 +26,45 @@ test.beforeEach(async () => {
   await requireBackend()
 })
 
-test('a guardian visiting the console sees the reviewer notice, not the queue', async ({
+test('a plain guardian is denied the admin console and lands on the family console', async ({
   page,
   context,
 }) => {
   await seedGuardianSession(context, 'dev-guardian')
-  await page.goto('/guardian')
-  await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+  await page.goto('/admin')
+  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
   await expect(page.getByText(/safety reviewer/i)).toBeVisible()
-  await expect(page.getByText('The Bridge Builder')).not.toBeVisible()
 })
 
 test('the admin sees the seeded in-review story in the real queue', async ({ page, context }) => {
   await seedGuardianSession(context, 'dev-admin')
-  await page.goto('/guardian')
+  await page.goto('/admin')
   await expect(page.getByRole('link', { name: /The Bridge Builder/ })).toBeVisible()
   await expect(page.getByText('1 flagged')).toBeVisible()
 })
 
+test('a dual-role adult can reach the admin queue from the guardian console', async ({
+  page,
+  context,
+}) => {
+  await seedGuardianSession(context, 'dev-dual')
+  await page.goto('/guardian')
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
+  await page.getByRole('link', { name: 'Admin console', exact: true }).click()
+  await expect(page).toHaveURL(/\/admin$/)
+  await expect(page.getByRole('link', { name: /The Bridge Builder/ })).toBeVisible()
+})
+
 test('the admin approves the story through the real API', async ({ page, context }) => {
   await seedGuardianSession(context, 'dev-admin')
-  await page.goto('/guardian/review/s_bridge_builder')
+  await page.goto('/admin/review/s_bridge_builder')
   await expect(page.getByRole('heading', { name: 'The Bridge Builder' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Flagged passages' })).toBeVisible()
 
   await page.getByRole('button', { name: /^Approve$/ }).click()
   await page.getByRole('button', { name: 'Confirm approve' }).click()
-  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page).toHaveURL(/\/admin$/)
 
   // Persisted, not optimistic: after reload the story is out of the queue.
   await page.reload()

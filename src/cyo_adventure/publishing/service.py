@@ -20,7 +20,7 @@ from sqlalchemy import func, select
 
 from cyo_adventure.core.exceptions import BusinessLogicError, ResourceNotFoundError
 from cyo_adventure.db.models import Storybook, StorybookVersion
-from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.publishing.state_machine import (
     Action,
     Status,
@@ -299,7 +299,7 @@ async def approve(
     # test_approve_writes_released_event asserts exactly one "released" row.
     await record_event(
         session,
-        Actor.from_principal(principal),
+        Actor.from_principal(principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="storybook",
         entity_id=storybook.id,
         event_type=EventType.RELEASED,
@@ -348,7 +348,7 @@ async def send_back(
     # test_send_back_writes_sent_back_event asserts payload == {}.
     await record_event(
         session,
-        Actor.from_principal(principal),
+        Actor.from_principal(principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="storybook",
         entity_id=storybook.id,
         event_type=EventType.SENT_BACK,

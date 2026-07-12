@@ -92,10 +92,14 @@ in the same repository.
 - **API client**: generated from the backend OpenAPI schema (see Architecture
   below); the generated client is committed to git and CI fails on drift
   (see Architecture note 1).
-- **Routes**: three surfaces, code-split by audience: landing (`/`), kid
+- **Routes**: four surfaces, code-split by audience: landing (`/`), kid
   (`/kids`, `/library/:profileId`, `/read/:profileId/:storybookId/:version`),
-  and guardian (`/guardian/*` console: requests, review, moderation
-  thresholds, profiles, assignments).
+  guardian (`/guardian/*` console: family requests, intake, books,
+  profiles, assignments), and admin (`/admin/*` console: review queue,
+  cross-family request queue, moderation dashboard/thresholds). One adult
+  can hold guardian, admin, or both (`/v1/me` returns the base `role` plus
+  the orthogonal `is_admin` capability); the shells cross-link for
+  dual-role adults.
 - **Offline support**: IndexedDB-backed offline reading and sync
   (`src/offline/`), with a client-side player engine (`src/player/`) that
   mirrors backend reading-state logic.
@@ -642,9 +646,11 @@ tests/
 frontend/                    # React 19 + Vite + TS app (own package.json)
 └── src/
     ├── client/              # Generated axios client (committed, drift-checked in CI)
-    ├── auth/                # Supabase auth context, ProtectedRoute
-    ├── guardian/             # Guardian console: requests, review, moderation,
-    │                        # profiles, intake, assign-children
+    ├── auth/                # Supabase auth context, ProtectedRoute (capability-gated)
+    ├── admin/                # Admin console: review queue, cross-family request
+    │                        # queue, review detail, moderation dashboard/thresholds
+    ├── guardian/             # Guardian console: family requests, intake, books,
+    │                        # profiles, assign-children; StoryRequestQueue (shared)
     ├── kid/                  # KidShell, ProfilePickerPage
     ├── landing/               # Landing page
     ├── library/               # LibraryPage, BookCard, RequestStory, StarRating

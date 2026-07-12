@@ -201,7 +201,9 @@ test('the Books nav link reaches the page', async ({ page }) => {
     route.fulfill({ json: { items: [] } })
   )
   await page.goto('/guardian')
-  await page.getByRole('link', { name: 'Books' }).click()
+  // exact: the family console body now has a "Browse and assign books" quick
+  // link too; target the top-nav "Books" link specifically.
+  await page.getByRole('link', { name: 'Books', exact: true }).click()
   await expect(page).toHaveURL(/\/guardian\/books$/)
   await expect(page.getByText('The Brave Little Fox')).toBeVisible()
 })

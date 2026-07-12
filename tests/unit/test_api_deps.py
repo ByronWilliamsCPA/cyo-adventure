@@ -211,6 +211,30 @@ class TestResolveProfiles:
         result = await _resolve_profiles(session, user)  # pyright: ignore[arg-type]
         assert result == frozenset()
 
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_admin_only_returns_empty_frozenset(self) -> None:
+        """An admin-only user (not a guardian) gets an empty frozenset.
+
+        Mirrors the docstring's "empty for an admin-only adult" case: the
+        admin base role skips the guardian branch entirely, and an admin row
+        carries no ``child_profile_id``, so the child branch also falls
+        through to the empty-set default.
+        """
+        from cyo_adventure.api.deps import _resolve_profiles
+        from cyo_adventure.db.models import User
+
+        user = User(
+            id=uuid.uuid4(),
+            family_id=uuid.uuid4(),
+            role="admin",
+            is_admin=True,
+            authn_subject="sub",
+        )
+        session = _FakeDepSession()
+        result = await _resolve_profiles(session, user)  # pyright: ignore[arg-type]
+        assert result == frozenset()
+
 
 # ---------------------------------------------------------------------------
 # require_principal
@@ -280,6 +304,35 @@ class TestRequirePrincipal:
         )
         assert result.role == "guardian"
         assert result.profile_ids == frozenset({p1, p2})
+
+    @pytest.mark.unit
+    @pytest.mark.asyncio
+    async def test_dual_role_user_resolves_guardian_principal_with_admin(
+        self,
+    ) -> None:
+        """A (role=guardian, is_admin=True) row yields a dual-capability principal.
+
+        The guardian base role still resolves the family profile set, and the
+        stored flag carries the admin capability onto the same principal.
+        """
+        from cyo_adventure.db.models import User
+
+        p1 = uuid.uuid4()
+        user = User(
+            id=uuid.uuid4(),
+            family_id=uuid.uuid4(),
+            role="guardian",
+            is_admin=True,
+            authn_subject="dual-token",
+        )
+        session = _FakeDepSession(scalar_return=user, scalars_items=[p1])
+        result = await deps.require_principal(
+            session,  # pyright: ignore[arg-type]
+            authorization="Bearer dual-token",
+        )
+        assert result.is_guardian is True
+        assert result.is_admin is True
+        assert result.profile_ids == frozenset({p1})
 
 
 # ---------------------------------------------------------------------------
@@ -426,7 +479,7 @@ class TestAuthStubGuard:
 
 @pytest.mark.unit
 def test_principal_is_admin_role() -> None:
-    """is_admin is true only for the admin role; is_guardian stays false for it."""
+    """The admin base role derives the capability; a plain guardian has neither."""
     admin = Principal(
         subject="s",
         user_id=uuid.uuid4(),
@@ -434,6 +487,8 @@ def test_principal_is_admin_role() -> None:
         family_id=uuid.uuid4(),
         profile_ids=frozenset(),
     )
+    # __post_init__ derives the capability from the admin base role even when
+    # the flag is not passed, so a legacy admin-only row keeps its power.
     assert admin.is_admin is True
     assert admin.is_guardian is False
     guardian = Principal(
@@ -444,6 +499,41 @@ def test_principal_is_admin_role() -> None:
         profile_ids=frozenset(),
     )
     assert guardian.is_admin is False
+
+
+@pytest.mark.unit
+def test_principal_dual_role_holds_both_capabilities() -> None:
+    """A guardian with the admin flag is both guardian and admin."""
+    dual = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="guardian",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset(),
+        is_admin=True,
+    )
+    assert dual.is_guardian is True
+    assert dual.is_admin is True
+
+
+@pytest.mark.unit
+def test_principal_child_cannot_hold_admin_capability() -> None:
+    """A CHILD principal force-clears is_admin (defense in depth).
+
+    The ck_user_child_not_admin CHECK blocks this at rest, but a mistakenly
+    constructed Principal(role=CHILD, is_admin=True) must never escalate
+    in-memory: __post_init__ clears the flag for a child base role.
+    """
+    child = Principal(
+        subject="s",
+        user_id=uuid.uuid4(),
+        role="child",
+        family_id=uuid.uuid4(),
+        profile_ids=frozenset({uuid.uuid4()}),
+        is_admin=True,
+    )
+    assert child.is_admin is False
+    assert child.is_guardian is False
 
 
 class TestJwksClient:

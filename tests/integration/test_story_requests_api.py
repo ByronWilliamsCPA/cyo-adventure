@@ -140,6 +140,151 @@ async def test_guardian_lists_family_requests(client: AsyncClient, seed: Seed) -
     assert len(res.json()["requests"]) == 1
 
 
+async def test_list_is_family_scoped_for_every_caller(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """GET /story-requests never widens past the caller's family.
+
+    The surface selects the scope: a family-B request must be invisible to
+    family A's guardian, to the dual-role adult (guardian + admin
+    capability), and to the admin-only user on THIS surface, even though
+    the latter two can read it on the admin surface. Before the dual-role
+    change an admin token was global here, which would have silently turned
+    a dual-role guardian's everyday request list into a cross-family view.
+    """
+    request_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    for token in (seed.guardian_token, seed.dual_token, seed.admin_token):
+        res = await client.get(_CREATE, headers=auth(token))
+        assert res.status_code == 200, res.text
+        ids = {r["id"] for r in res.json()["requests"]}
+        assert other_id not in ids, f"family-B row leaked to {token}"
+        assert request_id in ids, f"own-family row missing for {token}"
+
+
+async def test_admin_surface_lists_all_families(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """GET /admin/story-requests is the global queue, admin capability only."""
+    request_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    for token in (seed.admin_token, seed.dual_token):
+        res = await client.get("/api/v1/admin/story-requests", headers=auth(token))
+        assert res.status_code == 200, res.text
+        ids = {r["id"] for r in res.json()["requests"]}
+        assert {request_id, other_id} <= ids
+
+    denied = await client.get(
+        "/api/v1/admin/story-requests", headers=auth(seed.guardian_token)
+    )
+    assert denied.status_code == 403
+
+
+async def test_admin_surface_filters_by_status_and_family(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The admin queue honors the optional status and family_id filters.
+
+    Exercises both narrowing branches of GET /admin/story-requests: a status
+    filter and a single-family drill-down, plus the 422 on a bad status.
+    """
+    own_id = await _create_pending_request(client, seed)
+    other = await client.post(
+        _CREATE,
+        json={
+            "profile_id": str(seed.other_child_profile_id),
+            "request_text": "an otter",
+        },
+        headers=auth(seed.other_guardian_token),
+    )
+    assert other.status_code == 201, other.text
+    other_id = str(other.json()["id"])
+
+    # Family drill-down: only family A's request comes back.
+    scoped = await client.get(
+        f"/api/v1/admin/story-requests?family_id={seed.family_id}",
+        headers=auth(seed.admin_token),
+    )
+    assert scoped.status_code == 200, scoped.text
+    scoped_ids = {r["id"] for r in scoped.json()["requests"]}
+    assert own_id in scoped_ids
+    assert other_id not in scoped_ids
+
+    # Status filter: both pending rows come back globally.
+    pending = await client.get(
+        "/api/v1/admin/story-requests?status=pending", headers=auth(seed.admin_token)
+    )
+    assert pending.status_code == 200, pending.text
+    assert {own_id, other_id} <= {r["id"] for r in pending.json()["requests"]}
+
+    # A malformed status is a 422, not a silent empty list.
+    bad = await client.get(
+        "/api/v1/admin/story-requests?status=nope", headers=auth(seed.admin_token)
+    )
+    assert bad.status_code == 422
+
+
+async def test_child_lists_only_own_profile_requests(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """A child token listing with no profile_id sees only its own requests.
+
+    A child session is scoped to its own profile: it must never read a
+    sibling's request text just by omitting the profile_id filter. This pins
+    the family filter alone is insufficient for a child; the own-profile
+    constraint is what confines the list.
+    """
+    own_id = await _create_pending_request(client, seed)
+    # A sibling profile in the SAME family, with its own request inserted
+    # directly (the child cannot create for a profile it does not own).
+    async with sessions() as session:
+        sibling = ChildProfile(
+            family_id=seed.family_id, display_name="Reader A2", age_band="8-11"
+        )
+        session.add(sibling)
+        await session.flush()
+        sibling_request = StoryRequest(
+            family_id=seed.family_id,
+            profile_id=sibling.id,
+            request_text="a sibling's secret idea",
+            status="pending",
+            moderation_flags={"blocked": False, "flags": []},
+            age_band="8-11",
+            initiator_role="child",
+        )
+        session.add(sibling_request)
+        await session.commit()
+        sibling_request_id = str(sibling_request.id)
+
+    res = await client.get(_CREATE, headers=auth(seed.child_token))
+    assert res.status_code == 200, res.text
+    ids = {r["id"] for r in res.json()["requests"]}
+    assert own_id in ids
+    assert sibling_request_id not in ids, "child leaked a sibling's request"
+
+
 async def test_list_rejects_inaccessible_profile_filter(
     client: AsyncClient, seed: Seed
 ) -> None:

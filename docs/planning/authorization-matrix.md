@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.3 | **Updated**: 2026-07-09
+> **Status**: Active | **Version**: 0.4 | **Updated**: 2026-07-12
 
 ## Overview
 
@@ -22,18 +22,48 @@ token subject maps to an allowed set of profiles. A guardian may act on any prof
 within their own family. A child token is scoped to reader and library endpoints and may
 only act on its own assigned profile. `profile_id` is never trusted alone.
 
-Approval is a single state-machine transition reserved for the global admin role
-(`Role.ADMIN` / `is_admin`). A guardian or child token that calls the approve endpoint
+Approval is a single state-machine transition reserved for the global admin capability
+(`Principal.is_admin`). A guardian or child token that calls the approve endpoint
 receives 403 regardless of the `profile_id` in the request. There is no separate publish
 transition: the single approve action stamps `approved_by` and `published_at` and returns
 `status='published'` (approve and publish in one call).
+
+### Dual-role capability model (2026-07-12)
+
+`User.role` is the single base persona (`guardian`, `child`, or `admin`) and the
+global admin capability is the orthogonal `User.is_admin` flag, so one adult account
+can be a guardian, an admin, or both. `Principal.is_guardian` derives from the base
+role; `Principal.is_admin` derives from the flag, with the `admin` base role implying
+the capability (an admin-only adult with no family guardianship). A dual-role
+principal (`role='guardian'`, `is_admin=true`) therefore passes the UNION of the
+guardian-only and admin-only gates, and its guardian base role resolves the family
+profile set, so ownership-scoped endpoints work too.
+
+**Surface selects scope.** Holding the admin capability never widens what a
+guardian-surface endpoint returns: `GET /story-requests` is family-scoped for every
+caller, and the global review queue is the explicit admin surface
+`GET /admin/story-requests`. Per-id actions (approve, decline, child-session mint,
+version fetch, content-summary) retain their admin-global reach, because acting on an
+explicitly named resource is the admin capability working as designed, not a silent
+scope widening of an everyday list.
+
+**Audit stamps record the acting capacity.** `initiator_role` and pipeline-event
+`actor_role` record the role that authorized the action: admin-gated endpoints stamp
+`admin`, and cross-family actions by a dual-role adult stamp `admin`
+(`Principal.acting_role`), while own-family actions stamp the guardian base role.
 
 ---
 
 ## Action-by-Role Table
 
+Roles below are the base personas; a dual-role adult (guardian base role plus the
+admin capability) receives the union of the Admin and Guardian columns, with list
+surfaces staying family-scoped as described above.
+
 | Action | Admin | Guardian | Child (own profile) | Enforcement |
 |--------|-------|----------|---------------------|-------------|
+| List story requests (`GET /story-requests`) | Own family only | Own family only | Own profile via filter | Family-scoped for every caller; the global queue is the admin surface below |
+| Global request queue (`GET /admin/story-requests`) | Yes (all families) | No (403) | No (403) | Admin capability required; surfaces every moderation flag (no threshold filtering) |
 | Read own library / story / state | Any profile | Any family profile | Own profile only | Token subject maps to allowed-profile set; 403 otherwise |
 | Write own reading state | Any profile | Any family profile | Own profile only | Same, plus `state_revision` and version guards on the PUT |
 | Record a completion | Any profile | Any family profile | Own profile only | `ending_id` must belong to the cited published version |

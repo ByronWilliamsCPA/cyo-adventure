@@ -155,20 +155,51 @@ class Series(Base):
 
 
 class User(Base):
-    """An authenticated user (guardian, child, or admin) within a family."""
+    """An authenticated user (guardian, child, or admin) within a family.
+
+    ``role`` is the single base persona; the ``is_admin`` flag is an
+    orthogonal capability so one adult can be a guardian, an admin, or both:
+    ``('guardian', false)`` is a plain guardian, ``('guardian', true)`` is a
+    guardian who also holds the global admin capability, and ``('admin', *)``
+    is an admin-only adult (the auth boundary treats the admin base role as
+    implying the capability regardless of the flag).
+    """
 
     __tablename__ = "user"
     # #CRITICAL: security: ``role`` is coerced to the closed Role enum at the auth
     # boundary (api/deps.py); this CHECK is the at-rest backstop so a non-API write
     # path cannot persist an unmodeled role that would then drive authorization.
-    # #VERIFY: api/deps.Role(user.role) raises on any value outside this set.
+    # The second CHECK keeps the admin capability off child rows: a child user
+    # must never carry is_admin, since the flag grants global review/approval
+    # power at the auth boundary.
+    # #VERIFY: api/deps.Role(user.role) raises on any value outside this set;
+    # api/deps.Principal.__post_init__ derives is_admin for the admin base role.
     __table_args__ = (
         CheckConstraint("role IN ('guardian', 'child', 'admin')", name="ck_user_role"),
+        CheckConstraint(
+            "role <> 'child' OR is_admin = false", name="ck_user_child_not_admin"
+        ),
+        CheckConstraint(
+            "role <> 'admin' OR is_admin = true", name="ck_user_admin_role_flag"
+        ),
     )
 
     id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
     family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
     role: Mapped[str] = mapped_column(String(16))
+    # #CRITICAL: timing dependencies: migration
+    # supabase/migrations/20260712000000_user_is_admin.sql must be applied
+    # BEFORE an image carrying this column deploys. Every full-entity
+    # select(User) (the auth path in api/deps.py::require_principal runs one
+    # per authenticated request) emits this column; against a database
+    # without it, asyncpg raises UndefinedColumn and every authenticated
+    # endpoint 500s.
+    # #VERIFY: apply the migration in each environment ahead of the image
+    # rollout (migrate-before-deploy), per the header comment in the
+    # migration file.
+    is_admin: Mapped[bool] = mapped_column(
+        server_default=sa_text("false"), default=False
+    )
     authn_subject: Mapped[str] = mapped_column(String(255), unique=True, index=True)
     # Contact data ONLY, never an identity key. Populated from the Supabase
     # user's email claim at JIT onboarding (P6-03) for receipts and consent

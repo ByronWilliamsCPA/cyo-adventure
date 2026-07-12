@@ -298,9 +298,14 @@ async def _build_concept(
     request.reviewed_at = datetime.now(UTC)
 
     if emit_approved_event:
+        # Stamp the capacity that authorized the approval: a dual-role adult
+        # approving another family's request can only be acting as admin.
         await record_event(
             session,
-            Actor.from_principal(principal),
+            Actor.from_principal(
+                principal,
+                acting_role=principal.acting_role(request.family_id).value,
+            ),
             entity_type="story_request",
             entity_id=str(request.id),
             event_type=EventType.REQUEST_APPROVED,
@@ -359,7 +364,9 @@ async def create_authored_request(
     """
     # #CRITICAL: security: initiator_role is derived from the authenticated
     # principal, never from the request body, so a guardian cannot mint an
-    # admin-attributed row (and vice versa).
+    # admin-attributed row (and vice versa). The stamp records the capacity
+    # that authorized the write: a dual-role adult authoring into a foreign
+    # family is stamped "admin", into their own family "guardian".
     # #VERIFY: test_story_requests_authored.py asserts the persisted role per
     # token; api/schemas.py::StoryRequestAuthoredCreateBody forbids the field.
     # #ASSUME: concurrency: two concurrent authored submits (a retry, a second
@@ -384,7 +391,7 @@ async def create_authored_request(
         age_band=confirmation.age_band.value,
         length=confirmation.length.value,
         narrative_style=confirmation.narrative_style.value,
-        initiator_role=principal.role.value,
+        initiator_role=principal.acting_role(family_id).value,
         series_id=series_id,
         anchor_storybook_id=anchor_storybook_id,
     )
@@ -392,7 +399,7 @@ async def create_authored_request(
     await session.flush()
     await record_event(
         session,
-        Actor.from_principal(principal),
+        Actor.from_principal(principal, acting_role=request.initiator_role),
         entity_type="story_request",
         entity_id=str(request.id),
         event_type=EventType.REQUEST_CREATED,
@@ -427,7 +434,9 @@ async def decline_story_request(
     request.reviewed_at = datetime.now(UTC)
     await record_event(
         session,
-        Actor.from_principal(principal),
+        Actor.from_principal(
+            principal, acting_role=principal.acting_role(request.family_id).value
+        ),
         entity_type="story_request",
         entity_id=str(request.id),
         event_type=EventType.REQUEST_DECLINED,

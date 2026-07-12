@@ -33,8 +33,8 @@ test('a generation job is locatable from the console by content, without its job
     })
   )
 
-  // The admin never learns the job id; they navigate cold to the console.
-  await page.goto('/guardian')
+  // The admin never learns the job id; they navigate cold to the admin console.
+  await page.goto('/admin')
   await expect(page.getByRole('heading', { level: 2 })).toContainText('Still processing')
   await expect(page.getByText('A tide pool adventure')).toBeVisible()
 })
@@ -105,8 +105,8 @@ test('two admin sessions approving the same storybook concurrently both reach th
     })
   }
 
-  await pageA.goto('/guardian/review/s1')
-  await pageB.goto('/guardian/review/s1')
+  await pageA.goto('/admin/review/s1')
+  await pageB.goto('/admin/review/s1')
 
   await Promise.all(
     [pageA, pageB].map(async (page) => {
@@ -115,8 +115,8 @@ test('two admin sessions approving the same storybook concurrently both reach th
     })
   )
 
-  await expect(pageA).toHaveURL(/\/guardian$/)
-  await expect(pageB).toHaveURL(/\/guardian$/)
+  await expect(pageA).toHaveURL(/\/admin$/)
+  await expect(pageB).toHaveURL(/\/admin$/)
   expect(approveCount).toBe(2) // both requests reached the mock: no client-side guard blocked either
 
   await contextA.close()

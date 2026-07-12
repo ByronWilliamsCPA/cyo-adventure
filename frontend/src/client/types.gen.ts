@@ -1121,7 +1121,11 @@ export type LibraryView = {
  * The frontend has no way to inspect a bearer token itself (it may be an
  * opaque dev-stub string locally, or a signed Supabase JWT it should not
  * parse); this is the sole source of truth for which shell (kid vs
- * guardian) and nav to render for the current session.
+ * guardian vs admin) and nav to render for the current session.
+ *
+ * ``role`` is the base persona (guardian/child/admin); ``is_admin`` is the
+ * orthogonal admin capability, so one adult can be a guardian, an admin,
+ * or both (role='guardian' with is_admin=true).
  */
 export type MeResponse = {
     /**
@@ -1132,6 +1136,10 @@ export type MeResponse = {
      * Role
      */
     role: string;
+    /**
+     * Is Admin
+     */
+    is_admin: boolean;
     /**
      * Family Id
      */
@@ -3936,6 +3944,46 @@ export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses = 
 };
 
 export type CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponse = CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses[keyof CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses];
+
+export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: {
+        /**
+         * Status
+         */
+        status?: string | null;
+        /**
+         * Family Id
+         */
+        family_id?: string | null;
+    };
+    url: '/api/v1/admin/story-requests';
+};
+
+export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetError = ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors[keyof ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors];
+
+export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses = {
+    /**
+     * Successful Response
+     */
+    200: StoryRequestListView;
+};
+
+export type ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponse = ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses[keyof ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses];
 
 export type ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData = {
     body: StoryRequestApproveBody;

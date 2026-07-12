@@ -81,16 +81,25 @@ export const ProfilePickerPage = lazy(() =>
 export const ProfilesPage = lazy(() =>
   import('./guardian/ProfilesPage').then((m) => ({ default: m.ProfilesPage }))
 )
+export const AdminShell = lazy(() =>
+  import('./admin/AdminShell').then((m) => ({ default: m.AdminShell }))
+)
+export const AdminConsolePage = lazy(() =>
+  import('./admin/AdminConsolePage').then((m) => ({ default: m.AdminConsolePage }))
+)
+export const AdminRequestsPage = lazy(() =>
+  import('./admin/AdminRequestsPage').then((m) => ({ default: m.AdminRequestsPage }))
+)
 export const ReviewDetailPage = lazy(() =>
-  import('./guardian/ReviewDetailPage').then((m) => ({ default: m.ReviewDetailPage }))
+  import('./admin/ReviewDetailPage').then((m) => ({ default: m.ReviewDetailPage }))
 )
 export const ModerationThresholdsPage = lazy(() =>
-  import('./guardian/ModerationThresholdsPage').then((m) => ({
+  import('./admin/ModerationThresholdsPage').then((m) => ({
     default: m.ModerationThresholdsPage,
   }))
 )
 export const ModerationDashboardPage = lazy(() =>
-  import('./guardian/ModerationDashboardPage').then((m) => ({
+  import('./admin/ModerationDashboardPage').then((m) => ({
     default: m.ModerationDashboardPage,
   }))
 )

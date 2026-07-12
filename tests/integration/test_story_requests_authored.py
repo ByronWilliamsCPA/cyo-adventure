@@ -9,7 +9,7 @@ import pytest
 
 from cyo_adventure.api.families import _FAMILY_LIST_LIMIT
 from cyo_adventure.db.models import Concept, Family, StoryRequest
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -64,10 +64,27 @@ async def test_guardian_rejects_cross_family_profile(
     assert res.status_code == 403
 
 
-async def test_guardian_must_omit_family_id(client: AsyncClient, seed: Seed) -> None:
+async def test_guardian_may_name_own_family(client: AsyncClient, seed: Seed) -> None:
+    """Naming your own family is a harmless self-reference, not an error.
+
+    The pre-dual-role contract 422'd any guardian-supplied family_id; the
+    optional-family contract accepts the caller's own id.
+    """
     body = {**BODY, "family_id": str(seed.family_id)}
     res = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
-    assert res.status_code == 422
+    assert res.status_code == 201
+
+
+async def test_guardian_foreign_family_is_403(client: AsyncClient, seed: Seed) -> None:
+    """A guardian without the admin capability cannot author into another family.
+
+    403 outright, before any existence lookup, so the endpoint is not a
+    family-id oracle: a nonexistent id and a real foreign family's id must
+    be indistinguishable to a plain guardian.
+    """
+    body = {**BODY, "family_id": str(uuid.uuid4())}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
+    assert res.status_code == 403
 
 
 async def test_child_cannot_author(client: AsyncClient, seed: Seed) -> None:
@@ -109,6 +126,53 @@ async def test_admin_unknown_family_is_404(client: AsyncClient, seed: Seed) -> N
     body = {**BODY, "family_id": "00000000-0000-0000-0000-000000000000"}
     res = await client.post(AUTHORED, json=body, headers=auth(seed.admin_token))
     assert res.status_code == 404
+
+
+async def test_guardian_real_foreign_family_is_403(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """A real foreign family id gets the same 403 as a nonexistent one."""
+    body = {**BODY, "family_id": str(stranger.family_id)}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.guardian_token))
+    assert res.status_code == 403
+
+
+async def test_dual_role_omitted_family_targets_own(
+    client: AsyncClient, sessions: async_sessionmaker[AsyncSession], seed: Seed
+) -> None:
+    """A dual-role adult omitting family_id authors into their own family.
+
+    The row is stamped in the guardian capacity: acting within your own
+    family never needs (and never records) the admin capability.
+    """
+    res = await client.post(AUTHORED, json=BODY, headers=auth(seed.dual_token))
+    assert res.status_code == 201
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(res.json()["id"]))
+        assert row is not None
+        assert row.family_id == seed.family_id
+        assert row.initiator_role == "guardian"
+
+
+async def test_dual_role_foreign_family_is_stamped_admin(
+    client: AsyncClient,
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+    stranger: Stranger,
+) -> None:
+    """A dual-role adult authoring into a foreign family acts as admin.
+
+    Only the admin capability can authorize the cross-family write, so the
+    audit stamp records admin, not the guardian base persona.
+    """
+    body = {**BODY, "family_id": str(stranger.family_id)}
+    res = await client.post(AUTHORED, json=body, headers=auth(seed.dual_token))
+    assert res.status_code == 201
+    async with sessions() as session:
+        row = await session.get(StoryRequest, uuid.UUID(res.json()["id"]))
+        assert row is not None
+        assert row.family_id == stranger.family_id
+        assert row.initiator_role == "admin"
 
 
 async def test_authored_missing_length_is_422(client: AsyncClient, seed: Seed) -> None:

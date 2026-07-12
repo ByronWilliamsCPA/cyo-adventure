@@ -26,7 +26,7 @@ from cyo_adventure.db.models import (
     ModerationThreshold,
     ModerationThresholdAudit,
 )
-from cyo_adventure.events import Actor, EventType, record_event
+from cyo_adventure.events import ADMIN_ACTOR_ROLE, Actor, EventType, record_event
 from cyo_adventure.moderation.thresholds import (
     ADMIN_NOISE_FLOOR_KEY,
     DEFAULT_THRESHOLD,
@@ -217,7 +217,7 @@ async def upsert_threshold(
     # test_threshold_upsert_emits_threshold_changed_event.
     await record_event(
         ctx.session,
-        Actor.from_principal(ctx.principal),
+        Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="moderation_threshold",
         entity_id=age_band,
         event_type=EventType.THRESHOLD_CHANGED,
@@ -296,7 +296,7 @@ async def delete_threshold(
     # test_threshold_delete_emits_threshold_changed_event.
     await record_event(
         ctx.session,
-        Actor.from_principal(ctx.principal),
+        Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="moderation_threshold",
         entity_id=age_band,
         event_type=EventType.THRESHOLD_CHANGED,
@@ -376,7 +376,7 @@ async def update_noise_floor(
     # test_noise_floor_update_emits_noise_floor_changed_event.
     await record_event(
         ctx.session,
-        Actor.from_principal(ctx.principal),
+        Actor.from_principal(ctx.principal, acting_role=ADMIN_ACTOR_ROLE),
         entity_type="moderation_setting",
         entity_id="admin_noise_floor",
         event_type=EventType.NOISE_FLOOR_CHANGED,

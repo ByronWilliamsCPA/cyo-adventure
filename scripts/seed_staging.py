@@ -359,7 +359,12 @@ async def seed(
         )
         session.add(guardian)
         session.add(
-            User(family_id=family.id, role="admin", authn_subject=admin_subject)
+            User(
+                family_id=family.id,
+                role="admin",
+                authn_subject=admin_subject,
+                is_admin=True,
+            )
         )
         await session.flush()
 

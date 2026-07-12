@@ -73,7 +73,9 @@ async def _seed_published_with_noisy_report(
         fam = Family(name="NoiseFloorFamily")
         session.add(fam)
         await session.flush()
-        admin = User(family_id=fam.id, role="admin", authn_subject="admin-nf")
+        admin = User(
+            family_id=fam.id, role="admin", authn_subject="admin-nf", is_admin=True
+        )
         session.add_all(
             [
                 admin,
@@ -158,7 +160,12 @@ async def _seed_in_review_with_noisy_report(
         fam = Family(name="NoiseFloorQueueFamily")
         session.add(fam)
         await session.flush()
-        admin = User(family_id=fam.id, role="admin", authn_subject="admin-nf-queue")
+        admin = User(
+            family_id=fam.id,
+            role="admin",
+            authn_subject="admin-nf-queue",
+            is_admin=True,
+        )
         session.add(admin)
         await session.flush()
         story_id = "noise-floor-queue-story"

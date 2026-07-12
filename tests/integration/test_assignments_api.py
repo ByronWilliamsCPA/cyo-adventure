@@ -42,7 +42,12 @@ async def _seed_in_review(
         await session.flush()
         session.add_all(
             [
-                User(family_id=fam.id, role="admin", authn_subject="admin-a"),
+                User(
+                    family_id=fam.id,
+                    role="admin",
+                    authn_subject="admin-a",
+                    is_admin=True,
+                ),
                 User(family_id=fam.id, role="guardian", authn_subject="guardian-a"),
                 User(family_id=fam.id, role="child", authn_subject="child-a"),
             ]
@@ -325,7 +330,9 @@ async def _seed_published_with_report(
         fam = Family(name="A")
         session.add(fam)
         await session.flush()
-        admin = User(family_id=fam.id, role="admin", authn_subject="admin-a")
+        admin = User(
+            family_id=fam.id, role="admin", authn_subject="admin-a", is_admin=True
+        )
         session.add_all(
             [
                 admin,
@@ -427,7 +434,11 @@ async def test_admin_reads_content_summary_cross_family(
         fam_b = Family(name="B")
         session.add(fam_b)
         await session.flush()
-        session.add(User(family_id=fam_b.id, role="admin", authn_subject="admin-b"))
+        session.add(
+            User(
+                family_id=fam_b.id, role="admin", authn_subject="admin-b", is_admin=True
+            )
+        )
         await session.commit()
     resp = await client.get(
         f"/api/v1/storybooks/{story_id}/content-summary", headers=auth("admin-b")

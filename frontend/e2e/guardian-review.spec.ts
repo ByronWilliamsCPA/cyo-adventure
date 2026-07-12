@@ -14,7 +14,13 @@ const SURFACE = {
   version: 1,
   status: 'in_review',
   screened: true,
-  summary: { count: 1, hard_block: false, soft_flag: true, repaired: false, reviewer_independent: true },
+  summary: {
+    count: 1,
+    hard_block: false,
+    soft_flag: true,
+    repaired: false,
+    reviewer_independent: true,
+  },
   blob: {
     title: 'The Cave',
     nodes: [
@@ -44,15 +50,13 @@ const SURFACE = {
 
 test.beforeEach(async ({ page, context }) => {
   await seedGuardianSession(context)
-  await mockEmptyConsole(page) // for the post-action navigation back to /guardian
-  await page.route('**/api/v1/storybooks/s1/review*', (route) =>
-    route.fulfill({ json: SURFACE })
-  )
+  await mockEmptyConsole(page) // for the post-action navigation back to /admin
+  await page.route('**/api/v1/storybooks/s1/review*', (route) => route.fulfill({ json: SURFACE }))
 })
 
 test('flagged passages render before the full story', async ({ page }) => {
   await mockMe(page, { role: 'admin' })
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await expect(page.getByRole('heading', { name: 'The Cave' })).toBeVisible()
   const h2s = page.getByRole('heading', { level: 2 })
   await expect(h2s.first()).toHaveText('Flagged passages')
@@ -76,22 +80,26 @@ test('admin approve posts and returns to the console (ADR-005)', async ({ page }
     })
   })
 
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: /^Approve$/ }).click()
   await expect(page.getByText('Approve this story?')).toBeVisible()
   await page.getByRole('button', { name: 'Confirm approve' }).click()
 
-  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page).toHaveURL(/\/admin$/)
   expect(approvePosted).toBe(true)
 })
 
-test('guardian approve gets 403 and the UI fails closed', async ({ page }) => {
-  await mockMe(page, { role: 'guardian' })
+test('a backend 403 on approve fails closed in the UI', async ({ page }) => {
+  // The /admin route gate needs the capability to even load the page, so
+  // the 403 under test is the backend independently rejecting the approve
+  // (e.g. the capability was revoked server-side mid-session). The UI must
+  // fail closed either way: error alert, no navigation, no false success.
+  await mockMe(page, { role: 'admin' })
   await page.route('**/api/v1/storybooks/s1/approve', (route) =>
     route.fulfill({ status: 403, json: { detail: 'approval requires the admin role' } })
   )
 
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: /^Approve$/ }).click()
   await page.getByRole('button', { name: 'Confirm approve' }).click()
 
@@ -99,7 +107,7 @@ test('guardian approve gets 403 and the UI fails closed', async ({ page }) => {
     page.getByText('We could not approve this story. It may be unscreened or no longer in review.')
   ).toBeVisible()
   // Fail closed: still on the review page, no silent success navigation.
-  await expect(page).toHaveURL(/\/guardian\/review\/s1$/)
+  await expect(page).toHaveURL(/\/admin\/review\/s1$/)
 })
 
 test('send-back posts the reason and returns to the console', async ({ page }) => {
@@ -110,12 +118,12 @@ test('send-back posts the reason and returns to the console', async ({ page }) =
     return route.fulfill({ json: { id: 's1', status: 'needs_revision', reason: 'too intense' } })
   })
 
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: 'Send Back' }).click()
   await expect(page.getByText('Send back for revision')).toBeVisible()
   await page.getByLabel(/reason/i).fill('too intense for this age')
   await page.getByRole('button', { name: 'Confirm send back' }).click()
 
-  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page).toHaveURL(/\/admin$/)
   await expect.poll(() => body).toEqual({ reason: 'too intense for this age' })
 })

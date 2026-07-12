@@ -6,9 +6,9 @@ import { Dialog } from '@ds/components/Dialog'
 import { PassageText } from '@ds/components/PassageText'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
-import { makeCoverApi, type CoverStatusView } from './coverApi'
-import { FlagBadge, verdictTone } from './FlagBadge'
-import { makeReviewApi, type FindingView, type ReviewSurface, type Visibility } from './reviewApi'
+import { makeCoverApi, type CoverStatusView } from '../guardian/coverApi'
+import { FlagBadge, verdictTone } from '../guardian/FlagBadge'
+import { makeReviewApi, type FindingView, type ReviewSurface, type Visibility } from '../guardian/reviewApi'
 
 interface StoryNode {
   id: string
@@ -190,7 +190,7 @@ export function ReviewDetailPage() {
     setActionError(false)
     try {
       await action()
-      void navigate('/guardian')
+      void navigate('/admin')
     } catch (err) {
       console.error('review action failed:', err instanceof Error ? err.message : err)
       setActionError(true)

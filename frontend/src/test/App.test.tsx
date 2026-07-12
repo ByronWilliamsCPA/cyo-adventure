@@ -182,16 +182,37 @@ describe('router: guardian surface', () => {
     expect(await screen.findByText(/Guardian sign-in/)).toBeInTheDocument()
   })
 
-  it('renders the console for a signed-in guardian with a warm parental gate', async () => {
+  it('renders the family console for a signed-in guardian with a warm parental gate', async () => {
     mockGetSession.mockResolvedValue(guardianSession)
-    // The console route sits behind the parental gate (P6-08); warm it so
-    // this test keeps asserting what it always did (the route mounts). The
+    // The family console route sits behind the parental gate (P6-08); warm it
+    // so this test keeps asserting what it always did (the route mounts). The
     // cold-gate path has its own test below.
     warmParentalGate('u1')
     // One shared get mock serves the auth /v1/me lookup and the console's
-    // /v1/review-queue and /v1/generation-jobs fetches, so branch on the URL:
-    // empty responses are enough to confirm the console mounts (its behavioral
-    // matrix lives in ConsolePage.test.tsx).
+    // /v1/profiles fetch, so branch on the URL: an empty profile list is
+    // enough to confirm the console mounts (its behavioral matrix lives in
+    // ConsolePage.test.tsx).
+    mockGet.mockImplementation((url: string) => {
+      if (url === '/v1/profiles') {
+        return Promise.resolve({ data: { profiles: [] } })
+      }
+      return Promise.resolve({
+        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+      })
+    })
+    renderAt('/guardian')
+    expect(await screen.findByText(/Family console/)).toBeInTheDocument()
+  })
+
+  it('renders the admin console (review queue) for a signed-in admin with a warm parental gate', async () => {
+    mockGetSession.mockResolvedValue(guardianSession)
+    // The admin tree is gated twice: the is_admin capability from /v1/me
+    // (ProtectedRoute) admits the adult, and the parental gate (P6-08) proves a
+    // grown-up is present. Warm the gate so this test asserts the console
+    // mounts; the cold-gate path is covered by the guardian cold-gate test.
+    warmParentalGate('u1')
+    // Empty queue responses are enough to confirm the console mounts (its
+    // behavioral matrix lives in AdminConsolePage.test.tsx).
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/review-queue') {
         return Promise.resolve({ data: { items: [] } })
@@ -200,19 +221,85 @@ describe('router: guardian surface', () => {
         return Promise.resolve({ data: { jobs: [] } })
       }
       return Promise.resolve({
-        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+        data: {
+          subject: 'sub-1',
+          role: 'admin',
+          is_admin: true,
+          family_id: 'fam-1',
+          profile_ids: [],
+        },
       })
     })
-    renderAt('/guardian')
+    renderAt('/admin')
     expect(await screen.findByText(/Review queue/)).toBeInTheDocument()
   })
 
-  it('renders the review detail page at /guardian/review/:storybookId', async () => {
+  it('renders the admin cross-family request queue for a signed-in admin with a warm parental gate', async () => {
     mockGetSession.mockResolvedValue(guardianSession)
+    // AdminRequestsPage renders cross-family child request text, so it moved
+    // inside the admin ParentalGate (I1); warm it so this test asserts the
+    // route mounts. The cold-gate path is covered by the test below.
+    warmParentalGate('u1')
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/admin/story-requests')) {
+        return Promise.resolve({ data: { requests: [] } })
+      }
+      if (url === '/v1/admin/families') {
+        return Promise.resolve({ data: { families: [] } })
+      }
+      return Promise.resolve({
+        data: {
+          subject: 'sub-1',
+          role: 'admin',
+          is_admin: true,
+          family_id: 'fam-1',
+          profile_ids: [],
+        },
+      })
+    })
+    renderAt('/admin/requests')
+    expect(await screen.findByLabelText(/what should the story be about/i)).toBeInTheDocument()
+  })
+
+  it('challenges a cold parental gate before the admin request queue renders (I1)', async () => {
+    mockGetSession.mockResolvedValue(guardianSession)
+    // No warmParentalGate call: the gate is cold, so /admin/requests must
+    // render the re-auth challenge instead of the cross-family request queue,
+    // even though the admin capability from /v1/me admits the principal.
+    mockGet.mockImplementation((url: string) => {
+      if (url.startsWith('/v1/admin/story-requests')) {
+        return Promise.resolve({ data: { requests: [] } })
+      }
+      if (url === '/v1/admin/families') {
+        return Promise.resolve({ data: { families: [] } })
+      }
+      return Promise.resolve({
+        data: {
+          subject: 'sub-1',
+          role: 'admin',
+          is_admin: true,
+          family_id: 'fam-1',
+          profile_ids: [],
+        },
+      })
+    })
+    renderAt('/admin/requests')
+    expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
+    expect(
+      screen.queryByLabelText(/what should the story be about/i)
+    ).not.toBeInTheDocument()
+  })
+
+  it('renders the review detail page at /admin/review/:storybookId with a warm parental gate', async () => {
+    mockGetSession.mockResolvedValue(guardianSession)
+    // The review detail moved to the admin tree, which is behind the parental
+    // gate (P6-08); warm it so the route mounts.
     warmParentalGate('u1')
     // Shared get mock: serve the auth /v1/me lookup and the review surface fetch.
     // A minimal screened-clean surface is enough to confirm the detail route
-    // mounts (its behavioral matrix lives in ReviewDetailPage.test.tsx).
+    // mounts (its behavioral matrix lives in ReviewDetailPage.test.tsx). The
+    // principal is a dual-role adult: the admin tree admits it via the
+    // is_admin capability even though the base role is guardian.
     mockGet.mockImplementation((url: string) => {
       if (url === '/v1/storybooks/s1/review') {
         return Promise.resolve({
@@ -229,10 +316,16 @@ describe('router: guardian surface', () => {
         })
       }
       return Promise.resolve({
-        data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+        data: {
+          subject: 'sub-1',
+          role: 'guardian',
+          is_admin: true,
+          family_id: 'fam-1',
+          profile_ids: [],
+        },
       })
     })
-    renderAt('/guardian/review/s1')
+    renderAt('/admin/review/s1')
     expect(await screen.findByRole('heading', { name: 'The Cave' })).toBeInTheDocument()
   })
 
@@ -255,13 +348,42 @@ describe('router: guardian surface', () => {
   it('challenges a cold parental gate before the console renders (P6-08)', async () => {
     mockGetSession.mockResolvedValue(guardianSession)
     // No warmParentalGate call: the gate is cold, so the console route must
-    // render the re-auth challenge instead of the review queue.
+    // render the re-auth challenge instead of the family console.
     mockGet.mockResolvedValue({
       data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
     })
     renderAt('/guardian')
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
-    expect(screen.queryByText(/Review queue/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Family console/)).not.toBeInTheDocument()
+  })
+
+  it('redirects a plain guardian away from /admin to the guardian console (I7)', async () => {
+    mockGetSession.mockResolvedValue(guardianSession)
+    // A plain guardian (is_admin false/absent) fails the admin-only capability
+    // gate; ProtectedRoute's deniedRedirectTo sends them to
+    // GUARDIAN_CONSOLE_PATH ('/guardian'), not the login page (which would
+    // loop for an already signed-in user). Warm the gate so a successful
+    // redirect resolves all the way to the family console, distinguishing it
+    // from a redirect failure (which would leave the shared "Grown-ups only"
+    // challenge markup ambiguous between the guardian and admin trees).
+    warmParentalGate('u1')
+    mockGet.mockImplementation((url: string) => {
+      if (url === '/v1/profiles') {
+        return Promise.resolve({ data: { profiles: [] } })
+      }
+      return Promise.resolve({
+        data: {
+          subject: 'sub-1',
+          role: 'guardian',
+          is_admin: false,
+          family_id: 'fam-1',
+          profile_ids: [],
+        },
+      })
+    })
+    renderAt('/admin')
+    expect(await screen.findByText(/Family console/)).toBeInTheDocument()
+    expect(screen.queryByText(/Guardian sign-in/)).not.toBeInTheDocument()
   })
 
   it('keeps intake outside the parental gate (requesting is not the gated action)', async () => {

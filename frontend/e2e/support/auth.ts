@@ -18,6 +18,7 @@ export const SUPABASE_SESSION_KEY = 'sb-example-auth-token'
 export interface MeBody {
   subject: string
   role: 'guardian' | 'admin'
+  is_admin: boolean
   family_id: string
   profile_ids: string[]
 }
@@ -25,6 +26,7 @@ export interface MeBody {
 export const DEFAULT_ME: MeBody = {
   subject: 'guardian-1',
   role: 'guardian',
+  is_admin: false,
   family_id: 'fam-1',
   profile_ids: ['p1'],
 }
@@ -71,14 +73,30 @@ export async function seedGuardianSession(
   )
 }
 
-/** Mock GET /api/v1/me. Pass { role: 'admin' } for admin-gate tests. */
+/**
+ * Mock GET /api/v1/me. Pass { role: 'admin' } for admin-gate tests; the
+ * is_admin capability defaults from the role so an 'admin' persona passes
+ * the /admin route gate without every call site spelling out the flag. Pass
+ * { role: 'guardian', is_admin: true } for a dual-role adult.
+ */
 export async function mockMe(page: Page, me: Partial<MeBody> = {}): Promise<void> {
-  const body: MeBody = { ...DEFAULT_ME, ...me }
+  const body: MeBody = {
+    ...DEFAULT_ME,
+    ...(me.role === 'admin' ? { is_admin: true } : {}),
+    ...me,
+  }
   await page.route('**/api/v1/me', (route) => route.fulfill({ json: body }))
 }
 
-/** Mock the two endpoints ConsolePage always fetches in parallel. */
+/**
+ * Mock the endpoints the two console homes fetch on mount: /v1/profiles for
+ * the guardian family console, /v1/review-queue + /v1/generation-jobs for
+ * the admin review queue.
+ */
 export async function mockEmptyConsole(page: Page): Promise<void> {
+  await page.route('**/api/v1/profiles', (route) =>
+    route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
+  )
   await page.route('**/api/v1/review-queue', (route) => route.fulfill({ json: { items: [] } }))
   await page.route('**/api/v1/generation-jobs', (route) => route.fulfill({ json: { jobs: [] } }))
 }

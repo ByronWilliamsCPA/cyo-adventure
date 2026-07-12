@@ -63,7 +63,9 @@ async def _seed_banded_published(
         fam = Family(name="T")
         session.add(fam)
         await session.flush()
-        admin = User(family_id=fam.id, role="admin", authn_subject="admin-t")
+        admin = User(
+            family_id=fam.id, role="admin", authn_subject="admin-t", is_admin=True
+        )
         session.add_all(
             [
                 admin,

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { mockEmptyConsole, mockMe, seedGuardianSession } from './support/auth'
+import { mockMe, seedGuardianSession } from './support/auth'
 
 /**
  * Guardian/admin "authored" story request (WS-B PR2) e2e: the pre-approved
@@ -116,13 +116,15 @@ test.describe('guardian authored request (RequestsPage)', () => {
   })
 })
 
-test.describe('admin authored request (ConsolePage)', () => {
+test.describe('admin authored request (AdminRequestsPage)', () => {
   test.beforeEach(async ({ page, context }) => {
     await seedGuardianSession(context)
     await mockMe(page, { role: 'admin' })
-    await mockEmptyConsole(page)
-    // ConsolePage's onboarding-nudge read; not under test here.
-    await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: { profiles: [] } }))
+    // The admin request queue reads the cross-family admin surface; an empty
+    // list keeps the authored form the focus of this spec.
+    await page.route('**/api/v1/admin/story-requests**', (route) =>
+      route.fulfill({ json: { requests: [] } })
+    )
     await page.route('**/api/v1/admin/families', (route) =>
       route.fulfill({ json: { families: [FAMILY] } })
     )
@@ -140,7 +142,7 @@ test.describe('admin authored request (ConsolePage)', () => {
       })
     })
 
-    await page.goto('/guardian')
+    await page.goto('/admin/requests')
 
     await expect(page.getByLabel('Child (optional)')).toHaveCount(0)
     await page.getByLabel('Family').selectOption(FAMILY.id)

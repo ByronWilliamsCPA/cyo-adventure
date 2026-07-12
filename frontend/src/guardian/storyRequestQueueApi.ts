@@ -52,18 +52,31 @@ export type StoryRequestApproveBody = {
   series_title?: string
 }
 
+/**
+ * Which pending-request list backs the queue. 'family' reads the
+ * family-scoped guardian surface (GET /v1/story-requests); 'all' reads the
+ * global admin surface (GET /v1/admin/story-requests, admin capability
+ * required). Approve/decline are per-id actions shared by both surfaces.
+ */
+export type StoryRequestQueueScope = 'family' | 'all'
+
 export interface StoryRequestQueueApi {
   listPending(): Promise<StoryRequestView[]>
   approve(id: string, body: StoryRequestApproveBody): Promise<StoryRequestApproved>
   decline(id: string): Promise<StoryRequestDeclined>
 }
 
-export function makeStoryRequestQueueApi(api: AxiosInstance): StoryRequestQueueApi {
+export function makeStoryRequestQueueApi(
+  api: AxiosInstance,
+  scope: StoryRequestQueueScope = 'family'
+): StoryRequestQueueApi {
+  const listUrl =
+    scope === 'all'
+      ? '/v1/admin/story-requests?status=pending'
+      : '/v1/story-requests?status=pending'
   return {
     async listPending(): Promise<StoryRequestView[]> {
-      const res = await api.get<{ requests: StoryRequestView[] }>(
-        '/v1/story-requests?status=pending'
-      )
+      const res = await api.get<{ requests: StoryRequestView[] }>(listUrl)
       return res.data.requests
     },
     async approve(id: string, body: StoryRequestApproveBody): Promise<StoryRequestApproved> {

@@ -39,10 +39,10 @@ const SURFACE = {
 
 function renderAt(storybookId: string) {
   return render(
-    <MemoryRouter initialEntries={[`/guardian/review/${storybookId}`]}>
+    <MemoryRouter initialEntries={[`/admin/review/${storybookId}`]}>
       <Routes>
-        <Route path="/guardian/review/:storybookId" element={<ReviewDetailPage />} />
-        <Route path="/guardian" element={<div>CONSOLE HOME</div>} />
+        <Route path="/admin/review/:storybookId" element={<ReviewDetailPage />} />
+        <Route path="/admin" element={<div>CONSOLE HOME</div>} />
       </Routes>
     </MemoryRouter>
   )

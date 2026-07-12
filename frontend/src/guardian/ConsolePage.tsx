@@ -1,96 +1,42 @@
-import { useEffect, useMemo, useState, type ReactElement } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { useAuth } from '../auth/useAuth'
-import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
-import { FlagBadge } from './FlagBadge'
-import { RequestStoryForm } from './RequestStoryForm'
-import { makeReviewApi, type ReviewQueueItem, type StillProcessingItem } from './reviewApi'
-
-type LoadState =
-  | { kind: 'loading' }
-  | { kind: 'forbidden' }
-  | { kind: 'error' }
-  | { kind: 'ready'; items: ReviewQueueItem[]; processing: StillProcessingItem[] }
-
-/** A story that was never screened, or screened with at least one finding. */
-function isFlagged(item: ReviewQueueItem): boolean {
-  return !item.screened || item.flagged_count > 0
-}
-
-function QueueRow({ item }: { item: ReviewQueueItem }) {
-  return (
-    <li className="console-row cyo-card cyo-card--interactive">
-      <Link className="console-row__link" to={`/guardian/review/${item.storybook_id}`}>
-        <span className="console-row__title">{item.title}</span>
-        {!item.screened ? (
-          <FlagBadge tone="unscreened" />
-        ) : item.flagged_count > 0 ? (
-          <FlagBadge tone="flag" label={`${item.flagged_count} flagged`} />
-        ) : (
-          <FlagBadge tone="clean" />
-        )}
-      </Link>
-    </li>
-  )
-}
+import { ADMIN_CONSOLE_PATH } from '../routes'
 
 /**
- * Guardian console (C4a-4): the safety operator's severity-ordered review
- * queue. Flagged stories sort to the top, then ready-to-review, then still
- * processing. The queue endpoint is admin-only; a plain-guardian token gets a
- * 403 and sees a notice rather than a broken page (ADR-005: the approver is the
- * global safety reviewer, not any guardian). Admins also get an embedded
- * RequestStoryForm (WS-B PR 2) for authoring a pre-approved request against a
- * chosen family.
+ * Guardian console home. The safety review queue that used to live here
+ * moved to the admin console (AdminConsolePage) when admin functions gained
+ * their own surface; this page is now the guardian's family home: an
+ * onboarding nudge toward profile creation for a childless family, quick
+ * links into the guardian surfaces, and (for an adult who also holds the
+ * admin capability) the pointer into the admin console.
  */
 export function ConsolePage() {
   const api = useApi()
   const { principal } = useAuth()
-  const reviewApi = useMemo(() => makeReviewApi(api), [api])
-  const [state, setState] = useState<LoadState>({ kind: 'loading' })
+  // An admin-only adult (isAdmin without the guardian base role) has no
+  // guardian family surface here: /v1/profiles always resolves to an empty
+  // set for this role (api/deps.py::_resolve_profiles never scans a family's
+  // children for a non-guardian principal), and profile creation is
+  // guardian-only (api/profiles.py::_require_guardian), so both the
+  // onboarding nudge and the quick-link grid would be dead ends for this
+  // principal. A dual-role adult (role='guardian', isAdmin=true) is NOT
+  // admin-only and keeps the full guardian experience.
+  const isAdminOnly = principal !== null && principal.isAdmin && principal.role !== 'guardian'
   // #ASSUME: data integrity: /v1/profiles returns { profiles: [...] }. On any
-  // failure childCount stays null and the onboarding nudge simply does not
-  // render, so a first-time guardian is nudged but a load hiccup is silent.
-  // #VERIFY: ConsolePage.test.tsx nudge / no-nudge cases.
+  // failure childCount stays null; the onboarding nudge is gated on a
+  // confirmed-empty family (childCount === 0), so a guardian keeps their
+  // quick links over a transient load hiccup rather than being pushed into
+  // the childless-onboarding path. The admin-only dead-link case (I4) is
+  // handled by the isAdminOnly branch above, which never fetches at all.
+  // #VERIFY: ConsolePage.test.tsx nudge / no-nudge / load-failure / admin-only cases.
   const [childCount, setChildCount] = useState<number | null>(null)
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const [items, processing] = await Promise.all([
-          reviewApi.queue(),
-          reviewApi.stillProcessing(),
-        ])
-        if (!cancelled) setState({ kind: 'ready', items, processing })
-      } catch (err) {
-        // #CRITICAL: security: a plain-guardian token is allowed into the
-        // /guardian route tree but not the admin-only queue endpoint; a 403 is
-        // an expected role outcome, not a failure, so surface a clear notice.
-        // #VERIFY: ConsolePage.test.tsx asserts the notice on a 403 and the
-        // generic error on a 500.
-        if (classifyApiError(err).kind === 'forbidden') {
-          if (!cancelled) setState({ kind: 'forbidden' })
-          return
-        }
-        // Log the message, not the axios error object (its config.headers
-        // carries the caller's Authorization bearer token).
-        console.error('review queue load failed:', err instanceof Error ? err.message : err)
-        if (!cancelled) setState({ kind: 'error' })
-      }
-    }
-    void load()
-    return () => {
-      cancelled = true
-    }
-  }, [reviewApi])
-
-  // Separate, non-blocking read: a first-time guardian with zero children needs
-  // a nudge toward profile creation, independent of the admin-only queue state.
-  useEffect(() => {
+    if (isAdminOnly) return
     let cancelled = false
     async function loadChildren() {
       try {
@@ -105,104 +51,66 @@ export function ConsolePage() {
     return () => {
       cancelled = true
     }
-  }, [api])
-
-  let content: ReactElement
-  if (state.kind === 'loading') {
-    content = (
-      <div role="status" aria-live="polite">
-        Loading review queue…
-      </div>
-    )
-  } else if (state.kind === 'forbidden') {
-    content = (
-      <section className="console">
-        <h1>Review queue</h1>
-        <p className="console__notice cyo-text-muted">
-          Reviews are handled by your family&apos;s safety reviewer. You do not need to
-          approve stories here.
-        </p>
-      </section>
-    )
-  } else if (state.kind === 'error') {
-    content = (
-      <p role="alert" className="console__error cyo-text-error">
-        We could not load the review queue. Please reload.
-      </p>
-    )
-  } else {
-    const flagged = state.items.filter(isFlagged)
-    const ready = state.items.filter((item) => item.screened && item.flagged_count === 0)
-    const nothingPending = state.items.length === 0 && state.processing.length === 0
-
-    content = (
-      <section className="console">
-        <h1>Review queue</h1>
-        {nothingPending ? (
-          <EmptyState
-            title="Nothing to review"
-            description="New stories appear here once they finish generating."
-            actions={
-              childCount === 0 ? (
-                <Link className="console__cta" to="/guardian/profiles">
-                  Add a child profile to get started
-                </Link>
-              ) : undefined
-            }
-          />
-        ) : (
-          <>
-            {flagged.length > 0 ? (
-              <div className="console-group">
-                <h2 className="console-group__heading">Flagged (review carefully)</h2>
-                <ul className="console-list">
-                  {flagged.map((item) => (
-                    <QueueRow key={item.storybook_id} item={item} />
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            {ready.length > 0 ? (
-              <div className="console-group">
-                <h2 className="console-group__heading">Ready to review</h2>
-                <ul className="console-list">
-                  {ready.map((item) => (
-                    <QueueRow key={item.storybook_id} item={item} />
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            <div className="console-group">
-              <h2 className="console-group__heading">Still processing</h2>
-              {state.processing.length === 0 ? (
-                <p className="console__muted cyo-text-muted">No stories are generating right now.</p>
-              ) : (
-                <ul className="console-list">
-                  {state.processing.map((job) => (
-                    <li key={job.job_id} className="console-row cyo-card">
-                      <span className="console-row__title">{job.title}</span>
-                      <FlagBadge tone="processing" />
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </>
-        )}
-      </section>
-    )
-  }
+  }, [api, isAdminOnly])
 
   return (
-    <>
-      {principal?.role === 'admin' ? <RequestStoryForm mode="admin" /> : null}
-      {principal?.role === 'admin' ? (
-        <nav aria-label="Moderation admin">
-          <Link to="/guardian/moderation-dashboard">Moderation dashboard</Link>{' '}
-          <Link to="/guardian/moderation-thresholds">Moderation thresholds</Link>
+    <section className="console">
+      <h1>Family console</h1>
+      {principal?.isAdmin ? (
+        <p className="console__notice cyo-text-muted">
+          You also have safety-reviewer access.{' '}
+          <Link to={ADMIN_CONSOLE_PATH}>Open the admin console</Link> to review stories and requests
+          across families.
+        </p>
+      ) : (
+        <p className="console__notice cyo-text-muted">
+          Stories are checked by your family&apos;s safety reviewer before they reach your children;
+          you do not need to approve them here.
+        </p>
+      )}
+      {isAdminOnly ? (
+        <EmptyState
+          title="No family console for this account"
+          description="This account only has safety-reviewer access; family features like requesting stories and managing profiles aren't available here."
+        />
+      ) : childCount === 0 ? (
+        <EmptyState
+          title="Add your first reader"
+          description="Create a child profile to start requesting stories."
+          actions={
+            <Link className="console__cta" to="/guardian/profiles">
+              Add a child profile to get started
+            </Link>
+          }
+        />
+      ) : (
+        <nav aria-label="Guardian quick links" className="console-group">
+          <ul className="console-list">
+            <li className="console-row cyo-card cyo-card--interactive">
+              <Link className="console-row__link" to="/guardian/intake">
+                <span className="console-row__title">Request a story</span>
+              </Link>
+            </li>
+            <li className="console-row cyo-card cyo-card--interactive">
+              <Link className="console-row__link" to="/guardian/requests">
+                <span className="console-row__title">
+                  Review your children&apos;s story requests
+                </span>
+              </Link>
+            </li>
+            <li className="console-row cyo-card cyo-card--interactive">
+              <Link className="console-row__link" to="/guardian/books">
+                <span className="console-row__title">Browse and assign books</span>
+              </Link>
+            </li>
+            <li className="console-row cyo-card cyo-card--interactive">
+              <Link className="console-row__link" to="/guardian/profiles">
+                <span className="console-row__title">Manage child profiles</span>
+              </Link>
+            </li>
+          </ul>
         </nav>
-      ) : null}
-      {content}
-    </>
+      )}
+    </section>
   )
 }
