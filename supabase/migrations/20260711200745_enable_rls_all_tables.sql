@@ -30,9 +30,10 @@
 -- (frontend/src/auth/supabaseClient.ts, frontend/src/auth/AuthContext.tsx)
 -- is Auth (GoTrue) only: auth.getSession, auth.onAuthStateChange,
 -- auth.signInWithOAuth, auth.signInWithPassword, auth.signOut. A
--- repo-wide grep for ".from(" against the supabase client found no
--- PostgREST table access anywhere in frontend/src/ (verified 2026-07-11:
--- frontend uses the anon key for Auth only). The child-session design
+-- repo-wide grep for the supabase-js PostgREST calls "supabase.from("
+-- and "supabase.rpc(" found no PostgREST table access anywhere in
+-- frontend/src/ (verified 2026-07-11: frontend uses the anon key for
+-- Auth only). The child-session design
 -- (P6-04, built in parallel) mints backend JWTs rather than issuing
 -- Supabase client sessions to kid readers, so this deny-by-default posture
 -- holds for R2.

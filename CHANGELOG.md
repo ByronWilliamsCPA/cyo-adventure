@@ -39,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (the frontend's `@supabase/supabase-js` client is Auth/GoTrue only:
   `auth.getSession`, `auth.onAuthStateChange`, `auth.signInWithOAuth`,
   `auth.signInWithPassword`, `auth.signOut`; a repo-wide grep of
-  `frontend/src/` found no `.from()` PostgREST table access). `FORCE ROW
+  `frontend/src/` found no `supabase.from(` or `supabase.rpc(` PostgREST
+  table access). `FORCE ROW
   LEVEL SECURITY` is deliberately not used: the tables are owned by
   `postgres`, and forcing RLS with zero policies would also lock out the
   table owner, i.e. the application itself. See
