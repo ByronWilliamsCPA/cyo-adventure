@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
+  every push to `main` that touches image content now fires a
+  `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
+  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`. Once
+  homelab-infra#591 lands its matching `repository_dispatch` trigger, its
+  `cyo-adventure-build.yml` will rebuild and publish the backend/frontend
+  images from exactly that commit; until then GitHub accepts the dispatch
+  (204) but nothing consumes it, and the receiver's weekly schedule remains
+  the build path. Previously images were only built on manual dispatch or a
+  weekly schedule, so merges could sit unpublished for days while the live
+  deploy served a stale build. Doc-only paths (`docs/**`, `**.md`,
+  `.claude/**`, `mkdocs.yml`) are ignored. Requires the
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Actions
+  read/write on homelab-infra); a missing/empty secret fails the run via an
+  explicit guard step, and an invalid/expired token fails the `gh` call
+  loudly (HTTP 401) rather than silently skipping the dispatch.
+
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
@@ -136,6 +154,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
   unchanged and remains local-only.
+- Auth-gate scenario tier for the `naive-ux-check` skill (issue #204): three
+  new Track B comprehension scenarios (`K0` fresh-device kid gate, `G0`
+  guardian sign-in discovery, `A0` admin sign-in signal) grow the prompt set
+  from 14 to 17 and give the differentiated kid auth gates shipped in PR
+  #198 their first naive-user verification (a clear, friendly, working gate
+  now scores as a pass for these three scenarios). The skill's default
+  target changes from plain local dev to local dev pointed at the seeded
+  Supabase staging project via `.env.staging`, with live production demoted
+  to an explicit, deliberate operator choice (mutating personas still never
+  target it). `K1`-`K4` gain a documented operator precondition (sign in as
+  the seeded test guardian, `SEED_GUARDIAN_EMAIL`, first), zero-state
+  scenario premises are annotated for the seeded "Test Reader" fixtures,
+  and stale pre-#206/#209/#210 UI descriptions in the prompt files were
+  re-verified against the current frontend. Spec:
+  `docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`.
 - Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
   8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
   quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8
