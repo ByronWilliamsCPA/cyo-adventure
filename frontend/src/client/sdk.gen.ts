@@ -1220,8 +1220,7 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
  * Raises:
  * AuthorizationError: If a child token reaches this endpoint, or a
  * guardian names a profile outside its own family (-> 403).
- * ResourceNotFoundError: If the profile does not exist, or has no child
- * account to attribute the session to (-> 404).
+ * ResourceNotFoundError: If the profile does not exist (-> 404).
  * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
  */
 export const createChildSessionApiV1ChildSessionsPost = <ThrowOnError extends boolean = false>(options: Options<CreateChildSessionApiV1ChildSessionsPostData, ThrowOnError>): RequestResult<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError> => (options.client ?? client).post<CreateChildSessionApiV1ChildSessionsPostResponses, CreateChildSessionApiV1ChildSessionsPostErrors, ThrowOnError>({

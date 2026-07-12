@@ -12,18 +12,24 @@
   "readmeHeader": ".design-sync/conventions.md",
   "dtsPropsFor": {
     "Button": "variant?: 'primary' | 'ghost' | 'danger'; size?: 'sm' | 'md' | 'lg'; children: React.ReactNode; disabled?: boolean; onClick?: React.MouseEventHandler<HTMLButtonElement>",
+    "Card": "interactive?: boolean; children: React.ReactNode; className?: string",
     "ChoiceButton": "label: string; selected?: boolean; disabled?: boolean; onClick?: React.MouseEventHandler<HTMLButtonElement>",
+    "Chip": "on?: boolean; children: React.ReactNode; onClick?: React.MouseEventHandler<HTMLButtonElement>",
     "Dialog": "title: string; children: React.ReactNode; actions: React.ReactNode; open?: boolean; onClose: () => void",
     "EmptyState": "title: string; description: string; actions?: React.ReactNode; icon?: React.ReactNode",
+    "FormField": "label: string; children: React.ReactNode; className?: string",
     "PassageText": "text: string; className?: string",
     "ProgressBar": "value: number; label?: string; showLabel?: boolean",
     "StatusBadge": "status: 'connected' | 'offline' | 'loading' | 'error'; label?: string"
   },
   "componentSrcMap": {
     "Button": "src/components/Button/Button.tsx",
+    "Card": "src/components/Card/Card.tsx",
     "ChoiceButton": "src/components/ChoiceButton/ChoiceButton.tsx",
+    "Chip": "src/components/Chip/Chip.tsx",
     "Dialog": "src/components/Dialog/Dialog.tsx",
     "EmptyState": "src/components/EmptyState/EmptyState.tsx",
+    "FormField": "src/components/FormField/FormField.tsx",
     "PassageText": "src/components/PassageText/PassageText.tsx",
     "ProgressBar": "src/components/ProgressBar/ProgressBar.tsx",
     "StatusBadge": "src/components/StatusBadge/StatusBadge.tsx"

@@ -118,7 +118,7 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 | 2 Gen + Gate | ✅ Delivered (merged) |
 | 2b Live providers + yield | ✅ Delivered (70% live yield, 14/20; Tier-2 weak at 3/7) |
 | 3 Safety + Review | ✅ Delivered, backend (moderation #36, approval spine #34, review surface + save-state #45); guardian UI is Phase 4a |
-| 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete**, pending release-readiness (#73 auth redirect, docs sync #52) |
+| 4a Library + Profiles | ✅ Delivered (C4a-1..6 merged: app shell/auth #56, profiles #60, library #68, intake #69, assign #75, guardian console #76); **R1 feature-complete** (#73 auth redirect closed 2026-07-06; remaining doc sync #52 is Track 2 hygiene, not an R1 gap) |
 | Story-lifecycle redesign (WS-A..G, post-R1) | ✅ Delivered (merged 2026-07-06 to 2026-07-10: moderation thresholds #141/#161/#162, request lifecycle #163/#164/#165/#167, provider selection + skeleton matching #170/#175, pipeline event log #168, catalog sharing #180, suggestion dashboard #176, series chaining #184/#192); see [story-lifecycle-redesign.md](./story-lifecycle-redesign.md) |
 | 4b Editor + UX | ⏸️ Not started (post-R1; read-aloud is also an R2/R3 subscription lever) |
 | 5 Hardening | ⏸️ Not started (post-R1; public-tier ops fold into Phase 9) |
@@ -130,8 +130,9 @@ Source: [Project Vision](./project-vision.md) sections 1-3;
 With **Phases 0 through 3 and Phase 4a all merged, the internal web release (R1) is
 feature-complete as of 2026-07-03**: the approval, moderation, and review APIs are
 enforced, and the guardian-facing app shell, library, per-child profiles, guardian
-console, and concept intake are built and merged (C4a-1..6). What remains for R1 is
-release-readiness, not new build (#73 auth redirect, docs sync #52). Between R1
+console, and concept intake are built and merged (C4a-1..6). No R1 build work
+remains: issue #73 (auth redirect) closed 2026-07-06, and issue #52 (docs sync)
+is Track 2 hygiene rather than an R1 gap. Between R1
 feature-complete and R2 planning, the seven-workstream story-lifecycle redesign (WS-A
 through WS-G) hardened moderation, request handling, generation matching, observability,
 catalog sharing, and series continuation; all seven merged by 2026-07-10. The public rungs
@@ -656,7 +657,8 @@ profiles #60, library #68, guardian console #76, concept intake #69, assign-to-p
 The `library` API (published, profile-scoped browsing) and the child `ratings` API
 were joined by a full guardian/parent frontend: routing, the kid library UI, per-child
 profile management, the guardian review-and-approval console, and the concept-intake form.
-What remains for R1 is release-readiness, not new build (#73 auth redirect, docs sync #52).
+No R1 build work remains: issue #73 (auth redirect) closed 2026-07-06, and issue #52
+(docs sync) is Track 2 hygiene rather than an R1 gap.
 
 **Objective**: Make the internal web release (R1) shippable. A child sees only the stories
 permitted for their profile; a guardian can assign an approved generated story to one or
@@ -678,14 +680,16 @@ more children. This is the **R1 release line**.
 - A child sees only stories permitted for their profile (age band and reading level enforced).
 - A guardian can assign an approved generated story to one or more children.
 
-**Quality gates**:
+**Quality gates** (retro-verified 2026-07-11: every C4a PR merged through the required
+"CI Gate" aggregator, and a full local run measured 98.03% total coverage with
+`api/library.py` at 99.36% and `api/profiles.py` at 95.52%, 2414 tests passing):
 
-- [ ] 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths
-- [ ] Integration tests: child cannot see unapproved or off-band story; guardian assigns story
+- [x] 80% line / 70% branch coverage; 90% on library filtering and profile-enforcement paths
+- [x] Integration tests: child cannot see unapproved or off-band story; guardian assigns story
       to profile and child library updates
-- [ ] No high or critical security findings
-- [ ] Ruff clean; BasedPyright strict clean
-- [ ] Pre-commit green; all commits signed with conventional messages
+- [x] No high or critical security findings
+- [x] Ruff clean; BasedPyright strict clean
+- [x] Pre-commit green; all commits signed with conventional messages
 
 **Dependencies**: Requires Phases 2 and 3. This phase closes R1 (the internal web release);
 Phase 4b and Phase 5 follow.

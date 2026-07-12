@@ -2,12 +2,15 @@
    Guardian console: shell chrome, shared surface patterns, per-page styles.
 
    1. Shell chrome: page background, sticky header/nav, sign-in card.
-   2. Shared surface patterns (C2): grouped :is() rules give the five
-      card/list-item families and four form-field stacks one consistent
-      visual treatment, plus two text-tone groups (error, muted/notice).
-      Kept ahead of the per-page sections below so a page's own rule only
-      has to add its layout-specific spacing, not repeat the shared radius,
-      border, background, input, or text-color declarations.
+   2. Shared surface patterns (C2, promoted to @cyo/design-system): the five
+      card/list-item families, the four form-field stacks, the two
+      text-tone groups (error, muted/notice), and the intake chip that used
+      to live here are now the design system's `.cyo-card`,
+      `.cyo-field` / `.cyo-field__control`, `.cyo-text-error`,
+      `.cyo-text-muted`, and the `Chip` component (`.cyo-chip`), applied
+      directly alongside each element's semantic class in the page
+      component. Only page-local overrides (an extra color, a font-size,
+      a margin, an italic) stay here.
    3. Per-page sections: profiles, intake, console/review queue, review
       detail, assignment, authored request form, books, admin tables.
    ============================================================================ */
@@ -168,13 +171,15 @@
   text-align: left;
 }
 
-/* Layout/gap/font-weight for this field stack live in the shared grouped
-   rule below; only the extra color override stays here. */
+/* Layout/gap/font-weight for this field stack come from the cyo-field class
+   added directly to this label in LoginPage.tsx; only the extra color
+   override stays here. */
 .guardian-login__field {
   color: var(--color-ink-secondary, #5a3e28);
 }
 
-/* margin/font-size stay local; text color moves to the shared error group. */
+/* margin/font-size stay local; text color comes from the cyo-text-error
+   class added alongside these in LoginPage.tsx / GuardianShell.tsx. */
 .guardian-login__error,
 .guardian-shell__error {
   margin: 1rem 1.5rem 0;
@@ -233,114 +238,26 @@
 
 /* ============================================================================
    Shared surface patterns (C2 consolidation)
+
+   The card/list-item radius+background+border, the field-stack layout, the
+   input box treatment, and the error/muted text tones that used to be
+   grouped :is() rules here now live in the design system as `.cyo-card`,
+   `.cyo-field` / `.cyo-field__control`, `.cyo-text-error`, and
+   `.cyo-text-muted` (frontend/design-system/src/components/Card/Card.css,
+   .../FormField/FormField.css, .../utilities.css). Every element that used
+   to be matched by those grouped selectors now also carries the matching
+   `cyo-*` class directly in its TSX; only page-local overrides (a font-size,
+   a margin, an italic) stay here.
    ============================================================================ */
 
-/* Raised-card treatment shared by the console feed, profile list, intake
-   requests, review findings, and books list. Each family's own rule below
-   keeps only its layout (flex direction, gaps, per-row padding). */
-:is(.console-row, .profiles__card, .intake-request, .review-card, .books__row) {
-  border-radius: var(--radius-lg, 12px);
-  background: var(--surface-raised, rgb(255 255 255 / 55%));
-  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
-}
-
-/* Only the console feed row is a single whole-row link; the other four
-   families host their own interactive controls (buttons, selects) that
-   already carry their own hover/focus states, so only this one lifts. */
-.console-row:hover {
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(44, 26, 14, 0.1));
-}
-
-/* Field-stack layout shared by every labeled input across the login, profile,
-   intake, and authored-request forms.
-   Specificity note: :is() takes the weight of its most specific argument, and
-   `.profile-form label` (class + type) is the heaviest one here, so this
-   whole rule resolves to (0,1,1), not the (0,1,0) a single class selector
-   would carry. A later same-file override written as a single class (e.g.
-   `.request-form__field { ... }`) is LOWER specificity and will silently lose
-   to this rule regardless of source order; override with an equally or more
-   specific selector instead. */
-:is(.guardian-login__field, .profile-form label, .intake-form__field, .request-form__field) {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-weight: var(--weight-semibold, 600);
-}
-
-/* Shared input box treatment for the same four field-stack families.
-   Checkbox/radio inputs (profile avatar picker, TTS toggle) are excluded so
-   they keep their native control appearance.
-   Specificity note: the heaviest :is() argument here is
-   `.profile-form label input` (0,1,2), plus the two chained
-   :not([type=...]) exclusions (0,1,0 each), for a resolved (0,3,2). Same
-   caution as the field-stack rule above: a later single-class or
-   single-class-plus-element override needs at least this weight to win. */
-:is(
-    .guardian-login__field input,
-    .profile-form label input,
-    .profile-form label select,
-    .intake-form__field input,
-    .intake-form__field textarea,
-    .request-form__field input,
-    .request-form__field select,
-    .request-form__field textarea
-  ):not([type='checkbox']):not([type='radio']) {
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-md, 8px);
-  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
-  background: rgb(255 255 255 / 70%);
-  font: inherit;
-  color: var(--color-ink, #2c1a0e);
-}
-
-:is(
-    .guardian-login__field input,
-    .profile-form label input,
-    .profile-form label select,
-    .intake-form__field input,
-    .intake-form__field textarea,
-    .request-form__field input,
-    .request-form__field select,
-    .request-form__field textarea
-  ):not([type='checkbox']):not([type='radio']):focus-visible {
-  outline: 2px solid var(--color-amber-deep, #c17b2a);
-  outline-offset: 2px;
-  border-color: var(--color-amber-deep, #c17b2a);
-}
-
-/* Error-toned inline text: form/field/action errors across every page. */
-:is(
-  .guardian-login__error,
-  .guardian-shell__error,
-  .profile-form__error,
-  .intake-form__error,
-  .console__error,
-  .console-row__error,
-  .intake-request__error,
-  .review-detail__action-error,
-  .review-detail__visibility-warning,
-  .request-form__error
-) {
-  color: var(--color-error, #b3261e);
-}
-
-/* font-size stays local; text color moves to the shared error group above. */
+/* font-size stays local; text color comes from the cyo-text-error class
+   added alongside this one in IntakePage.tsx. */
 .intake-request__error {
   font-size: 0.875rem;
 }
 
-/* Muted/notice-toned inline text: secondary, non-error informational copy. */
-:is(
-  .console__notice,
-  .console__muted,
-  .console-row__series-note,
-  .intake-form__hint,
-  .review-actionbar__hint
-) {
-  color: var(--color-ink-muted, #8c6f56);
-}
-
-/* color moves to the shared muted group above; font-size/margin stay local. */
+/* color comes from the cyo-text-muted class added alongside this one in
+   IntakePage.tsx; font-size/margin stay local. */
 .intake-form__hint {
   font-size: 0.875rem;
   margin: 0;
@@ -434,35 +351,6 @@
   border-radius: 999px;
   padding: 0.15rem 0.7rem;
   cursor: pointer;
-}
-
-/* Bright amber (--color-amber) only clears the WCAG 1.4.11 non-text 3:1
-   minimum, not the 4.5:1 normal-text minimum, so it stays reserved for
-   hover-only boundaries (kid.css idiom). This chip's resting border is a
-   permanent, non-hover boundary, so it uses --color-amber-deep instead. */
-.intake-chip {
-  border: 1px solid var(--color-amber-deep, #c17b2a);
-  background: transparent;
-  color: var(--color-ink, #2c1a0e);
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  cursor: pointer;
-}
-
-.intake-chip:focus-visible {
-  outline: 2px solid var(--color-amber-deep, #c17b2a);
-  outline-offset: 2px;
-}
-
-/* White text on an amber-deep fill only clears 4.5:1 at large-text sizes
-   (matching the sign-out / nav-active / provider-button treatment above),
-   so the selected chip is bumped to text-lg + bold along with the fill. */
-.intake-chip--on {
-  background: var(--color-amber-deep, #c17b2a);
-  border-color: var(--color-amber-deep, #c17b2a);
-  color: white;
-  font-size: var(--text-lg, 1.25rem);
-  font-weight: var(--weight-bold, 700);
 }
 
 .intake-requests {
@@ -620,7 +508,8 @@
   padding: 0 1rem 0.75rem;
 }
 
-/* color moves to the shared muted group above; italic stays local. */
+/* color comes from the cyo-text-muted class added alongside this one in
+   RequestsPage.tsx; italic stays local. */
 .console-row__series-note {
   font-style: italic;
 }
@@ -697,7 +586,8 @@
   font-weight: 400;
 }
 
-/* color moves to the shared error group above; margin stays local. */
+/* color comes from the cyo-text-error class added alongside this one in
+   ReviewDetailPage.tsx; margin stays local. */
 .review-detail__visibility-warning {
   margin: 0;
 }
@@ -715,7 +605,8 @@
   border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
 }
 
-/* color moves to the shared muted group above; the rest stays local. */
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; the rest stays local. */
 .review-actionbar__hint {
   margin: 0.5rem 0 0;
   font-size: 0.875rem;

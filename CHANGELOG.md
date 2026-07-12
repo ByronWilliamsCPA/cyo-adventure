@@ -7,6 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `scripts/backfill_covers_r2.py`: one-shot operator script that migrates
+  pre-R2 cover art from Supabase Storage to Cloudflare R2 (#214), closing the
+  gap the R2 cutover PR (#209) explicitly left open ("this PR does not
+  backfill or re-upload them to R2, so old covers keep loading from Supabase
+  until a future backfill"). Selects every `storybook_version` row with a
+  non-null `cover_image_url`, classifies each as `"r2"` (already migrated via
+  a `startswith(settings.r2_public_base_url)` check; skipped, not a
+  candidate), `"supabase"` (matches the pre-R2 public-URL shape
+  `https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>/<key>`,
+  tolerating an optional `?...` cache-busting suffix; a migration candidate),
+  or `"other"` (skipped). Each candidate is downloaded, re-uploaded to R2 via
+  the existing `covers.storage.upload_cover()` under the same
+  `{storybook_id}/{version}.webp` key the live generation path uses, then
+  downloaded back from the new R2 URL and compared byte-for-byte against the
+  original before the database row is touched at all; a mismatch, or any
+  download/upload exception, leaves the row untouched and counts it as
+  failed rather than risking a half-migrated or corrupted cover. Supports
+  `--dry-run` to log candidates and print a summary without writing
+  anything. Uses a browser-like User-Agent on both downloads: the
+  williamshome.family Cloudflare zone's bot protection returns 403 for the
+  default python-httpx User-Agent, which was observed in practice during the
+  PR #209/#210 R2 rollout smoke tests. Idempotent: re-running against an
+  already-migrated row is a no-op (classified `"r2"`, not a candidate).
+- Hybrid post-quantum cryptography readiness (ADR-013). The JWT
+  signature-algorithm allowlist in `api/deps.py` is now configuration
+  (`Settings.oidc_allowed_algs`, env `OIDC_ALLOWED_ALGS`, default
+  `["RS256", "ES256"]`) instead of a hardcoded list, so a future
+  post-quantum JOSE algorithm (e.g. ML-DSA) is an env change, not a code
+  change; a startup validator refuses an empty list, `none`, and the
+  symmetric `HS*` family so the new knob cannot reopen the alg=none or
+  HS256-confusion forgeries. `scripts/check_fips_compatibility.py` now
+  recognizes the finalized FIPS 203/204/205 algorithm names (ML-KEM,
+  ML-DSA, SLH-DSA, and the hybrid `X25519MLKEM768` TLS group) as approved
+  and warns on pre-standardization names (Kyber, Dilithium, SPHINCS+) with
+  migration hints. An explicit `cryptography>=45` floor (the ML-DSA/SLH-DSA
+  primitives) is pinned in `pyproject.toml`, and a living cryptographic
+  inventory ships at `docs/security/crypto-inventory.md`. Key-exchange
+  enablement (hybrid X25519+ML-KEM on the ingress legs) is owned by the
+  `homelab-infra` repo per the ADR; nothing in this repo pins TLS groups.
+- Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
+  every push to `main` that touches image content now fires a
+  `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
+  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`, whose
+  `cyo-adventure-build.yml` (receiver trigger live on its main since
+  homelab-infra#591 merged) rebuilds and publishes the backend/frontend
+  images from exactly that commit. GitHub accepts a dispatch (204) even
+  with no listener, so the receiver's weekly schedule remains the backstop
+  if that trigger ever drifts. Previously images were only built on manual dispatch or a
+  weekly schedule, so merges could sit unpublished for days while the live
+  deploy served a stale build. Doc-only paths (`docs/**`, `**.md`,
+  `.claude/**`, `mkdocs.yml`) are ignored. Requires the
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Contents
+  read/write on homelab-infra, the permission that
+  `POST /repos/{owner}/{repo}/dispatches` requires; Actions permissions are
+  not sufficient); a missing/empty secret fails the run via an
+  explicit guard step, and an invalid/expired token fails the `gh` call
+  loudly (HTTP 401) rather than silently skipping the dispatch.
+
+### Security
+- Enabled Row Level Security (RLS) on all 19 public tables as defense-in-depth
+  against the Supabase PostgREST anon/authenticated path (issue #125). The
+  FastAPI backend connects via the session pooler as the `postgres` role,
+  which Postgres always exempts from RLS, so app behavior is unaffected; the
+  exposure closed is that, with RLS off, anyone holding the project's anon
+  key could read or write every public table (including `child_profile`)
+  directly through PostgREST. No policies are added: this is deny-by-default
+  for anon/authenticated, since no client in this project uses PostgREST
+  (the frontend's `@supabase/supabase-js` client is Auth/GoTrue only:
+  `auth.getSession`, `auth.onAuthStateChange`, `auth.signInWithOAuth`,
+  `auth.signInWithPassword`, `auth.signOut`; a repo-wide grep of
+  `frontend/src/` found no `supabase.from(` or `supabase.rpc(` PostgREST
+  table access). `FORCE ROW
+  LEVEL SECURITY` is deliberately not used: the tables are owned by
+  `postgres`, and forcing RLS with zero policies would also lock out the
+  table owner, i.e. the application itself. See
+  `supabase/migrations/20260711200745_enable_rls_all_tables.sql`.
+
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
@@ -53,6 +131,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coverage, and no other test file was touched.
 
 ### Fixed
+- Design-system library build (Vite 8/rolldown): `react/jsx-runtime` is now
+  externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
+  inlines the jsx runtime with a CJS-interop shim whose runtime
+  `require("react")` throws in browser consumers of the ESM dist.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -142,6 +224,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   storage persistence, in-flight lock) plus router-level tests that the cold
   gate blocks the console, intake stays ungated, and the kid surface never
   mounts the gate.
+- Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
+  fixture (`tests/integration/conftest.py::seed`, family A and B) is now
+  joined by a third, completely unrelated `stranger` fixture (family C, no
+  shared storybook, assignment, story request, or profile with A or B), so a
+  query that happens to reject only the one other family the suite knew
+  about (rather than correctly checking "belongs to the caller's family")
+  can no longer pass unnoticed. `test_authz_matrix.py` gains stranger-family
+  parametrized checks in both directions (family C's guardian/child tokens
+  against family A's resources, and family A's child token against family
+  C's profile) across every ownership-scoped route already covered for
+  family B, plus a leak-by-inclusion check on `GET /api/v1/profiles` (the
+  response body's id set, not just the status code, is asserted to exclude
+  both other families). `test_child_sessions.py` extends the same coverage
+  to the real, backend-signed child-session JWT mint/verify path (G1/P6-04):
+  a guardian cannot mint a session for a stranger family's profile in either
+  direction, and a minted third-family token is proven to fail against
+  family A's library/guardian routes and vice versa, closing the gap left by
+  testing only the dev-stub role tokens. `test_guardian_books_api.py` adds
+  the same third-family isolation and assignment-leak checks the file
+  already ran against family B. No cross-tenant leak was found; every new
+  check landed green against the existing implementation.
 - Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
   admin) exchanges a child profile id for a short-lived, backend-signed HS256
   JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
@@ -158,7 +261,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   minted it (no `alg=none` forgery and no RS256/HS256 confusion in either
   direction). The child `User.id` is embedded at mint so the resulting principal
   is attributable on the append-only pipeline event log without a database read,
-  keeping verification offline-friendly. New settings (`core/config.py`):
+  keeping verification offline-friendly. Because profiles created through
+  `POST /api/v1/profiles` get no `User` row (only the seed scripts ever created
+  child accounts), the mint endpoint JIT-provisions the child account when it
+  is absent: a `role="child"` `User` row with a deterministic synthetic subject
+  (`child-profile:{profile_id}`, which cannot collide with a Supabase UUID sub
+  or the seed scripts' opaque subjects), created inside the same unit of work
+  under the family authorization that already ran. A concurrent double-mint
+  from two guardian devices converges on one row: both compute the same
+  subject, the loser's INSERT hits the unique `authn_subject` index inside a
+  savepoint (the `begin_nested` pattern from `generation/series_link.py`), and
+  it recovers by reading the winner's committed row. New settings
+  (`core/config.py`):
   `CHILD_SESSION_SECRET` (required outside `local`, validated at startup) and
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
@@ -198,6 +312,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   parental-gate re-auth wrapper (P6-08), Keychain/secure storage for the
   child token (P8-02), and pre-checking token expiry before an offline sync
   attempt (P6-06).
+- Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
+  `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
+  text-tone utilities, consuming the pre-existing amber token pair:
+  `--color-amber` stays the bright brand hue, `--color-amber-deep` is the
+  deeper shade that clears the 3:1 WCAG non-text/large-text threshold,
+  though not the 4.5:1 AA normal-text minimum), and the guardian console
+  now consumes them instead of its bespoke `guardian.css` equivalents (the
+  `.intake-chip` styles, orphaned by this same swap, are removed).
+  `FlagBadge` deliberately stays bespoke: its flag/info tones belong to the
+  moderation-review surface, which this promotion pass excluded.
+- Auth-gate scenario tier for the `naive-ux-check` skill (issue #204): three
+  new Track B comprehension scenarios (`K0` fresh-device kid gate, `G0`
+  guardian sign-in discovery, `A0` admin sign-in signal) grow the prompt set
+  from 14 to 17 and give the differentiated kid auth gates shipped in PR
+  #198 their first naive-user verification (a clear, friendly, working gate
+  now scores as a pass for these three scenarios). The skill's default
+  target changes from plain local dev to local dev pointed at the seeded
+  Supabase staging project via `.env.staging`, with live production demoted
+  to an explicit, deliberate operator choice (mutating personas still never
+  target it). `K1`-`K4` gain a documented operator precondition (sign in as
+  the seeded test guardian, `SEED_GUARDIAN_EMAIL`, first), zero-state
+  scenario premises are annotated for the seeded "Test Reader" fixtures,
+  and stale pre-#206/#209/#210 UI descriptions in the prompt files were
+  re-verified against the current frontend. Spec:
+  `docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md`.
 - Illustrated avatar set (issue #65 phase 1, "Bucket B"): the profile picker's
   8 emoji glyphs are replaced by 22 illustrated WebP presets (256x256,
   quality 80, 3.8-8.9KB each, ~134KB total), 14 of them new. The original 8

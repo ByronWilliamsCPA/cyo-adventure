@@ -214,6 +214,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Guards the react/jsx-runtime external in vite.config.ts: if a future
+      # Vite/rolldown bump re-inlines the jsx runtime, its CJS-interop shim
+      # carries a runtime require("react") that throws in browser consumers
+      # of the ESM dist. The inlined runtime is identifiable by this marker.
+      - name: Assert jsx-runtime is not inlined in the ESM bundle
+        run: |
+          if grep -q 'react-stack-top-frame' dist/cyo-design-system.js; then
+            echo 'react/jsx-runtime was inlined into dist/cyo-design-system.js;'
+            echo 'check rollupOptions.external in frontend/design-system/vite.config.ts'
+            exit 1
+          fi
+
       # Same repo-root-relative rewrite as the frontend job (see note there):
       # design-system lcov SF: paths are src/... relative to the package, the
       # repo path is frontend/design-system/src/..., so prefix then upload from
