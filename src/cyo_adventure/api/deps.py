@@ -19,7 +19,7 @@ from __future__ import annotations
 import uuid
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import TYPE_CHECKING, Annotated
+from typing import TYPE_CHECKING, Annotated, Any
 
 import jwt
 from fastapi import Depends, Header
@@ -209,8 +209,8 @@ def _jwks_client() -> jwt.PyJWKClient:
     return _jwks_client_cache
 
 
-async def _verify_oidc_jwt(token: str) -> str:
-    """Verify a Supabase-issued JWT and return its subject.
+async def _decode_oidc_payload(token: str) -> dict[str, Any]:
+    """Verify a Supabase-issued JWT and return its full verified payload.
 
     Verifies signature (via the cached JWKS), issuer, audience, and expiry.
     Only algorithms on the configured allowlist are accepted
@@ -221,11 +221,17 @@ async def _verify_oidc_jwt(token: str) -> str:
     post-quantum JOSE algorithm is an env change; the Settings validator
     guarantees it is non-empty and never contains ``none`` or ``HS*``.
 
+    This is the single decode path shared by ``_verify_oidc_jwt`` (subject
+    only, used by ``require_principal``) and ``_verify_oidc_identity`` (subject
+    plus the optional ``email`` contact claim, used by onboarding). Sharing one
+    decode keeps the two callers from drifting on the security-critical claim
+    checks.
+
     Args:
         token: The raw bearer token (a JWT, not the dev-stub's opaque string).
 
     Returns:
-        str: The verified ``sub`` claim.
+        dict[str, Any]: The verified claim payload.
 
     Raises:
         AuthenticationError: If the token is malformed, unsigned, expired, or
@@ -246,7 +252,7 @@ async def _verify_oidc_jwt(token: str) -> str:
         signing_key = await run_in_threadpool(
             _jwks_client().get_signing_key_from_jwt, token
         )
-        payload = jwt.decode(
+        return jwt.decode(
             token,
             signing_key.key,  # pyright: ignore[reportAny]
             algorithms=list(settings.oidc_allowed_algs),
@@ -260,11 +266,74 @@ async def _verify_oidc_jwt(token: str) -> str:
     except jwt.PyJWTError as exc:
         msg = "token failed verification"
         raise AuthenticationError(msg) from exc
+
+
+def _require_subject(payload: dict[str, Any]) -> str:
+    """Return the verified ``sub`` claim, rejecting an absent or empty one.
+
+    Args:
+        payload: A signature-verified OIDC claim payload.
+
+    Returns:
+        str: The non-empty subject.
+
+    Raises:
+        AuthenticationError: If ``sub`` is missing or not a non-empty string.
+    """
     subject = payload.get("sub")
     if not isinstance(subject, str) or not subject:
         msg = "token is missing a subject claim"
         raise AuthenticationError(msg)
     return subject
+
+
+async def _verify_oidc_jwt(token: str) -> str:
+    """Verify a Supabase-issued JWT and return its subject.
+
+    Args:
+        token: The raw bearer token (a JWT, not the dev-stub's opaque string).
+
+    Returns:
+        str: The verified ``sub`` claim.
+
+    Raises:
+        AuthenticationError: If the token fails verification or carries no
+            subject claim.
+    """
+    payload = await _decode_oidc_payload(token)
+    return _require_subject(payload)
+
+
+async def _verify_oidc_identity(token: str) -> tuple[str, str | None]:
+    """Verify a Supabase JWT and return its subject plus optional email.
+
+    Used only by the onboarding provisioning path, which needs the email
+    contact claim in addition to the subject. The email is contact data only,
+    never an identity key; the subject remains the sole key.
+
+    Args:
+        token: The raw bearer token (a Supabase JWT).
+
+    Returns:
+        tuple[str, str | None]: The verified subject and the ``email`` claim
+        (``None`` when absent or not a non-empty string).
+
+    Raises:
+        AuthenticationError: If the token fails verification or carries no
+            subject claim.
+    """
+    # #ASSUME: data integrity: the ``email`` claim is optional and free-form;
+    # Supabase may omit it or supply an Apple private-relay address. It is
+    # captured for receipts/consent only, never trusted for authorization or
+    # used as a key, so an absent or oddly-shaped value degrades to ``None``
+    # rather than raising.
+    # #VERIFY: test_oidc_verification.py covers the capture
+    # (test_verify_oidc_identity_captures_email_when_present, ..._email_none_when_absent,
+    # ..._email_none_when_blank).
+    payload = await _decode_oidc_payload(token)
+    subject = _require_subject(payload)
+    email = payload.get("email")
+    return subject, (email if isinstance(email, str) and email else None)
 
 
 async def _resolve_subject(token: str) -> str:
@@ -484,3 +553,78 @@ def authorize_family(principal: Principal, owner_family_id: uuid.UUID) -> None:
 
 
 CurrentPrincipal = Annotated[Principal, Depends(require_principal)]
+
+
+@dataclass(frozen=True, slots=True)
+class OnboardingIdentity:
+    """A fully-verified guardian identity that may not yet have a ``User`` row.
+
+    ``require_principal`` rejects a verified token whose subject has no user row
+    (``"unknown subject"`` -> 401); that is correct for every endpoint except
+    first-login provisioning, which must accept exactly that case to create the
+    row. This value type carries only what onboarding needs: the verified
+    subject (the key) and the optional email contact claim.
+
+    Attributes:
+        subject: The verified OIDC subject (the sole identity key).
+        email: The optional email contact claim (may be an Apple private-relay
+            address), or ``None``. Never an identity key.
+    """
+
+    subject: str
+    email: str | None
+
+
+async def require_onboarding_identity(
+    authorization: Annotated[str | None, Header()] = None,
+) -> OnboardingIdentity:
+    """Resolve a verified guardian identity for first-login provisioning.
+
+    Unlike ``require_principal`` this does NOT require a ``User`` row to exist
+    for the subject: onboarding is precisely the path that creates it. It still
+    fully verifies the token (real Supabase JWT outside ``local``; trusted
+    dev-stub subject in ``local``) before returning any identity, so an
+    unverified or forged token is rejected exactly as elsewhere.
+
+    Args:
+        authorization: The ``Authorization`` header.
+
+    Returns:
+        OnboardingIdentity: The verified subject and optional email claim.
+
+    Raises:
+        AuthenticationError: If the token is missing, malformed, or fails OIDC
+            verification (-> 401).
+        AuthorizationError: If the token is a child session token; a child
+            session is a reading credential, never an account-creation one, so
+            it may not provision a guardian family (-> 403).
+    """
+    token = _extract_subject(authorization)
+    # #CRITICAL: security: a child session token must never provision a guardian
+    # Family+User. Routing on the UNVERIFIED audience is safe here because the
+    # branch only ever REFUSES: any token claiming the child audience is
+    # rejected outright, never used to build or create anything, so reading the
+    # unverified claim cannot widen access (mirrors the require_principal
+    # routing note). Guardians and admins carry the Supabase audience and fall
+    # through to real verification below.
+    # #VERIFY: test_onboarding_identity.py::test_child_session_token_cannot_onboard
+    # (unit) and test_onboarding_api.py::test_child_session_token_cannot_onboard
+    # (integration) cover a child session token onboarding -> 403.
+    if unverified_audience(token) == CHILD_SESSION_AUDIENCE:
+        msg = "a child session cannot onboard a guardian account"
+        raise AuthorizationError(msg)
+    # #CRITICAL: security: the local branch trusts the bearer token as the
+    # subject with NO verification and yields no email; it is reachable only
+    # when environment == "local" (the dev/test auth seam documented at module
+    # level). Everywhere else the token is verified as a real Supabase JWT.
+    # #VERIFY: the ConfigurationError guard at import time blocks a non-local
+    # process without OIDC config from ever reaching the local branch.
+    if settings.environment == "local":
+        return OnboardingIdentity(subject=token, email=None)
+    subject, email = await _verify_oidc_identity(token)
+    return OnboardingIdentity(subject=subject, email=email)
+
+
+OnboardingIdentityDep = Annotated[
+    OnboardingIdentity, Depends(require_onboarding_identity)
+]
