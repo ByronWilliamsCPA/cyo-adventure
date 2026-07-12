@@ -8,8 +8,19 @@
 # over there as a safety net if this sender or its token breaks.
 #
 # Auth: HOMELAB_INFRA_DISPATCH_TOKEN must be a fine-grained PAT (or GitHub App
-# token) with Actions read/write (and metadata read) on the homelab-infra
-# repo, stored as an Actions secret in THIS repo.
+# token) with Contents read/write on the homelab-infra repo (the permission
+# POST /repos/{owner}/{repo}/dispatches actually requires per GitHub's
+# fine-grained-PAT reference; Metadata read is implied, Actions permissions
+# are NOT needed and NOT sufficient: an Actions-only PAT gets HTTP 403
+# "Resource not accessible by personal access token"), stored as an Actions
+# secret in THIS repo.
+# #ASSUME: security: Contents read/write is broader than this one dispatch
+# call needs (it also grants code write on homelab-infra); accepted risk from
+# the PR #218 review, since GitHub exposes no narrower fine-grained PAT
+# permission for this endpoint.
+# #VERIFY: a GitHub App installation token scoped to homelab-infra is the
+# tighter alternative; switch to one if the PAT's grant ever widens beyond
+# that single repo.
 # #ASSUME: external resources: the secret exists and is non-empty; an unset
 # secret renders as an empty env var, which the guard step below turns into
 # an explicit red run, and an invalid or expired token fails the gh call
@@ -18,15 +29,15 @@
 # #VERIFY: rotate the PAT before expiry; a red run of this workflow on main
 # means dispatches are NOT reaching homelab-infra.
 #
-# #ASSUME: external resources: the receiver is homelab-infra PR #591, which
-# adds a `repository_dispatch` trigger for event_type cyo-adventure-push and
-# reads client_payload.ref as the source ref to build. Until that PR merges,
-# POST /dispatches still returns 204 (GitHub accepts the event whether or
-# not anything listens), so this sender goes green while no build runs; the
-# receiver's weekly schedule bounds that silent window.
-# #VERIFY: merge homelab-infra#591 before (or together with) this workflow's
-# first run on main; if the event_type or payload field ever changes there,
-# change it here in the same PR.
+# #ASSUME: external resources: the receiver (homelab-infra's
+# cyo-adventure-build.yml, live on its main since PR #591 merged) listens
+# for exactly event_type cyo-adventure-push and reads client_payload.ref as
+# the source ref to build. POST /dispatches returns 204 whether or not
+# anything listens, so if the receiver's trigger is ever renamed or removed
+# this sender goes green while no build runs; the receiver's weekly
+# schedule bounds that silent window.
+# #VERIFY: if the event_type or payload field ever changes there, change it
+# here in the same PR.
 name: Trigger Homelab Image Build
 
 on:
