@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, cast
 import pytest
 from sqlalchemy import func, select
 
-from cyo_adventure.api import deps
+from cyo_adventure.api import deps, onboarding
 from cyo_adventure.api.deps import OnboardingIdentity
 from cyo_adventure.app import app
 from cyo_adventure.core.child_session import mint_child_session_token
@@ -160,6 +160,58 @@ async def test_consent_seam_is_accepted_without_side_effect(
     )
     assert resp.status_code == 201
     assert resp.json()["created"] is True
+
+
+async def test_onboarding_race_recovers_winner(
+    sessions: async_sessionmaker[AsyncSession],
+    seed: Seed,
+) -> None:
+    """The first-login race recovers via a real unique-index conflict.
+
+    Simulates the loser's timeline: its pre-insert SELECT saw no row (so the
+    handler proceeded to provision), but the winner's row is already committed
+    when the loser's INSERT hits the unique ``ix_user_authn_subject`` index.
+    The real ``IntegrityError`` unwinds the savepoint (undoing the loser's
+    Family insert too) and the loser returns the winner's row, leaving exactly
+    one user and one family for the subject.
+    """
+    _ = seed
+    subject = "raced-first-login"
+    families_before = await _count(sessions, Family)
+
+    # The "winner": another device's committed first login.
+    async with sessions() as session:
+        family = Family(name="Winner Family")
+        session.add(family)
+        await session.flush()
+        winner = User(family_id=family.id, role="guardian", authn_subject=subject)
+        session.add(winner)
+        await session.commit()
+        winner_id = winner.id
+        winner_family_id = family.id
+
+    # The "loser": drive the savepoint provisioning step directly (its
+    # pre-read already returned None before the winner committed) against the
+    # real index. The conflicting writes run INSIDE begin_nested, so only the
+    # savepoint unwinds and the outer transaction stays usable for the
+    # recovery re-read.
+    async with sessions() as session:
+        user, created = await onboarding._provision_guardian(
+            session, OnboardingIdentity(subject=subject, email=None)
+        )
+        assert created is False
+        assert user.id == winner_id
+        assert user.family_id == winner_family_id
+        await session.commit()
+
+    # Exactly one user row for the subject, and only the winner's family was
+    # created: the loser's partial Family insert was unwound with the savepoint.
+    async with sessions() as session:
+        count = await session.scalar(
+            select(func.count()).select_from(User).where(User.authn_subject == subject)
+        )
+    assert count == 1
+    assert await _count(sessions, Family) == families_before + 1
 
 
 async def test_email_claim_persisted_when_present(

@@ -46,9 +46,13 @@ async def test_child_session_token_cannot_onboard(
     audience and happens regardless of signature validity.
     """
     monkeypatch.setattr(deps.settings, "environment", "local")
-    # #EDGE: security: unverified_audience only reads the aud claim, so an
-    # unsigned-but-decodable token with the child audience is enough to prove
-    # the refusal fires ahead of any verification.
+    # #EDGE: security: unverified_audience reads only the aud claim, so this
+    # HS256-signed token (throwaway secret; the signature is never checked)
+    # carrying the child audience proves the refusal fires ahead of any
+    # verification.
+    # #VERIFY: the assertion below expects AuthorizationError (the refusal),
+    # not a signature/verification failure, confirming the child-audience
+    # check runs before any verification path.
     child_like = jwt.encode(
         {"aud": CHILD_SESSION_AUDIENCE, "sub": "child:abc"},
         "irrelevant-secret-padded-to-thirty-two-plus-bytes",

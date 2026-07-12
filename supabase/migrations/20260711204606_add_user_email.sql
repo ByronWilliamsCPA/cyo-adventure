@@ -1,3 +1,9 @@
+-- #CRITICAL: timing: apply this migration BEFORE deploying the image that
+-- adds User.email to the ORM (db/models.py). Every full-entity select(User)
+-- from the new code emits this column; against a database without it, asyncpg
+-- raises UndefinedColumn and every authenticated endpoint 500s
+-- (migrate-before-deploy).
+--
 -- P6-03 (JIT guardian provisioning): add a nullable email contact column to
 -- public."user". The email is captured from the Supabase user at first-login
 -- onboarding for receipts and consent records (P7-02); it may be an Apple

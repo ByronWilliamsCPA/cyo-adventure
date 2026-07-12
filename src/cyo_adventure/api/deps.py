@@ -327,7 +327,9 @@ async def _verify_oidc_identity(token: str) -> tuple[str, str | None]:
     # captured for receipts/consent only, never trusted for authorization or
     # used as a key, so an absent or oddly-shaped value degrades to ``None``
     # rather than raising.
-    # #VERIFY: test_onboarding covers email-present and email-absent capture.
+    # #VERIFY: test_oidc_verification.py covers the capture
+    # (test_verify_oidc_identity_captures_email_when_present, ..._email_none_when_absent,
+    # ..._email_none_when_blank).
     payload = await _decode_oidc_payload(token)
     subject = _require_subject(payload)
     email = payload.get("email")
@@ -605,7 +607,9 @@ async def require_onboarding_identity(
     # unverified claim cannot widen access (mirrors the require_principal
     # routing note). Guardians and admins carry the Supabase audience and fall
     # through to real verification below.
-    # #VERIFY: test_onboarding covers a child session token onboarding -> 403.
+    # #VERIFY: test_onboarding_identity.py::test_child_session_token_cannot_onboard
+    # (unit) and test_onboarding_api.py::test_child_session_token_cannot_onboard
+    # (integration) cover a child session token onboarding -> 403.
     if unverified_audience(token) == CHILD_SESSION_AUDIENCE:
         msg = "a child session cannot onboard a guardian account"
         raise AuthorizationError(msg)

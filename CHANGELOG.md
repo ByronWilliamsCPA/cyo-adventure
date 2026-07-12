@@ -199,9 +199,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `require_principal` and every other endpoint keep rejecting unknown
   subjects with 401 exactly as before. A child session token (child audience)
   is refused with 403: a reading credential can never provision a guardian
-  account. An admin always already has a row, so onboarding returns it
-  unchanged and never creates a family for an admin (preserving the "admin is
-  a guardian superset, not a family member" invariant). Two racing
+  account. Admin and guardian are disjoint roles (an admin holds no family
+  membership and resolves to an empty profile set), and onboarding cannot
+  tell an intended admin apart from a guardian: a seeded admin resolves to
+  its existing row and is returned unchanged (no family is created), so
+  admin accounts must be seeded before their first sign-in. Two racing
   first-login requests are resolved via the repo's savepoint-retry pattern
   (both inserts inside `begin_nested()`; on the `ix_user_authn_subject`
   `IntegrityError` the savepoint unwinds and the loser re-reads and returns
