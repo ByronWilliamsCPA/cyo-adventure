@@ -38,7 +38,13 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@5a9ea882c71cfc17d7e70f450a7bef113ea85b9f # v7.0.13
+    # #ASSUME: external resources: pinned to a commit on the unmerged
+    # ByronWilliamsCPA/.github#269 branch (feat/parallel-test-buckets-opt-in),
+    # not a tagged release, to trial parallel-tests before that PR merges.
+    # #VERIFY: once #269 merges to main, re-pin this to the merged commit's
+    # SHA on main (and drop this note) so CI no longer depends on the
+    # feature branch continuing to exist.
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@0d02c9250b1cc4cd09ce63ec0dbf56ef83fc6acd # feat/parallel-test-buckets-opt-in
     with:
       python-version: "3.12"
       coverage-threshold: 80
@@ -53,6 +59,13 @@ jobs:
       # cyo_adventure is an installable package with a build backend; the shared
       # workflow defaults no-build: true, which would block the editable install.
       no-build: false
+      # Opt-in trial of ByronWilliamsCPA/.github#269: splits unit/integration/
+      # security into parallel jobs instead of one sequential job, taking the
+      # ~5.5min integration suite off the critical path it currently shares
+      # with unit+security. Relies on relative_files = true below (already
+      # set) for coverage-combine's cross-runner `coverage combine` to merge
+      # correctly; see coverage-combine's inline #ASSUME in python-ci.yml.
+      parallel-tests: true
     secrets: inherit
 
   frontend:
