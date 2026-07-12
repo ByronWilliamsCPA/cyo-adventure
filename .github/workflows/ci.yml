@@ -38,7 +38,7 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@24c05930de5eb08808dbaadc6df2a42bab38ae5b # #269 opt-in parallel test-bucket jobs, merged to main
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059 # #270: parallel buckets pass --cov-fail-under=0, coverage-combine gates
     with:
       python-version: "3.12"
       coverage-threshold: 80
