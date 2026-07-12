@@ -3,7 +3,10 @@
 The app's ``get_db_session`` unit-of-work is overridden to bind to the container
 engine. A fresh schema is created per test for isolation. The seed fixture builds
 two families with a guardian, a child user + profile, and a published lantern
-story, which the authorization and reading-state tests reuse.
+story, which the authorization and reading-state tests reuse. A separate
+``stranger`` fixture seeds a third, unrelated family (no shared storybook,
+assignment, or profile with the seed families) for the cross-tenant IDOR
+sweeps (P6-10).
 """
 
 from __future__ import annotations

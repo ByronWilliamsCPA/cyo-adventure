@@ -350,7 +350,7 @@ async def test_child_token_rejected_on_other_profile_library(
 
 
 async def _mint_token_for(
-    client: AsyncClient, profile_id: object, guardian_token: str
+    client: AsyncClient, profile_id: uuid.UUID, guardian_token: str
 ) -> str:
     """Mint a child token for an arbitrary profile/guardian pair.
 
@@ -405,6 +405,30 @@ async def test_stranger_guardian_cannot_mint_family_a_profile(
 
 
 @pytest.mark.asyncio
+async def test_stranger_family_minted_token_reads_own_library(
+    client: AsyncClient, stranger: Stranger
+) -> None:
+    """Positive control: family C's minted JWT reads family C's own library.
+
+    The rejection tests below would pass vacuously if the ``stranger``
+    fixture were broken in a way that made every family-C request fail
+    (e.g. an unprovisioned guardian, or a mint that yields an unusable
+    token). Proving the same fixture and the same minted token succeed on
+    family C's OWN resources pins the rejections on the ownership check,
+    not on a defective fixture.
+    """
+    token = await _mint_token_for(
+        client, stranger.child_profile_id, stranger.guardian_token
+    )
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(stranger.child_profile_id)},
+        headers=auth(token),
+    )
+    assert resp.status_code == 200, resp.text
+
+
+@pytest.mark.asyncio
 async def test_stranger_family_minted_token_rejected_on_family_a_library(
     client: AsyncClient, seed: Seed, stranger: Stranger
 ) -> None:
@@ -427,7 +451,6 @@ async def test_stranger_family_minted_token_rejected_on_family_a_library(
         headers=auth(token),
     )
     assert resp.status_code in (403, 404), resp.text
-    assert not (200 <= resp.status_code < 300)
 
 
 @pytest.mark.asyncio
@@ -468,4 +491,3 @@ async def test_family_a_minted_token_rejected_on_stranger_family_library(
         headers=auth(token),
     )
     assert resp.status_code in (403, 404), resp.text
-    assert not (200 <= resp.status_code < 300)

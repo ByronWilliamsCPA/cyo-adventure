@@ -390,6 +390,15 @@ async def test_stranger_family_private_book_stays_hidden(
             )
         )
         await session.commit()
+    # Positive control first: family C's own guardian DOES see the book, so
+    # the absence asserted below cannot be explained by the book never having
+    # been seeded (or seeded unreadably) in the first place.
+    resp = await client.get(
+        "/api/v1/guardian/books", headers=auth(stranger.guardian_token)
+    )
+    assert resp.status_code == 200, resp.text
+    own_ids = [b["storybook_id"] for b in resp.json()["books"]]
+    assert "stranger-family-book" in own_ids
     resp = await client.get("/api/v1/guardian/books", headers=auth(seed.guardian_token))
     assert resp.status_code == 200, resp.text
     ids = [b["storybook_id"] for b in resp.json()["books"]]

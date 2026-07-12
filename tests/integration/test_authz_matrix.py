@@ -822,6 +822,32 @@ _CROSS_FAMILY_CHILD_IDS = [
 ]
 
 
+async def test_stranger_family_tokens_reach_own_resources(
+    client: AsyncClient, stranger: Stranger
+) -> None:
+    """Positive control: family C's own tokens succeed on family C's resources.
+
+    Every stranger-family test below asserts a rejection, so all of them
+    would pass vacuously if the ``stranger`` fixture were broken in a way
+    that made every family-C request fail (an unseeded user row, a token
+    that never authenticates, a profile in the wrong family). Proving the
+    same guardian and child tokens get 200 on their OWN family's routes
+    pins the rejections below on the ownership checks, not on a defective
+    fixture.
+    """
+    resp = await client.get("/api/v1/profiles", headers=auth(stranger.guardian_token))
+    assert resp.status_code == 200, resp.text
+    ids = {row["id"] for row in resp.json()["profiles"]}
+    assert str(stranger.child_profile_id) in ids
+
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(stranger.child_profile_id)},
+        headers=auth(stranger.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+
+
 @pytest.mark.parametrize(
     ("method", "path_template"), _CROSS_FAMILY_ROUTE_KEYS, ids=_CROSS_FAMILY_IDS
 )
@@ -849,10 +875,6 @@ async def test_cross_family_guardian_from_stranger_family_is_rejected(
     assert resp.status_code in (403, 404), (
         f"{method} {path_template} expected 403/404 for a stranger-family "
         f"guardian, got {resp.status_code}: {resp.text}"
-    )
-    assert not (200 <= resp.status_code < 300), (
-        f"{method} {path_template} let a stranger-family guardian succeed: "
-        f"{resp.status_code} {resp.text}"
     )
 
 
@@ -883,10 +905,6 @@ async def test_cross_family_child_from_stranger_family_is_rejected(
     assert resp.status_code in (403, 404), (
         f"{method} {path_template} expected 403/404 for a stranger-family "
         f"child, got {resp.status_code}: {resp.text}"
-    )
-    assert not (200 <= resp.status_code < 300), (
-        f"{method} {path_template} let a stranger-family child succeed: "
-        f"{resp.status_code} {resp.text}"
     )
 
 
@@ -925,10 +943,6 @@ async def test_family_a_child_cannot_reach_stranger_family_profile(
     assert resp.status_code in (403, 404), (
         f"{method} {path_template} expected 403/404 for family A's child "
         f"reaching family C's profile, got {resp.status_code}: {resp.text}"
-    )
-    assert not (200 <= resp.status_code < 300), (
-        f"{method} {path_template} let family A's child reach family C's "
-        f"profile: {resp.status_code} {resp.text}"
     )
 
 
