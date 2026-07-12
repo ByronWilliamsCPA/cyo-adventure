@@ -2814,6 +2814,18 @@
   <h1>Naive-User UX Test Design: Playwright Misuse Regressions and Claude-for-Chrome Comprehension Prompts</h1>
 
 <blockquote>
+<p><strong>Status (2026-07-11)</strong>: Amended. The Track B scenario set grew from 14 to
+17: a new auth-gate tier (<code>K0</code>, <code>G0</code>, <code>A0</code>, added to the Section 6.1 table)
+tests the sign-in/auth-gate step itself, giving the differentiated kid
+gates shipped in PR #198 their first naive-user coverage. The
+<code>/naive-ux-check</code> skill now defaults to the local dev frontend pointed at
+the seeded Supabase staging project via <code>.env.staging</code> (live production is
+demoted to an explicit, deliberate operator choice; mutating personas
+still never target it), <code>K1</code>-<code>K4</code> gained a documented operator
+precondition (sign in as the seeded test guardian first), and zero-state
+scenario premises were annotated for the seeded "Test Reader" fixtures.
+Design and rationale:
+<code>docs/superpowers/specs/2026-07-10-naive-ux-check-scenario-redesign-design.md</code>.</p>
 <p><strong>Status (2026-07-10)</strong>: Partially superseded. The Section 4 route map and the
 Track B expected observations describe the app as of 2026-07-05. PR #140 (the
 landing page at <code>/</code> and the <code>/kids</code> profile picker) and PR #185 (the persistent
@@ -3046,72 +3058,87 @@ a fixed four-question rubric so responses are comparable across runs.</p>
 <tbody>
 <tr>
 <td>Kid</td>
-<td>Cold start, zero profiles exist yet</td>
+<td>Fresh device, no guardian has ever signed in (<code>K0</code>)</td>
+<td>Whether the differentiated auth gate ("Ask a grown-up to help", with an "I am a grown-up" path) reads as a friendly invitation rather than an error</td>
+</tr>
+<tr>
+<td>Kid</td>
+<td>Cold start, zero profiles exist yet (<code>K1</code>)</td>
 <td>Whether there's any usable next step at all</td>
 </tr>
 <tr>
 <td>Kid</td>
-<td>Empty library, first action is "request a story"</td>
+<td>Empty library, first action is "request a story" (<code>K2</code>)</td>
 <td>Whether the concept of a request is understandable with zero context</td>
 </tr>
 <tr>
 <td>Kid</td>
-<td>Garbage-input request (single word, mashed keys)</td>
+<td>Garbage-input request (single word, mashed keys) (<code>K3</code>)</td>
 <td>Whether the resulting pending-approval state reads as sensible to a child</td>
 </tr>
 <tr>
 <td>Kid</td>
-<td>Sibling switches profile mid-session</td>
+<td>Sibling switches profile mid-session (<code>K4</code>)</td>
 <td>Whether the switch feels like a clean reset or a confusing leftover state</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>First login, zero children</td>
+<td>Find and complete sign-in unaided (<code>G0</code>)</td>
+<td>Whether sign-in is discoverable at all and its success/failure feedback is clear</td>
+</tr>
+<tr>
+<td>Guardian</td>
+<td>First login, zero children (<code>G1</code>)</td>
 <td>Whether the nudge toward creating a profile is discoverable unaided</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Edge-case profile creation (long name, emoji, duplicate name)</td>
+<td>Edge-case profile creation (long name, emoji, duplicate name) (<code>G2</code>)</td>
 <td>Whether feedback on unusual input is clear</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Requests vs. review vs. books</td>
+<td>Requests vs. review vs. books (<code>G3</code>)</td>
 <td>Whether the three concepts read as distinct or get conflated</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Approve a kid's request, unaware a second review step exists later</td>
+<td>Approve a kid's request, unaware a second review step exists later (<code>G4</code>)</td>
 <td>Whether the two-step approval flow is surfaced anywhere</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Use intake thinking it approves the kid's request</td>
+<td>Use intake thinking it approves the kid's request (<code>G5</code>)</td>
 <td>Whether intake vs. request-approval is distinguishable from the page alone</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Decline a story, then try to find it again</td>
+<td>Decline a story, then try to find it again (<code>G6</code>)</td>
 <td>Whether the declined item's fate is discoverable</td>
 </tr>
 <tr>
 <td>Guardian</td>
-<td>Hand the device to your kid after your own setup</td>
+<td>Hand the device to your kid after your own setup (<code>G7</code>)</td>
 <td>Whether the path from guardian console to child reading screen is discoverable unaided</td>
 </tr>
 <tr>
 <td>Admin</td>
-<td>Compare the admin console to a guardian's</td>
+<td>"You were just told you're an admin," applied to sign-in (<code>A0</code>)</td>
+<td>Whether sign-in gives any admin-distinct signal before or after login</td>
+</tr>
+<tr>
+<td>Admin</td>
+<td>Compare the admin console to a guardian's (<code>A1</code>)</td>
 <td>Whether elevated capability is visible at all</td>
 </tr>
 <tr>
 <td>Admin</td>
-<td>Minimum-viable intake, every optional field skipped</td>
+<td>Minimum-viable intake, every optional field skipped (<code>A2</code>)</td>
 <td>Whether the flow still makes sense with nothing but the required fields</td>
 </tr>
 <tr>
 <td>Admin</td>
-<td>Approve a just-generated story without opening any flagged passage</td>
+<td>Approve a just-generated story without opening any flagged passage (<code>A3</code>)</td>
 <td>Whether the review UI resists a zero-look rubber-stamp approval</td>
 </tr>
 </tbody>
@@ -3233,7 +3260,7 @@ during implementation, not in this design doc.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 10, 2026 16:47:44 UTC">July 10, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 00:15:00 UTC">July 12, 2026</span>
   </span>
 
     
