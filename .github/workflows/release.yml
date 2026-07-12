@@ -69,12 +69,23 @@ jobs:
   propose:
     name: Propose Release PR
     # Skip when the push IS the release-bump merge landing on main; that
-    # push is handled by the publish job below. (Belt and braces: even
-    # without this guard the computed next version would equal the
-    # just-bumped current version and the job would no-op.)
+    # push is handled by the publish job below.
+    # #ASSUME external: python-semantic-release recomputes the same version on
+    # the just-bumped commit, so even without this guard the job would no-op
+    # rather than double-bump. #VERIFY do not delete the head_commit.message
+    # guard on that assumption alone: a PSR change could break the no-op and
+    # cause a double bump, so the message guard is the real protection.
+    # #ASSUME external: releases are cut only from main. Restricting to
+    # refs/heads/main blocks a prerelease workflow_dispatch from a
+    # develop/release branch, which would break the pipeline end to end
+    # (`uv version` PEP 440-normalizes 0.2.1-rc.1 to 0.2.1rc1 while the branch,
+    # PR title and CHANGELOG keep the hyphen; publish greps the normalized
+    # string, extract hard-exits on the heading mismatch, and the tag fails the
+    # live tag ruleset regex). #VERIFY propose runs only for refs/heads/main.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      !startsWith(github.event.head_commit.message, 'chore(release):')
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       !startsWith(github.event.head_commit.message, 'chore(release):'))
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -140,8 +151,10 @@ jobs:
             semantic-release version --print ${FORCE_FLAG})"
           # #ASSUME external: semantic-release prints a bare X.Y.Z(-pre)?
           # #VERIFY reject non-semver before it reaches git refs/tags/titles.
-          if ! printf '%s' "${NEXT}" \
-            | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-+.][0-9A-Za-z.-]+)*$'; then
+          # Match the whole string in bash: a piped `grep -Eq` anchors PER
+          # LINE, so a multi-line value would pass if any single line matched,
+          # and the old pattern also accepted 1.2.3.4.
+          if [[ ! "${NEXT}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Computed version '${NEXT}' is not valid semver."
             exit 1
           fi
@@ -176,6 +189,16 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B "${BRANCH}"
           git add pyproject.toml uv.lock CHANGELOG.md
+          # #EDGE external: a re-run after a partial run (or after the hard-fail
+          # auto-merge path below) can reach here with the bump already applied
+          # and nothing staged-different; `git commit` would die on "nothing to
+          # commit". Detect that and exit cleanly, matching the idempotent-
+          # re-run intent. #VERIFY skip commit/push/PR when the tree is clean.
+          if git diff --cached --quiet; then
+            echo "No release changes to commit for v${NEXT}; the bump is" \
+              "already applied. Nothing to do."
+            exit 0
+          fi
           git commit -m "chore(release): v${NEXT}"
           # Release branches are machine-owned; force-push makes re-runs and
           # recomputed versions idempotent. Checkout ran with
@@ -216,9 +239,18 @@ jobs:
             echo "::error::Could not resolve the release PR for ${BRANCH}."
             exit 1
           fi
+          # #CRITICAL external: a failed auto-merge enable would otherwise leave
+          # the release PR open with green CI and nothing flagging the stalled
+          # release/v* branch, the exact silent stall this pipeline exists to
+          # prevent. Re-running is safe (branch force-push + PR reuse), so fail
+          # hard rather than emit a swallowed warning, matching the empty
+          # PR_NUMBER guard above. #VERIFY a failed `gh pr merge --auto` is a
+          # hard error (exit 1), not a warning.
           if ! gh pr merge "${PR_NUMBER}" --auto; then
-            echo "::warning::Could not enable auto-merge on release PR" \
-              "#${PR_NUMBER}; merge it manually to publish v${NEXT}."
+            echo "::error::Could not enable auto-merge on release PR" \
+              "#${PR_NUMBER}; re-run the workflow or merge it manually to" \
+              "publish v${NEXT}."
+            exit 1
           fi
 
       - name: Dry-run summary
@@ -233,6 +265,14 @@ jobs:
 
   publish:
     name: Tag and GitHub Release
+    # #ASSUME external-resource: the merge queue squash-merges the release PR
+    # using its "chore(release): vX.Y.Z" title as the commit subject, so this
+    # prefix match fires (the propose job's negative guard relies on the same
+    # convention). If the repo's squash-merge commit-message setting drifts
+    # (e.g. to the PR number or the default merge message), publish silently
+    # never runs and every release stalls. #VERIFY the repo keeps "Default
+    # commit message" = "Pull request title" for squash merges (Settings >
+    # General > Pull Requests > Allow squash merging).
     if: >-
       github.event_name == 'push' &&
       startsWith(github.event.head_commit.message, 'chore(release):')
