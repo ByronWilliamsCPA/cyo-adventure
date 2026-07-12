@@ -1,22 +1,28 @@
 """Integration tests for the child-session mint endpoint (G1 / P6-04).
 
 Exercises minting authorization (guardian own-family, admin, cross-family,
-child, unauthenticated, missing child account), the end-to-end round-trip
-(a minted token authenticates as a CHILD principal scoped to one profile),
-and the P6-09 negative cases (a child token is rejected on a guardian
-endpoint and on another profile's library).
+child, unauthenticated), JIT provisioning of the child account (profiles
+created through the API have no User row), the double-mint race recovery,
+the end-to-end round-trip (a minted token authenticates as a CHILD principal
+scoped to one profile), and the P6-09 negative cases (a child token is
+rejected on a guardian endpoint and on another profile's library).
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import jwt
 import pytest
+from sqlalchemy import select
 
-from cyo_adventure.db.models import ChildProfile
+from cyo_adventure.api import child_sessions
+from cyo_adventure.db.models import ChildProfile, User
 from tests.integration.conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
+    import uuid
+
     from httpx import AsyncClient
     from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -94,27 +100,135 @@ async def test_unauthenticated_mint_returns_401(
     assert resp.status_code == 401, resp.text
 
 
+async def _create_bare_profile(
+    sessions: async_sessionmaker[AsyncSession], family_id: uuid.UUID
+) -> uuid.UUID:
+    """Create a child profile with no child User row, as the profiles API does."""
+    async with sessions() as session:
+        bare = ChildProfile(
+            family_id=family_id, display_name="No Account", age_band="10-13"
+        )
+        session.add(bare)
+        await session.commit()
+        return bare.id
+
+
+async def _child_users_for(
+    sessions: async_sessionmaker[AsyncSession], profile_id: uuid.UUID
+) -> list[User]:
+    """Fetch all child User rows attached to a profile."""
+    async with sessions() as session:
+        result = await session.scalars(
+            select(User).where(
+                User.child_profile_id == profile_id, User.role == "child"
+            )
+        )
+        return list(result)
+
+
+def _unverified_user_id(token: str) -> str:
+    """Read the user_id claim without verification (test introspection only)."""
+    payload = jwt.decode(token, options={"verify_signature": False})
+    user_id = payload["user_id"]
+    assert isinstance(user_id, str)
+    return user_id
+
+
 @pytest.mark.asyncio
-async def test_mint_requires_child_account(
+async def test_mint_provisions_child_account(
     client: AsyncClient,
     seed: Seed,
     sessions: async_sessionmaker[AsyncSession],
 ) -> None:
-    """A profile with no child User cannot start a session (404)."""
-    async with sessions() as session:
-        bare = ChildProfile(
-            family_id=seed.family_id, display_name="No Account", age_band="10-13"
-        )
-        session.add(bare)
-        await session.commit()
-        bare_id = bare.id
+    """Minting for a profile with no child User JIT-provisions exactly one row.
+
+    Profiles created through POST /api/v1/profiles get no User row, so without
+    provisioning no API-created profile could ever start a child session.
+    """
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
 
     resp = await client.post(
         "/api/v1/child-sessions",
         json={"profile_id": str(bare_id)},
         headers=auth(seed.guardian_token),
     )
-    assert resp.status_code == 404, resp.text
+    assert resp.status_code == 201, resp.text
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+    assert rows[0].family_id == seed.family_id
+    assert rows[0].authn_subject == f"child-profile:{bare_id}"
+
+
+@pytest.mark.asyncio
+async def test_second_mint_reuses_provisioned_account(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A second mint reuses the JIT-provisioned row; no duplicate account."""
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
+
+    first = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(bare_id)},
+        headers=auth(seed.guardian_token),
+    )
+    second = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(bare_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert first.status_code == 201, first.text
+    assert second.status_code == 201, second.text
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+
+    # Both tokens must attribute to the same (single) account.
+    first_user_id = _unverified_user_id(first.json()["token"])
+    second_user_id = _unverified_user_id(second.json()["token"])
+    assert first_user_id == second_user_id == str(rows[0].id)
+
+
+@pytest.mark.asyncio
+async def test_provision_race_recovers_winner(
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The double-mint race path recovers via a real unique-index conflict.
+
+    Simulates the loser's timeline: its pre-insert SELECT saw no account (so
+    it proceeds to provision), but the winner's row is already committed when
+    its INSERT hits the unique authn_subject index. The IntegrityError unwinds
+    the savepoint and the loser returns the winner's row, leaving one account.
+    """
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
+
+    # The "winner": another device's committed provisioning.
+    async with sessions() as session:
+        winner = User(
+            family_id=seed.family_id,
+            role="child",
+            authn_subject=f"child-profile:{bare_id}",
+            child_profile_id=bare_id,
+        )
+        session.add(winner)
+        await session.commit()
+        winner_id = winner.id
+
+    # The "loser": call the provision step directly (its SELECT already
+    # returned None before the winner committed), against the real index.
+    async with sessions() as session:
+        profile = await session.get(ChildProfile, bare_id)
+        assert profile is not None
+        recovered = await child_sessions._provision_child_user(session, profile)
+        assert recovered.id == winner_id
+        await session.commit()
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+    assert rows[0].id == winner_id
 
 
 @pytest.mark.asyncio
