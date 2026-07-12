@@ -67,7 +67,7 @@ export function GuardianShell() {
         <NavLink to="/guardian/profiles">Profiles</NavLink>
       </nav>
       {signOutError ? (
-        <p role="alert" className="guardian-shell__error">
+        <p role="alert" className="guardian-shell__error cyo-text-error">
           Sign-out failed. Check your connection and try again.
         </p>
       ) : null}

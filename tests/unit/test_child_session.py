@@ -240,6 +240,21 @@ def test_missing_id_claim_rejected(missing: str) -> None:
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize("missing", ["exp", "iat", "sub"])
+def test_missing_required_standard_claim_rejected(missing: str) -> None:
+    """A validly-signed token missing a required standard claim is rejected.
+
+    Exercises the verifier's ``require=["exp", "iat", "sub"]`` option (distinct
+    from the custom id-claim checks): a token lacking any of these must fail
+    even though its signature is valid, so a stripped-down forgery cannot pass.
+    """
+    claims = _claims()
+    del claims[missing]
+    with pytest.raises(AuthenticationError):
+        verify_child_session_token(_encode(claims))
+
+
+@pytest.mark.unit
 def test_malformed_uuid_claim_rejected() -> None:
     """A non-UUID profile_id claim is rejected even when validly signed."""
     with pytest.raises(AuthenticationError):

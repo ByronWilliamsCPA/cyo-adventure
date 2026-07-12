@@ -1,0 +1,28 @@
+/* Toggleable chip: a compact pill button for a "pick one of several"
+   filter or selector row (e.g. guardian intake's child/tone pickers). */
+.cyo-chip {
+  border: 1px solid var(--color-amber-deep);
+  background-color: transparent;
+  color: var(--color-ink);
+  border-radius: var(--radius-full);
+  padding: 0.35rem 0.9rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cyo-chip:focus-visible {
+  outline: 2px solid var(--color-amber-deep);
+  outline-offset: 2px;
+}
+
+/* White text on an amber-deep fill clears the 3:1 WCAG 1.4.3 AA large-text
+   minimum but not the 4.5:1 normal-text minimum, so the "on" state is
+   bumped to text-lg + bold along with the fill (matches the guardian
+   .intake-chip--on precedent this class replaces). */
+.cyo-chip--on {
+  background-color: var(--color-amber-deep);
+  border-color: var(--color-amber-deep);
+  color: white;
+  font-size: var(--text-lg);
+  font-weight: var(--weight-bold);
+}

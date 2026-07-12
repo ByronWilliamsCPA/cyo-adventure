@@ -206,7 +206,7 @@ export function AssignChildrenDialog({
         <>
           {saveError ? <p role="alert">{saveError}</p> : null}
           {summaryError ? (
-            <p className="assign__content-summary console__notice">
+            <p className="assign__content-summary console__notice cyo-text-muted">
               Content review unavailable right now. You can still assign, but
               flags could not be loaded.
             </p>

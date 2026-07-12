@@ -226,7 +226,7 @@ export function ReviewDetailPage() {
   }
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         {state.message}
       </p>
     )
@@ -256,7 +256,7 @@ export function ReviewDetailPage() {
         <div className="review-group">
           <h2>Flagged passages</h2>
           {surface.flagged_passages.map((passage) => (
-            <article key={passage.node_id} className="review-card">
+            <article key={passage.node_id} className="review-card cyo-card">
               <PassageText text={passage.prose} />
               <ul className="review-findings">
                 {passage.findings.map((finding, index) => (
@@ -268,7 +268,7 @@ export function ReviewDetailPage() {
           ))}
         </div>
       ) : surface.screened ? (
-        <p className="console__muted">No flagged passages. This story screened clean.</p>
+        <p className="console__muted cyo-text-muted">No flagged passages. This story screened clean.</p>
       ) : null}
 
       {surface.story_level_findings.length > 0 ? (
@@ -352,7 +352,7 @@ export function ReviewDetailPage() {
         earlier approach) hid the action name from assistive tech.
       */}
       {surface.status !== 'in_review' ? (
-        <p id="review-actions-disabled-hint" className="review-actionbar__hint">
+        <p id="review-actions-disabled-hint" className="review-actionbar__hint cyo-text-muted">
           Only stories in review can be approved or sent back.
         </p>
       ) : null}
@@ -383,7 +383,7 @@ export function ReviewDetailPage() {
           }
         >
           {actionError ? (
-            <p role="alert" className="review-detail__action-error">
+            <p role="alert" className="review-detail__action-error cyo-text-error">
               We could not approve this story. It may be unscreened or no longer in review.
             </p>
           ) : null}
@@ -409,7 +409,7 @@ export function ReviewDetailPage() {
               Catalog (every family)
             </label>
             {visibility === 'catalog' ? (
-              <p className="review-detail__visibility-warning">
+              <p className="review-detail__visibility-warning cyo-text-error">
                 Catalog books are visible to every family. Confirm the story contains no names,
                 photos, or personal details before sharing.
               </p>
@@ -445,7 +445,7 @@ export function ReviewDetailPage() {
           }
         >
           {actionError ? (
-            <p role="alert" className="review-detail__action-error">
+            <p role="alert" className="review-detail__action-error cyo-text-error">
               We could not send this story back. Please try again.
             </p>
           ) : null}
