@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 
 import { useAuth } from '../auth/useAuth'
+import { ADMIN_CONSOLE_PATH } from '../routes'
 import './guardian.css'
 
 /**
@@ -27,8 +28,10 @@ export function GuardianShell() {
 
   // Role is 'guardian' | 'child' | 'admin' (see auth/types.ts); GuardianShell
   // only ever mounts for a guardian or admin principal in practice (routed
-  // behind ProtectedRoute's role gate), but the hint is written to degrade to
-  // nothing rather than mislabel a 'child' principal if that ever changes.
+  // behind ProtectedRoute's capability gate), but the hint is written to
+  // degrade to nothing rather than mislabel a 'child' principal if that ever
+  // changes. A dual-role adult reads "Guardian" here (this is the guardian
+  // surface); the admin console's shell labels itself "Admin".
   const roleHint =
     principal === null
       ? null
@@ -65,6 +68,7 @@ export function GuardianShell() {
         ) : null}
         <NavLink to="/guardian/requests">Story requests</NavLink>
         <NavLink to="/guardian/profiles">Profiles</NavLink>
+        {principal?.isAdmin ? <NavLink to={ADMIN_CONSOLE_PATH}>Admin console</NavLink> : null}
       </nav>
       {signOutError ? (
         <p role="alert" className="guardian-shell__error cyo-text-error">

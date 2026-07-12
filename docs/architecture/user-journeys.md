@@ -84,17 +84,20 @@ For the engineering detail behind this lane, see the
 ### Act 4: The approval gate (ADR-005)
 
 This is the single mandatory checkpoint before any story reaches a child. In the
-Guardian Console (`/guardian`), the review queue is ordered Flagged, then Ready
-to review, then Still processing. Opening a story (`/guardian/review/:id`)
-surfaces its flagged passages first, then the full text. The reviewer either
-**approves** or **sends it back** with a note; a sent-back story is rewritten and
-re-enters the queue (the inner loop in the diagram).
+Admin Console (`/admin`, the parallel adult surface for the admin capability),
+the review queue is ordered Flagged, then Ready to review, then Still
+processing. Opening a story (`/admin/review/:id`) surfaces its flagged passages
+first, then the full text. The reviewer either **approves** or **sends it
+back** with a note; a sent-back story is rewritten and re-enters the queue (the
+inner loop in the diagram).
 
 The approve action is the recorded human gate required by
-[ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) and is
-admin-only: a guardian can monitor the queue but cannot self-approve (the API
-returns 403). The diagram places the whole review-and-approve sequence in the
-Admin lane to keep that gate visually unambiguous.
+[ADR-005](../planning/adr/adr-005-mandatory-human-approval.md) and requires the
+admin capability: a plain guardian cannot self-approve (the API returns 403).
+One adult may hold both roles (guardian plus the `is_admin` capability) and
+switches between `/guardian` and `/admin` via the shell nav. The diagram places
+the whole review-and-approve sequence in the Admin lane to keep that gate
+visually unambiguous.
 
 ### Act 5: Assignment
 
@@ -131,7 +134,7 @@ onboarding in Act 1 is not repeated.
 | Guardian approves the child's request | (new) | Planned |
 | Generation + safety validation | generation pipeline | Shipped |
 | Guardian-initiated request | `/guardian/intake` | Shipped |
-| Admin review + approve/send-back | `/guardian`, `/guardian/review/:id` | Shipped |
+| Admin review + approve/send-back | `/admin`, `/admin/review/:id` | Shipped |
 | Assign / assign more | Intake / assign | Shipped |
 | "New story ready!" pill | Profile Picker (`/`) | Shipped |
 | Library and Reader | `/library/...`, `/read/...` | Shipped |

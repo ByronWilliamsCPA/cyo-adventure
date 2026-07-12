@@ -335,17 +335,17 @@ test('browser back after a successful approve disables the Approve affordance (#
     })
   })
 
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await page.getByRole('button', { name: /^Approve$/ }).click()
   await page.getByRole('button', { name: 'Confirm approve' }).click()
-  await expect(page).toHaveURL(/\/guardian$/)
+  await expect(page).toHaveURL(/\/admin$/)
 
   // The naive move: hit back expecting to redo the approval. A bfcache restore
   // can hand back the pre-approval snapshot (stale in_review state, no refetch),
   // so reload once to force the review detail to re-read current server truth,
   // which is what the naive user's next interaction would trigger anyway.
   await page.goBack()
-  await expect(page).toHaveURL(/\/guardian\/review\/s1$/)
+  await expect(page).toHaveURL(/\/admin\/review\/s1$/)
   await page.reload()
   // Wait for the remount's data fetch to actually resolve before checking for
   // Approve; without this, the assertion below races ReviewDetailPage's own
@@ -391,7 +391,7 @@ test('a hand-typed review URL for an already-published storybook disables Approv
     })
   )
 
-  await page.goto('/guardian/review/s1')
+  await page.goto('/admin/review/s1')
   await expect(page.getByRole('heading', { name: 'The Cave' })).toBeVisible()
   await expect(page.getByRole('button', { name: /^Approve$/ })).toBeDisabled()
 })

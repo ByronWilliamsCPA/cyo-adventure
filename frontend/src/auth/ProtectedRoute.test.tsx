@@ -26,8 +26,8 @@ function renderProtected(initialPath: string) {
   )
 }
 
-function principal(role: Principal['role']): Principal {
-  return { subject: 's', role, familyId: 'f', profileIds: [] }
+function principal(role: Principal['role'], isAdmin = role === 'admin'): Principal {
+  return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
 }
 
 beforeEach(() => {
@@ -92,5 +92,56 @@ describe('ProtectedRoute', () => {
     mockUseAuth.mockReturnValue({ status: 'signed-in', principal: principal('admin') })
     renderProtected('/protected')
     expect(screen.getByText('Protected content')).toBeInTheDocument()
+  })
+
+  it('treats the admin entry as a capability: a dual-role guardian passes an admin-only gate', () => {
+    // 'admin' in allowedRoles means principal.isAdmin, not the base persona,
+    // so an adult who is a guardian AND an admin reaches the admin console.
+    mockUseAuth.mockReturnValue({
+      status: 'signed-in',
+      principal: principal('guardian', true),
+    })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/denied" element={<div>Access denied</div>} />
+          <Route
+            element={
+              <ProtectedRoute
+                redirectTo="/login"
+                allowedRoles={['admin']}
+                deniedRedirectTo="/denied"
+              />
+            }
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Protected content')).toBeInTheDocument()
+  })
+
+  it('denies a plain guardian at an admin-only gate', () => {
+    mockUseAuth.mockReturnValue({ status: 'signed-in', principal: principal('guardian') })
+    render(
+      <MemoryRouter initialEntries={['/protected']}>
+        <Routes>
+          <Route path="/denied" element={<div>Access denied</div>} />
+          <Route
+            element={
+              <ProtectedRoute
+                redirectTo="/login"
+                allowedRoles={['admin']}
+                deniedRedirectTo="/denied"
+              />
+            }
+          >
+            <Route path="/protected" element={<div>Protected content</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    )
+    expect(screen.getByText('Access denied')).toBeInTheDocument()
   })
 })

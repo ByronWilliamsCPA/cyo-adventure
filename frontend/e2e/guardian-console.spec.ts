@@ -3,14 +3,16 @@ import { expect, test } from '@playwright/test'
 import { mockMe, seedGuardianSession } from './support/auth'
 
 /**
- * Guardian console (C4a-4) e2e: unauthenticated-redirect smoke plus the
- * signed-in queue-ordering and navigation matrix.
+ * Console e2e (C4a-4): unauthenticated-redirect smoke plus the signed-in
+ * admin review-queue ordering and navigation matrix, now on the parallel
+ * /admin surface (the review queue moved out of /guardian when admin
+ * functions gained their own console).
  *
  * support/auth.ts now seeds a GoTrue session directly into localStorage
  * (the pattern proven in assignments.spec.ts), so the signed-in surface below
  * mounts without driving the real login form. The full behavioral matrix
  * (severity pills, forbidden/error states, empty state) still lives in
- * Vitest (src/guardian/ConsolePage.test.tsx, src/guardian/ReviewDetailPage.test.tsx);
+ * Vitest (src/admin/AdminConsolePage.test.tsx, src/admin/ReviewDetailPage.test.tsx);
  * this spec covers only what Vitest cannot: real routing and navigation.
  *
  * The placeholder VITE_SUPABASE_* values in playwright.config.ts exist so the
@@ -27,10 +29,10 @@ test('an unauthenticated visit to /guardian redirects to the guardian login', as
   await expect(page.getByText(/sign in/i).first()).toBeVisible()
 })
 
-test('an unauthenticated visit to a review detail URL also redirects to login', async ({
+test('an unauthenticated visit to an admin review detail URL also redirects to login', async ({
   page,
 }) => {
-  await page.goto('/guardian/review/some-story')
+  await page.goto('/admin/review/some-story')
   await expect(page).toHaveURL(/\/guardian\/login$/)
 })
 
@@ -66,10 +68,10 @@ const READY = {
 }
 const RUNNING_JOB = { id: 'j1', status: 'running', title: 'Brewing a Tale', premise_snippet: 'x' }
 
-test.describe('signed-in console', () => {
+test.describe('signed-in admin console', () => {
   test.beforeEach(async ({ page, context }) => {
     await seedGuardianSession(context)
-    await mockMe(page)
+    await mockMe(page, { role: 'admin' })
     // READY intentionally listed before FLAGGED: ordering must come from the
     // UI's grouping, not from response order.
     await page.route('**/api/v1/review-queue', (route) =>
@@ -81,7 +83,7 @@ test.describe('signed-in console', () => {
   })
 
   test('groups the queue Flagged, then Ready, then Still processing', async ({ page }) => {
-    await page.goto('/guardian')
+    await page.goto('/admin')
     await expect(page.getByRole('heading', { level: 2 })).toHaveText([
       'Flagged (review carefully)',
       'Ready to review',
@@ -97,8 +99,36 @@ test.describe('signed-in console', () => {
     await page.route('**/api/v1/storybooks/flag-1/review*', (route) =>
       route.fulfill({ status: 500, json: { detail: 'not under test here' } })
     )
-    await page.goto('/guardian')
+    await page.goto('/admin')
     await page.getByRole('link', { name: /Scary Tale/ }).click()
-    await expect(page).toHaveURL(/\/guardian\/review\/flag-1$/)
+    await expect(page).toHaveURL(/\/admin\/review\/flag-1$/)
+  })
+
+  test('a dual-role adult can switch between the guardian and admin consoles', async ({ page }) => {
+    await mockMe(page, { role: 'guardian', is_admin: true })
+    await page.route('**/api/v1/profiles', (route) =>
+      route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
+    )
+    await page.goto('/guardian')
+    // exact: the family-console body also has an "Open the admin console" link
+    // for dual-role adults; target the top-nav switcher specifically.
+    await page.getByRole('link', { name: 'Admin console', exact: true }).click()
+    await expect(page).toHaveURL(/\/admin$/)
+    await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+    await page.getByRole('link', { name: 'Guardian console' }).click()
+    await expect(page).toHaveURL(/\/guardian$/)
+    await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
+  })
+
+  test('a plain guardian visiting /admin is sent back to the guardian console', async ({
+    page,
+  }) => {
+    await mockMe(page, { role: 'guardian' })
+    await page.route('**/api/v1/profiles', (route) =>
+      route.fulfill({ json: { profiles: [{ id: 'p1' }] } })
+    )
+    await page.goto('/admin')
+    await expect(page).toHaveURL(/\/guardian$/)
+    await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
   })
 })

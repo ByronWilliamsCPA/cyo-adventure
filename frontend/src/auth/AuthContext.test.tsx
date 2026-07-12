@@ -43,6 +43,7 @@ function Probe() {
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="role">{principal?.role ?? 'none'}</span>
+      <span data-testid="isAdmin">{principal ? String(principal.isAdmin) : 'none'}</span>
       <span data-testid="authError">{authError ?? 'none'}</span>
     </div>
   )
@@ -141,9 +142,35 @@ describe('AuthProvider', () => {
     )
     await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
     expect(screen.getByTestId('role')).toHaveTextContent('guardian')
+    // is_admin is absent from this legacy-shaped response: the capability
+    // must fail closed to false, never default open.
+    expect(screen.getByTestId('isAdmin')).toHaveTextContent('false')
     expect(screen.getByTestId('authError')).toHaveTextContent('none')
     expect(mockGet).toHaveBeenCalledWith('/v1/me')
     expect(localStorage.getItem('auth_token')).toBe('tok-1')
+  })
+
+  it('carries the is_admin capability onto the principal for a dual-role adult', async () => {
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: {
+        subject: 'sub-1',
+        role: 'guardian',
+        is_admin: true,
+        family_id: 'fam-1',
+        profile_ids: ['p1'],
+      },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(screen.getByTestId('role')).toHaveTextContent('guardian')
+    expect(screen.getByTestId('isAdmin')).toHaveTextContent('true')
   })
 
   it('fails closed and sets authError when /me rejects a session', async () => {

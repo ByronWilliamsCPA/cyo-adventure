@@ -96,6 +96,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setPrincipal({
           subject: res.data.subject,
           role: res.data.role,
+          // #CRITICAL: security: fail closed on anything but an explicit true;
+          // a missing or malformed is_admin must never grant the admin console.
+          // #VERIFY: AuthContext.test.tsx is_admin true/absent cases.
+          isAdmin: res.data.is_admin === true,
           familyId: res.data.family_id,
           profileIds: res.data.profile_ids,
         })

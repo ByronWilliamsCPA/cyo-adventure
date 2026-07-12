@@ -10,8 +10,8 @@ vi.mock('../auth/useAuth', () => ({
   useAuth: (): unknown => mockUseAuth(),
 }))
 
-function principal(role: 'guardian' | 'admin' | 'child') {
-  return { subject: 's', role, familyId: 'f', profileIds: [] }
+function principal(role: 'guardian' | 'admin' | 'child', isAdmin = role === 'admin') {
+  return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
 }
 
 function renderShell() {
@@ -51,6 +51,23 @@ describe('GuardianShell', () => {
     mockUseAuth.mockReturnValue({ principal: principal('admin'), signOut: mockSignOut })
     renderShell()
     expect(screen.queryByRole('link', { name: 'Books' })).not.toBeInTheDocument()
+  })
+
+  it('shows the Admin console link for a principal holding the admin capability', () => {
+    // A dual-role adult (guardian base role + is_admin) gets the switcher
+    // into the parallel /admin surface; an admin-only principal does too.
+    mockUseAuth.mockReturnValue({
+      principal: principal('guardian', true),
+      signOut: mockSignOut,
+    })
+    renderShell()
+    expect(screen.getByRole('link', { name: 'Admin console' })).toHaveAttribute('href', '/admin')
+  })
+
+  it('hides the Admin console link from a plain guardian', () => {
+    mockUseAuth.mockReturnValue({ principal: principal('guardian'), signOut: mockSignOut })
+    renderShell()
+    expect(screen.queryByRole('link', { name: 'Admin console' })).not.toBeInTheDocument()
   })
 
   it('shows the Books link and a sign-out button for a guardian principal', () => {

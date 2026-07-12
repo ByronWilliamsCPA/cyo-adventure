@@ -1,13 +1,26 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { KID_PICKER_PATH } from '../routes'
-import type { Role } from './types'
+import type { Principal, Role } from './types'
 import { useAuth } from './useAuth'
+
+/**
+ * Capability check for one allowed-roles entry. 'admin' means the admin
+ * CAPABILITY (`principal.isAdmin`), not the base persona, so a dual-role
+ * adult (role='guardian', isAdmin=true) passes both a ['guardian'] gate and
+ * an ['admin'] gate, mirroring the backend's Principal.is_admin model.
+ */
+function holdsCapability(principal: Principal, allowed: Role): boolean {
+  return allowed === 'admin' ? principal.isAdmin : principal.role === allowed
+}
 
 interface ProtectedRouteProps {
   /** Redirect target when unauthenticated (carries the attempted location). */
   redirectTo: string
-  /** When set, the principal's role must be one of these, not just any authenticated role. */
+  /**
+   * When set, the principal must hold at least one of these capabilities
+   * (see {@link holdsCapability}), not just any authenticated role.
+   */
   allowedRoles?: Role[]
   /**
    * Where to send a signed-in principal whose role is NOT allowed. Defaults to
@@ -44,7 +57,7 @@ export function ProtectedRoute({
     return <Navigate to={redirectTo} state={{ from: location }} replace />
   }
 
-  if (allowedRoles && !allowedRoles.includes(principal.role)) {
+  if (allowedRoles && !allowedRoles.some((role) => holdsCapability(principal, role))) {
     // A signed-in principal with the wrong role: send them somewhere they can
     // be (deniedRedirectTo, default the kid picker), NOT redirectTo. redirectTo
     // is the login page, which redirects an already-signed-in user back here and

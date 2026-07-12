@@ -22,7 +22,7 @@ test('signs in with email and password and lands on the console', async ({ page 
   await page.getByRole('button', { name: 'Sign in' }).click()
 
   await expect(page).toHaveURL(/\/guardian$/)
-  await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
 })
 
 test('wrong password shows the credentials error and stays on login', async ({ page }) => {
@@ -51,7 +51,7 @@ test('sign-out returns to the login page and re-locks the console', async ({ pag
   await page.route('**/auth/v1/logout**', (route) => route.fulfill({ status: 204, body: '' }))
 
   await page.goto('/guardian')
-  await expect(page.getByRole('heading', { name: 'Review queue' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Family console' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/guardian\/login$/)

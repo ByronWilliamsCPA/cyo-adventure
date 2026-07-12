@@ -14,7 +14,16 @@ export function isRole(value: unknown): value is Role {
 
 export interface Principal {
   subject: string
+  /**
+   * The base persona from `/v1/me` (`role`). One adult can be a guardian, an
+   * admin, or both: `role` stays the persona ('guardian' for anyone with
+   * family guardianship, 'admin' for an admin-only adult) and the orthogonal
+   * {@link isAdmin} capability decides admin-console access, mirroring the
+   * backend's `Principal.is_admin` (api/deps.py).
+   */
   role: Role
+  /** The global admin capability (`/v1/me` `is_admin`), orthogonal to role. */
+  isAdmin: boolean
   familyId: string
   profileIds: string[]
 }

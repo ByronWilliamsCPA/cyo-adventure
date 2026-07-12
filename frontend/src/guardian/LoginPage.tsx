@@ -4,6 +4,7 @@ import { Navigate, useLocation } from 'react-router-dom'
 
 import { useAuth } from '../auth/useAuth'
 import { flagEnabled } from '../env'
+import { ADMIN_CONSOLE_PATH, GUARDIAN_CONSOLE_PATH } from '../routes'
 import './guardian.css'
 
 /**
@@ -27,7 +28,7 @@ function isInvalidCredentials(err: unknown): boolean {
  * no new auth machinery, only a second entry point into the same flow.
  */
 export function LoginPage() {
-  const { status, authError, signInWithOAuth, signInWithPassword } = useAuth()
+  const { status, principal, authError, signInWithOAuth, signInWithPassword } = useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -35,7 +36,12 @@ export function LoginPage() {
   const [submitting, setSubmitting] = useState(false)
   const location = useLocation()
   const state = location.state as { from?: { pathname?: string } } | null
-  const from = state?.from?.pathname ?? '/guardian'
+  // An admin-only adult (base role 'admin', no family guardianship) lands on
+  // the admin console; everyone else (guardian, dual-role) starts at the
+  // guardian console. An explicit `from` (the page that bounced them here)
+  // always wins over either default.
+  const home = principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH
+  const from = state?.from?.pathname ?? home
 
   // Apple sign-in is hidden until it is actually configured in Supabase (it
   // needs a paid Apple Developer account and a signed, expiring client secret).

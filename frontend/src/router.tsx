@@ -4,6 +4,9 @@ import { createBrowserRouter } from 'react-router-dom'
 
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
+  AdminConsolePage,
+  AdminRequestsPage,
+  AdminShell,
   BooksPage,
   ConsolePage,
   GuardianAuthLayout,
@@ -24,19 +27,27 @@ import {
   RouteError,
   RouteFallback,
 } from './routeElements'
-import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH, KID_PICKER_PATH } from './routes'
+import {
+  ADMIN_CONSOLE_PATH,
+  GUARDIAN_CONSOLE_PATH,
+  GUARDIAN_LOGIN_PATH,
+  KID_PICKER_PATH,
+} from './routes'
 
 function suspended(element: ReactNode) {
   return <Suspense fallback={<RouteFallback />}>{element}</Suspense>
 }
 
 /**
- * Three entry points plus two disjoint route trees (wireframe section 2 / section 6):
+ * Three entry points plus disjoint route trees (wireframe section 2 / section 6):
  * the landing page at (/), the kid surface (/kids, /library/*, /read/*),
- * and the guardian surface (/guardian/*) share no navigation. Only the
- * component library, axios client, and this router module are shared. Each tree
- * is a separate lazy chunk (routeElements.tsx) so a kid device never downloads the
- * guardian console's code, and vice versa.
+ * and the adult surfaces (/guardian/* and its parallel /admin/* console)
+ * share no navigation with the kid tree. Only the component library, axios
+ * client, and this router module are shared. Each tree is a separate lazy
+ * chunk (routeElements.tsx) so a kid device never downloads the guardian or
+ * admin console's code, and vice versa. The admin console is gated on the
+ * admin CAPABILITY (principal.isAdmin), so one adult holding both roles
+ * moves between /guardian and /admin via the shell nav.
  *
  * The landing page is chunk-neutral and doesn't inherit KidShell chrome.
  * The Supabase-backed AuthProvider is scoped to the guardian subtree via the
@@ -88,6 +99,10 @@ export const routes = [
         element: suspended(<LoginPage />),
       },
       {
+        // The guardian console admits both adult capabilities: a dual-role
+        // adult lives here day-to-day, and an admin-only adult who lands
+        // here sees the family home's pointer into the admin console rather
+        // than a redirect loop (a child still bounces to the kid picker).
         path: GUARDIAN_CONSOLE_PATH,
         element: (
           <ProtectedRoute redirectTo={GUARDIAN_LOGIN_PATH} allowedRoles={['guardian', 'admin']} />
@@ -101,31 +116,38 @@ export const routes = [
               { path: 'books', element: suspended(<BooksPage />) },
               { path: 'requests', element: suspended(<RequestsPage />) },
               { path: 'profiles', element: suspended(<ProfilesPage />) },
+            ],
+          },
+        ],
+      },
+      {
+        // Admin console: the parallel adult surface for admin-capability
+        // functions (review queue, global request queue, moderation admin).
+        // 'admin' is the CAPABILITY (principal.isAdmin), so a dual-role
+        // guardian passes; a plain guardian is sent back to their console
+        // (NOT the login page, which would loop for a signed-in user).
+        path: ADMIN_CONSOLE_PATH,
+        element: (
+          <ProtectedRoute
+            redirectTo={GUARDIAN_LOGIN_PATH}
+            allowedRoles={['admin']}
+            deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
+          />
+        ),
+        children: [
+          {
+            element: suspended(<AdminShell />),
+            children: [
+              { index: true, element: suspended(<AdminConsolePage />) },
+              { path: 'requests', element: suspended(<AdminRequestsPage />) },
               { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
               {
-                // Admin-only within the guardian subtree: a guardian who is
-                // not an admin already passed the outer ['guardian','admin']
-                // gate above, so this inner ProtectedRoute narrows further.
-                // deniedRedirectTo overrides the component's kid-picker
-                // default, which would otherwise send a denied guardian to
-                // the kid profile picker instead of somewhere they belong.
-                element: (
-                  <ProtectedRoute
-                    redirectTo={GUARDIAN_LOGIN_PATH}
-                    allowedRoles={['admin']}
-                    deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
-                  />
-                ),
-                children: [
-                  {
-                    path: 'moderation-thresholds',
-                    element: suspended(<ModerationThresholdsPage />),
-                  },
-                  {
-                    path: 'moderation-dashboard',
-                    element: suspended(<ModerationDashboardPage />),
-                  },
-                ],
+                path: 'moderation-thresholds',
+                element: suspended(<ModerationThresholdsPage />),
+              },
+              {
+                path: 'moderation-dashboard',
+                element: suspended(<ModerationDashboardPage />),
               },
             ],
           },
