@@ -17,7 +17,13 @@ one-shot operator task:
    from the new R2 URL, and only writes the new URL to the database if the
    re-downloaded bytes are byte-for-byte identical to the original. Any
    download/upload failure or a verification mismatch leaves the row
-   untouched and counts it as failed; nothing is ever half-migrated.
+   untouched and counts it as failed.
+
+Each row is migrated atomically: either its URL is updated (after byte-for-byte
+verification and a successful commit) or the row is left exactly as it was. The
+pass as a whole is not one transaction, though, so an interrupted or partially
+failed run leaves already-migrated rows migrated and every other row untouched.
+That is safe: re-running skips rows already on R2 and re-attempts the rest.
 
 Run recipe (idempotent: re-running skips rows already migrated to R2)::
 
@@ -35,12 +41,15 @@ from __future__ import annotations
 import argparse
 import asyncio
 import re
+import sys
 import time
 from typing import TYPE_CHECKING
 
 import httpx
-from botocore.exceptions import ClientError
+from botocore.exceptions import BotoCoreError, ClientError
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import load_only
 
 from cyo_adventure.core.config import settings as _settings
 from cyo_adventure.core.database import get_session
@@ -102,6 +111,28 @@ def classify_cover_url(url: str, r2_public_base_url: str | None) -> str:
     if _SUPABASE_STORAGE_URL_RE.match(url):
         return "supabase"
     return "other"
+
+
+def _r2_configured(settings: Settings) -> bool:
+    """Return True if every R2 storage setting ``upload_cover`` needs is set.
+
+    Mirrors the configuration check inside ``covers.storage.upload_cover`` so a
+    live backfill can fail fast once, up front, instead of downloading every
+    candidate's bytes only for each per-row upload to raise
+    ``CoverGenerationError``.
+
+    Args:
+        settings: App settings to inspect.
+
+    Returns:
+        True if all four R2 settings are truthy, False otherwise.
+    """
+    return bool(
+        settings.r2_account_id
+        and settings.r2_access_key_id
+        and settings.r2_secret_access_key
+        and settings.r2_public_base_url
+    )
 
 
 async def _download(client: httpx.AsyncClient, url: str) -> bytes:
@@ -182,7 +213,20 @@ async def migrate_row(
         original_bytes = await _download(client, original_url)
         public_url = await upload(original_bytes, key, settings)
         verify_bytes = await _download(client, public_url)
-    except (httpx.HTTPError, CoverGenerationError, ClientError) as exc:
+    except (
+        httpx.HTTPError,
+        CoverGenerationError,
+        ClientError,
+        BotoCoreError,
+    ) as exc:
+        # #EDGE: external resources: ClientError covers S3 API-level errors
+        # (4xx/5xx PutObject responses); BotoCoreError is its sibling, not a
+        # subclass, and covers transport-level failures (connect/read
+        # timeouts, DNS, NoCredentialsError). upload_cover() runs put_object
+        # via asyncio.to_thread with no wrapping try/except, so both escape
+        # raw; catching only one would let a transport failure crash the whole
+        # pass instead of failing this single row and continuing.
+        # #VERIFY: test_migrate_row_botocore_error_counts_failed.
         _logger.warning(
             "backfill_row_failed",
             storybook_id=row.storybook_id,
@@ -205,7 +249,24 @@ async def migrate_row(
         return "failed"
 
     row.cover_image_url = f"{public_url}?v={int(time.time())}"
-    await session.commit()
+    # #CRITICAL: data integrity: the commit itself can fail (lost DB
+    # connection, statement timeout). Guard it so one row's commit failure
+    # rolls back its pending URL update and is reported as failed rather than
+    # escaping migrate_row() and aborting the whole pass; the R2 object is
+    # already uploaded (an idempotent upsert at a deterministic key), so a
+    # later re-run safely re-verifies and re-commits this row.
+    # #VERIFY: test_migrate_row_commit_failure_rolls_back_and_counts_failed.
+    try:
+        await session.commit()
+    except SQLAlchemyError as exc:
+        await session.rollback()
+        _logger.warning(
+            "backfill_commit_failed",
+            storybook_id=row.storybook_id,
+            version=row.version,
+            error=str(exc),
+        )
+        return "failed"
     _logger.info(
         "backfill_row_migrated",
         storybook_id=row.storybook_id,
@@ -249,6 +310,18 @@ async def backfill(
     """
     counts = {"candidates": 0, "migrated": 0, "skipped": 0, "failed": 0}
 
+    # Fail fast in live mode if R2 is unconfigured: without this guard every
+    # candidate would be downloaded and then fail its upload one by one,
+    # reporting a wall of failures instead of one clear "not configured"
+    # error. Dry-run needs no R2 access, so it is exempt.
+    if not dry_run and not _r2_configured(settings):
+        msg = (
+            "R2 cover storage is not configured (R2_ACCOUNT_ID / "
+            "R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY / R2_PUBLIC_BASE_URL); "
+            "cannot run a live backfill. Configure R2 or use --dry-run."
+        )
+        raise CoverGenerationError(msg)
+
     async with (
         httpx.AsyncClient(
             headers={"User-Agent": _BROWSER_USER_AGENT},
@@ -256,10 +329,16 @@ async def backfill(
         ) as client,
         session_factory() as session,
     ):
+        # load_only defers the large JSONB columns (blob, validation_report,
+        # moderation_report); the composite primary key (storybook_id,
+        # version) is always loaded, so this fetches exactly the three
+        # attributes migrate_row() reads and writes. Deferred columns would
+        # lazy-load on access, which raises under async SQLAlchemy; migrate_row
+        # never touches them.
         result = await session.scalars(
-            select(StorybookVersion).where(
-                StorybookVersion.cover_image_url.is_not(None)
-            )
+            select(StorybookVersion)
+            .options(load_only(StorybookVersion.cover_image_url))
+            .where(StorybookVersion.cover_image_url.is_not(None))
         )
         rows = result.all()
         for row in rows:
@@ -305,16 +384,28 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main() -> None:
-    """Entry point for the cover backfill script."""
+    """Entry point for the cover backfill script.
+
+    Exits non-zero when a live run cannot start (R2 unconfigured) or when a
+    live run finished with at least one failed row, so an operator or wrapping
+    automation can detect a partial migration from the process exit code
+    instead of having to parse the summary line.
+    """
     setup_logging(level="INFO", json_logs=False, include_correlation=False)
     args = _parse_args()
-    counts = asyncio.run(backfill(dry_run=args.dry_run, settings=_settings))
+    try:
+        counts = asyncio.run(backfill(dry_run=args.dry_run, settings=_settings))
+    except CoverGenerationError as exc:
+        print(f"[ERROR] {exc}")
+        sys.exit(1)
     mode = "DRY RUN" if args.dry_run else "LIVE"
     print(
         f"[{mode}] cover backfill summary: "
         f"candidates={counts['candidates']} migrated={counts['migrated']} "
         f"skipped={counts['skipped']} failed={counts['failed']}"
     )
+    if not args.dry_run and counts["failed"] > 0:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
