@@ -239,6 +239,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
   unchanged and remains local-only.
+
+  **Frontend half (G1)**: the kid surface now runs on the minted child token
+  instead of the guardian's own bearer. `ProfilePickerPage` mints a session
+  (`frontend/src/kid/childSessionApi.ts`, a hand-typed adapter over the
+  generated `ChildSessionCreateBody`/`ChildSessionView` types) with the
+  guardian's bearer right after a profile tile is picked, stores
+  `{token, expiresAt, profileId}` in `localStorage`
+  (`frontend/src/auth/childSession.ts`), then navigates into
+  `/library/:profileId` regardless of whether the mint succeeded (a failed
+  mint falls back to the pre-G1 behavior of the guardian token, if any, so a
+  transient mint failure never traps a child on the picker). Token selection
+  lives centrally in `useApi.ts`'s request interceptor: on a kid-token route
+  (`/library/*`, `/read/*`) it attaches a still-valid child token instead of
+  the guardian bearer, and never attaches both; `/kids` itself is
+  deliberately EXCLUDED from "kid-token route" even though it is
+  kid-facing, because the picker's own profile listing and mint call need
+  the guardian's full-family scope, and `KidNav`'s "Switch reader" link
+  returns to `/kids` without clearing anything, so a lingering child token
+  there would silently narrow the picker to one profile. The response
+  interceptor determines which bearer a failing request actually carried
+  (by comparing its `Authorization` header to the stored child token, not by
+  route) before clearing anything, so a dead child token never tears down a
+  live guardian session and vice versa; a kid-route 401 clears the child
+  session and relies on the existing ask-a-grown-up gate
+  (`classifyApiError`'s `unauthenticated` state in `ProfilePickerPage` and
+  `LibraryPage`) to recover, with no new error UI. An expired child token is
+  also caught client-side (`isExpired`/`getValidChildSession`) before ever
+  being attached, as a courtesy on top of the server's own `exp`
+  verification. `AuthContext.tsx`'s `safeRemoveToken()` now also clears the
+  child session, so guardian sign-out (or a guardian session that never
+  resolves to a principal) ends a shared-device child session too. Out of
+  scope for this slice (tracked separately): per-profile PIN (P6-07), a
+  parental-gate re-auth wrapper (P6-08), Keychain/secure storage for the
+  child token (P8-02), and pre-checking token expiry before an offline sync
+  attempt (P6-06).
 - Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
   `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
   text-tone utilities, consuming the pre-existing amber token pair:
