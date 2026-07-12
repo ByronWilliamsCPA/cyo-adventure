@@ -1,16 +1,26 @@
 import './tokens.css'
+import './utilities.css'
 
 export { Button } from './components/Button'
 export type { ButtonProps, ButtonSize, ButtonVariant } from './components/Button'
 
+export { Card } from './components/Card'
+export type { CardProps } from './components/Card'
+
 export { ChoiceButton } from './components/ChoiceButton'
 export type { ChoiceButtonProps } from './components/ChoiceButton'
+
+export { Chip } from './components/Chip'
+export type { ChipProps } from './components/Chip'
 
 export { Dialog } from './components/Dialog'
 export type { DialogProps } from './components/Dialog'
 
 export { EmptyState } from './components/EmptyState'
 export type { EmptyStateProps } from './components/EmptyState'
+
+export { FormField } from './components/FormField'
+export type { FormFieldProps } from './components/FormField'
 
 export { PassageText } from './components/PassageText'
 export type { PassageTextProps } from './components/PassageText'

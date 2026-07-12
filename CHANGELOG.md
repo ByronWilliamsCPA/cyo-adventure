@@ -11,19 +11,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
   every push to `main` that touches image content now fires a
   `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
-  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`. Once
-  homelab-infra#591 lands its matching `repository_dispatch` trigger, its
-  `cyo-adventure-build.yml` will rebuild and publish the backend/frontend
-  images from exactly that commit; until then GitHub accepts the dispatch
-  (204) but nothing consumes it, and the receiver's weekly schedule remains
-  the build path. Previously images were only built on manual dispatch or a
+  `client_payload.ref`) at `ByronWilliamsCPA/homelab-infra`, whose
+  `cyo-adventure-build.yml` (receiver trigger live on its main since
+  homelab-infra#591 merged) rebuilds and publishes the backend/frontend
+  images from exactly that commit. GitHub accepts a dispatch (204) even
+  with no listener, so the receiver's weekly schedule remains the backstop
+  if that trigger ever drifts. Previously images were only built on manual dispatch or a
   weekly schedule, so merges could sit unpublished for days while the live
   deploy served a stale build. Doc-only paths (`docs/**`, `**.md`,
   `.claude/**`, `mkdocs.yml`) are ignored. Requires the
-  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Actions
-  read/write on homelab-infra); a missing/empty secret fails the run via an
+  `HOMELAB_INFRA_DISPATCH_TOKEN` repo secret (fine-grained PAT, Contents
+  read/write on homelab-infra, the permission that
+  `POST /repos/{owner}/{repo}/dispatches` requires; Actions permissions are
+  not sufficient); a missing/empty secret fails the run via an
   explicit guard step, and an invalid/expired token fails the `gh` call
   loudly (HTTP 401) rather than silently skipping the dispatch.
+
+### Security
+- Enabled Row Level Security (RLS) on all 19 public tables as defense-in-depth
+  against the Supabase PostgREST anon/authenticated path (issue #125). The
+  FastAPI backend connects via the session pooler as the `postgres` role,
+  which Postgres always exempts from RLS, so app behavior is unaffected; the
+  exposure closed is that, with RLS off, anyone holding the project's anon
+  key could read or write every public table (including `child_profile`)
+  directly through PostgREST. No policies are added: this is deny-by-default
+  for anon/authenticated, since no client in this project uses PostgREST
+  (the frontend's `@supabase/supabase-js` client is Auth/GoTrue only:
+  `auth.getSession`, `auth.onAuthStateChange`, `auth.signInWithOAuth`,
+  `auth.signInWithPassword`, `auth.signOut`; a repo-wide grep of
+  `frontend/src/` found no `supabase.from(` or `supabase.rpc(` PostgREST
+  table access). `FORCE ROW
+  LEVEL SECURITY` is deliberately not used: the tables are owned by
+  `postgres`, and forcing RLS with zero policies would also lock out the
+  table owner, i.e. the application itself. See
+  `supabase/migrations/20260711200745_enable_rls_all_tables.sql`.
 
 ### Changed
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
@@ -71,6 +92,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   coverage, and no other test file was touched.
 
 ### Fixed
+- Design-system library build (Vite 8/rolldown): `react/jsx-runtime` is now
+  externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
+  inlines the jsx runtime with a CJS-interop shim whose runtime
+  `require("react")` throws in browser consumers of the ESM dist.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -154,6 +179,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
   unchanged and remains local-only.
+- Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
+  `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
+  text-tone utilities, consuming the pre-existing amber token pair:
+  `--color-amber` stays the bright brand hue, `--color-amber-deep` is the
+  deeper shade that clears the 3:1 WCAG non-text/large-text threshold,
+  though not the 4.5:1 AA normal-text minimum), and the guardian console
+  now consumes them instead of its bespoke `guardian.css` equivalents (the
+  `.intake-chip` styles, orphaned by this same swap, are removed).
+  `FlagBadge` deliberately stays bespoke: its flag/info tones belong to the
+  moderation-review surface, which this promotion pass excluded.
 - Auth-gate scenario tier for the `naive-ux-check` skill (issue #204): three
   new Track B comprehension scenarios (`K0` fresh-device kid gate, `G0`
   guardian sign-in discovery, `A0` admin sign-in signal) grow the prompt set

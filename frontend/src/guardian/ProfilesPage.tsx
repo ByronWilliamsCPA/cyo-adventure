@@ -84,7 +84,7 @@ export function ProfilesPage() {
       ) : (
         <ul className="profiles__list">
           {profiles.map((profile) => (
-            <li key={profile.id} className="profiles__card">
+            <li key={profile.id} className="profiles__card cyo-card">
               <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
               <div className="profiles__card-body">
                 <span className="profiles__name">{profile.display_name}</span>
