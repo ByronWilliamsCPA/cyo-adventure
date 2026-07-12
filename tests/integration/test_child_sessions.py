@@ -1,0 +1,333 @@
+"""Integration tests for the child-session mint endpoint (G1 / P6-04).
+
+Exercises minting authorization (guardian own-family, admin, cross-family,
+child, unauthenticated), JIT provisioning of the child account (profiles
+created through the API have no User row), the double-mint race recovery,
+the end-to-end round-trip (a minted token authenticates as a CHILD principal
+scoped to one profile), and the P6-09 negative cases (a child token is
+rejected on a guardian endpoint and on another profile's library).
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import jwt
+import pytest
+from sqlalchemy import select
+
+from cyo_adventure.api import child_sessions
+from cyo_adventure.db.models import ChildProfile, User
+from tests.integration.conftest import Seed, auth
+
+if TYPE_CHECKING:
+    import uuid
+
+    from httpx import AsyncClient
+    from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+pytestmark = [pytest.mark.integration, pytest.mark.security]
+
+
+# ---------------------------------------------------------------------------
+# mint authorization
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_guardian_mints_own_family_profile_returns_201(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian mints a session for a profile in its own family."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["profile_id"] == str(seed.child_profile_id)
+    assert body["token"]
+    assert body["expires_at"]
+
+
+@pytest.mark.asyncio
+async def test_admin_mints_any_profile_returns_201(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """An admin is global and may mint for any profile."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.admin_token),
+    )
+    assert resp.status_code == 201, resp.text
+
+
+@pytest.mark.asyncio
+async def test_guardian_cannot_mint_other_family_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A guardian naming another family's profile is rejected with 403."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.other_child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_child_cannot_mint(client: AsyncClient, seed: Seed) -> None:
+    """A child dev-stub token cannot mint a session (403 at the role gate)."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_unauthenticated_mint_returns_401(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Minting without a bearer token is rejected with 401."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+    )
+    assert resp.status_code == 401, resp.text
+
+
+async def _create_bare_profile(
+    sessions: async_sessionmaker[AsyncSession], family_id: uuid.UUID
+) -> uuid.UUID:
+    """Create a child profile with no child User row, as the profiles API does."""
+    async with sessions() as session:
+        bare = ChildProfile(
+            family_id=family_id, display_name="No Account", age_band="10-13"
+        )
+        session.add(bare)
+        await session.commit()
+        return bare.id
+
+
+async def _child_users_for(
+    sessions: async_sessionmaker[AsyncSession], profile_id: uuid.UUID
+) -> list[User]:
+    """Fetch all child User rows attached to a profile."""
+    async with sessions() as session:
+        result = await session.scalars(
+            select(User).where(
+                User.child_profile_id == profile_id, User.role == "child"
+            )
+        )
+        return list(result)
+
+
+def _unverified_user_id(token: str) -> str:
+    """Read the user_id claim without verification (test introspection only)."""
+    payload = jwt.decode(token, options={"verify_signature": False})
+    user_id = payload["user_id"]
+    assert isinstance(user_id, str)
+    return user_id
+
+
+@pytest.mark.asyncio
+async def test_mint_provisions_child_account(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """Minting for a profile with no child User JIT-provisions exactly one row.
+
+    Profiles created through POST /api/v1/profiles get no User row, so without
+    provisioning no API-created profile could ever start a child session.
+    """
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
+
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(bare_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+    assert rows[0].family_id == seed.family_id
+    assert rows[0].authn_subject == f"child-profile:{bare_id}"
+
+
+@pytest.mark.asyncio
+async def test_second_mint_reuses_provisioned_account(
+    client: AsyncClient,
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """A second mint reuses the JIT-provisioned row; no duplicate account."""
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
+
+    first = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(bare_id)},
+        headers=auth(seed.guardian_token),
+    )
+    second = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(bare_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert first.status_code == 201, first.text
+    assert second.status_code == 201, second.text
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+
+    # Both tokens must attribute to the same (single) account.
+    first_user_id = _unverified_user_id(first.json()["token"])
+    second_user_id = _unverified_user_id(second.json()["token"])
+    assert first_user_id == second_user_id == str(rows[0].id)
+
+
+@pytest.mark.asyncio
+async def test_provision_race_recovers_winner(
+    seed: Seed,
+    sessions: async_sessionmaker[AsyncSession],
+) -> None:
+    """The double-mint race path recovers via a real unique-index conflict.
+
+    Simulates the loser's timeline: its pre-insert SELECT saw no account (so
+    it proceeds to provision), but the winner's row is already committed when
+    its INSERT hits the unique authn_subject index. The IntegrityError unwinds
+    the savepoint and the loser returns the winner's row, leaving one account.
+    """
+    bare_id = await _create_bare_profile(sessions, seed.family_id)
+
+    # The "winner": another device's committed provisioning.
+    async with sessions() as session:
+        winner = User(
+            family_id=seed.family_id,
+            role="child",
+            authn_subject=f"child-profile:{bare_id}",
+            child_profile_id=bare_id,
+        )
+        session.add(winner)
+        await session.commit()
+        winner_id = winner.id
+
+    # The "loser": call the provision step directly (its SELECT already
+    # returned None before the winner committed), against the real index.
+    async with sessions() as session:
+        profile = await session.get(ChildProfile, bare_id)
+        assert profile is not None
+        recovered = await child_sessions._provision_child_user(session, profile)
+        assert recovered.id == winner_id
+        await session.commit()
+
+    rows = await _child_users_for(sessions, bare_id)
+    assert len(rows) == 1
+    assert rows[0].id == winner_id
+
+
+@pytest.mark.asyncio
+async def test_mint_rejects_malformed_profile_id(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A non-UUID profile id is rejected with 422 before any lookup."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": "not-a-uuid"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.asyncio
+async def test_mint_forbids_unknown_body_field(client: AsyncClient, seed: Seed) -> None:
+    """An unexpected body field is rejected (extra='forbid')."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "role": "admin"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+# ---------------------------------------------------------------------------
+# end-to-end round-trip
+# ---------------------------------------------------------------------------
+
+
+async def _mint_child_token(client: AsyncClient, seed: Seed) -> str:
+    """Mint a child token for the seeded profile and return the raw JWT."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    token = resp.json()["token"]
+    assert isinstance(token, str)
+    return token
+
+
+@pytest.mark.asyncio
+async def test_minted_token_authenticates_as_scoped_child(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A minted token yields a CHILD principal scoped to exactly one profile."""
+    token = await _mint_child_token(client, seed)
+    resp = await client.get("/api/v1/me", headers=auth(token))
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["role"] == "child"
+    assert body["profile_ids"] == [str(seed.child_profile_id)]
+    assert body["family_id"] == str(seed.family_id)
+
+
+@pytest.mark.asyncio
+async def test_minted_token_reads_own_library(client: AsyncClient, seed: Seed) -> None:
+    """A child token may list its own profile's library."""
+    token = await _mint_child_token(client, seed)
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(seed.child_profile_id)},
+        headers=auth(token),
+    )
+    assert resp.status_code == 200, resp.text
+
+
+# ---------------------------------------------------------------------------
+# P6-09 negative cases: a child token on out-of-scope surfaces
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_child_token_rejected_on_guardian_endpoint(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A minted child token cannot reach a guardian-only endpoint (403)."""
+    token = await _mint_child_token(client, seed)
+    resp = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "New Kid", "age_band": "10-13"},
+        headers=auth(token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_child_token_rejected_on_other_profile_library(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A child token scoped to profile A cannot read profile B's library."""
+    token = await _mint_child_token(client, seed)
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(seed.other_child_profile_id)},
+        headers=auth(token),
+    )
+    assert resp.status_code in (403, 404), resp.text
+    assert not (200 <= resp.status_code < 300)

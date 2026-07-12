@@ -14,7 +14,13 @@ from __future__ import annotations
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import AliasChoices, Field, field_validator, model_validator
+from pydantic import (
+    AliasChoices,
+    Field,
+    SecretStr,
+    field_validator,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cyo_adventure.core.exceptions import ConfigurationError
@@ -397,6 +403,42 @@ class Settings(BaseSettings):
             raise ConfigurationError(msg)
         return normalized
 
+    # --- Child-scoped session tokens (G1 / PROJECT-PLAN P6-04) ---
+    # The kid surface does NOT use Supabase users. A guardian mints a short-lived,
+    # backend-signed (HS256) JWT scoped to role=child and one profile; api/deps.py
+    # verifies it in a second branch (see core/child_session.py). This secret signs
+    # and verifies those tokens; it is a backend secret the browser never sees, and
+    # is DISTINCT from the Supabase JWKS used for guardians. Optional here so local
+    # dev needs no config; _require_child_session_secret_outside_local below fails
+    # fast outside "local", mirroring the OIDC validator.
+    # #CRITICAL: security: this is the child-session signing key; never log its
+    # value or echo it in an error message, and never reuse a Supabase key for it.
+    # #VERIFY: core/child_session.py reads it only via get_secret_value() at
+    # mint/verify time; no error message includes the secret.
+    child_session_secret: SecretStr | None = Field(
+        default=None, validation_alias="CHILD_SESSION_SECRET"
+    )
+    # Child-session lifetime in seconds. Default 43200 (12h) comfortably covers a
+    # single offline reading session; a child session cannot be refreshed, so it
+    # reads a downloaded story for the token's full lifetime (debt-register
+    # offline-reading requirement). The model sets env_prefix="cyo_adventure_",
+    # so the unprefixed CHILD_SESSION_TTL_SECONDS the .env templates document
+    # only binds because of this explicit alias; without it the field is inert
+    # and every deploy silently keeps the 12h default. Mirror the sibling
+    # child_session_secret, which pins CHILD_SESSION_SECRET the same way.
+    # #EDGE: data integrity: ge=1 rejects a zero/negative TTL that would mint
+    # already-expired tokens (every child mint 401s); a misconfig fails fast at
+    # startup rather than at first read.
+    # #VERIFY: test_config parses CHILD_SESSION_TTL_SECONDS and rejects TTL<=0.
+    child_session_ttl_seconds: int = Field(
+        default=43_200,
+        ge=1,
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS",
+            "CHILD_SESSION_TTL_SECONDS",
+        ),
+    )
+
     # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
     # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
     # It is consumed by uvicorn's --forwarded-allow-ips CLI flag (set from this same
@@ -541,6 +583,77 @@ class Settings(BaseSettings):
                 "OIDC_ISSUER and OIDC_JWKS_URL must both be set in non-local "
                 f"environments; refusing to start in '{self.environment}' with no "
                 "way to verify a bearer token (ADR-009)."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_child_session_secret_outside_local(self) -> Settings:
+        """Fail fast on a missing or weak child-session signing secret outside local.
+
+        Mirrors _require_oidc_config_outside_local (G1 / P6-04): outside "local"
+        the kid surface authenticates with backend-signed child JWTs, which can
+        neither be minted nor verified without this secret, so a non-local
+        process with no secret could not authenticate any child session; refuse
+        to start rather than silently disable the kid surface.
+
+        Presence alone is not enough. An empty SecretStr("") passes a plain
+        ``is None`` check but makes ``jwt.encode`` raise InvalidKeyError, 500ing
+        every mint (a kid-surface outage). A short or placeholder secret is worse:
+        it signs real, forgeable child tokens with a weak HMAC key. PyJWT's
+        InsecureKeyLengthWarning only errors under pytest ``filterwarnings``, not
+        at runtime, so this validator is the only thing that stops a
+        ``CHILD_SESSION_SECRET=REPLACE_ME`` (shipped in .env.staging.example)
+        from reaching production. HS256 keys shorter than the 32-byte hash output
+        are the ones PyJWT flags, so 32 bytes is the floor.
+
+        #CRITICAL: security: rejecting weak/placeholder keys here is the child-
+        session forgery boundary; a short HMAC key lets an attacker mint valid
+        child tokens for any profile.
+        #VERIFY: the error message never echoes the secret value; test_config
+        rejects empty, whitespace, sub-32-byte, and placeholder secrets.
+
+        Raises:
+            ConfigurationError: when ``environment`` is not ``local`` and
+                ``child_session_secret`` is unset, empty, shorter than 32 bytes,
+                or a known placeholder.
+        """
+        if self.environment == "local":
+            return self
+
+        if self.child_session_secret is None:
+            msg = (
+                "CHILD_SESSION_SECRET must be set in non-local environments; "
+                f"refusing to start in '{self.environment}' with no way to sign "
+                "or verify child session tokens (G1 / P6-04)."
+            )
+            raise ConfigurationError(msg)
+
+        secret = self.child_session_secret.get_secret_value()
+        min_secret_bytes = 32
+        # Reject known scaffolding placeholders regardless of length so a
+        # copied .env template can never sign real tokens. Compared casefolded
+        # against the stripped value; never interpolate `secret` into an error.
+        placeholders = {
+            "replace_me",
+            "changeme",
+            "change_me",
+            "your_secret_here",
+            "your-secret-here",
+            "secret",
+            "xxx",
+        }
+        stripped = secret.strip()
+        if (
+            not stripped
+            or len(secret.encode("utf-8")) < min_secret_bytes
+            or stripped.casefold() in placeholders
+        ):
+            msg = (
+                "CHILD_SESSION_SECRET is set but too weak: it must be a "
+                f"non-placeholder value of at least {min_secret_bytes} bytes to "
+                f"safely sign child session tokens; refusing to start in "
+                f"'{self.environment}' (G1 / P6-04)."
             )
             raise ConfigurationError(msg)
         return self

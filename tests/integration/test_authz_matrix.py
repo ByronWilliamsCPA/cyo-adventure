@@ -168,6 +168,12 @@ def _story_request_body(seed: Seed) -> dict[str, Any]:
     }
 
 
+def _child_session_body(seed: Seed) -> dict[str, Any]:
+    # A profile the guardian owns (authorize_profile runs after the role gate);
+    # seed.child_profile_id is family A's, matching seed.guardian_token.
+    return {"profile_id": str(seed.child_profile_id)}
+
+
 def _story_request_authored_body(_seed: Seed) -> dict[str, Any]:
     # family_id deliberately omitted: a guardian's family is server-derived,
     # and an admin without one gets a 422 from _resolve_authored_family, both
@@ -448,6 +454,13 @@ _ROUTE_SPECS: list[RouteSpec] = [
         json_body=_story_request_body,
     ),
     RouteSpec("GET", "/api/v1/story-requests", ALL_ROLES),
+    # -- child_sessions.py: guardian-or-admin mint (child rejected) ----------
+    RouteSpec(
+        "POST",
+        "/api/v1/child-sessions",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
+        json_body=_child_session_body,
+    ),
     RouteSpec(
         "POST",
         "/api/v1/story-requests/authored",
