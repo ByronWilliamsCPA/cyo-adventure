@@ -373,6 +373,42 @@ export type CategoryInsightView = {
 };
 
 /**
+ * ChildSessionCreateBody
+ *
+ * A guardian's (or admin's) request to mint a child session for one profile.
+ */
+export type ChildSessionCreateBody = {
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+};
+
+/**
+ * ChildSessionView
+ *
+ * A minted child session token and its expiry.
+ *
+ * The token is a backend-signed, short-lived JWT the kid surface uses as its
+ * own bearer (role=child, scoped to ``profile_id``). No PII beyond ids
+ * crosses this boundary; see ``core/child_session.py`` for the trust model.
+ */
+export type ChildSessionView = {
+    /**
+     * Token
+     */
+    token: string;
+    /**
+     * Expires At
+     */
+    expires_at: string;
+    /**
+     * Profile Id
+     */
+    profile_id: string;
+};
+
+/**
  * CompletionBody
  *
  * A request to record that a child reached an ending.
@@ -3922,3 +3958,34 @@ export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostRes
 };
 
 export type DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponse = DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses[keyof DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses];
+
+export type CreateChildSessionApiV1ChildSessionsPostData = {
+    body: ChildSessionCreateBody;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/child-sessions';
+};
+
+export type CreateChildSessionApiV1ChildSessionsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateChildSessionApiV1ChildSessionsPostError = CreateChildSessionApiV1ChildSessionsPostErrors[keyof CreateChildSessionApiV1ChildSessionsPostErrors];
+
+export type CreateChildSessionApiV1ChildSessionsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: ChildSessionView;
+};
+
+export type CreateChildSessionApiV1ChildSessionsPostResponse = CreateChildSessionApiV1ChildSessionsPostResponses[keyof CreateChildSessionApiV1ChildSessionsPostResponses];

@@ -8,6 +8,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `scripts/backfill_covers_r2.py`: one-shot operator script that migrates
+  pre-R2 cover art from Supabase Storage to Cloudflare R2 (#214), closing the
+  gap the R2 cutover PR (#209) explicitly left open ("this PR does not
+  backfill or re-upload them to R2, so old covers keep loading from Supabase
+  until a future backfill"). Selects every `storybook_version` row with a
+  non-null `cover_image_url`, classifies each as `"r2"` (already migrated via
+  a `startswith(settings.r2_public_base_url)` check; skipped, not a
+  candidate), `"supabase"` (matches the pre-R2 public-URL shape
+  `https://<project-ref>.supabase.co/storage/v1/object/public/<bucket>/<key>`,
+  tolerating an optional `?...` cache-busting suffix; a migration candidate),
+  or `"other"` (skipped). Each candidate is downloaded, re-uploaded to R2 via
+  the existing `covers.storage.upload_cover()` under the same
+  `{storybook_id}/{version}.webp` key the live generation path uses, then
+  downloaded back from the new R2 URL and compared byte-for-byte against the
+  original before the database row is touched at all; a mismatch, or any
+  download/upload exception, leaves the row untouched and counts it as
+  failed rather than risking a half-migrated or corrupted cover. Supports
+  `--dry-run` to log candidates and print a summary without writing
+  anything. Uses a browser-like User-Agent on both downloads: the
+  williamshome.family Cloudflare zone's bot protection returns 403 for the
+  default python-httpx User-Agent, which was observed in practice during the
+  PR #209/#210 R2 rollout smoke tests. Idempotent: re-running against an
+  already-migrated row is a no-op (classified `"r2"`, not a candidate).
+- Hybrid post-quantum cryptography readiness (ADR-013). The JWT
+  signature-algorithm allowlist in `api/deps.py` is now configuration
+  (`Settings.oidc_allowed_algs`, env `OIDC_ALLOWED_ALGS`, default
+  `["RS256", "ES256"]`) instead of a hardcoded list, so a future
+  post-quantum JOSE algorithm (e.g. ML-DSA) is an env change, not a code
+  change; a startup validator refuses an empty list, `none`, and the
+  symmetric `HS*` family so the new knob cannot reopen the alg=none or
+  HS256-confusion forgeries. `scripts/check_fips_compatibility.py` now
+  recognizes the finalized FIPS 203/204/205 algorithm names (ML-KEM,
+  ML-DSA, SLH-DSA, and the hybrid `X25519MLKEM768` TLS group) as approved
+  and warns on pre-standardization names (Kyber, Dilithium, SPHINCS+) with
+  migration hints. An explicit `cryptography>=45` floor (the ML-DSA/SLH-DSA
+  primitives) is pinned in `pyproject.toml`, and a living cryptographic
+  inventory ships at `docs/security/crypto-inventory.md`. Key-exchange
+  enablement (hybrid X25519+ML-KEM on the ingress legs) is owned by the
+  `homelab-infra` repo per the ADR; nothing in this repo pins TLS groups.
 - Cross-repo image-build trigger (`.github/workflows/trigger-image-build.yml`):
   every push to `main` that touches image content now fires a
   `repository_dispatch` (event type `cyo-adventure-push`, pushed commit SHA in
@@ -168,6 +207,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
+  fixture (`tests/integration/conftest.py::seed`, family A and B) is now
+  joined by a third, completely unrelated `stranger` fixture (family C, no
+  shared storybook, assignment, story request, or profile with A or B), so a
+  query that happens to reject only the one other family the suite knew
+  about (rather than correctly checking "belongs to the caller's family")
+  can no longer pass unnoticed. `test_authz_matrix.py` gains stranger-family
+  parametrized checks in both directions (family C's guardian/child tokens
+  against family A's resources, and family A's child token against family
+  C's profile) across every ownership-scoped route already covered for
+  family B, plus a leak-by-inclusion check on `GET /api/v1/profiles` (the
+  response body's id set, not just the status code, is asserted to exclude
+  both other families). `test_child_sessions.py` extends the same coverage
+  to the real, backend-signed child-session JWT mint/verify path (G1/P6-04):
+  a guardian cannot mint a session for a stranger family's profile in either
+  direction, and a minted third-family token is proven to fail against
+  family A's library/guardian routes and vice versa, closing the gap left by
+  testing only the dev-stub role tokens. `test_guardian_books_api.py` adds
+  the same third-family isolation and assignment-leak checks the file
+  already ran against family B. No cross-tenant leak was found; every new
+  check landed green against the existing implementation.
+- Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
+  admin) exchanges a child profile id for a short-lived, backend-signed HS256
+  JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
+  it as its own bearer. Children are deliberately NOT Supabase users (ADR-009
+  keeps guardians on Supabase): this is a distinct, self-contained credential.
+  New endpoint `POST /api/v1/child-sessions` (guardian-or-admin only; a child
+  token is refused at the role gate, a cross-family guardian at the ownership
+  check) returns `{token, expires_at, profile_id}`. `require_principal` gains a
+  second verification branch (`core/child_session.py`): it routes on the token's
+  unverified `aud` claim, but each branch then fully verifies its own family of
+  token, the child branch pinning `algorithms=["HS256"]` plus a fixed, distinct
+  issuer/audience (`cyo-adventure` / `cyo-child-session`) against
+  `CHILD_SESSION_SECRET`, so a token can only ever verify through the branch that
+  minted it (no `alg=none` forgery and no RS256/HS256 confusion in either
+  direction). The child `User.id` is embedded at mint so the resulting principal
+  is attributable on the append-only pipeline event log without a database read,
+  keeping verification offline-friendly. Because profiles created through
+  `POST /api/v1/profiles` get no `User` row (only the seed scripts ever created
+  child accounts), the mint endpoint JIT-provisions the child account when it
+  is absent: a `role="child"` `User` row with a deterministic synthetic subject
+  (`child-profile:{profile_id}`, which cannot collide with a Supabase UUID sub
+  or the seed scripts' opaque subjects), created inside the same unit of work
+  under the family authorization that already ran. A concurrent double-mint
+  from two guardian devices converges on one row: both compute the same
+  subject, the loser's INSERT hits the unique `authn_subject` index inside a
+  savepoint (the `begin_nested` pattern from `generation/series_link.py`), and
+  it recovers by reading the winner's committed row. New settings
+  (`core/config.py`):
+  `CHILD_SESSION_SECRET` (required outside `local`, validated at startup) and
+  `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
+  since a child session cannot be refreshed). The dev-stub token path is
+  unchanged and remains local-only.
 - Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
   `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
   text-tone utilities, consuming the pre-existing amber token pair:

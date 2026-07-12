@@ -20,6 +20,9 @@ _PROD_DB_URL = "postgresql+asyncpg://appuser:testpass@db.example.com/cyo_adventu
 _POOLER_DB_URL = (
     "postgresql+asyncpg://appuser:testpass@pooler.example.com:6543/postgres"
 )
+# A >=32-byte child-session signing secret, required alongside OIDC config in
+# every non-local environment (see the _require_child_session_secret validator).
+_CHILD_SECRET = "test-child-session-secret-0123456789abcd"
 
 
 class TestSettingsDefaults:
@@ -194,6 +197,7 @@ class TestValidatorRejectDevUrlOutsideLocal:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert settings.database_url == _PROD_DB_URL
         assert settings.environment == environment
@@ -264,6 +268,7 @@ class TestEnvironmentAlias:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert s.environment == "staging"
 
@@ -280,6 +285,7 @@ class TestEnvironmentAlias:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert s.environment == "production"
 
@@ -562,6 +568,7 @@ class TestValidatorRequireOidcConfigOutsideLocal:
             database_url=_PROD_DB_URL,
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
+            child_session_secret=_CHILD_SECRET,
         )
         assert settings.oidc_issuer == "https://project.supabase.co/auth/v1"
         assert (
@@ -578,6 +585,156 @@ class TestValidatorRequireOidcConfigOutsideLocal:
         settings = Settings(environment="local")
         assert settings.oidc_issuer is None
         assert settings.oidc_jwks_url is None
+
+
+def _non_local_settings(**overrides: object) -> object:
+    """Build a non-local Settings with valid OIDC + db, overriding as needed.
+
+    Centralizes the OIDC-config-plus-prod-db boilerplate every child-session
+    validator test needs so each case varies only child_session_secret. The
+    OIDC validator runs before the child-session validator, so without valid
+    OIDC config every case would raise for the wrong reason.
+    """
+    from cyo_adventure.core.config import Settings
+
+    kwargs: dict[str, object] = {
+        "environment": "production",
+        "database_url": _PROD_DB_URL,
+        "oidc_issuer": "https://project.supabase.co/auth/v1",
+        "oidc_jwks_url": ("https://project.supabase.co/auth/v1/.well-known/jwks.json"),
+        "child_session_secret": _CHILD_SECRET,
+    }
+    kwargs.update(overrides)
+    return Settings(**kwargs)  # type: ignore[arg-type]
+
+
+class TestValidatorRequireChildSessionSecretOutsideLocal:
+    """Tests for the _require_child_session_secret_outside_local validator.
+
+    Presence alone is insufficient: an empty secret 500s every mint, and a
+    short or placeholder secret signs forgeable child tokens. The validator is
+    the only runtime guard (PyJWT's InsecureKeyLengthWarning does not error
+    outside pytest), so these cases pin the forgery boundary.
+    """
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_without_child_secret_raises(self, environment: str) -> None:
+        """Missing child_session_secret outside local raises ConfigurationError."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(environment=environment, child_session_secret=None)
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize(
+        "secret",
+        [
+            "",  # empty: SecretStr("") slips past a bare is-None check
+            "   ",  # whitespace only
+            "short-key",  # non-empty but under the 32-byte HS256 floor
+            "0123456789abcdef0123456789abcde",  # 31 bytes: one short of the floor
+            "REPLACE_ME",  # placeholder shipped in .env.staging.example
+            "changeme",  # common placeholder
+            "SECRET",  # placeholder (casefolded match)
+        ],
+    )
+    def test_non_local_with_weak_child_secret_raises(self, secret: str) -> None:
+        """Empty, short, or placeholder secrets are rejected outside local."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            _non_local_settings(child_session_secret=secret)
+
+    @pytest.mark.unit
+    def test_error_message_never_echoes_the_secret(self) -> None:
+        """The failure message must not leak the (weak) secret value."""
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        canary = "sekret-leak-canary"  # 18 bytes: fails the length check
+        with pytest.raises(ConfigurationError) as exc_info:
+            _non_local_settings(child_session_secret=canary)
+
+        message = str(exc_info.value)
+        assert canary not in message
+        assert "CHILD_SESSION_SECRET" in message
+        assert "production" in message
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("environment", ["dev", "staging", "production"])
+    def test_non_local_with_strong_child_secret_is_valid(
+        self, environment: str
+    ) -> None:
+        """A >=32-byte non-placeholder secret is accepted outside local."""
+        settings = _non_local_settings(environment=environment)
+        assert settings.child_session_secret is not None  # type: ignore[attr-defined]
+
+    @pytest.mark.unit
+    def test_local_environment_without_child_secret_is_valid(self) -> None:
+        """Local environment does not require a child-session secret (dev stub)."""
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(environment="local")
+        assert settings.child_session_secret is None
+
+
+class TestChildSessionTtlSetting:
+    """Tests for child_session_ttl_seconds env binding and its ge=1 bound.
+
+    The field declares validation_alias=AliasChoices(prefixed, unprefixed);
+    without it the unprefixed CHILD_SESSION_TTL_SECONDS the .env templates
+    document is silently ignored and every deploy keeps the 12h default.
+    """
+
+    @pytest.mark.unit
+    def test_ttl_defaults_to_twelve_hours(self) -> None:
+        """child_session_ttl_seconds defaults to 43200 (12h) when unset."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings(environment="local").child_session_ttl_seconds == 43_200
+
+    @pytest.mark.unit
+    def test_ttl_reads_unprefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """child_session_ttl_seconds reads the unprefixed CHILD_SESSION_TTL_SECONDS."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", raising=False)
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", "3600")
+        assert Settings(environment="local").child_session_ttl_seconds == 3_600
+
+    @pytest.mark.unit
+    def test_ttl_reads_prefixed_env(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        """The prefixed CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS name also binds."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.delenv("CHILD_SESSION_TTL_SECONDS", raising=False)
+        monkeypatch.setenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", "1800")
+        assert Settings(environment="local").child_session_ttl_seconds == 1_800
+
+    @pytest.mark.unit
+    def test_ttl_prefixed_wins_when_both_set(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """When both names are set, the explicit CYO_ADVENTURE_ prefix wins."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", "3600")
+        monkeypatch.setenv("CYO_ADVENTURE_CHILD_SESSION_TTL_SECONDS", "1800")
+        assert Settings(environment="local").child_session_ttl_seconds == 1_800
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("ttl", ["0", "-1"])
+    def test_ttl_non_positive_is_rejected(
+        self, monkeypatch: pytest.MonkeyPatch, ttl: str
+    ) -> None:
+        """A zero/negative TTL fails the ge=1 bound at construction time."""
+        from pydantic import ValidationError
+
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("CHILD_SESSION_TTL_SECONDS", ttl)
+        with pytest.raises(ValidationError):
+            Settings(environment="local")
 
 
 class TestAnthropicGenerationSettings:
@@ -622,3 +779,87 @@ class TestAnthropicGenerationSettings:
         monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test")
         settings = Settings()
         assert settings.anthropic_api_key == "sk-ant-test"
+
+
+class TestOidcAllowedAlgs:
+    """The config-driven JWT signature-algorithm allowlist (ADR-013).
+
+    The allowlist moved from a hardcoded list in api/deps.py into Settings so
+    a future post-quantum JOSE algorithm (e.g. ML-DSA) is an env change, not a
+    code change. The validator must keep that agility from reopening the
+    classic JWT forgeries: empty list, alg=none, and the symmetric HS* family
+    are all startup failures.
+    """
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_default_is_rs256_es256(self) -> None:
+        """The default allowlist matches what Supabase issues today."""
+        from cyo_adventure.core.config import Settings
+
+        assert Settings().oidc_allowed_algs == ["RS256", "ES256"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_empty_list_raises(self) -> None:
+        """An empty allowlist would make every token unverifiable; fail fast."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=[])
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("alg", ["none", "None", "NONE", " none "])
+    def test_oidc_allowed_algs_none_algorithm_raises(self, alg: str) -> None:
+        """alg=none in the allowlist would accept unsigned tokens; fail fast."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=["RS256", alg])
+
+    @pytest.mark.unit
+    @pytest.mark.parametrize("alg", ["HS256", "hs384", "HS512", " HS256 "])
+    def test_oidc_allowed_algs_symmetric_hs_family_raises(self, alg: str) -> None:
+        """HS* in the allowlist reopens public-key-as-HMAC-secret confusion."""
+        from cyo_adventure.core.config import Settings
+        from cyo_adventure.core.exceptions import ConfigurationError
+
+        with pytest.raises(ConfigurationError):
+            Settings(oidc_allowed_algs=[alg])
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_accepts_future_pqc_algorithm(self) -> None:
+        """A post-quantum JOSE alg name passes validation (the ADR-013 point).
+
+        The validator is a denylist (none/HS*), not an allowlist of known
+        names, precisely so a finalized ML-DSA JOSE registration can be
+        enabled by env var without touching this code.
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(oidc_allowed_algs=["ES256", "ML-DSA-44"])
+        assert settings.oidc_allowed_algs == ["ES256", "ML-DSA-44"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_reads_unprefixed_env_var(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """OIDC_ALLOWED_ALGS (unprefixed, JSON list) populates the allowlist."""
+        from cyo_adventure.core.config import Settings
+
+        monkeypatch.setenv("OIDC_ALLOWED_ALGS", '["ES256"]')
+        assert Settings().oidc_allowed_algs == ["ES256"]
+
+    @pytest.mark.unit
+    def test_oidc_allowed_algs_strips_surrounding_whitespace(self) -> None:
+        """A padded but valid alg is normalized, not silently left unusable.
+
+        Regression guard: the validator must return the stripped form, not the
+        raw input. Returning " ES256 " unchanged would pass startup and then
+        fail PyJWT's exact-string registry match on every request, breaking
+        auth in production while the process still boots healthy (ADR-013).
+        """
+        from cyo_adventure.core.config import Settings
+
+        settings = Settings(oidc_allowed_algs=[" ES256 ", "RS256\t"])
+        assert settings.oidc_allowed_algs == ["ES256", "RS256"]

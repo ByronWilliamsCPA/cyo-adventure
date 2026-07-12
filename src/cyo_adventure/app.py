@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse
 from cyo_adventure.api import (
     approval,
     assignments,
+    child_sessions,
     covers,
     families,
     generation,
@@ -185,6 +186,7 @@ def create_app() -> FastAPI:
     app.include_router(provider_allowlist.router)
     app.include_router(me.router)
     app.include_router(story_requests.router)
+    app.include_router(child_sessions.router)
     return app
 
 
