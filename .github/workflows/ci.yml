@@ -38,13 +38,7 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    # #ASSUME: external resources: pinned to a commit on the unmerged
-    # ByronWilliamsCPA/.github#269 branch (feat/parallel-test-buckets-opt-in),
-    # not a tagged release, to trial parallel-tests before that PR merges.
-    # #VERIFY: once #269 merges to main, re-pin this to the merged commit's
-    # SHA on main (and drop this note) so CI no longer depends on the
-    # feature branch continuing to exist.
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@0d02c9250b1cc4cd09ce63ec0dbf56ef83fc6acd # feat/parallel-test-buckets-opt-in
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@24c05930de5eb08808dbaadc6df2a42bab38ae5b # #269 opt-in parallel test-bucket jobs, merged to main
     with:
       python-version: "3.12"
       coverage-threshold: 80
