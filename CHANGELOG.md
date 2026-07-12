@@ -135,6 +135,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
   inlines the jsx runtime with a CJS-interop shim whose runtime
   `require("react")` throws in browser consumers of the ESM dist.
+- Release pipeline reworked to be branch-ruleset compatible (#157; closes #183
+  and #158). `release.yml` no longer pushes a version bump directly to `main`
+  (rejected with GH013 by the `pull_request`, `required_signatures`, and
+  `merge_queue` rulesets); it now runs a two-phase flow. Phase 1 (`propose`):
+  on push to `main` (or manual dispatch), python-semantic-release is used
+  purely as a version calculator (`semantic-release version --print`; it
+  never writes files or tags), then `uv version` bumps `pyproject.toml`,
+  `uv lock` refreshes the embedded version, and the new
+  `scripts/promote_changelog.py` promotes the hand-curated `[Unreleased]`
+  CHANGELOG section to the release version. The changes go up as a
+  `release/vX.Y.Z` PR with auto-merge enabled, so the bump lands through the
+  merge queue like any other change. Phase 2 (`publish`): when that
+  `chore(release):` commit merges, the workflow tags `vX.Y.Z` and creates a
+  GitHub Release whose notes come from the new
+  `scripts/extract_changelog_section.py` (idempotent; safe on re-runs).
+  The propose job authenticates with a `RELEASE_TOKEN` fine-grained PAT
+  (contents + pull-requests write) because `GITHUB_TOKEN`-created PRs do not
+  trigger the required CI workflows; the job fails with an actionable message
+  if the secret is missing. `publish-pypi.yml` is deleted (#158): this is a
+  deployed application, not a distributable package, and the workflow would
+  have attempted a real PyPI upload on every GitHub Release.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
