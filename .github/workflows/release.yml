@@ -108,6 +108,11 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           token: ${{ secrets.RELEASE_TOKEN }}
+          # #CRITICAL security: do not leave RELEASE_TOKEN in .git/config
+          # while third-party code (uvx, uv lock) runs later in this job; the
+          # push step re-supplies it via a one-shot http.extraheader instead.
+          # #VERIFY persist-credentials stays false; the push uses extraheader.
+          persist-credentials: false
 
       - name: Install uv
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
@@ -133,6 +138,13 @@ jobs:
           # shellcheck disable=SC2086  # FORCE_FLAG is intentionally unquoted
           NEXT="$(uvx --from 'python-semantic-release==10.6.1' \
             semantic-release version --print ${FORCE_FLAG})"
+          # #ASSUME external: semantic-release prints a bare X.Y.Z(-pre)?
+          # #VERIFY reject non-semver before it reaches git refs/tags/titles.
+          if ! printf '%s' "${NEXT}" \
+            | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+([-+.][0-9A-Za-z.-]+)*$'; then
+            echo "::error::Computed version '${NEXT}' is not valid semver."
+            exit 1
+          fi
           echo "current=${CURRENT}" >> "$GITHUB_OUTPUT"
           echo "next=${NEXT}" >> "$GITHUB_OUTPUT"
           if [ "${NEXT}" = "${CURRENT}" ]; then
@@ -156,6 +168,7 @@ jobs:
         if: steps.version.outputs.released == 'true' && !inputs.dry_run
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           NEXT: ${{ steps.version.outputs.next }}
         run: |
           BRANCH="release/v${NEXT}"
@@ -164,9 +177,18 @@ jobs:
           git checkout -B "${BRANCH}"
           git add pyproject.toml uv.lock CHANGELOG.md
           git commit -m "chore(release): v${NEXT}"
-          # Release branches are machine-owned; force-push makes re-runs
-          # and recomputed versions idempotent.
-          git push --force origin "${BRANCH}"
+          # Release branches are machine-owned; force-push makes re-runs and
+          # recomputed versions idempotent. Checkout ran with
+          # persist-credentials:false, so supply RELEASE_TOKEN as a one-shot
+          # http.extraheader here, after every third-party step has finished,
+          # rather than leaving it resident in .git/config for that window.
+          # #CRITICAL security: the token reaches git only at push time.
+          # #VERIFY auth travels via extraheader; nothing is written to config.
+          AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' \
+            "${RELEASE_TOKEN}" | base64 -w0)"
+          git -c "http.https://github.com/.extraheader=${AUTH}" \
+            push --force origin "${BRANCH}"
+          # Reuse an existing open release PR for this branch, else create one.
           PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
             --json number --jq '.[0].number // empty')"
           if [ -z "${PR_NUMBER}" ]; then
@@ -174,12 +196,30 @@ jobs:
               --base main \
               --head "${BRANCH}" \
               --title "chore(release): v${NEXT}" \
-              --body "$(printf 'Automated version bump to v%s.\n\nPromotes the CHANGELOG [Unreleased] section and bumps pyproject.toml plus uv.lock. When this PR merges, the publish job in release.yml creates the tag and the GitHub Release.\n\nCloses #183\nCloses #157\nCloses #158' "${NEXT}")"
+              --body "$(printf '%s\n' \
+                "Automated version bump to v${NEXT}." \
+                "" \
+                "Promotes the hand-curated CHANGELOG [Unreleased] section and" \
+                "bumps pyproject.toml plus uv.lock. When this PR merges, the" \
+                "publish job in release.yml creates the tag and GitHub Release." \
+                "" \
+                "Closes #183" \
+                "Closes #157" \
+                "Closes #158")"
             PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
-              --json number --jq '.[0].number')"
+              --json number --jq '.[0].number // empty')"
           fi
-          gh pr merge "${PR_NUMBER}" --auto || \
-            echo "::warning::Could not enable auto-merge on release PR #${PR_NUMBER}; merge it manually."
+          # #CRITICAL external: an empty PR number means the release silently
+          # stalls; fail loudly instead of feeding "null" to gh pr merge.
+          # #VERIFY empty PR_NUMBER is a hard error, not a swallowed warning.
+          if [ -z "${PR_NUMBER}" ]; then
+            echo "::error::Could not resolve the release PR for ${BRANCH}."
+            exit 1
+          fi
+          if ! gh pr merge "${PR_NUMBER}" --auto; then
+            echo "::warning::Could not enable auto-merge on release PR" \
+              "#${PR_NUMBER}; merge it manually to publish v${NEXT}."
+          fi
 
       - name: Dry-run summary
         if: steps.version.outputs.released == 'true' && inputs.dry_run
