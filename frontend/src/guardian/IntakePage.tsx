@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
+import { Chip } from '@ds/components/Chip'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -153,7 +154,7 @@ export function IntakePage() {
     <section className="intake">
       <h1>Request a story</h1>
       {loadError ? (
-        <div role="alert" className="intake-form__error">
+        <div role="alert" className="intake-form__error cyo-text-error">
           {loadError}{' '}
           <button
             type="button"
@@ -172,7 +173,7 @@ export function IntakePage() {
         }}
       >
         {error ? (
-          <p role="alert" className="intake-form__error">
+          <p role="alert" className="intake-form__error cyo-text-error">
             {error}
           </p>
         ) : null}
@@ -180,28 +181,27 @@ export function IntakePage() {
         <fieldset className="intake-form__chips">
           <legend>Who&apos;s it for?</legend>
           {profiles.length === 0 ? (
-            <Link to="/guardian/profiles" className="intake-form__hint">
+            <Link to="/guardian/profiles" className="intake-form__hint cyo-text-muted">
               Add a child profile first.
             </Link>
           ) : (
             profiles.map((p) => (
-              <button
+              <Chip
                 key={p.id}
-                type="button"
                 data-testid={`child-chip-${p.id}`}
-                className={`intake-chip${selectedId === p.id ? ' intake-chip--on' : ''}`}
-                aria-pressed={selectedId === p.id}
+                on={selectedId === p.id}
                 onClick={() => setSelectedId(p.id)}
               >
                 {p.display_name}
-              </button>
+              </Chip>
             ))
           )}
         </fieldset>
 
-        <label className="intake-form__field">
+        <label className="intake-form__field cyo-field">
           What&apos;s it about?
           <textarea
+            className="cyo-field__control"
             value={premise}
             onChange={(e) => setPremise(e.target.value)}
             maxLength={2000}
@@ -213,15 +213,9 @@ export function IntakePage() {
         <fieldset className="intake-form__chips">
           <legend>Tone</legend>
           {TONES.map((t) => (
-            <button
-              key={t.value}
-              type="button"
-              className={`intake-chip${tone === t.value ? ' intake-chip--on' : ''}`}
-              aria-pressed={tone === t.value}
-              onClick={() => setTone(t.value)}
-            >
+            <Chip key={t.value} on={tone === t.value} onClick={() => setTone(t.value)}>
               {t.label}
-            </button>
+            </Chip>
           ))}
         </fieldset>
 
@@ -244,7 +238,7 @@ export function IntakePage() {
               <li
                 key={job.id}
                 data-testid={`request-${job.id}`}
-                className="intake-request"
+                className="intake-request cyo-card"
               >
                 <div className="intake-request__body">
                   <span className="intake-request__title">
@@ -254,7 +248,7 @@ export function IntakePage() {
                       needs_review) shows the short error field if present;
                       the raw report is never fetched or rendered. */}
                   {pill === 'Failed' && job.error ? (
-                    <span className="intake-request__error">{job.error}</span>
+                    <span className="intake-request__error cyo-text-error">{job.error}</span>
                   ) : null}
                 </div>
                 <span

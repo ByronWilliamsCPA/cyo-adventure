@@ -145,6 +145,15 @@ def unverified_audience(token: str) -> str | None:
         audience.
     """
     try:
+        # SonarCloud python:S5659 (JWT without signature verification) flags the
+        # next line. It is a verified FALSE POSITIVE: this decode reads the `aud`
+        # claim ONLY to route the token to a verifier (child vs guardian). The
+        # value is never trusted; the selected branch (verify_child_session_token
+        # / _verify_oidc_jwt) re-decodes with signature + alg + iss + aud + exp
+        # fully enforced before any principal is built. Suppressing an intentional
+        # unverified peek here does not weaken authorization. Mark Safe in the
+        # SonarCloud UI; do not add real verification (there is no key to select
+        # yet, that selection is this function's job).
         payload = jwt.decode(token, options={"verify_signature": False})
     except jwt.PyJWTError:
         return None

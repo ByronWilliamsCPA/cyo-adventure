@@ -144,7 +144,7 @@ export function ModerationDashboardPage() {
   }
   if (state.kind === 'error') {
     return (
-      <p role="alert" className="console__error">
+      <p role="alert" className="console__error cyo-text-error">
         {state.message}
       </p>
     )
@@ -155,7 +155,7 @@ export function ModerationDashboardPage() {
     <main>
       <h1>Moderation dashboard</h1>
       {refreshError ? (
-        <p role="alert" className="console__notice">
+        <p role="alert" className="console__notice cyo-text-muted">
           {refreshError}{' '}
           <button type="button" onClick={() => setRefreshError(null)} aria-label="Dismiss">
             Dismiss
@@ -163,20 +163,20 @@ export function ModerationDashboardPage() {
         </p>
       ) : null}
       {actionError ? (
-        <p role="alert" className="console__error">
+        <p role="alert" className="console__error cyo-text-error">
           {actionError}
         </p>
       ) : null}
 
       <section aria-labelledby="suggestions-heading">
         <h2 id="suggestions-heading">Threshold suggestions</h2>
-        <p className="console__muted">
+        <p className="console__muted cyo-text-muted">
           Computed from override evidence (at least {suggestions.min_decided_versions} decided books
           and {Math.round(suggestions.min_override_rate * 100)}% released despite the finding).
           Nothing changes until you apply it.
         </p>
         {suggestions.suggestions.length === 0 ? (
-          <p className="console__muted">No threshold suggestions right now.</p>
+          <p className="console__muted cyo-text-muted">No threshold suggestions right now.</p>
         ) : (
           <ul>
             {suggestions.suggestions.map((suggestion) => {
@@ -212,7 +212,7 @@ export function ModerationDashboardPage() {
       <section aria-labelledby="insights-heading">
         <h2 id="insights-heading">Override evidence</h2>
         {dashboard.insights.length === 0 ? (
-          <p className="console__muted">No moderated books with advisory or flag findings yet.</p>
+          <p className="console__muted cyo-text-muted">No moderated books with advisory or flag findings yet.</p>
         ) : (
           <table>
             <thead>
@@ -248,7 +248,7 @@ export function ModerationDashboardPage() {
       <section aria-labelledby="changes-heading">
         <h2 id="changes-heading">Recent threshold changes</h2>
         {dashboard.recent_changes.length === 0 ? (
-          <p className="console__muted">No threshold changes recorded.</p>
+          <p className="console__muted cyo-text-muted">No threshold changes recorded.</p>
         ) : (
           <ul>
             {dashboard.recent_changes.map((change) => (
