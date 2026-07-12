@@ -3185,16 +3185,19 @@ For the engineering detail behind this lane, see the
 <a href="../generation-pipeline/">generation pipeline</a> page.</p>
 <h3 id="act-4-the-approval-gate-adr-005">Act 4: The approval gate (ADR-005)<a class="headerlink" href="#act-4-the-approval-gate-adr-005" title="Permanent link">&para;</a></h3>
 <p>This is the single mandatory checkpoint before any story reaches a child. In the
-Guardian Console (<code>/guardian</code>), the review queue is ordered Flagged, then Ready
-to review, then Still processing. Opening a story (<code>/guardian/review/:id</code>)
-surfaces its flagged passages first, then the full text. The reviewer either
-<strong>approves</strong> or <strong>sends it back</strong> with a note; a sent-back story is rewritten and
-re-enters the queue (the inner loop in the diagram).</p>
+Admin Console (<code>/admin</code>, the parallel adult surface for the admin capability),
+the review queue is ordered Flagged, then Ready to review, then Still
+processing. Opening a story (<code>/admin/review/:id</code>) surfaces its flagged passages
+first, then the full text. The reviewer either <strong>approves</strong> or <strong>sends it
+back</strong> with a note; a sent-back story is rewritten and re-enters the queue (the
+inner loop in the diagram).</p>
 <p>The approve action is the recorded human gate required by
-<a href="../../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a> and is
-admin-only: a guardian can monitor the queue but cannot self-approve (the API
-returns 403). The diagram places the whole review-and-approve sequence in the
-Admin lane to keep that gate visually unambiguous.</p>
+<a href="../../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a> and requires the
+admin capability: a plain guardian cannot self-approve (the API returns 403).
+One adult may hold both roles (guardian plus the <code>is_admin</code> capability) and
+switches between <code>/guardian</code> and <code>/admin</code> via the shell nav. The diagram places
+the whole review-and-approve sequence in the Admin lane to keep that gate
+visually unambiguous.</p>
 <h3 id="act-5-assignment">Act 5: Assignment<a class="headerlink" href="#act-5-assignment" title="Permanent link">&para;</a></h3>
 <p>An approved story is assigned to the child it was written for; "Assign more"
 widens it to siblings without re-requesting. On the kid surface, the child's
@@ -3256,7 +3259,7 @@ onboarding in Act 1 is not repeated.</p>
 </tr>
 <tr>
 <td>Admin review + approve/send-back</td>
-<td><code>/guardian</code>, <code>/guardian/review/:id</code></td>
+<td><code>/admin</code>, <code>/admin/review/:id</code></td>
 <td>Shipped</td>
 </tr>
 <tr>
@@ -3407,7 +3410,7 @@ when deciding what e2e tests to write next.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 00:40:08 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 18:15:47 UTC">July 12, 2026</span>
   </span>
 
     

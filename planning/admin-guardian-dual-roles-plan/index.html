@@ -12,7 +12,7 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/authorization-matrix/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/admin-guardian-dual-roles-plan/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Authorization Matrix - CYO Adventure</title>
+        <title>Dual Admin/Guardian Roles and a Parallel Admin Console - CYO Adventure</title>
       
     
     
@@ -88,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#authorization-matrix" class="md-skip">
+        <a href="#dual-adminguardian-roles-and-a-parallel-admin-console" class="md-skip">
           Skip to content
         </a>
       
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Authorization Matrix
+              Dual Admin/Guardian Roles and a Parallel Admin Console
             
           </span>
         </div>
@@ -2606,66 +2606,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#goal" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#dual-role-capability-model-2026-07-12" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dual-role capability model (2026-07-12)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#action-by-role-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Action-by-Role Table
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Action-by-Role Table">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#catalog-visibility-ws-e" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Catalog visibility (WS-E)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#idor-negative-tests" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        IDOR Negative Tests
+        Goal
       
     </span>
   </a>
@@ -2673,10 +2617,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#state-machine-and-role-enforcement" class="md-nav__link">
+  <a href="#why-this-is-currently-impossible" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State Machine and Role Enforcement
+        Why this is currently impossible
       
     </span>
   </a>
@@ -2684,10 +2628,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#related-documents" class="md-nav__link">
+  <a href="#recommended-role-representation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Related Documents
+        Recommended role representation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-real-risk-privilege-scoping-forks-not-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The real risk: privilege-scoping forks, not gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#backend-work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend work items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend-work-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend work items
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sequencing-three-prs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sequencing (three PRs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open-decisions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Open decisions
       
     </span>
   </a>
@@ -2714,225 +2713,186 @@
   
 
 
-<h1 id="authorization-matrix">Authorization Matrix<a class="headerlink" href="#authorization-matrix" title="Permanent link">&para;</a></h1>
+<h1 id="dual-adminguardian-roles-and-a-parallel-admin-console">Dual Admin/Guardian Roles and a Parallel Admin Console<a class="headerlink" href="#dual-adminguardian-roles-and-a-parallel-admin-console" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.4 | <strong>Updated</strong>: 2026-07-12</p>
+<p><strong>Status</strong>: Draft | <strong>Version</strong>: 0.1 | <strong>Updated</strong>: 2026-07-12</p>
 </blockquote>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>Authorization is enforced server-side on every endpoint. The Supabase OIDC (ADR-009)
-token subject maps to an allowed set of profiles. A guardian may act on any profile
-within their own family. A child token is scoped to reader and library endpoints and may
-only act on its own assigned profile. <code>profile_id</code> is never trusted alone.</p>
-<p>Approval is a single state-machine transition reserved for the global admin capability
-(<code>Principal.is_admin</code>). A guardian or child token that calls the approve endpoint
-receives 403 regardless of the <code>profile_id</code> in the request. There is no separate publish
-transition: the single approve action stamps <code>approved_by</code> and <code>published_at</code> and returns
-<code>status='published'</code> (approve and publish in one call).</p>
-<h3 id="dual-role-capability-model-2026-07-12">Dual-role capability model (2026-07-12)<a class="headerlink" href="#dual-role-capability-model-2026-07-12" title="Permanent link">&para;</a></h3>
-<p><code>User.role</code> is the single base persona (<code>guardian</code>, <code>child</code>, or <code>admin</code>) and the
-global admin capability is the orthogonal <code>User.is_admin</code> flag, so one adult account
-can be a guardian, an admin, or both. <code>Principal.is_guardian</code> derives from the base
-role; <code>Principal.is_admin</code> derives from the flag, with the <code>admin</code> base role implying
-the capability (an admin-only adult with no family guardianship). A dual-role
-principal (<code>role='guardian'</code>, <code>is_admin=true</code>) therefore passes the UNION of the
-guardian-only and admin-only gates, and its guardian base role resolves the family
-profile set, so ownership-scoped endpoints work too.</p>
-<p><strong>Surface selects scope.</strong> Holding the admin capability never widens what a
-guardian-surface endpoint returns: <code>GET /story-requests</code> is family-scoped for every
-caller, and the global review queue is the explicit admin surface
-<code>GET /admin/story-requests</code>. Per-id actions (approve, decline, child-session mint,
-version fetch, content-summary) retain their admin-global reach, because acting on an
-explicitly named resource is the admin capability working as designed, not a silent
-scope widening of an everyday list.</p>
-<p><strong>Audit stamps record the acting capacity.</strong> <code>initiator_role</code> and pipeline-event
-<code>actor_role</code> record the role that authorized the action: admin-gated endpoints stamp
-<code>admin</code>, and cross-family actions by a dual-role adult stamp <code>admin</code>
-(<code>Principal.acting_role</code>), while own-family actions stamp the guardian base role.</p>
-<hr />
-<h2 id="action-by-role-table">Action-by-Role Table<a class="headerlink" href="#action-by-role-table" title="Permanent link">&para;</a></h2>
-<p>Roles below are the base personas; a dual-role adult (guardian base role plus the
-admin capability) receives the union of the Admin and Guardian columns, with list
-surfaces staying family-scoped as described above.</p>
-<table>
-<thead>
-<tr>
-<th>Action</th>
-<th>Admin</th>
-<th>Guardian</th>
-<th>Child (own profile)</th>
-<th>Enforcement</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>List story requests (<code>GET /story-requests</code>)</td>
-<td>Own family only</td>
-<td>Own family only</td>
-<td>Own profile via filter</td>
-<td>Family-scoped for every caller; the global queue is the admin surface below</td>
-</tr>
-<tr>
-<td>Global request queue (<code>GET /admin/story-requests</code>)</td>
-<td>Yes (all families)</td>
-<td>No (403)</td>
-<td>No (403)</td>
-<td>Admin capability required; surfaces every moderation flag (no threshold filtering)</td>
-</tr>
-<tr>
-<td>Read own library / story / state</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td>Token subject maps to allowed-profile set; 403 otherwise</td>
-</tr>
-<tr>
-<td>Write own reading state</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td>Same, plus <code>state_revision</code> and version guards on the PUT</td>
-</tr>
-<tr>
-<td>Record a completion</td>
-<td>Any profile</td>
-<td>Any family profile</td>
-<td>Own profile only</td>
-<td><code>ending_id</code> must belong to the cited published version</td>
-</tr>
-<tr>
-<td>Generate / submit concept</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>No (403)</td>
-<td>Guardian role required; child tokens are scoped to reader endpoints</td>
-</tr>
-<tr>
-<td>Approve (and publish)</td>
-<td>Yes (global, cross-family)</td>
-<td>No (403)</td>
-<td>No (403)</td>
-<td>Global admin role (<code>Role.ADMIN</code> / <code>is_admin</code>) required; enforced in the state machine. <code>authorize_family</code> is not applied</td>
-</tr>
-<tr>
-<td>Access another family's data</td>
-<td>Yes (admin, cross-family)</td>
-<td>No (403)</td>
-<td>No (403)</td>
-<td>Family ownership is checked on every non-admin resource access; cross-family 403</td>
-</tr>
-<tr>
-<td>Edit a passage (Phase 4b)</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>No (403)</td>
-<td>Guardian role required; <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code></td>
-</tr>
-<tr>
-<td>Browse / assign a catalog book (cross-family, WS-E)</td>
-<td>No (403; browse and assignment endpoints are guardian-only)</td>
-<td>Any <code>visibility='catalog'</code> book, any family</td>
-<td>No (403)</td>
-<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child token gets 403 regardless of <code>profile_id</code>; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
-</tr>
-</tbody>
-</table>
-<p>Key implementation rules:</p>
-<ul>
-<li>The token subject is the canonical identity. <code>profile_id</code> in the query string or
-  request body is used only after the subject has been verified to own it.</li>
-<li>Child tokens are issued with a scope that excludes authoring, generation, review,
-  approval, and publish endpoints at the API gateway layer. The backend enforces the
-  same restriction independently (defense in depth).</li>
-<li>Family ownership is checked on every resource access, not only on listing endpoints.
-  A story that belongs to family A is inaccessible to a guardian from family B.</li>
-</ul>
-<h3 id="catalog-visibility-ws-e">Catalog visibility (WS-E)<a class="headerlink" href="#catalog-visibility-ws-e" title="Permanent link">&para;</a></h3>
-<p>WS-E adds a <code>visibility</code> axis (<code>family</code> or <code>catalog</code>) on <code>Storybook</code>, set by the admin at
-approval. The plain family-ownership rule above still governs the default case; catalog
-visibility adds a narrow, server-checked exception on top of it. The contract is three-way:</p>
+<h2 id="goal">Goal<a class="headerlink" href="#goal" title="Permanent link">&para;</a></h2>
+<p>An adult account can be a guardian, an admin, or both. Admin functions move out of the
+guardian console into their own <code>/admin/*</code> page tree that sits in parallel with the
+standard <code>/guardian/*</code> pages, with a switcher for users who hold both roles.</p>
+<h2 id="why-this-is-currently-impossible">Why this is currently impossible<a class="headerlink" href="#why-this-is-currently-impossible" title="Permanent link">&para;</a></h2>
+<p>The role model is single-valued end to end, and the two adult roles are deliberately
+non-hierarchical (an admin is rejected from guardian-only endpoints and vice versa;
+see <code>tests/integration/test_authz_matrix.py:17-32</code>):</p>
 <ol>
-<li><strong>Own-family</strong>: unchanged. A guardian or child acting within their own family reads,
-   writes, or is assigned any book in that family exactly as before; visibility never
-   restricts an own-family action.</li>
-<li><strong>Cross-family, <code>visibility='family'</code></strong>: unchanged. <code>authorize_family</code> still returns 403;
-   the catalog widening does not touch the default (private) visibility case.</li>
-<li><strong>Cross-family, <code>visibility='catalog'</code></strong>: a guardian may browse the book in
-   <code>GET /api/v1/guardian/books</code> and assign it to any of their own children's profiles
-   without a 403, but every child-facing read or write path still requires a
-   <code>StorybookAssignment</code> row for the acting profile. On an assignment mismatch the
-   responses differ by surface: ratings and reading-state (progress saves and
-   completions) return 403, while the direct version-blob fetch returns 404 to hide an
-   unassigned book's existence rather than leaking a 403. In short: the family filter
-   widens to admit catalog books, but the assignment gate that already governs child
-   access is never bypassed.</li>
+<li><strong>Storage</strong>: <code>User.role</code> is one <code>String(16)</code> column (<code>db/models.py:170</code>) with
+   <code>CHECK (role IN ('guardian','child','admin'))</code> (<code>db/models.py:164-166</code>,
+   <code>supabase/migrations/20260710000000_baseline.sql:350</code>). <code>authn_subject</code> is unique
+   (<code>db/models.py:171</code>), so one login identity maps to exactly one role. Today the seed
+   models "both" as two separate User rows with two distinct login subjects
+   (<code>tests/integration/conftest.py:230-234</code>).</li>
+<li><strong>Principal</strong>: <code>require_principal</code> coerces the column to a single enum value,
+   <code>role=Role(user.role)</code> (<code>api/deps.py:339</code>); <code>Principal.is_admin</code> / <code>is_guardian</code> are
+   equality tests on that one value (<code>api/deps.py:103-111</code>).</li>
+<li><strong>Profile ownership</strong>: <code>_resolve_profiles</code> grants family profile access only when
+   <code>user.role == Role.GUARDIAN</code> (<code>api/deps.py:394-401</code>). An admin structurally owns no
+   profiles, so library, reading-state, ratings, and profile listing come back empty or
+   403 for an admin even in their own family.</li>
+<li><strong>Guardian-only gates explicitly reject admins</strong>: <code>generation.py:194,254,338,416,486</code>,
+   <code>profiles.py:53-70</code>, <code>assignments.py:100-136,446</code> (guardian books browse; the comment
+   at <code>assignments.py:438-444</code> states admin is rejected on purpose).</li>
+<li><strong>Frontend</strong>: <code>Principal.role</code> is a single scalar (<code>frontend/src/auth/types.ts:1-20</code>),
+   <code>/v1/me</code> returns one <code>role</code> string (<code>client/types.gen.ts:1115-1132</code>), and
+   <code>ProtectedRoute</code> does <code>allowedRoles.includes(principal.role)</code>
+   (<code>frontend/src/auth/ProtectedRoute.tsx:47</code>). Admin pages are nested inside
+   <code>/guardian/*</code> (<code>frontend/src/router.tsx:112-127</code>), and several guardian pages branch
+   on <code>principal?.role === 'admin'</code> inline (<code>ConsolePage.tsx:198-204</code>,
+   <code>RequestsPage.tsx:329</code>).</li>
 </ol>
-<p>This contract (the E5 amendment, ratified 2026-07-09, shipped in WS-E's PR #180) is pinned
-against <code>api/library.py</code>, <code>api/ratings.py</code>, and <code>api/reading.py</code>.</p>
-<hr />
-<h2 id="idor-negative-tests">IDOR Negative Tests<a class="headerlink" href="#idor-negative-tests" title="Permanent link">&para;</a></h2>
-<p>Each test below expects a 403 response. These are acceptance-level tests that must be
-green before Phase 3 closes.</p>
-<ol>
-<li>
-<p><strong>Child A requests child B's library or reading state</strong>: a child token belonging to
-   profile A sends <code>GET /api/v1/library?profile_id={B}</code> or
-   <code>GET /api/v1/reading-state/{B}/{storybook_id}</code>. Expected: 403. The token subject does
-   not own profile B; the server must not return B's data.</p>
-</li>
-<li>
-<p><strong>Child mutates <code>profile_id</code> in a reading-state PUT</strong>: a child token belonging to
-   profile A sends <code>PUT /api/v1/reading-state/{B}/{storybook_id}</code> with a body that
-   includes <code>profile_id: B</code>. Expected: 403. The server must validate the subject against
-   the path parameter, not the body field.</p>
-</li>
-<li>
-<p><strong>Child (or guardian) calls approve</strong>: a child token sends
-   <code>POST /api/v1/storybooks/{id}/versions/{v}/approve</code>. Expected: 403. Note the reason is
-   "admin required," not "wrong family": approval is reserved for the global admin role,
-   so a guardian token calling the same endpoint also receives 403. A child token must not
-   escalate, and a guardian must not self-approve.</p>
-</li>
-<li>
-<p><strong>Guardian from another family accesses a story</strong>: a guardian token belonging to
-   family B sends any read or write request against a storybook owned by family A.
-   Expected: 403. Family ownership is checked independently of the role.</p>
-</li>
-</ol>
-<hr />
-<h2 id="state-machine-and-role-enforcement">State Machine and Role Enforcement<a class="headerlink" href="#state-machine-and-role-enforcement" title="Permanent link">&para;</a></h2>
-<p>The publish state machine transitions are enforced as follows:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>GenerationJob:  queued -&gt; running -+-&gt; passed        (validator + moderation gates pass)
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                   +-&gt; needs_review  (safety flag; a human must clear it)
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                   +-&gt; failed        (hard validation failure)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>Storybook:      draft -&gt; in_review -+-&gt; published -&gt; archived
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                    +-&gt; needs_revision -&gt; (repair / regenerate)
-</span></code></pre></div>
+<h2 id="recommended-role-representation">Recommended role representation<a class="headerlink" href="#recommended-role-representation" title="Permanent link">&para;</a></h2>
+<p>Keep <code>role</code> as the single <strong>base persona</strong> and add an orthogonal admin capability flag:</p>
 <ul>
-<li><code>in_review -&gt; published</code>: global admin role required (<code>Role.ADMIN</code> / <code>is_admin</code>). This
-  is a single approve-and-publish transition: the approve action stamps both
-  <code>storybook_version.approved_by</code> and <code>storybook_version.published_at</code> and returns
-  <code>status='published'</code>. The check is cross-family: <code>authorize_family</code> is not applied to
-  approval, so an admin from any family may approve. There is no separate <code>approved</code>
-  resting state and no separate publish endpoint in the current code. A two-step
-  approve-then-publish split (with an intermediate <code>approved</code> state audited independently)
-  remains a not-yet-built future design if separate audit of approval and publish is
-  later required.</li>
-<li><code>running -&gt; passed</code>: automated; the GenerationJob's validator and moderation gates pass,
-  and the resulting draft version becomes reviewable. No role check because no human initiates it.</li>
-<li><code>running -&gt; needs_review</code> / <code>running -&gt; failed</code>: automated on gate outcome. A safety flag
-  routes the job to <code>needs_review</code> (a person must clear it); a hard validation failure routes
-  to <code>failed</code> for repair or regeneration.</li>
+<li><code>User.role IN ('guardian','child','admin')</code> stays as-is; its meaning narrows to the
+  base persona. <code>'admin'</code> now means "adult with no family guardianship" (admin-only).</li>
+<li>New column <code>User.is_admin BOOLEAN NOT NULL DEFAULT FALSE</code>.</li>
+<li>The three adult states: guardian-only = <code>('guardian', false)</code>; both =
+  <code>('guardian', true)</code>; admin-only = <code>('admin', true)</code>.</li>
+<li>Migration backfills <code>is_admin = TRUE</code> where <code>role = 'admin'</code>, plus a CHECK that
+  <code>role = 'admin'</code> implies <code>is_admin</code> (<code>ck_user_admin_role_flag</code>).</li>
 </ul>
-<p>A story is visible in a child's library only in the <code>published</code> state.</p>
-<hr />
-<h2 id="related-documents">Related Documents<a class="headerlink" href="#related-documents" title="Permanent link">&para;</a></h2>
+<p>Rationale over a roles array or join table:</p>
 <ul>
-<li><a href="../tech-spec/#security">Tech Spec: Security</a></li>
-<li><a href="../tech-spec/#api-specification">Tech Spec: API Specification</a></li>
-<li><a href="../adr/adr-005-mandatory-human-approval/">ADR-005: Mandatory human approval</a> (amended 2026-06-30: approver is the global admin role)</li>
-<li><a href="../adr/adr-009-supabase-platform/">ADR-009: Supabase as the managed platform for auth, database, and storage</a></li>
-<li><a href="../adr/adr-004-homelab-first-deployment/">ADR-004: Homelab-first deployment</a> (governs the homelab / family tier)</li>
+<li><code>Principal.is_guardian</code> and every guardian-only gate keep working unchanged; a
+  dual-role user has <code>role='guardian'</code> and passes them, an admin-only user is still
+  rejected, which preserves the documented non-hierarchy.</li>
+<li><code>Principal.is_admin</code> changes from an equality test to reading the flag
+  (<code>user.is_admin or role == Role.ADMIN</code>), one line in <code>deps.py</code>.</li>
+<li><code>_resolve_profiles</code> needs no change for the guardian branch; dual-role users resolve
+  their family's profiles because their base role is guardian.</li>
+<li><code>initiator_role</code> / <code>actor_role</code> audit stamps (<code>story_requests/service.py:387</code>,
+  <code>events/models.py:97</code>) and their CHECK constraints stay valid; see the audit decision
+  below.</li>
+<li>No new table, no array column, one additive migration.</li>
+</ul>
+<p><code>Principal</code> gains <code>is_admin: bool</code> as a stored field (set from the User row) instead of
+the derived property; <code>is_guardian</code> stays derived from <code>role</code>.</p>
+<h2 id="the-real-risk-privilege-scoping-forks-not-gates">The real risk: privilege-scoping forks, not gates<a class="headerlink" href="#the-real-risk-privilege-scoping-forks-not-gates" title="Permanent link">&para;</a></h2>
+<p>Several endpoints do not gate on admin, they <strong>fork scope</strong> on it. With dual roles these
+become silent escalations for a guardian-who-is-admin acting on guardian surfaces:</p>
+<ul>
+<li><code>GET /story-requests</code> widens to all families and full moderation detail when
+  <code>is_admin</code> (<code>api/story_requests.py:578,594</code>).</li>
+<li><code>_load_scoped_request</code> skips the family check for admins (<code>api/story_requests.py:636-638</code>).</li>
+<li><code>_resolve_authored_family</code> is an either/or contract: admin must supply <code>family_id</code>,
+  guardian must omit it (<code>api/story_requests.py:385-403</code>).</li>
+<li><code>child_sessions.py:77</code> and <code>_resolve_authored_profile</code>
+  (<code>api/story_requests.py:438</code>) skip <code>authorize_profile</code> for admins.</li>
+<li><code>library.py:400-427</code> three-way branch: admin reads any family and any status.</li>
+<li><code>assignments.py:170,177</code> content-summary skips <code>authorize_family</code> for admins.</li>
+</ul>
+<p><strong>Principle for the fix</strong>: the surface, not the caller's maximal privilege, selects the
+scope. Concretely:</p>
+<ul>
+<li>Guardian-surface endpoints are always family-scoped, even for admins. The admin
+  bypass in each fork above moves behind an explicit signal: either a dedicated
+  <code>/api/v1/admin/...</code> route (preferred, matches <code>families.py</code>, <code>moderation_*</code>,
+  <code>provider_allowlist.py</code>) or an explicit <code>scope=all</code> query parameter that requires
+  <code>is_admin</code>.</li>
+<li><code>GET /story-requests</code>: family-scoped for everyone; add
+  <code>GET /api/v1/admin/story-requests</code> (requires <code>is_admin</code>) for the global queue the
+  admin RequestsPage view uses today.</li>
+<li><code>_resolve_authored_family</code>: <code>family_id</code> optional for everyone; omitted means the
+  caller's own family (requires <code>is_guardian</code>), provided-and-different requires
+  <code>is_admin</code>. This removes the either/or 422 fork that has no "both" answer.</li>
+<li>Approval, review-queue, covers, moderation, provider allowlist, families: unchanged,
+  already admin-gated (<code>approval.py:86,289</code>, <code>covers.py:30-33</code>, etc.).</li>
+</ul>
+<p><strong>Audit stamping decision</strong>: <code>initiator_role</code> / <code>actor_role</code> record the capacity in
+which the action was authorized, not the base persona: admin-gated endpoints stamp
+<code>'admin'</code>, guardian-surface endpoints stamp <code>'guardian'</code>. Implement by passing the
+acting role explicitly at the call sites that are admin-gated instead of deriving from
+<code>principal.role.value</code>.</p>
+<h2 id="backend-work-items">Backend work items<a class="headerlink" href="#backend-work-items" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Migration</strong> (<code>supabase/migrations/</code>): add <code>is_admin</code> with backfill and the
+   implication CHECK; mirror in <code>db/models.py</code> (<code>User.is_admin</code>).</li>
+<li><strong><code>api/deps.py</code></strong>: load the flag in <code>require_principal</code>; <code>Principal.is_admin</code>
+   becomes flag-based; child principals keep <code>is_admin=False</code>.</li>
+<li><strong><code>api/me.py</code> contract</strong>: <code>MeResponse</code> gains <code>is_admin: bool</code> (keep <code>role</code> for the
+   base persona so the kid/guardian shell selection logic is untouched). This is a
+   frontend contract change, so regenerate the client (Architecture note 1).</li>
+<li><strong>Scoping-fork rework</strong> per the principle above: <code>story_requests.py</code> (list, scoped
+   load, authored family/profile), <code>child_sessions.py</code>, <code>library.py</code> version fetch,
+   <code>assignments.py</code> content-summary. Each site gets a deliberate decision recorded in
+   the authorization matrix.</li>
+<li><strong>Audit stamps</strong>: explicit acting-role at admin call sites.</li>
+<li><strong>Tests</strong>:</li>
+<li><code>tests/integration/test_authz_matrix.py</code>: add a dual-role principal to the
+     matrix; relax the "exactly one role passes" invariant to "every listed capability
+     set passes, everything else 403"; extend <code>_ROUTE_SPECS</code>.</li>
+<li><code>tests/integration/conftest.py</code> seed: add <code>both-a</code> (guardian + is_admin) alongside
+     the existing <code>admin-a</code> and <code>guardian-a</code>.</li>
+<li>New tests: dual-role user sees only their own family on guardian surfaces; global
+     scope only via admin routes; admin-only user still 403 on guardian-only endpoints;
+     authored-request family resolution for all three adult states.</li>
+<li>Update pinned exclusivity tests (<code>test_profiles.py</code>, <code>test_guardian_books_api.py</code>,
+     <code>test_story_requests_api.py</code>) where semantics change.</li>
+<li><strong>Docs</strong>: update <code>docs/planning/authorization-matrix.md</code> (action-by-role table gains
+   the dual-role column and the surface-selects-scope rule); short ADR for the role
+   model change (amends the role notes in ADR-005/ADR-009 context).</li>
+</ol>
+<h2 id="frontend-work-items">Frontend work items<a class="headerlink" href="#frontend-work-items" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Auth model</strong> (<code>frontend/src/auth/types.ts</code>, <code>AuthContext.tsx</code>): <code>Principal</code> gains
+   <code>isAdmin: boolean</code> from the regenerated <code>MeResponse</code>; <code>role</code> stays the base persona.
+   Fail-closed validation unchanged.</li>
+<li><strong>Route guard</strong> (<code>ProtectedRoute.tsx</code>): replace <code>allowedRoles.includes(role)</code> with a
+   capability check (<code>requireGuardian</code> / <code>requireAdmin</code> style props, or keep
+   <code>allowedRoles</code> and treat <code>is_admin</code> as granting <code>'admin'</code> membership).</li>
+<li><strong>New <code>/admin/*</code> tree</strong> (<code>router.tsx</code>, <code>routes.ts</code>, new <code>frontend/src/admin/</code>):</li>
+<li><code>AdminShell</code> paralleling <code>GuardianShell</code> with its own nav; both shells show a
+     console switcher when the principal holds both capabilities
+     (<code>GuardianShell.tsx:32-39</code> already renders a role label to build on).</li>
+<li>Move: <code>ModerationThresholdsPage</code>, <code>ModerationDashboardPage</code> (and their API
+     modules), the review queue plus admin nav currently inside <code>ConsolePage.tsx</code>
+     (<code>:40-48,70-83,117-126,198-204</code>), <code>ReviewDetailPage</code> (also fixes the existing gap
+     that it is not admin-gated at the router level, only server-side), the admin
+     story-request approval queue half of <code>RequestsPage.tsx</code> (<code>:78-87</code>), and
+     <code>RequestStoryForm mode="admin"</code> with its family selector.</li>
+<li>Add admin pages that have backend support but no UI today if desired: provider
+     allowlist, families list.</li>
+<li><strong>Guardian pages become single-purpose</strong>: <code>ConsolePage</code> and <code>RequestsPage</code> drop
+   their <code>role === 'admin'</code> branches; <code>GuardianShell</code> drops the guardian-only
+   conditional on the Books link if a dual-role user should see it (they will, since
+   their base role is guardian).</li>
+<li><strong>Client regen</strong>: <code>npm run generate-client</code> against the updated backend; commit the
+   diff (CI contract job fails on drift).</li>
+<li><strong>Login flow</strong>: <code>/guardian/login</code> stays the shared entry; post-login landing picks
+   <code>/admin</code> for admin-only users, <code>/guardian</code> otherwise.</li>
+</ol>
+<h2 id="sequencing-three-prs">Sequencing (three PRs)<a class="headerlink" href="#sequencing-three-prs" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>feat(auth): dual-role principal model</strong>: migration, deps, /me, client regen,
+   authz-matrix test rework. Behavior-neutral for existing single-role users.</li>
+<li><strong>feat(api): surface-scoped admin access</strong>: scoping-fork rework, new
+   <code>/admin/story-requests</code> route, audit stamping, matrix doc update.</li>
+<li><strong>feat(frontend): parallel admin console</strong>: <code>/admin/*</code> tree, page moves and splits,
+   shell switcher.</li>
+</ol>
+<p>Rough size: PR1 small-to-medium, PR2 medium (highest review risk, touches IDOR-adjacent
+code), PR3 medium-to-large (mostly moves plus two page splits). The authz matrix test
+suite is the regression harness for PRs 1 and 2.</p>
+<h2 id="open-decisions">Open decisions<a class="headerlink" href="#open-decisions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Whether an admin-only user keeps a mandatory <code>family_id</code> (today NOT NULL and admins
+  have one). Recommendation: keep NOT NULL for now, revisit if pure-admin provisioning
+  becomes a product surface.</li>
+<li>Whether guardian-surface behavior for dual-role users should ever widen (for example
+  seeing unpublished versions in <code>library.py</code>). Recommendation: no, keep guardian
+  surfaces strictly family-scoped and published-only; admins use the review surface.</li>
+<li>Whether <code>role='admin'</code> should be renamed to <code>'adult'</code> once it only means
+  "non-guardian adult". Defer, it is a cosmetic migration.</li>
 </ul>
 
 
@@ -2966,7 +2926,7 @@ green before Phase 3 closes.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="June 22, 2026 00:17:31 UTC">June 22, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 18:15:47 UTC">July 12, 2026</span>
   </span>
 
     
