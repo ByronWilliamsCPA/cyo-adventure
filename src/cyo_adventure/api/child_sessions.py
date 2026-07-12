@@ -9,6 +9,7 @@ branch. Children never mint their own sessions.
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
@@ -95,13 +96,20 @@ async def create_child_session(
     # #VERIFY: middleware/security.py::RateLimitMiddleware already bounds
     # per-client request rates app-wide; revisit only if this endpoint is
     # ever reachable without an authenticated guardian/admin principal.
-    if profile.pin_hash is not None and (
-        body.pin is None or not verify_pin(body.pin, profile.pin_hash)
-    ):
-        # Distinct, kid-safe detail: the picker shows a gentle retry for
-        # exactly this code and never the ask-a-grown-up gate.
-        msg = "that PIN does not match"
-        raise AuthorizationError(msg, error_code="PIN_MISMATCH")
+    if profile.pin_hash is not None:
+        # #CRITICAL: timing: verify_pin re-derives 600k PBKDF2 iterations
+        # (100-300ms of pure CPU); inline it would stall the single-process
+        # event loop for every concurrent request. Offload to a worker
+        # thread (repo idiom: covers/service.py, covers/storage.py).
+        # #VERIFY: test_child_sessions.py PIN-gate suite still passes.
+        pin_ok = body.pin is not None and await asyncio.to_thread(
+            verify_pin, body.pin, profile.pin_hash
+        )
+        if not pin_ok:
+            # Distinct, kid-safe detail: the picker shows a gentle retry for
+            # exactly this code and never the ask-a-grown-up gate.
+            msg = "that PIN does not match"
+            raise AuthorizationError(msg, error_code="PIN_MISMATCH")
 
     # #CRITICAL: data integrity: the minted token embeds a real child User.id so
     # the resulting child principal is attributable on the append-only

@@ -450,6 +450,29 @@ async def test_mint_clearing_pin_restores_open_mint(
     assert resp.status_code == 201, resp.text
 
 
+@pytest.mark.asyncio
+@pytest.mark.parametrize("candidate", ["abc", "123", "1" * 20])
+async def test_mint_malformed_pin_shape_is_403_not_422(
+    client: AsyncClient, seed: Seed, candidate: str
+) -> None:
+    """A malformed-shape candidate fails as an ordinary wrong PIN (403).
+
+    The mint body's ``pin`` is deliberately NOT ``PinCode``-constrained
+    (see ``ChildSessionCreateBody``): a 422 for "abc" or a 3/20-digit
+    candidate would leak that the stored PIN has a different shape. This
+    pins the uniformity invariant so a future ``PinCode`` reuse on the mint
+    schema cannot silently reintroduce the 422 oracle.
+    """
+    await _set_profile_pin(client, seed, "4321")
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": candidate},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+    assert resp.json()["code"] == "PIN_MISMATCH"
+
+
 # ---------------------------------------------------------------------------
 # P6-10: third, stranger-family IDOR extension
 # ---------------------------------------------------------------------------

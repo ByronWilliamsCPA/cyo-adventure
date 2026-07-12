@@ -10,6 +10,8 @@ guardian management page need.
 
 from __future__ import annotations
 
+import asyncio
+
 from fastapi import APIRouter
 from sqlalchemy import select
 
@@ -195,6 +197,14 @@ async def update_profile(
         # P6-07: a PinCode-validated 4-8 digit string sets or replaces the
         # picker PIN; an explicit null removes it; omitted leaves it unchanged.
         # Only the derived hash is stored; the raw PIN is discarded here.
-        row.pin_hash = hash_pin(body.pin) if body.pin is not None else None
+        # #CRITICAL: timing: hash_pin runs 600k PBKDF2 iterations (100-300ms
+        # of pure CPU); calling it inline would stall the single-process
+        # event loop for every concurrent request. Offload to a worker
+        # thread (repo idiom: covers/service.py, covers/storage.py).
+        # #VERIFY: tests/integration/test_profiles.py PIN set/clear paths.
+        if body.pin is not None:
+            row.pin_hash = await asyncio.to_thread(hash_pin, body.pin)
+        else:
+            row.pin_hash = None
     await ctx.session.flush()
     return _view(row)

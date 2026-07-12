@@ -8,10 +8,10 @@ generated frontend client.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
-from fastapi.exceptions import ResponseValidationError
+from fastapi.exceptions import RequestValidationError, ResponseValidationError
 from fastapi.responses import JSONResponse
 
 from cyo_adventure.api import (
@@ -153,6 +153,44 @@ def _handle_response_validation_error(
     return JSONResponse(status_code=500, content=_INTERNAL_ERROR)
 
 
+def _handle_request_validation_error(_request: Request, exc: Exception) -> JSONResponse:
+    """Render a RequestValidationError without echoing the submitted input.
+
+    FastAPI's default handler returns each Pydantic error verbatim, including
+    the ``input`` field that repeats the caller's raw submitted value (and a
+    ``ctx`` field that can embed it too). That bypasses this app's CWE-209
+    sanitization posture (`_client_safe_error` strips ``value``/``context``
+    from the core-exception path): a malformed profile PIN, for example, would
+    be echoed back in the 422 body. Only ``type``/``loc``/``msg`` survive to
+    the client; the full detail is available server-side via the log below.
+
+    Args:
+        _request: The incoming request (unused).
+        exc: The ``RequestValidationError`` raised by request parsing.
+
+    Returns:
+        JSONResponse: A 422 body whose ``detail`` entries carry only
+        ``type``, ``loc``, and ``msg``.
+    """
+    if not isinstance(exc, RequestValidationError):  # pragma: no cover
+        return JSONResponse(status_code=500, content=_INTERNAL_ERROR)
+    # exc.errors() is typed as returning Any-valued dicts; pin the shape so
+    # the sanitizing projection below stays type-checked.
+    errors = cast("list[dict[str, object]]", exc.errors())
+    # #CRITICAL: security: log only the sanitized shape as well. Request
+    # bodies on this app can carry credential material (the profile PIN),
+    # which must never be written to logs either (same posture as the
+    # token-never-logged rule in the frontend's logApiError).
+    # #VERIFY: tests/integration/test_profiles.py asserts a malformed PIN
+    # never appears in the 422 body.
+    safe = [
+        {"type": e.get("type"), "loc": e.get("loc"), "msg": e.get("msg")}
+        for e in errors
+    ]
+    logger.warning("request_validation_error", errors=safe)
+    return JSONResponse(status_code=422, content={"detail": safe})
+
+
 def create_app() -> FastAPI:
     """Build and configure the FastAPI application.
 
@@ -168,6 +206,7 @@ def create_app() -> FastAPI:
     app.add_middleware(CorrelationMiddleware)
     add_security_middleware(app)
     app.add_exception_handler(ProjectBaseError, _handle_project_error)
+    app.add_exception_handler(RequestValidationError, _handle_request_validation_error)
     app.add_exception_handler(
         ResponseValidationError, _handle_response_validation_error
     )

@@ -472,6 +472,35 @@ async def test_update_rejects_malformed_pin(
 
 
 @pytest.mark.integration
+@pytest.mark.security
+@pytest.mark.asyncio
+async def test_malformed_pin_422_never_echoes_submitted_value(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The 422 body must not repeat the submitted PIN candidate (CWE-209).
+
+    FastAPI's default RequestValidationError handler echoes the raw submitted
+    value in each error's ``input`` field; the app-wide handler in ``app.py``
+    strips it (keeping ``type``/``loc``/``msg``) so a near-miss PIN, which is
+    credential material, can never leak through a validation error.
+    """
+    candidate = "998877665"  # 9 digits: fails PinCode's max_length, near-miss
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": candidate},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+    assert candidate not in resp.text
+    detail = resp.json()["detail"]
+    assert detail, "expected at least one validation error entry"
+    for entry in detail:
+        assert "input" not in entry
+        assert "ctx" not in entry
+        assert set(entry) == {"type", "loc", "msg"}
+
+
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_guardian_cannot_set_pin_on_other_familys_profile(
     client: AsyncClient, seed: Seed
