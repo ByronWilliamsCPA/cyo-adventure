@@ -8,6 +8,7 @@ are loaded directly from their file paths via importlib.
 from __future__ import annotations
 
 import importlib.util
+import sys
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -138,3 +139,94 @@ class TestExtract:
         """Asking for a version that is not in the changelog is a hard error."""
         with pytest.raises(SystemExit):
             extract_changelog_section.extract("9.9.9", changelog)
+
+
+class TestPromoteCLI:
+    """promote_changelog.main argument handling and dispatch."""
+
+    def test_usage_error_on_wrong_argc(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """A missing version argument returns exit code 2 with a usage line."""
+        monkeypatch.setattr(sys, "argv", ["promote_changelog.py"])
+        assert promote_changelog.main() == 2
+        assert "usage:" in capsys.readouterr().err
+
+    def test_strips_v_prefix_and_reports_promotion(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """A 'vX.Y.Z' argument is normalized before promote() is called."""
+        seen: dict[str, str] = {}
+
+        def _spy(version: str) -> bool:
+            seen["version"] = version
+            return True
+
+        monkeypatch.setattr(promote_changelog, "promote", _spy)
+        monkeypatch.setattr(sys, "argv", ["promote_changelog.py", "v0.2.0"])
+        assert promote_changelog.main() == 0
+        assert seen["version"] == "0.2.0"
+        assert "promoted" in capsys.readouterr().out
+
+    def test_idempotent_no_op_is_reported(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """When promote() returns False, main reports the no-op and exits 0."""
+
+        def _noop(_version: str) -> bool:
+            return False
+
+        monkeypatch.setattr(promote_changelog, "promote", _noop)
+        monkeypatch.setattr(sys, "argv", ["promote_changelog.py", "0.2.0"])
+        assert promote_changelog.main() == 0
+        assert "already present" in capsys.readouterr().out
+
+
+class TestExtractCLI:
+    """extract_changelog_section.main argument handling and output."""
+
+    def test_usage_error_on_wrong_argc(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """A missing version argument returns exit code 2 with a usage line."""
+        monkeypatch.setattr(sys, "argv", ["extract_changelog_section.py"])
+        assert extract_changelog_section.main() == 2
+        assert "usage:" in capsys.readouterr().err
+
+    def test_prints_section_body(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """A non-empty section is printed verbatim."""
+
+        def _body(_version: str) -> str:
+            return "- A bug."
+
+        monkeypatch.setattr(extract_changelog_section, "extract", _body)
+        monkeypatch.setattr(sys, "argv", ["extract_changelog_section.py", "0.2.0"])
+        assert extract_changelog_section.main() == 0
+        assert "- A bug." in capsys.readouterr().out
+
+    def test_empty_section_substitutes_placeholder(
+        self,
+        monkeypatch: pytest.MonkeyPatch,
+        capsys: pytest.CaptureFixture[str],
+    ) -> None:
+        """An empty section prints the no-entries placeholder, never nothing."""
+
+        def _empty(_version: str) -> str:
+            return ""
+
+        monkeypatch.setattr(extract_changelog_section, "extract", _empty)
+        monkeypatch.setattr(sys, "argv", ["extract_changelog_section.py", "0.2.0"])
+        assert extract_changelog_section.main() == 0
+        assert "_No curated changelog entries" in capsys.readouterr().out
