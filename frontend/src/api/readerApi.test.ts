@@ -5,11 +5,14 @@ import type { ReadingState } from '../player/types'
 import {
   ForbiddenError,
   StoryNotFoundError,
+  UnauthenticatedError,
   makeFetchServerState,
   makeFetchSeriesNext,
   makeFetchStory,
   makeRecordCompletion,
+  makeSyncApi,
 } from './readerApi'
+import type { SaveBody } from '../offline/sync'
 
 /**
  * Real axios rejections are `AxiosError` instances (an `Error` subclass), so
@@ -47,6 +50,13 @@ describe('makeFetchStory', () => {
       axiosLike(mockAxiosError({ isAxiosError: true, response: { status: 403 } }))
     )
     await expect(fetchStory('locked', 1)).rejects.toBeInstanceOf(ForbiddenError)
+  })
+
+  it('maps a 401 response to UnauthenticatedError', async () => {
+    const fetchStory = makeFetchStory(
+      axiosLike(mockAxiosError({ isAxiosError: true, response: { status: 401 } }))
+    )
+    await expect(fetchStory('expired', 1)).rejects.toBeInstanceOf(UnauthenticatedError)
   })
 
   it('maps a no-response (transport) failure to OfflineError', async () => {
@@ -97,6 +107,63 @@ describe('makeFetchServerState', () => {
     const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
     const fetchServerState = makeFetchServerState(axiosGetReject(err))
     await expect(fetchServerState('p1', 's1')).rejects.toBe(err)
+  })
+})
+
+describe('makeSyncApi.putReadingState', () => {
+  const SAVE_BODY: SaveBody = { ...SERVER_ROW, event_id: 'evt-1' }
+
+  function axiosPutResolve(data: unknown): AxiosInstance {
+    return { put: () => Promise.resolve(data) } as unknown as AxiosInstance
+  }
+
+  function axiosPutReject(error: Error): AxiosInstance {
+    return { put: () => Promise.reject(error) } as unknown as AxiosInstance
+  }
+
+  it('returns the saved row on a 200', async () => {
+    const sync = makeSyncApi(axiosPutResolve({ data: SERVER_ROW }))
+    await expect(sync.putReadingState('p1', 's1', SAVE_BODY)).resolves.toEqual({
+      status: 200,
+      row: SERVER_ROW,
+    })
+  })
+
+  it('maps a 409 to a conflict carrying the server current_row', async () => {
+    const sync = makeSyncApi(
+      axiosPutReject(
+        mockAxiosError({
+          isAxiosError: true,
+          response: { status: 409, data: { current_row: SERVER_ROW } },
+        })
+      )
+    )
+    await expect(sync.putReadingState('p1', 's1', SAVE_BODY)).resolves.toEqual({
+      status: 409,
+      currentRow: SERVER_ROW,
+    })
+  })
+
+  it('maps a 401 to UnauthenticatedError so the reader stops persisting', async () => {
+    const sync = makeSyncApi(
+      axiosPutReject(mockAxiosError({ isAxiosError: true, response: { status: 401 } }))
+    )
+    await expect(sync.putReadingState('p1', 's1', SAVE_BODY)).rejects.toBeInstanceOf(
+      UnauthenticatedError
+    )
+  })
+
+  it('maps a no-response transport failure to OfflineError', async () => {
+    const sync = makeSyncApi(
+      axiosPutReject(mockAxiosError({ isAxiosError: true, response: undefined }))
+    )
+    await expect(sync.putReadingState('p1', 's1', SAVE_BODY)).rejects.toBeInstanceOf(OfflineError)
+  })
+
+  it('rethrows other HTTP errors unchanged', async () => {
+    const err = mockAxiosError({ isAxiosError: true, response: { status: 500 } })
+    const sync = makeSyncApi(axiosPutReject(err))
+    await expect(sync.putReadingState('p1', 's1', SAVE_BODY)).rejects.toBe(err)
   })
 })
 
