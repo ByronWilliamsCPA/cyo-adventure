@@ -6,16 +6,22 @@ import {
   getValidChildSession,
   isExpired,
   isKidTokenRoute,
+  routeProfileId,
   setChildSession,
 } from './childSession'
+
+const SESSION_KEY = 'child_session'
+const LEGACY_KEYS = ['child_session_token', 'child_session_expires_at', 'child_session_profile_id']
 
 afterEach(() => {
   localStorage.clear()
 })
 
 describe('setChildSession / getChildSession', () => {
-  it('round-trips a stored session', () => {
+  it('round-trips a stored session through a single JSON-blob key', () => {
     setChildSession({ token: 'tok-1', expiresAt: '2026-07-11T12:00:00Z', profileId: 'p1' })
+    // One key holds the whole session; no non-atomic triple to half-write.
+    expect(localStorage.getItem(SESSION_KEY)).not.toBeNull()
     expect(getChildSession()).toEqual({
       token: 'tok-1',
       expiresAt: '2026-07-11T12:00:00Z',
@@ -27,9 +33,22 @@ describe('setChildSession / getChildSession', () => {
     expect(getChildSession()).toBeNull()
   })
 
-  it('returns null when the stored triple is incomplete', () => {
-    localStorage.setItem('child_session_token', 'tok-1')
-    // expires_at and profile_id are missing.
+  it('treats a legacy pre-blob triple as absent (no cross-version confusion)', () => {
+    // A complete triple written by the old three-key implementation must not
+    // be revived as a session under the blob reader; only the blob key counts.
+    for (const key of LEGACY_KEYS) {
+      localStorage.setItem(key, 'p1')
+    }
+    expect(getChildSession()).toBeNull()
+  })
+
+  it('returns null when the stored blob is corrupt (unparseable)', () => {
+    localStorage.setItem(SESSION_KEY, '{not-json')
+    expect(getChildSession()).toBeNull()
+  })
+
+  it('returns null when the stored blob is missing a field', () => {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ token: 'tok-1', profileId: 'p1' }))
     expect(getChildSession()).toBeNull()
   })
 
@@ -53,13 +72,18 @@ describe('setChildSession / getChildSession', () => {
 })
 
 describe('clearChildSession', () => {
-  it('removes all three stored keys', () => {
+  it('removes the blob key and any lingering legacy triple', () => {
     setChildSession({ token: 'tok-1', expiresAt: '2026-07-11T12:00:00Z', profileId: 'p1' })
+    // Plant a stale legacy triple too, to prove clear sweeps both shapes.
+    for (const key of LEGACY_KEYS) {
+      localStorage.setItem(key, 'stale')
+    }
     clearChildSession()
     expect(getChildSession()).toBeNull()
-    expect(localStorage.getItem('child_session_token')).toBeNull()
-    expect(localStorage.getItem('child_session_expires_at')).toBeNull()
-    expect(localStorage.getItem('child_session_profile_id')).toBeNull()
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull()
+    for (const key of LEGACY_KEYS) {
+      expect(localStorage.getItem(key)).toBeNull()
+    }
   })
 
   it('storage failure on clear is swallowed', () => {
@@ -134,5 +158,27 @@ describe('isKidTokenRoute', () => {
 
   it('excludes the landing page', () => {
     expect(isKidTokenRoute('/')).toBe(false)
+  })
+})
+
+describe('routeProfileId', () => {
+  it('extracts the profile id from a library route', () => {
+    expect(routeProfileId('/library/p1')).toBe('p1')
+  })
+
+  it('extracts the profile id from a reader route', () => {
+    expect(routeProfileId('/read/p1/story-1/3')).toBe('p1')
+  })
+
+  it('returns null for the picker path', () => {
+    expect(routeProfileId('/kids')).toBeNull()
+  })
+
+  it('returns null for a guardian route', () => {
+    expect(routeProfileId('/guardian/console')).toBeNull()
+  })
+
+  it('returns null for a library route with no profile segment', () => {
+    expect(routeProfileId('/library')).toBeNull()
   })
 })

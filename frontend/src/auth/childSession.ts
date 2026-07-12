@@ -12,15 +12,38 @@
  * bearer (child vs. guardian) a given request should carry.
  */
 
-const TOKEN_KEY = 'child_session_token'
-const EXPIRES_KEY = 'child_session_expires_at'
-const PROFILE_KEY = 'child_session_profile_id'
+// A single JSON-blob key, not three parallel keys. Writing three keys
+// non-atomically meant a mid-sequence throw (quota, a locked-down browser
+// evicting between calls) could leave a mixed triple: token present, profileId
+// stale from a previous session, which getChildSession would accept as a valid
+// session for the WRONG profile. One setItem/removeItem makes a stored session
+// all-or-nothing.
+const SESSION_KEY = 'child_session'
+
+// The pre-blob triple keys. No longer read (a stale triple from before this
+// change is treated as "no session"), but still removed on clear so an old
+// triple can never linger alongside the new blob.
+const LEGACY_KEYS = [
+  'child_session_token',
+  'child_session_expires_at',
+  'child_session_profile_id',
+] as const
 
 export interface ChildSession {
   token: string
   /** ISO 8601 timestamp; the server's `expires_at` from `ChildSessionView`. */
   expiresAt: string
   profileId: string
+}
+
+function isChildSession(value: unknown): value is ChildSession {
+  if (typeof value !== 'object' || value === null) return false
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate.token === 'string' &&
+    typeof candidate.expiresAt === 'string' &&
+    typeof candidate.profileId === 'string'
+  )
 }
 
 /**
@@ -31,14 +54,20 @@ export interface ChildSession {
  * browser modes. The mint already succeeded server-side regardless, so a
  * storage failure here just means the next kid-token-route request finds no
  * child session and falls back to the guardian token (if any), same as a
- * fresh deep link; it must not throw out of the picker's click handler.
- * #VERIFY: childSession.test.ts "storage failure is swallowed".
+ * fresh deep link; it must not throw out of the picker's click handler. The
+ * single-key write also means a throw leaves NO partial session behind.
+ * #VERIFY: childSession.test.ts "storage failure on write is swallowed".
  */
 export function setChildSession(session: ChildSession): void {
   try {
-    localStorage.setItem(TOKEN_KEY, session.token)
-    localStorage.setItem(EXPIRES_KEY, session.expiresAt)
-    localStorage.setItem(PROFILE_KEY, session.profileId)
+    localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        token: session.token,
+        expiresAt: session.expiresAt,
+        profileId: session.profileId,
+      })
+    )
   } catch {
     // #EDGE: browser-compat: storage unavailable; nothing more to do here.
   }
@@ -47,28 +76,30 @@ export function setChildSession(session: ChildSession): void {
 /** Clear a stored child session: on 401, on client-detected expiry, or on guardian sign-out. */
 export function clearChildSession(): void {
   try {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(EXPIRES_KEY)
-    localStorage.removeItem(PROFILE_KEY)
+    localStorage.removeItem(SESSION_KEY)
+    // Also drop any pre-blob triple so a legacy write can never be revived.
+    for (const key of LEGACY_KEYS) {
+      localStorage.removeItem(key)
+    }
   } catch {
     // #EDGE: browser-compat: storage unavailable; nothing to clean up.
   }
 }
 
 /**
- * Read the stored child session, if a complete one is present. Does not
- * check expiry; request-time callers should use `getValidChildSession`
+ * Read the stored child session, if a complete and well-formed one is present.
+ * Does not check expiry; request-time callers should use `getValidChildSession`
  * instead so an expired token is never attached to a request.
  */
 export function getChildSession(): ChildSession | null {
   try {
-    const token = localStorage.getItem(TOKEN_KEY)
-    const expiresAt = localStorage.getItem(EXPIRES_KEY)
-    const profileId = localStorage.getItem(PROFILE_KEY)
-    if (!token || !expiresAt || !profileId) return null
-    return { token, expiresAt, profileId }
+    const raw = localStorage.getItem(SESSION_KEY)
+    if (!raw) return null
+    const parsed: unknown = JSON.parse(raw)
+    return isChildSession(parsed) ? parsed : null
   } catch {
-    // #EDGE: browser-compat: storage unavailable; treat as no session.
+    // #EDGE: browser-compat: storage unavailable, or a corrupt/partial blob
+    // that failed to parse; either way treat it as no session.
     return null
   }
 }
@@ -122,9 +153,34 @@ export function getValidChildSession(now: Date = new Date()): ChildSession | nul
  * clearing anything) would silently narrow the picker to one profile instead
  * of showing every child in the family.
  * #VERIFY: childSession.test.ts "isKidTokenRoute excludes the picker path";
- * ProfilePickerPage.test.tsx's mint-then-navigate case exercises the real
- * flow this protects.
+ * useApi.test.ts "request interceptor child-token selection" drives the real
+ * interceptor that calls this (picker/guardian routes fall through to the
+ * guardian token; library/read routes attach the child token). The
+ * ProfilePickerPage tests mock useApi wholesale, so they never run the
+ * interceptor and cannot exercise this predicate.
  */
 export function isKidTokenRoute(pathname: string): boolean {
   return pathname.startsWith('/library/') || pathname.startsWith('/read/')
+}
+
+/**
+ * Extract the profile id a kid-token route is scoped to, or null when the path
+ * is not a kid-token route. Both surfaces put the profile id in the same
+ * position: `/library/:profileId` and `/read/:profileId/:storybookId/:version`.
+ *
+ * #ASSUME: security: used by useApi's request interceptor to attach the child
+ * token ONLY when the routed profile matches the session's profile. A session
+ * for profile A must never authorize a request for profile B's library (a
+ * lingering A-session reached via a B deep link would otherwise 403 as A on
+ * B's resources, a confusing wrong-gate); the interceptor falls back to the
+ * guardian token in that mismatch instead.
+ * #VERIFY: useApi.test.ts "does not attach a child token whose profile does
+ * not match the routed profile".
+ */
+export function routeProfileId(pathname: string): string | null {
+  const segments = pathname.split('/').filter(Boolean)
+  if (segments.length >= 2 && (segments[0] === 'library' || segments[0] === 'read')) {
+    return segments[1]
+  }
+  return null
 }
