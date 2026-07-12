@@ -35,7 +35,10 @@ export function parentalGateRemainingMs(userId: string, now: number = Date.now()
   return Math.max(0, warmed.expiresAt - now)
 }
 
-/** Drop any warm state so the next mount re-challenges (tests, sign-out). */
+/**
+ * Drop any warm state so the next mount re-challenges. Called by tests and by
+ * AuthContext's signOut(), so warmth never survives an explicit sign-out.
+ */
 export function coolParentalGate(): void {
   warmed = null
 }
