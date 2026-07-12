@@ -216,6 +216,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   when present (it may be an Apple relay address) and NEVER used as an
   identity key; `authn_subject` remains the sole key. The generated frontend
   client (`frontend/src/client/`) is regenerated for the new contract.
+- Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
+  fixture (`tests/integration/conftest.py::seed`, family A and B) is now
+  joined by a third, completely unrelated `stranger` fixture (family C, no
+  shared storybook, assignment, story request, or profile with A or B), so a
+  query that happens to reject only the one other family the suite knew
+  about (rather than correctly checking "belongs to the caller's family")
+  can no longer pass unnoticed. `test_authz_matrix.py` gains stranger-family
+  parametrized checks in both directions (family C's guardian/child tokens
+  against family A's resources, and family A's child token against family
+  C's profile) across every ownership-scoped route already covered for
+  family B, plus a leak-by-inclusion check on `GET /api/v1/profiles` (the
+  response body's id set, not just the status code, is asserted to exclude
+  both other families). `test_child_sessions.py` extends the same coverage
+  to the real, backend-signed child-session JWT mint/verify path (G1/P6-04):
+  a guardian cannot mint a session for a stranger family's profile in either
+  direction, and a minted third-family token is proven to fail against
+  family A's library/guardian routes and vice versa, closing the gap left by
+  testing only the dev-stub role tokens. `test_guardian_books_api.py` adds
+  the same third-family isolation and assignment-leak checks the file
+  already ran against family B. No cross-tenant leak was found; every new
+  check landed green against the existing implementation.
 - Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
   admin) exchanges a child profile id for a short-lived, backend-signed HS256
   JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
@@ -248,6 +269,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
   unchanged and remains local-only.
+
+  **Frontend half (G1)**: the kid surface now runs on the minted child token
+  instead of the guardian's own bearer. `ProfilePickerPage` mints a session
+  (`frontend/src/kid/childSessionApi.ts`, a hand-typed adapter over the
+  generated `ChildSessionCreateBody`/`ChildSessionView` types) with the
+  guardian's bearer right after a profile tile is picked, stores
+  `{token, expiresAt, profileId}` in `localStorage`
+  (`frontend/src/auth/childSession.ts`), then navigates into
+  `/library/:profileId` regardless of whether the mint succeeded (a failed
+  mint falls back to the pre-G1 behavior of the guardian token, if any, so a
+  transient mint failure never traps a child on the picker). Token selection
+  lives centrally in `useApi.ts`'s request interceptor: on a kid-token route
+  (`/library/*`, `/read/*`) it attaches a still-valid child token instead of
+  the guardian bearer, and never attaches both; `/kids` itself is
+  deliberately EXCLUDED from "kid-token route" even though it is
+  kid-facing, because the picker's own profile listing and mint call need
+  the guardian's full-family scope, and `KidNav`'s "Switch reader" link
+  returns to `/kids` without clearing anything, so a lingering child token
+  there would silently narrow the picker to one profile. The response
+  interceptor determines which bearer a failing request actually carried
+  (by comparing its `Authorization` header to the stored child token, not by
+  route) before clearing anything, so a dead child token never tears down a
+  live guardian session and vice versa; a kid-route 401 clears the child
+  session and relies on the existing ask-a-grown-up gate
+  (`classifyApiError`'s `unauthenticated` state in `ProfilePickerPage` and
+  `LibraryPage`) to recover, with no new error UI. An expired child token is
+  also caught client-side (`isExpired`/`getValidChildSession`) before ever
+  being attached, as a courtesy on top of the server's own `exp`
+  verification. `AuthContext.tsx`'s `safeRemoveToken()` now also clears the
+  child session, so guardian sign-out (or a guardian session that never
+  resolves to a principal) ends a shared-device child session too. Out of
+  scope for this slice (tracked separately): per-profile PIN (P6-07), a
+  parental-gate re-auth wrapper (P6-08), Keychain/secure storage for the
+  child token (P8-02), and pre-checking token expiry before an offline sync
+  attempt (P6-06).
 - Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
   `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
   text-tone utilities, consuming the pre-existing amber token pair:
