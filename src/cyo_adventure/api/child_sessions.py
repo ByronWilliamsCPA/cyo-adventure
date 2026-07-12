@@ -9,6 +9,7 @@ branch. Children never mint their own sessions.
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 from fastapi import APIRouter
@@ -19,6 +20,7 @@ from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import ChildSessionCreateBody, ChildSessionView
 from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.core.pin import verify_pin
 from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import ChildProfile, User
 from cyo_adventure.utils.logging import get_logger
@@ -47,15 +49,18 @@ async def create_child_session(
     """Mint a child session token for one profile (guardian or admin only).
 
     Args:
-        body: The target child profile id.
+        body: The target child profile id, plus the profile's picker PIN when
+            one is set (P6-07); ignored for a PIN-less profile.
         ctx: The request context (principal and session).
 
     Returns:
         ChildSessionView: The signed token, its expiry, and the profile id.
 
     Raises:
-        AuthorizationError: If a child token reaches this endpoint, or a
-            guardian names a profile outside its own family (-> 403).
+        AuthorizationError: If a child token reaches this endpoint, a
+            guardian names a profile outside its own family, or the profile
+            has a picker PIN and the body's ``pin`` is missing or wrong
+            (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
         ResourceNotFoundError: If the profile does not exist (-> 404).
         ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
     """
@@ -82,6 +87,30 @@ async def create_child_session(
     if profile is None:
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
+
+    # #ASSUME: security: a 4-8 digit PIN checked behind an ALREADY
+    # authenticated guardian/admin bearer is a convenience lock (keeps a
+    # sibling out of another kid's library on a shared family device), not a
+    # security boundary; a guardian token already had full mint rights before
+    # P6-07. Deliberately NO endpoint-local rate limiting or attempt counter
+    # is built here.
+    # #VERIFY: middleware/security.py::RateLimitMiddleware already bounds
+    # per-client request rates app-wide; revisit only if this endpoint is
+    # ever reachable without an authenticated guardian/admin principal.
+    if profile.pin_hash is not None:
+        # #CRITICAL: timing: verify_pin re-derives 600k PBKDF2 iterations
+        # (100-300ms of pure CPU); inline it would stall the single-process
+        # event loop for every concurrent request. Offload to a worker
+        # thread (repo idiom: covers/service.py, covers/storage.py).
+        # #VERIFY: test_child_sessions.py PIN-gate suite still passes.
+        pin_ok = body.pin is not None and await asyncio.to_thread(
+            verify_pin, body.pin, profile.pin_hash
+        )
+        if not pin_ok:
+            # Distinct, kid-safe detail: the picker shows a gentle retry for
+            # exactly this code and never the ask-a-grown-up gate.
+            msg = "that PIN does not match"
+            raise AuthorizationError(msg, error_code="PIN_MISMATCH")
 
     # #CRITICAL: data integrity: the minted token embeds a real child User.id so
     # the resulting child principal is attributable on the append-only

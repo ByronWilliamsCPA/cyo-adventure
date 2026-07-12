@@ -334,6 +334,146 @@ async def test_child_token_rejected_on_other_profile_library(
 
 
 # ---------------------------------------------------------------------------
+# P6-07: picker-PIN gating at mint
+# ---------------------------------------------------------------------------
+
+
+async def _set_profile_pin(client: AsyncClient, seed: Seed, pin: str) -> None:
+    """Set the seeded profile's picker PIN through the guardian API."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": pin},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["has_pin"] is True
+
+
+@pytest.mark.asyncio
+async def test_mint_with_correct_pin_returns_201(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A PIN-protected profile mints when the body carries the right PIN."""
+    await _set_profile_pin(client, seed, "4321")
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "4321"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    assert resp.json()["profile_id"] == str(seed.child_profile_id)
+
+
+@pytest.mark.asyncio
+async def test_mint_with_wrong_pin_returns_403_pin_mismatch(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A wrong PIN is a 403 with the distinct PIN_MISMATCH code, no token."""
+    await _set_profile_pin(client, seed, "4321")
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "9999"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+    body = resp.json()
+    assert body["code"] == "PIN_MISMATCH"
+    assert "token" not in body
+
+
+@pytest.mark.asyncio
+async def test_mint_with_missing_pin_returns_403(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Omitting the PIN for a PIN-protected profile is the same 403."""
+    await _set_profile_pin(client, seed, "4321")
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+    assert resp.json()["code"] == "PIN_MISMATCH"
+
+
+@pytest.mark.asyncio
+async def test_mint_pinless_profile_ignores_supplied_pin(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A PIN in the body is ignored when the profile has no PIN set."""
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "0000"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+
+
+@pytest.mark.asyncio
+async def test_admin_mint_is_pin_gated_too(client: AsyncClient, seed: Seed) -> None:
+    """The PIN gate applies after the role gate, so admins are checked too."""
+    await _set_profile_pin(client, seed, "4321")
+    wrong = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "1111"},
+        headers=auth(seed.admin_token),
+    )
+    assert wrong.status_code == 403, wrong.text
+    assert wrong.json()["code"] == "PIN_MISMATCH"
+
+    right = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "4321"},
+        headers=auth(seed.admin_token),
+    )
+    assert right.status_code == 201, right.text
+
+
+@pytest.mark.asyncio
+async def test_mint_clearing_pin_restores_open_mint(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """After the guardian clears the PIN, minting without one works again."""
+    await _set_profile_pin(client, seed, "4321")
+    cleared = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": None},
+        headers=auth(seed.guardian_token),
+    )
+    assert cleared.status_code == 200, cleared.text
+
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("candidate", ["abc", "123", "1" * 20])
+async def test_mint_malformed_pin_shape_is_403_not_422(
+    client: AsyncClient, seed: Seed, candidate: str
+) -> None:
+    """A malformed-shape candidate fails as an ordinary wrong PIN (403).
+
+    The mint body's ``pin`` is deliberately NOT ``PinCode``-constrained
+    (see ``ChildSessionCreateBody``): a 422 for "abc" or a 3/20-digit
+    candidate would leak that the stored PIN has a different shape. This
+    pins the uniformity invariant so a future ``PinCode`` reuse on the mint
+    schema cannot silently reintroduce the 422 oracle.
+    """
+    await _set_profile_pin(client, seed, "4321")
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": candidate},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403, resp.text
+    assert resp.json()["code"] == "PIN_MISMATCH"
+
+
+# ---------------------------------------------------------------------------
 # P6-10: third, stranger-family IDOR extension
 # ---------------------------------------------------------------------------
 #

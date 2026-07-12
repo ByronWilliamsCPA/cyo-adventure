@@ -376,12 +376,23 @@ export type CategoryInsightView = {
  * ChildSessionCreateBody
  *
  * A guardian's (or admin's) request to mint a child session for one profile.
+ *
+ * ``pin`` is required (and checked) only when the target profile has a
+ * guardian-set picker PIN (P6-07); for a PIN-less profile it is ignored.
+ * Deliberately NOT ``PinCode``-constrained: a malformed candidate ("abc",
+ * three digits) must fail as an ordinary wrong PIN (403), not a 422 that
+ * leaks whether the profile has a PIN of a different shape. The length cap
+ * only bounds the hashing work.
  */
 export type ChildSessionCreateBody = {
     /**
      * Profile Id
      */
     profile_id: string;
+    /**
+     * Pin
+     */
+    pin?: string | null;
 };
 
 /**
@@ -1284,11 +1295,13 @@ export type ProfileListView = {
  *
  * A guardian's partial update to a child profile.
  *
- * ``avatar`` distinguishes "omitted" from "explicit null" via
- * ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar.
- * The other four fields have no legitimate "clear" semantics, so an explicit
- * ``null`` on them is a deliberate no-op (the router only applies non-null
- * values); see ``update_profile`` and
+ * ``avatar`` and ``pin`` distinguish "omitted" from "explicit null" via
+ * ``model_fields_set``: an explicit ``"avatar": null`` clears the avatar,
+ * and an explicit ``"pin": null`` removes the profile's picker PIN (a
+ * 4-8 digit string sets or replaces it). The other four fields have no
+ * legitimate "clear" semantics, so an explicit ``null`` on them is a
+ * deliberate no-op (the router only applies non-null values); see
+ * ``update_profile`` and
  * ``test_update_ignores_explicit_null_on_non_avatar_fields``.
  */
 export type ProfileUpdateBody = {
@@ -1309,12 +1322,20 @@ export type ProfileUpdateBody = {
      * Tts Enabled
      */
     tts_enabled?: boolean | null;
+    /**
+     * Pin
+     */
+    pin?: string | null;
 };
 
 /**
  * ProfileView
  *
  * A child profile as seen by its guardian or the child themself.
+ *
+ * ``has_pin`` is the ONLY PIN-related field any view exposes; the stored
+ * ``pin_hash`` is write-only credential material and must never be
+ * serialized (see the ``#CRITICAL`` note on ``ChildProfile.pin_hash``).
  */
 export type ProfileView = {
     /**
@@ -1338,6 +1359,10 @@ export type ProfileView = {
      * Tts Enabled
      */
     tts_enabled: boolean;
+    /**
+     * Has Pin
+     */
+    has_pin: boolean;
     /**
      * Created At
      */

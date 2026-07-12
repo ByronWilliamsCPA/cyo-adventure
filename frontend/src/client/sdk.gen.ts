@@ -388,8 +388,8 @@ export const createProfileApiV1ProfilesPost = <ThrowOnError extends boolean = fa
  * Args:
  * profile_id: The profile to update.
  * body: The fields to change; omitted fields are untouched. An explicit
- * ``null`` clears only ``avatar``; on the other fields it is a no-op
- * (see ProfileUpdateBody).
+ * ``null`` clears only ``avatar`` and ``pin``; on the other fields
+ * it is a no-op (see ProfileUpdateBody).
  * ctx: The request context (principal + unit-of-work session).
  *
  * Returns:
@@ -1211,15 +1211,18 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
  * Mint a child session token for one profile (guardian or admin only).
  *
  * Args:
- * body: The target child profile id.
+ * body: The target child profile id, plus the profile's picker PIN when
+ * one is set (P6-07); ignored for a PIN-less profile.
  * ctx: The request context (principal and session).
  *
  * Returns:
  * ChildSessionView: The signed token, its expiry, and the profile id.
  *
  * Raises:
- * AuthorizationError: If a child token reaches this endpoint, or a
- * guardian names a profile outside its own family (-> 403).
+ * AuthorizationError: If a child token reaches this endpoint, a
+ * guardian names a profile outside its own family, or the profile
+ * has a picker PIN and the body's ``pin`` is missing or wrong
+ * (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
  * ResourceNotFoundError: If the profile does not exist (-> 404).
  * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
  */

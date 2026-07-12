@@ -398,3 +398,158 @@ async def test_update_display_name(client: AsyncClient, seed: Seed) -> None:
     )
     assert resp.status_code == 200, resp.text
     assert resp.json()["display_name"] == "Reader A Prime"
+
+
+# ---------------------------------------------------------------------------
+# P6-07: optional picker PIN (guardian set/clear; write-only hash)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_set_pin_marks_profile_has_pin(client: AsyncClient, seed: Seed) -> None:
+    """A guardian sets a PIN; has_pin flips to true in the echo and the list."""
+    guardian = auth(seed.guardian_token)
+    created = await client.post(
+        "/api/v1/profiles",
+        json={"display_name": "Nova", "age_band": "5-8"},
+        headers=guardian,
+    )
+    assert created.status_code == 201, created.text
+    assert created.json()["has_pin"] is False  # no PIN by default
+    pid = created.json()["id"]
+
+    resp = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"pin": "4321"}, headers=guardian
+    )
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["has_pin"] is True
+
+    listed = await client.get("/api/v1/profiles", headers=guardian)
+    by_id = {p["id"]: p for p in listed.json()["profiles"]}
+    assert by_id[pid]["has_pin"] is True
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_clear_pin_via_explicit_null(client: AsyncClient, seed: Seed) -> None:
+    """An explicit ``"pin": null`` removes the PIN; omitting it keeps it."""
+    guardian = auth(seed.guardian_token)
+    pid = str(seed.child_profile_id)
+    await client.patch(
+        f"/api/v1/profiles/{pid}", json={"pin": "4321"}, headers=guardian
+    )
+
+    untouched = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"tts_enabled": True}, headers=guardian
+    )
+    assert untouched.status_code == 200, untouched.text
+    assert untouched.json()["has_pin"] is True  # omitted pin left unchanged
+
+    cleared = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"pin": None}, headers=guardian
+    )
+    assert cleared.status_code == 200, cleared.text
+    assert cleared.json()["has_pin"] is False
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "bad_pin",
+    ["123", "123456789", "12a4", "    ", "", "12 34"],
+)
+async def test_update_rejects_malformed_pin(
+    client: AsyncClient, seed: Seed, bad_pin: str
+) -> None:
+    """Anything but 4-8 ASCII digits is a 422 (PinCode boundary)."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": bad_pin},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+
+
+@pytest.mark.integration
+@pytest.mark.security
+@pytest.mark.asyncio
+async def test_malformed_pin_422_never_echoes_submitted_value(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The 422 body must not repeat the submitted PIN candidate (CWE-209).
+
+    FastAPI's default RequestValidationError handler echoes the raw submitted
+    value in each error's ``input`` field; the app-wide handler in ``app.py``
+    strips it (keeping ``type``/``loc``/``msg``) so a near-miss PIN, which is
+    credential material, can never leak through a validation error.
+    """
+    candidate = "998877665"  # 9 digits: fails PinCode's max_length, near-miss
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": candidate},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 422, resp.text
+    assert candidate not in resp.text
+    detail = resp.json()["detail"]
+    assert detail, "expected at least one validation error entry"
+    for entry in detail:
+        assert "input" not in entry
+        assert "ctx" not in entry
+        assert set(entry) == {"type", "loc", "msg"}
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_guardian_cannot_set_pin_on_other_familys_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """Cross-family PIN set is a 403 like any other cross-family PATCH."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.other_child_profile_id}",
+        json={"pin": "4321"},
+        headers=auth(seed.guardian_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_child_cannot_set_own_pin(client: AsyncClient, seed: Seed) -> None:
+    """A child token may not set or clear a picker PIN (guardian-only write)."""
+    resp = await client.patch(
+        f"/api/v1/profiles/{seed.child_profile_id}",
+        json={"pin": "4321"},
+        headers=auth(seed.child_token),
+    )
+    assert resp.status_code == 403
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_pin_hash_never_serialized(client: AsyncClient, seed: Seed) -> None:
+    """No profile response ever contains the stored hash, only has_pin.
+
+    Asserts on the RAW response body text, not parsed keys, so an accidental
+    rename or nesting of the credential field cannot slip past the check.
+    """
+    guardian = auth(seed.guardian_token)
+    pid = str(seed.child_profile_id)
+
+    patched = await client.patch(
+        f"/api/v1/profiles/{pid}", json={"pin": "4321"}, headers=guardian
+    )
+    assert patched.status_code == 200, patched.text
+    assert "pin_hash" not in patched.text
+    assert "pbkdf2" not in patched.text
+
+    listed = await client.get("/api/v1/profiles", headers=guardian)
+    assert listed.status_code == 200, listed.text
+    assert "pin_hash" not in listed.text
+    assert "pbkdf2" not in listed.text
+
+    as_child = await client.get("/api/v1/profiles", headers=auth(seed.child_token))
+    assert as_child.status_code == 200, as_child.text
+    assert "pin_hash" not in as_child.text
+    assert "pbkdf2" not in as_child.text

@@ -19,6 +19,11 @@ export interface ProfileView {
   reading_level_cap: number
   avatar: string | null
   tts_enabled: boolean
+  /**
+   * Whether a picker PIN is set (P6-07). Derived server-side; the stored
+   * hash itself is write-only and never appears in any response.
+   */
+  has_pin: boolean
   created_at: string
 }
 
@@ -34,7 +39,8 @@ export interface ProfileCreateBody {
  * Deliberately stricter than the backend on the non-avatar fields: the server
  * accepts an explicit null there but treats it as a no-op (see
  * ProfileUpdateBody in schemas.py), so these types keep that confusing shape
- * unrepresentable from the UI. Only avatar has real "clear via null" semantics.
+ * unrepresentable from the UI. Only avatar and pin have real "clear via null"
+ * semantics.
  */
 export interface ProfileUpdateBody {
   display_name?: string
@@ -42,6 +48,11 @@ export interface ProfileUpdateBody {
   reading_level_cap?: number
   avatar?: string | null
   tts_enabled?: boolean
+  /**
+   * Picker PIN (P6-07): a 4-8 digit string sets or replaces it, an explicit
+   * null removes it, omitted leaves it unchanged. Never echoed back.
+   */
+  pin?: string | null
 }
 
 export interface ProfilesApi {
