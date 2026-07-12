@@ -63,7 +63,7 @@ import pytest
 
 from cyo_adventure.api.deps import Role
 from cyo_adventure.app import app
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, Stranger, auth
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -779,3 +779,187 @@ async def test_cross_family_guardian_is_rejected(
         f"{method} {path_template} let a cross-family guardian succeed: "
         f"{resp.status_code} {resp.text}"
     )
+
+
+# ---------------------------------------------------------------------------
+# P6-10: third, stranger-family IDOR extension
+# ---------------------------------------------------------------------------
+#
+# The checks above prove family B (``seed.other_guardian_token``) cannot reach
+# family A's resources. That alone cannot distinguish a correct "belongs to
+# the caller's family" ownership check from a buggy "is not family B"
+# special-case, an accidental id-adjacency pass, or a filter that defaults to
+# "not mine" instead of "is mine" -- all of which a two-family suite can miss.
+# A third, totally unrelated family (C, the ``stranger`` fixture: no shared
+# storybook, assignment, story request, or profile with A or B) closes that
+# gap. The three tests below attack in both directions (stranger -> family A,
+# and family A -> stranger) so neither a "reject the other one I know about"
+# bug nor a one-way ownership check slips through.
+
+_CROSS_FAMILY_CHILD_ROUTE_KEYS: list[tuple[str, str]] = [
+    ("GET", "/api/v1/ratings/{profile_id}"),
+    ("POST", "/api/v1/ratings"),
+    ("GET", "/api/v1/library"),
+    ("GET", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("PUT", "/api/v1/reading-state/{profile_id}/{storybook_id}"),
+    ("GET", "/api/v1/series-next/{profile_id}/{storybook_id}"),
+    ("POST", "/api/v1/completions"),
+]
+
+# Every key referenced above must actually be a child-eligible route in
+# ROUTE_TABLE, so this section fails loudly instead of silently skipping a
+# route that got renamed, removed, or had its role gate changed.
+assert all(key in ROUTE_TABLE for key in _CROSS_FAMILY_CHILD_ROUTE_KEYS), (
+    "a _CROSS_FAMILY_CHILD_ROUTE_KEYS entry is missing from ROUTE_TABLE"
+)
+assert all(
+    Role.CHILD in ROUTE_TABLE[key].allowed_roles
+    for key in _CROSS_FAMILY_CHILD_ROUTE_KEYS
+), "a _CROSS_FAMILY_CHILD_ROUTE_KEYS entry is not child-eligible"
+
+_CROSS_FAMILY_CHILD_IDS = [
+    f"{method} {path}" for method, path in _CROSS_FAMILY_CHILD_ROUTE_KEYS
+]
+
+
+async def test_stranger_family_tokens_reach_own_resources(
+    client: AsyncClient, stranger: Stranger
+) -> None:
+    """Positive control: family C's own tokens succeed on family C's resources.
+
+    Every stranger-family test below asserts a rejection, so all of them
+    would pass vacuously if the ``stranger`` fixture were broken in a way
+    that made every family-C request fail (an unseeded user row, a token
+    that never authenticates, a profile in the wrong family). Proving the
+    same guardian and child tokens get 200 on their OWN family's routes
+    pins the rejections below on the ownership checks, not on a defective
+    fixture.
+    """
+    resp = await client.get("/api/v1/profiles", headers=auth(stranger.guardian_token))
+    assert resp.status_code == 200, resp.text
+    ids = {row["id"] for row in resp.json()["profiles"]}
+    assert str(stranger.child_profile_id) in ids
+
+    resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(stranger.child_profile_id)},
+        headers=auth(stranger.child_token),
+    )
+    assert resp.status_code == 200, resp.text
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"), _CROSS_FAMILY_ROUTE_KEYS, ids=_CROSS_FAMILY_IDS
+)
+async def test_cross_family_guardian_from_stranger_family_is_rejected(
+    client: AsyncClient,
+    seed: Seed,
+    stranger: Stranger,
+    method: str,
+    path_template: str,
+) -> None:
+    """A third, unrelated family's guardian must never reach family A (IDOR).
+
+    Same shape as ``test_cross_family_guardian_is_rejected`` above, but the
+    attacking token belongs to family C (``stranger``), which shares no
+    storybook, assignment, or profile with family A or B. This is exactly the
+    case where a "reject only family B" bug (as opposed to a correct "reject
+    anyone outside my family" check) would pass a two-family suite while this
+    test catches it.
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(stranger.guardian_token)
+    )
+    assert resp.status_code in (403, 404), (
+        f"{method} {path_template} expected 403/404 for a stranger-family "
+        f"guardian, got {resp.status_code}: {resp.text}"
+    )
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"),
+    _CROSS_FAMILY_CHILD_ROUTE_KEYS,
+    ids=_CROSS_FAMILY_CHILD_IDS,
+)
+async def test_cross_family_child_from_stranger_family_is_rejected(
+    client: AsyncClient,
+    seed: Seed,
+    stranger: Stranger,
+    method: str,
+    path_template: str,
+) -> None:
+    """A third, unrelated family's child token must never reach family A.
+
+    ``stranger.child_token`` holds ``Role.CHILD`` scoped to profile C: it
+    passes every role gate for these routes, but every id the spec resolves
+    against ``seed`` belongs to family A/profile A, so only the endpoint's
+    ownership check (``authorize_profile``) can reject it.
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(stranger.child_token)
+    )
+    assert resp.status_code in (403, 404), (
+        f"{method} {path_template} expected 403/404 for a stranger-family "
+        f"child, got {resp.status_code}: {resp.text}"
+    )
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"),
+    _CROSS_FAMILY_CHILD_ROUTE_KEYS,
+    ids=_CROSS_FAMILY_CHILD_IDS,
+)
+async def test_family_a_child_cannot_reach_stranger_family_profile(
+    client: AsyncClient,
+    seed: Seed,
+    stranger: Stranger,
+    method: str,
+    path_template: str,
+) -> None:
+    """Family A's child token must never reach family C's profile (reverse IDOR).
+
+    The previous two tests attack family A with an outside token; this one
+    reverses direction: ``seed.child_token`` (scoped to profile A) tries to
+    act on profile C's resources. ``seed.storybook_id`` (family A's own book)
+    is left in place for the storybook leg of reading-state/series-next/
+    completions -- only ``profile_id`` is swapped to family C's -- so a pass
+    here proves the ownership check keys on the profile id itself, not merely
+    on "is this the caller's own storybook".
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    url = url.replace(str(seed.child_profile_id), str(stranger.child_profile_id))
+    if "profile_id" in query:
+        query = {**query, "profile_id": str(stranger.child_profile_id)}
+    if body and "profile_id" in body:
+        body = {**body, "profile_id": str(stranger.child_profile_id)}
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(seed.child_token)
+    )
+    assert resp.status_code in (403, 404), (
+        f"{method} {path_template} expected 403/404 for family A's child "
+        f"reaching family C's profile, got {resp.status_code}: {resp.text}"
+    )
+
+
+async def test_profile_list_excludes_other_families(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """GET /api/v1/profiles as family A must list neither family B's nor C's ids.
+
+    A status-code-only suite cannot catch a handler that returns 200 but
+    accidentally unions in another family's rows (e.g. a missing/loosened
+    WHERE clause); this asserts on the response body's id set directly. Family
+    C is included alongside the already-seeded family B so a filter that only
+    special-cases "not B" (rather than "is mine") is caught too.
+    """
+    resp = await client.get("/api/v1/profiles", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    ids = {row["id"] for row in resp.json()["profiles"]}
+    assert str(seed.other_child_profile_id) not in ids
+    assert str(stranger.child_profile_id) not in ids
+    assert str(seed.child_profile_id) in ids

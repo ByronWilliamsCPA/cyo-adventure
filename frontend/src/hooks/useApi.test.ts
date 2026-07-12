@@ -113,6 +113,30 @@ function makeUnauthorizedError(authorization?: string): AxiosError {
   )
 }
 
+/**
+ * Run a fresh request config through the request interceptor so it picks up
+ * whatever bearer the interceptor would attach AND, for a child-token request,
+ * the module-scoped tag the response interceptor classifies on. The response
+ * interceptor must see the SAME config object the request went out with, which
+ * is exactly what axios threads onto `error.config`; a hand-built error config
+ * would never carry that tag and would misrepresent the real flow.
+ */
+function issueThroughInterceptor(api: AxiosInstance): InternalAxiosRequestConfig {
+  const { fulfilled } = getRequestHandlers(api)
+  return fulfilled(makeRequestConfig())
+}
+
+/** A 401 AxiosError whose `.config` is the exact object the request carried. */
+function unauthorizedForConfig(config: InternalAxiosRequestConfig): AxiosError {
+  return new AxiosError('Unauthorized', 'ERR_BAD_REQUEST', config, undefined, {
+    status: 401,
+    statusText: 'Unauthorized',
+    headers: {},
+    config,
+    data: undefined,
+  })
+}
+
 // #ASSUME: external resources: jsdom does not implement real navigation, so
 // window.location is replaced with a stub object per test rather than
 // spied on directly (its `assign` is non-configurable in jsdom).
@@ -152,9 +176,13 @@ describe('useApi 401 interceptor', () => {
   it('clears the token and redirects to the guardian login on a guardian-path 401', async () => {
     const location = setPathname('/guardian/console')
     const { result } = renderHook(() => useApi())
+    // Issue through the interceptor so the request carries the guardian bearer,
+    // exactly as a real guardian request does; the 401 handler clears the token
+    // that actually failed rather than guessing from the route.
+    const config = issueThroughInterceptor(result.current)
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     // replace(), not assign(): the expired URL must not linger in history.
@@ -163,11 +191,15 @@ describe('useApi 401 interceptor', () => {
   })
 
   it('clears the token but does not navigate on a kid-path 401', async () => {
+    // No child session here, so a kid-route request falls back to the guardian
+    // bearer; a 401 then means the guardian token is dead. It is cleared, but
+    // there is no navigation off a kid path.
     const location = setPathname('/library/some-story')
     const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current)
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     expect(location.replace).not.toHaveBeenCalled()
@@ -176,9 +208,10 @@ describe('useApi 401 interceptor', () => {
   it('does not redirect loop when already on the guardian login page', async () => {
     const location = setPathname(GUARDIAN_LOGIN_PATH)
     const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current)
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     expect(location.replace).not.toHaveBeenCalled()
@@ -206,11 +239,13 @@ describe('useApi 401 interceptor child session clearing (G1 / P6-04)', () => {
   it('clears only the child session when the failing request carried the child bearer', async () => {
     setPathname('/library/p1')
     const { result } = renderHook(() => useApi())
+    // Issue the request through the interceptor so its config is tagged as a
+    // child-token request; that tag is what the 401 handler classifies on.
+    const config = issueThroughInterceptor(result.current)
+    expect(config.headers.Authorization).toBe('Bearer child-token')
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(
-      rejected(makeUnauthorizedError('Bearer child-token'))
-    ).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(getChildSession()).toBeNull()
     // The guardian's own, unrelated session must survive: only the token
@@ -221,41 +256,74 @@ describe('useApi 401 interceptor child session clearing (G1 / P6-04)', () => {
   it('does not navigate off a kid-token route when clearing the child session', async () => {
     const location = setPathname('/read/p1/story-1/2')
     const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current)
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(
-      rejected(makeUnauthorizedError('Bearer child-token'))
-    ).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(getChildSession()).toBeNull()
     expect(location.replace).not.toHaveBeenCalled()
   })
 
   it('clears the guardian token (not the child session) when the failing request carried the guardian bearer', async () => {
+    // A guardian route never attaches the child token, so the request goes out
+    // with the guardian bearer and is not tagged as a child request.
     setPathname('/guardian/console')
     const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current)
+    expect(config.headers.Authorization).toBe('Bearer test-token')
     const rejected = getResponseRejectedHandler(result.current)
 
-    await expect(
-      rejected(makeUnauthorizedError('Bearer test-token'))
-    ).rejects.toBeInstanceOf(AxiosError)
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     expect(localStorage.getItem('auth_token')).toBeNull()
     // An unrelated, still-valid child session must survive a guardian 401.
     expect(getChildSession()).not.toBeNull()
   })
 
-  it('clears the guardian token when a kid-token-route request carried no bearer at all', async () => {
+  it('clears NEITHER token when the failing request carried no Authorization header', async () => {
+    // Behavior change (was: wiped the guardian token). A 401 on a request that
+    // carried no bearer at all is not evidence that either stored session is
+    // the one that failed (e.g. an anonymous public call), so tearing one down
+    // would be a guess that could sign a guardian out for an unrelated 401.
     setPathname('/library/p1')
     const { result } = renderHook(() => useApi())
     const rejected = getResponseRejectedHandler(result.current)
 
     await expect(rejected(makeUnauthorizedError())).rejects.toBeInstanceOf(AxiosError)
 
-    expect(localStorage.getItem('auth_token')).toBeNull()
-    // Not a child-bearer 401 (no Authorization matched the stored child
-    // token), so the child session itself is left untouched here.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
     expect(getChildSession()).not.toBeNull()
+  })
+
+  it('does not sign the guardian out when a second request with the same dead child token 401s', async () => {
+    // Critical 1 (privilege-boundary TOCTOU) regression guard: two in-flight
+    // requests share the (now dead) child token. The first 401 clears the child
+    // session; the second must still be classified as a child-token failure from
+    // its issue-time WeakSet tag, NOT re-derived from now-empty storage (which
+    // would misread it as a guardian failure). A misclassified second 401 would
+    // refreshSession() and overwrite the child bearer with a fresh GUARDIAN
+    // bearer, then retry the kid-surface request under guardian identity. So the
+    // second 401 must: clear only the child session, never touch auth_token,
+    // never refresh, and never retry.
+    const location = setPathname('/library/p1')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const first = issueThroughInterceptor(result.current)
+    const second = issueThroughInterceptor(result.current)
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(unauthorizedForConfig(first))).rejects.toBeInstanceOf(AxiosError)
+    expect(getChildSession()).toBeNull()
+
+    await expect(rejected(unauthorizedForConfig(second))).rejects.toBeInstanceOf(AxiosError)
+    // The guardian's own session must survive the second, now-orphaned 401.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+    // No privilege escalation: neither 401 may refresh or retry under guardian.
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
+    expect(location.replace).not.toHaveBeenCalled()
   })
 })
 
@@ -367,10 +435,14 @@ describe('useApi guardian 401 refresh-and-retry (P6-06)', () => {
     const { result } = renderHook(() => useApi())
     const requestSpy = vi.spyOn(result.current, 'request')
     const rejected = getResponseRejectedHandler(result.current)
+    // Issue through the interceptor so the config is tagged as a child-token
+    // request at issue time (the WeakSet tag the 401 handler classifies on).
+    // The tag, not a re-read of storage, is the sole child-vs-guardian
+    // discriminator, so a child 401 can never reach the guardian refresh path.
+    const config = issueThroughInterceptor(result.current)
+    expect(config.headers.Authorization).toBe('Bearer child-token')
 
-    await expect(rejected(makeUnauthorizedError('Bearer child-token'))).rejects.toBeInstanceOf(
-      AxiosError
-    )
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
 
     // Child tokens are not refreshable by design (fixed TTL); the existing
     // clear-and-gate behavior must be byte-for-byte what it was pre-P6-06.
@@ -381,7 +453,14 @@ describe('useApi guardian 401 refresh-and-retry (P6-06)', () => {
     expect(location.replace).not.toHaveBeenCalled()
   })
 
-  it('never attempts a refresh when the failing request carried no bearer', async () => {
+  it('never refreshes AND clears no token when the failing request carried no bearer', async () => {
+    // Invariant (base redesign): a 401 on a request that carried NO Authorization
+    // header is not evidence that either stored session is the one that failed
+    // (e.g. an anonymous public call). So it must neither refresh (nothing to
+    // refresh) nor tear down auth_token; clearing it would be a guess that could
+    // sign a guardian out for an unrelated anonymous 401. An earlier revision of
+    // this PR wrongly asserted the token was cleared here; that regressed the
+    // base's deliberate clear-neither behavior.
     setPathname('/guardian/console')
     mockRefreshSuccess('refreshed-token')
     const { result } = renderHook(() => useApi())
@@ -392,7 +471,112 @@ describe('useApi guardian 401 refresh-and-retry (P6-06)', () => {
 
     expect(refreshSessionMock).not.toHaveBeenCalled()
     expect(requestSpy).not.toHaveBeenCalled()
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+  })
+
+  it('does not refresh or import the Supabase client from a kid-token route', async () => {
+    // Important 6: even when a kid-token route (/library/*, /read/*) sent the
+    // guardian bearer as a fallback (no child session), a 401 there must NOT
+    // trigger the guardian refresh, whose dynamic import would pull the Supabase
+    // client onto the kid surface (documented "never used on the kid surface").
+    // The 401 falls straight to teardown, with no redirect off the kid path.
+    const location = setPathname('/library/p1')
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(makeUnauthorizedError('Bearer test-token'))).rejects.toBeInstanceOf(
+      AxiosError
+    )
+
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
     expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(location.replace).not.toHaveBeenCalled()
+  })
+
+  it('a hung refresh resolves to the failure path after the deadline', async () => {
+    // Critical 4: refreshSession() has no client-side timeout and its in-flight
+    // promise is module-scoped, so a hung auth endpoint would otherwise stall
+    // every guardian 401 handler forever. The bounded deadline must resolve the
+    // shared refresh to the failure path (null) so teardown proceeds.
+    vi.useFakeTimers()
+    vi.setSystemTime(0)
+    try {
+      const location = setPathname('/guardian/console')
+      // A refresh that never settles on its own.
+      refreshSessionMock.mockReturnValue(new Promise(() => {}))
+      const { result } = renderHook(() => useApi())
+      const requestSpy = vi.spyOn(result.current, 'request')
+      const rejected = getResponseRejectedHandler(result.current)
+
+      // Attach the rejection expectation BEFORE advancing timers so the reject
+      // is handled the moment the deadline fires (no unhandled-rejection noise).
+      const settled = expect(
+        rejected(makeUnauthorizedError('Bearer test-token'))
+      ).rejects.toBeInstanceOf(AxiosError)
+      // Drive past the client-side deadline (REFRESH_DEADLINE_MS = 10s).
+      await vi.advanceTimersByTimeAsync(10_000)
+      await settled
+
+      expect(requestSpy).not.toHaveBeenCalled()
+      expect(localStorage.getItem('auth_token')).toBeNull()
+      expect(location.replace).toHaveBeenCalledWith(GUARDIAN_LOGIN_PATH)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('retries with the fresh token even when the write-through to localStorage fails', async () => {
+    // Critical 2: the retry re-dispatches through instance.request, which re-runs
+    // the request interceptor. If the refresh's setItem write-through threw
+    // (private mode / quota), localStorage still holds the EXPIRED token; the
+    // retry must nonetheless carry the FRESH bearer, never the stale stored one.
+    // Important 7: a persist failure also emits a console.warn breadcrumb.
+    vi.useFakeTimers()
+    vi.setSystemTime(0)
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+    try {
+      setPathname('/guardian/console')
+      mockRefreshSuccess('refreshed-token')
+      const { result } = renderHook(() => useApi())
+      const requestSpy = vi
+        .spyOn(result.current, 'request')
+        .mockResolvedValue({ status: 200, data: { ok: true } })
+      const rejected = getResponseRejectedHandler(result.current)
+      // Storage rejects the write-through (simulate private mode / quota). Set
+      // this only now so the beforeEach seed of auth_token already succeeded.
+      setItemSpy.mockImplementation(() => {
+        throw new Error('QuotaExceededError')
+      })
+
+      await rejected(makeUnauthorizedError('Bearer test-token'))
+
+      expect(requestSpy).toHaveBeenCalledTimes(1)
+      const retried = requestSpy.mock.calls[0][0] as RetriableRequestConfig
+      expect(retried.headers.Authorization).toBe('Bearer refreshed-token')
+      expect(retried.guardianRetryAttempted).toBe(true)
+      // The persist failure must be surfaced as a breadcrumb, not swallowed.
+      expect(warnSpy).toHaveBeenCalled()
+
+      // Important 7: the failed persist opens a cooldown, so a second guardian
+      // 401 in the window does NOT fire another (refresh-token-rotating) refresh.
+      const second = rejected(makeUnauthorizedError('Bearer test-token'))
+      await expect(second).rejects.toBeInstanceOf(AxiosError)
+      expect(refreshSessionMock).toHaveBeenCalledTimes(1)
+
+      // Once the cooldown elapses, refreshing resumes (this refresh succeeds and
+      // its retry resolves via the request spy, so the call itself resolves).
+      vi.advanceTimersByTime(11_000)
+      await rejected(makeUnauthorizedError('Bearer test-token'))
+      expect(refreshSessionMock).toHaveBeenCalledTimes(2)
+    } finally {
+      setItemSpy.mockRestore()
+      warnSpy.mockRestore()
+      vi.useRealTimers()
+    }
   })
 })
 
@@ -450,6 +634,25 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
 
     expect(config.headers.Authorization).toBe('Bearer guardian-token')
     expect(getChildSession()).toBeNull()
+  })
+
+  it('does not attach a child token whose profile does not match the routed profile', () => {
+    // A still-valid session for p1 must NOT authorize a request for p2's
+    // library reached via a fresh deep link; that would 403 as p1 on p2's
+    // resources (a confusing wrong-gate). The interceptor falls back to the
+    // guardian token on the mismatch instead.
+    setPathname('/library/p2')
+    setChildSession({ token: 'child-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p1' })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig())
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    // The mismatched session is left in place (not cleared): a later request
+    // for p1's own library will still use it.
+    expect(getChildSession()).not.toBeNull()
   })
 
   it('always uses the guardian token on the profile picker path, even with a valid child session', () => {
@@ -564,6 +767,25 @@ describe('useApi request interceptor', () => {
 
     const error = new AxiosError('setup failed', 'ERR_NETWORK')
     await expect(rejected(error)).rejects.toBe(error)
+  })
+
+  it('preserves a retry config fresh bearer instead of overwriting from localStorage', () => {
+    // Critical 2: a retry re-dispatched by the guardian 401 path carries a FRESH
+    // bearer set directly on its config and the one-shot marker. If the refresh's
+    // write-through setItem failed, localStorage still holds the EXPIRED token;
+    // the interceptor must return the retry config verbatim rather than re-read
+    // the stale stored token, or the retry would re-send the expired bearer.
+    localStorage.setItem('auth_token', 'stale-expired-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const retryConfig = makeRequestConfig() as RetriableRequestConfig
+    retryConfig.guardianRetryAttempted = true
+    retryConfig.headers.Authorization = 'Bearer fresh-token'
+
+    const config = fulfilled(retryConfig)
+
+    expect(config.headers.Authorization).toBe('Bearer fresh-token')
   })
 })
 

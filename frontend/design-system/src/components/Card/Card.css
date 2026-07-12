@@ -1,0 +1,17 @@
+/* Raised-card treatment: consolidates the guardian card/list-item families
+   (console feed, profile list, intake requests, review findings, books
+   list) into one shared shape. */
+.cyo-card {
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  border: 1px solid var(--color-border-soft);
+}
+
+/* Hover-lift for a card that is itself a whole clickable row (e.g. the
+   review-queue feed row), not a card that hosts its own interactive
+   controls with their own hover/focus states. :focus-within gives keyboard
+   users the same card-level affordance when the inner link takes focus. */
+.cyo-card--interactive:hover,
+.cyo-card--interactive:focus-within {
+  box-shadow: var(--shadow-sm);
+}

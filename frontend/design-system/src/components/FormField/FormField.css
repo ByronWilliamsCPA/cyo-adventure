@@ -1,0 +1,27 @@
+/* Field-stack layout: the label text stacked above its input slot. Shared
+   by every labeled input across the guardian login, profile, intake, and
+   authored-request forms. */
+.cyo-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-weight: var(--weight-semibold);
+}
+
+/* Input box treatment: applied directly to the input/select/textarea
+   element (not the wrapping label), so a checkbox or radio inside a
+   .cyo-field label can opt out simply by not carrying this class. */
+.cyo-field__control {
+  padding: 0.6rem var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-soft);
+  background: rgb(255 255 255 / 70%);
+  font: inherit;
+  color: var(--color-ink);
+}
+
+.cyo-field__control:focus-visible {
+  outline: 2px solid var(--color-amber-deep);
+  outline-offset: 2px;
+  border-color: var(--color-amber-deep);
+}

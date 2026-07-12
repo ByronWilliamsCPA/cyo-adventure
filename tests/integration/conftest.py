@@ -3,7 +3,10 @@
 The app's ``get_db_session`` unit-of-work is overridden to bind to the container
 engine. A fresh schema is created per test for isolation. The seed fixture builds
 two families with a guardian, a child user + profile, and a published lantern
-story, which the authorization and reading-state tests reuse.
+story, which the authorization and reading-state tests reuse. A separate
+``stranger`` fixture seeds a third, unrelated family (no shared storybook,
+assignment, or profile with the seed families) for the cross-tenant IDOR
+sweeps (P6-10).
 """
 
 from __future__ import annotations
@@ -297,3 +300,63 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
 def auth(token: str) -> dict[str, str]:
     """Build an Authorization header for a bearer token."""
     return {"Authorization": f"Bearer {token}"}
+
+
+@dataclass(frozen=True)
+class Stranger:
+    """Identifiers and tokens for a third family with zero ties to A or B.
+
+    P6-10: the IDOR/authz suite's two-family fixture (``seed``, family A and
+    B) catches a query that checks "is this OTHER specific family" but misses
+    a query filtered by "not mine" (e.g. ``family_id != caller_family_id``)
+    or a handler that forgets to filter by family at all and happens to pass
+    only because family B's rows sort after family A's. A completely
+    unrelated third family (no shared storybook, assignment, or profile with
+    A or B) catches both of those bug classes: any code path that reaches
+    family C's data cannot be explained by an accidental A/B adjacency.
+    """
+
+    family_id: uuid.UUID
+    guardian_token: str
+    child_token: str
+    child_profile_id: uuid.UUID
+
+
+@pytest_asyncio.fixture
+async def stranger(sessions: async_sessionmaker[AsyncSession]) -> Stranger:
+    """Seed a third, stranger family (family C): a guardian and one child.
+
+    Deliberately minimal: no storybook, assignment, or story request ties
+    family C to family A or B. Tests that need one of those attach it
+    directly to ``stranger.family_id``/``stranger.child_profile_id``.
+    """
+    async with sessions() as session:
+        fam_c = Family(name="Family C (stranger)")
+        session.add(fam_c)
+        await session.flush()
+
+        profile_c = ChildProfile(
+            family_id=fam_c.id, display_name="Reader C", age_band="10-13"
+        )
+        session.add(profile_c)
+        await session.flush()
+
+        session.add_all(
+            [
+                User(family_id=fam_c.id, role="guardian", authn_subject="guardian-c"),
+                User(
+                    family_id=fam_c.id,
+                    role="child",
+                    authn_subject="child-c",
+                    child_profile_id=profile_c.id,
+                ),
+            ]
+        )
+        await session.commit()
+
+        return Stranger(
+            family_id=fam_c.id,
+            guardian_token="guardian-c",
+            child_token="child-c",
+            child_profile_id=profile_c.id,
+        )

@@ -126,6 +126,38 @@ async def _child_user_for_profile(session: AsyncSession, profile: ChildProfile) 
     return await _provision_child_user(session, profile)
 
 
+def _is_authn_subject_conflict(exc: IntegrityError) -> bool:
+    """Return True only for a unique violation on the ``authn_subject`` index.
+
+    The double-mint race is benign only when the failure is a duplicate-key
+    conflict on ``ix_user_authn_subject``; an FK or CHECK violation is a real
+    error a retry cannot fix and must propagate. A bare ``"authn_subject" in
+    str(exc.orig)`` match is brittle: it silently reclassifies an unrelated
+    error whose text happens to mention the column, and it breaks if the
+    message format changes. Prefer the driver-reported SQLSTATE 23505
+    (``unique_violation``) plus the constraint/index name, and fall back to the
+    message text only when the driver does not surface either, so behaviour
+    stays a strict superset of the old check.
+
+    Args:
+        exc: The ``IntegrityError`` raised by the savepoint flush.
+
+    Returns:
+        bool: True when the error is the ``authn_subject`` unique conflict.
+    """
+    orig = exc.orig
+    # asyncpg exposes ``sqlstate``; psycopg exposes ``pgcode``. 23505 is
+    # unique_violation. Anything else is not the benign double-mint race.
+    sqlstate = getattr(orig, "sqlstate", None) or getattr(orig, "pgcode", None)
+    if sqlstate is not None and sqlstate != "23505":
+        return False
+    constraint = getattr(orig, "constraint_name", None)
+    if constraint:
+        return "authn_subject" in constraint
+    # Driver did not surface the constraint name; fall back to message text.
+    return "authn_subject" in str(orig)
+
+
 async def _provision_child_user(session: AsyncSession, profile: ChildProfile) -> User:
     """Create the profile's child ``User`` row, surviving a double-mint race.
 
@@ -170,12 +202,22 @@ async def _provision_child_user(session: AsyncSession, profile: ChildProfile) ->
     except IntegrityError as exc:
         # Only the authn_subject unique conflict is the benign double-mint
         # race; an FK or CHECK violation is a real error and must propagate.
-        if "authn_subject" not in str(exc.orig):
+        if not _is_authn_subject_conflict(exc):
             raise
         logger.warning(
             "child_session.provision_conflict",
             profile_id=str(profile.id),
         )
+        # #ASSUME: concurrency: recovery relies on READ COMMITTED isolation
+        # (Postgres' default). The loser's INSERT blocks on the winner's
+        # uncommitted row, then raises 23505 only once the winner COMMITS, so a
+        # fresh per-statement snapshot makes the winner's row visible to this
+        # SELECT. Under REPEATABLE READ / SERIALIZABLE the loser's snapshot
+        # predates the winner's commit, this SELECT returns None, and the guard
+        # below re-raises instead of silently minting against a missing row.
+        # #VERIFY: keep the request transaction at READ COMMITTED; if isolation
+        # is ever raised, replace this read with a retry that opens a new
+        # snapshot (see test_provision_race_recovers_winner).
         winner = await session.scalar(select(User).where(User.authn_subject == subject))
         if winner is None:  # pragma: no cover - conflict implies a winner row
             raise
