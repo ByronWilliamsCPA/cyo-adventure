@@ -135,6 +135,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
   inlines the jsx runtime with a CJS-interop shim whose runtime
   `require("react")` throws in browser consumers of the ESM dist.
+- Release pipeline reworked to be branch-ruleset compatible (#157; closes #183
+  and #158). `release.yml` no longer pushes a version bump directly to `main`
+  (rejected with GH013 by the `pull_request`, `required_signatures`, and
+  `merge_queue` rulesets); it now runs a two-phase flow. Phase 1 (`propose`):
+  on push to `main` (or manual dispatch), python-semantic-release is used
+  purely as a version calculator (`semantic-release version --print`; it
+  never writes files or tags), then `uv version` bumps `pyproject.toml`,
+  `uv lock` refreshes the embedded version, and the new
+  `scripts/promote_changelog.py` promotes the hand-curated `[Unreleased]`
+  CHANGELOG section to the release version. The changes go up as a
+  `release/vX.Y.Z` PR with auto-merge enabled, so the bump lands through the
+  merge queue like any other change. Phase 2 (`publish`): when that
+  `chore(release):` commit merges, the workflow tags `vX.Y.Z` and creates a
+  GitHub Release whose notes come from the new
+  `scripts/extract_changelog_section.py` (idempotent; safe on re-runs).
+  The propose job authenticates with a `RELEASE_TOKEN` fine-grained PAT
+  (contents + pull-requests write) because `GITHUB_TOKEN`-created PRs do not
+  trigger the required CI workflows; the job fails with an actionable message
+  if the secret is missing. `publish-pypi.yml` is deleted (#158): this is a
+  deployed application, not a distributable package, and the workflow would
+  have attempted a real PyPI upload on every GitHub Release.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -217,6 +238,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   fall back to the guardian token and bypass the lock), and never shows the
   ask-a-grown-up gate. The generated API client was regenerated from the
   updated OpenAPI schema.
+- JIT guardian provisioning (P6-03): new endpoint `POST /api/v1/onboarding`
+  (`api/onboarding.py`, wired in `app.py`). A guardian's first authenticated
+  call creates their `Family` plus a guardian `User` row keyed on the verified
+  Supabase `sub` and returns 201; every later call is idempotent, returning
+  the existing `{family_id, user_id, role, created: false}` with 200. This is
+  the only endpoint that accepts a fully verified token whose subject has no
+  `User` row yet: a new `require_onboarding_identity` dependency in
+  `api/deps.py` verifies the token through the same shared OIDC decode path
+  (`_decode_oidc_payload`, factored out of and now also backing
+  `_verify_oidc_jwt`) and additionally extracts the optional `email` claim;
+  `require_principal` and every other endpoint keep rejecting unknown
+  subjects with 401 exactly as before. A child session token (child audience)
+  is refused with 403: a reading credential can never provision a guardian
+  account. Admin and guardian are disjoint roles (an admin holds no family
+  membership and resolves to an empty profile set), and onboarding cannot
+  tell an intended admin apart from a guardian: a seeded admin resolves to
+  its existing row and is returned unchanged (no family is created), so
+  admin accounts must be seeded before their first sign-in. Two racing
+  first-login requests are resolved via the repo's savepoint-retry pattern
+  (both inserts inside `begin_nested()`; on the `ix_user_authn_subject`
+  `IntegrityError` the savepoint unwinds and the loser re-reads and returns
+  the winner's row, never a 500). The request body carries only a
+  consent-capture seam (`OnboardingConsent`, accepted but not recorded;
+  `_record_consent` is the documented no-op hook P7-02 fills). Schema: new
+  nullable `email` varchar(320) contact column on `public."user"`
+  (`supabase/migrations/20260711204606_add_user_email.sql` plus the ORM
+  column in `db/models.py`), populated from the Supabase user's email claim
+  when present (it may be an Apple relay address) and NEVER used as an
+  identity key; `authn_subject` remains the sole key. The generated frontend
+  client (`frontend/src/client/`) is regenerated for the new contract.
 - Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
   fixture (`tests/integration/conftest.py::seed`, family A and B) is now
   joined by a third, completely unrelated `stranger` fixture (family C, no
