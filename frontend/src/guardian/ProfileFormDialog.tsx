@@ -129,22 +129,24 @@ export function ProfileFormDialog({
         }}
       >
         {errorMsg ? (
-          <p role="alert" className="profile-form__error">
+          <p role="alert" className="profile-form__error cyo-text-error">
             {errorMsg}
           </p>
         ) : null}
-        <label>
+        <label className="cyo-field">
           Name
           <input
+            className="cyo-field__control"
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
             maxLength={120}
             required
           />
         </label>
-        <label>
+        <label className="cyo-field">
           Age band
           <select
+            className="cyo-field__control"
             value={ageBand}
             onChange={(e) => setAgeBand(e.target.value as AgeBandValue)}
           >
@@ -155,13 +157,14 @@ export function ProfileFormDialog({
             ))}
           </select>
         </label>
-        <label>
+        <label className="cyo-field">
           Reading level cap
           <input
             type="number"
             min="0"
             max="99"
             step="0.5"
+            className="cyo-field__control"
             value={cap}
             onChange={(e) => setCap(e.target.value)}
             aria-describedby="reading-level-cap-help"
@@ -172,7 +175,7 @@ export function ProfileFormDialog({
         </p>
         <fieldset className="profile-form__avatars">
           <legend>Avatar</legend>
-          <label>
+          <label className="cyo-field">
             <input
               type="radio"
               name="avatar"
@@ -182,7 +185,7 @@ export function ProfileFormDialog({
             None
           </label>
           {AVATARS.map((option) => (
-            <label key={option.id}>
+            <label key={option.id} className="cyo-field">
               <input
                 type="radio"
                 name="avatar"
@@ -199,7 +202,7 @@ export function ProfileFormDialog({
             </label>
           ))}
         </fieldset>
-        <label>
+        <label className="cyo-field">
           <input
             type="checkbox"
             checked={tts}
