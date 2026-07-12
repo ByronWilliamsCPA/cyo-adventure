@@ -1,0 +1,97 @@
+# Trigger Homelab Image Build
+# Fires a repository_dispatch (event type cyo-adventure-push) at
+# ByronWilliamsCPA/homelab-infra so its cyo-adventure-build.yml rebuilds and
+# publishes the backend/frontend images from the exact commit just pushed to
+# main. Before this existed, homelab-infra's build only ran on manual
+# workflow_dispatch or a weekly schedule, so merges here could sit unpublished
+# for days (the "why is the live site stale" gap); the weekly schedule remains
+# over there as a safety net if this sender or its token breaks.
+#
+# Auth: HOMELAB_INFRA_DISPATCH_TOKEN must be a fine-grained PAT (or GitHub App
+# token) with Contents read/write on the homelab-infra repo (the permission
+# POST /repos/{owner}/{repo}/dispatches actually requires per GitHub's
+# fine-grained-PAT reference; Metadata read is implied, Actions permissions
+# are NOT needed and NOT sufficient: an Actions-only PAT gets HTTP 403
+# "Resource not accessible by personal access token"), stored as an Actions
+# secret in THIS repo.
+# #ASSUME: security: Contents read/write is broader than this one dispatch
+# call needs (it also grants code write on homelab-infra); accepted risk from
+# the PR #218 review, since GitHub exposes no narrower fine-grained PAT
+# permission for this endpoint.
+# #VERIFY: a GitHub App installation token scoped to homelab-infra is the
+# tighter alternative; switch to one if the PAT's grant ever widens beyond
+# that single repo.
+# #ASSUME: external resources: the secret exists and is non-empty; an unset
+# secret renders as an empty env var, which the guard step below turns into
+# an explicit red run, and an invalid or expired token fails the gh call
+# loudly (HTTP 401). Neither case silently skips: a broken dispatch shows up
+# as a red run on main, not a stale deploy.
+# #VERIFY: rotate the PAT before expiry; a red run of this workflow on main
+# means dispatches are NOT reaching homelab-infra.
+#
+# #ASSUME: external resources: the receiver (homelab-infra's
+# cyo-adventure-build.yml, live on its main since PR #591 merged) listens
+# for exactly event_type cyo-adventure-push and reads client_payload.ref as
+# the source ref to build. POST /dispatches returns 204 whether or not
+# anything listens, so if the receiver's trigger is ever renamed or removed
+# this sender goes green while no build runs; the receiver's weekly
+# schedule bounds that silent window.
+# #VERIFY: if the event_type or payload field ever changes there, change it
+# here in the same PR.
+name: Trigger Homelab Image Build
+
+on:
+  push:
+    branches: [main]
+    # Doc-only merges don't change image content; skip the dispatch (the
+    # image build would succeed but publish a byte-identical app). Anything
+    # not listed here (src/, frontend/, Dockerfiles, pyproject/uv.lock, ...)
+    # still triggers.
+    # #EDGE: external resources: GitHub evaluates push path filters against
+    # at most the first 300 changed files; a mega-merge touching more than
+    # 300 files can skip this workflow entirely (silent skip, no red run).
+    # #VERIFY: the receiver's weekly scheduled build backstops any skipped
+    # dispatch within a week.
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '.claude/**'
+      - 'mkdocs.yml'
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  # Never cancel an in-flight dispatch: each one is a near-instant API call,
+  # and homelab-infra's own concurrency group handles superseded builds.
+  # With cancel-in-progress false, GitHub keeps one running plus one pending
+  # run and auto-cancels older pending ones; that is benign here because the
+  # newest SHA's dispatch is the one kept, and each dispatch carries its own
+  # exact SHA.
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Dispatch to homelab-infra
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Harden the runner
+        # deferral: 2026-09-18
+        uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
+        with:
+          egress-policy: audit
+
+      - name: Fire repository_dispatch (cyo-adventure-push)
+        env:
+          GH_TOKEN: ${{ secrets.HOMELAB_INFRA_DISPATCH_TOKEN }}
+          SHA: ${{ github.sha }}
+        run: |
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "::error::HOMELAB_INFRA_DISPATCH_TOKEN is missing or empty; dispatch not sent"
+            exit 1
+          fi
+          gh api repos/ByronWilliamsCPA/homelab-infra/dispatches \
+            -f event_type=cyo-adventure-push \
+            -f "client_payload[ref]=${SHA}"
+          echo "Dispatched image build for ${SHA} to homelab-infra" >> "$GITHUB_STEP_SUMMARY"

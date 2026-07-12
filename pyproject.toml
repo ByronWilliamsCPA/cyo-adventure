@@ -77,6 +77,11 @@ dependencies = [
     "jsonschema>=4.23",
     "google-genai>=2.10.0",
     "pillow>=12.3.0",
+    # ADR-013 dependency floor: >=45 carries the ML-DSA/SLH-DSA (FIPS 204/205)
+    # primitives. Also arrives via pyjwt[crypto]; this explicit constraint is
+    # what makes a transitive downgrade below the floor a resolver error
+    # instead of a silent posture regression. Do not remove as redundant.
+    "cryptography>=45",
 ]
 
 # Optional dependency groups

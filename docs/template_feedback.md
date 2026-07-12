@@ -750,3 +750,34 @@ job conclusion so the two cannot disagree.
 
 **Affected Files**: template `scripts/check_fips_compatibility.py`,
 `.github/workflows/fips-compatibility.yml`
+
+---
+
+### FIPS checker has no awareness of the finalized post-quantum standards (FIPS 203/204/205)
+
+- **Priority**: Medium
+- **Category**: Tooling
+- **Discovered**: 2026-07-11
+
+**Issue**: `scripts/check_fips_compatibility.py` predates the August 2024 NIST post-quantum
+standards. It has no concept of ML-KEM (FIPS 203), ML-DSA (FIPS 204), SLH-DSA (FIPS 205), or
+hybrid key-exchange groups such as `X25519MLKEM768`, and it gives no guidance when code uses
+pre-standardization names (Kyber, Dilithium, SPHINCS+), which are not the finalized,
+FIPS-validated parameter sets. Its package hints are also stale: `cryptography` gained
+ML-DSA/SLH-DSA primitives around version 45, which is exactly the floor a project planning a
+PQC migration needs to know about, and the checker's advice stops at "version >= 3.4.6".
+
+**Context**: Found while executing this project's hybrid PQC readiness plan (ADR-013 in this
+repo). The checker is the template's designated FIPS gate, so a template-generated project
+adopting NIST-approved PQC algorithms would get zero support (and, with naive name matching,
+possibly false flags) from the very tool meant to police algorithm choice.
+
+**Suggested Fix**: Adopt this repo's extension upstream: (1) add an approved set for the FIPS
+203/204/205 names and `X25519MLKEM768`, exempted from all name matching; (2) warn on
+pre-standardization names (kyber/dilithium/sphincs) with a hint to the finalized FIPS name;
+(3) update the `cryptography` hint to mention the >= 45 floor for ML-DSA/SLH-DSA primitives
+and the `pyjwt` hint to cover asymmetric-only allowlists. See this repo's
+`scripts/check_fips_compatibility.py` (`FIPS_PQC_APPROVED`, `PQC_PRE_STANDARD_NAMES`,
+`_check_pqc_pre_standard_name`) for a working implementation.
+
+**Affected Files**: template `scripts/check_fips_compatibility.py`

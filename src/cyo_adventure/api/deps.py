@@ -213,9 +213,13 @@ async def _decode_oidc_payload(token: str) -> dict[str, Any]:
     """Verify a Supabase-issued JWT and return its full verified payload.
 
     Verifies signature (via the cached JWKS), issuer, audience, and expiry.
-    Only ``RS256``/``ES256`` are accepted; an explicit algorithm allowlist is
-    what defeats an ``alg=none`` or HS256-confusion forgery attempt, since
-    PyJWT never falls back to a caller-supplied algorithm.
+    Only algorithms on the configured allowlist are accepted
+    (``settings.oidc_allowed_algs``, default ``RS256``/``ES256``); an explicit
+    allowlist is what defeats an ``alg=none`` or HS256-confusion forgery
+    attempt, since PyJWT never falls back to a caller-supplied algorithm. The
+    allowlist is config-driven (ADR-013: hybrid PQC readiness) so a future
+    post-quantum JOSE algorithm is an env change; the Settings validator
+    guarantees it is non-empty and never contains ``none`` or ``HS*``.
 
     This is the single decode path shared by ``_verify_oidc_jwt`` (subject
     only, used by ``require_principal``) and ``_verify_oidc_identity`` (subject
@@ -251,7 +255,7 @@ async def _decode_oidc_payload(token: str) -> dict[str, Any]:
         return jwt.decode(
             token,
             signing_key.key,  # pyright: ignore[reportAny]
-            algorithms=["RS256", "ES256"],
+            algorithms=list(settings.oidc_allowed_algs),
             audience=settings.oidc_audience,
             issuer=settings.oidc_issuer,
             options={"require": ["exp", "iat", "sub"]},
