@@ -38,7 +38,7 @@ jobs:
       contents: read
       pull-requests: write
       checks: write
-    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@5a9ea882c71cfc17d7e70f450a7bef113ea85b9f # v7.0.13
+    uses: ByronWilliamsCPA/.github/.github/workflows/python-ci.yml@c4ba2d18e4de831cbdbffcafd8e033473c0a0059 # #270: parallel buckets pass --cov-fail-under=0, coverage-combine gates
     with:
       python-version: "3.12"
       coverage-threshold: 80
@@ -53,6 +53,13 @@ jobs:
       # cyo_adventure is an installable package with a build backend; the shared
       # workflow defaults no-build: true, which would block the editable install.
       no-build: false
+      # Opt-in trial of ByronWilliamsCPA/.github#269: splits unit/integration/
+      # security into parallel jobs instead of one sequential job, taking the
+      # ~5.5min integration suite off the critical path it currently shares
+      # with unit+security. Relies on relative_files = true below (already
+      # set) for coverage-combine's cross-runner `coverage combine` to merge
+      # correctly; see coverage-combine's inline #ASSUME in python-ci.yml.
+      parallel-tests: true
     secrets: inherit
 
   frontend:

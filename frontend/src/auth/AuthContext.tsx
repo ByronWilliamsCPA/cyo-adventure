@@ -12,6 +12,7 @@ import {
   type AuthStatus,
 } from './authContext'
 import { clearChildSession } from './childSession'
+import { coolParentalGate } from './parentalGateState'
 import { supabase } from './supabaseClient'
 import { isRole, type Principal } from './types'
 
@@ -198,6 +199,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut: async () => {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
+        // #ASSUME: security: an explicit sign-out hands the device over, so
+        // any warm parental-gate state (P6-08) must die with the session
+        // rather than surviving in module memory for the next sign-in within
+        // the TTL. Cool it here deterministically instead of relying on the
+        // async SIGNED_OUT event.
+        // #VERIFY: AuthContext.test.tsx "sign-out drops warm parental-gate
+        // state".
+        coolParentalGate()
       },
     }),
     [status, principal, authError]
