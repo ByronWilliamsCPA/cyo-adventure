@@ -1,15 +1,23 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { getChildSession, setChildSession } from '../auth/childSession'
 import { ProfilePickerPage } from './ProfilePickerPage'
 
 const mockGet = vi.fn()
-const fakeApi = { get: mockGet }
+const mockPost = vi.fn()
+const fakeApi = { get: mockGet, post: mockPost }
 vi.mock('../hooks/useApi', () => ({
   useApi: () => fakeApi,
 }))
+
+const mockNavigate = vi.fn()
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
+  return { ...actual, useNavigate: () => mockNavigate }
+})
 
 function renderPicker() {
   return render(
@@ -19,8 +27,25 @@ function renderPicker() {
   )
 }
 
+const ONE_PROFILE = {
+  profiles: [
+    {
+      id: 'p1',
+      display_name: 'Reader A',
+      age_band: '10-13',
+      reading_level_cap: 99,
+      avatar: 'fox',
+      tts_enabled: false,
+      created_at: '2026-07-02T00:00:00Z',
+    },
+  ],
+}
+
 beforeEach(() => {
   mockGet.mockReset()
+  mockPost.mockReset()
+  mockNavigate.mockReset()
+  localStorage.clear()
 })
 
 describe('ProfilePickerPage', () => {
@@ -180,9 +205,7 @@ describe('ProfilePickerPage', () => {
 
     // The redacted log still fires (it precedes the cancelled check); the
     // point is that no state write follows on the unmounted component.
-    await waitFor(() =>
-      expect(errorSpy).toHaveBeenCalledWith('profile list failed', 'late boom')
-    )
+    await waitFor(() => expect(errorSpy).toHaveBeenCalledWith('profile list failed', 'late boom'))
     errorSpy.mockRestore()
   })
 
@@ -201,5 +224,126 @@ describe('ProfilePickerPage', () => {
     await new Promise((resolve) => setTimeout(resolve, 0))
     expect(mockGet).toHaveBeenCalledTimes(1)
     expect(document.body.textContent).toBe('')
+  })
+})
+
+describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
+  it('mints and stores a child session before navigating to the library', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/child-sessions', { profile_id: 'p1' })
+    )
+    expect(getChildSession()).toEqual({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
+  })
+
+  it('still navigates to the library when the mint call fails, without storing a session', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    expect(getChildSession()).toBeNull()
+    errorSpy.mockRestore()
+  })
+
+  it('does not navigate on click before the mint call settles', async () => {
+    const user = userEvent.setup()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    let resolveMint!: (value: unknown) => void
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveMint = resolve
+        })
+    )
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    expect(mockNavigate).not.toHaveBeenCalled()
+
+    resolveMint({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+  })
+
+  it('clears a prior session before minting so a failed mint does not carry the old token', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const user = userEvent.setup()
+    // A leftover session for a DIFFERENT profile is present before the pick.
+    setChildSession({ token: 'old-token', expiresAt: '2099-01-01T00:00:00Z', profileId: 'p_old' })
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockRejectedValue({ isAxiosError: true, response: { status: 500 } })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    // The stale p_old session must be gone: the interceptor would otherwise
+    // attach it on /library/p1 and 403 as the wrong profile.
+    expect(getChildSession()).toBeNull()
+    errorSpy.mockRestore()
+  })
+
+  it('fires only one mint when the tile is double-clicked', async () => {
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    let resolveMint!: (value: unknown) => void
+    mockPost.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveMint = resolve
+        })
+    )
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    // Two rapid clicks while the first mint is still in flight.
+    fireEvent.click(tile)
+    fireEvent.click(tile)
+
+    await waitFor(() => expect(mockPost).toHaveBeenCalledTimes(1))
+    resolveMint({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/library/p1'))
+    expect(mockPost).toHaveBeenCalledTimes(1)
+  })
+
+  it('lets a modified click fall through to the browser without minting', async () => {
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    // A Ctrl/Cmd-click (open-in-new-tab) must not hijack into the async mint
+    // flow; the native href navigation is left to the browser.
+    fireEvent.click(tile, { ctrlKey: true })
+
+    expect(mockPost).not.toHaveBeenCalled()
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })

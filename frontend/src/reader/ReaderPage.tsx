@@ -16,9 +16,11 @@ import { EmptyState } from '@ds/components/EmptyState'
 import {
   ForbiddenError,
   StoryNotFoundError,
+  UnauthenticatedError,
   type CompletionRequest,
   type SeriesNextBookInfo,
 } from '../api/readerApi'
+import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { cacheStorybook, getCachedStorybook, getReadingState, putReadingState } from '../offline/db'
 import {
   LocalWriteError,
@@ -50,16 +52,10 @@ export interface ReaderPageProps {
    * saved progress exists (spec section 6 no-clobber rule). */
   continuation?: ContinuationSeed
   /** Forwarded to the Reader's ending screen. */
-  fetchSeriesNext?: (
-    profileId: string,
-    storybookId: string
-  ) => Promise<SeriesNextBookInfo | null>
+  fetchSeriesNext?: (profileId: string, storybookId: string) => Promise<SeriesNextBookInfo | null>
 }
 
-type FetchServerState = (
-  profileId: string,
-  storybookId: string
-) => Promise<ReadingState | null>
+type FetchServerState = (profileId: string, storybookId: string) => Promise<ReadingState | null>
 type RecordCompletion = (body: CompletionRequest) => Promise<void>
 
 // Stable module-level defaults, not inline default-parameter expressions: a
@@ -72,7 +68,7 @@ type RecordCompletion = (body: CompletionRequest) => Promise<void>
 const NO_SERVER_STATE: FetchServerState = () => Promise.resolve(null)
 const NO_RECORD_COMPLETION: RecordCompletion = () => Promise.resolve()
 
-type ErrorPhase = 'not-found' | 'forbidden' | 'offline' | 'error'
+type ErrorPhase = 'not-found' | 'forbidden' | 'unauthenticated' | 'offline' | 'error'
 
 type SaveWarning = 'lost' | 'failing' | null
 
@@ -94,6 +90,7 @@ type PageState =
   | { phase: 'reading'; story: Storybook; initialReading: ReadingState | undefined }
   | { phase: 'not-found' }
   | { phase: 'forbidden' }
+  | { phase: 'unauthenticated' }
   | { phase: 'offline' }
   | { phase: 'error' }
 
@@ -105,6 +102,7 @@ interface ConflictState {
 function loadErrorPhase(error: unknown): ErrorPhase {
   if (error instanceof StoryNotFoundError) return 'not-found'
   if (error instanceof ForbiddenError) return 'forbidden'
+  if (error instanceof UnauthenticatedError) return 'unauthenticated'
   if (error instanceof OfflineError) return 'offline'
   return 'error'
 }
@@ -317,6 +315,19 @@ export function ReaderPage({
           updateSaveWarning('lost')
           return
         }
+        if (error instanceof UnauthenticatedError) {
+          // #CRITICAL: security: the child session token is dead (expired or
+          // revoked). Every subsequent save will 401 identically, so stop the
+          // fire-on-every-choice retry loop here and drop any stale save
+          // banner, then surface the ask-a-grown-up gate. Promising "we'll
+          // keep trying" would be a lie: nothing retries until a grown-up
+          // signs in again and a fresh session is minted.
+          // #VERIFY: ReaderPage.test.tsx "shows the ask-a-grown-up gate and
+          // stops saving when a save 401s".
+          updateSaveWarning(null)
+          setPageState({ phase: 'unauthenticated' })
+          return
+        }
         failedSaveCountRef.current += 1
         console.error('[reader] progress save failed', {
           profileId,
@@ -461,6 +472,22 @@ export function ReaderPage({
         title="You don't have access to this story"
         description="This story isn't available on this profile. Let's head back to your books."
         actions={<BackToLibrary profileId={profileId} />}
+      />
+    )
+  }
+  if (pageState.phase === 'unauthenticated') {
+    return (
+      <EmptyState
+        title="Ask a grown-up to help"
+        description="A grown-up needs to sign in again before you can keep reading."
+        actions={
+          <>
+            <Button variant="primary" onClick={() => void navigate(GUARDIAN_LOGIN_PATH)}>
+              I am a grown-up
+            </Button>
+            <BackToLibrary profileId={profileId} />
+          </>
+        }
       />
     )
   }

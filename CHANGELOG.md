@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Guardian 401 retry-with-refresh (P6-06): when a request that carried the
+  guardian bearer gets a 401 (typically an access token that expired before
+  supabase-js's background refresh caught it), `useApi`'s response
+  interceptor now calls `supabase.auth.refreshSession()` once, writes the
+  new access token to `localStorage['auth_token']` (an idempotent
+  write-through; `AuthContext`'s `TOKEN_REFRESHED` handler later stores the
+  same value), and retries the original request exactly once with the fresh
+  token. Concurrent 401s from parallel requests share a single in-flight
+  refresh promise (Supabase rotates refresh tokens on use, so racing
+  parallel refreshes could invalidate each other), and retried requests
+  carry a one-shot config marker so a second 401 falls through to the
+  pre-existing failure path (clear token, redirect off guardian paths)
+  instead of looping. The Supabase client is loaded via dynamic import so
+  the kid bundle still omits it entirely. Child-token 401s are deliberately
+  untouched: child session tokens are not refreshable by design (fixed TTL;
+  expiry means hand the device back to a grown-up), so they keep the
+  existing clear-session-and-gate behavior, and 401s on requests that
+  carried no bearer at all are also unchanged. The refresh is bounded by a
+  client-side deadline, cannot run from a kid-token route (it never imports
+  the Supabase client on the kid surface), and a refresh whose write-through
+  to `localStorage` fails opens a short cooldown so a locked-down browser
+  cannot drive a refresh-token-rotation storm.
 - `scripts/backfill_covers_r2.py`: one-shot operator script that migrates
   pre-R2 cover art from Supabase Storage to Cloudflare R2 (#214), closing the
   gap the R2 cutover PR (#209) explicitly left open ("this PR does not
@@ -143,6 +165,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   externalized in `frontend/design-system/vite.config.ts`. Rolldown otherwise
   inlines the jsx runtime with a CJS-interop shim whose runtime
   `require("react")` throws in browser consumers of the ESM dist.
+- Release pipeline reworked to be branch-ruleset compatible (#157; closes #183
+  and #158). `release.yml` no longer pushes a version bump directly to `main`
+  (rejected with GH013 by the `pull_request`, `required_signatures`, and
+  `merge_queue` rulesets); it now runs a two-phase flow. Phase 1 (`propose`):
+  on push to `main` (or manual dispatch), python-semantic-release is used
+  purely as a version calculator (`semantic-release version --print`; it
+  never writes files or tags), then `uv version` bumps `pyproject.toml`,
+  `uv lock` refreshes the embedded version, and the new
+  `scripts/promote_changelog.py` promotes the hand-curated `[Unreleased]`
+  CHANGELOG section to the release version. The changes go up as a
+  `release/vX.Y.Z` PR with auto-merge enabled, so the bump lands through the
+  merge queue like any other change. Phase 2 (`publish`): when that
+  `chore(release):` commit merges, the workflow tags `vX.Y.Z` and creates a
+  GitHub Release whose notes come from the new
+  `scripts/extract_changelog_section.py` (idempotent; safe on re-runs).
+  The propose job authenticates with a `RELEASE_TOKEN` fine-grained PAT
+  (contents + pull-requests write) because `GITHUB_TOKEN`-created PRs do not
+  trigger the required CI workflows; the job fails with an actionable message
+  if the secret is missing. `publish-pypi.yml` is deleted (#158): this is a
+  deployed application, not a distributable package, and the workflow would
+  have attempted a real PyPI upload on every GitHub Release.
 - WCAG AA contrast sweep on the guardian console: every remaining
   resting-state (non-hover) use of the bright amber token as a border or
   text color moved to the contrast-safe `--color-amber-deep`, including
@@ -194,6 +237,95 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   reorder).
 
 ### Added
+- Parental gate on the guardian console's sensitive surfaces (P6-08), the gate
+  pattern Apple expects in Kids Category apps. A new `ParentalGate` component
+  (`frontend/src/auth/ParentalGate.tsx`) wraps, as a pathless layout route
+  inside the existing `ProtectedRoute`, the console review queue (`/guardian`),
+  review/approve detail (`/guardian/review/:id`), books/assignments
+  (`/guardian/books`), profile management (`/guardian/profiles`), and the
+  admin moderation pages (`/guardian/moderation-thresholds`,
+  `/guardian/moderation-dashboard`); future purchase routes (P8-06) join the
+  same group. When the gate is cold it renders a guardian re-auth challenge
+  (password re-entry via the existing Supabase client's `signInWithPassword`
+  against the current session user's email) instead of the wrapped page; a
+  correct password warms the gate for a 5-minute TTL held in module memory
+  only (`frontend/src/auth/parentalGateState.ts`, keyed by Supabase user id;
+  never `localStorage`, so a reload or new tab always re-challenges), a wrong
+  password shows an inline error and stays locked, and cancel navigates back.
+  Intake (`/guardian/intake`) and the request list (`/guardian/requests`)
+  deliberately stay outside the gate: viewing and asking are not the
+  high-stakes actions; approving, assigning, and settings are. Kid routes have
+  zero interaction with the gate (it ships in the guardian lazy chunk only).
+  A guardian who signed in via OAuth has no password to re-enter and
+  supabase-js offers no client-side OAuth re-auth challenge, so OAuth users
+  pass through with a console-visible warning rather than being locked out of
+  approval; a real challenge for them (gate PIN or backend re-auth grant) is
+  follow-up work. **Deferred, deliberately**: the plan's companion
+  "approval freshness guard" backend note (a bounded `auth_time`/`iat`
+  recency check on the approve endpoint) is not implemented because it is not
+  sound with Supabase sessions; the client's silent token refresh also mints
+  a fresh `iat`, so an `iat`-recency check cannot distinguish a
+  re-authenticated human from a walked-away auto-refreshing session.
+  Server-side freshness needs its own attestation design (candidate: a
+  backend-minted, short-lived re-auth grant demanded by the approve
+  endpoint), tracked as future work. Covered by a 12-case Vitest suite
+  (`ParentalGate.test.tsx`: cold challenge, unlock, wrong password,
+  connection failure, warm mount, cross-user warm entry, TTL expiry under
+  fake timers, OAuth pass-through, cancel, no-session fail-closed, no
+  storage persistence, in-flight lock) plus router-level tests that the cold
+  gate blocks the console, intake stays ungated, and the kid surface never
+  mounts the gate.
+- JIT guardian provisioning (P6-03): new endpoint `POST /api/v1/onboarding`
+  (`api/onboarding.py`, wired in `app.py`). A guardian's first authenticated
+  call creates their `Family` plus a guardian `User` row keyed on the verified
+  Supabase `sub` and returns 201; every later call is idempotent, returning
+  the existing `{family_id, user_id, role, created: false}` with 200. This is
+  the only endpoint that accepts a fully verified token whose subject has no
+  `User` row yet: a new `require_onboarding_identity` dependency in
+  `api/deps.py` verifies the token through the same shared OIDC decode path
+  (`_decode_oidc_payload`, factored out of and now also backing
+  `_verify_oidc_jwt`) and additionally extracts the optional `email` claim;
+  `require_principal` and every other endpoint keep rejecting unknown
+  subjects with 401 exactly as before. A child session token (child audience)
+  is refused with 403: a reading credential can never provision a guardian
+  account. Admin and guardian are disjoint roles (an admin holds no family
+  membership and resolves to an empty profile set), and onboarding cannot
+  tell an intended admin apart from a guardian: a seeded admin resolves to
+  its existing row and is returned unchanged (no family is created), so
+  admin accounts must be seeded before their first sign-in. Two racing
+  first-login requests are resolved via the repo's savepoint-retry pattern
+  (both inserts inside `begin_nested()`; on the `ix_user_authn_subject`
+  `IntegrityError` the savepoint unwinds and the loser re-reads and returns
+  the winner's row, never a 500). The request body carries only a
+  consent-capture seam (`OnboardingConsent`, accepted but not recorded;
+  `_record_consent` is the documented no-op hook P7-02 fills). Schema: new
+  nullable `email` varchar(320) contact column on `public."user"`
+  (`supabase/migrations/20260711204606_add_user_email.sql` plus the ORM
+  column in `db/models.py`), populated from the Supabase user's email claim
+  when present (it may be an Apple relay address) and NEVER used as an
+  identity key; `authn_subject` remains the sole key. The generated frontend
+  client (`frontend/src/client/`) is regenerated for the new contract.
+- Cross-tenant IDOR extension (P6-10): the authorization suite's two-family
+  fixture (`tests/integration/conftest.py::seed`, family A and B) is now
+  joined by a third, completely unrelated `stranger` fixture (family C, no
+  shared storybook, assignment, story request, or profile with A or B), so a
+  query that happens to reject only the one other family the suite knew
+  about (rather than correctly checking "belongs to the caller's family")
+  can no longer pass unnoticed. `test_authz_matrix.py` gains stranger-family
+  parametrized checks in both directions (family C's guardian/child tokens
+  against family A's resources, and family A's child token against family
+  C's profile) across every ownership-scoped route already covered for
+  family B, plus a leak-by-inclusion check on `GET /api/v1/profiles` (the
+  response body's id set, not just the status code, is asserted to exclude
+  both other families). `test_child_sessions.py` extends the same coverage
+  to the real, backend-signed child-session JWT mint/verify path (G1/P6-04):
+  a guardian cannot mint a session for a stranger family's profile in either
+  direction, and a minted third-family token is proven to fail against
+  family A's library/guardian routes and vice versa, closing the gap left by
+  testing only the dev-stub role tokens. `test_guardian_books_api.py` adds
+  the same third-family isolation and assignment-leak checks the file
+  already ran against family B. No cross-tenant leak was found; every new
+  check landed green against the existing implementation.
 - Child-scoped session tokens for the kid surface (G1 / P6-04). A guardian (or
   admin) exchanges a child profile id for a short-lived, backend-signed HS256
   JWT scoped to `role=child` and that single `profile_id`; the kid surface uses
@@ -226,6 +358,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `CHILD_SESSION_TTL_SECONDS` (default 43200, a 12h offline reading session,
   since a child session cannot be refreshed). The dev-stub token path is
   unchanged and remains local-only.
+
+  **Frontend half (G1)**: the kid surface now runs on the minted child token
+  instead of the guardian's own bearer. `ProfilePickerPage` mints a session
+  (`frontend/src/kid/childSessionApi.ts`, a hand-typed adapter over the
+  generated `ChildSessionCreateBody`/`ChildSessionView` types) with the
+  guardian's bearer right after a profile tile is picked, stores
+  `{token, expiresAt, profileId}` in `localStorage`
+  (`frontend/src/auth/childSession.ts`), then navigates into
+  `/library/:profileId` regardless of whether the mint succeeded (a failed
+  mint falls back to the pre-G1 behavior of the guardian token, if any, so a
+  transient mint failure never traps a child on the picker). Token selection
+  lives centrally in `useApi.ts`'s request interceptor: on a kid-token route
+  (`/library/*`, `/read/*`) it attaches a still-valid child token instead of
+  the guardian bearer, and never attaches both; `/kids` itself is
+  deliberately EXCLUDED from "kid-token route" even though it is
+  kid-facing, because the picker's own profile listing and mint call need
+  the guardian's full-family scope, and `KidNav`'s "Switch reader" link
+  returns to `/kids` without clearing anything, so a lingering child token
+  there would silently narrow the picker to one profile. The response
+  interceptor determines which bearer a failing request actually carried
+  (by comparing its `Authorization` header to the stored child token, not by
+  route) before clearing anything, so a dead child token never tears down a
+  live guardian session and vice versa; a kid-route 401 clears the child
+  session and relies on the existing ask-a-grown-up gate
+  (`classifyApiError`'s `unauthenticated` state in `ProfilePickerPage` and
+  `LibraryPage`) to recover, with no new error UI. An expired child token is
+  also caught client-side (`isExpired`/`getValidChildSession`) before ever
+  being attached, as a courtesy on top of the server's own `exp`
+  verification. `AuthContext.tsx`'s `safeRemoveToken()` now also clears the
+  child session, so guardian sign-out (or a guardian session that never
+  resolves to a principal) ends a shared-device child session too. Out of
+  scope for this slice (tracked separately): per-profile PIN (P6-07), a
+  parental-gate re-auth wrapper (P6-08), Keychain/secure storage for the
+  child token (P8-02), and pre-checking token expiry before an offline sync
+  attempt (P6-06).
 - Guardian console patterns promoted into `@cyo/design-system`: new `Card`,
   `FormField`, and `Chip` primitives (with `.cyo-text-error` / `.cyo-text-muted`
   text-tone utilities, consuming the pre-existing amber token pair:

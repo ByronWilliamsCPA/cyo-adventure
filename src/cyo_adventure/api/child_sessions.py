@@ -19,6 +19,7 @@ from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
 from cyo_adventure.api.schemas import ChildSessionCreateBody, ChildSessionView
 from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
+from cyo_adventure.db.integrity import is_authn_subject_conflict
 from cyo_adventure.db.models import ChildProfile, User
 from cyo_adventure.utils.logging import get_logger
 
@@ -126,38 +127,6 @@ async def _child_user_for_profile(session: AsyncSession, profile: ChildProfile) 
     return await _provision_child_user(session, profile)
 
 
-def _is_authn_subject_conflict(exc: IntegrityError) -> bool:
-    """Return True only for a unique violation on the ``authn_subject`` index.
-
-    The double-mint race is benign only when the failure is a duplicate-key
-    conflict on ``ix_user_authn_subject``; an FK or CHECK violation is a real
-    error a retry cannot fix and must propagate. A bare ``"authn_subject" in
-    str(exc.orig)`` match is brittle: it silently reclassifies an unrelated
-    error whose text happens to mention the column, and it breaks if the
-    message format changes. Prefer the driver-reported SQLSTATE 23505
-    (``unique_violation``) plus the constraint/index name, and fall back to the
-    message text only when the driver does not surface either, so behaviour
-    stays a strict superset of the old check.
-
-    Args:
-        exc: The ``IntegrityError`` raised by the savepoint flush.
-
-    Returns:
-        bool: True when the error is the ``authn_subject`` unique conflict.
-    """
-    orig = exc.orig
-    # asyncpg exposes ``sqlstate``; psycopg exposes ``pgcode``. 23505 is
-    # unique_violation. Anything else is not the benign double-mint race.
-    sqlstate = getattr(orig, "sqlstate", None) or getattr(orig, "pgcode", None)
-    if sqlstate is not None and sqlstate != "23505":
-        return False
-    constraint = getattr(orig, "constraint_name", None)
-    if constraint:
-        return "authn_subject" in constraint
-    # Driver did not surface the constraint name; fall back to message text.
-    return "authn_subject" in str(orig)
-
-
 async def _provision_child_user(session: AsyncSession, profile: ChildProfile) -> User:
     """Create the profile's child ``User`` row, surviving a double-mint race.
 
@@ -202,7 +171,7 @@ async def _provision_child_user(session: AsyncSession, profile: ChildProfile) ->
     except IntegrityError as exc:
         # Only the authn_subject unique conflict is the benign double-mint
         # race; an FK or CHECK violation is a real error and must propagate.
-        if not _is_authn_subject_conflict(exc):
+        if not is_authn_subject_conflict(exc):
             raise
         logger.warning(
             "child_session.provision_conflict",

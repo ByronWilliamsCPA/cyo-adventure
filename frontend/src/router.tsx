@@ -16,6 +16,7 @@ import {
   ModerationDashboardPage,
   ModerationThresholdsPage,
   NotFoundPage,
+  ParentalGate,
   ProfilePickerPage,
   ProfilesPage,
   ReaderRoute,
@@ -96,34 +97,52 @@ export const routes = [
           {
             element: suspended(<GuardianShell />),
             children: [
-              { index: true, element: suspended(<ConsolePage />) },
+              // Outside the parental gate: requesting a story and watching the
+              // request list are viewing/asking surfaces, not the high-stakes
+              // actions (P6-08 gates approval, settings, and family
+              // management, not every guardian page).
               { path: 'intake', element: suspended(<IntakePage />) },
-              { path: 'books', element: suspended(<BooksPage />) },
               { path: 'requests', element: suspended(<RequestsPage />) },
-              { path: 'profiles', element: suspended(<ProfilesPage />) },
-              { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
               {
-                // Admin-only within the guardian subtree: a guardian who is
-                // not an admin already passed the outer ['guardian','admin']
-                // gate above, so this inner ProtectedRoute narrows further.
-                // deniedRedirectTo overrides the component's kid-picker
-                // default, which would otherwise send a denied guardian to
-                // the kid profile picker instead of somewhere they belong.
-                element: (
-                  <ProtectedRoute
-                    redirectTo={GUARDIAN_LOGIN_PATH}
-                    allowedRoles={['admin']}
-                    deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
-                  />
-                ),
+                // Parental gate (P6-08): a pathless layout route wrapping the
+                // sensitive console surfaces, so a kid holding a signed-in
+                // device cannot reach approval (console queue + review
+                // detail), assignments (books), profile management, or the
+                // admin moderation settings without a guardian re-auth. Sits
+                // INSIDE ProtectedRoute (a signed-in guardian/admin is a
+                // precondition of re-auth) and renders its challenge in place
+                // of the child route until warm. Purchase routes join this
+                // group when they exist (P8-06).
+                element: suspended(<ParentalGate />),
                 children: [
+                  { index: true, element: suspended(<ConsolePage />) },
+                  { path: 'books', element: suspended(<BooksPage />) },
+                  { path: 'profiles', element: suspended(<ProfilesPage />) },
+                  { path: 'review/:storybookId', element: suspended(<ReviewDetailPage />) },
                   {
-                    path: 'moderation-thresholds',
-                    element: suspended(<ModerationThresholdsPage />),
-                  },
-                  {
-                    path: 'moderation-dashboard',
-                    element: suspended(<ModerationDashboardPage />),
+                    // Admin-only within the guardian subtree: a guardian who is
+                    // not an admin already passed the outer ['guardian','admin']
+                    // gate above, so this inner ProtectedRoute narrows further.
+                    // deniedRedirectTo overrides the component's kid-picker
+                    // default, which would otherwise send a denied guardian to
+                    // the kid profile picker instead of somewhere they belong.
+                    element: (
+                      <ProtectedRoute
+                        redirectTo={GUARDIAN_LOGIN_PATH}
+                        allowedRoles={['admin']}
+                        deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
+                      />
+                    ),
+                    children: [
+                      {
+                        path: 'moderation-thresholds',
+                        element: suspended(<ModerationThresholdsPage />),
+                      },
+                      {
+                        path: 'moderation-dashboard',
+                        element: suspended(<ModerationDashboardPage />),
+                      },
+                    ],
                   },
                 ],
               },
