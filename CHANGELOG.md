@@ -108,6 +108,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `supabase/migrations/20260711200745_enable_rls_all_tables.sql`.
 
 ### Changed
+- CI: `ci.yml` opts into the org reusable workflow's new `parallel-tests`
+  input (`ByronWilliamsCPA/.github` [#269](https://github.com/ByronWilliamsCPA/.github/pull/269)),
+  splitting the unit/integration/security pytest buckets out of one
+  sequential job into three parallel jobs plus a coverage-combine job. The
+  ~5.5 min integration suite no longer sits behind unit and security on the
+  critical path. No behavior change beyond CI wall-clock time: the same
+  `coverage-reports` artifact this repo's `coverage-upload` job already
+  consumes is produced under the same name and layout.
 - Cover-art storage backend pivoted from Supabase Storage to Cloudflare R2
   (`covers/storage.py`). `upload_cover()` now uses `boto3`'s S3-compatible
   client against R2's endpoint (`https://{account_id}.r2.cloudflarestorage.com`)
