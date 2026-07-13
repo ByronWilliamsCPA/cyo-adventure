@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Guardian parental gate: a "Not you? Sign out and use a different account"
+  link on the locked-challenge screen, for guardians who cannot
+  re-authenticate as the current session's owner (a test account, or one
+  whose password identity differs from the signed-in session). Signs out
+  through the existing `signOut()` flow; `ProtectedRoute` redirects once the
+  session clears.
+
 ### Fixed
 - Release-bump commits are now signed and self-verify before the release PR
   is opened. `createCommitOnBranch`'s `branchName` was populated with a
