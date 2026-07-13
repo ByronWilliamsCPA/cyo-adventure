@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Manual production smoke e2e tier (`frontend/e2e-prod/`, `npm run test:e2e:prod`):
+  signs in through the real login form against live production with a dedicated
+  test account, sourced from Infisical or a gitignored `.env.e2e-prod` fallback.
+  Deliberately kept out of CI (every run authenticates a real account against a
+  live system). `guardian-admin-smoke.spec.ts` is a regression guard for the
+  admin-only-account crash fixed by #236, walking `/guardian`,
+  `/guardian/intake`, `/guardian/requests`, and `/guardian/profiles`.
+
 ## [0.2.0] - 2026-07-12
 
 ### Added
