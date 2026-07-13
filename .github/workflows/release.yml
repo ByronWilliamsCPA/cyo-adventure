@@ -263,8 +263,30 @@ jobs:
           # creation errors are a hard failure, not a swallowed warning.
           RESPONSE="$(jq -n --arg q "${QUERY}" --argjson v "${VARS}" \
             '{query: $q, variables: $v}' | gh api graphql --input -)"
-          if [ -z "$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')" ]; then
+          COMMIT_OID="$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')"
+          if [ -z "${COMMIT_OID}" ]; then
             echo "::error::createCommitOnBranch failed for ${BRANCH}: ${RESPONSE}"
+            exit 1
+          fi
+          # #CRITICAL security: don't just trust that createCommitOnBranch
+          # produced a verified commit; ask GitHub to confirm it. This is the
+          # exact class of bug that stalled PR #241 for days with green CI
+          # and auto-merge enabled and nothing flagging it: a release commit
+          # that branch protection would reject sat unnoticed until a human
+          # happened to open the merge UI. Failing the job here turns that
+          # into an immediate, visible CI failure instead of a silent stall.
+          # #VERIFY every release commit is confirmed Verified before this
+          # step is allowed to succeed; if this ever fires, fix the
+          # commit-creation path above, do not admin-merge past it.
+          VERIFIED="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+            --jq '.commit.verification.verified')"
+          if [ "${VERIFIED}" != "true" ]; then
+            REASON="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+              --jq '.commit.verification.reason')"
+            echo "::error::Release commit ${COMMIT_OID} on ${BRANCH} is not" \
+              "verified (reason: ${REASON}). Branch protection will block" \
+              "this PR from merging; fix the commit-creation path in this" \
+              "workflow rather than merging around it."
             exit 1
           fi
           # Reuse an existing open release PR for this branch, else create one.
