@@ -16,6 +16,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   admin-only-account crash fixed by #236, walking `/guardian`,
   `/guardian/intake`, `/guardian/requests`, and `/guardian/profiles`.
 
+### Fixed
+- Production `story_request` table was missing 7 columns
+  (`initiator_role`, `age_band`, `length`, `narrative_style`, `series_id`,
+  `anchor_storybook_id`, `proposed_series_title`) that the baseline schema
+  declares: the baseline migration was recorded as applied in
+  `supabase_migrations.schema_migrations` but never actually ran these
+  changes against the live database, causing `GET /v1/story-requests` and
+  `GET /v1/admin/story-requests` to 500 with
+  `asyncpg.exceptions.UndefinedColumnError`.
+  `supabase/migrations/20260713173427_add_story_request_metadata_columns.sql`
+  backfills the missing columns and constraints, guarded to be a no-op
+  wherever the baseline already applied them cleanly (CI, a fresh dev
+  clone, staging) as well as on production, where it does the real work.
+
 ## [0.2.0] - 2026-07-12
 
 ### Added
