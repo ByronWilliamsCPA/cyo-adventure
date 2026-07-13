@@ -513,7 +513,7 @@ describe('ParentalGate', () => {
     await act(async () => {})
   })
 
-  it('does not offer a switch-account link while a sign-out or a submit is in flight', async () => {
+  it('disables the switch-account link while a sign-out is in flight', async () => {
     let resolveSignOut: (() => void) | undefined
     mockSignOut.mockImplementation(
       () =>
@@ -529,6 +529,56 @@ describe('ParentalGate', () => {
 
     expect(link).toBeDisabled()
     expect(link).toHaveTextContent(/signing out/i)
+    resolveSignOut?.()
+    await act(async () => {})
+  })
+
+  it('disables the switch-account link while a password submit is in flight', async () => {
+    // #CRITICAL: concurrency: the cross-guard companion to the re-entrant
+    // guards above -- a submit() in flight must also block switchAccount(),
+    // not just a second submit(), or signOut() and signInWithPassword() could
+    // race against the same Supabase client.
+    let resolveSignIn: (() => void) | undefined
+    mockSignInWithPassword.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSignIn = () => resolve()
+        })
+    )
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'pw' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm' }))
+
+    const link = await screen.findByRole('button', { name: /use a different account/i })
+    expect(link).toBeDisabled()
+    fireEvent.click(link)
+    expect(mockSignOut).not.toHaveBeenCalled()
+
+    resolveSignIn?.()
+    await waitFor(() => expect(screen.getByText('Sensitive content')).toBeInTheDocument())
+  })
+
+  it('disables the Confirm button while a switch-account sign-out is in flight', async () => {
+    let resolveSignOut: (() => void) | undefined
+    mockSignOut.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSignOut = () => resolve()
+        })
+    )
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    fireEvent.click(screen.getByRole('button', { name: /use a different account/i }))
+
+    const confirmButton = screen.getByRole('button', { name: 'Confirm' })
+    expect(confirmButton).toBeDisabled()
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'pw' } })
+    fireEvent.click(confirmButton)
+    expect(mockSignInWithPassword).not.toHaveBeenCalled()
+
     resolveSignOut?.()
     await act(async () => {})
   })
