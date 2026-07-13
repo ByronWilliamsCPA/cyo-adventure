@@ -301,12 +301,29 @@ class TestRealChangelog:
     ) -> None:
         """Promoting then extracting the real file yields a bounded section."""
         copied = tmp_path / "CHANGELOG.md"
-        copied.write_text(self._REAL.read_text(encoding="utf-8"), encoding="utf-8")
+        real_text = self._REAL.read_text(encoding="utf-8")
+        # #ASSUME data-integrity: this smoke test exercises the real file's
+        # header/link format, not its current content, so the Unreleased
+        # section is seeded with a sentinel entry here rather than relied
+        # upon to already be non-empty. On a release branch the real
+        # Unreleased section is empty by design (promote_changelog.py
+        # already ran to produce this PR's own diff), so asserting against
+        # the unmodified real content is self-referentially false on the
+        # one branch this script actually runs against.
+        # #VERIFY the seeded entry is bounded away from later sections the
+        # same way a real entry would be; the assertions below cover that.
+        seeded_text = real_text.replace(
+            "\n## [Unreleased]\n",
+            "\n## [Unreleased]\n\n### Added\n- Smoke-test sentinel entry.\n",
+            1,
+        )
+        copied.write_text(seeded_text, encoding="utf-8")
 
         assert promote_changelog.promote("9.9.9", copied) is True
         section = extract_changelog_section.extract("9.9.9", copied)
 
-        # Non-empty: the real Unreleased section currently carries entries.
+        # Non-empty: seeded above, deterministic regardless of whether the
+        # real repo's Unreleased section currently carries entries.
         assert section
         # Bounded: no later release heading line or trailing link-block line
         # leaked in. Checked line-anchored (a '## [' may appear inline in an

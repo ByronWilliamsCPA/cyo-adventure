@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-12
+
 ### Added
 - Dual admin/guardian roles (#236; see
   `docs/planning/admin-guardian-dual-roles-plan.md`). `User.role` stays the
@@ -1547,5 +1549,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/releases/tag/v0.1.0
