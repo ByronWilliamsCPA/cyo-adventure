@@ -53,6 +53,26 @@ function classifySubmitError(err: unknown): SubmitError {
 }
 
 /**
+ * What went wrong with a switch-account sign-out, mapped to distinct copy.
+ * No 'credentials' case: signOut() has no password to reject.
+ */
+type SwitchAccountError = 'rate-limit' | 'server' | 'connection'
+
+const SWITCH_ACCOUNT_ERROR_COPY: Record<SwitchAccountError, string> = {
+  'rate-limit': 'Sign-out failed. Too many attempts, please wait a minute before trying again.',
+  server: 'Sign-out failed. The service had a problem, please wait a moment and try again.',
+  connection: 'Sign-out failed. Check your connection and try again.',
+}
+
+/** Same discrimination as {@link classifySubmitError}, minus the credentials case. */
+function classifySwitchAccountError(err: unknown): SwitchAccountError {
+  if (!isAuthApiError(err)) return 'connection'
+  if (err.status === 429) return 'rate-limit'
+  if (err.status >= 500) return 'server'
+  return 'connection'
+}
+
+/**
  * Collect the auth providers recorded on the Supabase user's app_metadata.
  * `providers` is the full list; `provider` is the first/primary one. Both are
  * loosely typed upstream (`[key: string]: any`), so validate rather than cast.
@@ -111,13 +131,15 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
  * console warning".
  */
 export function ParentalGate({ children }: { children?: ReactNode }) {
-  const { signInWithPassword } = useAuth()
+  const { signInWithPassword, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [phase, setPhase] = useState<GatePhase>({ kind: 'checking' })
   const [password, setPassword] = useState('')
   const [error, setError] = useState<SubmitError | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [switchingAccount, setSwitchingAccount] = useState(false)
+  const [switchAccountError, setSwitchAccountError] = useState<SwitchAccountError | null>(null)
   // Bumped by the error phase's "Try again" button to re-run the session
   // lookup effect below.
   const [attempt, setAttempt] = useState(0)
@@ -186,7 +208,10 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
   useEffect(() => {
     if (phase.kind !== 'unlocked') return
     const user = phase.user
-    const lockNow = () => setPhase({ kind: 'locked', user })
+    const lockNow = () => {
+      setSwitchAccountError(null)
+      setPhase({ kind: 'locked', user })
+    }
     const lockIfExpired = () => {
       if (parentalGateRemainingMs(user.userId) <= 0) lockNow()
     }
@@ -218,9 +243,14 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     event.preventDefault()
     // #CRITICAL: concurrency: a second submit while one is in flight (Enter
     // key on the still-focused input; the disabled attribute only guards the
-    // button) must not stack a second re-auth call on the first.
-    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant submit".
+    // button) must not stack a second re-auth call on the first. Also guards
+    // against switchAccount() racing a concurrent signOut() against the same
+    // Supabase client: without this, a sign-in already in flight could land
+    // after the sign-out and undo it.
+    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant submit", "disables
+    // the Confirm button while a switch-account sign-out is in flight".
     if (submitting) return
+    if (switchingAccount) return
     if (phase.kind !== 'locked' || phase.user.email === null) return
     setError(null)
     setSubmitting(true)
@@ -233,6 +263,45 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
       setError(classifySubmitError(err))
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  // #ASSUME: security: the gate only knows how to re-authenticate the
+  // CURRENT session's owner (no email field on the challenge form), so a
+  // guardian who needs a different account (a test account, or one whose
+  // password identity differs from the signed-in session) has no path
+  // forward except signing out and going back through LoginPage, which
+  // supports both Google and password. signOut() also cools the module-level
+  // warm state (AuthContext), so the next sign-in re-challenges as expected.
+  // #VERIFY: ParentalGate.test.tsx "signs out and lets a different account
+  // sign back in".
+  async function switchAccount() {
+    // #CRITICAL: concurrency: same re-entrant guard as submit() above (a slow
+    // network letting a second click land before the button disables): a
+    // stacked second signOut() call is wasted work at best and a race against
+    // the first at worst. Also cross-guards against submit(): without this,
+    // signOut() and signInWithPassword() could run concurrently against the
+    // same Supabase client, racing which one lands last.
+    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant switch-account
+    // click while one is already in flight", "disables the switch-account
+    // link while a password submit is in flight".
+    if (switchingAccount) return
+    if (submitting) return
+    setSwitchAccountError(null)
+    setSwitchingAccount(true)
+    try {
+      await signOut()
+      // No manual navigation: the enclosing ProtectedRoute (router.tsx) reads
+      // the same AuthContext status and redirects to GUARDIAN_LOGIN_PATH once
+      // it flips to 'signed-out', same as GuardianShell's sign-out button.
+    } catch (err) {
+      // #EDGE: external-resources: signOut rejects when Supabase cannot
+      // revoke the session (network down); surface it instead of silently
+      // leaving the guardian stuck on a challenge they cannot get past.
+      // #VERIFY: ParentalGate.test.tsx "shows an inline error when sign-out
+      // fails while switching accounts".
+      setSwitchAccountError(classifySwitchAccountError(err))
+      setSwitchingAccount(false)
     }
   }
 
@@ -307,7 +376,11 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
               onChange={(event) => setPassword(event.target.value)}
             />
           </label>
-          <button type="submit" className="guardian-login__provider" disabled={submitting}>
+          <button
+            type="submit"
+            className="guardian-login__provider"
+            disabled={submitting || switchingAccount}
+          >
             {submitting ? 'Checking...' : 'Confirm'}
           </button>
           <button type="button" className="guardian-login__provider" onClick={cancelChallenge}>
@@ -319,6 +392,19 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
             </p>
           ) : null}
         </form>
+        <button
+          type="button"
+          className="guardian-login__link"
+          disabled={switchingAccount || submitting}
+          onClick={() => void switchAccount()}
+        >
+          {switchingAccount ? 'Signing out…' : 'Not you? Sign out and use a different account'}
+        </button>
+        {!switchingAccount && switchAccountError !== null ? (
+          <p role="alert" className="guardian-login__error">
+            {SWITCH_ACCOUNT_ERROR_COPY[switchAccountError]}
+          </p>
+        ) : null}
       </div>
     )
   }
