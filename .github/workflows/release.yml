@@ -230,6 +230,21 @@ jobs:
           QUERY='mutation($input: CreateCommitOnBranchInput!) {
             createCommitOnBranch(input: $input) { commit { oid } } }'
 
+          # #CRITICAL external: uv.lock alone base64-encodes to roughly 1MB;
+          # passed as a `jq --arg` value it becomes part of that process's
+          # argv, and combined with the runner's environment this can exceed
+          # the kernel's execve() argument-list limit ("jq: Argument list too
+          # long", exit 126) -- observed on the first real run of this
+          # pipeline. `--rawfile` reads file content directly instead of
+          # putting it on the command line. #VERIFY large lockfile growth
+          # does not reintroduce an argv-size failure here.
+          PYPROJECT_B64="$(mktemp)"
+          UVLOCK_B64="$(mktemp)"
+          CHANGELOG_B64="$(mktemp)"
+          base64 -w0 pyproject.toml | tr -d '\n' > "${PYPROJECT_B64}"
+          base64 -w0 uv.lock | tr -d '\n' > "${UVLOCK_B64}"
+          base64 -w0 CHANGELOG.md | tr -d '\n' > "${CHANGELOG_B64}"
+
           COMMIT_OID=""
           ATTEMPT=1
           MAX_ATTEMPTS=3
@@ -238,37 +253,35 @@ jobs:
             # current main tip on every attempt so a retry (or a recomputed
             # version) is idempotent, mirroring the previous force-push
             # behavior.
-            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
-                >/dev/null 2>&1; then
+            #
+            # Distinguish a genuine 404 (branch does not exist yet) from any
+            # other lookup failure (rate-limit, auth, transient 5xx): only a
+            # confirmed 404 should route to branch creation. Any other
+            # failure falling through to `POST .../git/refs` on a branch
+            # that DOES exist would hard-fail under `set -e` outside this
+            # retry loop.
+            LOOKUP_ERR="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
+              2>&1 >/dev/null)"
+            LOOKUP_STATUS=$?
+            if [ "${LOOKUP_STATUS}" -eq 0 ]; then
               gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
                 -f sha="${BASE_SHA}" -F force=true >/dev/null
-            else
+            elif echo "${LOOKUP_ERR}" | grep -q "HTTP 404"; then
               gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
                 -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" >/dev/null
+            else
+              echo "Branch lookup for ${BRANCH} failed with a non-404 error" \
+                "(attempt ${ATTEMPT}/${MAX_ATTEMPTS}): ${LOOKUP_ERR}" >&2
+              if [ "${ATTEMPT}" -lt "${MAX_ATTEMPTS}" ]; then
+                sleep 2
+                ATTEMPT=$((ATTEMPT + 1))
+                continue
+              fi
+              echo "::error::Branch lookup for ${BRANCH} kept failing:" \
+                "${LOOKUP_ERR}"
+              exit 1
             fi
 
-            VARS="$(jq -n \
-              --arg repo "${GITHUB_REPOSITORY}" \
-              --arg branch "${BRANCH}" \
-              --arg oid "${BASE_SHA}" \
-              --arg headline "chore(release): v${NEXT}" \
-              --arg pyproject "$(base64 -w0 pyproject.toml)" \
-              --arg uvlock "$(base64 -w0 uv.lock)" \
-              --arg changelog "$(base64 -w0 CHANGELOG.md)" \
-              '{
-                input: {
-                  branch: {repositoryNameWithOwner: $repo, branchName: $branch},
-                  message: {headline: $headline},
-                  expectedHeadOid: $oid,
-                  fileChanges: {
-                    additions: [
-                      {path: "pyproject.toml", contents: $pyproject},
-                      {path: "uv.lock", contents: $uvlock},
-                      {path: "CHANGELOG.md", contents: $changelog}
-                    ]
-                  }
-                }
-              }')"
             # #CRITICAL external: a failed commit-creation call must not fall
             # through to `gh pr create` against a branch left on its prior
             # (stale or nonexistent) commit; fail loudly instead of silently
@@ -280,9 +293,39 @@ jobs:
             # `set -e`, letting that propagate would abort the script before
             # the diagnostic below ever runs. Capture the exit code
             # explicitly instead of relying on set -e to report it.
+            #
+            # The whole request body is built in a single jq invocation so
+            # the large file contents only ever enter via --rawfile (a file
+            # read); an intermediate $(jq ...) result reused via --argjson
+            # would put that same huge string back onto a command line and
+            # reintroduce the argv-size failure this block exists to avoid.
             set +e
-            RESPONSE="$(jq -n --arg q "${QUERY}" --argjson v "${VARS}" \
-              '{query: $q, variables: $v}' | gh api graphql --input - 2>&1)"
+            RESPONSE="$(jq -n \
+              --arg q "${QUERY}" \
+              --arg repo "${GITHUB_REPOSITORY}" \
+              --arg branch "${BRANCH}" \
+              --arg oid "${BASE_SHA}" \
+              --arg headline "chore(release): v${NEXT}" \
+              --rawfile pyproject "${PYPROJECT_B64}" \
+              --rawfile uvlock "${UVLOCK_B64}" \
+              --rawfile changelog "${CHANGELOG_B64}" \
+              '{
+                query: $q,
+                variables: {
+                  input: {
+                    branch: {repositoryNameWithOwner: $repo, branchName: $branch},
+                    message: {headline: $headline},
+                    expectedHeadOid: $oid,
+                    fileChanges: {
+                      additions: [
+                        {path: "pyproject.toml", contents: $pyproject},
+                        {path: "uv.lock", contents: $uvlock},
+                        {path: "CHANGELOG.md", contents: $changelog}
+                      ]
+                    }
+                  }
+                }
+              }' | gh api graphql --input - 2>&1)"
             GQL_EXIT=$?
             set -e
             if [ "${GQL_EXIT}" -eq 0 ]; then
@@ -303,6 +346,7 @@ jobs:
             fi
             ATTEMPT=$((ATTEMPT + 1))
           done
+          rm -f "${PYPROJECT_B64}" "${UVLOCK_B64}" "${CHANGELOG_B64}"
           # #CRITICAL security: don't just trust that createCommitOnBranch
           # produced a verified commit; ask GitHub to confirm it. This is the
           # exact class of bug that stalled PR #241 for days with green CI
