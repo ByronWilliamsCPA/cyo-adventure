@@ -217,57 +217,92 @@ jobs:
           # #VERIFY every release commit shows "Verified" on GitHub; if this
           # ever regresses, fix the commit-creation path here, do not
           # `--no-verify`/admin-merge past the signature requirement.
+          #
+          # #EDGE concurrency: the ref-reset (REST, below) and the mutation
+          # (GraphQL) hit separate GitHub API surfaces with no read-after-
+          # write guarantee between them, so expectedHeadOid can transiently
+          # mismatch the branch's observed head immediately after we set it.
+          # #VERIFY a transient mismatch is retried, not treated as a hard
+          # failure, before this step gives up.
           BASE_SHA="$(git rev-parse HEAD)"
-
-          # Release branches are machine-owned; reset the ref to the current
-          # main tip on every run so a re-run (or a recomputed version) is
-          # idempotent, mirroring the previous force-push behavior.
-          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
-              >/dev/null 2>&1; then
-            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
-              -f sha="${BASE_SHA}" -F force=true >/dev/null
-          else
-            gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
-              -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" >/dev/null
-          fi
 
           # shellcheck disable=SC2016  # literal GraphQL text, expansion not wanted
           QUERY='mutation($input: CreateCommitOnBranchInput!) {
             createCommitOnBranch(input: $input) { commit { oid } } }'
-          VARS="$(jq -n \
-            --arg repo "${GITHUB_REPOSITORY}" \
-            --arg branch "refs/heads/${BRANCH}" \
-            --arg oid "${BASE_SHA}" \
-            --arg headline "chore(release): v${NEXT}" \
-            --arg pyproject "$(base64 -w0 pyproject.toml)" \
-            --arg uvlock "$(base64 -w0 uv.lock)" \
-            --arg changelog "$(base64 -w0 CHANGELOG.md)" \
-            '{
-              input: {
-                branch: {repositoryNameWithOwner: $repo, branchName: $branch},
-                message: {headline: $headline},
-                expectedHeadOid: $oid,
-                fileChanges: {
-                  additions: [
-                    {path: "pyproject.toml", contents: $pyproject},
-                    {path: "uv.lock", contents: $uvlock},
-                    {path: "CHANGELOG.md", contents: $changelog}
-                  ]
+
+          COMMIT_OID=""
+          ATTEMPT=1
+          MAX_ATTEMPTS=3
+          while [ -z "${COMMIT_OID}" ] && [ "${ATTEMPT}" -le "${MAX_ATTEMPTS}" ]; do
+            # Release branches are machine-owned; reset the ref to the
+            # current main tip on every attempt so a retry (or a recomputed
+            # version) is idempotent, mirroring the previous force-push
+            # behavior.
+            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
+                >/dev/null 2>&1; then
+              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
+                -f sha="${BASE_SHA}" -F force=true >/dev/null
+            else
+              gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+                -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" >/dev/null
+            fi
+
+            VARS="$(jq -n \
+              --arg repo "${GITHUB_REPOSITORY}" \
+              --arg branch "${BRANCH}" \
+              --arg oid "${BASE_SHA}" \
+              --arg headline "chore(release): v${NEXT}" \
+              --arg pyproject "$(base64 -w0 pyproject.toml)" \
+              --arg uvlock "$(base64 -w0 uv.lock)" \
+              --arg changelog "$(base64 -w0 CHANGELOG.md)" \
+              '{
+                input: {
+                  branch: {repositoryNameWithOwner: $repo, branchName: $branch},
+                  message: {headline: $headline},
+                  expectedHeadOid: $oid,
+                  fileChanges: {
+                    additions: [
+                      {path: "pyproject.toml", contents: $pyproject},
+                      {path: "uv.lock", contents: $uvlock},
+                      {path: "CHANGELOG.md", contents: $changelog}
+                    ]
+                  }
                 }
-              }
-            }')"
-          # #CRITICAL external: a failed commit-creation call must not fall
-          # through to `gh pr create` against a branch left on its prior
-          # (stale or nonexistent) commit; fail loudly instead of silently
-          # opening/reusing a PR with no new bump commit. #VERIFY commit
-          # creation errors are a hard failure, not a swallowed warning.
-          RESPONSE="$(jq -n --arg q "${QUERY}" --argjson v "${VARS}" \
-            '{query: $q, variables: $v}' | gh api graphql --input -)"
-          COMMIT_OID="$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')"
-          if [ -z "${COMMIT_OID}" ]; then
-            echo "::error::createCommitOnBranch failed for ${BRANCH}: ${RESPONSE}"
-            exit 1
-          fi
+              }')"
+            # #CRITICAL external: a failed commit-creation call must not fall
+            # through to `gh pr create` against a branch left on its prior
+            # (stale or nonexistent) commit; fail loudly instead of silently
+            # opening/reusing a PR with no new bump commit. #VERIFY commit
+            # creation errors are a hard failure, not a swallowed warning.
+            #
+            # `gh api graphql` exits non-zero whenever the response body
+            # carries a top-level `errors` array; under this step's default
+            # `set -e`, letting that propagate would abort the script before
+            # the diagnostic below ever runs. Capture the exit code
+            # explicitly instead of relying on set -e to report it.
+            set +e
+            RESPONSE="$(jq -n --arg q "${QUERY}" --argjson v "${VARS}" \
+              '{query: $q, variables: $v}' | gh api graphql --input - 2>&1)"
+            GQL_EXIT=$?
+            set -e
+            if [ "${GQL_EXIT}" -eq 0 ]; then
+              COMMIT_OID="$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')"
+            fi
+            if [ -z "${COMMIT_OID}" ]; then
+              if [ "${ATTEMPT}" -lt "${MAX_ATTEMPTS}" ] \
+                  && echo "${RESPONSE}" | grep -qi "expectedHeadOid\|does not match\|head sha"; then
+                echo "createCommitOnBranch attempt ${ATTEMPT} hit an" \
+                  "expectedHeadOid mismatch (likely REST/GraphQL read-after-" \
+                  "write race); retrying." >&2
+                sleep 2
+              else
+                echo "::error::createCommitOnBranch failed for ${BRANCH}" \
+                  "(attempt ${ATTEMPT}/${MAX_ATTEMPTS}): ${RESPONSE}"
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
           # #CRITICAL security: don't just trust that createCommitOnBranch
           # produced a verified commit; ask GitHub to confirm it. This is the
           # exact class of bug that stalled PR #241 for days with green CI
