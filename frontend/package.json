@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"e2e-real/**/*.ts\" \"playwright.config.ts\"",
-    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"e2e-real/**/*.ts\" \"playwright.config.ts\" --fix",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"e2e-real/**/*.ts\" \"e2e-prod/**/*.ts\" \"playwright.config.ts\" \"playwright.e2e-prod.config.ts\"",
+    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" \"e2e/**/*.ts\" \"e2e-real/**/*.ts\" \"e2e-prod/**/*.ts\" \"playwright.config.ts\" \"playwright.e2e-prod.config.ts\" --fix",
     "preview": "vite preview",
     "test": "vitest",
     "test:run": "vitest run",

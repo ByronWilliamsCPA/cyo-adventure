@@ -19,7 +19,7 @@ export default defineConfig({
   reporter: 'list',
   use: {
     baseURL: PROD_BASE_URL,
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
   },
   projects: [{ name: 'e2e-prod', use: { ...devices['Desktop Chrome'] } }],
 })
