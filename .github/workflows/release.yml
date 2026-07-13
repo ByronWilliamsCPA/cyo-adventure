@@ -31,6 +31,12 @@
 # created with GITHUB_TOKEN do not trigger workflows and the release PR
 # would sit forever with no CI Gate to satisfy the merge queue.
 #
+# The release-bump commit is built via the GraphQL createCommitOnBranch
+# mutation instead of local `git commit` + `git push`: this repo's branch
+# protection requires every commit to carry a verified signature, and a
+# plain local commit is never signed. GitHub signs commits it constructs
+# itself through its API, so this needs no GPG key management in CI.
+#
 # Injection note: github.event.head_commit.message appears ONLY inside
 # `if:` expressions (never interpolated into run: shell); all dynamic
 # values reach shell steps via env vars.
@@ -120,9 +126,12 @@ jobs:
           fetch-tags: true
           token: ${{ secrets.RELEASE_TOKEN }}
           # #CRITICAL security: do not leave RELEASE_TOKEN in .git/config
-          # while third-party code (uvx, uv lock) runs later in this job; the
-          # push step re-supplies it via a one-shot http.extraheader instead.
-          # #VERIFY persist-credentials stays false; the push uses extraheader.
+          # while third-party code (uvx, uv lock) runs later in this job.
+          # Nothing after this step needs git's own credential storage: the
+          # version bump/changelog steps only write local files, and the
+          # release commit itself is built via the GraphQL API (GH_TOKEN env
+          # var, not a git push) in the "Open release PR" step below.
+          # #VERIFY persist-credentials stays false.
           persist-credentials: false
 
       - name: Install uv
@@ -181,36 +190,140 @@ jobs:
         if: steps.version.outputs.released == 'true' && !inputs.dry_run
         env:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           NEXT: ${{ steps.version.outputs.next }}
         run: |
           BRANCH="release/v${NEXT}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B "${BRANCH}"
-          git add pyproject.toml uv.lock CHANGELOG.md
           # #EDGE external: a re-run after a partial run (or after the hard-fail
           # auto-merge path below) can reach here with the bump already applied
-          # and nothing staged-different; `git commit` would die on "nothing to
-          # commit". Detect that and exit cleanly, matching the idempotent-
+          # and nothing changed on disk vs. HEAD; there is nothing new to
+          # commit. Detect that and exit cleanly, matching the idempotent-
           # re-run intent. #VERIFY skip commit/push/PR when the tree is clean.
-          if git diff --cached --quiet; then
+          if git diff --quiet -- pyproject.toml uv.lock CHANGELOG.md; then
             echo "No release changes to commit for v${NEXT}; the bump is" \
               "already applied. Nothing to do."
             exit 0
           fi
-          git commit -m "chore(release): v${NEXT}"
-          # Release branches are machine-owned; force-push makes re-runs and
-          # recomputed versions idempotent. Checkout ran with
-          # persist-credentials:false, so supply RELEASE_TOKEN as a one-shot
-          # http.extraheader here, after every third-party step has finished,
-          # rather than leaving it resident in .git/config for that window.
-          # #CRITICAL security: the token reaches git only at push time.
-          # #VERIFY auth travels via extraheader; nothing is written to config.
-          AUTH="AUTHORIZATION: basic $(printf 'x-access-token:%s' \
-            "${RELEASE_TOKEN}" | base64 -w0)"
-          git -c "http.https://github.com/.extraheader=${AUTH}" \
-            push --force origin "${BRANCH}"
+          # #CRITICAL security: this repo's branch protection requires every
+          # commit to carry a verified signature. A plain local `git commit`
+          # (even with a spoofed github-actions[bot] git config identity, the
+          # prior approach) is never signed and permanently blocks the
+          # resulting PR from merging - this is what broke PR #241. Rather
+          # than provision and rotate a GPG key for a bot identity, build the
+          # commit server-side via the GraphQL createCommitOnBranch mutation:
+          # GitHub signs commits it constructs itself through its API, so the
+          # result shows "Verified" with no key management in CI. Probed
+          # against this repo on a disposable branch before wiring this in
+          # (confirmed verified=true, reason="valid").
+          # #VERIFY every release commit shows "Verified" on GitHub; if this
+          # ever regresses, fix the commit-creation path here, do not
+          # `--no-verify`/admin-merge past the signature requirement.
+          #
+          # #EDGE concurrency: the ref-reset (REST, below) and the mutation
+          # (GraphQL) hit separate GitHub API surfaces with no read-after-
+          # write guarantee between them, so expectedHeadOid can transiently
+          # mismatch the branch's observed head immediately after we set it.
+          # #VERIFY a transient mismatch is retried, not treated as a hard
+          # failure, before this step gives up.
+          BASE_SHA="$(git rev-parse HEAD)"
+
+          # shellcheck disable=SC2016  # literal GraphQL text, expansion not wanted
+          QUERY='mutation($input: CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input: $input) { commit { oid } } }'
+
+          COMMIT_OID=""
+          ATTEMPT=1
+          MAX_ATTEMPTS=3
+          while [ -z "${COMMIT_OID}" ] && [ "${ATTEMPT}" -le "${MAX_ATTEMPTS}" ]; do
+            # Release branches are machine-owned; reset the ref to the
+            # current main tip on every attempt so a retry (or a recomputed
+            # version) is idempotent, mirroring the previous force-push
+            # behavior.
+            if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
+                >/dev/null 2>&1; then
+              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
+                -f sha="${BASE_SHA}" -F force=true >/dev/null
+            else
+              gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+                -f ref="refs/heads/${BRANCH}" -f sha="${BASE_SHA}" >/dev/null
+            fi
+
+            VARS="$(jq -n \
+              --arg repo "${GITHUB_REPOSITORY}" \
+              --arg branch "${BRANCH}" \
+              --arg oid "${BASE_SHA}" \
+              --arg headline "chore(release): v${NEXT}" \
+              --arg pyproject "$(base64 -w0 pyproject.toml)" \
+              --arg uvlock "$(base64 -w0 uv.lock)" \
+              --arg changelog "$(base64 -w0 CHANGELOG.md)" \
+              '{
+                input: {
+                  branch: {repositoryNameWithOwner: $repo, branchName: $branch},
+                  message: {headline: $headline},
+                  expectedHeadOid: $oid,
+                  fileChanges: {
+                    additions: [
+                      {path: "pyproject.toml", contents: $pyproject},
+                      {path: "uv.lock", contents: $uvlock},
+                      {path: "CHANGELOG.md", contents: $changelog}
+                    ]
+                  }
+                }
+              }')"
+            # #CRITICAL external: a failed commit-creation call must not fall
+            # through to `gh pr create` against a branch left on its prior
+            # (stale or nonexistent) commit; fail loudly instead of silently
+            # opening/reusing a PR with no new bump commit. #VERIFY commit
+            # creation errors are a hard failure, not a swallowed warning.
+            #
+            # `gh api graphql` exits non-zero whenever the response body
+            # carries a top-level `errors` array; under this step's default
+            # `set -e`, letting that propagate would abort the script before
+            # the diagnostic below ever runs. Capture the exit code
+            # explicitly instead of relying on set -e to report it.
+            set +e
+            RESPONSE="$(jq -n --arg q "${QUERY}" --argjson v "${VARS}" \
+              '{query: $q, variables: $v}' | gh api graphql --input - 2>&1)"
+            GQL_EXIT=$?
+            set -e
+            if [ "${GQL_EXIT}" -eq 0 ]; then
+              COMMIT_OID="$(echo "${RESPONSE}" | jq -r '.data.createCommitOnBranch.commit.oid // empty')"
+            fi
+            if [ -z "${COMMIT_OID}" ]; then
+              if [ "${ATTEMPT}" -lt "${MAX_ATTEMPTS}" ] \
+                  && echo "${RESPONSE}" | grep -qi "expectedHeadOid\|does not match\|head sha"; then
+                echo "createCommitOnBranch attempt ${ATTEMPT} hit an" \
+                  "expectedHeadOid mismatch (likely REST/GraphQL read-after-" \
+                  "write race); retrying." >&2
+                sleep 2
+              else
+                echo "::error::createCommitOnBranch failed for ${BRANCH}" \
+                  "(attempt ${ATTEMPT}/${MAX_ATTEMPTS}): ${RESPONSE}"
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+          # #CRITICAL security: don't just trust that createCommitOnBranch
+          # produced a verified commit; ask GitHub to confirm it. This is the
+          # exact class of bug that stalled PR #241 for days with green CI
+          # and auto-merge enabled and nothing flagging it: a release commit
+          # that branch protection would reject sat unnoticed until a human
+          # happened to open the merge UI. Failing the job here turns that
+          # into an immediate, visible CI failure instead of a silent stall.
+          # #VERIFY every release commit is confirmed Verified before this
+          # step is allowed to succeed; if this ever fires, fix the
+          # commit-creation path above, do not admin-merge past it.
+          VERIFIED="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+            --jq '.commit.verification.verified')"
+          if [ "${VERIFIED}" != "true" ]; then
+            REASON="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${COMMIT_OID}" \
+              --jq '.commit.verification.reason')"
+            echo "::error::Release commit ${COMMIT_OID} on ${BRANCH} is not" \
+              "verified (reason: ${REASON}). Branch protection will block" \
+              "this PR from merging; fix the commit-creation path in this" \
+              "workflow rather than merging around it."
+            exit 1
+          fi
           # Reuse an existing open release PR for this branch, else create one.
           PR_NUMBER="$(gh pr list --head "${BRANCH}" --state open \
             --json number --jq '.[0].number // empty')"

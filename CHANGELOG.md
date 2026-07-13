@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Release-bump commits are now signed and self-verify before the release PR
+  is opened. `createCommitOnBranch`'s `branchName` was populated with a
+  fully-qualified ref (`refs/heads/release/vX.Y.Z`) instead of the
+  unqualified branch name the GitHub GraphQL schema requires, which would
+  have made every real invocation fail branch resolution; fixed to pass the
+  unqualified name. Also hardened the ref-reset/commit-creation call with a
+  bounded retry against the transient `expectedHeadOid` mismatch possible
+  from the REST-then-GraphQL write ordering, and stopped `set -e` from
+  swallowing the intended failure diagnostic when GitHub returns a
+  GraphQL-level error.
+
 ### Added
 - Manual production smoke e2e tier (`frontend/e2e-prod/`, `npm run test:e2e:prod`):
   signs in through the real login form against live production with a dedicated
