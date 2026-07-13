@@ -186,6 +186,34 @@
   font-size: var(--text-sm, 0.9375rem);
 }
 
+.guardian-login__link {
+  display: block;
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border: none;
+  background: none;
+  color: var(--color-ink-muted, #8c6f56);
+  font-size: var(--text-sm, 0.9375rem);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.guardian-login__link:hover {
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.guardian-login__link:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.guardian-login__link:disabled {
+  opacity: 0.6;
+  cursor: progress;
+  text-decoration: none;
+}
+
 .guardian-stub {
   border: 1px dashed var(--color-ink-muted, #8c6f56);
   border-radius: 12px;

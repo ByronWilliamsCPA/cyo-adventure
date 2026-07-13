@@ -12,9 +12,11 @@ import {
 } from './parentalGateState'
 
 const mockSignInWithPassword = vi.fn()
+const mockSignOut = vi.fn()
 vi.mock('./useAuth', () => ({
   useAuth: (): unknown => ({
     signInWithPassword: (...args: unknown[]): unknown => mockSignInWithPassword(...args),
+    signOut: (...args: unknown[]): unknown => mockSignOut(...args),
   }),
 }))
 
@@ -110,6 +112,7 @@ async function flushSession() {
 beforeEach(() => {
   coolParentalGate()
   mockSignInWithPassword.mockReset()
+  mockSignOut.mockReset()
   mockGetSession.mockReset().mockResolvedValue(passwordSession())
 })
 
@@ -458,6 +461,76 @@ describe('ParentalGate', () => {
 
     expect(await screen.findByText('Console home')).toBeInTheDocument()
     expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
+  })
+
+  it('signs out and lets a different account sign back in', async () => {
+    // The gate re-authenticates the CURRENT session's owner only (no email
+    // field); a guardian who needs a different account (e.g. a test account,
+    // or one without a password identity) has to sign out first and go
+    // through LoginPage, which supports both Google and password.
+    mockSignOut.mockResolvedValue(undefined)
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    fireEvent.click(screen.getByRole('button', { name: /use a different account/i }))
+    await act(async () => {})
+
+    expect(mockSignOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows an inline error when sign-out fails while switching accounts', async () => {
+    // #EDGE: external-resources: signOut rejects when Supabase cannot revoke
+    // the session (network down); same failure mode GuardianShell guards
+    // against for its own sign-out button.
+    mockSignOut.mockRejectedValue(new Error('network down'))
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    fireEvent.click(screen.getByRole('button', { name: /use a different account/i }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(/sign-out failed/i)
+    expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
+  })
+
+  it('ignores a re-entrant switch-account click while one is already in flight', async () => {
+    let resolveSignOut: (() => void) | undefined
+    mockSignOut.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSignOut = () => resolve()
+        })
+    )
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    const link = screen.getByRole('button', { name: /use a different account/i })
+    fireEvent.click(link)
+    fireEvent.click(link)
+    fireEvent.click(link)
+
+    expect(mockSignOut).toHaveBeenCalledTimes(1)
+    resolveSignOut?.()
+    await act(async () => {})
+  })
+
+  it('does not offer a switch-account link while a sign-out or a submit is in flight', async () => {
+    let resolveSignOut: (() => void) | undefined
+    mockSignOut.mockImplementation(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveSignOut = () => resolve()
+        })
+    )
+    renderGate()
+    await screen.findByRole('heading', { name: 'Grown-ups only' })
+
+    const link = screen.getByRole('button', { name: /use a different account/i })
+    fireEvent.click(link)
+
+    expect(link).toBeDisabled()
+    expect(link).toHaveTextContent(/signing out/i)
+    resolveSignOut?.()
+    await act(async () => {})
   })
 
   it('fails closed to the login page, carrying the attempted location', async () => {

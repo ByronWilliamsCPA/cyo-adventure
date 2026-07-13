@@ -111,13 +111,15 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
  * console warning".
  */
 export function ParentalGate({ children }: { children?: ReactNode }) {
-  const { signInWithPassword } = useAuth()
+  const { signInWithPassword, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [phase, setPhase] = useState<GatePhase>({ kind: 'checking' })
   const [password, setPassword] = useState('')
   const [error, setError] = useState<SubmitError | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [switchingAccount, setSwitchingAccount] = useState(false)
+  const [switchAccountError, setSwitchAccountError] = useState(false)
   // Bumped by the error phase's "Try again" button to re-run the session
   // lookup effect below.
   const [attempt, setAttempt] = useState(0)
@@ -236,6 +238,39 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     }
   }
 
+  // #ASSUME: security: the gate only knows how to re-authenticate the
+  // CURRENT session's owner (no email field on the challenge form), so a
+  // guardian who needs a different account (a test account, or one whose
+  // password identity differs from the signed-in session) has no path
+  // forward except signing out and going back through LoginPage, which
+  // supports both Google and password. signOut() also cools the module-level
+  // warm state (AuthContext), so the next sign-in re-challenges as expected.
+  // #VERIFY: ParentalGate.test.tsx "signs out and lets a different account
+  // sign back in".
+  async function switchAccount() {
+    // #CRITICAL: concurrency: same re-entrant guard as submit() above (Enter
+    // key vs. click, or a slow network letting a second click land before the
+    // button disables): a stacked second signOut() call is wasted work at
+    // best and a race against the first at worst.
+    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant switch-account
+    // click while one is already in flight".
+    if (switchingAccount) return
+    setSwitchAccountError(false)
+    setSwitchingAccount(true)
+    try {
+      await signOut()
+      // No manual navigation: the enclosing ProtectedRoute (router.tsx) reads
+      // the same AuthContext status and redirects to GUARDIAN_LOGIN_PATH once
+      // it flips to 'signed-out', same as GuardianShell's sign-out button.
+    } catch {
+      // #EDGE: external-resources: signOut rejects when Supabase cannot
+      // revoke the session (network down); surface it instead of silently
+      // leaving the guardian stuck on a challenge they cannot get past.
+      setSwitchAccountError(true)
+      setSwitchingAccount(false)
+    }
+  }
+
   function cancelChallenge() {
     // Deep-link/bookmark entries have no in-app history to pop
     // (location.key === 'default' is the router's first-entry signal), so
@@ -319,6 +354,19 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
             </p>
           ) : null}
         </form>
+        <button
+          type="button"
+          className="guardian-login__link"
+          disabled={switchingAccount}
+          onClick={() => void switchAccount()}
+        >
+          {switchingAccount ? 'Signing out…' : 'Not you? Sign out and use a different account'}
+        </button>
+        {!switchingAccount && switchAccountError ? (
+          <p role="alert" className="guardian-login__error">
+            Sign-out failed. Check your connection and try again.
+          </p>
+        ) : null}
       </div>
     )
   }
