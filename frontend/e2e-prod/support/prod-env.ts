@@ -21,11 +21,29 @@ export const PROD_BASE_URL = process.env.E2E_PROD_BASE_URL || 'https://cyo.willi
  * suite fail individually with a confusing login-form error.
  */
 export function requireProdCredentials(): { email: string; password: string } {
+  // #CRITICAL: security: this tier authenticates a real account against live
+  // production on every run. It must never execute unattended in CI; fail
+  // fast and loudly rather than relying solely on the config file never
+  // being wired into a workflow.
+  // #VERIFY: this check is the only runtime enforcement of that constraint.
+  if (process.env.CI) {
+    throw new Error(
+      'e2e-prod must never run in CI: every test authenticates a real account ' +
+        'against live production. This tier is manual-only (see frontend/README.md).'
+    )
+  }
+
   const email = process.env.E2E_PROD_TEST_EMAIL
   const password = process.env.E2E_PROD_TEST_PASSWORD
   if (!email || !password) {
+    const missing = [
+      !email ? 'E2E_PROD_TEST_EMAIL' : null,
+      !password ? 'E2E_PROD_TEST_PASSWORD' : null,
+    ]
+      .filter(Boolean)
+      .join(' / ')
     throw new Error(
-      'E2E_PROD_TEST_EMAIL / E2E_PROD_TEST_PASSWORD are not set. Run via ' +
+      `${missing} not set. Run via ` +
         '`infisical run --env=prod -- npm run test:e2e:prod`, or copy ' +
         'frontend/.env.e2e-prod.example to frontend/.env.e2e-prod and fill it in.'
     )

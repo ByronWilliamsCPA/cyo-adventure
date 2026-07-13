@@ -1,6 +1,7 @@
+import type { Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 
-import { signInAsProdTestAdmin } from './support/auth'
+import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/auth'
 
 /**
  * Regression guard for the admin-only-account crash fixed by PR #236: an
@@ -12,8 +13,21 @@ import { signInAsProdTestAdmin } from './support/auth'
  * run authenticates as a real account against a live system.
  */
 test.describe('admin-only account on the guardian surfaces', () => {
-  test.beforeEach(async ({ page }) => {
-    await signInAsProdTestAdmin(page)
+  // Serial (also enforced by fullyParallel:false/workers:1 in
+  // playwright.e2e-prod.config.ts, made explicit here): the 4 tests share
+  // one authenticated page rather than each logging into production
+  // separately, so this suite performs one real login instead of four.
+  test.describe.configure({ mode: 'serial' })
+
+  let sharedPage: Page
+
+  test.beforeAll(async ({ browser }) => {
+    sharedPage = await browser.newPage()
+    await signInAsProdTestAdmin(sharedPage)
+  })
+
+  test.afterAll(async () => {
+    await sharedPage.close()
   })
 
   for (const [path, heading] of [
@@ -22,12 +36,17 @@ test.describe('admin-only account on the guardian surfaces', () => {
     ['/guardian/requests', 'Story requests'],
     ['/guardian/profiles', 'Profiles'],
   ] as const) {
-    test(`${path} renders without the error boundary`, async ({ page }) => {
-      await page.goto(path)
+    test(`${path} renders without the error boundary`, async () => {
+      await sharedPage.goto(path)
+      // /guardian and /guardian/profiles sit behind ParentalGate, whose
+      // unlock state is deliberately not persisted across a page reload
+      // (see unlockParentalGateIfPresent's doc comment). No-op on the two
+      // ungated paths.
+      await unlockParentalGateIfPresent(sharedPage)
       await expect(
-        page.getByRole('heading', { name: 'Something went wrong', level: 1 })
+        sharedPage.getByRole('heading', { name: 'Something went wrong', level: 1 })
       ).not.toBeVisible()
-      await expect(page.getByRole('heading', { name: heading, level: 1 })).toBeVisible()
+      await expect(sharedPage.getByRole('heading', { name: heading, level: 1 })).toBeVisible()
     })
   }
 })
