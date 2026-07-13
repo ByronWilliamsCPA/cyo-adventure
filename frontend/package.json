@@ -17,7 +17,8 @@
     "typecheck": "tsc -b",
     "generate-client": "openapi-ts",
     "test:e2e": "playwright test --project=chromium",
-    "test:e2e:real": "playwright test --project=real-backend --workers=1"
+    "test:e2e:real": "playwright test --project=real-backend --workers=1",
+    "test:e2e:prod": "playwright test --config=playwright.e2e-prod.config.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
@@ -42,6 +43,7 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react-swc": "^4.0.0",
     "@vitest/coverage-v8": "^4.0.0",
+    "dotenv": "^17.4.2",
     "eslint": "^10.0.0",
     "eslint-plugin-react-hooks": "^7.0.0",
     "eslint-plugin-react-refresh": "^0.5.0",

@@ -177,3 +177,26 @@ DB_PORT=5442 docker compose up -d db
 
 `test:e2e:real` runs with `--workers=1`: the backend's per-IP rate limiter (100 rpm, burst 10)
 trips when two workers share the loopback IP, producing spurious 429s.
+
+## Production smoke e2e (manual, never CI)
+
+A third tier, `e2e-prod/`, signs in through the real login form against LIVE production
+(`https://cyo.williamshome.family` by default) with a dedicated test account, rather than
+mocking or running a local stack. It has its own Playwright config
+(`playwright.e2e-prod.config.ts`, no `webServer`, since it targets an already-running
+external site) and is never wired into CI: every run authenticates a real account against a
+live system, so it is manual-trigger-only.
+
+```bash
+# Preferred: nothing touches disk
+infisical run --env=prod -- npm run test:e2e:prod
+
+# Fallback if Infisical is unavailable: copy .env.e2e-prod.example to
+# .env.e2e-prod (gitignored) and fill in E2E_PROD_TEST_EMAIL / E2E_PROD_TEST_PASSWORD
+npm run test:e2e:prod
+```
+
+The current suite (`guardian-admin-smoke.spec.ts`) is a regression guard for the
+admin-only-account crash fixed by PR #236: it walks `/guardian`, `/guardian/intake`,
+`/guardian/requests`, and `/guardian/profiles` and asserts each renders its real heading
+instead of the app's generic error boundary.
