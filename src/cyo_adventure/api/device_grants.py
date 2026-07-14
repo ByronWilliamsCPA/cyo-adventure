@@ -195,6 +195,15 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
         AuthorizationError: If a device or child principal reaches this
             endpoint (-> 403).
     """
+    # #CRITICAL: security: family-scoped read. The WHERE pins family_id to the
+    # authenticated principal's own family (never a client-supplied value), and
+    # an admin gets NO cross-family override here, so one family's device list
+    # can never leak into another's.
+    # #VERIFY: test_device_grants.py family-scoping + test_child_cannot_list.
+    # #ASSUME: data-integrity: revoked_at IS NULL is the active-grant predicate,
+    # so the list reflects only grants the online revocation check
+    # (deps.py::_device_principal) would still honor; a revoked row drops out.
+    # #VERIFY: test_device_grants.py "revoked grant is absent from the list".
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
@@ -238,6 +247,13 @@ async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
             the id does not exist at all or belongs to another family, so
             this is not a cross-family existence oracle.
     """
+    # #CRITICAL: security: this endpoint arms the ONLY enforced revocation path.
+    # Setting revoked_at is what makes deps.py::_device_principal reject the
+    # grant on its next online use; until then an offline device keeps working
+    # (ADR-014 accepted risk). The family_id check ties the target to the
+    # caller's own family and returns the SAME 404 for "no such grant" and
+    # "another family's grant", so this is not a cross-family existence oracle.
+    # #VERIFY: test_device_grants.py revoke-then-401 + cross-family 404 tests.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
         msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
