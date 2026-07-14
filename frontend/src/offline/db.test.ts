@@ -1,19 +1,28 @@
 import 'fake-indexeddb/auto'
 
+import { openDB } from 'idb'
 import { beforeEach, describe, expect, it } from 'vitest'
 
+import type { DeviceGrant } from '../auth/deviceGrant'
 import type { ReadingState, Storybook } from '../player/types'
 import {
   _resetDbHandle,
   cacheStorybook,
+  clearDeviceGrantMirror,
   dequeue,
   enqueueWrite,
   getCachedStorybook,
+  getDeviceGrantMirror,
   getReadingState,
   listQueue,
+  putDeviceGrantMirror,
   putReadingState,
   type QueuedWrite,
 } from './db'
+
+// db.ts keeps DB_NAME private; mirror it here so the v1-migration test can open
+// the same database at the previous version. A drift fails this test loudly.
+const DB_NAME = 'cyo-reader'
 
 const story: Storybook = {
   schema_version: '1.0',
@@ -87,5 +96,50 @@ describe('offline IndexedDB cache', () => {
     await dequeue('e1')
     const after = await listQueue()
     expect(after.map((q) => q.event_id)).toEqual(['e2'])
+  })
+
+  it('round-trips the device-grant mirror on a fresh (v2) database', async () => {
+    const grant: DeviceGrant = {
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    }
+    await putDeviceGrantMirror(grant)
+    expect(await getDeviceGrantMirror()).toEqual(grant)
+    await clearDeviceGrantMirror()
+    expect(await getDeviceGrantMirror()).toBeUndefined()
+  })
+
+  it('migrates a v1 database to v2 by adding only the device_grant store', async () => {
+    // Reproduce the pre-ADR-014-Phase-3 on-disk state: a real v1 database with
+    // exactly the three original stores and NO device_grant. This is what an
+    // existing reader's browser holds before the upgrade.
+    const v1 = await openDB(DB_NAME, 1, {
+      upgrade(db) {
+        db.createObjectStore('storybooks')
+        db.createObjectStore('reading_states')
+        db.createObjectStore('offline_queue', { keyPath: 'event_id' })
+      },
+    })
+    v1.close()
+
+    // getDb() opens at DB_VERSION (2), so idb's upgrade fires with
+    // oldVersion === 1: the `oldVersion < 1` block is skipped and only
+    // `device_grant` is created. This is the branch the fresh-database tests
+    // never exercise.
+    const grant: DeviceGrant = {
+      token: 'tok-2',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-2',
+    }
+    await putDeviceGrantMirror(grant)
+    expect(await getDeviceGrantMirror()).toEqual(grant)
+
+    // The migration must be additive: a pre-existing v1 store still works and
+    // loses no data.
+    await cacheStorybook(story)
+    expect((await getCachedStorybook('s_demo', 1))?.id).toBe('s_demo')
   })
 })
