@@ -12,10 +12,11 @@ guardian's short-lived Supabase JWT and the child session:
 - Child session (``core/child_session.py``): "this profile is reading" (12h,
   no refresh, HS256).
 
-Phase 1 (this module plus ``api/device_grants.py`` and the ``api/deps.py``
-routing branch) only mints, verifies, lists, and revokes the grant. Phase 2
-wires it into the child-session mint and the profiles endpoint as an
-additional authority alongside the guardian/admin Supabase bearer.
+This module mints and verifies the grant; ``api/device_grants.py`` lists and
+revokes it; and the ``api/deps.py`` routing branch turns a presented token
+into a revocation-checked ``DEVICE`` principal. That principal is an
+additional authority alongside the guardian/admin Supabase bearer on the
+child-session mint and the profiles endpoint (never a guardian/admin gate).
 
 Trust model
 -----------

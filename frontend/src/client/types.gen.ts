@@ -706,6 +706,12 @@ export type DeviceGrantCreateBody = {
  * DeviceGrantListItem
  *
  * One row of a family's device-grant list. Never carries the token.
+ *
+ * The list endpoint returns only currently-active grants (it filters
+ * ``revoked_at IS NULL``), so a revocation timestamp would always be null on
+ * the wire and is deliberately omitted: the row's mere presence means the
+ * grant is active. A future "show revoked devices" view would re-add the
+ * field alongside a widened query.
  */
 export type DeviceGrantListItem = {
     /**
@@ -720,10 +726,6 @@ export type DeviceGrantListItem = {
      * Created At
      */
     created_at: string;
-    /**
-     * Revoked At
-     */
-    revoked_at: string | null;
 };
 
 /**

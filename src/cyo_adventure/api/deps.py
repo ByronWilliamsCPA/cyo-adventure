@@ -43,7 +43,7 @@ from cyo_adventure.core.exceptions import (
     ConfigurationError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, User
+from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -114,9 +114,10 @@ class Principal:
             ``"device"`` (ADR-014 phase 1; a device grant, never a login).
         family_id: The family the principal belongs to.
         profile_ids: The child-profile ids this principal may read or write.
-            Always empty for a ``DEVICE`` principal in phase 1: the grant
-            does not yet authorize any profile-scoped resource (that is
-            phase 2's child-session-mint and profiles wiring).
+            Always empty for a ``DEVICE`` principal: a device grant mints a
+            child session and lists a family's profiles, but is never itself
+            scoped to a profile, so ``__post_init__`` force-clears this set
+            for the device role (symmetric with the ``is_admin`` invariant).
         is_admin: Whether the principal holds the global admin (approver)
             capability. Orthogonal to ``role`` so one adult can be a guardian,
             an admin, or both: a ``(role=guardian, is_admin=True)`` principal
@@ -156,6 +157,16 @@ class Principal:
             object.__setattr__(self, "is_admin", False)
         elif self.role == Role.ADMIN and not self.is_admin:
             object.__setattr__(self, "is_admin", True)
+        # #CRITICAL: security: a DEVICE principal is never profile-scoped; the
+        # grant authorizes a child-session mint and a profile listing, not any
+        # per-profile read/write. Force-clearing profile_ids here is the
+        # structural counterpart to the is_admin invariant above, so a
+        # mistakenly constructed Principal(role=DEVICE, profile_ids={...}) can
+        # never pass authorize_profile for a profile it was handed in error.
+        # #VERIFY: test_device_grant.py pins role=DEVICE -> profile_ids empty
+        # even when a non-empty set is passed to the constructor.
+        if self.role == Role.DEVICE:
+            object.__setattr__(self, "profile_ids", frozenset())
 
     @property
     def is_guardian(self) -> bool:
@@ -469,7 +480,7 @@ async def require_principal(
     if aud == CHILD_SESSION_AUDIENCE:
         return _child_principal(token)
     if aud == DEVICE_GRANT_AUDIENCE:
-        return _device_principal(token)
+        return await _device_principal(session, token)
     subject = await _resolve_subject(token)
     user = await session.scalar(select(User).where(User.authn_subject == subject))
     if user is None:
@@ -533,38 +544,57 @@ def _child_principal(token: str) -> Principal:
     )
 
 
-def _device_principal(token: str) -> Principal:
-    """Build a DEVICE :class:`Principal` from a verified device grant token.
+async def _device_principal(session: AsyncSession, token: str) -> Principal:
+    """Build a DEVICE :class:`Principal` from a verified, unrevoked device grant.
 
-    No database round-trip and no revocation check: this verifies only the
-    token's signature and standard claims
-    (``core.device_grant.verify_device_grant_token``), matching the child
-    session path's self-contained design. Phase 1 does not route any
-    profile-scoped resource through a device principal (that is phase 2's
-    child-session-mint and profiles wiring), so today this principal can
-    reach only ``api/device_grants.py``'s own management endpoints, which
-    perform their own family-scoped, revocation-aware database lookups
-    rather than trusting anything from ``profile_ids``.
+    Unlike the child-session path (self-contained, deliberately DB-free), this
+    performs one database read to enforce revocation. A device grant is a
+    long-lived (90-day) authorization for a shared device, and its whole
+    reason to be revocable (ADR-014) is to cut off a lost or stolen tablet
+    before that TTL elapses. Revocation is server-authoritative state a
+    self-contained token cannot carry, so the online consuming path MUST
+    consult it; verifying the signature alone would let a revoked grant keep
+    minting child sessions and enumerating a family's profiles until ``exp``.
+    Enforcing it here, at principal resolution, means every device-consuming
+    endpoint (the child-session mint, the profiles listing, and any future
+    one) inherits the check and no handler can forget it.
 
     Args:
+        session: The request database session, used for the revocation lookup.
         token: The raw bearer token, already routed here by its device
             grant audience.
 
     Returns:
         Principal: A ``Role.DEVICE`` principal scoped to no profiles, with
         ``user_id`` set to the minting guardian's id (the ``authorized_by``
-        claim) so the principal is attributable without a database read,
+        claim) so the principal is attributable without a further lookup,
         mirroring the child session path's ``user_id`` convention.
 
     Raises:
-        AuthenticationError: If the token fails device-grant verification.
+        AuthenticationError: If the token fails device-grant verification, or
+            its grant row is absent (never minted, or the token predates a
+            row now deleted) or carries a non-null ``revoked_at``.
     """
     claims = verify_device_grant_token(token)
+    # #CRITICAL: security: revocation is enforced here, online, on the jti the
+    # verified token carries. A missing row (unknown/deleted jti) or a non-null
+    # revoked_at is rejected as an authentication failure BEFORE any principal
+    # is built, so a revoked device cannot mint a child session or list family
+    # profiles. Same-message rejection for missing vs revoked avoids a probe
+    # oracle. An offline device is unaffected until it reconnects; the exposure
+    # is bounded by the 90-day TTL (ADR-014, "Negative / risks").
+    # #VERIFY: test_device_grants.py asserts a revoked grant yields 401 on the
+    # child-session mint and the profiles listing, and an unknown jti yields 401.
+    grant = await session.scalar(
+        select(DeviceGrant).where(DeviceGrant.jti == claims.jti)
+    )
+    if grant is None or grant.revoked_at is not None:
+        msg = "device grant token failed verification"
+        raise AuthenticationError(msg)
     # #CRITICAL: security: a device principal carries NO profile_ids and can
-    # never be admin (Principal.__post_init__ force-clears is_admin for the
-    # DEVICE role as defense in depth), so this token can never pass a
-    # guardian-only or admin-only gate, and cannot reach any profile-scoped
-    # resource until phase 2 explicitly wires it in.
+    # never be admin (Principal.__post_init__ force-clears both for the DEVICE
+    # role as defense in depth), so this token can never pass a guardian-only
+    # or admin-only gate, and cannot pass authorize_profile for any profile.
     # #VERIFY: test_device_grant.py's require_principal routing tests assert
     # profile_ids is empty and is_admin is False, and that the guardian-only
     # dependency refuses a device token with 403.

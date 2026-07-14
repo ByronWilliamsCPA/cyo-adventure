@@ -5,8 +5,10 @@ shared device authorize a child to read without a live guardian Supabase
 session; see ``core/device_grant.py`` for the trust model and
 ``api/deps.py::require_principal``'s third routing branch for the verifying
 side. This module is management-only: minting, listing, and revoking a
-grant. Wiring the resulting device principal into the child-session mint and
-the profiles endpoint as an additional authority is phase 2 (not here).
+grant. The resulting device principal is wired into the child-session mint
+and the profiles endpoint as an additional authority in ``api/deps.py``;
+a revocation set here is enforced online by that module's device branch,
+which rejects a revoked grant before any handler runs.
 """
 
 from __future__ import annotations
@@ -35,6 +37,11 @@ from cyo_adventure.utils.logging import get_logger
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/api/v1", tags=["device-grants"])
+
+# The role gate shared by every endpoint here: only a guardian (own family) or
+# an admin may manage device grants. Defined once so the three endpoints cannot
+# drift on the rejection message.
+_ADULT_ROLE_REQUIRED = "guardian or admin role required"
 
 
 @router.post("/device-grants", status_code=201)
@@ -76,7 +83,7 @@ async def create_device_grant(
     # #VERIFY: test_device_grants.py::test_device_cannot_mint_device_grant and
     # ::test_child_cannot_mint_device_grant assert 403.
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
 
     # An absent body is equivalent to an empty one: every field is optional,
@@ -189,7 +196,7 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
             endpoint (-> 403).
     """
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
     rows = await ctx.session.scalars(
         select(DeviceGrant)
@@ -204,7 +211,6 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
             id=str(row.id),
             label=row.label,
             created_at=row.created_at,
-            revoked_at=row.revoked_at,
         )
         for row in rows
     ]
@@ -214,11 +220,11 @@ async def list_device_grants(ctx: Context) -> list[DeviceGrantListItem]:
 async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
     """Revoke a device grant belonging to the caller's family.
 
-    Sets ``revoked_at``; the row is kept (not deleted) so the guardian-facing
-    list can show when a device was revoked. Revocation is enforced only on
-    the online path (phase 2's device-principal-consuming endpoints check
-    this column); an already-offline device is not affected until it
-    reconnects (ADR-014, "Negative / risks").
+    Sets ``revoked_at``; the row is kept (not deleted) so the jti stays a
+    stable revocation record. Revocation is enforced only on the online path
+    (``deps.py::_device_principal`` rejects a grant whose ``revoked_at`` is
+    set before building the principal); an already-offline device is not
+    affected until it reconnects (ADR-014, "Negative / risks").
 
     Args:
         grant_id: The device grant's id (path).
@@ -233,7 +239,7 @@ async def revoke_device_grant(grant_id: uuid.UUID, ctx: Context) -> None:
             this is not a cross-family existence oracle.
     """
     if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+        msg = _ADULT_ROLE_REQUIRED
         raise AuthorizationError(msg)
     grant = await ctx.session.get(DeviceGrant, grant_id)
     if grant is None or grant.family_id != ctx.principal.family_id:

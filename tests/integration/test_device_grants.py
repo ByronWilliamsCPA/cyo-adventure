@@ -9,11 +9,13 @@ principal). Mirrors ``test_child_sessions.py``.
 
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 import pytest
 from sqlalchemy import select
 
+from cyo_adventure.core.device_grant import mint_device_grant_token
 from cyo_adventure.db.models import DeviceGrant
 from tests.integration.conftest import Seed, Stranger, auth
 
@@ -209,7 +211,10 @@ async def test_list_returns_only_own_family_active_grants(
     items = resp.json()
     assert [item["id"] for item in items] == [own_id]
     assert items[0]["label"] == "Own device"
-    assert items[0]["revoked_at"] is None
+    # The list returns only active grants, so a revocation timestamp would
+    # always be null; the field is deliberately dropped from the wire contract
+    # (its mere presence in the list means the grant is active).
+    assert "revoked_at" not in items[0]
 
 
 @pytest.mark.asyncio
@@ -350,3 +355,69 @@ async def test_device_token_cannot_onboard(client: AsyncClient, seed: Seed) -> N
     token = await _mint_device_token(client, seed)
     resp = await client.post("/api/v1/onboarding", json={}, headers=auth(token))
     assert resp.status_code == 403, resp.text
+
+
+# ---------------------------------------------------------------------------
+# revocation enforcement (deps.py::_device_principal online check)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_revoked_device_token_is_rejected(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A cryptographically valid token is refused once its grant is revoked.
+
+    The token itself never changes and stays perfectly signed; revocation is a
+    server-side, online-only decision (``deps.py::_device_principal`` looks the
+    jti up and rejects a non-null ``revoked_at``). This is the whole point of a
+    revocable device grant: a self-contained token cannot know it was revoked.
+    """
+    token = await _mint_device_token(client, seed)
+    grant_id = await _grant_id_for_token(client, seed)
+
+    # Before revocation the token authenticates as a device principal.
+    ok = await client.get("/api/v1/me", headers=auth(token))
+    assert ok.status_code == 200, ok.text
+
+    revoke = await client.delete(
+        f"/api/v1/device-grants/{grant_id}", headers=auth(seed.guardian_token)
+    )
+    assert revoke.status_code == 204, revoke.text
+
+    # The identical token is now refused: the online revocation check fires
+    # before any principal is built.
+    denied = await client.get("/api/v1/me", headers=auth(token))
+    assert denied.status_code == 401, denied.text
+
+
+@pytest.mark.asyncio
+async def test_device_token_with_unknown_jti_is_rejected(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A validly-signed token whose jti has no grant row is refused.
+
+    Forging a signature is not required to probe this path: a token signed with
+    the real secret but carrying a jti that was never persisted (e.g. a grant
+    row hard-deleted out from under a still-live token) must not authenticate.
+    ``_device_principal`` treats "no row" and "revoked row" identically, with
+    the same 401 message, so neither is a jti-existence oracle.
+    """
+    token, _expires_at = mint_device_grant_token(
+        family_id=seed.family_id,
+        authorized_by=seed.admin_user_id,
+        jti=uuid.uuid4(),
+    )
+    resp = await client.get("/api/v1/me", headers=auth(token))
+    assert resp.status_code == 401, resp.text
+
+
+async def _grant_id_for_token(client: AsyncClient, seed: Seed) -> str:
+    """Return the id of the caller's single active grant (for revoke-by-id)."""
+    resp = await client.get("/api/v1/device-grants", headers=auth(seed.guardian_token))
+    assert resp.status_code == 200, resp.text
+    items = resp.json()
+    assert len(items) == 1, items
+    grant_id = items[0]["id"]
+    assert isinstance(grant_id, str)
+    return grant_id

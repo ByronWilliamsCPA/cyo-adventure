@@ -1348,11 +1348,11 @@ export const createDeviceGrantApiV1DeviceGrantsPost = <ThrowOnError extends bool
  *
  * Revoke a device grant belonging to the caller's family.
  *
- * Sets ``revoked_at``; the row is kept (not deleted) so the guardian-facing
- * list can show when a device was revoked. Revocation is enforced only on
- * the online path (phase 2's device-principal-consuming endpoints check
- * this column); an already-offline device is not affected until it
- * reconnects (ADR-014, "Negative / risks").
+ * Sets ``revoked_at``; the row is kept (not deleted) so the jti stays a
+ * stable revocation record. Revocation is enforced only on the online path
+ * (``deps.py::_device_principal`` rejects a grant whose ``revoked_at`` is
+ * set before building the principal); an already-offline device is not
+ * affected until it reconnects (ADR-014, "Negative / risks").
  *
  * Args:
  * grant_id: The device grant's id (path).

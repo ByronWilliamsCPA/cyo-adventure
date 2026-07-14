@@ -142,8 +142,9 @@ def test_expired_token_rejected() -> None:
     would still mint a token expiring ~89 days from now.
     """
     stale = datetime.now(UTC) - timedelta(days=100)
+    token = _mint(now=stale)
     with pytest.raises(AuthenticationError):
-        verify_device_grant_token(_mint(now=stale))
+        verify_device_grant_token(token)
 
 
 @pytest.mark.unit
@@ -218,8 +219,9 @@ def test_missing_id_claim_rejected(missing: str) -> None:
     """A validly-signed token missing an id claim is rejected."""
     claims = _claims()
     del claims[missing]
+    token = _encode(claims)
     with pytest.raises(AuthenticationError):
-        verify_device_grant_token(_encode(claims))
+        verify_device_grant_token(token)
 
 
 @pytest.mark.unit
@@ -228,22 +230,25 @@ def test_missing_required_standard_claim_rejected(missing: str) -> None:
     """A validly-signed token missing a required standard claim is rejected."""
     claims = _claims()
     del claims[missing]
+    token = _encode(claims)
     with pytest.raises(AuthenticationError):
-        verify_device_grant_token(_encode(claims))
+        verify_device_grant_token(token)
 
 
 @pytest.mark.unit
 def test_malformed_uuid_claim_rejected() -> None:
     """A non-UUID family_id claim is rejected even when validly signed."""
+    token = _encode(_claims(family_id="not-a-uuid"))
     with pytest.raises(AuthenticationError):
-        verify_device_grant_token(_encode(_claims(family_id="not-a-uuid")))
+        verify_device_grant_token(token)
 
 
 @pytest.mark.unit
 def test_non_device_role_claim_rejected() -> None:
     """A validly-signed token carrying a non-device role is refused."""
+    token = _encode(_claims(role="guardian"))
     with pytest.raises(AuthenticationError):
-        verify_device_grant_token(_encode(_claims(role="guardian")))
+        verify_device_grant_token(token)
 
 
 @pytest.mark.unit
@@ -275,22 +280,47 @@ def test_unverified_audience_reads_device_token() -> None:
 class _ExplodingSession:
     """A session double whose query methods must never be called.
 
-    The device branch of require_principal is DB-free; if it ever queried,
-    this surfaces the regression instead of silently passing.
+    Used for the paths that MUST reject before any database access: a token
+    that fails signature/claim verification is refused before the revocation
+    lookup runs, so scalar() firing here surfaces a regression in that ordering.
     """
 
     async def scalar(self, _stmt: object) -> object:
-        msg = "device branch must not touch the database"
+        msg = "verification must reject before the revocation lookup"
         raise AssertionError(msg)
+
+
+class _GrantRow:
+    """Minimal DeviceGrant stand-in; only ``revoked_at`` is read downstream."""
+
+    def __init__(self, *, revoked_at: datetime | None) -> None:
+        self.revoked_at = revoked_at
+
+
+class _GrantSession:
+    """A session double returning one device-grant row (or None) from scalar().
+
+    Models the online revocation lookup in ``deps.py::_device_principal``: a
+    row with ``revoked_at is None`` is an active grant, a row with it set is
+    revoked, and ``None`` is a jti with no grant row at all.
+    """
+
+    def __init__(self, grant: object | None) -> None:
+        self._grant = grant
+
+    async def scalar(self, _stmt: object) -> object | None:
+        return self._grant
 
 
 @pytest.mark.unit
 @pytest.mark.asyncio
 async def test_require_principal_device_branch_builds_device_principal() -> None:
-    """A device grant token resolves to a DEVICE principal with no profiles."""
+    """A device token backed by an ACTIVE grant row resolves to a DEVICE principal."""
+    session = _GrantSession(_GrantRow(revoked_at=None))
+    token = _mint()
     principal = await deps.require_principal(
-        _ExplodingSession(),  # pyright: ignore[reportArgumentType]
-        authorization=f"Bearer {_mint()}",
+        session,  # pyright: ignore[reportArgumentType]
+        authorization=f"Bearer {token}",
     )
     assert principal.role is deps.Role.DEVICE
     assert principal.profile_ids == frozenset()
@@ -303,12 +333,39 @@ async def test_require_principal_device_branch_builds_device_principal() -> None
 
 @pytest.mark.unit
 @pytest.mark.asyncio
+async def test_require_principal_rejects_revoked_device_grant() -> None:
+    """A perfectly-signed token is refused once its grant row is revoked."""
+    session = _GrantSession(_GrantRow(revoked_at=datetime.now(UTC)))
+    token = _mint()
+    with pytest.raises(AuthenticationError):
+        await deps.require_principal(
+            session,  # pyright: ignore[reportArgumentType]
+            authorization=f"Bearer {token}",
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
+async def test_require_principal_rejects_device_grant_with_no_row() -> None:
+    """A validly-signed token whose jti has no grant row is refused."""
+    session = _GrantSession(None)
+    token = _mint()
+    with pytest.raises(AuthenticationError):
+        await deps.require_principal(
+            session,  # pyright: ignore[reportArgumentType]
+            authorization=f"Bearer {token}",
+        )
+
+
+@pytest.mark.unit
+@pytest.mark.asyncio
 async def test_require_principal_rejects_forged_device_token() -> None:
     """A device-audience token signed with the wrong secret is rejected."""
     forged = _encode(_claims(), secret=_OTHER_SECRET)
+    session = _ExplodingSession()
     with pytest.raises(AuthenticationError):
         await deps.require_principal(
-            _ExplodingSession(),  # pyright: ignore[reportArgumentType]
+            session,  # pyright: ignore[reportArgumentType]
             authorization=f"Bearer {forged}",
         )
 
@@ -343,8 +400,9 @@ def test_device_principal_never_carries_admin_capability() -> None:
 @pytest.mark.asyncio
 async def test_device_grant_cannot_onboard() -> None:
     """A device grant token cannot provision a guardian Family+User."""
+    token = _mint()
     with pytest.raises(AuthorizationError):
-        await deps.require_onboarding_identity(authorization=f"Bearer {_mint()}")
+        await deps.require_onboarding_identity(authorization=f"Bearer {token}")
 
 
 # ---------------------------------------------------------------------------
@@ -368,8 +426,9 @@ def _base_nonlocal_kwargs() -> dict[str, Any]:
 @pytest.mark.unit
 def test_missing_device_grant_secret_outside_local_rejected() -> None:
     """A non-local Settings with no device-grant secret refuses to construct."""
+    kwargs = _base_nonlocal_kwargs()
     with pytest.raises(ConfigError, match="DEVICE_GRANT_SECRET"):
-        Settings(**_base_nonlocal_kwargs(), device_grant_secret=None)
+        Settings(**kwargs, device_grant_secret=None)
 
 
 @pytest.mark.unit
@@ -379,8 +438,7 @@ def test_missing_device_grant_secret_outside_local_rejected() -> None:
 )
 def test_weak_device_grant_secret_outside_local_rejected(weak: str) -> None:
     """A short or placeholder device-grant secret refuses to construct."""
+    kwargs = _base_nonlocal_kwargs()
+    secret = SecretStr(weak)
     with pytest.raises(ConfigError, match="DEVICE_GRANT_SECRET"):
-        Settings(
-            **_base_nonlocal_kwargs(),
-            device_grant_secret=SecretStr(weak),
-        )
+        Settings(**kwargs, device_grant_secret=secret)
