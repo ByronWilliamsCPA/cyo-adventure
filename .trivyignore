@@ -15,7 +15,9 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-07-14
+# Last reviewed: 2026-07-14 (gawk block only; see each block's own "Confirmed
+# via" comment below for when it was individually last re-verified against a
+# live Trivy run).
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496

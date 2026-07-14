@@ -224,6 +224,10 @@ set, so no project-side upgrade path exists until Debian ships a fix.
 
 ### References
 
+- [Aqua AVD CVE-2026-40468](https://avd.aquasec.com/nvd/cve-2026-40468)
+- [Aqua AVD CVE-2026-40469](https://avd.aquasec.com/nvd/cve-2026-40469)
+- [Aqua AVD CVE-2026-40467](https://avd.aquasec.com/nvd/cve-2026-40467)
+- [Aqua AVD CVE-2026-40553](https://avd.aquasec.com/nvd/cve-2026-40553)
 - [Debian security tracker: gawk](https://security-tracker.debian.org/tracker/source-package/gawk)
 - Discovered by the Container Security workflow (Trivy) on
   [PR #256](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/256)
