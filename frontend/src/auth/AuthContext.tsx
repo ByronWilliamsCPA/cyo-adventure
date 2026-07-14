@@ -13,7 +13,7 @@ import {
 } from './authContext'
 import { clearChildSession } from './childSession'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
-import { supabase } from './supabaseClient'
+import { isPasswordRecovery, supabase } from './supabaseClient'
 import { isRole, type Principal } from './types'
 
 const TOKEN_STORAGE_KEY = 'auth_token'
@@ -57,6 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [principal, setPrincipal] = useState<Principal | null>(null)
   const [status, setStatus] = useState<AuthStatus>('loading')
   const [authError, setAuthError] = useState<AuthError | null>(null)
+  // Seeded from the frozen hash flag (supabaseClient captured it before
+  // createClient stripped the fragment). Also flipped on by a PASSWORD_RECOVERY
+  // event below, so a recovery landing is caught whether the flag or the event
+  // wins the race. Cleared on a successful updatePassword or on sign-out.
+  const [recovery, setRecovery] = useState(isPasswordRecovery)
 
   // #CRITICAL: concurrency: onAuthStateChange can fire several events in quick
   // succession (INITIAL_SESSION, then a near-immediate TOKEN_REFRESHED), each
@@ -166,6 +171,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      // supabase-js emits PASSWORD_RECOVERY once it has processed a recovery
+      // link's hash. Flip into recovery here (in addition to the module-level
+      // seed) so the set-new-password form shows even when the event, not the
+      // frozen flag, is what surfaces the recovery intent.
+      if (event === 'PASSWORD_RECOVERY') setRecovery(true)
       void syncPrincipal(session, event)
     })
 
@@ -180,6 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       principal,
       authError,
+      recovery,
       // #ASSUME: data-integrity: supabase-js auth methods resolve with
       // { error } instead of throwing, so an unchecked await silently
       // swallows a failed OAuth redirect or sign-out. Rethrow so callers
@@ -243,11 +254,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // #VERIFY: AuthContext.test.tsx "sign-out drops warm adult-gate
         // state".
         clearAdultGate()
+        // Abandoning a recovery flow (signing out from the set-new-password
+        // form) must not leave the provider stuck in recovery for the next
+        // session on this device.
+        setRecovery(false)
         const { error } = await supabase.auth.signOut()
         if (error) throw error
       },
+      // #ASSUME: security: resetPasswordForEmail resolves regardless of whether
+      // the address is registered (Supabase does not disclose it) and returns
+      // { error } only on operational failures (e.g. rate limiting), so rethrow
+      // lets the form surface a retryable error while the success path stays
+      // neutral. redirectTo mirrors signInWithOAuth: the reset link must return
+      // to the guardian login page, the only surface that loads supabase-js and
+      // can process the recovery hash into a session + PASSWORD_RECOVERY event.
+      // #VERIFY: AuthContext.test.tsx requestPasswordReset delegation + rejection.
+      requestPasswordReset: async (email) => {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}${GUARDIAN_LOGIN_PATH}`,
+        })
+        if (error) throw error
+      },
+      // #CRITICAL: security: updateUser sets the new password on the CURRENT
+      // recovery session; rethrow on { error } so a weak/invalid password keeps
+      // the user on the form to retry instead of silently failing. Clear
+      // recovery only AFTER a confirmed success so the app auto-continues to the
+      // console (the recovery session is now an ordinary signed-in session); a
+      // failed update leaves recovery set and the form visible.
+      // #VERIFY: AuthContext.test.tsx updatePassword clears/keeps recovery.
+      updatePassword: async (newPassword) => {
+        const { error } = await supabase.auth.updateUser({ password: newPassword })
+        if (error) throw error
+        setRecovery(false)
+      },
     }),
-    [status, principal, authError]
+    [status, principal, authError, recovery]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

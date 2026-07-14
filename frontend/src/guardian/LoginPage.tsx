@@ -17,6 +17,7 @@ import {
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
+import { SetNewPasswordForm } from './SetNewPasswordForm'
 
 /**
  * Whether `pathname` is a location `principal` can actually land on, mirroring
@@ -64,13 +65,25 @@ function isInvalidCredentials(err: unknown): boolean {
  * no new auth machinery, only a second entry point into the same flow.
  */
 export function LoginPage() {
-  const { status, principal, authError, signInWithOAuth, signInWithPassword, signOut } =
-    useAuth()
+  const {
+    status,
+    principal,
+    authError,
+    recovery,
+    signInWithOAuth,
+    signInWithPassword,
+    signOut,
+    requestPasswordReset,
+  } = useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [showReset, setShowReset] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetStatus, setResetStatus] = useState<'idle' | 'sent' | 'error'>('idle')
+  const [resetSubmitting, setResetSubmitting] = useState(false)
   const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
   const location = useLocation()
   const navigate = useNavigate()
@@ -231,6 +244,40 @@ export function LoginPage() {
     }
   }
 
+  // #ASSUME: security: requestPasswordReset resolves whether or not the address
+  // is registered (Supabase does not disclose it), so a resolution always maps
+  // to the neutral "if an account exists" confirmation, never a "sent" that
+  // would confirm the email. Only an operational rejection (rate limit, network,
+  // 5xx) surfaces a distinct, retryable connection error. Enumeration-resistant
+  // by construction, matching the login form's generic-credentials stance.
+  // #VERIFY: LoginPage.test.tsx forgot-password neutral-confirmation + error.
+  async function submitReset() {
+    setResetStatus('idle')
+    setResetSubmitting(true)
+    try {
+      await requestPasswordReset(resetEmail)
+      setResetStatus('sent')
+    } catch {
+      setResetStatus('error')
+    } finally {
+      setResetSubmitting(false)
+    }
+  }
+
+  // Recovery-link return leg (ADR-009 password reset). The link established a
+  // session, so `status` is (or is becoming) 'signed-in', but the guardian must
+  // set a new password before continuing rather than being redirected to the
+  // console. Checked BEFORE the signed-in redirect for exactly that reason. On a
+  // successful update the context clears `recovery`, this branch falls away, and
+  // the signed-in redirect below auto-continues them to their console.
+  if (recovery) {
+    return (
+      <div className="guardian-login">
+        <SetNewPasswordForm />
+      </div>
+    )
+  }
+
   if (status === 'signed-in') {
     // While the device-authorization mint is in flight, hold here instead of
     // firing the normal redirect; the effect above navigates to the kid
@@ -327,6 +374,54 @@ export function LoginPage() {
           </p>
         ) : null}
       </form>
+
+      <button
+        type="button"
+        className="guardian-login__link"
+        onClick={() => setShowReset((open) => !open)}
+        aria-expanded={showReset}
+      >
+        Forgot your password?
+      </button>
+      {showReset ? (
+        <form
+          className="guardian-login__form"
+          onSubmit={(event) => {
+            event.preventDefault()
+            void submitReset()
+          }}
+        >
+          <label className="guardian-login__field cyo-field">
+            <span>Email for reset link</span>
+            <input
+              type="email"
+              name="reset-email"
+              autoComplete="email"
+              required
+              className="cyo-field__control"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
+          </label>
+          <button
+            type="submit"
+            className="guardian-login__provider"
+            disabled={resetSubmitting}
+          >
+            {resetSubmitting ? 'Sending...' : 'Send reset link'}
+          </button>
+          {resetStatus === 'sent' ? (
+            <p role="status" aria-live="polite" className="guardian-login__note">
+              If an account exists for that email, we&apos;ve sent a reset link. Check your inbox.
+            </p>
+          ) : null}
+          {resetStatus === 'error' ? (
+            <p role="alert" className="guardian-login__error cyo-text-error">
+              We couldn&apos;t send a reset link. Check your connection and try again.
+            </p>
+          ) : null}
+        </form>
+      ) : null}
     </div>
   )
 }

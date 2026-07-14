@@ -1,5 +1,38 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { hashIndicatesRecovery } from './supabaseClient'
+
+describe('hashIndicatesRecovery', () => {
+  it('is true for a Supabase recovery-link hash', () => {
+    // Supabase's /verify?type=recovery redirect lands with an implicit-flow
+    // hash carrying type=recovery alongside the access token.
+    expect(
+      hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=recovery')
+    ).toBe(true)
+  })
+
+  it('is false for an ordinary OAuth / bearer return hash', () => {
+    // A normal sign-in return must NOT be treated as a recovery, or every
+    // login would show the set-new-password form.
+    expect(
+      hashIndicatesRecovery('#access_token=abc.def.ghi&expires_in=3600&type=bearer')
+    ).toBe(false)
+  })
+
+  it('is false for a signup-confirmation hash', () => {
+    expect(hashIndicatesRecovery('#access_token=abc&type=signup')).toBe(false)
+  })
+
+  it('is false for an empty or bare-hash location', () => {
+    expect(hashIndicatesRecovery('')).toBe(false)
+    expect(hashIndicatesRecovery('#')).toBe(false)
+  })
+
+  it('tolerates a hash with no leading # (defensive)', () => {
+    expect(hashIndicatesRecovery('type=recovery&access_token=abc')).toBe(true)
+  })
+})
+
 /**
  * Direct unit coverage for supabaseClient.ts itself: every other test in the
  * suite mocks this module (see AuthContext.test.tsx's `vi.mock('./supabaseClient')`

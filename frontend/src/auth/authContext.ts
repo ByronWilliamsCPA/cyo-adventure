@@ -23,9 +23,29 @@ export interface AuthContextValue {
   status: AuthStatus
   principal: Principal | null
   authError: AuthError | null
+  /**
+   * True while this page load is the return leg of a password-recovery link
+   * (Supabase fired PASSWORD_RECOVERY, or the landing hash carried
+   * type=recovery). LoginPage renders the set-new-password form instead of
+   * redirecting while this is set; it clears on a successful password update
+   * or on sign-out.
+   */
+  recovery: boolean
   signInWithOAuth: (provider: 'google' | 'apple') => Promise<void>
   signInWithPassword: (credentials: Credentials) => Promise<void>
   signOut: () => Promise<void>
+  /**
+   * Emails a password-reset link to `email`. Resolves whether or not the
+   * address exists (Supabase does not reveal it), so callers must show a
+   * neutral confirmation and never leak account existence.
+   */
+  requestPasswordReset: (email: string) => Promise<void>
+  /**
+   * Sets a new password on the current (recovery) session and, on success,
+   * clears {@link recovery} so the app auto-continues to the console. Rethrows
+   * Supabase's error so the form can surface a retryable failure.
+   */
+  updatePassword: (newPassword: string) => Promise<void>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)

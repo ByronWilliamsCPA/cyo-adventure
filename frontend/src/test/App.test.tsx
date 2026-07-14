@@ -75,8 +75,14 @@ vi.mock('../auth/supabaseClient', () => ({
       signInWithOAuth: vi.fn(),
       signInWithPassword: vi.fn(),
       signOut: vi.fn(),
+      resetPasswordForEmail: vi.fn(),
+      updateUser: vi.fn(),
     },
   },
+  // AuthProvider reads this at mount (useState seed). Vitest mocks throw on
+  // access to an undeclared export, so it must be present even though these
+  // router tests never exercise the recovery flow.
+  isPasswordRecovery: false,
 }))
 
 function renderAt(initialPath: string) {
