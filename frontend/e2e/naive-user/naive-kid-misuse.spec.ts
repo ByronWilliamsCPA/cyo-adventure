@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 
+import { seedDeviceGrant } from '../support/auth'
 import { loadLanternStory } from '../support/fixtures'
 
 const lantern = loadLanternStory()
@@ -35,6 +36,8 @@ test.describe('double-submitting a story request', () => {
     await context.addInitScript(() => {
       window.localStorage.setItem('auth_token', 'child-fox')
     })
+    // ADR-014: an authorized device (grant present) so the kid surface renders.
+    await seedDeviceGrant(context)
     await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   })
 
@@ -91,6 +94,8 @@ test.describe('refresh mid-reader', () => {
     await context.addInitScript(() => {
       window.localStorage.setItem('auth_token', 'child-fox')
     })
+    // ADR-014: an authorized device (grant present) so /read/* renders.
+    await seedDeviceGrant(context)
   })
 
   test('a clean refresh (not the offline/409 case) does not lose reading position', async ({
@@ -156,11 +161,42 @@ test.describe('refresh mid-reader', () => {
   })
 })
 
-test.describe('fresh browser, no grown-up signed in', () => {
-  // Deliberately no addInitScript seeding auth_token (unlike the sibling
-  // blocks above): this is issue #196/#137 F1's naive-UX scenario, a kid
-  // opening the app on a browser/tab where no one has signed in yet, so
-  // every profiles/library fetch comes back 401 with no token attached.
+test.describe('fresh device, never authorized (ADR-014)', () => {
+  // A device that has never been authorized has no device grant, so
+  // DeviceAuthorizedRoute intercepts the whole kid surface BEFORE any page
+  // mounts or fetches, and routes to guardian login carrying the
+  // authorize-device intent. The kid-safe "ask a grown-up" in-page gate
+  // (covered by the sibling block below) is one layer down and never reached
+  // here: this is the new, correct handoff for an unauthorized device.
+  // Deliberately no auth_token and no device grant seeded.
+
+  test('the kid picker redirects to guardian login with the authorize-device intent', async ({
+    page,
+  }) => {
+    await page.goto('/kids')
+
+    await expect(page).toHaveURL('/guardian/login?intent=authorize-device')
+  })
+
+  test('a kid deep link into the library also redirects to authorize this device', async ({
+    page,
+  }) => {
+    await page.goto('/library/p1')
+
+    await expect(page).toHaveURL('/guardian/login?intent=authorize-device')
+  })
+})
+
+test.describe('authorized device, session no longer valid (ADR-014)', () => {
+  // This is issue #196/#137 F1's naive-UX scenario as it now presents: the
+  // device WAS authorized (a grant is present and not yet expired per the
+  // client clock), so DeviceAuthorizedRoute lets the kid surface mount, but
+  // the server rejects the grant's bearer (revoked, or its own exp reached) so
+  // every profiles/library fetch comes back 401. The kid-safe in-page
+  // "ask a grown-up" gate must render instead of a scary retryable error.
+  test.beforeEach(async ({ context }) => {
+    await seedDeviceGrant(context)
+  })
 
   test('the profile picker shows an ask-a-grown-up gate, not a retryable error', async ({
     page,
@@ -182,7 +218,7 @@ test.describe('fresh browser, no grown-up signed in', () => {
 
   test('the library shows an ask-a-grown-up gate, not a retryable error', async ({ page }) => {
     // KidNav (mounted alongside LibraryPage) fetches profiles too, on the same
-    // no-token request; it swallows that failure into a generic "My books"
+    // rejected request; it swallows that failure into a generic "My books"
     // label (see KidNav.tsx), so only the page-level gate below is expected
     // to render even though both routes 401.
     await page.route('**/api/v1/profiles', (route) =>
@@ -213,6 +249,8 @@ test.describe('rating twice', () => {
     await context.addInitScript(() => {
       window.localStorage.setItem('auth_token', 'child-fox')
     })
+    // ADR-014: an authorized device (grant present) so the kid surface renders.
+    await seedDeviceGrant(context)
     await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
   })
 

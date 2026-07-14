@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { AuthProvider } from './AuthContext'
 import { getChildSession, setChildSession } from './childSession'
-import { coolParentalGate, parentalGateRemainingMs, warmParentalGate } from './parentalGateState'
+import { adultGateRemainingMs, clearAdultGate, warmAdultGate } from './parentalGateState'
 import { useAuth } from './useAuth'
 
 const mockGet = vi.fn()
@@ -101,7 +101,8 @@ function CatchingActionsProbe() {
 
 beforeEach(() => {
   localStorage.clear()
-  coolParentalGate()
+  sessionStorage.clear()
+  clearAdultGate()
   mockGet.mockReset()
   mockGetSession.mockReset()
   mockOnAuthStateChange
@@ -455,43 +456,116 @@ describe('AuthProvider', () => {
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
   })
 
-  it('sign-out drops warm parental-gate state', async () => {
-    // P6-08: an explicit sign-out hands the device over, so a warm parental
-    // gate must not survive it and greet the next sign-in already unlocked.
+  it('sign-out drops warm adult-gate state', async () => {
+    // ADR-014 Phase 5: an explicit sign-out hands the device over, so a warm
+    // adult gate must not survive it and greet the next sign-in already
+    // unlocked.
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: null })
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     render(
       <AuthProvider>
         <ActionsProbe />
       </AuthProvider>
     )
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
-    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
 
     fireEvent.click(screen.getByText('sign out'))
 
     await waitFor(() => expect(mockSignOut).toHaveBeenCalled())
-    expect(parentalGateRemainingMs('u1')).toBe(0)
+    expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
-  it('keeps warm parental-gate state when sign-out itself fails', async () => {
-    // A failed sign-out leaves the session in place, so the gate state should
-    // stay consistent with it rather than half-clearing.
+  it('clears the local credential and adult gate even when the network revoke fails', async () => {
+    // #CRITICAL: security (C1): on a shared kid device the guardian bearer must
+    // not survive a sign-out just because the network revoke failed. Supabase's
+    // GoTrueClient._signOut removes the local session only AFTER a successful or
+    // 4xx revoke, so a transport failure/5xx would otherwise strand auth_token
+    // in localStorage for the useApi fallthrough to attach on a kid route.
+    // AuthContext therefore clears the token (and the now-meaningless warm adult
+    // gate) up front, before the revoke and independently of its outcome; the
+    // revoke error still propagates to the caller.
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: new Error('revoke failed') })
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     render(
       <AuthProvider>
         <CatchingActionsProbe />
       </AuthProvider>
     )
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    // A bearer still in storage at sign-out time (set after mount settles so
+    // the initial signed-out resolution does not clear it first).
+    localStorage.setItem('auth_token', 'guardian-bearer')
 
     fireEvent.click(screen.getByText('sign out'))
 
     await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('revoke failed'))
-    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(adultGateRemainingMs('u1')).toBe(0)
+  })
+
+  it('warms the adult gate on a genuine SIGNED_IN event', async () => {
+    // ADR-014 Phase 5: the guardian just proved full credentials (password
+    // submit or an OAuth redirect return), so entering the console
+    // immediately after must NOT show the step-up.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    let changeHandler: ((event: string, session: unknown) => void) | undefined
+    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
+      changeHandler = cb
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+    expect(adultGateRemainingMs('u1')).toBe(0)
+
+    act(() => {
+      changeHandler?.('SIGNED_IN', { access_token: 'tok-1', user: { id: 'u1' } })
+    })
+
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+  })
+
+  it('does NOT warm the adult gate on a restored session or a silent token refresh', async () => {
+    // #CRITICAL: security: only an explicit SIGNED_IN event may warm the
+    // gate. Warming on the initial getSession()-driven restore (no event) or
+    // on a periodic TOKEN_REFRESHED would let a merely-persisted or
+    // auto-refreshing session look identical to a guardian who just typed a
+    // password, defeating the step-up.
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    let changeHandler: ((event: string, session: unknown) => void) | undefined
+    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
+      changeHandler = cb
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-in'))
+    // The session was restored via getSession(), not an explicit sign-in.
+    expect(adultGateRemainingMs('u1')).toBe(0)
+
+    act(() => {
+      changeHandler?.('TOKEN_REFRESHED', { access_token: 'tok-2', user: { id: 'u1' } })
+    })
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2))
+    expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
   it('rejects signInWithOAuth when supabase reports an error', async () => {

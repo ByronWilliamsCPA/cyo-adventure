@@ -33,13 +33,17 @@ from cyo_adventure.core.child_session import (
 )
 from cyo_adventure.core.config import settings
 from cyo_adventure.core.database import get_session
+from cyo_adventure.core.device_grant import (
+    DEVICE_GRANT_AUDIENCE,
+    verify_device_grant_token,
+)
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
     ConfigurationError,
     ValidationError,
 )
-from cyo_adventure.db.models import ChildProfile, User
+from cyo_adventure.db.models import ChildProfile, DeviceGrant, User
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -59,11 +63,18 @@ class Role(StrEnum):
     ``User.is_admin``), so one adult can be a guardian, an admin, or both.
     ``ADMIN`` as a base role means an admin-only adult with no family
     guardianship; it implies the capability regardless of the stored flag.
+
+    ``DEVICE`` (ADR-014 phase 1) is a token-only role: it never corresponds
+    to a ``User`` row (the ``ck_user_role`` DB CHECK does not include it), so
+    ``Role("device")`` only ever appears on a :class:`Principal` built from a
+    verified device grant token (``_device_principal``), never from the
+    ``select(User)`` branch of ``require_principal``.
     """
 
     GUARDIAN = "guardian"
     CHILD = "child"
     ADMIN = "admin"
+    DEVICE = "device"
 
 
 _BEARER_PREFIX = "bearer "
@@ -95,9 +106,18 @@ class Principal:
         subject: The verified token subject (OIDC ``sub`` in production).
         user_id: The resolved ``User.id`` for the subject, used to stamp
             creator provenance (``created_by``) on rows this principal writes.
-        role: The base persona: ``"guardian"``, ``"child"``, or ``"admin"``.
+            For a ``DEVICE`` principal this is the minting guardian's
+            ``User.id`` (the token's ``authorized_by`` claim), not a real
+            device account, mirroring how a ``CHILD`` principal carries the
+            child's own provisioned ``User.id``.
+        role: The base persona: ``"guardian"``, ``"child"``, ``"admin"``, or
+            ``"device"`` (ADR-014 phase 1; a device grant, never a login).
         family_id: The family the principal belongs to.
         profile_ids: The child-profile ids this principal may read or write.
+            Always empty for a ``DEVICE`` principal: a device grant mints a
+            child session and lists a family's profiles, but is never itself
+            scoped to a profile, so ``__post_init__`` force-clears this set
+            for the device role (symmetric with the ``is_admin`` invariant).
         is_admin: Whether the principal holds the global admin (approver)
             capability. Orthogonal to ``role`` so one adult can be a guardian,
             an admin, or both: a ``(role=guardian, is_admin=True)`` principal
@@ -122,18 +142,31 @@ class Principal:
         # would otherwise be a half-admin that fails admin gates. The
         # Role(...) coercion also rejects any unmodeled role string a
         # caller passes (closed-world), instead of authorizing nothing
-        # and nobody noticing. A CHILD principal can never hold the admin
-        # capability: the flag is force-cleared here (defense in depth
-        # behind the ck_user_child_not_admin DB CHECK) so a mistakenly
-        # constructed Principal(role=CHILD, is_admin=True) never escalates.
+        # and nobody noticing. A CHILD or DEVICE principal can never hold
+        # the admin capability: the flag is force-cleared here (defense in
+        # depth behind the ck_user_child_not_admin DB CHECK for CHILD; DEVICE
+        # has no DB row at all, so this is the ONLY enforcement point) so a
+        # mistakenly constructed Principal(role=CHILD/DEVICE, is_admin=True)
+        # never escalates.
         # #VERIFY: tests/unit/test_api_deps.py pins role=ADMIN -> is_admin
-        # and role=CHILD -> not is_admin.
+        # and role=CHILD -> not is_admin; test_device_grant.py pins
+        # role=DEVICE -> not is_admin.
         """
         object.__setattr__(self, "role", Role(self.role))
-        if self.role == Role.CHILD:
+        if self.role in (Role.CHILD, Role.DEVICE):
             object.__setattr__(self, "is_admin", False)
         elif self.role == Role.ADMIN and not self.is_admin:
             object.__setattr__(self, "is_admin", True)
+        # #CRITICAL: security: a DEVICE principal is never profile-scoped; the
+        # grant authorizes a child-session mint and a profile listing, not any
+        # per-profile read/write. Force-clearing profile_ids here is the
+        # structural counterpart to the is_admin invariant above, so a
+        # mistakenly constructed Principal(role=DEVICE, profile_ids={...}) can
+        # never pass authorize_profile for a profile it was handed in error.
+        # #VERIFY: test_device_grant.py pins role=DEVICE -> profile_ids empty
+        # even when a non-empty set is passed to the constructor.
+        if self.role == Role.DEVICE:
+            object.__setattr__(self, "profile_ids", frozenset())
 
     @property
     def is_guardian(self) -> bool:
@@ -430,17 +463,24 @@ async def require_principal(
     # #CRITICAL: security: the verification branch is selected by the token's
     # UNVERIFIED audience claim, which is safe ONLY because each branch then
     # fully verifies the signature and its own claims before any principal is
-    # built. The child branch pins HS256 + the child audience/issuer against the
-    # backend secret; the guardian branch pins RS256/ES256 + the Supabase
-    # audience/issuer via JWKS. A token can therefore only ever verify through
-    # the branch that minted it: a guardian token routed here fails the child
-    # audience, a child token routed to the guardian path fails the Supabase
-    # audience, and neither algorithm is accepted by the other branch. Routing
-    # on unverified data widens nothing; it only picks which verifier runs.
+    # built. The child branch pins HS256 + the child audience/issuer against
+    # the backend secret; the device-grant branch pins HS256 + the device
+    # audience/issuer against a DIFFERENT backend secret
+    # (settings.device_grant_secret); the guardian branch pins RS256/ES256 +
+    # the Supabase audience/issuer via JWKS. A token can therefore only ever
+    # verify through the branch that minted it: any token routed to a branch
+    # it wasn't minted for fails on audience (and, for the guardian branch,
+    # on algorithm too). Routing on unverified data widens nothing; it only
+    # picks which verifier runs.
     # #VERIFY: test_child_session.py exercises alg-confusion in both directions,
-    # wrong-audience, wrong-issuer, and a forged child token.
-    if unverified_audience(token) == CHILD_SESSION_AUDIENCE:
+    # wrong-audience, wrong-issuer, and a forged child token; test_device_grant.py
+    # covers the same matrix for the device-grant branch, including a child
+    # token routed here and a device token routed to the child branch.
+    aud = unverified_audience(token)
+    if aud == CHILD_SESSION_AUDIENCE:
         return _child_principal(token)
+    if aud == DEVICE_GRANT_AUDIENCE:
+        return await _device_principal(session, token)
     subject = await _resolve_subject(token)
     user = await session.scalar(select(User).where(User.authn_subject == subject))
     if user is None:
@@ -501,6 +541,69 @@ def _child_principal(token: str) -> Principal:
         role=Role.CHILD,
         family_id=claims.family_id,
         profile_ids=frozenset({claims.profile_id}),
+    )
+
+
+async def _device_principal(session: AsyncSession, token: str) -> Principal:
+    """Build a DEVICE :class:`Principal` from a verified, unrevoked device grant.
+
+    Unlike the child-session path (self-contained, deliberately DB-free), this
+    performs one database read to enforce revocation. A device grant is a
+    long-lived (90-day) authorization for a shared device, and its whole
+    reason to be revocable (ADR-014) is to cut off a lost or stolen tablet
+    before that TTL elapses. Revocation is server-authoritative state a
+    self-contained token cannot carry, so the online consuming path MUST
+    consult it; verifying the signature alone would let a revoked grant keep
+    minting child sessions and enumerating a family's profiles until ``exp``.
+    Enforcing it here, at principal resolution, means every device-consuming
+    endpoint (the child-session mint, the profiles listing, and any future
+    one) inherits the check and no handler can forget it.
+
+    Args:
+        session: The request database session, used for the revocation lookup.
+        token: The raw bearer token, already routed here by its device
+            grant audience.
+
+    Returns:
+        Principal: A ``Role.DEVICE`` principal scoped to no profiles, with
+        ``user_id`` set to the minting guardian's id (the ``authorized_by``
+        claim) so the principal is attributable without a further lookup,
+        mirroring the child session path's ``user_id`` convention.
+
+    Raises:
+        AuthenticationError: If the token fails device-grant verification, or
+            its grant row is absent (never minted, or the token predates a
+            row now deleted) or carries a non-null ``revoked_at``.
+    """
+    claims = verify_device_grant_token(token)
+    # #CRITICAL: security: revocation is enforced here, online, on the jti the
+    # verified token carries. A missing row (unknown/deleted jti) or a non-null
+    # revoked_at is rejected as an authentication failure BEFORE any principal
+    # is built, so a revoked device cannot mint a child session or list family
+    # profiles. Same-message rejection for missing vs revoked avoids a probe
+    # oracle. An offline device is unaffected until it reconnects; the exposure
+    # is bounded by the 90-day TTL (ADR-014, "Negative / risks").
+    # #VERIFY: test_device_grants.py asserts a revoked grant yields 401 on the
+    # child-session mint and the profiles listing, and an unknown jti yields 401.
+    grant = await session.scalar(
+        select(DeviceGrant).where(DeviceGrant.jti == claims.jti)
+    )
+    if grant is None or grant.revoked_at is not None:
+        msg = "device grant token failed verification"
+        raise AuthenticationError(msg)
+    # #CRITICAL: security: a device principal carries NO profile_ids and can
+    # never be admin (Principal.__post_init__ force-clears both for the DEVICE
+    # role as defense in depth), so this token can never pass a guardian-only
+    # or admin-only gate, and cannot pass authorize_profile for any profile.
+    # #VERIFY: test_device_grant.py's require_principal routing tests assert
+    # profile_ids is empty and is_admin is False, and that the guardian-only
+    # dependency refuses a device token with 403.
+    return Principal(
+        subject=claims.subject,
+        user_id=claims.authorized_by,
+        role=Role.DEVICE,
+        family_id=claims.family_id,
+        profile_ids=frozenset(),
     )
 
 
@@ -657,18 +760,24 @@ async def require_onboarding_identity(
             it may not provision a guardian family (-> 403).
     """
     token = _extract_subject(authorization)
-    # #CRITICAL: security: a child session token must never provision a guardian
-    # Family+User. Routing on the UNVERIFIED audience is safe here because the
-    # branch only ever REFUSES: any token claiming the child audience is
-    # rejected outright, never used to build or create anything, so reading the
-    # unverified claim cannot widen access (mirrors the require_principal
-    # routing note). Guardians and admins carry the Supabase audience and fall
-    # through to real verification below.
+    # #CRITICAL: security: a child session token or a device grant must never
+    # provision a guardian Family+User. Routing on the UNVERIFIED audience is
+    # safe here because both branches only ever REFUSE: any token claiming
+    # the child or device-grant audience is rejected outright, never used to
+    # build or create anything, so reading the unverified claim cannot widen
+    # access (mirrors the require_principal routing note). Guardians and
+    # admins carry the Supabase audience and fall through to real
+    # verification below.
     # #VERIFY: test_onboarding_identity.py::test_child_session_token_cannot_onboard
     # (unit) and test_onboarding_api.py::test_child_session_token_cannot_onboard
-    # (integration) cover a child session token onboarding -> 403.
-    if unverified_audience(token) == CHILD_SESSION_AUDIENCE:
+    # (integration) cover a child session token onboarding -> 403;
+    # test_device_grant.py covers the device-grant equivalent.
+    aud = unverified_audience(token)
+    if aud == CHILD_SESSION_AUDIENCE:
         msg = "a child session cannot onboard a guardian account"
+        raise AuthorizationError(msg)
+    if aud == DEVICE_GRANT_AUDIENCE:
+        msg = "a device grant cannot onboard a guardian account"
         raise AuthorizationError(msg)
     # #CRITICAL: security: the local branch trusts the bearer token as the
     # subject with NO verification and yields no email; it is reachable only

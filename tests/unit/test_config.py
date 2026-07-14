@@ -23,6 +23,10 @@ _POOLER_DB_URL = (
 # A >=32-byte child-session signing secret, required alongside OIDC config in
 # every non-local environment (see the _require_child_session_secret validator).
 _CHILD_SECRET = "test-child-session-secret-0123456789abcd"
+# A >=32-byte device-grant signing secret, required alongside OIDC config in
+# every non-local environment (see the _require_device_grant_secret_outside_local
+# validator, ADR-014). Must be distinct from _CHILD_SECRET.
+_DEVICE_SECRET = "test-device-grant-secret-0123456789abcdef"
 
 
 class TestSettingsDefaults:
@@ -198,6 +202,7 @@ class TestValidatorRejectDevUrlOutsideLocal:
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
         )
         assert settings.database_url == _PROD_DB_URL
         assert settings.environment == environment
@@ -269,6 +274,7 @@ class TestEnvironmentAlias:
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
         )
         assert s.environment == "staging"
 
@@ -286,6 +292,7 @@ class TestEnvironmentAlias:
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
         )
         assert s.environment == "production"
 
@@ -569,6 +576,7 @@ class TestValidatorRequireOidcConfigOutsideLocal:
             oidc_issuer="https://project.supabase.co/auth/v1",
             oidc_jwks_url="https://project.supabase.co/auth/v1/.well-known/jwks.json",
             child_session_secret=_CHILD_SECRET,
+            device_grant_secret=_DEVICE_SECRET,
         )
         assert settings.oidc_issuer == "https://project.supabase.co/auth/v1"
         assert (
@@ -603,6 +611,7 @@ def _non_local_settings(**overrides: object) -> object:
         "oidc_issuer": "https://project.supabase.co/auth/v1",
         "oidc_jwks_url": ("https://project.supabase.co/auth/v1/.well-known/jwks.json"),
         "child_session_secret": _CHILD_SECRET,
+        "device_grant_secret": _DEVICE_SECRET,
     }
     kwargs.update(overrides)
     return Settings(**kwargs)  # type: ignore[arg-type]

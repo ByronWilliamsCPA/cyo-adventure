@@ -25,3 +25,14 @@ export const GUARDIAN_CONSOLE_PATH = '/guardian'
  * shell nav.
  */
 export const ADMIN_CONSOLE_PATH = '/admin'
+
+/**
+ * Query parameter DeviceAuthorizedRoute appends to the guardian-login
+ * redirect when the kid surface has no valid device grant (ADR-014 Phase 4).
+ * Carried so a future login flow (Phase 5/6) can recognize "this sign-in is
+ * to authorize a device, then return to the kid surface" and drive the
+ * authorize-then-return flow automatically, rather than landing the guardian
+ * on the console with no indication why they were sent to log in.
+ */
+export const AUTHORIZE_DEVICE_INTENT_PARAM = 'intent'
+export const AUTHORIZE_DEVICE_INTENT_VALUE = 'authorize-device'

@@ -1,0 +1,156 @@
+import 'fake-indexeddb/auto'
+
+import { IDBFactory } from 'fake-indexeddb'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { AUTHORIZE_DEVICE_INTENT_PARAM, AUTHORIZE_DEVICE_INTENT_VALUE } from '../routes'
+import { _resetDbHandle } from '../offline/db'
+import { DeviceAuthorizedRoute } from './DeviceAuthorizedRoute'
+import * as deviceGrant from './deviceGrant'
+import { setDeviceGrant } from './deviceGrant'
+import { isAdultGateWarm, warmAdultGate } from './parentalGateState'
+
+function renderGate(initialPath = '/kids') {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path="/guardian/login" element={<div>Login page</div>} />
+        <Route element={<DeviceAuthorizedRoute />}>
+          <Route path="/kids" element={<div>Kid picker</div>} />
+        </Route>
+      </Routes>
+    </MemoryRouter>
+  )
+}
+
+beforeEach(() => {
+  globalThis.indexedDB = new IDBFactory()
+  _resetDbHandle()
+  localStorage.clear()
+  sessionStorage.clear()
+})
+
+describe('DeviceAuthorizedRoute', () => {
+  it('renders the nested route immediately when a valid device grant exists', () => {
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    renderGate()
+    expect(screen.getByText('Kid picker')).toBeInTheDocument()
+  })
+
+  it('redirects to guardian login with the authorize-device intent marker when no grant exists', async () => {
+    renderGate()
+    // No grant in localStorage or the IndexedDB mirror, so this resolves
+    // from 'checking' straight to 'unauthorized' asynchronously.
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
+    expect(screen.queryByText('Kid picker')).not.toBeInTheDocument()
+  })
+
+  it('redirects when the stored grant is expired', async () => {
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2020-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    renderGate()
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
+  })
+
+  it('shows a loading state while checking the IndexedDB mirror', () => {
+    renderGate()
+    expect(screen.getByRole('status')).toBeInTheDocument()
+  })
+
+  it('fails closed to guardian login when device-grant hydration rejects', async () => {
+    // #CRITICAL: security: a rejected hydration (e.g. a localStorage write
+    // throwing on the mirror-hit path in a locked-down browser) must NOT leave
+    // the guard stuck on 'checking' / "Loading…" forever. The route drops to
+    // 'unauthorized' and redirects to guardian login instead of hanging.
+    const spy = vi.spyOn(deviceGrant, 'hydrateDeviceGrant').mockRejectedValue(new Error('hydrate boom'))
+    try {
+      renderGate()
+      expect(await screen.findByText('Login page')).toBeInTheDocument()
+      expect(screen.queryByText('Kid picker')).not.toBeInTheDocument()
+    } finally {
+      spy.mockRestore()
+    }
+  })
+
+  it('recovers from the IndexedDB mirror when localStorage alone is empty', async () => {
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    // Simulate a localStorage clear that leaves the IndexedDB mirror intact
+    // (the mirror write is async; give it a tick before clearing).
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    localStorage.removeItem('device_grant')
+
+    renderGate()
+    expect(await screen.findByText('Kid picker')).toBeInTheDocument()
+  })
+
+  it('builds the redirect with the intent query param', async () => {
+    renderGate()
+    const login = await screen.findByText('Login page')
+    expect(login).toBeInTheDocument()
+    // The marker is a plain query param on GUARDIAN_LOGIN_PATH; assert the
+    // constants used to build it are the ones exported for a future login
+    // flow to read.
+    expect(AUTHORIZE_DEVICE_INTENT_PARAM).toBe('intent')
+    expect(AUTHORIZE_DEVICE_INTENT_VALUE).toBe('authorize-device')
+  })
+
+  it('parks the adult gate (ADR-014 Phase 5) once the kid surface authorizes', () => {
+    // A device handed to a kid must always re-demand the grown-up password
+    // on the way back up, however much of the step-up's TTL window was left.
+    warmAdultGate('u1')
+    expect(isAdultGateWarm('u1')).toBe(true)
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+
+    renderGate()
+
+    expect(screen.getByText('Kid picker')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(false)
+  })
+
+  it('parks the adult gate after the async IndexedDB-mirror path authorizes too', async () => {
+    warmAdultGate('u1')
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    // Simulate the localStorage-empty, mirror-only recovery path so the
+    // 'authorized' status is set asynchronously (not on first render).
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    localStorage.removeItem('device_grant')
+
+    renderGate()
+
+    expect(await screen.findByText('Kid picker')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(false)
+  })
+
+  it('does not park the adult gate while still unauthorized', async () => {
+    warmAdultGate('u1')
+    renderGate()
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(true)
+  })
+})

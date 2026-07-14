@@ -16,7 +16,13 @@ from fastapi import APIRouter
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
-from cyo_adventure.api.deps import Context, authorize_profile, parse_uuid
+from cyo_adventure.api.deps import (
+    Context,
+    Role,
+    authorize_family,
+    authorize_profile,
+    parse_uuid,
+)
 from cyo_adventure.api.schemas import ChildSessionCreateBody, ChildSessionView
 from cyo_adventure.core.child_session import mint_child_session_token
 from cyo_adventure.core.exceptions import AuthorizationError, ResourceNotFoundError
@@ -46,7 +52,12 @@ _SUBJECT_PREFIX = "child-profile:"
 async def create_child_session(
     body: ChildSessionCreateBody, ctx: Context
 ) -> ChildSessionView:
-    """Mint a child session token for one profile (guardian or admin only).
+    """Mint a child session token for one profile.
+
+    Callable by a guardian (own family), an admin (any family), or a
+    family-scoped ``DEVICE`` principal (own family only; ADR-014 phase 2):
+    a device grant lets an authorized device mint a reading session for one
+    of its own family's profiles without a live guardian bearer.
 
     Args:
         body: The target child profile id, plus the profile's picker PIN when
@@ -58,35 +69,57 @@ async def create_child_session(
 
     Raises:
         AuthorizationError: If a child token reaches this endpoint, a
-            guardian names a profile outside its own family, or the profile
-            has a picker PIN and the body's ``pin`` is missing or wrong
-            (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
+            guardian or device grant names a profile outside its own family,
+            or the profile has a picker PIN and the body's ``pin`` is missing
+            or wrong (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
         ResourceNotFoundError: If the profile does not exist (-> 404).
         ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
     """
-    # #CRITICAL: security: only a guardian (own family) or an admin may mint a
-    # child session; a child principal must never mint one for itself or anyone
-    # else. This role gate runs before any lookup, so a child token is rejected
-    # with an exact 403.
+    # #CRITICAL: security: only a guardian (own family), an admin, or a
+    # DEVICE principal may mint a child session; a child principal must never
+    # mint one for itself or anyone else. This role gate runs before any
+    # lookup, so a child token is rejected with an exact 403.
     # #VERIFY: test_child_sessions.py::test_child_cannot_mint asserts 403.
-    if not (ctx.principal.is_guardian or ctx.principal.is_admin):
-        msg = "guardian or admin role required"
+    if not (
+        ctx.principal.is_guardian
+        or ctx.principal.is_admin
+        or ctx.principal.role is Role.DEVICE
+    ):
+        msg = "guardian, admin, or device-grant role required"
         raise AuthorizationError(msg)
 
     profile_uuid = parse_uuid(body.profile_id, "profile_id")
     # #CRITICAL: security: a guardian may mint only for a profile in its own
     # family (authorize_profile checks the family-resolved profile set); an
     # admin is global and skips the ownership check by design (mirrors the
-    # admin-global branch in story_requests.py). A cross-family guardian id is
-    # rejected with 403 before the profile row is read.
+    # admin-global branch in story_requests.py). A DEVICE principal carries no
+    # profile_ids (ADR-014 phase 1 design: the grant is family-scoped, not
+    # profile-scoped), so authorize_profile cannot be used for it; its family
+    # check runs below, once the profile row (and thus its family_id) is
+    # loaded. A cross-family guardian id is rejected with 403 before the
+    # profile row is read.
     # #VERIFY: test_child_sessions.py::test_guardian_cannot_mint_other_family.
-    if not ctx.principal.is_admin:
+    if not ctx.principal.is_admin and ctx.principal.role is not Role.DEVICE:
         authorize_profile(ctx.principal, profile_uuid)
 
     profile = await ctx.session.get(ChildProfile, profile_uuid)
     if profile is None:
         msg = "profile not found"
         raise ResourceNotFoundError(msg)
+
+    if ctx.principal.role is Role.DEVICE:
+        # #CRITICAL: security: a device grant may mint only within its OWN
+        # family; reuses the existing family-scoping helper (authorize_family)
+        # rather than a hand-rolled comparison, so this stays on the same
+        # audited AuthorizationError path as every other family-ownership
+        # check in this module. A cross-family target is a 403, matching the
+        # shape of the guardian's authorize_profile 403 above (both are pure
+        # authorization failures, never a differently-shaped existence leak);
+        # the fetch-then-authorize order here mirrors the admin branch, which
+        # also authorizes only after the row is loaded.
+        # #VERIFY: test_child_sessions.py::test_device_grant_cannot_mint_other_family
+        # asserts 403 for a cross-family device token.
+        authorize_family(ctx.principal, profile.family_id)
 
     # #ASSUME: security: a 4-8 digit PIN checked behind an ALREADY
     # authenticated guardian/admin bearer is a convenience lock (keeps a

@@ -4,8 +4,10 @@ Exercises minting authorization (guardian own-family, admin, cross-family,
 child, unauthenticated), JIT provisioning of the child account (profiles
 created through the API have no User row), the double-mint race recovery,
 the end-to-end round-trip (a minted token authenticates as a CHILD principal
-scoped to one profile), and the P6-09 negative cases (a child token is
-rejected on a guardian endpoint and on another profile's library).
+scoped to one profile), the P6-09 negative cases (a child token is rejected
+on a guardian endpoint and on another profile's library), and the ADR-014
+phase 2 device-grant minting authorization (own-family success, cross-family
+rejection, and PIN enforcement unchanged for a device principal).
 """
 
 from __future__ import annotations
@@ -18,7 +20,7 @@ from sqlalchemy import select
 
 from cyo_adventure.api import child_sessions
 from cyo_adventure.db.models import ChildProfile, User
-from tests.integration.conftest import Seed, Stranger, auth
+from tests.integration.conftest import Seed, Stranger, auth, mint_device_token
 
 if TYPE_CHECKING:
     import uuid
@@ -631,3 +633,121 @@ async def test_family_a_minted_token_rejected_on_stranger_family_library(
         headers=auth(token),
     )
     assert resp.status_code in (403, 404), resp.text
+
+
+# ---------------------------------------------------------------------------
+# ADR-014 phase 2: device-grant minting authorization
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_device_grant_mints_own_family_profile_returns_201(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant mints a session for a profile in its own family."""
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 201, resp.text
+    body = resp.json()
+    assert body["profile_id"] == str(seed.child_profile_id)
+    assert body["token"]
+
+
+@pytest.mark.asyncio
+async def test_device_grant_minted_session_reads_own_library(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """The child session minted via a device grant is a working CHILD token."""
+    device_token = await mint_device_token(client, seed.guardian_token)
+    mint_resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert mint_resp.status_code == 201, mint_resp.text
+    child_token = mint_resp.json()["token"]
+
+    me_resp = await client.get("/api/v1/me", headers=auth(child_token))
+    assert me_resp.status_code == 200, me_resp.text
+    assert me_resp.json()["role"] == "child"
+    assert me_resp.json()["profile_ids"] == [str(seed.child_profile_id)]
+
+    library_resp = await client.get(
+        "/api/v1/library",
+        params={"profile_id": str(seed.child_profile_id)},
+        headers=auth(child_token),
+    )
+    assert library_resp.status_code == 200, library_resp.text
+
+
+@pytest.mark.asyncio
+async def test_device_grant_cannot_mint_other_family_profile(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant naming another family's profile is rejected with 403."""
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.other_child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_device_grant_cannot_mint_stranger_family_profile(
+    client: AsyncClient, seed: Seed, stranger: Stranger
+) -> None:
+    """A device grant naming a third, unrelated family's profile is 403.
+
+    Mirrors ``test_guardian_cannot_mint_stranger_family_profile``: catches a
+    family check that happens to reject only the specific family B id.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(stranger.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 403, resp.text
+
+
+@pytest.mark.asyncio
+async def test_device_grant_mint_requires_pin_when_set(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A PIN-protected profile still requires the PIN for a device grant.
+
+    PIN enforcement (P6-07) is unchanged by ADR-014 phase 2: a device grant
+    is a convenience authority for its own family, not an override of the
+    per-profile picker PIN.
+    """
+    await _set_profile_pin(client, seed, "4321")
+    device_token = await mint_device_token(client, seed.guardian_token)
+
+    missing_pin = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert missing_pin.status_code == 403, missing_pin.text
+    assert missing_pin.json()["code"] == "PIN_MISMATCH"
+
+    wrong_pin = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "9999"},
+        headers=auth(device_token),
+    )
+    assert wrong_pin.status_code == 403, wrong_pin.text
+    assert wrong_pin.json()["code"] == "PIN_MISMATCH"
+
+    right_pin = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id), "pin": "4321"},
+        headers=auth(device_token),
+    )
+    assert right_pin.status_code == 201, right_pin.text

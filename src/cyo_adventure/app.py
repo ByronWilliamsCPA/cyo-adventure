@@ -19,6 +19,7 @@ from cyo_adventure.api import (
     assignments,
     child_sessions,
     covers,
+    device_grants,
     families,
     generation,
     health,
@@ -227,6 +228,7 @@ def create_app() -> FastAPI:
     app.include_router(me.router)
     app.include_router(story_requests.router)
     app.include_router(child_sessions.router)
+    app.include_router(device_grants.router)
     app.include_router(onboarding.router)
     return app
 

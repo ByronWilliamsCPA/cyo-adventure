@@ -2,6 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { getChildSession, setChildSession } from '../auth/childSession'
+import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { useApi } from './useApi'
 
@@ -85,9 +86,10 @@ function getRequestHandlers(api: AxiosInstance) {
   return handler
 }
 
-function makeRequestConfig(): InternalAxiosRequestConfig {
-  // A minimal config with a real headers bag, which is all the interceptor touches.
-  return { headers: {} } as unknown as InternalAxiosRequestConfig
+function makeRequestConfig(url?: string): InternalAxiosRequestConfig {
+  // A minimal config with a real headers bag, which is all the interceptor
+  // touches (plus `url`, read only by the device-grant auth-route check).
+  return { headers: {}, url } as unknown as InternalAxiosRequestConfig
 }
 
 /**
@@ -121,9 +123,9 @@ function makeUnauthorizedError(authorization?: string): AxiosError {
  * is exactly what axios threads onto `error.config`; a hand-built error config
  * would never carry that tag and would misrepresent the real flow.
  */
-function issueThroughInterceptor(api: AxiosInstance): InternalAxiosRequestConfig {
+function issueThroughInterceptor(api: AxiosInstance, url?: string): InternalAxiosRequestConfig {
   const { fulfilled } = getRequestHandlers(api)
-  return fulfilled(makeRequestConfig())
+  return fulfilled(makeRequestConfig(url))
 }
 
 /** A 401 AxiosError whose `.config` is the exact object the request carried. */
@@ -677,6 +679,200 @@ describe('useApi request interceptor child-token selection (G1 / P6-04)', () => 
     const config = fulfilled(makeRequestConfig())
 
     expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+})
+
+describe('useApi request interceptor device-grant bearer selection (ADR-014 Phase 3)', () => {
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+    localStorage.clear()
+  })
+
+  it('attaches the device-grant bearer to POST /v1/child-sessions on the picker path', () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/child-sessions'))
+
+    expect(config.headers.Authorization).toBe('Bearer device-token')
+  })
+
+  it('attaches the device-grant bearer to GET /v1/profiles on the picker path', () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles'))
+
+    expect(config.headers.Authorization).toBe('Bearer device-token')
+  })
+
+  it('prefers the device-grant bearer over a live guardian token on the picker path', () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles'))
+
+    expect(config.headers.Authorization).toBe('Bearer device-token')
+  })
+
+  it('falls back to the guardian token on the picker path when no device grant exists', () => {
+    setPathname('/kids')
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles'))
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+
+  it('falls back to the guardian token, and clears storage, when the device grant is expired', () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2000-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles'))
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+    expect(getDeviceGrant()).toBeNull()
+  })
+
+  it('does not attach the device-grant bearer to an unrelated endpoint, even on the picker path', () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/some-other-endpoint'))
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+
+  it('does not attach the device-grant bearer off the picker path, even to an eligible endpoint', () => {
+    // The guardian console's own onboarding check (ConsolePage) also calls
+    // GET /v1/profiles; it must keep using the guardian bearer, not a device
+    // grant, even though the backend would accept either for the same family.
+    setPathname('/guardian')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    localStorage.setItem('auth_token', 'guardian-token')
+    const { result } = renderHook(() => useApi())
+    const { fulfilled } = getRequestHandlers(result.current)
+
+    const config = fulfilled(makeRequestConfig('/v1/profiles'))
+
+    expect(config.headers.Authorization).toBe('Bearer guardian-token')
+  })
+})
+
+describe('useApi 401 interceptor device-grant clearing (ADR-014 Phase 3)', () => {
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+    localStorage.clear()
+  })
+
+  it('clears only the device grant when the failing request carried the device-grant bearer', async () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    localStorage.setItem('auth_token', 'test-token')
+    const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current, '/v1/profiles')
+    expect(config.headers.Authorization).toBe('Bearer device-token')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
+
+    expect(getDeviceGrant()).toBeNull()
+    // An unrelated, still-valid guardian token must survive a device-grant 401.
+    expect(localStorage.getItem('auth_token')).toBe('test-token')
+  })
+
+  it('does not navigate off the picker path when clearing the device grant', async () => {
+    const location = setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    const { result } = renderHook(() => useApi())
+    const config = issueThroughInterceptor(result.current, '/v1/child-sessions')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
+
+    expect(getDeviceGrant()).toBeNull()
+    expect(location.replace).not.toHaveBeenCalled()
+  })
+
+  it('does not refresh or retry a device-grant 401 (device grants are not refreshable)', async () => {
+    setPathname('/kids')
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    mockRefreshSuccess('refreshed-token')
+    const { result } = renderHook(() => useApi())
+    const requestSpy = vi.spyOn(result.current, 'request')
+    const config = issueThroughInterceptor(result.current, '/v1/profiles')
+    const rejected = getResponseRejectedHandler(result.current)
+
+    await expect(rejected(unauthorizedForConfig(config))).rejects.toBeInstanceOf(AxiosError)
+
+    expect(refreshSessionMock).not.toHaveBeenCalled()
+    expect(requestSpy).not.toHaveBeenCalled()
   })
 })
 

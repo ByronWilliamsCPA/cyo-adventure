@@ -190,6 +190,27 @@ def _child_session_secret(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
+@pytest.fixture(autouse=True)
+def _device_grant_secret(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Configure a device-grant signing secret on the shared app singleton.
+
+    Mirrors ``_child_session_secret``: the module-level ``settings`` singleton
+    carries no secret by default, so any endpoint that mints or verifies a
+    device grant would raise ConfigurationError. A DISTINCT value from the
+    child-session secret pins that the two token families never accidentally
+    share a signing key.
+    """
+    from pydantic import SecretStr
+
+    from cyo_adventure.core.config import settings
+
+    monkeypatch.setattr(
+        settings,
+        "device_grant_secret",
+        SecretStr("integration-device-grant-secret-0123456789abcdef"),
+    )
+
+
 @pytest_asyncio.fixture
 async def client(
     sessions: async_sessionmaker[AsyncSession],
@@ -316,6 +337,33 @@ async def seed(sessions: async_sessionmaker[AsyncSession]) -> Seed:
 def auth(token: str) -> dict[str, str]:
     """Build an Authorization header for a bearer token."""
     return {"Authorization": f"Bearer {token}"}
+
+
+async def mint_device_token(client: AsyncClient, guardian_token: str) -> str:
+    """Mint a device grant for a guardian's family and return the raw JWT.
+
+    Shared helper (ADR-014 phase 2) for every module that needs a live
+    ``DEVICE`` principal token: the child-session-mint, profiles-list, and
+    authz-matrix suites exercising the two endpoints a device grant may
+    reach, mirroring ``test_device_grants.py``'s own round-trip tests.
+
+    Args:
+        client: The HTTP client fixture.
+        guardian_token: The minting guardian's dev-stub token; the resulting
+            device grant is scoped to that guardian's own family.
+
+    Returns:
+        str: The signed device grant JWT (``cyo-device-grant`` audience).
+    """
+    resp = await client.post(
+        "/api/v1/device-grants",
+        json={},
+        headers=auth(guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    token = resp.json()["token"]
+    assert isinstance(token, str)
+    return token
 
 
 @dataclass(frozen=True)

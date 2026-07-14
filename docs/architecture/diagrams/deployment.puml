@@ -11,6 +11,10 @@
 '     database to Supabase Postgres, session pooler, homelab-infra #576/#577;
 '     r1-gap-closure-plan.md is archived, consolidated here)
 '   docs/planning/tech-spec.md  (Infrastructure section)
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md (device grant;
+'     local, no-round-trip verification on the kid PWA)
+'   src/cyo_adventure/core/device_grant.py, core/config.py (DEVICE_GRANT_SECRET,
+'     validated at startup, mirroring CHILD_SESSION_SECRET)
 '   CLAUDE.md (Docker, Pangolin zero-trust, Dockge)
 '
 ' Note: MinIO shown as planned (deferred Phase 5).
@@ -87,6 +91,7 @@ rq_worker ..> ollama_svc : "HTTP\nLLM fallback"
 rq_worker ..> minio_db : "[Phase 5]\nS3 API"
 pwa_client --> supabase_cloud : "OIDC auth flow\n(Apple/Google via Supabase)"
 fastapi_app --> supabase_cloud : "OIDC token validation\n[non-local; local uses token-as-subject]"
+pwa_client ..> pwa_client : "ADR-014: kid chunk decodes its\nlocal device grant (exp/family_id)\nfor routing only -- NO network\nround-trip to Supabase or the\nbackend; signature is verified\nserver-side only when the grant\nis actually used (mint/list calls)"
 
 note right of postgres_container
   Retained for one redeploy only as a
@@ -118,6 +123,17 @@ note bottom of pwa_client
   offline play. Offline write queue
   replays on reconnect with event_id
   idempotency.
+end note
+
+note left of fastapi_app
+  DEVICE_GRANT_SECRET (ADR-014) is
+  validated at startup outside "local",
+  mirroring CHILD_SESSION_SECRET: unset,
+  empty, or too-short raises
+  ConfigurationError before uvicorn
+  accepts traffic. Never sent to the
+  browser; distinct from the Supabase
+  JWKS used for guardian/admin OIDC.
 end note
 
 @enduml

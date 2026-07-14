@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from tests.integration.conftest import Seed, auth
+from tests.integration.conftest import Seed, auth, mint_device_token
 
 if TYPE_CHECKING:
     from httpx import AsyncClient
@@ -52,6 +52,31 @@ async def test_child_lists_only_own_profile(client: AsyncClient, seed: Seed) -> 
     assert resp.status_code == 200, resp.text
     profiles = resp.json()["profiles"]
     assert [p["id"] for p in profiles] == [str(seed.child_profile_id)]
+
+
+@pytest.mark.integration
+@pytest.mark.asyncio
+async def test_device_grant_lists_own_family_profiles(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant lists its own family's profiles, shaped like the guardian view.
+
+    ADR-014 phase 2: the kid picker needs name/avatar/has_pin for every
+    profile in the authorized device's family, without a live guardian
+    bearer. Another family's profile must never appear.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.get("/api/v1/profiles", headers=auth(device_token))
+    assert resp.status_code == 200, resp.text
+    profiles = resp.json()["profiles"]
+    ids = {p["id"] for p in profiles}
+    assert str(seed.child_profile_id) in ids
+    assert str(seed.other_child_profile_id) not in ids
+
+    row = next(p for p in profiles if p["id"] == str(seed.child_profile_id))
+    assert row["display_name"] == "Reader A"
+    assert "avatar" in row
+    assert "has_pin" in row
 
 
 @pytest.mark.integration

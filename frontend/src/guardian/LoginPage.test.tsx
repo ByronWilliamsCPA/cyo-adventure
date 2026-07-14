@@ -5,24 +5,42 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { AuthContextValue } from '../auth/authContext'
+import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
+import type { Principal } from '../auth/types'
 import { LoginPage } from './LoginPage'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
+const mockSignOut = vi.fn()
 let authStatus: AuthContextValue['status'] = 'signed-out'
 let authErrorValue: AuthContextValue['authError'] = null
+let principalValue: Principal | null = null
+
+function principal(role: 'guardian' | 'admin' | 'child', isAdmin = role === 'admin'): Principal {
+  return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
+}
 
 vi.mock('../auth/useAuth', () => ({
   useAuth: (): Pick<
     AuthContextValue,
-    'status' | 'authError' | 'signInWithOAuth' | 'signInWithPassword' | 'signOut'
+    'status' | 'authError' | 'signInWithOAuth' | 'signInWithPassword' | 'signOut' | 'principal'
   > => ({
     status: authStatus,
     authError: authErrorValue,
+    principal: principalValue,
     signInWithOAuth: mockSignInWithOAuth,
     signInWithPassword: mockSignInWithPassword,
-    signOut: vi.fn(),
+    signOut: mockSignOut,
   }),
+}))
+
+// The device-authorization mint (ADR-014 section 5) goes through useApi's
+// axios instance; mocking it here (same pattern as ConsolePage.test.tsx) lets
+// each test control the mint's success/failure without a real HTTP call.
+const mockPost = vi.fn()
+const fakeApi = { post: mockPost }
+vi.mock('../hooks/useApi', () => ({
+  useApi: () => fakeApi,
 }))
 
 /** Renders the login page plus stand-in targets so a redirect is observable. */
@@ -33,6 +51,9 @@ function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
         <Route path="/guardian/login" element={<LoginPage />} />
         <Route path="/guardian" element={<div>console landing</div>} />
         <Route path="/guardian/review/:id" element={<div>review landing</div>} />
+        <Route path="/admin" element={<div>admin landing</div>} />
+        <Route path="/admin/moderation-dashboard" element={<div>admin moderation landing</div>} />
+        <Route path="/kids" element={<div>kid picker landing</div>} />
       </Routes>
     </MemoryRouter>
   )
@@ -46,8 +67,16 @@ function fillCredentials(email: string, password: string) {
 beforeEach(() => {
   authStatus = 'signed-out'
   authErrorValue = null
+  principalValue = null
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
+  mockSignOut.mockReset()
+  // Default: signOut resolves. LoginPage calls signOut().catch(...), so the
+  // mock must return a promise; a bare vi.fn() would return undefined and blow
+  // up on .catch. Individual tests override with mockRejectedValue.
+  mockSignOut.mockResolvedValue(undefined)
+  mockPost.mockReset()
+  localStorage.clear()
 })
 
 describe('LoginPage password form', () => {
@@ -145,10 +174,64 @@ describe('LoginPage password form', () => {
     // ProtectedRoute forwards the intended path via location.state.from; a
     // guardian who deep-linked to a review must land there, not on /guardian.
     authStatus = 'signed-in'
+    principalValue = principal('guardian')
     renderLogin([
       { pathname: '/guardian/login', state: { from: { pathname: '/guardian/review/123' } } },
     ])
     expect(screen.getByText('review landing')).toBeInTheDocument()
+  })
+
+  describe('role-based post-login redirect', () => {
+    it('sends a guardian-only principal to the guardian console', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin()
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+    })
+
+    it('sends an admin-only principal to the admin console', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('admin')
+      renderLogin()
+      expect(screen.getByText('admin landing')).toBeInTheDocument()
+    })
+
+    it('sends a dual-role (guardian + admin capability) principal to the guardian console', () => {
+      // Their day-to-day home; the admin console link is one hop away via
+      // GuardianShell's cross-link.
+      authStatus = 'signed-in'
+      principalValue = principal('guardian', true)
+      renderLogin()
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+    })
+
+    it('honors a role-valid state.from over the role-based default', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('admin')
+      renderLogin([
+        {
+          pathname: '/guardian/login',
+          state: { from: { pathname: '/admin/moderation-dashboard' } },
+        },
+      ])
+      expect(screen.getByText('admin moderation landing')).toBeInTheDocument()
+    })
+
+    it('does not honor a state.from path the principal cannot reach, falling back to the default', () => {
+      // A guardian-only principal (no admin capability) cannot reach /admin;
+      // ProtectedRoute would bounce them, so the default is used instead of
+      // handing <Navigate> an unreachable path.
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin([
+        {
+          pathname: '/guardian/login',
+          state: { from: { pathname: '/admin/moderation-dashboard' } },
+        },
+      ])
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+      expect(screen.queryByText('admin moderation landing')).not.toBeInTheDocument()
+    })
   })
 })
 
@@ -179,5 +262,113 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/sign-in didn't start/i)
+  })
+})
+
+describe('LoginPage authorize-device intent (ADR-014 section 5)', () => {
+  const mintResponse = {
+    data: { id: 'grant-1', token: 'tok-1', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+  }
+
+  it('mints a device grant and drops to the kid picker when no grant exists yet', async () => {
+    mockPost.mockResolvedValue(mintResponse)
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(mockPost).toHaveBeenCalledTimes(1)
+    expect(mockPost).toHaveBeenCalledWith('/v1/device-grants', undefined)
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    // Not the normal role-based redirect target.
+    expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+    // #VERIFY (LoginPage.tsx #CRITICAL): the guardian's own session must not
+    // linger on what is now a kid device, or the interceptor's guardian-bearer
+    // fallthrough could attach it on /library and /read.
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledTimes(1))
+  })
+
+  it('still drops to the kid picker when the post-mint sign-out fails', async () => {
+    // The grant already succeeded, so a signOut failure must neither present as
+    // an authorization failure nor block the hand-off to the picker.
+    mockPost.mockResolvedValue(mintResponse)
+    mockSignOut.mockRejectedValue(new Error('supabase sign-out unreachable'))
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    expect(mockSignOut).toHaveBeenCalledTimes(1)
+  })
+
+  it('falls back to the normal redirect when the mint is rejected (e.g. admin-only, no family)', async () => {
+    // #VERIFY (LoginPage.tsx #CRITICAL): an admin-only adult with no family
+    // gets a mint rejection from the backend; this must not crash and must
+    // still land the guardian somewhere useful.
+    mockPost.mockRejectedValue(new Error('no family to authorize a device for'))
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('console landing')).toBeInTheDocument()
+    expect(getDeviceGrant()).toBeNull()
+    expect(screen.queryByText('kid picker landing')).not.toBeInTheDocument()
+  })
+
+  it('navigates straight to the kid picker without minting when a valid grant already exists', async () => {
+    setDeviceGrant({
+      token: 'existing-tok',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'existing-grant',
+    })
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+    // Even the already-authorized path sheds the guardian session.
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledTimes(1))
+  })
+
+  it('ignores the intent and uses the normal role-based redirect when absent', async () => {
+    mockPost.mockResolvedValue(mintResponse)
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login'])
+
+    expect(await screen.findByText('console landing')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('shows a "setting up this device" status while the mint is in flight', async () => {
+    let resolveMint: (value: typeof mintResponse) => void = () => {}
+    mockPost.mockReturnValue(
+      new Promise((resolve) => {
+        resolveMint = resolve
+      })
+    )
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByRole('status')).toHaveTextContent(/setting up this device/i)
+    expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+    expect(screen.queryByText('kid picker landing')).not.toBeInTheDocument()
+
+    resolveMint(mintResponse)
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
   })
 })

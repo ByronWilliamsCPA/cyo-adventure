@@ -681,6 +681,87 @@ export type CoverStatusView = {
 };
 
 /**
+ * DeviceGrantCreateBody
+ *
+ * A guardian's (or admin's) request to mint a device grant.
+ *
+ * ``family_id`` is optional and mirrors ``StoryRequestAuthoredCreateBody``:
+ * a guardian must omit it (it always resolves to their own family) and an
+ * admin-only caller must supply it (an admin has no family of its own to
+ * default to). ``label`` is a free-text, guardian-facing name for the
+ * device ("Kitchen tablet"); never derived from request headers.
+ */
+export type DeviceGrantCreateBody = {
+    /**
+     * Family Id
+     */
+    family_id?: string | null;
+    /**
+     * Label
+     */
+    label?: string | null;
+};
+
+/**
+ * DeviceGrantListItem
+ *
+ * One row of a family's device-grant list. Never carries the token.
+ *
+ * The list endpoint returns only currently-active grants (it filters
+ * ``revoked_at IS NULL``), so a revocation timestamp would always be null on
+ * the wire and is deliberately omitted: the row's mere presence means the
+ * grant is active. A future "show revoked devices" view would re-add the
+ * field alongside a widened query.
+ */
+export type DeviceGrantListItem = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Label
+     */
+    label: string | null;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * DeviceGrantView
+ *
+ * A minted device grant token and its record.
+ *
+ * The token is a backend-signed, durable (90-day) JWT the kid surface's
+ * device-authorization check uses; see ``core/device_grant.py`` for the
+ * trust model. Returned ONLY at mint time, never again: ``GET
+ * /device-grants`` (``DeviceGrantListItem``) never includes it.
+ */
+export type DeviceGrantView = {
+    /**
+     * Id
+     */
+    id: string;
+    /**
+     * Token
+     */
+    token: string;
+    /**
+     * Expires At
+     */
+    expires_at: string;
+    /**
+     * Family Id
+     */
+    family_id: string;
+    /**
+     * Authorized By
+     */
+    authorized_by: string;
+};
+
+/**
  * FamilyListView
  *
  * All families, admin-only (powers the required family selector).
@@ -4123,6 +4204,109 @@ export type CreateChildSessionApiV1ChildSessionsPostResponses = {
 };
 
 export type CreateChildSessionApiV1ChildSessionsPostResponse = CreateChildSessionApiV1ChildSessionsPostResponses[keyof CreateChildSessionApiV1ChildSessionsPostResponses];
+
+export type ListDeviceGrantsApiV1DeviceGrantsGetData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/device-grants';
+};
+
+export type ListDeviceGrantsApiV1DeviceGrantsGetErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type ListDeviceGrantsApiV1DeviceGrantsGetError = ListDeviceGrantsApiV1DeviceGrantsGetErrors[keyof ListDeviceGrantsApiV1DeviceGrantsGetErrors];
+
+export type ListDeviceGrantsApiV1DeviceGrantsGetResponses = {
+    /**
+     * Response List Device Grants Api V1 Device Grants Get
+     *
+     * Successful Response
+     */
+    200: Array<DeviceGrantListItem>;
+};
+
+export type ListDeviceGrantsApiV1DeviceGrantsGetResponse = ListDeviceGrantsApiV1DeviceGrantsGetResponses[keyof ListDeviceGrantsApiV1DeviceGrantsGetResponses];
+
+export type CreateDeviceGrantApiV1DeviceGrantsPostData = {
+    /**
+     * Body
+     */
+    body?: DeviceGrantCreateBody | null;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path?: never;
+    query?: never;
+    url: '/api/v1/device-grants';
+};
+
+export type CreateDeviceGrantApiV1DeviceGrantsPostErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateDeviceGrantApiV1DeviceGrantsPostError = CreateDeviceGrantApiV1DeviceGrantsPostErrors[keyof CreateDeviceGrantApiV1DeviceGrantsPostErrors];
+
+export type CreateDeviceGrantApiV1DeviceGrantsPostResponses = {
+    /**
+     * Successful Response
+     */
+    201: DeviceGrantView;
+};
+
+export type CreateDeviceGrantApiV1DeviceGrantsPostResponse = CreateDeviceGrantApiV1DeviceGrantsPostResponses[keyof CreateDeviceGrantApiV1DeviceGrantsPostResponses];
+
+export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData = {
+    body?: never;
+    headers?: {
+        /**
+         * Authorization
+         */
+        authorization?: string | null;
+    };
+    path: {
+        /**
+         * Grant Id
+         */
+        grant_id: string;
+    };
+    query?: never;
+    url: '/api/v1/device-grants/{grant_id}';
+};
+
+export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteError = RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors[keyof RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors];
+
+export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponse = RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses[keyof RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses];
 
 export type OnboardApiV1OnboardingPostData = {
     /**

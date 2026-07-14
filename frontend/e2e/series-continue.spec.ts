@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { seedDeviceGrant } from './support/auth'
+
 const SERIES_ID = 'ser-e2e-1'
 
 function seriesBlock(bookIndex: number, entry: string) {
@@ -91,6 +93,9 @@ test.beforeEach(async ({ page, context }) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-a')
   })
+  // ADR-014: the kid surface is gated by DeviceAuthorizedRoute; without a
+  // valid device grant /read/* redirects to guardian login.
+  await seedDeviceGrant(context)
   await page.route('**/api/v1/storybooks/s_ember_1/**', (route) =>
     route.fulfill({ json: BOOK1 })
   )

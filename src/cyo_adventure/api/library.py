@@ -412,10 +412,15 @@ async def get_storybook_version(
         raise ResourceNotFoundError(msg)
     # #CRITICAL: security: a child may fetch a story blob directly ONLY if it is
     # assigned to their profile; an unassigned (but published+approved) book is
-    # 404 (existence hidden), matching the library-listing gate. Guardian and
+    # 404 (existence hidden), matching the library-listing gate. A DEVICE
+    # principal is routed through the SAME gate: it carries no profile_ids
+    # (enforced in Principal.__post_init__), so the assignment lookup matches
+    # nothing and every direct blob read is 404. Content reaches a device only
+    # after it mints a child session, which then reads under its own assignment
+    # scope; the device grant itself never reads story content. Guardian and
     # admin reads are unchanged (they skip this branch).
-    # #VERIFY: child + unassigned -> 404; child + assigned -> blob.
-    if principal.role == Role.CHILD:
+    # #VERIFY: child + unassigned -> 404; child + assigned -> blob; device -> 404.
+    if principal.role in (Role.CHILD, Role.DEVICE):
         assigned = await session.scalar(
             select(StorybookAssignment.storybook_id).where(
                 StorybookAssignment.storybook_id == storybook_id,

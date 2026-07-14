@@ -22,7 +22,7 @@ deterministic validation gate and mandatory admin approval (ADR-005).
 | [System Overview](system-overview.md) | C4 context and container diagrams; publish state machine |
 | [Generation Pipeline](generation-pipeline.md) | Staged LLM generation (Structure/Prose/Repair), provider fallback |
 | [Validation and Player](validation-and-player.md) | Validator gate, story engine, offline sync |
-| [Data Model](data-model.md) | 19 ORM tables, ER diagram, relationships |
+| [Data Model](data-model.md) | 20 ORM tables, ER diagram, relationships |
 | [Story Skeletons](story-skeletons.md) | Preset skeleton structure diagrams and metadata data dictionary |
 | [Deployment](deployment.md) | Homelab Docker stack, Pangolin, Supabase auth, MinIO (deferred Phase 5) |
 
@@ -48,8 +48,10 @@ All diagrams are PlantUML source + rendered SVG pairs under `docs/architecture/d
 | Generation Sequence | [seq-generation.puml](diagrams/seq-generation.puml) / [.svg](diagrams/seq-generation.svg) | Stage A/B/C with provider fallback |
 | Reading-State PUT | [seq-reading-state.puml](diagrams/seq-reading-state.puml) / [.svg](diagrams/seq-reading-state.svg) | Optimistic concurrency, 409 reconciliation |
 | Offline and Reconnect | [seq-offline.puml](diagrams/seq-offline.puml) / [.svg](diagrams/seq-offline.svg) | IndexedDB queue, replay, conflict |
-| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 19 ORM tables and FK relationships |
-| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Supabase OIDC |
+| ER Diagram | [er-diagram.puml](diagrams/er-diagram.puml) / [.svg](diagrams/er-diagram.svg) | 20 ORM tables and FK relationships (partial; see staleness note on the diagram and data-model.md) |
+| Deployment | [deployment.puml](diagrams/deployment.puml) / [.svg](diagrams/deployment.svg) | Docker containers, Pangolin, Supabase OIDC, device-grant secret |
+| Device Grant Sequence | [seq-device-grant.puml](diagrams/seq-device-grant.puml) / [.svg](diagrams/seq-device-grant.svg) | ADR-014: mint/verify/revoke, the three-tokens/three-lifetimes/three-scopes model |
+| Sitemap and Flows | [sitemap-and-flows.puml](diagrams/sitemap-and-flows.puml) / [.svg](diagrams/sitemap-and-flows.svg) | Every route and its purpose; Kid zone, Adult zone, and the two auth-boundary crossings (ADR-014) |
 
 To regenerate SVGs after editing a PUML file:
 
@@ -72,11 +74,13 @@ PWA (React 19, TypeScript)
   |  REST /api/v1 + Bearer token (OIDC via Supabase Auth)
   v
 FastAPI backend (Python 3.12)
-  - api/: 15 routers -- health, library, reading, generation, profiles,
+  - api/: 18 routers -- health, library, reading, generation, profiles,
                  families, ratings, assignments, approval (global admin),
                  covers, moderation_thresholds, moderation_dashboard,
-                 provider_allowlist, me, story_requests
-  - api/deps.py: Principal (role/family/profile) auth seam
+                 provider_allowlist, me, story_requests, child_sessions,
+                 device_grants (ADR-014), onboarding
+  - api/deps.py: Principal (role/family/profile) auth seam; Role.DEVICE
+                 routing branch for the device grant (ADR-014)
   - storybook/: Pydantic models, condition DSL, evaluator
   - player/: StoryEngine (Runtime Semantics v1, pure)
   - validator/: gate (L1+L2+RL+SAFE), walk, report
@@ -96,7 +100,7 @@ FastAPI backend (Python 3.12)
   - publishing/: approve -> publish state machine
   - middleware/: CorrelationMiddleware (first), SecurityMiddleware (OWASP)
   |
-  +-- PostgreSQL 16 (async SQLAlchemy 2, 19 tables, Supabase CLI SQL migrations)
+  +-- PostgreSQL 16 (async SQLAlchemy 2, 20 tables, Supabase CLI SQL migrations)
   +-- Redis 7 (RQ job queue)
   |
   +-- [worker container] RQ worker

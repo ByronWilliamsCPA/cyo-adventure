@@ -251,7 +251,24 @@ class TestEngineWiring:
         import cyo_adventure.core.config as config_module
         import cyo_adventure.core.database as db_module
 
-        importlib.reload(config_module)
+        # #CRITICAL: data-integrity: do NOT reload config_module to pick up the
+        # env var. importlib.reload rebinds cyo_adventure.core.config.settings to
+        # a brand-new object, orphaning every module that did
+        # `from ...config import settings` at its own import time (api.deps,
+        # core.device_grant, core.child_session all bind the singleton by value).
+        # Those keep the OLD instance while the integration conftest's autouse
+        # secret fixtures monkeypatch the NEW one, so a later device/child-session
+        # token op reads a secret-less settings and 400s. Under pytest-randomly's
+        # shuffled order that surfaces as an order-dependent flake in unrelated
+        # suites. Swap the singleton in place (config's module body is just
+        # `settings = Settings()`, so this reads the env identically) and restore
+        # the EXACT original object in finally, preserving the instance identity
+        # every importer holds.
+        # #VERIFY: run this test immediately before an integration device/child
+        # token test (any order) and both pass; see the deterministic repro in
+        # the fix for this flake.
+        original_settings = config_module.settings
+        config_module.settings = config_module.Settings()
         try:
             importlib.reload(db_module)
 
@@ -261,5 +278,5 @@ class TestEngineWiring:
             assert captured_kwargs["poolclass"] is db_module.NullPool
         finally:
             monkeypatch.undo()
-            importlib.reload(config_module)
+            config_module.settings = original_settings
             importlib.reload(db_module)

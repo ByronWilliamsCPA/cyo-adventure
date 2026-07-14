@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Device-authorized kid access (ADR-014). The kid surface (`/kids`,
+  `/library/*`, `/read/*`) is now gated by a per-device grant instead of an
+  ambient guardian session: a guardian authorizes a device once (from the
+  console "This device" section, or by handing a fresh device to a child from
+  the landing "Kids" door, which routes through login with an
+  `authorize-device` intent), and the child then reads without an adult
+  signing in each time. The two former per-page parental gates collapse into a
+  single `AdultGate` at the adult-subtree root, so adult-to-adult navigation
+  (guardian to guardian, guardian to admin, admin to guardian) no longer
+  re-challenges once warm; only crossing up from the kid surface re-locks it.
+  Post-login redirect is now role-based (admin-only adults land on the admin
+  console, guardians and dual-role adults on the guardian console).
+
+### Documentation
+- Refreshed the architecture doc set and diagrams for ADR-014 (data model,
+  authorization matrix, tech spec, deployment, C4 context, API-persistence
+  component, ER, and the three user-journey diagrams), and added two new
+  diagrams: a device-grant sequence diagram and a route/page
+  sitemap-and-flows diagram.
+
 ## [0.3.0] - 2026-07-14
 
 ### Added

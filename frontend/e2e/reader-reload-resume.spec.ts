@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { seedDeviceGrant } from './support/auth'
+
 import { loadLanternStory } from './support/fixtures'
 
 const lantern = loadLanternStory()
@@ -19,6 +21,9 @@ test.beforeEach(async ({ page, context }) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-a')
   })
+  // ADR-014: the kid surface is gated by DeviceAuthorizedRoute; without a
+  // valid device grant /read/* redirects to guardian login.
+  await seedDeviceGrant(context)
   await page.route('**/api/v1/storybooks/**', (route) => route.fulfill({ json: lantern }))
 })
 

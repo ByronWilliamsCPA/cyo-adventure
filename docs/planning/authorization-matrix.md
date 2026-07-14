@@ -13,7 +13,7 @@ source: "docs/planning/tech-spec.md sections Security, Authorization, API Specif
 
 # Authorization Matrix
 
-> **Status**: Active | **Version**: 0.4 | **Updated**: 2026-07-12
+> **Status**: Active | **Version**: 0.5 | **Updated**: 2026-07-13
 
 ## Overview
 
@@ -52,26 +52,52 @@ scope widening of an everyday list.
 `admin`, and cross-family actions by a dual-role adult stamp `admin`
 (`Principal.acting_role`), while own-family actions stamp the guardian base role.
 
+### Device principal (ADR-014)
+
+A fourth base role, `Role.DEVICE`, represents a durable, family-scoped device
+grant rather than a login: a guardian mints it once per shared device
+(`POST /v1/device-grants`), and the resulting HS256 token (audience
+`cyo-device-grant`, 90-day expiry) lets that device act on behalf of its
+family without a live guardian Supabase session. `Principal.__post_init__`
+force-clears `is_admin` for `Role.DEVICE` (it can never hold the admin
+capability) and the principal carries an empty `profile_ids` (it is scoped
+to no individual profile). It is allowlisted to exactly two endpoints:
+
+- `POST /v1/child-sessions`: mint a child session for a profile in the
+  grant's own family (per-profile PIN enforcement is unchanged).
+- `GET /v1/profiles`: list the grant's own family's profiles (for the kid
+  picker), family-scoped, never cross-family.
+
+Every other endpoint, including the device grant's own management endpoints
+(`POST`/`GET`/`DELETE /v1/device-grants`), refuses a device token with 403;
+device-grant management itself remains guardian/admin-only. See ADR-014 for
+the full three-token model (Supabase JWT, device grant, child session).
+
 ---
 
 ## Action-by-Role Table
 
 Roles below are the base personas; a dual-role adult (guardian base role plus the
 admin capability) receives the union of the Admin and Guardian columns, with list
-surfaces staying family-scoped as described above.
+surfaces staying family-scoped as described above. The Device column (ADR-014)
+is included only where it is reachable at all; every action not listed for
+Device is a flat 403.
 
-| Action | Admin | Guardian | Child (own profile) | Enforcement |
-|--------|-------|----------|---------------------|-------------|
-| List story requests (`GET /story-requests`) | Own family only | Own family only | Own profile via filter | Family-scoped for every caller; the global queue is the admin surface below |
-| Global request queue (`GET /admin/story-requests`) | Yes (all families) | No (403) | No (403) | Admin capability required; surfaces every moderation flag (no threshold filtering) |
-| Read own library / story / state | Any profile | Any family profile | Own profile only | Token subject maps to allowed-profile set; 403 otherwise |
-| Write own reading state | Any profile | Any family profile | Own profile only | Same, plus `state_revision` and version guards on the PUT |
-| Record a completion | Any profile | Any family profile | Own profile only | `ending_id` must belong to the cited published version |
-| Generate / submit concept | Yes | Yes | No (403) | Guardian role required; child tokens are scoped to reader endpoints |
-| Approve (and publish) | Yes (global, cross-family) | No (403) | No (403) | Global admin role (`Role.ADMIN` / `is_admin`) required; enforced in the state machine. `authorize_family` is not applied |
-| Access another family's data | Yes (admin, cross-family) | No (403) | No (403) | Family ownership is checked on every non-admin resource access; cross-family 403 |
-| Edit a passage (Phase 4b) | Yes | Yes | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
-| Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | No (403) | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child token gets 403 regardless of `profile_id`; the `StorybookAssignment` gate is unchanged for child read/write paths |
+| Action | Admin | Guardian | Child (own profile) | Device (own family) | Enforcement |
+|--------|-------|----------|---------------------|----------------------|-------------|
+| List story requests (`GET /story-requests`) | Own family only | Own family only | Own profile via filter | No (403) | Family-scoped for every caller; the global queue is the admin surface below |
+| Global request queue (`GET /admin/story-requests`) | Yes (all families) | No (403) | No (403) | No (403) | Admin capability required; surfaces every moderation flag (no threshold filtering) |
+| List profiles (`GET /profiles`) | Any family | Own family | No (403) | Own family only | Device is family-scoped, never cross-family, and carries no `profile_ids` of its own |
+| Mint a child session (`POST /child-sessions`) | Yes (any family) | Own family | No (403) | Own family only | Guardian/admin bearer or a matching device grant; per-profile PIN enforcement unchanged |
+| Read own library / story / state | Any profile | Any family profile | Own profile only | No (403) | Token subject maps to allowed-profile set; 403 otherwise |
+| Write own reading state | Any profile | Any family profile | Own profile only | No (403) | Same, plus `state_revision` and version guards on the PUT |
+| Record a completion | Any profile | Any family profile | Own profile only | No (403) | `ending_id` must belong to the cited published version |
+| Generate / submit concept | Yes | Yes | No (403) | No (403) | Guardian role required; child and device tokens are scoped to reader endpoints |
+| Manage device grants (`POST`/`GET`/`DELETE /device-grants`) | Yes (own family; admin may target another family on mint) | Own family only | No (403) | No (403) | Guardian or admin role required; a device token cannot mint, list, or revoke its own or any other grant |
+| Approve (and publish) | Yes (global, cross-family) | No (403) | No (403) | No (403) | Global admin role (`Role.ADMIN` / `is_admin`) required; enforced in the state machine. `authorize_family` is not applied |
+| Access another family's data | Yes (admin, cross-family) | No (403) | No (403) | No (403) | Family ownership is checked on every non-admin resource access; cross-family 403 |
+| Edit a passage (Phase 4b) | Yes | Yes | No (403) | No (403) | Guardian role required; `PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}` |
+| Browse / assign a catalog book (cross-family, WS-E) | No (403; browse and assignment endpoints are guardian-only) | Any `visibility='catalog'` book, any family | No (403) | No (403) | `visibility='catalog'` widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child or device token gets 403 regardless of `profile_id`; the `StorybookAssignment` gate is unchanged for child read/write paths |
 
 Key implementation rules:
 
@@ -133,6 +159,18 @@ green before Phase 3 closes.
 4. **Guardian from another family accesses a story**: a guardian token belonging to
    family B sends any read or write request against a storybook owned by family A.
    Expected: 403. Family ownership is checked independently of the role.
+
+5. **Device token calls any guardian/admin/child-only endpoint** (ADR-014): a
+   verified device grant token sends a request to any endpoint other than its
+   two allowlisted routes (`POST /api/v1/child-sessions`,
+   `GET /api/v1/profiles`), for example
+   `POST /api/v1/concepts`, `POST /api/v1/storybooks/{id}/approve`,
+   `GET /api/v1/library`, or its own management endpoints
+   (`POST`/`GET`/`DELETE /api/v1/device-grants`). Expected: 403 in every case.
+   `Principal.__post_init__` force-clears `is_admin` for `Role.DEVICE` and the
+   principal carries no `profile_ids`, so a device token cannot pass a
+   guardian-only, admin-only, or profile-scoped gate regardless of the claims
+   in the token.
 
 ---
 

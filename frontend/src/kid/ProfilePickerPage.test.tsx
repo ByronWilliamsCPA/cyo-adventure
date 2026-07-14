@@ -4,6 +4,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getChildSession, setChildSession } from '../auth/childSession'
+import { setDeviceGrant } from '../auth/deviceGrant'
 import { ProfilePickerPage } from './ProfilePickerPage'
 
 const mockGet = vi.fn()
@@ -345,6 +346,44 @@ describe('ProfilePickerPage child session mint (G1 / P6-04)', () => {
 
     expect(mockPost).not.toHaveBeenCalled()
     expect(mockNavigate).not.toHaveBeenCalled()
+  })
+})
+
+describe('ProfilePickerPage with a device grant and no guardian session (ADR-014 Phase 3)', () => {
+  // useApi is mocked wholesale in this file, so the picker component itself
+  // never touches bearer selection: which token (guardian, device grant, or
+  // child session) rides on `mockGet`/`mockPost` is entirely useApi's
+  // interceptor's job (covered directly in useApi.test.ts). This test is a
+  // documentation/regression check that the picker's list-then-mint flow
+  // still completes normally when the only credential in storage is a device
+  // grant and there is no live guardian session at all.
+  it('lists profiles and mints a child session with only a device grant present', async () => {
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'device-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    mockPost.mockResolvedValue({
+      data: { token: 'child-token', expires_at: '2099-01-01T00:00:00Z', profile_id: 'p1' },
+    })
+    renderPicker()
+
+    const tile = await screen.findByRole('link', { name: /Reader A/ })
+    await user.click(tile)
+
+    await waitFor(() =>
+      expect(mockPost).toHaveBeenCalledWith('/v1/child-sessions', { profile_id: 'p1' })
+    )
+    expect(getChildSession()).toEqual({
+      token: 'child-token',
+      expiresAt: '2099-01-01T00:00:00Z',
+      profileId: 'p1',
+    })
+    expect(mockNavigate).toHaveBeenCalledWith('/library/p1')
   })
 })
 

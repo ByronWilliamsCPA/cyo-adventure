@@ -15,17 +15,22 @@ does, screen by screen, to get value from the app. It is a product/UX-clarity
 view, not an API sequence, so the boxes are user actions and user-facing waits
 rather than endpoints and database locks.
 
-This page holds a set of four journey diagrams that work together:
+This page holds a set of journey diagrams that work together:
 
 | Diagram | Use it for |
 | ------- | ---------- |
 | [End-to-end journey](#target-state-end-to-end-journey) | The whole loop across all roles; onboarding a new contributor to the product |
 | [Kid-surface journey](#zoomed-journeys-per-surface) | Detailed child-facing flow; frontend work on the reader, library, and picker |
 | [Guardian + admin journey](#zoomed-journeys-per-surface) | Detailed parent-facing flow; request, approval gate, and assignment work |
+| [Device-grant sequence](#device-authorization-adr-014) | Mint/verify/revoke mechanics behind the device grant; auth/security work |
+| [Sitemap and flows](#site-map-and-flows-adr-014) | Every route, its purpose, and the two auth-boundary crossings; navigation/routing work |
 | [Developer test-coverage view](#developer-view-test-coverage) | Evaluating e2e/Playwright sufficiency; finding test gaps |
 
-All four use the same swimlane convention and the same shipped/planned color
-language, so they read as one family.
+The three journey diagrams (end-to-end, kid, guardian) use the same swimlane
+convention and the same shipped/planned color language, so they read as one
+family. The device-grant sequence and sitemap are a different diagram shape
+(sequence, and nested-package component) covering the same ADR-014 material at
+a more mechanical altitude.
 
 ## Target-state end-to-end journey
 
@@ -59,6 +64,29 @@ A guardian signs in at `/guardian/login` (email/password or Google today; Apple
 sign-in is gated behind a config flag) and creates a profile for each child at
 `/guardian/profiles`. Profiles use preset illustrated avatars only, never
 uploaded photos. This act runs once and sits outside the repeating story loop.
+
+**Device authorization (ADR-014).** Sign-in is now conditional, not a step every
+visit demands. The landing page (`/`) is device-state-aware: on a device that
+already carries a valid, non-expired device grant, the Kids door goes straight to
+`/kids` and the child never sees a guardian login at all. Only a cold entry (a
+brand-new device) or an already-revoked/expired grant routes the Kids door
+through `/guardian/login?intent=authorize-device`, where a guardian signing in
+mints a 90-day, revocable, family-scoped device grant for that device and is then
+dropped back to the kid picker. From then on that device needs no further
+guardian sign-in for a child to read, online or offline. Post-login, a guardian
+lands on `/guardian`, an admin-only adult on `/admin`, and a dual-role adult on
+`/guardian` (with a one-hop link into `/admin`).
+
+**The single kid-to-adult boundary (ADR-014).** The two former per-page
+"Grown-ups only" gates collapsed into one `AdultGate` at the root of the whole
+adult subtree, wrapping both `/guardian` and `/admin`. A signed-in adult
+navigating guardian&#8596;guardian, guardian&#8596;admin, or admin&#8596;guardian
+never sees the password re-entry once warm (warm state lives in
+`sessionStorage`, 5-minute TTL); the challenge fires only when crossing UP into
+the adult subtree from kid mode, or on a cold session. See
+[seq-device-grant](diagrams/seq-device-grant.svg) for the mint/verify/revoke
+mechanics and [sitemap-and-flows](diagrams/sitemap-and-flows.svg) for the full
+route map and the two boundary crossings (`DeviceAuthorizedRoute`, `AdultGate`).
 
 ### Act 2: Requesting a story
 
@@ -151,21 +179,60 @@ the offline branch, the assignment sub-flow) without the cross-role noise.
 
 ![Kid-surface journey](diagrams/journey-kid.svg)
 
-The child-facing route tree (`/`). It adds detail the master view omits: the
-three-way "is the story available?" branch (a malformed link shows a friendly
-exit, a missing story shows not-found rather than the offline copy), the
-read-loop with its online/offline and 409-conflict branches, and rating as a
-library-shelf action reached after the ending returns the child to their books.
+The child-facing route tree (`/kids`, behind the landing page's Kids door). It
+adds detail the master view omits: the device-authorization branch at entry
+(ADR-014: an authorized device skips guardian login entirely; an unauthorized
+one routes through `/guardian/login?intent=authorize-device` once, then never
+again), the three-way "is the story available?" branch (a malformed link shows
+a friendly exit, a missing story shows not-found rather than the offline copy),
+the read-loop with its online/offline and 409-conflict branches, and rating as
+a library-shelf action reached after the ending returns the child to their
+books.
 
 ### Guardian and admin surface
 
 ![Guardian and admin surface journey](diagrams/journey-guardian.svg)
 
-The parent-facing console (`/guardian`). It details the request-and-approval
-pipeline: sign-in, profile management, the Intake request with its
-"Generating..." status, the review queue ordered Flagged then Ready then
-processing, the approve/send-back revision loop, and the assign / "Assign more"
-sub-flow. Approve is the admin-only ADR-005 gate.
+The parent-facing console (`/guardian` and `/admin`, both behind a single
+`AdultGate` at the root of the adult subtree, ADR-014). It details the
+request-and-approval pipeline: sign-in (now conditional: a cold session or a
+step-up crossing UP from kid mode, never adult-to-adult navigation),
+role-based landing (admin-only to `/admin`, guardian-only or dual-role to
+`/guardian`), profile management, the Intake request with its "Generating..."
+status, the review queue ordered Flagged then Ready then processing, the
+approve/send-back revision loop, and the assign / "Assign more" sub-flow.
+Approve is the admin-only ADR-005 gate.
+
+### Device authorization (ADR-014)
+
+![Device grant sequence](diagrams/seq-device-grant.svg)
+
+The mechanical sequence behind the journey-level device-authorization notes
+above: minting a device grant (`POST /v1/device-grants`), the local (no
+network round-trip) client-side check `DeviceAuthorizedRoute` performs on
+every kid-surface page load, the backend verification and revocation check
+that runs when the grant is actually used to mint a child session or list
+profiles, and revocation (`DELETE /v1/device-grants/{id}`). See
+[ADR-014](../planning/adr/adr-014-device-authorized-kid-access.md) for the
+full three-token model.
+
+### Site map and flows (ADR-014)
+
+![Sitemap and flows](diagrams/sitemap-and-flows.svg)
+
+Every route in the app, its purpose, and how the pages link to each other,
+drawn as a nested-package component diagram (the same shape as
+[component-api-persistence](diagrams/component-api-persistence.svg)) rather
+than a swimlane journey. Three zones: the device-state-aware landing (`/`,
+`/guardian/login`), the Kid zone (`/kids`, `/library/:profileId`,
+`/read/:profileId/:storybookId/:version`, gated by `DeviceAuthorizedRoute`),
+and the Adult zone (`/guardian/*` with `/admin/*` nested inside it, gated by
+the single `AdultGate`). Solid arrows are ordinary in-zone navigation;
+distinctly styled dashed arrows and notes mark the two auth-boundary
+crossings (`DeviceAuthorizedRoute` at the landing-to-kid edge, `AdultGate` at
+the landing-to-adult edge and on the kid-to-adult step-up). Read it
+left-to-right within a zone and top-to-bottom across zones; the boundary
+arrows are the only edges that cost a credential check.
 
 ## Developer view: test coverage
 
@@ -174,6 +241,13 @@ sub-flow. Approve is the admin-only ADR-005 gate.
 This is the same end-to-end backbone recolored by automated test coverage, so
 the journey doubles as a Playwright/e2e gap map. It is the diagram to consult
 when deciding what e2e tests to write next.
+
+> **Deferred (2026-07-13):** this diagram derives its backbone from
+> `journey-end-to-end.puml` and has not been re-synced for the ADR-014 device-
+> authorization and single-AdultGate changes above. Its coverage coloring is
+> still accurate for the steps it shows; only the not-yet-recolored device-grant
+> and step-up-boundary steps are the gap. Refresh it alongside the next e2e
+> coverage pass rather than as part of this diagram update.
 
 - **Green** steps are exercised end-to-end by a Playwright spec under
   `frontend/e2e/`.
@@ -221,3 +295,9 @@ when deciding what e2e tests to write next.
   offline sync that Act 6 rides on.
 - [Generation Pipeline](generation-pipeline.md): the System lane of Act 3 in
   full.
+- [ADR-014: Device-authorized kid access](../planning/adr/adr-014-device-authorized-kid-access.md):
+  the decision behind the device grant and the single AdultGate boundary.
+- [Data Model: `device_grant`](data-model.md#device_grant): the table backing
+  the device grant.
+- [Authorization Matrix: Device principal](../planning/authorization-matrix.md#device-principal-adr-014):
+  the endpoint-level allowlist and IDOR test for the device token.

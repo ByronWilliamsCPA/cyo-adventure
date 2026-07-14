@@ -347,6 +347,10 @@ def _base_nonlocal_kwargs() -> dict[str, Any]:
         "database_url": "postgresql+asyncpg://u:p@db.example/app",
         "oidc_issuer": "https://ref.supabase.co/auth/v1",
         "oidc_jwks_url": "https://ref.supabase.co/auth/v1/jwks",
+        # The child-session validator runs before the device-grant validator
+        # (ADR-014), so this satisfies the latter without affecting any
+        # test below that targets the child-session secret specifically.
+        "device_grant_secret": SecretStr("unit-test-device-grant-secret-0123456789ab"),
     }
 
 

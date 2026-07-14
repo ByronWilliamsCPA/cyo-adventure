@@ -15,7 +15,13 @@ import asyncio
 from fastapi import APIRouter
 from sqlalchemy import select
 
-from cyo_adventure.api.deps import Context, Principal, authorize_profile, parse_uuid
+from cyo_adventure.api.deps import (
+    Context,
+    Principal,
+    Role,
+    authorize_profile,
+    parse_uuid,
+)
 from cyo_adventure.api.schemas import (
     ProfileCreateBody,
     ProfileListView,
@@ -86,9 +92,26 @@ async def list_profiles(ctx: Context) -> ProfileListView:
         ctx: The request context (principal + unit-of-work session).
 
     Returns:
-        ProfileListView: All family profiles for a guardian; the single
+        ProfileListView: All family profiles for a guardian or a DEVICE
+            principal (ADR-014 phase 2: the picker needs the family's
+            profiles to offer without a live guardian bearer); the single
             assigned profile for a child; empty if the principal has none.
     """
+    # #CRITICAL: security: a DEVICE principal carries no profile_ids (ADR-014
+    # phase 1 design: the grant is family-scoped, not profile-scoped), so it
+    # is handled as its own branch, scoped strictly to principal.family_id
+    # (never a client-supplied id) rather than falling through to the
+    # profile_ids-based query below, which would otherwise always yield an
+    # empty list for a device token.
+    # #VERIFY: test_profiles.py::test_device_grant_lists_own_family_profiles
+    # asserts the family's profiles are returned and a second family's are not.
+    if ctx.principal.role is Role.DEVICE:
+        rows = await ctx.session.scalars(
+            select(ChildProfile)
+            .where(ChildProfile.family_id == ctx.principal.family_id)
+            .order_by(ChildProfile.created_at.asc(), ChildProfile.id.asc())
+        )
+        return ProfileListView(profiles=[_view(row) for row in rows.all()])
     # #CRITICAL: security: scope strictly to principal.profile_ids (resolved at
     # the auth boundary in deps.py), never to a client-supplied family or
     # profile id, so no cross-family row can ever appear (IDOR).

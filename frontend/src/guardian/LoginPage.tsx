@@ -1,11 +1,47 @@
 import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
+import { hasValidDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
+import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
+import type { Principal } from '../auth/types'
 import { useAuth } from '../auth/useAuth'
 import { flagEnabled } from '../env'
-import { ADMIN_CONSOLE_PATH, GUARDIAN_CONSOLE_PATH } from '../routes'
+import { logApiError } from '../hooks/logApiError'
+import { useApi } from '../hooks/useApi'
+import {
+  ADMIN_CONSOLE_PATH,
+  AUTHORIZE_DEVICE_INTENT_PARAM,
+  AUTHORIZE_DEVICE_INTENT_VALUE,
+  GUARDIAN_CONSOLE_PATH,
+  KID_PICKER_PATH,
+} from '../routes'
 import './guardian.css'
+
+/**
+ * Whether `pathname` is a location `principal` can actually land on, mirroring
+ * router.tsx's ProtectedRoute allowedRoles config: `/admin/*` requires the
+ * admin CAPABILITY; `/guardian/*` admits either the guardian base role or the
+ * admin capability (an admin-only adult who deep-links into /guardian is not
+ * bounced there, per router.tsx's comment on that route). Anything outside
+ * the adult subtree is treated as reachable; ProtectedRoute is the real
+ * enforcement boundary, this only picks a sane post-login destination so we
+ * do not hand a `from` to `<Navigate>` that ProtectedRoute would reject.
+ *
+ * #ASSUME: security: this duplicates ProtectedRoute's allowedRoles logic
+ * instead of importing it (ProtectedRoute is a component, not an exported
+ * predicate). A drift between the two would only misroute the post-login
+ * landing spot; ProtectedRoute still independently enforces access.
+ * #VERIFY: LoginPage.test.tsx "does not honor a from path the principal
+ * cannot reach".
+ */
+function isReachableForPrincipal(pathname: string, principal: Principal): boolean {
+  if (pathname.startsWith(ADMIN_CONSOLE_PATH)) return principal.isAdmin
+  if (pathname.startsWith(GUARDIAN_CONSOLE_PATH)) {
+    return principal.role === 'guardian' || principal.isAdmin
+  }
+  return true
+}
 
 /**
  * Distinguishes a genuine bad-credentials failure from an operational one
@@ -28,20 +64,40 @@ function isInvalidCredentials(err: unknown): boolean {
  * no new auth machinery, only a second entry point into the same flow.
  */
 export function LoginPage() {
-  const { status, principal, authError, signInWithOAuth, signInWithPassword } = useAuth()
+  const { status, principal, authError, signInWithOAuth, signInWithPassword, signOut } =
+    useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
   const location = useLocation()
+  const navigate = useNavigate()
+  const api = useApi()
   const state = location.state as { from?: { pathname?: string } } | null
+  // ADR-014 section 5: the Kids door sends a signed-out visitor here with
+  // ?intent=authorize-device when this device has no valid device grant. Once
+  // that guardian resolves to a signed-in principal, the effect below mints a
+  // grant for THIS device instead of following the normal role-based redirect,
+  // then drops the guardian back to the kid picker they came from.
+  const authorizeDeviceIntent =
+    new URLSearchParams(location.search).get(AUTHORIZE_DEVICE_INTENT_PARAM) ===
+    AUTHORIZE_DEVICE_INTENT_VALUE
   // An admin-only adult (base role 'admin', no family guardianship) lands on
   // the admin console; everyone else (guardian, dual-role) starts at the
-  // guardian console. An explicit `from` (the page that bounced them here)
-  // always wins over either default.
+  // guardian console, their day-to-day home (the admin link is one hop away
+  // via GuardianShell). The role-based default is resolved BEFORE
+  // considering `from`, so a `from` that is unreachable for this principal
+  // (e.g. a stale deep link into a subtree they no longer/never held) falls
+  // back to the default instead of handing <Navigate> a path ProtectedRoute
+  // would reject.
   const home = principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH
-  const from = state?.from?.pathname ?? home
+  const requestedFrom = state?.from?.pathname
+  const from =
+    requestedFrom && principal && isReachableForPrincipal(requestedFrom, principal)
+      ? requestedFrom
+      : home
 
   // Apple sign-in is hidden until it is actually configured in Supabase (it
   // needs a paid Apple Developer account and a signed, expiring client secret).
@@ -53,6 +109,78 @@ export function LoginPage() {
   useEffect(() => {
     document.title = 'Sign in - CYO Adventure'
   }, [])
+
+  // ADR-014 section 5: authorize-then-return. Gated on a RESOLVED principal
+  // (not just a Supabase session) so this never races AuthProvider's /me
+  // lookup; `status === 'signed-in'` only flips once a Principal exists.
+  //
+  // #CRITICAL: security: minting a device grant requires a guardian/admin
+  // bearer, but an admin-only adult with no family (base role 'admin', no
+  // guardian capability) will get a mint REJECTION from the backend (no
+  // family to scope the grant to). That failure MUST fall through to
+  // 'failed' so the guardian still lands on their own console via the normal
+  // <Navigate to={from}> below, never a crash or a stuck spinner.
+  // #VERIFY: LoginPage.test.tsx "falls back to the normal redirect when the
+  // mint is rejected (e.g. admin-only, no family)".
+  useEffect(() => {
+    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal) return
+    if (hasValidDeviceGrant()) {
+      // Defensive: a grant already covers this device (e.g. a second tab
+      // completed the mint first). Still shed the guardian session before
+      // continuing, for the same reason the mint path does (see the #CRITICAL
+      // below): a signed-in guardian landing on the kid picker must not leave a
+      // live auth_token behind on a kid device.
+      void navigate(KID_PICKER_PATH, { replace: true })
+      void signOut().catch((err: unknown) => {
+        logApiError('sign-out after device authorization failed', err)
+      })
+      return
+    }
+    let cancelled = false
+    async function authorizeThisDevice() {
+      setDeviceAuthState('authorizing')
+      try {
+        const view = await makeDeviceGrantApi(api).mint()
+        if (cancelled) return
+        setDeviceGrant({
+          token: view.token,
+          expiresAt: view.expires_at,
+          familyId: view.family_id,
+          id: view.id,
+        })
+        // Hand the now kid-authorized device to the picker BEFORE signing the
+        // guardian out: signOut() flips status to 'signed-out', which trips
+        // this effect's cleanup (cancelled = true), so anything gated on
+        // `cancelled` after it would never run. Navigate first, clean up after.
+        void navigate(KID_PICKER_PATH, { replace: true })
+        // #CRITICAL: security: the device now holds a durable, revocable device
+        // grant, so the guardian's live Supabase session (and its auth_token)
+        // must NOT linger on what is henceforth a kid device. If it did, the
+        // request interceptor's guardian-bearer fallthrough (useApi.ts) would
+        // attach the guardian token on /library and /read, letting a child read
+        // the whole family's library instead of only their assigned books.
+        // signOut() clears the Supabase session, auth_token, and any child
+        // session (via onAuthStateChange -> safeRemoveToken). Fire-and-forget
+        // and swallow-with-log: the grant already succeeded, so a signOut
+        // failure must neither present as an authorization failure nor block
+        // the hand-off, and it is deliberately NOT gated on `cancelled` because
+        // navigate() unmounts this page yet the cleanup must still run.
+        // #VERIFY: LoginPage.test.tsx "signs the guardian out after minting the
+        // device grant".
+        void signOut().catch((err: unknown) => {
+          logApiError('sign-out after device authorization failed', err)
+        })
+      } catch (err) {
+        if (cancelled) return
+        logApiError('device grant mint failed', err)
+        setDeviceAuthState('failed')
+      }
+    }
+    void authorizeThisDevice()
+    return () => {
+      cancelled = true
+    }
+  }, [authorizeDeviceIntent, status, principal, api, navigate, signOut])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the
@@ -104,6 +232,18 @@ export function LoginPage() {
   }
 
   if (status === 'signed-in') {
+    // While the device-authorization mint is in flight, hold here instead of
+    // firing the normal redirect; the effect above navigates to the kid
+    // picker on success. On failure (deviceAuthState === 'failed') fall
+    // through to the normal redirect so the guardian still lands somewhere
+    // useful and can authorize the device manually from their console.
+    if (authorizeDeviceIntent && deviceAuthState !== 'failed') {
+      return (
+        <div role="status" aria-live="polite">
+          Setting up this device...
+        </div>
+      )
+    }
     return <Navigate to={from} replace />
   }
 

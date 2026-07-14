@@ -11,8 +11,16 @@ import {
   isKidTokenRoute,
   routeProfileId,
 } from '../auth/childSession'
+import { clearDeviceGrant, getValidDeviceGrant, isDeviceGrantAuthRoute } from '../auth/deviceGrant'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { logApiError } from './logApiError'
+
+// The two endpoints a device grant is allowed to authorize (ADR-014 Phase 3):
+// listing a family's profiles and minting a child session. Every other route
+// is refused server-side via an allowlist (api/deps.py); this client-side set
+// only decides which OUTGOING requests PREFER the device-grant bearer, it is
+// not itself a security boundary.
+const DEVICE_GRANT_AUTH_URLS = new Set(['/v1/child-sessions', '/v1/profiles'])
 
 // Configs whose request carried the child session token, tagged at request-ISSUE
 // time so the response interceptor can classify a 401 by what the failing request
@@ -28,6 +36,14 @@ import { logApiError } from './logApiError'
 // #VERIFY: useApi.test.ts "does not sign the guardian out when a second request
 // with the same dead child token 401s".
 const childTokenRequests = new WeakSet<object>()
+
+// Same issue-time tagging pattern as childTokenRequests, for requests that
+// carried the device-grant bearer (ADR-014 Phase 3) instead of the guardian
+// or child-session token. A device-grant 401 means the grant expired or was
+// revoked; it is classified independently of the other two so clearing it
+// never touches an unrelated guardian or child session.
+// #VERIFY: useApi.test.ts "device-grant bearer selection" 401 cases.
+const deviceGrantRequests = new WeakSet<object>()
 
 /**
  * A request config that may carry the one-shot retry marker set by the
@@ -234,6 +250,22 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
             return config
           }
         }
+        // #ASSUME: security: on the profile picker (`/kids`), a valid device
+        // grant authorizes exactly the two calls the picker needs (list
+        // profiles, mint a child session) and is PREFERRED over the guardian
+        // bearer so the kid flow keeps working after the guardian's Supabase
+        // session has expired (ADR-014 Phase 3). A guardian testing the
+        // picker inline with no device grant yet still falls through to the
+        // guardian-token branch below, unchanged from pre-ADR-014 behavior.
+        // #VERIFY: useApi.test.ts "device-grant bearer selection" cases.
+        if (isDeviceGrantAuthRoute(pathname) && DEVICE_GRANT_AUTH_URLS.has(config.url ?? '')) {
+          const deviceGrant = getValidDeviceGrant()
+          if (deviceGrant) {
+            config.headers.Authorization = `Bearer ${deviceGrant.token}`
+            deviceGrantRequests.add(config)
+            return config
+          }
+        }
         // Add auth token if available
         const token = localStorage.getItem('auth_token')
         if (token) {
@@ -264,11 +296,25 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
           // never torn down by a stale/expired child token, and vice versa.
           // #VERIFY: useApi.test.ts "response interceptor" child-vs-guardian
           // 401 clearing cases, incl. the concurrent-dead-child-token case.
+          const usedDeviceGrant = error.config ? deviceGrantRequests.has(error.config) : false
           const usedChildToken = error.config ? childTokenRequests.has(error.config) : false
           const authHeader = error.config?.headers?.Authorization
           const carriedBearer = typeof authHeader === 'string' && authHeader.length > 0
 
-          if (usedChildToken) {
+          if (usedDeviceGrant) {
+            // #ASSUME: security: the device grant expired or was revoked
+            // (ADR-014 Phase 3). Clear it locally; this request's caller
+            // (ProfilePickerPage) already has its own ask-a-grown-up gate
+            // (classifyApiError's `unauthenticated` state) for a 401 with no
+            // usable bearer, so no navigation happens here. A child on `/kids`
+            // must never be bounced into the guardian login page: that would
+            // read as "the app just signed me into a login screen" instead of
+            // the kid-safe "ask a grown-up" copy, and a repeated 401 (e.g. two
+            // in-flight requests sharing the same dead grant) must not loop.
+            // #VERIFY: useApi.test.ts "clears the device grant and does not
+            // navigate on a device-grant 401".
+            clearDeviceGrant()
+          } else if (usedChildToken) {
             // Kid paths (`/kids`, `/library/*`, `/read/*`) intentionally do
             // NOT navigate here; the profile-picker's and library page's own
             // ask-a-grown-up gate (classifyApiError's `unauthenticated`

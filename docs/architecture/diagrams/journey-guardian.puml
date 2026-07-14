@@ -8,7 +8,10 @@
 ' guardian cannot self-approve (API returns 403).
 '
 ' Source screens:
-'   frontend/src/router.tsx  (guardian route tree: /guardian/*)
+'   frontend/src/router.tsx  (guardian route tree: /guardian/*; a single AdultGate
+'     wraps the whole adult subtree -- both /guardian and /admin -- ADR-014)
+'   frontend/src/auth/AdultGate.tsx  (ADR-014: one kid-to-adult boundary crossing,
+'     warm state in sessionStorage, 5-min TTL, parked on entering kid mode)
 '   frontend/src/guardian/LoginPage.tsx, ConsolePage.tsx, ReviewDetailPage.tsx
 '   frontend/src/guardian/IntakePage.tsx, ProfilesPage.tsx, AssignChildrenDialog.tsx
 '   frontend/src/guardian/RequestsPage.tsx  (/guardian/requests: approve/decline
@@ -17,6 +20,8 @@
 '   frontend/src/guardian/BooksPage.tsx  (/guardian/books: catalog browse +
 '     assign, WS-E; guardian-only nav entry)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md (single AdultGate
+'     boundary; role-based post-login redirect)
 '   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
 '     docs/superpowers/specs/ was retired as scratch output once its work merged)
 ' ============================================================
@@ -46,8 +51,10 @@ start
 :Sign in
 (email/password or Google,
 Apple if the flag is on);
-note right: /guardian/login  •  shipped
-:Land on the Console;
+note right: /guardian/login  •  shipped\nADR-014 -- conditional now: only a cold entry\nor a step-up crossing UP from kid mode reaches\nthis (or the "Grown-ups only" password re-entry);\nadult<->adult navigation is free once warm
+:Land on the Console
+(role-based: admin-only -> /admin;\nguardian-only or dual-role -> /guardian);
+note right: AdultGate + ProtectedRoute  •  shipped
 
 ' --- Setup: profiles ---
 :Add or edit a child's profile
@@ -115,8 +122,12 @@ legend bottom
   |<back:#FFFDF8>  white  </back>| Shipped in the guardian console today |
   |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
   Columns: <b>Guardian</b> (request + assign + monitor), <b>Admin</b> (the ADR-005
-  approval gate), <b>System</b> (generation + safety, behind the scenes). See
-  journey-kid for the child side and journey-dev-coverage for test coverage.
+  approval gate), <b>System</b> (generation + safety, behind the scenes).
+  ADR-014: one AdultGate at the root of the whole adult subtree (not a per-page
+  gate) is the single kid-to-adult boundary; step-up fires only crossing UP from
+  kid mode, never guardian<->guardian, guardian<->admin, or admin<->guardian.
+  See journey-kid for the child side, seq-device-grant for the device-grant
+  mechanics, and journey-dev-coverage for test coverage.
 endlegend
 
 @enduml

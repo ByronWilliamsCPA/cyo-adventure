@@ -3,26 +3,27 @@ title: "Data Model"
 schema_type: common
 status: published
 owner: core-maintainer
-purpose: "ER diagram and description of the 19 ORM tables backing CYO Adventure."
+purpose: "ER diagram and description of the 20 ORM tables backing CYO Adventure."
 tags:
   - architecture
   - reference
 ---
 
-CYO Adventure has nineteen PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+CYO Adventure has twenty PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (`supabase/migrations/`,
 ADR-012; Alembic retired). All timestamps are `TIMESTAMP WITH TIME ZONE`. Enum-like
 columns (`role`, `status`, `age_band`) are stored as strings and validated at the
 application boundary, which keeps schema migrations simple and avoids enum-type churn.
 
-> **Note (2026-07-10):** the ER diagram below still shows only the original 9 tables
-> (`docs/architecture/diagrams/er-diagram.puml`); it needs regeneration to add the
-> 10 tables documented below (`series`, `rating`, `storybook_assignment`,
-> `story_request`, `moderation_threshold`, `moderation_threshold_audit`,
-> `moderation_setting`, `pipeline_event`, `provider_model_allowlist`,
-> `provider_model_allowlist_audit`) and the new columns on `storybook`,
-> `storybook_version`, and `generation_job`. The table reference below is
-> authoritative in the meantime.
+> **Note (2026-07-13, further behind since 2026-07-10):** the ER diagram
+> (`docs/architecture/diagrams/er-diagram.puml`) has been regenerated to add
+> `device_grant` (ADR-014, the newest table, added 2026-07-13), but the ten tables
+> called out in the 2026-07-10 pass are still missing from it: `series`, `rating`,
+> `storybook_assignment`, `story_request`, `moderation_threshold`,
+> `moderation_threshold_audit`, `moderation_setting`, `pipeline_event`,
+> `provider_model_allowlist`, `provider_model_allowlist_audit`. It also still needs
+> the new columns on `storybook`, `storybook_version`, and `generation_job`. The
+> table reference below is authoritative in the meantime.
 
 ## Entity-Relationship Diagram
 
@@ -213,6 +214,32 @@ filter on it, so a child sees only stories explicitly assigned to their profile.
 | assigned_by | UUID FK NULL | user.id of granting guardian; NULL for a system backfill |
 | created_at | TIMESTAMPTZ | Server default |
 
+### `device_grant`
+
+A guardian-minted, durable, family-scoped device authorization (ADR-014). Lets a
+child pick a profile and read, online or offline, without a live guardian Supabase
+session on the device: `POST /v1/child-sessions` and `GET /v1/profiles` accept a
+verified device grant as an additional authority alongside the guardian/admin
+Supabase bearer, scoped to the grant's own `family_id`. The token itself (HS256,
+audience `cyo-device-grant`, 90-day expiry) is never stored; only its unique `jti`
+and mint metadata are, here.
+
+| Column | Type | Notes |
+|--------|------|-------|
+| id | UUID PK | |
+| family_id | UUID FK | family.id; the device is authorized for exactly this family |
+| authorized_by | UUID FK | user.id of the guardian who minted the grant |
+| label | VARCHAR(120) NULL | Guardian-facing device name (e.g. "Kitchen tablet"); never derived from request headers |
+| jti | UUID UNIQUE | Matches the token's `jti` claim; the revocation lookup key |
+| created_at | TIMESTAMPTZ | |
+| revoked_at | TIMESTAMPTZ NULL | `NULL` while active; set (not deleted) on revoke so the guardian-facing device list can show when a device was revoked |
+
+Revocation is enforced online only: the token's `jti` is checked against this
+table's `revoked_at` on every use. An already-offline device cannot see a
+revocation until it reconnects, an accepted limitation bounded by the 90-day
+grant TTL (ADR-014, "Negative / risks"). The signing secret is
+`DEVICE_GRANT_SECRET`, validated at startup the same way as `CHILD_SESSION_SECRET`.
+
 ### `concept`
 
 The intake form for a guardian's story request. A `ConceptBrief` payload is validated
@@ -359,7 +386,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 | id | UUID PK | |
 | occurred_at | TIMESTAMPTZ | Server default |
 | actor_id | UUID FK NULL | user.id; NULL iff actor_role is `system` |
-| actor_role | VARCHAR(16) | `system`, `guardian`, `child`, or `admin` |
+| actor_role | VARCHAR(16) | `system`, `guardian`, `child`, `admin`, or `device` (ADR-014; the CHECK constraint's vocabulary is a superset of every valid `Role`, though no event is written with `actor_role='device'` yet, since the device principal is not wired into any event-emitting endpoint) |
 | entity_type | VARCHAR(32) | `story_request`, `generation_job`, `storybook`, `storybook_version`, `series`, `storybook_assignment`, `rating`, `moderation_threshold`, or `moderation_setting` |
 | entity_id | VARCHAR(255) | The affected row's id; composite ids (e.g. `f"{profile_id}:{storybook_id}"`) can reach ~157 chars |
 | event_type | VARCHAR(48) | One of 14 lifecycle event types (`request_created`, `request_approved`, `request_declined`, `plan_assigned`, `generation_started`, `generation_finished`, `moderation_completed`, `repair_applied`, `sent_back`, `released`, `threshold_changed`, `noise_floor_changed`, `book_assigned`, `rated`) |

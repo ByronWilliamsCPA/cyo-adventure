@@ -4,14 +4,19 @@
 ' CYO Adventure: Choose-Your-Own-Adventure reading app for kids
 '
 ' Source files:
-'   src/cyo_adventure/api/deps.py      (Principal/role model: guardian, child, admin)
+'   src/cyo_adventure/api/deps.py      (Principal/role model: guardian, child, admin,
+'     device (ADR-014, a device-grant credential, never a login))
 '   src/cyo_adventure/api/generation.py (guardian-only authoring)
 '   src/cyo_adventure/api/reading.py   (child reading endpoints)
+'   src/cyo_adventure/api/device_grants.py (mint/list/revoke a device grant)
+'   src/cyo_adventure/core/device_grant.py (HS256 token, aud cyo-device-grant, 90d)
 '   src/cyo_adventure/db/models.py     (Storybook + GenerationJob lifecycles)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md (amended: global-admin approver)
 '   docs/planning/adr/adr-003-frontier-llm-generation.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
 '     decision 2 = Supabase Postgres as the operational database)
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md (third token type:
+'     the device grant; single kid-to-adult step-up boundary)
 '   docs/planning/r1-deferred-debt-register.md (Task 1.7: Supabase Postgres cutover;
 '     r1-gap-closure-plan.md is archived, consolidated here)
 '   docs/planning/tech-spec.md
@@ -92,6 +97,23 @@ note bottom of backend
   - Storybook: draft -> in_review ->
     needs_revision | published | archived
   ("approved" is an action, not a resting state)
+end note
+
+note right of supabase_auth
+  ADR-014: three token types, three
+  lifetimes, three scopes:
+  - Supabase JWT: "a grown-up is present
+    now" (short, RS256/ES256, JWKS)
+  - Device grant (new): "this device is
+    authorized for the family" (90 days,
+    revocable, HS256, aud cyo-device-grant)
+  - Child session: "this profile is
+    reading" (12h, no refresh, HS256)
+  Only the guardian's Supabase JWT touches
+  this box; the device grant and child
+  session are backend-minted and verified
+  locally against their own HS256 secrets,
+  with no Supabase round-trip.
 end note
 
 @enduml

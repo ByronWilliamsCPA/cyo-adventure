@@ -3,12 +3,14 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ParentalGate } from './ParentalGate'
+import { AdultGate } from './AdultGate'
 import {
-  coolParentalGate,
-  PARENTAL_GATE_TTL_MS,
-  parentalGateRemainingMs,
-  warmParentalGate,
+  ADULT_GATE_TTL_MS,
+  adultGateRemainingMs,
+  clearAdultGate,
+  isAdultGateWarm,
+  parkAdultGate,
+  warmAdultGate,
 } from './parentalGateState'
 
 const mockSignInWithPassword = vi.fn()
@@ -69,14 +71,22 @@ function LoginProbe() {
   return <div>Login page (from {state?.from?.pathname ?? 'nowhere'})</div>
 }
 
+/**
+ * Route tree with TWO sibling gated branches (guardian-ish and admin-ish),
+ * mirroring the production shape (router.tsx): one AdultGate wraps both, so
+ * navigating between them must not remount the gate or re-trigger the
+ * challenge once warm. This is the core requirement of ADR-014 Phase 5.
+ */
 function gateRoutes() {
   return (
     <Routes>
       <Route path="/previous" element={<div>Previous page</div>} />
       <Route path="/guardian" element={<div>Console home</div>} />
       <Route path="/guardian/login" element={<LoginProbe />} />
-      <Route element={<ParentalGate />}>
+      <Route element={<AdultGate />}>
         <Route path="/gated" element={<div>Sensitive content</div>} />
+        <Route path="/guardian/console" element={<div>Guardian page</div>} />
+        <Route path="/admin/console" element={<div>Admin page</div>} />
       </Route>
     </Routes>
   )
@@ -110,10 +120,11 @@ async function flushSession() {
 }
 
 beforeEach(() => {
-  coolParentalGate()
+  clearAdultGate()
   mockSignInWithPassword.mockReset()
   mockSignOut.mockReset()
   mockGetSession.mockReset().mockResolvedValue(passwordSession())
+  sessionStorage.clear()
 })
 
 afterEach(() => {
@@ -121,7 +132,7 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('ParentalGate', () => {
+describe('AdultGate', () => {
   it('renders the re-auth challenge instead of the children when cold', async () => {
     renderGate()
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
@@ -163,8 +174,8 @@ describe('ParentalGate', () => {
       email: 'guardian@example.com',
       password: 'correct-horse',
     })
-    // The unlock warmed the module-level state for this user.
-    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
+    // The unlock warmed the sessionStorage-backed state for this user.
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
   })
 
   it('shows an inline wrong-password error and stays locked', async () => {
@@ -178,7 +189,7 @@ describe('ParentalGate', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/didn't match/)
     expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
-    expect(parentalGateRemainingMs('u1')).toBe(0)
+    expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
   it('reports an operational failure as a connection problem, not a wrong password', async () => {
@@ -223,14 +234,14 @@ describe('ParentalGate', () => {
   })
 
   it('renders the children immediately when the gate is already warm for this user', async () => {
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
     expect(screen.queryByLabelText('Password')).not.toBeInTheDocument()
   })
 
   it('stays locked when the warm entry belongs to a different user', async () => {
-    warmParentalGate('someone-else')
+    warmAdultGate('someone-else')
     renderGate()
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
     expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
@@ -238,14 +249,14 @@ describe('ParentalGate', () => {
 
   it('re-challenges when the TTL expires while the content is open', async () => {
     vi.useFakeTimers()
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     await flushSession()
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
 
     // Exactly the TTL boundary: at now === expiresAt the warmth is gone.
     act(() => {
-      vi.advanceTimersByTime(PARENTAL_GATE_TTL_MS)
+      vi.advanceTimersByTime(ADULT_GATE_TTL_MS)
     })
 
     expect(screen.getByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
@@ -257,12 +268,12 @@ describe('ParentalGate', () => {
     // simulate that by moving the wall clock past the TTL WITHOUT running
     // timers, then surfacing the tab.
     vi.useFakeTimers()
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     await flushSession()
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
 
-    vi.setSystemTime(Date.now() + PARENTAL_GATE_TTL_MS + 1)
+    vi.setSystemTime(Date.now() + ADULT_GATE_TTL_MS + 1)
     act(() => {
       document.dispatchEvent(new Event('visibilitychange'))
     })
@@ -272,16 +283,13 @@ describe('ParentalGate', () => {
   })
 
   it('re-locks on pageshow when a bfcache restore revives expired warm state', async () => {
-    // Module-level warm state survives a bfcache restore; the pageshow
-    // listener re-checks the wall clock so the sensitive page cannot come
-    // back from the cache already unlocked past its TTL.
     vi.useFakeTimers()
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     await flushSession()
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
 
-    vi.setSystemTime(Date.now() + PARENTAL_GATE_TTL_MS + 1)
+    vi.setSystemTime(Date.now() + ADULT_GATE_TTL_MS + 1)
     act(() => {
       window.dispatchEvent(new Event('pageshow'))
     })
@@ -292,11 +300,11 @@ describe('ParentalGate', () => {
 
   it('stays unlocked on visibilitychange while the TTL still has time left', async () => {
     vi.useFakeTimers()
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     await flushSession()
 
-    vi.setSystemTime(Date.now() + PARENTAL_GATE_TTL_MS - 1000)
+    vi.setSystemTime(Date.now() + ADULT_GATE_TTL_MS - 1000)
     act(() => {
       document.dispatchEvent(new Event('visibilitychange'))
     })
@@ -307,25 +315,32 @@ describe('ParentalGate', () => {
   it('supports a full re-lock then re-unlock cycle', async () => {
     vi.useFakeTimers()
     mockSignInWithPassword.mockResolvedValue(undefined)
-    warmParentalGate('u1')
+    warmAdultGate('u1')
     renderGate()
     await flushSession()
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
 
     act(() => {
-      vi.advanceTimersByTime(PARENTAL_GATE_TTL_MS + 1)
+      vi.advanceTimersByTime(ADULT_GATE_TTL_MS + 1)
     })
     expect(screen.getByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
 
     await typePasswordAndConfirm('correct-horse')
 
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
-    expect(parentalGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
   })
 
   it('clears the re-lock timer on unmount', async () => {
     vi.useFakeTimers()
-    warmParentalGate('u1')
+    warmAdultGate('u1')
+    // jsdom's sessionStorage.setItem schedules its own internal timer (to fire
+    // a cross-document 'storage' event) that has nothing to do with AdultGate
+    // and is never cleared by unmount; flush it now so the assertions below
+    // only see the gate's own re-lock timer, not this jsdom-storage artifact
+    // (the pre-Phase-5 gate used module memory, not Web Storage, so it never
+    // hit this).
+    vi.advanceTimersByTime(0)
     const { unmount } = renderGate()
     await flushSession()
     expect(screen.getByText('Sensitive content')).toBeInTheDocument()
@@ -336,20 +351,20 @@ describe('ParentalGate', () => {
     expect(vi.getTimerCount()).toBe(0)
   })
 
-  it('lets an OAuth-only guardian through with a console warning', async () => {
-    // #ASSUME: security: documented limitation, see ParentalGate.tsx: an OAuth
+  it('lets an OAuth-only guardian through with a console warning, and warms the gate', async () => {
+    // #ASSUME: security: documented limitation, see AdultGate.tsx: an OAuth
     // guardian has no password to re-enter and supabase-js has no client-side
     // OAuth re-auth challenge, so the gate passes them through loudly rather
-    // than locking them out of approval.
+    // than locking them out. Unlike the pre-Phase-5 ParentalGate, the bypass
+    // also warms the gate so a later crossing is consistent for these users.
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
     mockGetSession.mockResolvedValue(oauthSession())
     renderGate()
 
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
     expect(screen.queryByLabelText('Password')).not.toBeInTheDocument()
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ParentalGate'))
-    // Nothing was warmed: the bypass is per-mount, not a fake unlock.
-    expect(parentalGateRemainingMs('u1')).toBe(0)
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'))
+    expect(isAdultGateWarm('u1')).toBe(true)
   })
 
   it('challenges a mixed-provider guardian who does have a password identity', async () => {
@@ -389,7 +404,7 @@ describe('ParentalGate', () => {
     renderGate()
     // No 'email' identity survives validation, so this is an OAuth bypass.
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ParentalGate'))
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'))
   })
 
   it('treats a user without app_metadata as having no password identity', async () => {
@@ -399,7 +414,7 @@ describe('ParentalGate', () => {
     )
     renderGate()
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ParentalGate'))
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'))
   })
 
   it('never locks with a null email: an email provider without an email bypasses', async () => {
@@ -413,7 +428,7 @@ describe('ParentalGate', () => {
     renderGate()
     expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
     expect(screen.queryByLabelText('Password')).not.toBeInTheDocument()
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ParentalGate'))
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'))
   })
 
   it('ignores a re-entrant submit while one is already in flight', async () => {
@@ -479,9 +494,6 @@ describe('ParentalGate', () => {
   })
 
   it('shows an inline error when sign-out fails while switching accounts', async () => {
-    // #EDGE: external-resources: signOut rejects when Supabase cannot revoke
-    // the session (network down); same failure mode GuardianShell guards
-    // against for its own sign-out button.
     mockSignOut.mockRejectedValue(new Error('network down'))
     renderGate()
     await screen.findByRole('heading', { name: 'Grown-ups only' })
@@ -534,10 +546,6 @@ describe('ParentalGate', () => {
   })
 
   it('disables the switch-account link while a password submit is in flight', async () => {
-    // #CRITICAL: concurrency: the cross-guard companion to the re-entrant
-    // guards above -- a submit() in flight must also block switchAccount(),
-    // not just a second submit(), or signOut() and signInWithPassword() could
-    // race against the same Supabase client.
     let resolveSignIn: (() => void) | undefined
     mockSignInWithPassword.mockImplementation(
       () =>
@@ -594,48 +602,20 @@ describe('ParentalGate', () => {
   })
 
   it('recovers from a failed session lookup via the retry button', async () => {
-    // A getSession() rejection must not strand the gate on the loading state
-    // forever; it fails closed to an explicit error phase with a retry.
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     mockGetSession.mockRejectedValueOnce(new Error('storage exploded'))
     renderGate()
 
     expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't check/i)
     expect(screen.queryByText('Sensitive content')).not.toBeInTheDocument()
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('ParentalGate'),
-      expect.any(Error)
-    )
+    expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('AdultGate'), expect.any(Error))
 
-    // The next lookup succeeds (beforeEach default), so retry reaches the
-    // normal challenge.
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }))
     expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
   })
 
-  it('never persists warm state outside memory (a reload starts cold)', async () => {
-    // The state module keeps warmth in a module-level variable only; nothing
-    // is written to localStorage/sessionStorage, so a page reload (fresh
-    // module registry) always re-challenges. Assert the storage side of that
-    // contract here (against a snapshot, so unrelated keys other machinery
-    // may have set do not matter); the fresh-module side is inherent to the
-    // design.
-    const localKeysBefore = Object.keys(localStorage).sort()
-    const sessionKeysBefore = Object.keys(sessionStorage).sort()
-    mockSignInWithPassword.mockResolvedValue(undefined)
-    renderGate()
-    await screen.findByRole('heading', { name: 'Grown-ups only' })
-    await typePasswordAndConfirm('correct-horse')
-    await screen.findByText('Sensitive content')
-
-    expect(Object.keys(localStorage).sort()).toEqual(localKeysBefore)
-    expect(Object.keys(sessionStorage).sort()).toEqual(sessionKeysBefore)
-  })
-
   it('waits for the unlock to settle before rendering anything sensitive', async () => {
-    // While signInWithPassword is in flight the gate stays on the challenge
-    // with the button disabled, so double-submits cannot stack re-auth calls.
     let resolveSignIn: (() => void) | undefined
     mockSignInWithPassword.mockImplementation(
       () =>
@@ -655,27 +635,114 @@ describe('ParentalGate', () => {
     resolveSignIn?.()
     await waitFor(() => expect(screen.getByText('Sensitive content')).toBeInTheDocument())
   })
+
+  it('does not re-challenge navigating between two sibling gated routes once warm (core requirement)', async () => {
+    // The whole point of ADR-014 Phase 5: one AdultGate at the root of the
+    // adult subtree means guardian<->admin navigation is free once warm,
+    // because the gate component itself never unmounts between sibling
+    // routes the way the old per-page ParentalGate did.
+    warmAdultGate('u1')
+    render(
+      <MemoryRouter initialEntries={['/guardian/console']}>{gateRoutes()}</MemoryRouter>
+    )
+    expect(await screen.findByText('Guardian page')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
+  })
+
+  describe('switch-account regression (ADR-014 Phase 5)', () => {
+    // The bug this phase fixes: the old ParentalGate kept warmth in module
+    // memory, which a full-page reload (exactly what the switch-account OAuth
+    // round-trip does) always wiped, re-prompting even for the SAME user.
+    // Warmth now lives in sessionStorage, which survives a same-tab reload;
+    // simulate "the page reloaded and the gate remounted" by warming
+    // sessionStorage BEFORE mounting a fresh AdultGate instance, rather than
+    // relying on any in-memory state carried from a previous render.
+
+    it('stays warm across a simulated reload/remount for the SAME user', async () => {
+      warmAdultGate('u1')
+      mockGetSession.mockResolvedValue(passwordSession('u1'))
+
+      const { unmount } = renderGate()
+      expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
+      unmount()
+
+      // A fresh mount (simulating the reload) with the same sessionStorage
+      // entry still in place and the same user's session restored.
+      renderGate()
+      expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
+      expect(screen.queryByRole('heading', { name: 'Grown-ups only' })).not.toBeInTheDocument()
+    })
+
+    it('challenges again after a simulated reload/remount that returns as a DIFFERENT user', async () => {
+      warmAdultGate('u1')
+      mockGetSession.mockResolvedValue(passwordSession('u1'))
+      const { unmount } = renderGate()
+      expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
+      unmount()
+
+      // The switch-account sign-out clears the warm entry (AuthContext), and
+      // the new user's own sign-in warms it for THEIR id, not 'u1'. Simulate
+      // the post-switch state directly: warm entry now belongs to 'u2', and
+      // the restored session is for 'u2'.
+      clearAdultGate()
+      warmAdultGate('u2')
+      mockGetSession.mockResolvedValue(passwordSession('u2', 'other@example.com'))
+
+      renderGate()
+      expect(await screen.findByText('Sensitive content')).toBeInTheDocument()
+
+      // Sanity: had the switch NOT warmed 'u2', it would be cold.
+      clearAdultGate()
+      renderGate()
+      expect(await screen.findByRole('heading', { name: 'Grown-ups only' })).toBeInTheDocument()
+    })
+  })
 })
 
-describe('parentalGateState', () => {
+describe('parentalGateState (adult gate warm store)', () => {
   it('honors the injectable now parameter on warm and read', () => {
-    warmParentalGate('u1', 1_000)
-    expect(parentalGateRemainingMs('u1', 1_000)).toBe(PARENTAL_GATE_TTL_MS)
-    expect(parentalGateRemainingMs('u1', 1_000 + PARENTAL_GATE_TTL_MS / 2)).toBe(
-      PARENTAL_GATE_TTL_MS / 2
-    )
+    warmAdultGate('u1', 1_000)
+    expect(adultGateRemainingMs('u1', 1_000)).toBe(ADULT_GATE_TTL_MS)
+    expect(adultGateRemainingMs('u1', 1_000 + ADULT_GATE_TTL_MS / 2)).toBe(ADULT_GATE_TTL_MS / 2)
   })
 
   it('treats the exact TTL boundary (now === expiresAt) as expired', () => {
-    warmParentalGate('u1', 1_000)
-    expect(parentalGateRemainingMs('u1', 1_000 + PARENTAL_GATE_TTL_MS - 1)).toBe(1)
-    expect(parentalGateRemainingMs('u1', 1_000 + PARENTAL_GATE_TTL_MS)).toBe(0)
-    expect(parentalGateRemainingMs('u1', 1_000 + PARENTAL_GATE_TTL_MS + 1)).toBe(0)
+    warmAdultGate('u1', 1_000)
+    expect(adultGateRemainingMs('u1', 1_000 + ADULT_GATE_TTL_MS - 1)).toBe(1)
+    expect(adultGateRemainingMs('u1', 1_000 + ADULT_GATE_TTL_MS)).toBe(0)
+    expect(adultGateRemainingMs('u1', 1_000 + ADULT_GATE_TTL_MS + 1)).toBe(0)
   })
 
-  it('is cold for every user after coolParentalGate()', () => {
-    warmParentalGate('u1', 1_000)
-    coolParentalGate()
-    expect(parentalGateRemainingMs('u1', 1_000)).toBe(0)
+  it('is cold for every user after clearAdultGate()', () => {
+    warmAdultGate('u1', 1_000)
+    clearAdultGate()
+    expect(adultGateRemainingMs('u1', 1_000)).toBe(0)
+  })
+
+  it('is cold for every user after parkAdultGate(), same as clearAdultGate', () => {
+    warmAdultGate('u1', 1_000)
+    parkAdultGate()
+    expect(adultGateRemainingMs('u1', 1_000)).toBe(0)
+  })
+
+  it('#CRITICAL security: warming one user does not warm a different user', () => {
+    warmAdultGate('u1')
+    expect(isAdultGateWarm('u1')).toBe(true)
+    expect(isAdultGateWarm('u2')).toBe(false)
+  })
+
+  it('persists the warm entry in sessionStorage (survives a same-tab reload)', () => {
+    warmAdultGate('u1')
+    const raw = sessionStorage.getItem('cyo_adult_gate_warm')
+    expect(raw).not.toBeNull()
+    const parsed = JSON.parse(raw ?? '{}') as { userId: string; expiresAt: number }
+    expect(parsed.userId).toBe('u1')
+    expect(parsed.expiresAt).toBeGreaterThan(Date.now())
+  })
+
+  it('treats a corrupt sessionStorage entry as cold, not a thrown error', () => {
+    sessionStorage.setItem('cyo_adult_gate_warm', 'not-json{{{')
+    expect(isAdultGateWarm('u1')).toBe(false)
+    expect(adultGateRemainingMs('u1')).toBe(0)
   })
 })

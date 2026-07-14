@@ -38,10 +38,13 @@ test.describe('admin-only account on the guardian surfaces', () => {
   ] as const) {
     test(`${path} renders without the error boundary`, async () => {
       await sharedPage.goto(path)
-      // /guardian and /guardian/profiles sit behind ParentalGate, whose
-      // unlock state is deliberately not persisted across a page reload
-      // (see unlockParentalGateIfPresent's doc comment). No-op on the two
-      // ungated paths.
+      // ADR-014: all four of these adult paths (including intake and requests,
+      // which pre-dated the change as ungated) now sit behind the single
+      // AdultGate. In practice the real sign-in in beforeAll already warmed the
+      // gate, and that warmth persists across these same-tab navigations in
+      // sessionStorage, so this call is usually a no-op; it stays as a
+      // defensive unlock in case a navigation lands cold (see
+      // unlockParentalGateIfPresent's doc comment).
       await unlockParentalGateIfPresent(sharedPage)
       await expect(
         sharedPage.getByRole('heading', { name: 'Something went wrong', level: 1 })
