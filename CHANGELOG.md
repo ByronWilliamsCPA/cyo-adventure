@@ -35,6 +35,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   next load. A browser already wedged on the old worker still needs a one-time
   clear-site-data or hard reload; new and cleared clients self-heal.
 
+### Security
+- Suppressed four unfixable `gawk` CVEs (CVE-2026-40467, CVE-2026-40468,
+  CVE-2026-40469, CVE-2026-40553) in the Debian 13 base image via
+  `.trivyignore`; all report an empty Fixed Version upstream. `gawk` ships in
+  the hardened base image and is never installed or invoked by the app, so the
+  vulnerable paths are unreachable. Documented in
+  `docs/known-vulnerabilities.md` with a 2026-09-12 reassessment date. Keeps
+  the container vulnerability scan green without relaxing the CRITICAL/HIGH
+  gate for fixable findings.
+
 ## [0.4.0] - 2026-07-14
 
 ### Added

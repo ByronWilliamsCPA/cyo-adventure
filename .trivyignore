@@ -15,7 +15,7 @@
 #   - openssl / libssl CVE-2026-45447: resolved by `apt-get upgrade`.
 #   - Go stdlib / esbuild CVEs: frontend/node_modules excluded via .dockerignore.
 #
-# Last reviewed: 2026-07-08
+# Last reviewed: 2026-07-14
 
 # --- perl-base (Perl + bundled Archive::Tar / IO-Compress); no Debian fix yet ---
 CVE-2026-42496
@@ -35,3 +35,13 @@ CVE-2025-69720
 # Confirmed via the PR #165 Container Security run (empty Fixed Version, status
 # "affected"). Documented in docs/known-vulnerabilities.md; reassess 2026-09-06.
 CVE-2026-53615
+
+# --- gawk (1:5.2.1-2+b1; builtin.c integer overflows, io.c UAF, buffer overflow); no Debian fix yet ---
+# Confirmed via the PR #256 (v0.4.0 release) Container Security run: all four
+# report an empty Fixed Version with status "affected". Newly disclosed after
+# the 2026-07-08 review, so they post-date the entries above. Documented in
+# docs/known-vulnerabilities.md; reassess 2026-09-12.
+CVE-2026-40468
+CVE-2026-40469
+CVE-2026-40467
+CVE-2026-40553
