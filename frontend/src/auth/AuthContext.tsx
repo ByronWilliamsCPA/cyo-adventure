@@ -12,7 +12,7 @@ import {
   type AuthStatus,
 } from './authContext'
 import { clearChildSession } from './childSession'
-import { coolParentalGate } from './parentalGateState'
+import { clearAdultGate, warmAdultGate } from './parentalGateState'
 import { supabase } from './supabaseClient'
 import { isRole, type Principal } from './types'
 
@@ -76,7 +76,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // guardian sessions are low-frequency; revisit only if /me load becomes
     // measurable.
     // #VERIFY: test_auth_context.test_refetches_principal_on_token_refresh.
-    async function syncPrincipal(session: Session | null) {
+    //
+    // `event` is Supabase's onAuthStateChange discriminator (undefined for
+    // the initial getSession()-driven call below, which resolves a possibly
+    // PERSISTED session, not a fresh sign-in). It is used for exactly one
+    // thing: warming the adult gate (ADR-014 Phase 5) ONLY on a genuine
+    // 'SIGNED_IN' event (a password submit or an OAuth redirect return), the
+    // moment the guardian has just proven full credentials. Warming on any
+    // other event -- in particular the initial session restore or a silent
+    // 'TOKEN_REFRESHED' -- would let a stale/cached session, or a walked-away
+    // auto-refreshing tab, look identical to a guardian who just typed a
+    // password, defeating the step-up entirely.
+    // #CRITICAL: security: gate the warm call on event === 'SIGNED_IN', never
+    // on session presence alone.
+    // #VERIFY: AuthContext.test.tsx "warms the adult gate on a SIGNED_IN
+    // event, but not on session restore or token refresh".
+    async function syncPrincipal(session: Session | null, event?: string) {
       const seq = ++requestSeq.current
       // A later handler already superseded this one, or the provider unmounted.
       const isStale = () => cancelled || seq !== requestSeq.current
@@ -116,6 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         })
         setStatus('signed-in')
         setAuthError(null)
+        if (event === 'SIGNED_IN') {
+          warmAdultGate(session.user.id)
+        }
       } catch (err) {
         // #CRITICAL: security: a session whose /me call fails (expired,
         // rejected by the backend's real JWT verification) or returns an
@@ -147,8 +165,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      void syncPrincipal(session)
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      void syncPrincipal(session, event)
     })
 
     return () => {
@@ -204,13 +222,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await supabase.auth.signOut()
         if (error) throw error
         // #ASSUME: security: an explicit sign-out hands the device over, so
-        // any warm parental-gate state (P6-08) must die with the session
-        // rather than surviving in module memory for the next sign-in within
-        // the TTL. Cool it here deterministically instead of relying on the
-        // async SIGNED_OUT event.
-        // #VERIFY: AuthContext.test.tsx "sign-out drops warm parental-gate
+        // any warm adult-gate state (ADR-014 Phase 5) must die with the
+        // session rather than surviving in sessionStorage for the next
+        // sign-in within the TTL. Clear it here deterministically instead of
+        // relying on the async SIGNED_OUT event.
+        // #VERIFY: AuthContext.test.tsx "sign-out drops warm adult-gate
         // state".
-        coolParentalGate()
+        clearAdultGate()
       },
     }),
     [status, principal, authError]

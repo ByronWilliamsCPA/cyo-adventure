@@ -9,6 +9,7 @@ import { AUTHORIZE_DEVICE_INTENT_PARAM, AUTHORIZE_DEVICE_INTENT_VALUE } from '..
 import { _resetDbHandle } from '../offline/db'
 import { DeviceAuthorizedRoute } from './DeviceAuthorizedRoute'
 import { setDeviceGrant } from './deviceGrant'
+import { isAdultGateWarm, warmAdultGate } from './parentalGateState'
 
 function renderGate(initialPath = '/kids') {
   return render(
@@ -27,6 +28,7 @@ beforeEach(() => {
   globalThis.indexedDB = new IDBFactory()
   _resetDbHandle()
   localStorage.clear()
+  sessionStorage.clear()
 })
 
 describe('DeviceAuthorizedRoute', () => {
@@ -90,5 +92,49 @@ describe('DeviceAuthorizedRoute', () => {
     // flow to read.
     expect(AUTHORIZE_DEVICE_INTENT_PARAM).toBe('intent')
     expect(AUTHORIZE_DEVICE_INTENT_VALUE).toBe('authorize-device')
+  })
+
+  it('parks the adult gate (ADR-014 Phase 5) once the kid surface authorizes', () => {
+    // A device handed to a kid must always re-demand the grown-up password
+    // on the way back up, however much of the step-up's TTL window was left.
+    warmAdultGate('u1')
+    expect(isAdultGateWarm('u1')).toBe(true)
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+
+    renderGate()
+
+    expect(screen.getByText('Kid picker')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(false)
+  })
+
+  it('parks the adult gate after the async IndexedDB-mirror path authorizes too', async () => {
+    warmAdultGate('u1')
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    // Simulate the localStorage-empty, mirror-only recovery path so the
+    // 'authorized' status is set asynchronously (not on first render).
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    localStorage.removeItem('device_grant')
+
+    renderGate()
+
+    expect(await screen.findByText('Kid picker')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(false)
+  })
+
+  it('does not park the adult gate while still unauthorized', async () => {
+    warmAdultGate('u1')
+    renderGate()
+    expect(await screen.findByText('Login page')).toBeInTheDocument()
+    expect(isAdultGateWarm('u1')).toBe(true)
   })
 })

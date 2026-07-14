@@ -8,6 +8,7 @@ import {
   AdminConsolePage,
   AdminRequestsPage,
   AdminShell,
+  AdultGate,
   BooksPage,
   ConsolePage,
   GuardianAuthLayout,
@@ -20,7 +21,6 @@ import {
   ModerationDashboardPage,
   ModerationThresholdsPage,
   NotFoundPage,
-  ParentalGate,
   ProfilePickerPage,
   ProfilesPage,
   ReaderRoute,
@@ -111,83 +111,74 @@ export const routes = [
         element: suspended(<LoginPage />),
       },
       {
-        // The guardian console admits both adult capabilities: a dual-role
-        // adult lives here day-to-day, and an admin-only adult who lands
-        // here sees the family home's pointer into the admin console rather
-        // than a redirect loop (a child still bounces to the kid picker).
-        path: GUARDIAN_CONSOLE_PATH,
-        element: (
-          <ProtectedRoute redirectTo={GUARDIAN_LOGIN_PATH} allowedRoles={['guardian', 'admin']} />
-        ),
+        // Adult step-up gate (ADR-014 Phase 5): ONE pathless layout at the
+        // root of the whole adult subtree, wrapping BOTH the guardian and
+        // admin ProtectedRoute branches below. This is the collapse of the
+        // two former per-page ParentalGate placements (P6-08): because this
+        // sits ABOVE both role-gated branches instead of on individual
+        // sibling pages, React Router never unmounts/remounts it while an
+        // adult navigates guardian<->guardian, guardian<->admin, or
+        // admin<->guardian, so that navigation is free once warm. It sits
+        // OUTSIDE the login route (a signed-out visitor must reach login
+        // without a step-up) but does its own session check ahead of each
+        // ProtectedRoute below, redirecting to login itself when there is no
+        // session at all; ProtectedRoute still does the role/capability
+        // gating beneath it.
+        element: suspended(<AdultGate />),
         children: [
           {
-            element: suspended(<GuardianShell />),
+            // The guardian console admits both adult capabilities: a
+            // dual-role adult lives here day-to-day, and an admin-only adult
+            // who lands here sees the family home's pointer into the admin
+            // console rather than a redirect loop (a child still bounces to
+            // the kid picker).
+            path: GUARDIAN_CONSOLE_PATH,
+            element: (
+              <ProtectedRoute
+                redirectTo={GUARDIAN_LOGIN_PATH}
+                allowedRoles={['guardian', 'admin']}
+              />
+            ),
             children: [
-              // Outside the parental gate: requesting a story and watching the
-              // request list are viewing/asking surfaces, not the high-stakes
-              // actions (P6-08 gates approval, assignments, and profile
-              // management, not every guardian page).
-              { path: 'intake', element: suspended(<IntakePage />) },
-              { path: 'requests', element: suspended(<RequestsPage />) },
               {
-                // Parental gate (P6-08): a pathless layout route wrapping the
-                // sensitive console surfaces so a kid holding a signed-in
-                // device cannot reach the family home (console), assignments
-                // (books), or profile management without a guardian re-auth.
-                // Sits INSIDE ProtectedRoute (a signed-in guardian/admin is a
-                // precondition of re-auth) and renders its challenge in place
-                // of the child route until warm. The admin-capability
-                // surfaces that P6-08 also gated (approval queue, review,
-                // moderation) moved to the parallel /admin tree below, which
-                // carries its own ParentalGate.
-                element: suspended(<ParentalGate />),
+                element: suspended(<GuardianShell />),
                 children: [
+                  // Intake and the request list moved inside the single
+                  // adult gate along with everything else (ADR-014 Phase 5):
+                  // once warm, an adult reaches any guardian page, including
+                  // these, with no further challenge. They are no longer
+                  // singled out as "viewing/asking, not gated" the way P6-08
+                  // originally split them; the gate is now a kid-to-adult
+                  // boundary, not a per-page distinction.
                   { index: true, element: suspended(<ConsolePage />) },
+                  { path: 'intake', element: suspended(<IntakePage />) },
+                  { path: 'requests', element: suspended(<RequestsPage />) },
                   { path: 'books', element: suspended(<BooksPage />) },
                   { path: 'profiles', element: suspended(<ProfilesPage />) },
                 ],
               },
             ],
           },
-        ],
-      },
-      {
-        // Admin console: the parallel adult surface for admin-capability
-        // functions (review queue, global request queue, moderation admin).
-        // 'admin' is the CAPABILITY (principal.isAdmin), so a dual-role
-        // guardian passes; a plain guardian is sent back to their console
-        // (NOT the login page, which would loop for a signed-in user).
-        path: ADMIN_CONSOLE_PATH,
-        element: (
-          <ProtectedRoute
-            redirectTo={GUARDIAN_LOGIN_PATH}
-            allowedRoles={['admin']}
-            deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
-          />
-        ),
-        children: [
           {
-            element: suspended(<AdminShell />),
+            // Admin console: the parallel adult surface for admin-capability
+            // functions (review queue, global request queue, moderation
+            // admin). 'admin' is the CAPABILITY (principal.isAdmin), so a
+            // dual-role guardian passes; a plain guardian is sent back to
+            // their console (NOT the login page, which would loop for a
+            // signed-in user). The admin-only ProtectedRoute still runs
+            // beneath the shared AdultGate above, so an admin capability
+            // check happens after the step-up rather than gating it.
+            path: ADMIN_CONSOLE_PATH,
+            element: (
+              <ProtectedRoute
+                redirectTo={GUARDIAN_LOGIN_PATH}
+                allowedRoles={['admin']}
+                deniedRedirectTo={GUARDIAN_CONSOLE_PATH}
+              />
+            ),
             children: [
               {
-                // Parental gate (P6-08): wraps every admin-console surface,
-                // including the global request queue. Unlike the guardian
-                // subtree's own request list (own-family only, left ungated
-                // above as a viewing surface), AdminRequestsPage renders
-                // CROSS-FAMILY child request text plus a family selector, so
-                // it is high-stakes on privacy grounds even though it is not
-                // an approval action: the admin capability (is_admin,
-                // enforced by the ProtectedRoute above) proves the adult HAS
-                // admin rights, but not that a grown-up is holding the
-                // device right now, so a kid on a signed-in dual-role device
-                // would otherwise read other families' child PII with no
-                // challenge. The approval/review queue, review detail, and
-                // moderation settings moved here from the guardian subtree in
-                // the dual-role refactor, so the re-auth gate that P6-08
-                // placed around approval/review/moderation follows them too.
-                // Nested inside the admin-only ProtectedRoute, so a
-                // signed-in admin is a precondition.
-                element: suspended(<ParentalGate />),
+                element: suspended(<AdminShell />),
                 children: [
                   { index: true, element: suspended(<AdminConsolePage />) },
                   { path: 'requests', element: suspended(<AdminRequestsPage />) },

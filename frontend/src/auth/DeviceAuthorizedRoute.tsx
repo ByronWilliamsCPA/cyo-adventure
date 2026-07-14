@@ -7,6 +7,7 @@ import {
   GUARDIAN_LOGIN_PATH,
 } from '../routes'
 import { hasValidDeviceGrant, hydrateDeviceGrant } from './deviceGrant'
+import { parkAdultGate } from './parentalGateState'
 
 type GateStatus = 'checking' | 'authorized' | 'unauthorized'
 
@@ -15,11 +16,11 @@ type GateStatus = 'checking' | 'authorized' | 'unauthorized'
  * `/library/:profileId`, and `/read/*` so none of them render without a
  * valid, local device grant. Deliberately does NOT use `useAuth` or import
  * anything under `auth/` that reaches `supabaseClient` (AuthContext,
- * ParentalGate): this component lives in the kid chunk's import graph
+ * AdultGate): this component lives in the kid chunk's import graph
  * (router.tsx wraps KidShell's children with it), and the kid chunk must
  * never pull in @supabase/supabase-js (see router.tsx's header comment and
- * GuardianAuthLayout.tsx). `deviceGrant.ts` is Supabase-free for the same
- * reason.
+ * GuardianAuthLayout.tsx). `deviceGrant.ts` and `parentalGateState.ts` are
+ * both Supabase-free for the same reason.
  *
  * The common case (a valid grant already in localStorage) renders `<Outlet
  * />` on the first render with no async work. When localStorage holds
@@ -27,6 +28,15 @@ type GateStatus = 'checking' | 'authorized' | 'unauthorized'
  * fallback (offline resilience: a localStorage clear should not strand an
  * otherwise-valid grant); only after that resolves to nothing does this
  * redirect to guardian login.
+ *
+ * #CRITICAL: security: entering the kid surface PARKS the adult gate
+ * (ADR-014 Phase 5) so a device that goes from adult hands to a child's and
+ * back always re-demands the grown-up password on the way up, regardless of
+ * how much of the step-up's TTL window was left. Parking here (not just on
+ * sign-out) is what makes "hand the tablet to a kid, take it back a minute
+ * later" behave like a boundary crossing instead of a no-op.
+ * #VERIFY: AdultGate.test.tsx / DeviceAuthorizedRoute.test.tsx "entering the
+ * kid surface parks the adult gate".
  */
 export function DeviceAuthorizedRoute() {
   const location = useLocation()
@@ -44,6 +54,10 @@ export function DeviceAuthorizedRoute() {
     return () => {
       cancelled = true
     }
+  }, [status])
+
+  useEffect(() => {
+    if (status === 'authorized') parkAdultGate()
   }, [status])
 
   if (status === 'checking') {

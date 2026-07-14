@@ -5,7 +5,7 @@ import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom'
 
 import '../guardian/guardian.css'
 import { GUARDIAN_CONSOLE_PATH, GUARDIAN_LOGIN_PATH } from '../routes'
-import { parentalGateRemainingMs, warmParentalGate } from './parentalGateState'
+import { adultGateRemainingMs, warmAdultGate } from './parentalGateState'
 import { supabase } from './supabaseClient'
 import { useAuth } from './useAuth'
 
@@ -89,19 +89,26 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
 }
 
 /**
- * Parental gate (P6-08): guardian re-auth wrapper around the sensitive console
- * surfaces (review/approve, moderation settings, profiles, assignments; later,
- * purchases per P8-06). This is the gate pattern Apple expects in Kids
- * Category apps: a deliberate adult action (password re-entry) before anything
- * consequential, so a kid holding a signed-in device cannot wander from the
- * reader into approving stories or editing profiles.
- *
- * When the gate is cold it renders the challenge INSTEAD of the wrapped
- * content; a successful re-auth warms it for PARENTAL_GATE_TTL_MS of
- * in-memory state only (see parentalGateState.ts), so a reload re-challenges.
+ * Adult step-up gate (ADR-014 Phase 5): a SINGLE pathless layout route at the
+ * root of the adult subtree (router.tsx), wrapping both the guardian and
+ * admin ProtectedRoute subtrees. This collapses the two former per-page
+ * ParentalGate placements (P6-08) into one kid-to-adult BOUNDARY crossing:
+ * adult-to-adult navigation (guardian<->guardian, guardian<->admin,
+ * admin<->guardian) is free once warm, because this component no longer sits
+ * on individual sibling routes that React Router unmounts/remounts during
+ * that navigation.
  *
  * Renders `children` when given, otherwise an `<Outlet />` so it can be used
- * as a pathless layout route in router.tsx.
+ * as a pathless layout route.
+ *
+ * State machine:
+ *   - no Supabase session -> redirect to guardian login (carrying the
+ *     attempted location, same convention as ProtectedRoute).
+ *   - session present, NOT warm (cold entry, or returning from kid mode via
+ *     parkAdultGate) -> render the "Grown-ups only" password challenge.
+ *   - session present, has no password identity (OAuth-only) -> pass through
+ *     with a console warning, and warm the gate for consistency (see below).
+ *   - session present, warm -> render children/<Outlet/>, free navigation.
  *
  * #CRITICAL: security: this is a client-side deterrent, not a security
  * boundary. Every gated action is still authorized server-side (Supabase JWT
@@ -122,15 +129,19 @@ function readProviders(meta: Record<string, unknown> | undefined): string[] {
  * password to re-enter, and supabase-js offers no client-side OAuth
  * re-auth challenge (`auth.reauthenticate()` exists but only sends a nonce for
  * secure password updates, and re-running signInWithOAuth is a full-page
- * redirect that would drop this in-memory gate state and loop). Locking those
- * guardians out of approval entirely is worse than a weaker gate, so OAuth
- * users pass through with a console-visible warning. Follow-up: give OAuth
- * guardians a real challenge (e.g. a gate PIN set at onboarding, or the
- * backend re-auth grant above).
- * #VERIFY: ParentalGate.test.tsx "lets an OAuth-only guardian through with a
- * console warning".
+ * redirect that would drop any in-flight gate state and loop). Locking those
+ * guardians out entirely is worse than a weaker gate, so OAuth users pass
+ * through with a console-visible warning. The gate is also warmed for them
+ * (unlike the pre-Phase-5 ParentalGate, which deliberately left OAuth-bypass
+ * unwarmed): warming is what makes a later kid-to-adult crossing consistent
+ * for these users too, even though the bypass itself does not depend on
+ * warmth (the hasPassword check runs before the warm check below). Follow-up:
+ * give OAuth guardians a real challenge (e.g. a gate PIN set at onboarding, or
+ * the backend re-auth grant above).
+ * #VERIFY: AdultGate.test.tsx "lets an OAuth-only guardian through with a
+ * console warning, and warms the gate".
  */
-export function ParentalGate({ children }: { children?: ReactNode }) {
+export function AdultGate({ children }: { children?: ReactNode }) {
   const { signInWithPassword, signOut } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -155,8 +166,10 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
         if (cancelled) return
         const sessionUser = data.session?.user
         if (!sessionUser) {
-          // ProtectedRoute upstream should have redirected already; this only
-          // races a sign-out. Fail closed toward the login page.
+          // A missing session here means either a genuinely signed-out
+          // visitor (this gate now sits ABOVE ProtectedRoute, so it is the
+          // first thing to see a stale/expired session) or a race with a
+          // sign-out event. Either way, fail closed toward the login page.
           setPhase({ kind: 'no-session' })
           return
         }
@@ -169,15 +182,16 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
         const user: GateUser = { userId: sessionUser.id, email, hasPassword }
         if (!hasPassword) {
           console.warn(
-            'ParentalGate: session has no password identity (OAuth sign-in); ' +
-              'passing through without a re-auth challenge. See ParentalGate.tsx ' +
+            'AdultGate: session has no password identity (OAuth sign-in); ' +
+              'passing through without a re-auth challenge. See AdultGate.tsx ' +
               'for the documented limitation and follow-up.'
           )
+          warmAdultGate(user.userId)
           setPhase({ kind: 'oauth-bypass', user })
           return
         }
         setPhase(
-          parentalGateRemainingMs(user.userId) > 0
+          adultGateRemainingMs(user.userId) > 0
             ? { kind: 'unlocked', user }
             : { kind: 'locked', user }
         )
@@ -187,9 +201,9 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
         // and should not reject, but if it ever does the gate must not hang
         // on the "checking" spinner forever. Fail closed to an explicit error
         // phase with a retry affordance instead of a silent dead end.
-        // #VERIFY: ParentalGate.test.tsx "recovers from a failed session
+        // #VERIFY: AdultGate.test.tsx "recovers from a failed session
         // lookup via the retry button".
-        console.error('ParentalGate: could not resolve the current session:', err)
+        console.error('AdultGate: could not resolve the current session:', err)
         if (!cancelled) setPhase({ kind: 'error' })
       })
     return () => {
@@ -199,12 +213,12 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
 
   // #ASSUME: timing dependencies: while unlocked, schedule the re-challenge
   // for the moment the TTL runs out, so a guardian who walks away mid-session
-  // does not leave the sensitive surfaces open indefinitely in a live tab.
-  // Background tabs throttle timers and bfcache restores revive module state
+  // does not leave the adult subtree open indefinitely in a live tab.
+  // Background tabs throttle timers and bfcache restores revive stored state
   // past the TTL, so visibilitychange/pageshow re-check the wall clock and
   // lock immediately when the warmth has already expired.
-  // #VERIFY: ParentalGate.test.tsx TTL-expiry, throttled-tab, and
-  // bfcache-restore re-lock tests (fake timers).
+  // #VERIFY: AdultGate.test.tsx TTL-expiry, throttled-tab, and bfcache-restore
+  // re-lock tests (fake timers).
   useEffect(() => {
     if (phase.kind !== 'unlocked') return
     const user = phase.user
@@ -213,7 +227,7 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
       setPhase({ kind: 'locked', user })
     }
     const lockIfExpired = () => {
-      if (parentalGateRemainingMs(user.userId) <= 0) lockNow()
+      if (adultGateRemainingMs(user.userId) <= 0) lockNow()
     }
     const onVisibilityChange = () => {
       if (document.visibilityState === 'visible') lockIfExpired()
@@ -221,7 +235,7 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     // Already-expired (a race between the state update and this effect) falls
     // through to a zero-delay timeout rather than a synchronous setState in
     // the effect body (react-hooks/set-state-in-effect).
-    const remaining = Math.max(parentalGateRemainingMs(user.userId), 0)
+    const remaining = Math.max(adultGateRemainingMs(user.userId), 0)
     const timer = setTimeout(lockNow, remaining)
     document.addEventListener('visibilitychange', onVisibilityChange)
     window.addEventListener('pageshow', lockIfExpired)
@@ -235,10 +249,13 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
   // #ASSUME: security: signInWithPassword against the CURRENT session user's
   // email is the re-auth primitive (reused from AuthContext, same Supabase
   // client). Success replaces the session with an equivalent fresh one (the
-  // AuthProvider re-resolves /me on the SIGNED_IN event); failure leaves the
-  // existing session untouched, so a wrong password never signs the guardian
-  // out. The password lives only in component state and is cleared on success.
-  // #VERIFY: ParentalGate.test.tsx unlock + wrong-password tests.
+  // AuthProvider re-resolves /me on the SIGNED_IN event, which also warms the
+  // gate independently -- see AuthContext.tsx -- so the explicit warmAdultGate
+  // call here is what makes THIS render transition straight to unlocked
+  // without waiting on that separate effect); failure leaves the existing
+  // session untouched, so a wrong password never signs the guardian out. The
+  // password lives only in component state and is cleared on success.
+  // #VERIFY: AdultGate.test.tsx unlock + wrong-password tests.
   async function submit(event: FormEvent) {
     event.preventDefault()
     // #CRITICAL: concurrency: a second submit while one is in flight (Enter
@@ -247,7 +264,7 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     // against switchAccount() racing a concurrent signOut() against the same
     // Supabase client: without this, a sign-in already in flight could land
     // after the sign-out and undo it.
-    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant submit", "disables
+    // #VERIFY: AdultGate.test.tsx "ignores a re-entrant submit", "disables
     // the Confirm button while a switch-account sign-out is in flight".
     if (submitting) return
     if (switchingAccount) return
@@ -256,7 +273,7 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     setSubmitting(true)
     try {
       await signInWithPassword({ email: phase.user.email, password })
-      warmParentalGate(phase.user.userId)
+      warmAdultGate(phase.user.userId)
       setPassword('')
       setPhase({ kind: 'unlocked', user: phase.user })
     } catch (err) {
@@ -271,9 +288,9 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
   // guardian who needs a different account (a test account, or one whose
   // password identity differs from the signed-in session) has no path
   // forward except signing out and going back through LoginPage, which
-  // supports both Google and password. signOut() also cools the module-level
-  // warm state (AuthContext), so the next sign-in re-challenges as expected.
-  // #VERIFY: ParentalGate.test.tsx "signs out and lets a different account
+  // supports both Google and password. signOut() also clears the warm adult
+  // gate state (AuthContext), so the next sign-in re-challenges as expected.
+  // #VERIFY: AdultGate.test.tsx "signs out and lets a different account
   // sign back in".
   async function switchAccount() {
     // #CRITICAL: concurrency: same re-entrant guard as submit() above (a slow
@@ -282,7 +299,7 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     // the first at worst. Also cross-guards against submit(): without this,
     // signOut() and signInWithPassword() could run concurrently against the
     // same Supabase client, racing which one lands last.
-    // #VERIFY: ParentalGate.test.tsx "ignores a re-entrant switch-account
+    // #VERIFY: AdultGate.test.tsx "ignores a re-entrant switch-account
     // click while one is already in flight", "disables the switch-account
     // link while a password submit is in flight".
     if (switchingAccount) return
@@ -291,14 +308,14 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     setSwitchingAccount(true)
     try {
       await signOut()
-      // No manual navigation: the enclosing ProtectedRoute (router.tsx) reads
-      // the same AuthContext status and redirects to GUARDIAN_LOGIN_PATH once
-      // it flips to 'signed-out', same as GuardianShell's sign-out button.
+      // No manual navigation: AdultGate's own no-session branch (above) fires
+      // once the session change propagates, same as ProtectedRoute would for
+      // any other signed-out visitor.
     } catch (err) {
       // #EDGE: external-resources: signOut rejects when Supabase cannot
       // revoke the session (network down); surface it instead of silently
       // leaving the guardian stuck on a challenge they cannot get past.
-      // #VERIFY: ParentalGate.test.tsx "shows an inline error when sign-out
+      // #VERIFY: AdultGate.test.tsx "shows an inline error when sign-out
       // fails while switching accounts".
       setSwitchAccountError(classifySwitchAccountError(err))
       setSwitchingAccount(false)
@@ -309,7 +326,9 @@ export function ParentalGate({ children }: { children?: ReactNode }) {
     // Deep-link/bookmark entries have no in-app history to pop
     // (location.key === 'default' is the router's first-entry signal), so
     // navigate(-1) would no-op or leave the SPA. Fall back to the guardian
-    // console root, a deterministic in-app destination.
+    // console root, a deterministic in-app destination reachable by both a
+    // guardian and an admin-only adult (ProtectedRoute's allowedRoles admits
+    // the admin capability there too).
     if (location.key === 'default') {
       void navigate(GUARDIAN_CONSOLE_PATH, { replace: true })
     } else {
