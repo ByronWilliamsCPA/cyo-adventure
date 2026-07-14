@@ -5,6 +5,7 @@ import { RouterProvider, createMemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import App from '../App'
+import { setDeviceGrant } from '../auth/deviceGrant'
 import { coolParentalGate, warmParentalGate } from '../auth/parentalGateState'
 import { _resetDbHandle } from '../offline/db'
 import { routes } from '../router'
@@ -118,9 +119,25 @@ beforeEach(() => {
   mockOnAuthStateChange
     .mockReset()
     .mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+  localStorage.clear()
 })
 
 describe('router: kid surface', () => {
+  // ADR-014 Phase 4: the whole kid surface (/kids, /library/*, /read/*) now
+  // sits behind DeviceAuthorizedRoute, so every route in this tree needs a
+  // valid local device grant to render at all. These tests care about what
+  // renders ONCE inside the gate, not the gate itself (that behavioral
+  // matrix lives in auth/DeviceAuthorizedRoute.test.tsx), so grant a
+  // far-future device grant before every render here.
+  beforeEach(() => {
+    setDeviceGrant({
+      token: 'device-tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+  })
+
   it('renders the landing page at /', async () => {
     renderAt('/')
     expect(await screen.findByRole('link', { name: /grown-ups/i })).toHaveAttribute(

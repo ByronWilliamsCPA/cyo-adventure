@@ -1,21 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
+import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
+import { clearDeviceGrant, getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
+import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
 import { useAuth } from '../auth/useAuth'
+import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
 import { ADMIN_CONSOLE_PATH } from '../routes'
+
+/** Local UI status for the authorize-device action; independent of childCount's load. */
+type DeviceActionStatus = 'idle' | 'busy' | 'error'
 
 /**
  * Guardian console home. The safety review queue that used to live here
  * moved to the admin console (AdminConsolePage) when admin functions gained
  * their own surface; this page is now the guardian's family home: an
  * onboarding nudge toward profile creation for a childless family, quick
- * links into the guardian surfaces, and (for an adult who also holds the
- * admin capability) the pointer into the admin console.
+ * links into the guardian surfaces, a device-authorization control (ADR-014
+ * Phase 3), and (for an adult who also holds the admin capability) the
+ * pointer into the admin console.
  */
 export function ConsolePage() {
   const api = useApi()
+  const deviceGrantApi = useMemo(() => makeDeviceGrantApi(api), [api])
   const { principal } = useAuth()
   // An admin-only adult (isAdmin without the guardian base role) has no
   // guardian family surface here: /v1/profiles always resolves to an empty
@@ -34,6 +43,53 @@ export function ConsolePage() {
   // handled by the isAdminOnly branch above, which never fetches at all.
   // #VERIFY: ConsolePage.test.tsx nudge / no-nudge / load-failure / admin-only cases.
   const [childCount, setChildCount] = useState<number | null>(null)
+
+  // Device-authorization control (ADR-014 Phase 3): mints, re-mints, or
+  // forgets a durable device grant so this device's `/kids` surface can read
+  // without a live guardian session. Read directly from localStorage on
+  // mount; this page is guardian-only (a signed-in adult), so it never needs
+  // the async IndexedDB-mirror fallback DeviceAuthorizedRoute uses on the kid
+  // side.
+  const [grant, setGrant] = useState(() => getDeviceGrant())
+  const [deviceStatus, setDeviceStatus] = useState<DeviceActionStatus>('idle')
+
+  async function authorizeDevice() {
+    setDeviceStatus('busy')
+    try {
+      const view = await deviceGrantApi.mint()
+      setDeviceGrant({
+        token: view.token,
+        expiresAt: view.expires_at,
+        familyId: view.family_id,
+        id: view.id,
+      })
+      setGrant(getDeviceGrant())
+      setDeviceStatus('idle')
+    } catch (err) {
+      logApiError('device grant mint failed', err)
+      setDeviceStatus('error')
+    }
+  }
+
+  // #CRITICAL: security: only clear the LOCAL grant after the server confirms
+  // the revoke; if the DELETE fails (network blip, already-revoked-elsewhere),
+  // the button's "removed" claim would otherwise be a lie: the grant record
+  // stays active server-side while this page shows it as gone, and a guardian
+  // who believes it removed would not think to check the device list again.
+  // #VERIFY: ConsolePage.test.tsx "keeps showing the grant when revoke fails".
+  async function removeFromThisDevice() {
+    if (!grant) return
+    setDeviceStatus('busy')
+    try {
+      await deviceGrantApi.revoke(grant.id)
+      clearDeviceGrant()
+      setGrant(null)
+      setDeviceStatus('idle')
+    } catch (err) {
+      logApiError('device grant revoke failed', err)
+      setDeviceStatus('error')
+    }
+  }
 
   useEffect(() => {
     if (isAdminOnly) return
@@ -110,6 +166,55 @@ export function ConsolePage() {
             </li>
           </ul>
         </nav>
+      )}
+      {isAdminOnly ? null : (
+        <section aria-label="Device setup" className="console-device">
+          <h2>This device</h2>
+          {grant ? (
+            <>
+              <p className="console__notice cyo-text-muted">
+                This device is set up for your family; kids can now read here.
+              </p>
+              <div className="console-device__actions">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={deviceStatus === 'busy'}
+                  onClick={() => void authorizeDevice()}
+                >
+                  Re-authorize this device
+                </Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  disabled={deviceStatus === 'busy'}
+                  onClick={() => void removeFromThisDevice()}
+                >
+                  Remove from this device
+                </Button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="console__notice cyo-text-muted">
+                Set up this device so your kids can read here without you signing in every time.
+              </p>
+              <Button
+                variant="primary"
+                size="sm"
+                disabled={deviceStatus === 'busy'}
+                onClick={() => void authorizeDevice()}
+              >
+                Set up this device for your kids
+              </Button>
+            </>
+          )}
+          {deviceStatus === 'error' ? (
+            <p role="alert" className="console-device__error cyo-text-error">
+              That didn&apos;t work. Check your connection and try again.
+            </p>
+          ) : null}
+        </section>
       )}
     </section>
   )

@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import type { ReactNode } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 
+import { DeviceAuthorizedRoute } from './auth/DeviceAuthorizedRoute'
 import { ProtectedRoute } from './auth/ProtectedRoute'
 import {
   AdminConsolePage,
@@ -76,14 +77,24 @@ export const routes = [
       {
         element: suspended(<KidShell />),
         children: [
-          // KID_PICKER_PATH minus its leading slash: React Router child paths
-          // are relative segments, so this ties the picker's URL to the same
-          // constant that LandingPage and ReaderRoute navigate to.
-          { path: KID_PICKER_PATH.slice(1), element: suspended(<ProfilePickerPage />) },
-          { path: 'library/:profileId', element: suspended(<LibraryPage />) },
           {
-            path: 'read/:profileId/:storybookId/:version',
-            element: suspended(<ReaderRoute />),
+            // Device-authorization gate (ADR-014 Phase 4): the whole kid
+            // surface requires a valid local device grant, not just the
+            // picker. Nested inside KidShell so KidShell's chrome still
+            // wraps an authorized render; an unauthorized visitor is
+            // redirected to guardian login before any kid content mounts.
+            element: <DeviceAuthorizedRoute />,
+            children: [
+              // KID_PICKER_PATH minus its leading slash: React Router child
+              // paths are relative segments, so this ties the picker's URL to
+              // the same constant that LandingPage and ReaderRoute navigate to.
+              { path: KID_PICKER_PATH.slice(1), element: suspended(<ProfilePickerPage />) },
+              { path: 'library/:profileId', element: suspended(<LibraryPage />) },
+              {
+                path: 'read/:profileId/:storybookId/:version',
+                element: suspended(<ReaderRoute />),
+              },
+            ],
           },
         ],
       },
