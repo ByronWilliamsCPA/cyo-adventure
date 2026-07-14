@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
@@ -25,8 +25,11 @@ function principal(role: 'guardian' | 'admin', isAdmin = role === 'admin') {
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <ConsolePage />
+    <MemoryRouter initialEntries={['/guardian']}>
+      <Routes>
+        <Route path="/guardian" element={<ConsolePage />} />
+        <Route path="/kids" element={<div>kid picker landing</div>} />
+      </Routes>
     </MemoryRouter>
   )
 }
@@ -207,6 +210,49 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('/v1/device-grants/grant-1'))
     expect(await screen.findByRole('button', { name: /set up this device for your kids/i })).toBeInTheDocument()
     expect(getDeviceGrant()).toBeNull()
+  })
+
+  it('does not offer to hand the device to a child when no grant exists yet', async () => {
+    renderPage()
+    await screen.findByRole('button', { name: /set up this device for your kids/i })
+    expect(
+      screen.queryByRole('button', { name: /hand device to a child/i })
+    ).not.toBeInTheDocument()
+  })
+
+  it('offers to hand the device to a child once a valid grant exists, and navigates to /kids', async () => {
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    renderPage()
+
+    const handButton = await screen.findByRole('button', { name: /hand device to a child/i })
+    await user.click(handButton)
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+  })
+
+  it('does not offer to hand the device to a child when the stored grant is expired', async () => {
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2000-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    renderPage()
+
+    // hasValidDeviceGrant() (unlike the raw getDeviceGrant() read that seeds
+    // this page's `grant` state) checks expiry, so the launch action is
+    // gated out for a dead grant even though the surrounding "This device"
+    // section still reflects the last-known stored grant.
+    await screen.findByText(/kids can now read here/i)
+    expect(
+      screen.queryByRole('button', { name: /hand device to a child/i })
+    ).not.toBeInTheDocument()
   })
 
   it('keeps showing the grant when revoke fails, so the UI never lies about removal', async () => {

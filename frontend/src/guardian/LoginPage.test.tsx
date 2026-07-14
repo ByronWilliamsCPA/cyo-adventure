@@ -5,20 +5,27 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { AuthContextValue } from '../auth/authContext'
+import type { Principal } from '../auth/types'
 import { LoginPage } from './LoginPage'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
 let authStatus: AuthContextValue['status'] = 'signed-out'
 let authErrorValue: AuthContextValue['authError'] = null
+let principalValue: Principal | null = null
+
+function principal(role: 'guardian' | 'admin' | 'child', isAdmin = role === 'admin'): Principal {
+  return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
+}
 
 vi.mock('../auth/useAuth', () => ({
   useAuth: (): Pick<
     AuthContextValue,
-    'status' | 'authError' | 'signInWithOAuth' | 'signInWithPassword' | 'signOut'
+    'status' | 'authError' | 'signInWithOAuth' | 'signInWithPassword' | 'signOut' | 'principal'
   > => ({
     status: authStatus,
     authError: authErrorValue,
+    principal: principalValue,
     signInWithOAuth: mockSignInWithOAuth,
     signInWithPassword: mockSignInWithPassword,
     signOut: vi.fn(),
@@ -33,6 +40,8 @@ function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
         <Route path="/guardian/login" element={<LoginPage />} />
         <Route path="/guardian" element={<div>console landing</div>} />
         <Route path="/guardian/review/:id" element={<div>review landing</div>} />
+        <Route path="/admin" element={<div>admin landing</div>} />
+        <Route path="/admin/moderation-dashboard" element={<div>admin moderation landing</div>} />
       </Routes>
     </MemoryRouter>
   )
@@ -46,6 +55,7 @@ function fillCredentials(email: string, password: string) {
 beforeEach(() => {
   authStatus = 'signed-out'
   authErrorValue = null
+  principalValue = null
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
 })
@@ -145,10 +155,64 @@ describe('LoginPage password form', () => {
     // ProtectedRoute forwards the intended path via location.state.from; a
     // guardian who deep-linked to a review must land there, not on /guardian.
     authStatus = 'signed-in'
+    principalValue = principal('guardian')
     renderLogin([
       { pathname: '/guardian/login', state: { from: { pathname: '/guardian/review/123' } } },
     ])
     expect(screen.getByText('review landing')).toBeInTheDocument()
+  })
+
+  describe('role-based post-login redirect', () => {
+    it('sends a guardian-only principal to the guardian console', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin()
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+    })
+
+    it('sends an admin-only principal to the admin console', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('admin')
+      renderLogin()
+      expect(screen.getByText('admin landing')).toBeInTheDocument()
+    })
+
+    it('sends a dual-role (guardian + admin capability) principal to the guardian console', () => {
+      // Their day-to-day home; the admin console link is one hop away via
+      // GuardianShell's cross-link.
+      authStatus = 'signed-in'
+      principalValue = principal('guardian', true)
+      renderLogin()
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+    })
+
+    it('honors a role-valid state.from over the role-based default', () => {
+      authStatus = 'signed-in'
+      principalValue = principal('admin')
+      renderLogin([
+        {
+          pathname: '/guardian/login',
+          state: { from: { pathname: '/admin/moderation-dashboard' } },
+        },
+      ])
+      expect(screen.getByText('admin moderation landing')).toBeInTheDocument()
+    })
+
+    it('does not honor a state.from path the principal cannot reach, falling back to the default', () => {
+      // A guardian-only principal (no admin capability) cannot reach /admin;
+      // ProtectedRoute would bounce them, so the default is used instead of
+      // handing <Navigate> an unreachable path.
+      authStatus = 'signed-in'
+      principalValue = principal('guardian')
+      renderLogin([
+        {
+          pathname: '/guardian/login',
+          state: { from: { pathname: '/admin/moderation-dashboard' } },
+        },
+      ])
+      expect(screen.getByText('console landing')).toBeInTheDocument()
+      expect(screen.queryByText('admin moderation landing')).not.toBeInTheDocument()
+    })
   })
 })
 

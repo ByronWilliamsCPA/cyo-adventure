@@ -1,14 +1,19 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
 import { EmptyState } from '@ds/components/EmptyState'
-import { clearDeviceGrant, getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
+import {
+  clearDeviceGrant,
+  getDeviceGrant,
+  hasValidDeviceGrant,
+  setDeviceGrant,
+} from '../auth/deviceGrant'
 import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
 import { useAuth } from '../auth/useAuth'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
-import { ADMIN_CONSOLE_PATH } from '../routes'
+import { ADMIN_CONSOLE_PATH, KID_PICKER_PATH } from '../routes'
 
 /** Local UI status for the authorize-device action; independent of childCount's load. */
 type DeviceActionStatus = 'idle' | 'busy' | 'error'
@@ -24,6 +29,7 @@ type DeviceActionStatus = 'idle' | 'busy' | 'error'
  */
 export function ConsolePage() {
   const api = useApi()
+  const navigate = useNavigate()
   const deviceGrantApi = useMemo(() => makeDeviceGrantApi(api), [api])
   const { principal } = useAuth()
   // An admin-only adult (isAdmin without the guardian base role) has no
@@ -176,6 +182,22 @@ export function ConsolePage() {
                 This device is set up for your family; kids can now read here.
               </p>
               <div className="console-device__actions">
+                {hasValidDeviceGrant() ? (
+                  // The launch affordance itself carries no authorization; it
+                  // only navigates. hasValidDeviceGrant() is the same local,
+                  // client-side pre-check DeviceAuthorizedRoute uses to gate
+                  // `/kids` (auth/deviceGrant.ts), so this button is never
+                  // shown when that gate would immediately bounce the child
+                  // back to guardian login.
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    disabled={deviceStatus === 'busy'}
+                    onClick={() => void navigate(KID_PICKER_PATH)}
+                  >
+                    Hand device to a child
+                  </Button>
+                ) : null}
                 <Button
                   variant="ghost"
                   size="sm"

@@ -2,10 +2,36 @@ import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 
+import type { Principal } from '../auth/types'
 import { useAuth } from '../auth/useAuth'
 import { flagEnabled } from '../env'
 import { ADMIN_CONSOLE_PATH, GUARDIAN_CONSOLE_PATH } from '../routes'
 import './guardian.css'
+
+/**
+ * Whether `pathname` is a location `principal` can actually land on, mirroring
+ * router.tsx's ProtectedRoute allowedRoles config: `/admin/*` requires the
+ * admin CAPABILITY; `/guardian/*` admits either the guardian base role or the
+ * admin capability (an admin-only adult who deep-links into /guardian is not
+ * bounced there, per router.tsx's comment on that route). Anything outside
+ * the adult subtree is treated as reachable; ProtectedRoute is the real
+ * enforcement boundary, this only picks a sane post-login destination so we
+ * do not hand a `from` to `<Navigate>` that ProtectedRoute would reject.
+ *
+ * #ASSUME: security: this duplicates ProtectedRoute's allowedRoles logic
+ * instead of importing it (ProtectedRoute is a component, not an exported
+ * predicate). A drift between the two would only misroute the post-login
+ * landing spot; ProtectedRoute still independently enforces access.
+ * #VERIFY: LoginPage.test.tsx "does not honor a from path the principal
+ * cannot reach".
+ */
+function isReachableForPrincipal(pathname: string, principal: Principal): boolean {
+  if (pathname.startsWith(ADMIN_CONSOLE_PATH)) return principal.isAdmin
+  if (pathname.startsWith(GUARDIAN_CONSOLE_PATH)) {
+    return principal.role === 'guardian' || principal.isAdmin
+  }
+  return true
+}
 
 /**
  * Distinguishes a genuine bad-credentials failure from an operational one
@@ -38,10 +64,18 @@ export function LoginPage() {
   const state = location.state as { from?: { pathname?: string } } | null
   // An admin-only adult (base role 'admin', no family guardianship) lands on
   // the admin console; everyone else (guardian, dual-role) starts at the
-  // guardian console. An explicit `from` (the page that bounced them here)
-  // always wins over either default.
+  // guardian console, their day-to-day home (the admin link is one hop away
+  // via GuardianShell). The role-based default is resolved BEFORE
+  // considering `from`, so a `from` that is unreachable for this principal
+  // (e.g. a stale deep link into a subtree they no longer/never held) falls
+  // back to the default instead of handing <Navigate> a path ProtectedRoute
+  // would reject.
   const home = principal?.role === 'admin' ? ADMIN_CONSOLE_PATH : GUARDIAN_CONSOLE_PATH
-  const from = state?.from?.pathname ?? home
+  const requestedFrom = state?.from?.pathname
+  const from =
+    requestedFrom && principal && isReachableForPrincipal(requestedFrom, principal)
+      ? requestedFrom
+      : home
 
   // Apple sign-in is hidden until it is actually configured in Supabase (it
   // needs a paid Apple Developer account and a signed, expiring client secret).
