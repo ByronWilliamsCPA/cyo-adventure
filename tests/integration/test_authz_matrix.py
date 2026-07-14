@@ -73,7 +73,7 @@ import pytest
 
 from cyo_adventure.api.deps import Role
 from cyo_adventure.app import app
-from tests.integration.conftest import Seed, Stranger, auth
+from tests.integration.conftest import Seed, Stranger, auth, mint_device_token
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -1038,3 +1038,120 @@ async def test_profile_list_excludes_other_families(
     assert str(seed.other_child_profile_id) not in ids
     assert str(stranger.child_profile_id) not in ids
     assert str(seed.child_profile_id) in ids
+
+
+# ---------------------------------------------------------------------------
+# ADR-014 phase 2: DEVICE principal allowlist (#CRITICAL security invariant)
+# ---------------------------------------------------------------------------
+#
+# ``Role.DEVICE`` is deliberately excluded from ``ALL_ROLES`` (see the module
+# docstring's ``device_grants.py`` note): a device grant is not a login and
+# has no seed-owned dev-stub token, so it cannot ride the parametrized
+# ``_TOKEN_BY_ROLE`` machinery above. It is instead exercised here with a
+# REAL, minted device grant JWT (``mint_device_token``, the same mechanism a
+# guardian uses in production), against a representative sample spanning
+# every admin-only, guardian-only, and guardian-or-admin gate shape in
+# ROUTE_TABLE, plus the two endpoints ADR-014 explicitly widens to accept a
+# device principal. ADR-014's own "Negative / risks" section calls this out
+# by name: "#VERIFY: every guardian/admin endpoint is tested for 403 with a
+# device token, and the mint/profiles endpoints are tested for correct
+# family scoping" (the family-scoping half is covered in
+# test_child_sessions.py and test_profiles.py; this section covers the
+# universal-403-elsewhere half).
+
+_DEVICE_REJECTED_ROUTE_KEYS: list[tuple[str, str]] = [
+    # admin-only
+    ("GET", "/api/v1/admin/families"),
+    ("GET", "/api/v1/admin/moderation-thresholds"),
+    ("GET", "/api/v1/admin/moderation/dashboard"),
+    ("GET", "/api/v1/admin/provider-allowlist"),
+    ("GET", "/api/v1/review-queue"),
+    ("POST", "/api/v1/storybooks/{storybook_id}/approve"),
+    # guardian-only
+    ("POST", "/api/v1/concepts"),
+    ("GET", "/api/v1/guardian/books"),
+    ("POST", "/api/v1/profiles"),
+    ("PATCH", "/api/v1/profiles/{profile_id}"),
+    ("POST", "/api/v1/storybooks/{storybook_id}/assignments"),
+    # guardian-or-admin
+    ("POST", "/api/v1/story-requests/authored"),
+    ("POST", "/api/v1/child-sessions"),
+    ("POST", "/api/v1/device-grants"),
+    ("GET", "/api/v1/device-grants"),
+    ("DELETE", "/api/v1/device-grants/{grant_id}"),
+]
+
+# Every key above must be a real ROUTE_TABLE entry that does NOT admit
+# DEVICE, so this section fails loudly instead of silently skipping a route
+# that got renamed, removed, or had its role gate changed. The
+# /api/v1/child-sessions entry is deliberately included with a note: it is
+# a MIXED route (device is allowed for its OWN family; the rejection this
+# sweep proves is for a body naming a DIFFERENT family's profile, which is
+# exactly what `_child_session_body` resolves against `seed`'s family A).
+assert all(key in ROUTE_TABLE for key in _DEVICE_REJECTED_ROUTE_KEYS), (
+    "a _DEVICE_REJECTED_ROUTE_KEYS entry is missing from ROUTE_TABLE"
+)
+
+_DEVICE_REJECTED_IDS = [
+    f"{method} {path}" for method, path in _DEVICE_REJECTED_ROUTE_KEYS
+]
+
+
+@pytest.mark.parametrize(
+    ("method", "path_template"), _DEVICE_REJECTED_ROUTE_KEYS, ids=_DEVICE_REJECTED_IDS
+)
+async def test_device_token_rejected_on_guardian_and_admin_endpoints(
+    client: AsyncClient, seed: Seed, stranger: Stranger, method: str, path_template: str
+) -> None:
+    """A device grant token is exactly 403 on a representative admin/guardian sweep.
+
+    Parametrized (one request per test, like the role matrix above) rather
+    than looped in a single test: the app's per-IP burst limiter
+    (``RateLimitMiddleware``, 10 req/s) would otherwise 429 partway through a
+    15-route loop sharing one client, and the ``client`` fixture resets the
+    limiter's bucket per test invocation anyway. Every route below is either
+    role-gated (``is_guardian``/``is_admin``, checked before any database row
+    is loaded) or, for ``POST /api/v1/child-sessions``, targets a profile
+    OUTSIDE the minted grant's own family (``stranger.child_profile_id``), so
+    the family-scoping check added in ADR-014 phase 2 is what rejects it, not
+    the role gate. A device token must never pass either kind of check.
+    """
+    spec = ROUTE_TABLE[(method, path_template)]
+    url, query, body = spec.resolve(seed)
+    if path_template == "/api/v1/child-sessions":
+        body = {"profile_id": str(stranger.child_profile_id)}
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.request(
+        method, url, params=query, json=body, headers=auth(device_token)
+    )
+    assert resp.status_code == 403, (
+        f"{method} {path_template} expected 403 for a device grant token, "
+        f"got {resp.status_code}: {resp.text}"
+    )
+
+
+async def test_device_token_allowed_on_child_session_mint(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant mints a child session for its own family's profile.
+
+    The other half of ADR-014's allowlist: the exact two endpoints a device
+    principal MAY reach, positively confirmed here (both a 201 mint and a
+    200 profile list), complementing the universal-403 sweep above.
+    """
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.post(
+        "/api/v1/child-sessions",
+        json={"profile_id": str(seed.child_profile_id)},
+        headers=auth(device_token),
+    )
+    assert resp.status_code == 201, resp.text
+
+
+async def test_device_token_allowed_on_profiles_list(
+    client: AsyncClient, seed: Seed
+) -> None:
+    """A device grant lists its own family's profiles (200, not 403)."""
+    device_token = await mint_device_token(client, seed.guardian_token)
+    resp = await client.get("/api/v1/profiles", headers=auth(device_token))
+    assert resp.status_code == 200, resp.text

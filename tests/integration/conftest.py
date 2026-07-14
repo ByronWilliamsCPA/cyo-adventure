@@ -339,6 +339,33 @@ def auth(token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {token}"}
 
 
+async def mint_device_token(client: AsyncClient, guardian_token: str) -> str:
+    """Mint a device grant for a guardian's family and return the raw JWT.
+
+    Shared helper (ADR-014 phase 2) for every module that needs a live
+    ``DEVICE`` principal token: the child-session-mint, profiles-list, and
+    authz-matrix suites exercising the two endpoints a device grant may
+    reach, mirroring ``test_device_grants.py``'s own round-trip tests.
+
+    Args:
+        client: The HTTP client fixture.
+        guardian_token: The minting guardian's dev-stub token; the resulting
+            device grant is scoped to that guardian's own family.
+
+    Returns:
+        str: The signed device grant JWT (``cyo-device-grant`` audience).
+    """
+    resp = await client.post(
+        "/api/v1/device-grants",
+        json={},
+        headers=auth(guardian_token),
+    )
+    assert resp.status_code == 201, resp.text
+    token = resp.json()["token"]
+    assert isinstance(token, str)
+    return token
+
+
 @dataclass(frozen=True)
 class Stranger:
     """Identifiers and tokens for a third family with zero ties to A or B.
