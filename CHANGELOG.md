@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-14
+
 ### Added
 - Device-authorized kid access (ADR-014). The kid surface (`/kids`,
   `/library/*`, `/read/*`) is now gated by a per-device grant instead of an
@@ -1626,7 +1628,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Safety dependency vulnerability scanning
 - Pre-commit hooks for security validation
 
-[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/ByronWilliamsCPA/cyo-adventure/releases/tag/v0.1.0
