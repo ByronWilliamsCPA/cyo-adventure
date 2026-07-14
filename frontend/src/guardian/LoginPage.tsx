@@ -1,11 +1,21 @@
 import { isAuthApiError } from '@supabase/supabase-js'
 import { useEffect, useState } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 
+import { hasValidDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
+import { makeDeviceGrantApi } from '../auth/deviceGrantApi'
 import type { Principal } from '../auth/types'
 import { useAuth } from '../auth/useAuth'
 import { flagEnabled } from '../env'
-import { ADMIN_CONSOLE_PATH, GUARDIAN_CONSOLE_PATH } from '../routes'
+import { logApiError } from '../hooks/logApiError'
+import { useApi } from '../hooks/useApi'
+import {
+  ADMIN_CONSOLE_PATH,
+  AUTHORIZE_DEVICE_INTENT_PARAM,
+  AUTHORIZE_DEVICE_INTENT_VALUE,
+  GUARDIAN_CONSOLE_PATH,
+  KID_PICKER_PATH,
+} from '../routes'
 import './guardian.css'
 
 /**
@@ -60,8 +70,19 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
   const location = useLocation()
+  const navigate = useNavigate()
+  const api = useApi()
   const state = location.state as { from?: { pathname?: string } } | null
+  // ADR-014 section 5: the Kids door sends a signed-out visitor here with
+  // ?intent=authorize-device when this device has no valid device grant. Once
+  // that guardian resolves to a signed-in principal, the effect below mints a
+  // grant for THIS device instead of following the normal role-based redirect,
+  // then drops the guardian back to the kid picker they came from.
+  const authorizeDeviceIntent =
+    new URLSearchParams(location.search).get(AUTHORIZE_DEVICE_INTENT_PARAM) ===
+    AUTHORIZE_DEVICE_INTENT_VALUE
   // An admin-only adult (base role 'admin', no family guardianship) lands on
   // the admin console; everyone else (guardian, dual-role) starts at the
   // guardian console, their day-to-day home (the admin link is one hop away
@@ -87,6 +108,51 @@ export function LoginPage() {
   useEffect(() => {
     document.title = 'Sign in - CYO Adventure'
   }, [])
+
+  // ADR-014 section 5: authorize-then-return. Gated on a RESOLVED principal
+  // (not just a Supabase session) so this never races AuthProvider's /me
+  // lookup; `status === 'signed-in'` only flips once a Principal exists.
+  //
+  // #CRITICAL: security: minting a device grant requires a guardian/admin
+  // bearer, but an admin-only adult with no family (base role 'admin', no
+  // guardian capability) will get a mint REJECTION from the backend (no
+  // family to scope the grant to). That failure MUST fall through to
+  // 'failed' so the guardian still lands on their own console via the normal
+  // <Navigate to={from}> below, never a crash or a stuck spinner.
+  // #VERIFY: LoginPage.test.tsx "falls back to the normal redirect when the
+  // mint is rejected (e.g. admin-only, no family)".
+  useEffect(() => {
+    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal) return
+    if (hasValidDeviceGrant()) {
+      // Defensive: a grant already covers this device (e.g. a second tab
+      // completed the mint first); nothing to do but continue the flow.
+      void navigate(KID_PICKER_PATH, { replace: true })
+      return
+    }
+    let cancelled = false
+    async function authorizeThisDevice() {
+      setDeviceAuthState('authorizing')
+      try {
+        const view = await makeDeviceGrantApi(api).mint()
+        if (cancelled) return
+        setDeviceGrant({
+          token: view.token,
+          expiresAt: view.expires_at,
+          familyId: view.family_id,
+          id: view.id,
+        })
+        void navigate(KID_PICKER_PATH, { replace: true })
+      } catch (err) {
+        if (cancelled) return
+        logApiError('device grant mint failed', err)
+        setDeviceAuthState('failed')
+      }
+    }
+    void authorizeThisDevice()
+    return () => {
+      cancelled = true
+    }
+  }, [authorizeDeviceIntent, status, principal, api, navigate])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the
@@ -138,6 +204,18 @@ export function LoginPage() {
   }
 
   if (status === 'signed-in') {
+    // While the device-authorization mint is in flight, hold here instead of
+    // firing the normal redirect; the effect above navigates to the kid
+    // picker on success. On failure (deviceAuthState === 'failed') fall
+    // through to the normal redirect so the guardian still lands somewhere
+    // useful and can authorize the device manually from their console.
+    if (authorizeDeviceIntent && deviceAuthState !== 'failed') {
+      return (
+        <div role="status" aria-live="polite">
+          Setting up this device...
+        </div>
+      )
+    }
     return <Navigate to={from} replace />
   }
 

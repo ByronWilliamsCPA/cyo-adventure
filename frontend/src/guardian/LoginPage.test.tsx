@@ -5,6 +5,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { AuthContextValue } from '../auth/authContext'
+import { getDeviceGrant, setDeviceGrant } from '../auth/deviceGrant'
 import type { Principal } from '../auth/types'
 import { LoginPage } from './LoginPage'
 
@@ -32,6 +33,15 @@ vi.mock('../auth/useAuth', () => ({
   }),
 }))
 
+// The device-authorization mint (ADR-014 section 5) goes through useApi's
+// axios instance; mocking it here (same pattern as ConsolePage.test.tsx) lets
+// each test control the mint's success/failure without a real HTTP call.
+const mockPost = vi.fn()
+const fakeApi = { post: mockPost }
+vi.mock('../hooks/useApi', () => ({
+  useApi: () => fakeApi,
+}))
+
 /** Renders the login page plus stand-in targets so a redirect is observable. */
 function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
   return render(
@@ -42,6 +52,7 @@ function renderLogin(initialEntries: InitialEntry[] = ['/guardian/login']) {
         <Route path="/guardian/review/:id" element={<div>review landing</div>} />
         <Route path="/admin" element={<div>admin landing</div>} />
         <Route path="/admin/moderation-dashboard" element={<div>admin moderation landing</div>} />
+        <Route path="/kids" element={<div>kid picker landing</div>} />
       </Routes>
     </MemoryRouter>
   )
@@ -58,6 +69,8 @@ beforeEach(() => {
   principalValue = null
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
+  mockPost.mockReset()
+  localStorage.clear()
 })
 
 describe('LoginPage password form', () => {
@@ -243,5 +256,88 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/sign-in didn't start/i)
+  })
+})
+
+describe('LoginPage authorize-device intent (ADR-014 section 5)', () => {
+  const mintResponse = {
+    data: { id: 'grant-1', token: 'tok-1', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+  }
+
+  it('mints a device grant and drops to the kid picker when no grant exists yet', async () => {
+    mockPost.mockResolvedValue(mintResponse)
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(mockPost).toHaveBeenCalledTimes(1)
+    expect(mockPost).toHaveBeenCalledWith('/v1/device-grants', undefined)
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    // Not the normal role-based redirect target.
+    expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+  })
+
+  it('falls back to the normal redirect when the mint is rejected (e.g. admin-only, no family)', async () => {
+    // #VERIFY (LoginPage.tsx #CRITICAL): an admin-only adult with no family
+    // gets a mint rejection from the backend; this must not crash and must
+    // still land the guardian somewhere useful.
+    mockPost.mockRejectedValue(new Error('no family to authorize a device for'))
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('console landing')).toBeInTheDocument()
+    expect(getDeviceGrant()).toBeNull()
+    expect(screen.queryByText('kid picker landing')).not.toBeInTheDocument()
+  })
+
+  it('navigates straight to the kid picker without minting when a valid grant already exists', async () => {
+    setDeviceGrant({
+      token: 'existing-tok',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'existing-grant',
+    })
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('ignores the intent and uses the normal role-based redirect when absent', async () => {
+    mockPost.mockResolvedValue(mintResponse)
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login'])
+
+    expect(await screen.findByText('console landing')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('shows a "setting up this device" status while the mint is in flight', async () => {
+    let resolveMint: (value: typeof mintResponse) => void = () => {}
+    mockPost.mockReturnValue(
+      new Promise((resolve) => {
+        resolveMint = resolve
+      })
+    )
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByRole('status')).toHaveTextContent(/setting up this device/i)
+    expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+    expect(screen.queryByText('kid picker landing')).not.toBeInTheDocument()
+
+    resolveMint(mintResponse)
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
   })
 })
