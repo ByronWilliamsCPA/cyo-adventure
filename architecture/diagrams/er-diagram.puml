@@ -1,6 +1,6 @@
 @startuml er-diagram
 ' ============================================================
-' Entity-Relationship Diagram: 19 ORM Tables
+' Entity-Relationship Diagram: 9 of 20 ORM Tables (partial; see note below)
 ' CYO Adventure
 '
 ' Source file:
@@ -11,18 +11,21 @@
 ' backed by a CHECK constraint (simple Alembic migrations; the closed
 ' vocabulary is enforced at rest as well as at the application boundary).
 '
-' Ten tables added since the original 9-table model (WS-A..WS-G, PRs
-' #141-#192): series (WS-B PR3, series/continuation chaining), rating
-' (family-sharing), storybook_assignment (guardian read-gate), story_request
-' (child-initiated request lifecycle), moderation_threshold +
+' STALENESS NOTE (2026-07-13): this diagram still shows only the original
+' 9-table model plus device_grant (ADR-014, added here as a targeted update).
+' Ten other tables documented in docs/architecture/data-model.md are still
+' missing from this diagram: series (WS-B PR3, series/continuation chaining),
+' rating (family-sharing), storybook_assignment (guardian read-gate),
+' story_request (child-initiated request lifecycle), moderation_threshold +
 ' moderation_threshold_audit (WS-A per-band/category overrides),
 ' moderation_setting (WS-A admin noise-floor scalar), pipeline_event
 ' (WS-D append-only lifecycle log), provider_model_allowlist +
 ' provider_model_allowlist_audit (WS-C admin-editable model allowlist).
-' storybook/storybook_version/generation_job also gained columns since the
-' original diagram (visibility, series_id, book_index, provider,
-' skeleton_slug, cover_image_url, cover_status, authoring_metadata); see
-' docs/architecture/data-model.md for the full column dictionary.
+' storybook/storybook_version/generation_job also carry columns not yet drawn
+' here (visibility, series_id, book_index, provider, skeleton_slug,
+' cover_image_url, cover_status, authoring_metadata); see
+' docs/architecture/data-model.md for the full, authoritative column
+' dictionary until this diagram is brought current.
 ' ============================================================
 
 skinparam defaultFontName "Roboto"
@@ -258,6 +261,17 @@ entity "provider_model_allowlist_audit" as provider_model_allowlist_audit #D1C4E
   append-only (no update/delete path)
 }
 
+entity "device_grant" as device_grant #B3E5FC {
+  * id : UUID <<PK>>
+  --
+  * family_id : UUID <<FK family.id>>
+  * authorized_by : UUID <<FK user.id>>
+  label : VARCHAR(120) NULL [guardian-facing device name]
+  jti : UUID <<UNIQUE>> [revocation lookup key]
+  created_at : TIMESTAMPTZ
+  revoked_at : TIMESTAMPTZ NULL [set, not deleted, on revoke]
+}
+
 entity "generation_job" as generation_job #FFEBEE {
   * id : UUID <<PK>>
   --
@@ -284,6 +298,7 @@ family ||--o{ storybook : "1 family\nhas many storybooks"
 family ||--o{ concept : "1 family\nhas many concepts"
 family ||--o{ series : "1 family\nhas many series"
 family ||--o{ story_request : "1 family\nhas many requests"
+family ||--o{ device_grant : "1 family\nhas many device grants\n(ADR-014)"
 user_t }o--o| child_profile : "child user\nassigned to 1 profile\n(NULL for guardians and admins)"
 series ||--o{ storybook : "1 series\nhas many books\n(book_index order)"
 series ||--o{ story_request : "continuation target\n(anchored requests)"
@@ -301,6 +316,7 @@ child_profile ||--o{ storybook_assignment : "1 profile\nmany assignments"
 child_profile ||--o{ story_request : "1 profile\nmany requests\n(NULL = profile-less)"
 concept ||--o{ generation_job : "1 concept\nmany job attempts"
 concept |o--o| story_request : "created on approval\n(concept_id)"
+user_t ||--o{ device_grant : "authorized_by\n1 guardian mints\nmany device grants"
 
 note bottom of generation_job
   storybook_id is NOT a foreign key.
@@ -334,6 +350,17 @@ note bottom of user_t
   provider_model_allowlist.created_by/updated_by,
   provider_model_allowlist_audit.changed_by (NOT NULL),
   pipeline_event.actor_id (NULL iff actor_role='system').
+end note
+
+note bottom of device_grant
+  ADR-014: a guardian-minted, durable (90-day,
+  revocable) family-scoped authorization. The
+  signed token (HS256, aud cyo-device-grant) is
+  never stored; only its jti and mint metadata
+  are. jti is UNIQUE so the revocation lookup
+  (checked online only) is unambiguous.
+  Table name is singular (device_grant); the
+  REST surface is plural (/v1/device-grants).
 end note
 
 note bottom of pipeline_event

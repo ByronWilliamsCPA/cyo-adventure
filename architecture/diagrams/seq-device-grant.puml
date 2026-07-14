@@ -1,0 +1,141 @@
+@startuml seq-device-grant
+' ============================================================
+' Sequence Diagram: Device Grant Mint, Verify, and Revoke (ADR-014)
+' Three tokens, three lifetimes, three scopes:
+'   - Supabase JWT: "a grown-up is present now" (short, RS256/ES256, JWKS)
+'   - Device grant (this diagram): "this device is authorized for the
+'     family" (90 days, revocable, HS256, aud cyo-device-grant)
+'   - Child session: "this profile is reading" (12h, no refresh, HS256)
+'
+' Source files:
+'   src/cyo_adventure/core/device_grant.py       (mint_device_grant_token,
+'                                                  verify_device_grant_token)
+'   src/cyo_adventure/api/device_grants.py        (POST/GET/DELETE /device-grants)
+'   src/cyo_adventure/api/deps.py                 (Role.DEVICE routing branch,
+'                                                  _device_principal)
+'   src/cyo_adventure/api/child_sessions.py        (accepts a device principal
+'                                                  as an additional authority)
+'   src/cyo_adventure/api/profiles.py              (GET /profiles accepts a
+'                                                  device principal, family-scoped)
+'   frontend/src/auth/deviceGrant.ts               (local storage + IndexedDB
+'                                                  mirror, hasValidDeviceGrant,
+'                                                  hydrateDeviceGrant)
+'   frontend/src/auth/DeviceAuthorizedRoute.tsx    (kid-tree gate: local check,
+'                                                  no useAuth, Supabase-free)
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam sequenceMessageAlign center
+
+actor "Guardian" as guardian
+participant "LoginPage\nguardian/LoginPage.tsx" as login_page
+participant "deviceGrant.ts\n(local storage +\nIndexedDB mirror)" as device_grant_client
+participant "DeviceGrantApi\n(Generated Client)\nfrontend/src/client/" as api_client
+participant "device_grants.py\nPOST/GET/DELETE\n/api/v1/device-grants" as device_grants_router
+participant "core/device_grant.py\nmint/verify HS256\naud=cyo-device-grant" as device_grant_core
+database "device_grant table\n(jti UNIQUE, revoked_at)" as db
+
+' ========== Mint: guardian authorizes a device ==========
+note over guardian,db: Mint - a guardian authorizes THIS device for their family
+
+guardian -> login_page : "sign in\n(?intent=authorize-device)"
+login_page -> api_client : "mint()"
+api_client -> device_grants_router : "POST /device-grants\n[guardian/admin Supabase bearer]"
+device_grants_router -> device_grants_router : "check: is_guardian or is_admin\n(else 403)"
+device_grants_router -> device_grants_router : "jti = uuid4()"
+device_grants_router -> device_grant_core : "mint_device_grant_token(\n  family_id, authorized_by, jti)"
+device_grant_core --> device_grants_router : "(token, expires_at)\nHS256, aud=cyo-device-grant, 90d"
+device_grants_router -> db : "INSERT device_grant\n(id, family_id, authorized_by,\n label, jti, created_at)"
+db --> device_grants_router : "OK"
+device_grants_router --> api_client : "201 {id, token, expires_at,\nfamily_id, authorized_by}\n(token returned ONLY here)"
+api_client --> login_page : "DeviceGrantView"
+login_page -> device_grant_client : "setDeviceGrant({token, expiresAt,\nfamilyId, id})"
+device_grant_client --> login_page : "stored (localStorage +\nIndexedDB mirror)"
+login_page -> guardian : "redirect to /kids"
+
+' ========== Local check: every kid-surface page load ==========
+note over guardian,db: Verify (local) - every kid-tree page load, NO network round-trip
+
+participant "DeviceAuthorizedRoute\nauth/DeviceAuthorizedRoute.tsx" as gate
+actor "Child Reader" as child
+
+child -> gate : "navigate to /kids, /library/..., or /read/..."
+gate -> device_grant_client : "hasValidDeviceGrant()"
+device_grant_client -> device_grant_client : "decode exp / family_id\nlocally, ROUTING ONLY\n(no signature check here)"
+device_grant_client --> gate : "true | false"
+alt "valid (unexpired, present)"
+  gate -> child : "render the kid surface"
+else "missing or expired"
+  gate -> child : "redirect to\n/guardian/login?intent=authorize-device"
+end
+
+' ========== Online use: the grant as a bearer ==========
+note over guardian,db: Verify (server) - the grant used as authority, revocation checked
+
+participant "ProfilePickerPage" as picker
+participant "api/deps.py\n_device_principal()" as deps
+participant "profiles.py\nGET /profiles" as profiles_router
+participant "child_sessions.py\nPOST /child-sessions" as child_sessions_router
+
+child -> picker : "open picker"
+picker -> api_client : "GET /profiles\n[device grant bearer]"
+api_client -> profiles_router : "GET /profiles"
+profiles_router -> deps : "require_principal(token)"
+deps -> deps : "aud == cyo-device-grant\n-> _device_principal()"
+deps -> device_grant_core : "verify_device_grant_token(token)"
+device_grant_core --> deps : "DeviceGrantClaims\n(family_id, authorized_by, jti)\n[signature + exp verified;\nrevocation NOT checked here]"
+deps --> profiles_router : "Principal(role=DEVICE,\nfamily_id, profile_ids={})"
+profiles_router -> db : "SELECT child_profile\nWHERE family_id = :family_id"
+db --> profiles_router : "[profiles]"
+profiles_router --> api_client : "200 [ProfileListView]\n(family-scoped, never cross-family)"
+api_client --> picker : "profiles"
+
+child -> picker : "tap avatar + enter PIN"
+picker -> api_client : "POST /child-sessions\n[device grant bearer, profile_id, pin]"
+api_client -> child_sessions_router : "POST /child-sessions"
+child_sessions_router -> deps : "require_principal(token)\n-> Principal(role=DEVICE, ...)"
+deps --> child_sessions_router : "Principal(role=DEVICE)"
+child_sessions_router -> child_sessions_router : "check: principal.family_id owns\nthe target profile; verify PIN\n(per-profile enforcement unchanged)"
+child_sessions_router --> api_client : "201 child session token\n(HS256, aud=cyo-child-session, 12h)"
+api_client --> picker : "child session stored;\nchild starts reading"
+
+' ========== Revoke ==========
+note over guardian,db: Revoke - a guardian removes a lost or retired device
+
+guardian -> login_page : "open device list\n(/guardian console)"
+login_page -> api_client : "GET /device-grants"
+api_client -> device_grants_router : "GET /device-grants\n[guardian/admin bearer]"
+device_grants_router -> db : "SELECT * WHERE family_id = :own\nAND revoked_at IS NULL"
+db --> device_grants_router : "[active grants]"
+device_grants_router --> api_client : "200 [DeviceGrantListItem]\n(never includes the token)"
+guardian -> login_page : "tap Revoke on one device"
+login_page -> api_client : "revoke(grant_id)"
+api_client -> device_grants_router : "DELETE /device-grants/{id}\n[guardian/admin bearer]"
+device_grants_router -> db : "UPDATE device_grant\nSET revoked_at = now()\nWHERE id AND family_id = :own"
+db --> device_grants_router : "OK (404 if wrong family or missing)"
+device_grants_router --> api_client : "204 No Content"
+
+note over deps,db
+  Revocation is enforced ONLINE ONLY: a
+  device-grant-bearing request that reaches
+  the server re-checks device_grant.revoked_at
+  for the token's jti before it is trusted as
+  an authority (child-session mint, profile
+  list). An already-offline device cannot see
+  a revocation until it reconnects; this is an
+  accepted limitation bounded by the 90-day
+  grant TTL (ADR-014, "Negative / risks").
+end note
+
+legend bottom
+  Three tokens, three lifetimes, three scopes (ADR-014):
+  |= Token |= Means |= Lifetime |= Signing |= Audience |= Scope |
+  | Supabase JWT | a grown-up is present now | short, auto-refresh | RS256/ES256 (JWKS) | authenticated | full guardian/admin per role |
+  | Device grant | a grown-up authorized this device for their family | 90 days, revocable | HS256 | cyo-device-grant | list family profiles + mint child sessions, nothing else |
+  | Child session | this profile is reading | 12 hours, no refresh | HS256 | cyo-child-session | one profile's library/reading |
+endlegend
+
+@enduml

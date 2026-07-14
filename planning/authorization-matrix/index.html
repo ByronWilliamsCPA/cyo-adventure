@@ -2628,6 +2628,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#device-principal-adr-014" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device principal (ADR-014)
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2716,7 +2727,7 @@
 
 <h1 id="authorization-matrix">Authorization Matrix<a class="headerlink" href="#authorization-matrix" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.4 | <strong>Updated</strong>: 2026-07-12</p>
+<p><strong>Status</strong>: Active | <strong>Version</strong>: 0.5 | <strong>Updated</strong>: 2026-07-13</p>
 </blockquote>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>Authorization is enforced server-side on every endpoint. The Supabase OIDC (ADR-009)
@@ -2748,11 +2759,32 @@ scope widening of an everyday list.</p>
 <code>actor_role</code> record the role that authorized the action: admin-gated endpoints stamp
 <code>admin</code>, and cross-family actions by a dual-role adult stamp <code>admin</code>
 (<code>Principal.acting_role</code>), while own-family actions stamp the guardian base role.</p>
+<h3 id="device-principal-adr-014">Device principal (ADR-014)<a class="headerlink" href="#device-principal-adr-014" title="Permanent link">&para;</a></h3>
+<p>A fourth base role, <code>Role.DEVICE</code>, represents a durable, family-scoped device
+grant rather than a login: a guardian mints it once per shared device
+(<code>POST /v1/device-grants</code>), and the resulting HS256 token (audience
+<code>cyo-device-grant</code>, 90-day expiry) lets that device act on behalf of its
+family without a live guardian Supabase session. <code>Principal.__post_init__</code>
+force-clears <code>is_admin</code> for <code>Role.DEVICE</code> (it can never hold the admin
+capability) and the principal carries an empty <code>profile_ids</code> (it is scoped
+to no individual profile). It is allowlisted to exactly two endpoints:</p>
+<ul>
+<li><code>POST /v1/child-sessions</code>: mint a child session for a profile in the
+  grant's own family (per-profile PIN enforcement is unchanged).</li>
+<li><code>GET /v1/profiles</code>: list the grant's own family's profiles (for the kid
+  picker), family-scoped, never cross-family.</li>
+</ul>
+<p>Every other endpoint, including the device grant's own management endpoints
+(<code>POST</code>/<code>GET</code>/<code>DELETE /v1/device-grants</code>), refuses a device token with 403;
+device-grant management itself remains guardian/admin-only. See ADR-014 for
+the full three-token model (Supabase JWT, device grant, child session).</p>
 <hr />
 <h2 id="action-by-role-table">Action-by-Role Table<a class="headerlink" href="#action-by-role-table" title="Permanent link">&para;</a></h2>
 <p>Roles below are the base personas; a dual-role adult (guardian base role plus the
 admin capability) receives the union of the Admin and Guardian columns, with list
-surfaces staying family-scoped as described above.</p>
+surfaces staying family-scoped as described above. The Device column (ADR-014)
+is included only where it is reachable at all; every action not listed for
+Device is a flat 403.</p>
 <table>
 <thead>
 <tr>
@@ -2760,6 +2792,7 @@ surfaces staying family-scoped as described above.</p>
 <th>Admin</th>
 <th>Guardian</th>
 <th>Child (own profile)</th>
+<th>Device (own family)</th>
 <th>Enforcement</th>
 </tr>
 </thead>
@@ -2769,6 +2802,7 @@ surfaces staying family-scoped as described above.</p>
 <td>Own family only</td>
 <td>Own family only</td>
 <td>Own profile via filter</td>
+<td>No (403)</td>
 <td>Family-scoped for every caller; the global queue is the admin surface below</td>
 </tr>
 <tr>
@@ -2776,13 +2810,31 @@ surfaces staying family-scoped as described above.</p>
 <td>Yes (all families)</td>
 <td>No (403)</td>
 <td>No (403)</td>
+<td>No (403)</td>
 <td>Admin capability required; surfaces every moderation flag (no threshold filtering)</td>
+</tr>
+<tr>
+<td>List profiles (<code>GET /profiles</code>)</td>
+<td>Any family</td>
+<td>Own family</td>
+<td>No (403)</td>
+<td>Own family only</td>
+<td>Device is family-scoped, never cross-family, and carries no <code>profile_ids</code> of its own</td>
+</tr>
+<tr>
+<td>Mint a child session (<code>POST /child-sessions</code>)</td>
+<td>Yes (any family)</td>
+<td>Own family</td>
+<td>No (403)</td>
+<td>Own family only</td>
+<td>Guardian/admin bearer or a matching device grant; per-profile PIN enforcement unchanged</td>
 </tr>
 <tr>
 <td>Read own library / story / state</td>
 <td>Any profile</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td>Token subject maps to allowed-profile set; 403 otherwise</td>
 </tr>
 <tr>
@@ -2790,6 +2842,7 @@ surfaces staying family-scoped as described above.</p>
 <td>Any profile</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td>Same, plus <code>state_revision</code> and version guards on the PUT</td>
 </tr>
 <tr>
@@ -2797,6 +2850,7 @@ surfaces staying family-scoped as described above.</p>
 <td>Any profile</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td><code>ending_id</code> must belong to the cited published version</td>
 </tr>
 <tr>
@@ -2804,11 +2858,21 @@ surfaces staying family-scoped as described above.</p>
 <td>Yes</td>
 <td>Yes</td>
 <td>No (403)</td>
-<td>Guardian role required; child tokens are scoped to reader endpoints</td>
+<td>No (403)</td>
+<td>Guardian role required; child and device tokens are scoped to reader endpoints</td>
+</tr>
+<tr>
+<td>Manage device grants (<code>POST</code>/<code>GET</code>/<code>DELETE /device-grants</code>)</td>
+<td>Yes (own family; admin may target another family on mint)</td>
+<td>Own family only</td>
+<td>No (403)</td>
+<td>No (403)</td>
+<td>Guardian or admin role required; a device token cannot mint, list, or revoke its own or any other grant</td>
 </tr>
 <tr>
 <td>Approve (and publish)</td>
 <td>Yes (global, cross-family)</td>
+<td>No (403)</td>
 <td>No (403)</td>
 <td>No (403)</td>
 <td>Global admin role (<code>Role.ADMIN</code> / <code>is_admin</code>) required; enforced in the state machine. <code>authorize_family</code> is not applied</td>
@@ -2818,12 +2882,14 @@ surfaces staying family-scoped as described above.</p>
 <td>Yes (admin, cross-family)</td>
 <td>No (403)</td>
 <td>No (403)</td>
+<td>No (403)</td>
 <td>Family ownership is checked on every non-admin resource access; cross-family 403</td>
 </tr>
 <tr>
 <td>Edit a passage (Phase 4b)</td>
 <td>Yes</td>
 <td>Yes</td>
+<td>No (403)</td>
 <td>No (403)</td>
 <td>Guardian role required; <code>PATCH /storybooks/{id}/versions/{v}/nodes/{node_id}</code></td>
 </tr>
@@ -2832,7 +2898,8 @@ surfaces staying family-scoped as described above.</p>
 <td>No (403; browse and assignment endpoints are guardian-only)</td>
 <td>Any <code>visibility='catalog'</code> book, any family</td>
 <td>No (403)</td>
-<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child token gets 403 regardless of <code>profile_id</code>; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
+<td>No (403)</td>
+<td><code>visibility='catalog'</code> widens guardian browse and assignment eligibility past own-family; browse and assignment endpoints are guardian-only, so a child or device token gets 403 regardless of <code>profile_id</code>; the <code>StorybookAssignment</code> gate is unchanged for child read/write paths</td>
 </tr>
 </tbody>
 </table>
@@ -2897,6 +2964,19 @@ green before Phase 3 closes.</p>
    family B sends any read or write request against a storybook owned by family A.
    Expected: 403. Family ownership is checked independently of the role.</p>
 </li>
+<li>
+<p><strong>Device token calls any guardian/admin/child-only endpoint</strong> (ADR-014): a
+   verified device grant token sends a request to any endpoint other than its
+   two allowlisted routes (<code>POST /api/v1/child-sessions</code>,
+   <code>GET /api/v1/profiles</code>), for example
+   <code>POST /api/v1/concepts</code>, <code>POST /api/v1/storybooks/{id}/approve</code>,
+   <code>GET /api/v1/library</code>, or its own management endpoints
+   (<code>POST</code>/<code>GET</code>/<code>DELETE /api/v1/device-grants</code>). Expected: 403 in every case.
+   <code>Principal.__post_init__</code> force-clears <code>is_admin</code> for <code>Role.DEVICE</code> and the
+   principal carries no <code>profile_ids</code>, so a device token cannot pass a
+   guardian-only, admin-only, or profile-scoped gate regardless of the claims
+   in the token.</p>
+</li>
 </ol>
 <hr />
 <h2 id="state-machine-and-role-enforcement">State Machine and Role Enforcement<a class="headerlink" href="#state-machine-and-role-enforcement" title="Permanent link">&para;</a></h2>
@@ -2956,7 +3036,7 @@ green before Phase 3 closes.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 12, 2026 18:15:47 UTC">July 12, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
   </span>
 
     

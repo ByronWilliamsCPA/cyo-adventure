@@ -3003,6 +3003,32 @@ column is kept for backward compatibility with rows written in Phase 1.</p>
 via <code>core/config.py</code> (Pydantic Settings). The <code>model_validator</code> in <code>config.py</code>
 raises <code>ConfigurationError</code> if the localhost-only development database URL is
 detected in a non-local environment, preventing accidental credential leakage.</p>
+<p>Two backend-only signing secrets are validated at startup, not just read: a
+<code>model_validator</code> raises <code>ConfigurationError</code> outside the <code>local</code> environment if
+either is unset, empty, or shorter than the minimum key length.</p>
+<table>
+<thead>
+<tr>
+<th>Env var</th>
+<th>Purpose</th>
+<th>Validated at startup</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CHILD_SESSION_SECRET</code></td>
+<td>Signs/verifies the 12-hour, no-refresh child-session HS256 token (<code>core/child_session.py</code>)</td>
+<td>Yes, outside <code>local</code></td>
+</tr>
+<tr>
+<td><code>DEVICE_GRANT_SECRET</code></td>
+<td>Signs/verifies the 90-day, revocable device-grant HS256 token, audience <code>cyo-device-grant</code> (<code>core/device_grant.py</code>, ADR-014)</td>
+<td>Yes, outside <code>local</code>, mirroring <code>CHILD_SESSION_SECRET</code></td>
+</tr>
+</tbody>
+</table>
+<p>Neither secret is ever sent to the browser; both are backend-only signing keys
+distinct from the Supabase JWKS used to verify guardian/admin OIDC tokens.</p>
 <h2 id="authentication-flow">Authentication Flow<a class="headerlink" href="#authentication-flow" title="Permanent link">&para;</a></h2>
 <p><strong>Production:</strong> The PWA initiates an OIDC authorization code flow with Supabase Auth
 (ADR-009). The resulting access token is sent as a <code>Bearer</code> header with every API
@@ -3056,7 +3082,7 @@ development convention; CI produces versioned tags aligned with SemVer releases.
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 5, 2026 22:31:37 UTC">July 5, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
   </span>
 
     

@@ -1261,6 +1261,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#device_grant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device_grant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#concept" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3044,6 +3055,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#device_grant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        device_grant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#concept" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3180,20 +3202,21 @@
 
   <h1>Data Model</h1>
 
-<p>CYO Adventure has nineteen PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
+<p>CYO Adventure has twenty PostgreSQL tables managed by SQLAlchemy 2 async ORM, with
 schema migrations applied as plain SQL via the Supabase CLI (<code>supabase/migrations/</code>,
 ADR-012; Alembic retired). All timestamps are <code>TIMESTAMP WITH TIME ZONE</code>. Enum-like
 columns (<code>role</code>, <code>status</code>, <code>age_band</code>) are stored as strings and validated at the
 application boundary, which keeps schema migrations simple and avoids enum-type churn.</p>
 <blockquote>
-<p><strong>Note (2026-07-10):</strong> the ER diagram below still shows only the original 9 tables
-(<code>docs/architecture/diagrams/er-diagram.puml</code>); it needs regeneration to add the
-10 tables documented below (<code>series</code>, <code>rating</code>, <code>storybook_assignment</code>,
-<code>story_request</code>, <code>moderation_threshold</code>, <code>moderation_threshold_audit</code>,
-<code>moderation_setting</code>, <code>pipeline_event</code>, <code>provider_model_allowlist</code>,
-<code>provider_model_allowlist_audit</code>) and the new columns on <code>storybook</code>,
-<code>storybook_version</code>, and <code>generation_job</code>. The table reference below is
-authoritative in the meantime.</p>
+<p><strong>Note (2026-07-13, further behind since 2026-07-10):</strong> the ER diagram
+(<code>docs/architecture/diagrams/er-diagram.puml</code>) has been regenerated to add
+<code>device_grant</code> (ADR-014, the newest table, added 2026-07-13), but the ten tables
+called out in the 2026-07-10 pass are still missing from it: <code>series</code>, <code>rating</code>,
+<code>storybook_assignment</code>, <code>story_request</code>, <code>moderation_threshold</code>,
+<code>moderation_threshold_audit</code>, <code>moderation_setting</code>, <code>pipeline_event</code>,
+<code>provider_model_allowlist</code>, <code>provider_model_allowlist_audit</code>. It also still needs
+the new columns on <code>storybook</code>, <code>storybook_version</code>, and <code>generation_job</code>. The
+table reference below is authoritative in the meantime.</p>
 </blockquote>
 <h2 id="entity-relationship-diagram">Entity-Relationship Diagram<a class="headerlink" href="#entity-relationship-diagram" title="Permanent link">&para;</a></h2>
 <p><img alt="ER Diagram" src="../diagrams/er-diagram.svg" /></p>
@@ -3746,6 +3769,65 @@ filter on it, so a child sees only stories explicitly assigned to their profile.
 </tr>
 </tbody>
 </table>
+<h3 id="device_grant"><code>device_grant</code><a class="headerlink" href="#device_grant" title="Permanent link">&para;</a></h3>
+<p>A guardian-minted, durable, family-scoped device authorization (ADR-014). Lets a
+child pick a profile and read, online or offline, without a live guardian Supabase
+session on the device: <code>POST /v1/child-sessions</code> and <code>GET /v1/profiles</code> accept a
+verified device grant as an additional authority alongside the guardian/admin
+Supabase bearer, scoped to the grant's own <code>family_id</code>. The token itself (HS256,
+audience <code>cyo-device-grant</code>, 90-day expiry) is never stored; only its unique <code>jti</code>
+and mint metadata are, here.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>id</td>
+<td>UUID PK</td>
+<td></td>
+</tr>
+<tr>
+<td>family_id</td>
+<td>UUID FK</td>
+<td>family.id; the device is authorized for exactly this family</td>
+</tr>
+<tr>
+<td>authorized_by</td>
+<td>UUID FK</td>
+<td>user.id of the guardian who minted the grant</td>
+</tr>
+<tr>
+<td>label</td>
+<td>VARCHAR(120) NULL</td>
+<td>Guardian-facing device name (e.g. "Kitchen tablet"); never derived from request headers</td>
+</tr>
+<tr>
+<td>jti</td>
+<td>UUID UNIQUE</td>
+<td>Matches the token's <code>jti</code> claim; the revocation lookup key</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>TIMESTAMPTZ</td>
+<td></td>
+</tr>
+<tr>
+<td>revoked_at</td>
+<td>TIMESTAMPTZ NULL</td>
+<td><code>NULL</code> while active; set (not deleted) on revoke so the guardian-facing device list can show when a device was revoked</td>
+</tr>
+</tbody>
+</table>
+<p>Revocation is enforced online only: the token's <code>jti</code> is checked against this
+table's <code>revoked_at</code> on every use. An already-offline device cannot see a
+revocation until it reconnects, an accepted limitation bounded by the 90-day
+grant TTL (ADR-014, "Negative / risks"). The signing secret is
+<code>DEVICE_GRANT_SECRET</code>, validated at startup the same way as <code>CHILD_SESSION_SECRET</code>.</p>
 <h3 id="concept"><code>concept</code><a class="headerlink" href="#concept" title="Permanent link">&para;</a></h3>
 <p>The intake form for a guardian's story request. A <code>ConceptBrief</code> payload is validated
 at the application boundary by the Pydantic model before insertion. Immutable once
@@ -4168,7 +4250,7 @@ trigger created in the migration; the ORM never updates or deletes them.
 <tr>
 <td>actor_role</td>
 <td>VARCHAR(16)</td>
-<td><code>system</code>, <code>guardian</code>, <code>child</code>, or <code>admin</code></td>
+<td><code>system</code>, <code>guardian</code>, <code>child</code>, <code>admin</code>, or <code>device</code> (ADR-014; the CHECK constraint's vocabulary is a superset of every valid <code>Role</code>, though no event is written with <code>actor_role='device'</code> yet, since the device principal is not wired into any event-emitting endpoint)</td>
 </tr>
 <tr>
 <td>entity_type</td>
@@ -4346,7 +4428,7 @@ mirroring <code>moderation_threshold_audit</code>.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
   </span>
 
     

@@ -11,7 +11,11 @@
 ' in this loop is shipped (see the "Now covered" note at the bottom).
 '
 ' Source screens / decisions:
-'   frontend/src/router.tsx                         (kid + guardian route trees)
+'   frontend/src/router.tsx                         (kid + guardian route trees;
+'     DeviceAuthorizedRoute wraps the kid tree, AdultGate the adult tree, ADR-014)
+'   frontend/src/landing/LandingPage.tsx             (device-state-aware two-door
+'     landing: Kids door -> /kids if a valid grant exists, else guardian login)
+'   frontend/src/auth/DeviceAuthorizedRoute.tsx, auth/AdultGate.tsx (ADR-014)
 '   frontend/src/library/RequestStory.tsx            (child-initiated request,
 '     WS-B; shipped -- see api/story_requests.py)
 '   frontend/src/guardian/RequestsPage.tsx            (guardian/admin approve
@@ -19,9 +23,12 @@
 '   Phase 4a mobile UI wireframe concept spec (PR #47, shipped; the source doc under
 '     docs/superpowers/specs/ was retired as scratch output once its work merged)
 '   docs/planning/adr/adr-005-mandatory-human-approval.md  (approval gate)
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md (device grant;
+'     single kid-to-adult step-up boundary)
 '   docs/architecture/diagrams/seq-generation.puml  (behind-the-scenes detail)
 '   docs/architecture/diagrams/seq-offline.puml     (offline read + reconnect)
 '   docs/architecture/diagrams/seq-reading-state.puml (sync reconciliation)
+'   docs/architecture/diagrams/seq-device-grant.puml (device grant mint/verify/revoke)
 ' ============================================================
 
 title Target-State End-to-End User Journey\n(child-initiated; rose = planned, not yet built)
@@ -50,21 +57,30 @@ skinparam swimlaneWidth same
 ' ============ Act 1: Guardian onboarding (once) ============
 |Guardian|
 start
-:Sign in
-(email/password, Google,
-or Apple if enabled);
-note right: /guardian/login  •  shipped
-:Create each child's profile
-(name + preset avatar);
-note right: /guardian/profiles  •  shipped
+if (Is this device already authorized?\n(ADR-014 device grant)) then (no -- cold entry\nor unauthorized device)
+  :Sign in
+  (email/password, Google,
+  or Apple if enabled);
+  note right: /guardian/login  •  shipped\nADR-014: conditional now -- only a cold entry\nor an unauthorized device reaches this step
+  :Create each child's profile
+  (name + preset avatar);
+  note right: /guardian/profiles  •  shipped
+  :Authorize this device
+  (mint a 90-day, revocable
+  device grant for the family);
+  note right: ADR-014 -- one grant per shared device;\nafter this, the device needs no further\nguardian sign-in for the child to read
+else (yes -- valid grant already on device)
+endif
 
 ' ============ The repeating story loop ============
 repeat :a new story is wanted;
 
 ' ---- Act 2: Request (child-initiated primary path) ----
 |Child|
-:Open the app, tap my avatar;
-note right: /  (Profile Picker)  •  shipped
+:Open the app, tap Kids door;
+note right: /  (Landing)  •  shipped\nAn authorized device goes straight to /kids;\nDeviceAuthorizedRoute checks the grant locally,\nno guardian login and no Supabase round-trip
+:Tap my avatar;
+note right: /kids  (Profile Picker)  •  shipped
 :Open my Library, tap
 "Request a story" and
 say what it's about;
@@ -73,7 +89,7 @@ note right: RequestStory on the library page  •  shipped
 :See my child's request
 (screened text + flags),
 approve or decline it;
-note right: /guardian/requests  •  shipped\n(guardian-own-family or admin-global)
+note right: /guardian/requests  •  shipped\n(guardian-own-family or admin-global)\nADR-014: crossing UP into the adult subtree from\nkid mode re-demands the password (AdultGate,\nsingle kid-to-adult boundary); once warm, moving\nbetween guardian and admin pages is free
 
 ' ---- Act 3: Behind the scenes ----
 |System|
@@ -152,6 +168,13 @@ legend bottom
   author a request directly from Intake without a prior child ask. Approval
   of the generated storybook (ADR-005) remains the one mandatory admin gate
   before any story reaches a child.
+  ADR-014 (device-authorized kid access): Act 1's guardian sign-in is now
+  conditional -- an already-authorized device skips it entirely for the
+  Kids door. The former per-page parental gate collapsed into a single
+  AdultGate at the root of the adult subtree: crossing UP from kid mode
+  re-demands the password; guardian<->guardian, guardian<->admin, and
+  admin<->guardian navigation is free once warm. See seq-device-grant.svg
+  for the mint/verify/revoke mechanics.
 endlegend
 
 @enduml

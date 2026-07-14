@@ -5,7 +5,7 @@
 '
 ' Source files:
 '   src/cyo_adventure/app.py                 (FastAPI app, middleware order,
-'                                              wires all 15 routers)
+'                                              wires all 18 routers)
 '   src/cyo_adventure/api/health.py          (liveness/readiness/startup probes)
 '   src/cyo_adventure/api/library.py         (story library endpoints)
 '   src/cyo_adventure/api/reading.py         (reading-state + completions + series-next)
@@ -25,14 +25,20 @@
 '   src/cyo_adventure/api/story_requests.py  (child request lifecycle: submit,
 '                                              list, approve, decline, authored,
 '                                              authoring-plan; WS-B)
+'   src/cyo_adventure/api/child_sessions.py  (mint a child session; guardian/admin
+'                                              bearer OR a matching device grant, ADR-014)
+'   src/cyo_adventure/api/device_grants.py   (ADR-014: mint/list/revoke a device grant)
+'   src/cyo_adventure/api/onboarding.py      (first-login guardian/admin provisioning)
 '   src/cyo_adventure/api/schemas.py         (Pydantic request/response models)
-'   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam)
+'   src/cyo_adventure/api/deps.py            (Principal, Context, auth seam;
+'                                              Role.DEVICE routing branch, ADR-014)
+'   src/cyo_adventure/core/device_grant.py   (HS256 token, aud cyo-device-grant, 90d)
 '   src/cyo_adventure/middleware/correlation.py (CorrelationMiddleware, added first)
 '   src/cyo_adventure/middleware/security.py (OWASP headers, SSRF)
 '   src/cyo_adventure/core/config.py         (Pydantic Settings)
 '   src/cyo_adventure/core/database.py       (async engine, Base, get_session)
 '   src/cyo_adventure/core/exceptions.py     (exception hierarchy)
-'   src/cyo_adventure/db/models.py           (19 ORM tables)
+'   src/cyo_adventure/db/models.py           (20 ORM tables)
 '   src/cyo_adventure/events/writer.py       (append-only pipeline_event log, WS-D)
 '   docs/planning/authorization-matrix.md
 '   docs/planning/adr/adr-009-supabase-platform.md (Supabase OIDC replaces Authentik;
@@ -65,7 +71,7 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "RequestContext\nContext = principal + session\nDependency-injected into\nevery route handler" as ctx #DCEDC8
   }
 
-  package "API Routers (all under /api/v1; 15 total)" #B2DFDB {
+  package "API Routers (all under /api/v1; 18 total)" #B2DFDB {
     component "health.py\nGET /health/live\nGET /health/ready\nGET /health/startup" as health_router #B2DFDB
 
     component "library.py\nGET /library\n(filtered by age band,\nreading cap, published status)" as library_router #B2DFDB
@@ -95,6 +101,12 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
     component "me.py\nGET /me (principal identity)" as me_router #B2DFDB
 
     component "story_requests.py [WS-B]\nPOST /story-requests\nPOST /story-requests/authored\nGET /story-requests\nPOST /story-requests/{id}/approve\nPOST /story-requests/{id}/decline\nPOST /story-requests/{id}/authoring-plan" as story_req_router #B2DFDB
+
+    component "child_sessions.py\nPOST /child-sessions\n[guardian/admin bearer, OR a\nmatching device grant, ADR-014]" as child_sessions_router #B2DFDB
+
+    component "device_grants.py [ADR-014]\nPOST /device-grants (mint)\nGET /device-grants (list, own family)\nDELETE /device-grants/{id} (revoke)\nGuardian/admin only; never a device token" as device_grants_router #B2DFDB
+
+    component "onboarding.py\nPOST /onboarding\nFirst-login guardian/admin\nprovisioning; refuses child\nsession + device grant tokens" as onboarding_router #B2DFDB
   }
 
   package "Core" #A5D6A7 {
@@ -105,10 +117,11 @@ package "FastAPI Application\nsrc/cyo_adventure/app.py" #E8F5E9 {
 
 }
 
-package "ORM Models\nsrc/cyo_adventure/db/models.py (19 tables)" #FFF8E1 {
+package "ORM Models\nsrc/cyo_adventure/db/models.py (20 tables)" #FFF8E1 {
   component "Family\nSeries\nUser\nChildProfile\nStorybook\nStorybookVersion" as models_a #FFF8E1
   component "ReadingState\nCompletion\nRating\nStorybookAssignment\nConcept\nStoryRequest" as models_b #FFF8E1
   component "ModerationThreshold(+Audit)\nModerationSetting\nPipelineEvent\nProviderModelAllowlist(+Audit)\nGenerationJob" as models_c #FFF8E1
+  component "DeviceGrant [ADR-014]\nfamily_id, authorized_by, jti\n(unique), revoked_at" as models_d #FFF8E1
 }
 
 database "Supabase Postgres\n[Managed DB, ADR-009 decision 2]\nAsync SQLAlchemy 2 sessions\nSession pooler :5432 (session mode)\nAlembic migrations" as pg #E0F7FA
@@ -135,6 +148,9 @@ ctx --> allowlist_router
 ctx --> ratings_router
 ctx --> me_router
 ctx --> story_req_router
+ctx --> child_sessions_router
+ctx --> device_grants_router
+auth_seam --> onboarding_router : "OnboardingIdentityDep\n(own identity check, not Context:\nno Principal/User row exists yet)"
 
 reading_router --> models_a
 reading_router --> models_b
@@ -147,10 +163,16 @@ story_req_router --> models_b
 mod_thresh_router --> models_c
 mod_dash_router --> models_c
 allowlist_router --> models_c
+device_grants_router --> models_d
+device_grants_router --> models_a
+profiles_router --> models_a
+child_sessions_router --> models_a
+onboarding_router --> models_a : "creates Family + User\n(first-login provisioning)"
 
 models_a --> pg
 models_b --> pg
 models_c --> pg
+models_d --> pg
 
 exceptions --> reading_router : "raised -> mapped to HTTP\nby exception handlers"
 exceptions --> gen_router
@@ -164,6 +186,16 @@ note right of auth_seam
   real Supabase-issued JWT (signature, issuer,
   audience, expiry) via cached JWKS
   (jwt.PyJWKClient), per ADR-009.
+  --
+  ADR-014 device-grant branch: routes on the
+  UNVERIFIED aud claim to
+  verify_device_grant_token() (HS256,
+  aud=cyo-device-grant, DEVICE_GRANT_SECRET),
+  mirroring the existing child-session branch.
+  Builds a Role.DEVICE Principal with no
+  profile_ids and is_admin force-cleared, so it
+  can only ever reach child_sessions_router and
+  profiles_router below.
 end note
 
 note right of reading_router

@@ -12,31 +12,27 @@
         <meta name="author" content="Byron Williams">
       
       
-        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/architecture/user-journeys/">
+        <link rel="canonical" href="https://cyo-adventure.readthedocs.io/planning/adr/adr-014-device-authorized-kid-access/">
       
       
-        <link rel="prev" href="../">
-      
-      
-        <link rel="next" href="../system-overview/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>User Journeys - CYO Adventure</title>
+        <title>ADR-014: Device-authorized kid access - CYO Adventure</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -92,7 +88,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#target-state-end-to-end-journey" class="md-skip">
+        <a href="#adr-014-device-authorized-kid-access" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +102,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-header__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -126,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              User Journeys
+              ADR-014: Device-authorized kid access
             
           </span>
         </div>
@@ -239,7 +235,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../.." class="md-tabs__link">
+      <a href="../../.." class="md-tabs__link">
         
   
   
@@ -260,7 +256,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../guides/overview/" class="md-tabs__link">
+        <a href="../../../guides/overview/" class="md-tabs__link">
           
   
   
@@ -282,7 +278,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../api-reference/" class="md-tabs__link">
+        <a href="../../../api-reference/" class="md-tabs__link">
           
   
   
@@ -300,13 +296,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../../architecture/" class="md-tabs__link">
           
   
   
@@ -328,7 +322,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../development/architecture/" class="md-tabs__link">
+        <a href="../../../development/architecture/" class="md-tabs__link">
           
   
   
@@ -350,7 +344,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../project/roadmap/" class="md-tabs__link">
+        <a href="../../../project/roadmap/" class="md-tabs__link">
           
   
   
@@ -372,7 +366,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../planning/" class="md-tabs__link">
+        <a href="../../" class="md-tabs__link">
           
   
   
@@ -394,7 +388,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../PROJECT_SETUP/" class="md-tabs__link">
+        <a href="../../../PROJECT_SETUP/" class="md-tabs__link">
           
   
   
@@ -416,7 +410,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../ADRs/" class="md-tabs__link">
+        <a href="../../../ADRs/" class="md-tabs__link">
           
   
   
@@ -452,7 +446,7 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
+    <a href="../../.." title="CYO Adventure" class="md-nav__button md-logo" aria-label="CYO Adventure" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -482,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -580,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/overview/" class="md-nav__link">
+      <a href="../../../guides/overview/" class="md-nav__link">
         
   
   
@@ -615,7 +609,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/configuration/" class="md-nav__link">
+      <a href="../../../guides/configuration/" class="md-nav__link">
         
   
   
@@ -650,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/usage/" class="md-nav__link">
+      <a href="../../../guides/usage/" class="md-nav__link">
         
   
   
@@ -685,7 +679,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../guides/supabase-environments/" class="md-nav__link">
+      <a href="../../../guides/supabase-environments/" class="md-nav__link">
         
   
   
@@ -785,7 +779,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api-reference/" class="md-nav__link">
+      <a href="../../../api-reference/" class="md-nav__link">
         
   
   
@@ -824,8 +818,6 @@
       
   
   
-    
-  
   
   
     
@@ -851,23 +843,22 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../architecture/" class="md-nav__link ">
               
   
   
@@ -892,13 +883,13 @@
             </a>
             
               
-              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -915,42 +906,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    User Journeys
-  
-
-    
-  </span>
-  
-  
-    
-  
-  
-    <span class="md-status md-status--published"></span>
-  
-
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../architecture/user-journeys/" class="md-nav__link">
         
   
   
@@ -973,257 +932,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#target-state-end-to-end-journey" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Target-state end-to-end journey
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Target-state end-to-end journey">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-to-read-it" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How to read it
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-journey-act-by-act" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The journey, act by act
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="The journey, act by act">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#act-1-guardian-onboarding-once" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 1: Guardian onboarding (once)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-2-requesting-a-story" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 2: Requesting a story
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-3-behind-the-scenes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 3: Behind the scenes
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-4-the-approval-gate-adr-005" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 4: The approval gate (ADR-005)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-5-assignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 5: Assignment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-6-reading-and-rating" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 6: Reading and rating
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#loop" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Loop
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#shipped-vs-planned-at-a-glance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Shipped vs planned at a glance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#zoomed-journeys-per-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Zoomed journeys (per surface)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Zoomed journeys (per surface)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kid-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Kid surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#guardian-and-admin-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Guardian and admin surface
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#device-authorization-adr-014" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Device authorization (ADR-014)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#site-map-and-flows-adr-014" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Site map and flows (ADR-014)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#developer-view-test-coverage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Developer view: test coverage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Developer view: test coverage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-the-coverage-view-surfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the coverage view surfaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related pages
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1236,7 +944,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../system-overview/" class="md-nav__link">
+      <a href="../../../architecture/system-overview/" class="md-nav__link">
         
   
   
@@ -1271,7 +979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../generation-pipeline/" class="md-nav__link">
+      <a href="../../../architecture/generation-pipeline/" class="md-nav__link">
         
   
   
@@ -1306,7 +1014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../validation-and-player/" class="md-nav__link">
+      <a href="../../../architecture/validation-and-player/" class="md-nav__link">
         
   
   
@@ -1341,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../data-model/" class="md-nav__link">
+      <a href="../../../architecture/data-model/" class="md-nav__link">
         
   
   
@@ -1376,7 +1084,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../deployment/" class="md-nav__link">
+      <a href="../../../architecture/deployment/" class="md-nav__link">
         
   
   
@@ -1451,7 +1159,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../api/" class="md-nav__link ">
+            <a href="../../../api/" class="md-nav__link ">
               
   
   
@@ -1500,7 +1208,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/architecture/" class="md-nav__link">
+      <a href="../../../development/architecture/" class="md-nav__link">
         
   
   
@@ -1535,7 +1243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/testing/" class="md-nav__link">
+      <a href="../../../development/testing/" class="md-nav__link">
         
   
   
@@ -1572,7 +1280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/code-quality/" class="md-nav__link">
+      <a href="../../../development/code-quality/" class="md-nav__link">
         
   
   
@@ -1607,7 +1315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../development/contributing/" class="md-nav__link">
+      <a href="../../../development/contributing/" class="md-nav__link">
         
   
   
@@ -1711,7 +1419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/roadmap/" class="md-nav__link">
+      <a href="../../../project/roadmap/" class="md-nav__link">
         
   
   
@@ -1746,7 +1454,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/changelog/" class="md-nav__link">
+      <a href="../../../project/changelog/" class="md-nav__link">
         
   
   
@@ -1781,7 +1489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../project/license/" class="md-nav__link">
+      <a href="../../../project/license/" class="md-nav__link">
         
   
   
@@ -1858,7 +1566,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -1909,7 +1617,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/project-vision/" class="md-nav__link">
+      <a href="../../project-vision/" class="md-nav__link">
         
   
   
@@ -1944,7 +1652,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/tech-spec/" class="md-nav__link">
+      <a href="../../tech-spec/" class="md-nav__link">
         
   
   
@@ -1979,7 +1687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/PROJECT-PLAN/" class="md-nav__link">
+      <a href="../../PROJECT-PLAN/" class="md-nav__link">
         
   
   
@@ -2014,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/roadmap/" class="md-nav__link">
+      <a href="../../roadmap/" class="md-nav__link">
         
   
   
@@ -2096,7 +1804,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../planning/adr/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -2147,7 +1855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-001-story-format-json-storybook/" class="md-nav__link">
+      <a href="../adr-001-story-format-json-storybook/" class="md-nav__link">
         
   
   
@@ -2182,7 +1890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-002-client-pwa/" class="md-nav__link">
+      <a href="../adr-002-client-pwa/" class="md-nav__link">
         
   
   
@@ -2217,7 +1925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-003-frontier-llm-generation/" class="md-nav__link">
+      <a href="../adr-003-frontier-llm-generation/" class="md-nav__link">
         
   
   
@@ -2252,7 +1960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-004-homelab-first-deployment/" class="md-nav__link">
+      <a href="../adr-004-homelab-first-deployment/" class="md-nav__link">
         
   
   
@@ -2287,7 +1995,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-005-mandatory-human-approval/" class="md-nav__link">
+      <a href="../adr-005-mandatory-human-approval/" class="md-nav__link">
         
   
   
@@ -2322,7 +2030,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
+      <a href="../adr-006-conditions-inhouse-evaluator/" class="md-nav__link">
         
   
   
@@ -2357,7 +2065,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-007-raw-output-retention/" class="md-nav__link">
+      <a href="../adr-007-raw-output-retention/" class="md-nav__link">
         
   
   
@@ -2392,7 +2100,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-008-public-app-store-launch/" class="md-nav__link">
+      <a href="../adr-008-public-app-store-launch/" class="md-nav__link">
         
   
   
@@ -2427,7 +2135,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-009-supabase-platform/" class="md-nav__link">
+      <a href="../adr-009-supabase-platform/" class="md-nav__link">
         
   
   
@@ -2462,7 +2170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-010-modal-review-and-gated-generation/" class="md-nav__link">
+      <a href="../adr-010-modal-review-and-gated-generation/" class="md-nav__link">
         
   
   
@@ -2497,7 +2205,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../planning/adr/adr-011-story-scale-framework/" class="md-nav__link">
+      <a href="../adr-011-story-scale-framework/" class="md-nav__link">
         
   
   
@@ -2611,7 +2319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PROJECT_SETUP/" class="md-nav__link">
+      <a href="../../../PROJECT_SETUP/" class="md-nav__link">
         
   
   
@@ -2646,7 +2354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../OPENSSF_COMPLIANCE/" class="md-nav__link">
+      <a href="../../../OPENSSF_COMPLIANCE/" class="md-nav__link">
         
   
   
@@ -2681,7 +2389,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../PYTHON_COMPATIBILITY/" class="md-nav__link">
+      <a href="../../../PYTHON_COMPATIBILITY/" class="md-nav__link">
         
   
   
@@ -2716,7 +2424,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../template_feedback/" class="md-nav__link">
+      <a href="../../../template_feedback/" class="md-nav__link">
         
   
   
@@ -2785,7 +2493,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../ADRs/" class="md-nav__link ">
+            <a href="../../../ADRs/" class="md-nav__link ">
               
   
   
@@ -2836,7 +2544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../ADRs/adr-template/" class="md-nav__link">
+      <a href="../../../ADRs/adr-template/" class="md-nav__link">
         
   
   
@@ -2888,6 +2596,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -2896,22 +2606,55 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#target-state-end-to-end-journey" class="md-nav__link">
+  <a href="#tldr" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Target-state end-to-end journey
+        TL;DR
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Target-state end-to-end journey">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Context
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Context">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-to-read-it" class="md-nav__link">
+  <a href="#problem" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How to read it
+        Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Constraints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#significance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Significance
       
     </span>
   </a>
@@ -2924,22 +2667,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#the-journey-act-by-act" class="md-nav__link">
+  <a href="#decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The journey, act by act
+        Decision
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="The journey, act by act">
+    <nav class="md-nav" aria-label="Decision">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#act-1-guardian-onboarding-once" class="md-nav__link">
+  <a href="#1-a-third-token-type-the-device-grant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 1: Guardian onboarding (once)
+        1. A third token type: the device grant
       
     </span>
   </a>
@@ -2947,10 +2690,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-2-requesting-a-story" class="md-nav__link">
+  <a href="#2-the-child-session-mint-accepts-the-device-grant" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 2: Requesting a story
+        2. The child-session mint accepts the device grant
       
     </span>
   </a>
@@ -2958,10 +2701,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-3-behind-the-scenes" class="md-nav__link">
+  <a href="#3-the-kid-surface-is-gated-by-a-local-device-grant-check" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 3: Behind the scenes
+        3. The kid surface is gated by a local device-grant check
       
     </span>
   </a>
@@ -2969,10 +2712,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-4-the-approval-gate-adr-005" class="md-nav__link">
+  <a href="#4-the-step-up-becomes-a-single-kid-to-adult-boundary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 4: The approval gate (ADR-005)
+        4. The step-up becomes a single kid-to-adult boundary
       
     </span>
   </a>
@@ -2980,32 +2723,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#act-5-assignment" class="md-nav__link">
+  <a href="#5-device-state-aware-front-door" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Act 5: Assignment
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#act-6-reading-and-rating" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Act 6: Reading and rating
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#loop" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Loop
+        5. Device-state-aware front door
       
     </span>
   </a>
@@ -3018,33 +2739,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#shipped-vs-planned-at-a-glance" class="md-nav__link">
+  <a href="#consequences" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Shipped vs planned at a glance
+        Consequences
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#zoomed-journeys-per-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Zoomed journeys (per surface)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Zoomed journeys (per surface)">
+    <nav class="md-nav" aria-label="Consequences">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kid-surface" class="md-nav__link">
+  <a href="#positive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Kid surface
+        Positive
       
     </span>
   </a>
@@ -3052,10 +2762,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#guardian-and-admin-surface" class="md-nav__link">
+  <a href="#negative-risks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Guardian and admin surface
+        Negative / risks
       
     </span>
   </a>
@@ -3063,21 +2773,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#device-authorization-adr-014" class="md-nav__link">
+  <a href="#neutral" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Device authorization (ADR-014)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#site-map-and-flows-adr-014" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Site map and flows (ADR-014)
+        Neutral
       
     </span>
   </a>
@@ -3090,38 +2789,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#developer-view-test-coverage" class="md-nav__link">
+  <a href="#alternatives-considered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Developer view: test coverage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Developer view: test coverage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#what-the-coverage-view-surfaces" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the coverage view surfaces
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#related-pages" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Related pages
+        Alternatives considered
       
     </span>
   </a>
@@ -3148,368 +2819,183 @@
   
 
 
-  <h1>User Journeys</h1>
-
-<p>The other architecture diagrams describe how the system is built: containers,
-components, data model, and API sequences. This page describes what a <em>person</em>
-does, screen by screen, to get value from the app. It is a product/UX-clarity
-view, not an API sequence, so the boxes are user actions and user-facing waits
-rather than endpoints and database locks.</p>
-<p>This page holds a set of journey diagrams that work together:</p>
-<table>
-<thead>
-<tr>
-<th>Diagram</th>
-<th>Use it for</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><a href="#target-state-end-to-end-journey">End-to-end journey</a></td>
-<td>The whole loop across all roles; onboarding a new contributor to the product</td>
-</tr>
-<tr>
-<td><a href="#zoomed-journeys-per-surface">Kid-surface journey</a></td>
-<td>Detailed child-facing flow; frontend work on the reader, library, and picker</td>
-</tr>
-<tr>
-<td><a href="#zoomed-journeys-per-surface">Guardian + admin journey</a></td>
-<td>Detailed parent-facing flow; request, approval gate, and assignment work</td>
-</tr>
-<tr>
-<td><a href="#device-authorization-adr-014">Device-grant sequence</a></td>
-<td>Mint/verify/revoke mechanics behind the device grant; auth/security work</td>
-</tr>
-<tr>
-<td><a href="#site-map-and-flows-adr-014">Sitemap and flows</a></td>
-<td>Every route, its purpose, and the two auth-boundary crossings; navigation/routing work</td>
-</tr>
-<tr>
-<td><a href="#developer-view-test-coverage">Developer test-coverage view</a></td>
-<td>Evaluating e2e/Playwright sufficiency; finding test gaps</td>
-</tr>
-</tbody>
-</table>
-<p>The three journey diagrams (end-to-end, kid, guardian) use the same swimlane
-convention and the same shipped/planned color language, so they read as one
-family. The device-grant sequence and sitemap are a different diagram shape
-(sequence, and nested-package component) covering the same ADR-014 material at
-a more mechanical altitude.</p>
-<h2 id="target-state-end-to-end-journey">Target-state end-to-end journey<a class="headerlink" href="#target-state-end-to-end-journey" title="Permanent link">&para;</a></h2>
-<p><img alt="Target-state end-to-end user journey" src="../diagrams/journey-end-to-end.svg" /></p>
-<h3 id="how-to-read-it">How to read it<a class="headerlink" href="#how-to-read-it" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Columns are who is acting.</strong> The journey deliberately crosses four lanes:
-  the <strong>Child</strong> and <strong>Guardian</strong> each drive their own disjoint surface (the kid
-  app and the guardian console share no navigation; see
-  <code>frontend/src/router.tsx</code>), the <strong>Admin</strong> holds the mandatory
-  approval gate, and <strong>System</strong> collapses the behind-the-scenes generation and
-  safety work into user-facing waits.</li>
-<li><strong>Node fill marks maturity.</strong> White nodes are shipped in the app today.
-  Rose nodes are planned target-state steps that are not yet built, so the
-  diagram doubles as a gap map. The unbuilt steps line up with the gaps tracked
-  in the R1 deployment review.</li>
-<li><strong>Primary path is child-initiated.</strong> The diagram shows the intended future
-  where a child asks for a story and the guardian approves the request. Today
-  the entry point is reversed: a guardian starts requests from the Intake page.
-  See the note under Act 2.</li>
-</ul>
-<h2 id="the-journey-act-by-act">The journey, act by act<a class="headerlink" href="#the-journey-act-by-act" title="Permanent link">&para;</a></h2>
-<p>Each act below names the real screen or route it maps to and whether it is
-shipped or planned.</p>
-<h3 id="act-1-guardian-onboarding-once">Act 1: Guardian onboarding (once)<a class="headerlink" href="#act-1-guardian-onboarding-once" title="Permanent link">&para;</a></h3>
-<p>A guardian signs in at <code>/guardian/login</code> (email/password or Google today; Apple
-sign-in is gated behind a config flag) and creates a profile for each child at
-<code>/guardian/profiles</code>. Profiles use preset illustrated avatars only, never
-uploaded photos. This act runs once and sits outside the repeating story loop.</p>
-<p><strong>Device authorization (ADR-014).</strong> Sign-in is now conditional, not a step every
-visit demands. The landing page (<code>/</code>) is device-state-aware: on a device that
-already carries a valid, non-expired device grant, the Kids door goes straight to
-<code>/kids</code> and the child never sees a guardian login at all. Only a cold entry (a
-brand-new device) or an already-revoked/expired grant routes the Kids door
-through <code>/guardian/login?intent=authorize-device</code>, where a guardian signing in
-mints a 90-day, revocable, family-scoped device grant for that device and is then
-dropped back to the kid picker. From then on that device needs no further
-guardian sign-in for a child to read, online or offline. Post-login, a guardian
-lands on <code>/guardian</code>, an admin-only adult on <code>/admin</code>, and a dual-role adult on
-<code>/guardian</code> (with a one-hop link into <code>/admin</code>).</p>
-<p><strong>The single kid-to-adult boundary (ADR-014).</strong> The two former per-page
-"Grown-ups only" gates collapsed into one <code>AdultGate</code> at the root of the whole
-adult subtree, wrapping both <code>/guardian</code> and <code>/admin</code>. A signed-in adult
-navigating guardian&#8596;guardian, guardian&#8596;admin, or admin&#8596;guardian
-never sees the password re-entry once warm (warm state lives in
-<code>sessionStorage</code>, 5-minute TTL); the challenge fires only when crossing UP into
-the adult subtree from kid mode, or on a cold session. See
-<a href="../diagrams/seq-device-grant.svg">seq-device-grant</a> for the mint/verify/revoke
-mechanics and <a href="../diagrams/sitemap-and-flows.svg">sitemap-and-flows</a> for the full
-route map and the two boundary crossings (<code>DeviceAuthorizedRoute</code>, <code>AdultGate</code>).</p>
-<h3 id="act-2-requesting-a-story">Act 2: Requesting a story<a class="headerlink" href="#act-2-requesting-a-story" title="Permanent link">&para;</a></h3>
-<p><strong>Target state (primary path, planned):</strong> a child opens the kid app, taps their
-avatar on the Profile Picker (<code>/</code>), taps "I want a new story," and says what it
-is about. That request surfaces to the guardian, who approves or tweaks it.</p>
-<p><strong>Shipped today:</strong> the request is guardian-initiated. A guardian uses the Intake
-page (<code>/guardian/intake</code>) with "Who's it for?" first, then a topic and tone,
-then "Request Story." The child-tap entry point and the guardian
-request-approval step (the two rose nodes in Act 2) are the not-yet-built delta
-between these two flows.</p>
-<h3 id="act-3-behind-the-scenes">Act 3: Behind the scenes<a class="headerlink" href="#act-3-behind-the-scenes" title="Permanent link">&para;</a></h3>
-<p>The system writes the story through a staged pipeline with a provider fallback
-cascade, then runs a deterministic safety check that flags risky passages. To
-the guardian this is just a "Generating..." status in their "My Requests" list.
-For the engineering detail behind this lane, see the
-<a href="../diagrams/seq-generation.svg">generation sequence</a> and the
-<a href="../generation-pipeline/">generation pipeline</a> page.</p>
-<h3 id="act-4-the-approval-gate-adr-005">Act 4: The approval gate (ADR-005)<a class="headerlink" href="#act-4-the-approval-gate-adr-005" title="Permanent link">&para;</a></h3>
-<p>This is the single mandatory checkpoint before any story reaches a child. In the
-Admin Console (<code>/admin</code>, the parallel adult surface for the admin capability),
-the review queue is ordered Flagged, then Ready to review, then Still
-processing. Opening a story (<code>/admin/review/:id</code>) surfaces its flagged passages
-first, then the full text. The reviewer either <strong>approves</strong> or <strong>sends it
-back</strong> with a note; a sent-back story is rewritten and re-enters the queue (the
-inner loop in the diagram).</p>
-<p>The approve action is the recorded human gate required by
-<a href="../../planning/adr/adr-005-mandatory-human-approval/">ADR-005</a> and requires the
-admin capability: a plain guardian cannot self-approve (the API returns 403).
-One adult may hold both roles (guardian plus the <code>is_admin</code> capability) and
-switches between <code>/guardian</code> and <code>/admin</code> via the shell nav. The diagram places
-the whole review-and-approve sequence in the Admin lane to keep that gate
-visually unambiguous.</p>
-<h3 id="act-5-assignment">Act 5: Assignment<a class="headerlink" href="#act-5-assignment" title="Permanent link">&para;</a></h3>
-<p>An approved story is assigned to the child it was written for; "Assign more"
-widens it to siblings without re-requesting. On the kid surface, the child's
-avatar on the Profile Picker flips to a "new story ready!" status pill.</p>
-<h3 id="act-6-reading-and-rating">Act 6: Reading and rating<a class="headerlink" href="#act-6-reading-and-rating" title="Permanent link">&para;</a></h3>
-<p>The child opens their Library (<code>/library/:profileId</code>), which leads with a
-"Continue Reading" hero card and a shelf grid, then opens the Reader
-(<code>/read/:profileId/:storybookId/:version</code>). They read passages and make
-branching choices until they reach an ending. Reading is offline-first: if the
-device is offline, the child reads from cache and progress waits in a queue,
-syncing on reconnect and reconciling if it clashes (see
-<a href="../diagrams/seq-offline.svg">offline and reconnect</a> and
-<a href="../diagrams/seq-reading-state.svg">reading-state sync</a> for the mechanics). The
-ending screen itself offers only restart and "back to my books"; <strong>rating lives
-on the library shelf</strong>, where tapping a <code>BookCard</code>'s stars upserts the rating.
-Rating is shipped, not planned (an earlier draft of this page had it wrong).</p>
-<h3 id="loop">Loop<a class="headerlink" href="#loop" title="Permanent link">&para;</a></h3>
-<p>Wanting another story returns to the top of the loop (Act 2). Guardian
-onboarding in Act 1 is not repeated.</p>
-<h2 id="shipped-vs-planned-at-a-glance">Shipped vs planned at a glance<a class="headerlink" href="#shipped-vs-planned-at-a-glance" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Journey step</th>
-<th>Screen / route</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Guardian sign-in</td>
-<td><code>/guardian/login</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Create child profiles</td>
-<td><code>/guardian/profiles</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Child taps "I want a new story"</td>
-<td>Profile Picker (<code>/</code>)</td>
-<td>Planned</td>
-</tr>
-<tr>
-<td>Guardian approves the child's request</td>
-<td>(new)</td>
-<td>Planned</td>
-</tr>
-<tr>
-<td>Generation + safety validation</td>
-<td>generation pipeline</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Guardian-initiated request</td>
-<td><code>/guardian/intake</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Admin review + approve/send-back</td>
-<td><code>/admin</code>, <code>/admin/review/:id</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Assign / assign more</td>
-<td>Intake / assign</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>"New story ready!" pill</td>
-<td>Profile Picker (<code>/</code>)</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Library and Reader</td>
-<td><code>/library/...</code>, <code>/read/...</code></td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Offline read + reconnect sync</td>
-<td>Reader</td>
-<td>Shipped</td>
-</tr>
-<tr>
-<td>Rate a book</td>
-<td>Library shelf (<code>BookCard</code>)</td>
-<td>Shipped</td>
-</tr>
-</tbody>
-</table>
-<h2 id="zoomed-journeys-per-surface">Zoomed journeys (per surface)<a class="headerlink" href="#zoomed-journeys-per-surface" title="Permanent link">&para;</a></h2>
-<p>The end-to-end diagram spans every role at one altitude. When working on a
-single surface, the zoomed diagrams carry more screen-level detail (error exits,
-the offline branch, the assignment sub-flow) without the cross-role noise.</p>
-<h3 id="kid-surface">Kid surface<a class="headerlink" href="#kid-surface" title="Permanent link">&para;</a></h3>
-<p><img alt="Kid-surface journey" src="../diagrams/journey-kid.svg" /></p>
-<p>The child-facing route tree (<code>/kids</code>, behind the landing page's Kids door). It
-adds detail the master view omits: the device-authorization branch at entry
-(ADR-014: an authorized device skips guardian login entirely; an unauthorized
-one routes through <code>/guardian/login?intent=authorize-device</code> once, then never
-again), the three-way "is the story available?" branch (a malformed link shows
-a friendly exit, a missing story shows not-found rather than the offline copy),
-the read-loop with its online/offline and 409-conflict branches, and rating as
-a library-shelf action reached after the ending returns the child to their
-books.</p>
-<h3 id="guardian-and-admin-surface">Guardian and admin surface<a class="headerlink" href="#guardian-and-admin-surface" title="Permanent link">&para;</a></h3>
-<p><img alt="Guardian and admin surface journey" src="../diagrams/journey-guardian.svg" /></p>
-<p>The parent-facing console (<code>/guardian</code> and <code>/admin</code>, both behind a single
-<code>AdultGate</code> at the root of the adult subtree, ADR-014). It details the
-request-and-approval pipeline: sign-in (now conditional: a cold session or a
-step-up crossing UP from kid mode, never adult-to-adult navigation),
-role-based landing (admin-only to <code>/admin</code>, guardian-only or dual-role to
-<code>/guardian</code>), profile management, the Intake request with its "Generating..."
-status, the review queue ordered Flagged then Ready then processing, the
-approve/send-back revision loop, and the assign / "Assign more" sub-flow.
-Approve is the admin-only ADR-005 gate.</p>
-<h3 id="device-authorization-adr-014">Device authorization (ADR-014)<a class="headerlink" href="#device-authorization-adr-014" title="Permanent link">&para;</a></h3>
-<p><img alt="Device grant sequence" src="../diagrams/seq-device-grant.svg" /></p>
-<p>The mechanical sequence behind the journey-level device-authorization notes
-above: minting a device grant (<code>POST /v1/device-grants</code>), the local (no
-network round-trip) client-side check <code>DeviceAuthorizedRoute</code> performs on
-every kid-surface page load, the backend verification and revocation check
-that runs when the grant is actually used to mint a child session or list
-profiles, and revocation (<code>DELETE /v1/device-grants/{id}</code>). See
-<a href="../../planning/adr/adr-014-device-authorized-kid-access/">ADR-014</a> for the
-full three-token model.</p>
-<h3 id="site-map-and-flows-adr-014">Site map and flows (ADR-014)<a class="headerlink" href="#site-map-and-flows-adr-014" title="Permanent link">&para;</a></h3>
-<p><img alt="Sitemap and flows" src="../diagrams/sitemap-and-flows.svg" /></p>
-<p>Every route in the app, its purpose, and how the pages link to each other,
-drawn as a nested-package component diagram (the same shape as
-<a href="../diagrams/component-api-persistence.svg">component-api-persistence</a>) rather
-than a swimlane journey. Three zones: the device-state-aware landing (<code>/</code>,
-<code>/guardian/login</code>), the Kid zone (<code>/kids</code>, <code>/library/:profileId</code>,
-<code>/read/:profileId/:storybookId/:version</code>, gated by <code>DeviceAuthorizedRoute</code>),
-and the Adult zone (<code>/guardian/*</code> with <code>/admin/*</code> nested inside it, gated by
-the single <code>AdultGate</code>). Solid arrows are ordinary in-zone navigation;
-distinctly styled dashed arrows and notes mark the two auth-boundary
-crossings (<code>DeviceAuthorizedRoute</code> at the landing-to-kid edge, <code>AdultGate</code> at
-the landing-to-adult edge and on the kid-to-adult step-up). Read it
-left-to-right within a zone and top-to-bottom across zones; the boundary
-arrows are the only edges that cost a credential check.</p>
-<h2 id="developer-view-test-coverage">Developer view: test coverage<a class="headerlink" href="#developer-view-test-coverage" title="Permanent link">&para;</a></h2>
-<p><img alt="Developer view of the journey overlaid with test coverage" src="../diagrams/journey-dev-coverage.svg" /></p>
-<p>This is the same end-to-end backbone recolored by automated test coverage, so
-the journey doubles as a Playwright/e2e gap map. It is the diagram to consult
-when deciding what e2e tests to write next.</p>
+<h1 id="adr-014-device-authorized-kid-access">ADR-014: Device-authorized kid access<a class="headerlink" href="#adr-014-device-authorized-kid-access" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p><strong>Deferred (2026-07-13):</strong> this diagram derives its backbone from
-<code>journey-end-to-end.puml</code> and has not been re-synced for the ADR-014 device-
-authorization and single-AdultGate changes above. Its coverage coloring is
-still accurate for the steps it shows; only the not-yet-recolored device-grant
-and step-up-boundary steps are the gap. Refresh it alongside the next e2e
-coverage pass rather than as part of this diagram update.</p>
+<p><strong>Status</strong>: Accepted (2026-07-13)
+<strong>Date</strong>: 2026-07-13
+<strong>Relates to</strong>: <a href="../adr-009-supabase-platform/">ADR-009</a> (Supabase auth and JWKS
+verification), <a href="../adr-005-mandatory-human-approval/">ADR-005</a> (guardian gating of the
+pipeline), <a href="../adr-002-client-pwa/">ADR-002</a> (offline-first client), <a href="../adr-012-supabase-cli-migrations/">ADR-012</a>
+(migration mechanism for the new table)</p>
 </blockquote>
+<h2 id="tldr">TL;DR<a class="headerlink" href="#tldr" title="Permanent link">&para;</a></h2>
+<p>Introduce a third token type, the <strong>device grant</strong>: a durable (90-day, revocable),
+family-scoped credential a guardian mints once per shared device. The child-session mint
+endpoint begins accepting the device grant as authority in addition to a guardian JWT, so a
+child can pick a profile and read, online or offline, without a live guardian Supabase session
+sitting in the device's <code>localStorage</code>. The kid surface (<code>/kids</code>, <code>/library</code>, <code>/read</code>) moves
+behind a local device-grant check (no Supabase in the kid bundle). The "Grown-ups only"
+password step-up is reframed from a per-page gate (which caused remount churn and repeated
+prompts) into a single <strong>kid-to-adult boundary crossing</strong>: adult-to-adult navigation is free
+once warm, and only crossing up from kid mode re-demands the password.</p>
+<h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
+<h3 id="problem">Problem<a class="headerlink" href="#problem" title="Permanent link">&para;</a></h3>
+<p>The product requires that a child cannot open the app on a device and start reading without a
+guardian having first authorized that device, yet once authorized the device must keep working
+for the child online <strong>and</strong> offline, without the guardian logging in again each time.</p>
+<p>Two facts about the code as of <code>feat/parental-gate-switch-account</code> make the naive approach
+impossible:</p>
+<ol>
+<li>
+<p><strong>Minting a child session already requires a live guardian/admin bearer</strong> server-side
+   (<code>api/child_sessions.py:72-74</code>), and that bearer is the guardian's short-lived Supabase
+   access token. So today a child can only begin reading while a guardian's live Supabase
+   session happens to be cached in <code>localStorage</code> (<code>auth_token</code>). When it expires, the child is
+   locked out. A purely client-side "device authorized" flag cannot fix this, because the mint
+   call is authorized on the server.</p>
+</li>
+<li>
+<p><strong>The parental step-up (<code>ParentalGate</code>) wraps individual adult pages</strong> that are siblings of
+   ungated ones (<code>router.tsx:119-137</code>), so React Router unmounts and remounts it as the user
+   crosses the nav bar. Its "warmed" state lived in module memory with a 5-minute TTL and was
+   deliberately reset on any page reload, so the switch-account OAuth round-trip (a full reload)
+   and ordinary nav both re-fired the password box. To the user this reads as "sign in again on
+   every page," even though the underlying Supabase session was healthy the whole time.</p>
+</li>
+</ol>
+<h3 id="constraints">Constraints<a class="headerlink" href="#constraints" title="Permanent link">&para;</a></h3>
 <ul>
-<li><strong>Green</strong> steps are exercised end-to-end by a Playwright spec under
-  <code>frontend/e2e/</code>.</li>
-<li><strong>Amber</strong> steps are built but only unit/component-tested (<code>frontend/src/**/*.test.tsx</code>).
-  Amber is the <strong>e2e backlog</strong>: shipped behavior with no browser-level test.</li>
-<li><strong>Red</strong> steps have no automated test at all; here they line up with the
-  not-yet-built steps.</li>
-<li><strong>Grey</strong> steps are backend work covered by pytest, out of frontend-e2e scope.</li>
+<li><strong>Technical</strong>: the kid route tree is a separate lazy chunk that intentionally does not import
+  <code>@supabase/supabase-js</code> (<code>router.tsx:42-56</code>, <code>GuardianAuthLayout.tsx</code>), preserving offline
+  operation and a small kid bundle. Any kid-side gate must not pull the Supabase client into
+  that chunk. Offline reading is served from IndexedDB (<code>offline/db.ts</code>, stores keyed by
+  profile/storybook), so a valid token is not required to read already-synced content; the token
+  gates online API calls and sync.</li>
+<li><strong>Security</strong>: children's profile data is COPPA-adjacent. A device left with a child must not
+  expose guardian/admin capabilities, and a lost device must be revocable. Supabase remains the
+  sole identity provider for adults (ADR-009); the device grant is an authorization artifact
+  derived from a Supabase-authenticated guardian, never a competing identity.</li>
+<li><strong>Operational</strong>: a solo operator; the model must be mechanically testable and must not add a
+  per-session login step for either the guardian (beyond first setup) or the child.</li>
 </ul>
-<h3 id="what-the-coverage-view-surfaces">What the coverage view surfaces<a class="headerlink" href="#what-the-coverage-view-surfaces" title="Permanent link">&para;</a></h3>
-<ul>
-<li>The <strong>kid surface is well covered end-to-end</strong>: reader (play-to-ending,
-  offline read, state-gated choices, malformed/missing error states, tap-target
-  and no-scroll a11y), library (hero, shelf, rating, empty, mobile), and sibling
-  assignment all have Playwright specs.</li>
-<li>The <strong>guardian console is now e2e-covered too</strong>: sign-in, profile management,
-  intake, the review queue, review detail, the send-back revision loop, and the
-  <strong>ADR-005 Approve gate</strong> all have Playwright specs alongside their existing
-  Vitest coverage. Approve carries two layers: a mocked e2e test
-  (<code>guardian-review.spec.ts</code>, including the guardian-403 fail-closed case) and a
-  real-backend smoke test (<code>e2e-real/approval-flow.spec.ts</code>) that exercises the
-  gate with zero mocks against a real FastAPI and Postgres stack. Run it with
-  <code>npm run test:e2e:real</code> (runbook: <code>frontend/README.md</code>).</li>
-<li>The reader <strong>409-conflict reconciliation</strong> path, once amber, now has a
-  dedicated spec covering both reconciliation outcomes.</li>
-<li>One residual gap: the offline-queue <strong>reconnect flush</strong> is untested because
-  it is unimplemented, <code>replayQueue</code> is never invoked by app code. See
-  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/issues/110">issue #110</a>.</li>
-</ul>
+<h3 id="significance">Significance<a class="headerlink" href="#significance" title="Permanent link">&para;</a></h3>
+<p>This decision defines how the two audiences share one physical device, and it establishes the
+separation between "this device is set up for kids" (durable) and "a grown-up is present right
+now" (ephemeral), which is the property that makes the kid-to-adult boundary enforceable.</p>
+<h2 id="decision">Decision<a class="headerlink" href="#decision" title="Permanent link">&para;</a></h2>
+<h3 id="1-a-third-token-type-the-device-grant">1. A third token type: the device grant<a class="headerlink" href="#1-a-third-token-type-the-device-grant" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Former e2e gap</th>
-<th>Covered by</th>
+<th>Token</th>
+<th>Means</th>
+<th>Lifetime</th>
+<th>Signing</th>
+<th>Audience</th>
+<th>Scope</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Guardian successful sign-in</td>
-<td><code>frontend/e2e/guardian-auth.spec.ts</code></td>
+<td>Supabase JWT</td>
+<td>a grown-up is present now</td>
+<td>short (auto-refresh)</td>
+<td>RS256/ES256 (JWKS)</td>
+<td><code>authenticated</code></td>
+<td>full guardian/admin per role</td>
 </tr>
 <tr>
-<td>Console review queue + ordering</td>
-<td><code>frontend/e2e/guardian-console.spec.ts</code></td>
+<td><strong>Device grant (new)</strong></td>
+<td>a grown-up authorized this device for their family</td>
+<td>90 days, revocable</td>
+<td>HS256</td>
+<td><code>cyo-device-grant</code></td>
+<td>list this family's profiles + mint child sessions, nothing else</td>
 </tr>
 <tr>
-<td>Review detail + <strong>Approve (ADR-005)</strong></td>
-<td><code>frontend/e2e/guardian-review.spec.ts</code> (+ <code>e2e-real/approval-flow.spec.ts</code>)</td>
-</tr>
-<tr>
-<td>Send-back / revision loop</td>
-<td><code>frontend/e2e/guardian-review.spec.ts</code></td>
-</tr>
-<tr>
-<td>Intake request + job status</td>
-<td><code>frontend/e2e/intake.spec.ts</code></td>
-</tr>
-<tr>
-<td>Guardian profile management</td>
-<td><code>frontend/e2e/guardian-profiles.spec.ts</code></td>
-</tr>
-<tr>
-<td>Reader 409-conflict reconciliation</td>
-<td><code>frontend/e2e/reader-conflict.spec.ts</code></td>
+<td>Child session</td>
+<td>this profile is reading</td>
+<td>12 hours, no refresh</td>
+<td>HS256</td>
+<td><code>cyo-child-session</code></td>
+<td>one profile's library/reading</td>
 </tr>
 </tbody>
 </table>
-<h2 id="related-pages">Related pages<a class="headerlink" href="#related-pages" title="Permanent link">&para;</a></h2>
+<p>The device grant carries <code>family_id</code>, <code>authorized_by</code> (the guardian's user id), and a <code>jti</code>. It
+is signed with a new <code>DEVICE_GRANT_SECRET</code> (validated at startup like <code>CHILD_SESSION_SECRET</code>,
+<code>config.py:591-653</code>) and recorded in a new <code>device_grant</code> table (singular, matching the
+SQLAlchemy <code>__tablename__</code>; the REST surface below is plural, <code>/v1/device-grants</code>, since it
+names a collection endpoint, not the table) so a guardian can list and revoke authorized
+devices. Revocation is enforced on online calls (jti checked against the table); it cannot be
+enforced offline, which is an accepted limitation bounded by the grant TTL.</p>
+<h3 id="2-the-child-session-mint-accepts-the-device-grant">2. The child-session mint accepts the device grant<a class="headerlink" href="#2-the-child-session-mint-accepts-the-device-grant" title="Permanent link">&para;</a></h3>
+<p><code>POST /v1/child-sessions</code> and the picker's <code>GET /v1/profiles</code> accept a device principal scoped
+to the matching <code>family_id</code>, in addition to guardian/admin. Per-profile PIN enforcement is
+unchanged (<code>child_sessions.py:100-113</code>). <code>api/deps.py</code> gains a third routing branch on the
+unverified <code>aud</code> claim (mirroring the child-session branch at <code>deps.py:442</code>), and the device
+principal is refused on every other route via an explicit allowlist, not a denylist.</p>
+<h3 id="3-the-kid-surface-is-gated-by-a-local-device-grant-check">3. The kid surface is gated by a local device-grant check<a class="headerlink" href="#3-the-kid-surface-is-gated-by-a-local-device-grant-check" title="Permanent link">&para;</a></h3>
+<p><code>DeviceAuthorizedRoute</code> wraps the kid tree. It inspects the durable device grant
+(<code>localStorage</code> + an IndexedDB mirror for offline resilience), decoding <code>exp</code>/<code>family_id</code>
+locally for routing only (the backend verifies the signature on use, the same trust split the
+child session already uses in <code>childSession.ts</code>). No <code>useAuth</code>, so the kid chunk stays
+Supabase-free. A missing or expired grant redirects to guardian login to authorize the device.</p>
+<h3 id="4-the-step-up-becomes-a-single-kid-to-adult-boundary">4. The step-up becomes a single kid-to-adult boundary<a class="headerlink" href="#4-the-step-up-becomes-a-single-kid-to-adult-boundary" title="Permanent link">&para;</a></h3>
+<p>The two <code>ParentalGate</code> placements collapse into one <code>AdultGate</code> at the root of the adult
+subtree. Logic: no Supabase session then login; session but not warm (cold entry, or returning
+from kid mode) then the password step-up; warm then free adult-to-adult navigation. Warm state
+moves to <code>sessionStorage</code> so it survives the switch-account OAuth reload, and is cleared on
+sign-out and on entering kid mode. Entering kid mode from an adult page explicitly parks the
+warm state, so returning up always re-demands the grown-up password.</p>
+<h3 id="5-device-state-aware-front-door">5. Device-state-aware front door<a class="headerlink" href="#5-device-state-aware-front-door" title="Permanent link">&para;</a></h3>
+<p>The two-door landing stays. On a device with no valid device grant, both doors route through
+guardian login (the Kids door logs a guardian in to authorize the device, then drops to
+<code>/kids</code>). On an authorized device, the Kids door goes straight to <code>/kids</code> (the grant supplies
+the authorizing family's profiles; the child needs only their PIN), and the Grown-ups door
+enters the <code>AdultGate</code>.</p>
+<h2 id="consequences">Consequences<a class="headerlink" href="#consequences" title="Permanent link">&para;</a></h2>
+<h3 id="positive">Positive<a class="headerlink" href="#positive" title="Permanent link">&para;</a></h3>
 <ul>
-<li><a href="../system-overview/">System Overview</a>: the same three actors as C4 boxes
-  rather than journey lanes.</li>
-<li><a href="../validation-and-player/">Validation and Player</a>: the reader engine and
-  offline sync that Act 6 rides on.</li>
-<li><a href="../generation-pipeline/">Generation Pipeline</a>: the System lane of Act 3 in
-  full.</li>
-<li><a href="../../planning/adr/adr-014-device-authorized-kid-access/">ADR-014: Device-authorized kid access</a>:
-  the decision behind the device grant and the single AdultGate boundary.</li>
-<li><a href="../data-model/#device_grant">Data Model: <code>device_grant</code></a>: the table backing
-  the device grant.</li>
-<li><a href="../../planning/authorization-matrix/#device-principal-adr-014">Authorization Matrix: Device principal</a>:
-  the endpoint-level allowlist and IDOR test for the device token.</li>
+<li>A child reads on an authorized device with only a per-profile PIN, online or offline, with no
+  guardian re-login, satisfying the core requirement.</li>
+<li>A child's device holds only a narrow, revocable, family-scoped grant, never a full guardian
+  session, which is a security improvement over today's implicit reliance on a cached
+  <code>auth_token</code>.</li>
+<li>The repeated-prompt bug is eliminated structurally: the step-up no longer remounts during
+  adult navigation and its warm state survives the OAuth reload.</li>
+<li>Role-based navigation (guardian-only, admin-only, dual-role cross-links) is made consistent as
+  part of the same change.</li>
+</ul>
+<h3 id="negative-risks">Negative / risks<a class="headerlink" href="#negative-risks" title="Permanent link">&para;</a></h3>
+<ul>
+<li>New credential type to secure and test. <code>#CRITICAL security:</code> the device principal must never
+  reach a guardian/admin route; <code>#VERIFY:</code> every guardian/admin endpoint is tested for 403 with
+  a device token, and the mint/profiles endpoints are tested for correct family scoping.</li>
+<li>Offline revocation is impossible; a lost device retains family profile-list and child-mint
+  capability until the grant expires or the device reconnects and the revocation is seen.
+  Bounded by the 90-day TTL and mitigated by the guardian-visible device list.</li>
+<li><code>#ASSUME security:</code> <code>sessionStorage</code> warm-state for the adult step-up is acceptable because it
+  clears on tab close, sign-out, and kid-mode entry; <code>#VERIFY:</code> those three clears are covered
+  by tests.</li>
+</ul>
+<h3 id="neutral">Neutral<a class="headerlink" href="#neutral" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Adds one table (<code>device_grant</code>, via Supabase CLI migration per ADR-012), one env var
+  (<code>DEVICE_GRANT_SECRET</code>), and three endpoints (<code>POST</code>/<code>GET</code>/<code>DELETE /v1/device-grants</code>). The
+  OpenAPI client is regenerated and the contract-drift CI job gates the diff.</li>
+</ul>
+<h2 id="alternatives-considered">Alternatives considered<a class="headerlink" href="#alternatives-considered" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Rely on Supabase refresh tokens to keep the guardian session alive on the kid device.</strong>
+  Rejected: it leaves a full guardian session on a child's device (the exact thing the step-up
+  exists to defend against) and still means "a grown-up is logged in here," which defeats the
+  boundary.</li>
+<li><strong>Client-side-only device flag, keep guardian-bearer minting.</strong> Rejected: the mint is
+  server-authorized, so a client flag cannot grant offline/after-expiry minting.</li>
+<li><strong>Keep the per-page parental gate, only fix the reload.</strong> Rejected: it fixes the symptom
+  (switch-account cold-start) but not the remount churn, and it keeps more friction than the
+  device-authorization model needs.</li>
 </ul>
 
 
@@ -3543,7 +3029,7 @@ coverage pass rather than as part of this diagram update.</p>
     <span class="md-icon" title="Created">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.47 15.08 11 13V7h1.5v5.25l3.08 1.83c-.41.28-.79.62-1.11 1m-1.39 4.84c-.36.05-.71.08-1.08.08-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8c0 .37-.03.72-.08 1.08.69.1 1.33.32 1.92.64.1-.56.16-1.13.16-1.72 0-5.5-4.5-10-10-10S2 6.5 2 12s4.47 10 10 10c.59 0 1.16-.06 1.72-.16-.32-.59-.54-1.23-.64-1.92M18 15v3h-3v2h3v3h2v-3h3v-2h-3v-3z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 4, 2026 20:31:56 UTC">July 4, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
   </span>
 
     
@@ -3620,10 +3106,10 @@ coverage pass rather than as part of this diagram update.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.indexes", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

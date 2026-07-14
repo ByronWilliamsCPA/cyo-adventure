@@ -4172,6 +4172,17 @@ private bucket, never a broadly public URL.</p>
 child-session split. Child tokens are scoped to reader and library endpoints. See
 <a href="../adr/adr-009-supabase-platform/">ADR-009</a>. Homelab/family-tier deployment remains per
 <a href="../adr/adr-004-homelab-first-deployment/">ADR-004</a>.</p>
+<p>A third token type, the <strong>device grant</strong> (ADR-014), sits between the guardian's
+Supabase JWT and the child session: a guardian mints a durable (90-day, revocable),
+family-scoped grant once per shared device (<code>POST /v1/device-grants</code>), signed HS256
+with a distinct audience (<code>cyo-device-grant</code>) and a dedicated <code>DEVICE_GRANT_SECRET</code>.
+A verified device grant then authorizes exactly two routes as an additional bearer
+alongside the guardian/admin Supabase token: minting a child session
+(<code>POST /v1/child-sessions</code>) and listing the family's profiles (<code>GET /v1/profiles</code>),
+so a child can keep reading, online or offline, without a live guardian session on
+the device. <code>Role.DEVICE</code> in <code>api/deps.py</code> can never hold the admin capability and
+carries no <code>profile_ids</code>, so it is refused on every other route. See
+<a href="../adr/adr-014-device-authorized-kid-access/">ADR-014</a>.</p>
 <h3 id="authorization">Authorization<a class="headerlink" href="#authorization" title="Permanent link">&para;</a></h3>
 <p>Enforced server-side on every endpoint. The token subject maps to an allowed-profile set;
 a guardian may act on any profile in their family, a child only on its own assigned
@@ -4186,6 +4197,7 @@ including one acting on their own family's story, may perform it. See
 <th>Action</th>
 <th>Guardian</th>
 <th>Child (own profile)</th>
+<th>Device (own family, ADR-014)</th>
 <th>Enforcement</th>
 </tr>
 </thead>
@@ -4194,23 +4206,34 @@ including one acting on their own family's story, may perform it. See
 <td>Read own library / story / state</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td>Token subject to allowed-profile set; 403 otherwise</td>
 </tr>
 <tr>
 <td>Write own reading state</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td>Same, plus <code>state_revision</code> and version guards</td>
 </tr>
 <tr>
 <td>Record a completion</td>
 <td>Any family profile</td>
 <td>Own profile only</td>
+<td>No (403)</td>
 <td><code>ending_id</code> must belong to the published version</td>
+</tr>
+<tr>
+<td>List profiles / mint a child session</td>
+<td>Any family profile</td>
+<td>No (403)</td>
+<td>Own family only</td>
+<td>Guardian/admin bearer, or a matching device grant (ADR-014)</td>
 </tr>
 <tr>
 <td>Generate / submit concept for review</td>
 <td>Yes</td>
+<td>No (403)</td>
 <td>No (403)</td>
 <td>Guardian role required; scoped to own family</td>
 </tr>
@@ -4218,10 +4241,12 @@ including one acting on their own family's story, may perform it. See
 <td>Approve and publish (single <code>in_review -&gt; published</code> transition)</td>
 <td>No (403)</td>
 <td>No (403)</td>
+<td>No (403)</td>
 <td>Global admin role required (<code>Role.ADMIN</code> / <code>is_admin</code>), cross-family; there is no guardian path</td>
 </tr>
 <tr>
 <td>Access another family's data</td>
+<td>No (403)</td>
 <td>No (403)</td>
 <td>No (403)</td>
 <td>Family ownership checked on every resource</td>
@@ -4231,7 +4256,9 @@ including one acting on their own family's story, may perform it. See
 <p><strong>IDOR negative tests</strong> (each expects 403): child A requesting child B's library or state;
 a child mutating <code>profile_id</code> in a reading-state <code>PUT</code>; a child calling approve or publish;
 a guardian calling approve or publish, including on their own family's story; a guardian
-from another family accessing a story.</p>
+from another family accessing a story; a device grant token calling any endpoint other
+than its two allowlisted routes (<code>POST /child-sessions</code>, <code>GET /profiles</code>), including its
+own device-grant management endpoints.</p>
 <h3 id="data-protection">Data Protection<a class="headerlink" href="#data-protection" title="Permanent link">&para;</a></h3>
 <ul>
 <li><strong>At Rest</strong>: encrypt Postgres (which holds the story blobs inline at launch) and, once
@@ -4422,7 +4449,7 @@ cap.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 11, 2026 11:00:23 UTC">July 11, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 15:01:05 UTC">July 14, 2026</span>
   </span>
 
     
