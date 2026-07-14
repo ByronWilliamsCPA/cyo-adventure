@@ -2831,6 +2831,78 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cve-2026-40467-cve-2026-40468-cve-2026-40469-cve-2026-40553-gawk-criticalhigh" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CVE-2026-40467, CVE-2026-40468, CVE-2026-40469, CVE-2026-40553 | gawk | Critical/High
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CVE-2026-40467, CVE-2026-40468, CVE-2026-40469, CVE-2026-40553 | gawk | Critical/High">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#description_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Description
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact-on-this-project_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact on This Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remediation-plan_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remediation Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-not-fixed-yet_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Fixed Yet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#references_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#resolved-entries" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -3113,6 +3185,91 @@ project-side upgrade path exists until Debian ships a fix.</p>
 <li>Discovered by the Container Security workflow (Trivy) on
   <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165">PR #165</a></li>
 </ul>
+<hr />
+<h2 id="cve-2026-40467-cve-2026-40468-cve-2026-40469-cve-2026-40553-gawk-criticalhigh">CVE-2026-40467, CVE-2026-40468, CVE-2026-40469, CVE-2026-40553 | gawk | Critical/High<a class="headerlink" href="#cve-2026-40467-cve-2026-40468-cve-2026-40469-cve-2026-40553-gawk-criticalhigh" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CVE ID</strong></td>
+<td>CVE-2026-40468, CVE-2026-40469 (Critical); CVE-2026-40467, CVE-2026-40553 (High)</td>
+</tr>
+<tr>
+<td><strong>Package</strong></td>
+<td>gawk (Debian binary package from the <code>gawk</code> source package)</td>
+</tr>
+<tr>
+<td><strong>Affected Version</strong></td>
+<td>1:5.2.1-2+b1 (Debian 13 "trixie")</td>
+</tr>
+<tr>
+<td><strong>Fixed Version</strong></td>
+<td>No fix available</td>
+</tr>
+<tr>
+<td><strong>Severity</strong></td>
+<td>Critical (CVE-2026-40468, CVE-2026-40469); High (CVE-2026-40467, CVE-2026-40553)</td>
+</tr>
+<tr>
+<td><strong>CVSS Score</strong></td>
+<td>Not yet assigned (NVD status RESERVED as of 2026-07-14)</td>
+</tr>
+<tr>
+<td><strong>Discovered</strong></td>
+<td>2026-07-14</td>
+</tr>
+<tr>
+<td><strong>Reassessment Due</strong></td>
+<td>2026-09-12</td>
+</tr>
+<tr>
+<td><strong>Blocking Release</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="description_3">Description<a class="headerlink" href="#description_3" title="Permanent link">&para;</a></h3>
+<p>Four memory-safety defects in GNU Awk reported against the <code>gawk</code> binary
+package: integer overflows in <code>builtin.c</code> (CVE-2026-40468, CVE-2026-40469), a
+use-after-free in <code>io.c</code> (CVE-2026-40467), and a buffer overflow
+(CVE-2026-40553). Exploitation requires processing an attacker-controlled awk
+program or crafted input through gawk.</p>
+<h3 id="impact-on-this-project_3">Impact on This Project<a class="headerlink" href="#impact-on-this-project_3" title="Permanent link">&para;</a></h3>
+<p><code>gawk</code> ships in the production runtime base image
+(<code>ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13</code>); the application does not
+install it and does not invoke it. The container runs a FastAPI web service
+that never shells out to <code>gawk</code> nor feeds it untrusted input, so none of the
+vulnerable code paths are reachable through the application surface. Exposure
+is negligible.</p>
+<h3 id="remediation-plan_3">Remediation Plan<a class="headerlink" href="#remediation-plan_3" title="Permanent link">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Monitor the <a href="https://security-tracker.debian.org/tracker/source-package/gawk">Debian security tracker</a>
+  for a fixed <code>gawk</code> package in trixie</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Once a fix ships, let the patched package flow in on the next image
+  rebuild, then remove the four <code>.trivyignore</code> entries</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Reassess by 2026-09-12 whether a fixed Debian package or NVD analysis
+  (CVSS, exploitability detail) is available</li>
+</ul>
+<h3 id="why-not-fixed-yet_3">Why Not Fixed Yet<a class="headerlink" href="#why-not-fixed-yet_3" title="Permanent link">&para;</a></h3>
+<p>Debian has not released a patched <code>gawk</code> for trixie (Trivy reports an empty
+Fixed Version with status <code>affected</code> for all four CVEs). The package is
+provided by the hardened base image, not managed by this project's dependency
+set, so no project-side upgrade path exists until Debian ships a fix.</p>
+<h3 id="references_3">References<a class="headerlink" href="#references_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-40468">Aqua AVD CVE-2026-40468</a></li>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-40469">Aqua AVD CVE-2026-40469</a></li>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-40467">Aqua AVD CVE-2026-40467</a></li>
+<li><a href="https://avd.aquasec.com/nvd/cve-2026-40553">Aqua AVD CVE-2026-40553</a></li>
+<li><a href="https://security-tracker.debian.org/tracker/source-package/gawk">Debian security tracker: gawk</a></li>
+<li>Discovered by the Container Security workflow (Trivy) on
+  <a href="https://github.com/ByronWilliamsCPA/cyo-adventure/pull/256">PR #256</a></li>
+</ul>
 <h2 id="resolved-entries">Resolved Entries<a class="headerlink" href="#resolved-entries" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
@@ -3152,6 +3309,11 @@ project-side upgrade path exists until Debian ships a fix.</p>
 <td>Byron Williams</td>
 <td>Added CVE-2026-53615 (libuuid1, runtime base image; no upstream fix).</td>
 </tr>
+<tr>
+<td>2026-07-14</td>
+<td>Byron Williams</td>
+<td>Added gawk CVE-2026-40467/40468/40469/40553 (runtime base image; no upstream fix).</td>
+</tr>
 </tbody>
 </table>
 
@@ -3176,7 +3338,7 @@ project-side upgrade path exists until Debian ships a fix.</p>
     <span class="md-icon" title="Last update">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1zM12.5 7v5.2l4 2.4-1 1L11 13V7zM11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2z"/></svg>
     </span>
-    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 8, 2026 19:27:35 UTC">July 8, 2026</span>
+    <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date" title="July 14, 2026 23:40:33 UTC">July 14, 2026</span>
   </span>
 
     
