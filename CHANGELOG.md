@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Guardian password recovery (ADR-009). The sign-in page now offers a "Forgot
   your password?" request that emails a reset link, with an
   enumeration-resistant confirmation that never reveals whether an account
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to actually set a new password.
 
 ### Fixed
+
 - Guardian login could loop back to the sign-in page indefinitely on a device
   that had cached an older build. The frontend nginx config served the service
   worker control scripts (`sw.js`, `registerSW.js`) with `Cache-Control:
