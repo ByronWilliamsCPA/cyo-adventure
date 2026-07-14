@@ -190,6 +190,27 @@ def _child_session_secret(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
+@pytest.fixture(autouse=True)
+def _device_grant_secret(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Configure a device-grant signing secret on the shared app singleton.
+
+    Mirrors ``_child_session_secret``: the module-level ``settings`` singleton
+    carries no secret by default, so any endpoint that mints or verifies a
+    device grant would raise ConfigurationError. A DISTINCT value from the
+    child-session secret pins that the two token families never accidentally
+    share a signing key.
+    """
+    from pydantic import SecretStr
+
+    from cyo_adventure.core.config import settings
+
+    monkeypatch.setattr(
+        settings,
+        "device_grant_secret",
+        SecretStr("integration-device-grant-secret-0123456789abcdef"),
+    )
+
+
 @pytest_asyncio.fixture
 async def client(
     sessions: async_sessionmaker[AsyncSession],

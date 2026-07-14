@@ -97,7 +97,7 @@ _PIPELINE_EVENT_TYPE_VALUES = (
     "'moderation_completed', 'repair_applied', 'sent_back', 'released', "
     "'threshold_changed', 'noise_floor_changed', 'book_assigned', 'rated'"
 )
-_PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin'"
+_PIPELINE_ACTOR_ROLE_VALUES = "'system', 'guardian', 'child', 'admin', 'device'"
 _PIPELINE_ENTITY_TYPE_VALUES = (
     "'story_request', 'generation_job', 'storybook', 'storybook_version', "
     "'series', 'storybook_assignment', 'rating', 'moderation_threshold', "
@@ -1088,3 +1088,39 @@ class GenerationJob(Base):
     updated_at: Mapped[datetime] = mapped_column(
         _TS, server_default=func.now(), onupdate=func.now()
     )
+
+
+class DeviceGrant(Base):
+    """A guardian-minted, revocable device authorization (ADR-014 phase 1).
+
+    A row here is the durable, database-backed counterpart to a device grant
+    JWT (``core/device_grant.py``): the token's ``jti`` claim matches this
+    row's ``jti`` column, so revocation (setting ``revoked_at``) is checked
+    against this table on every online use of the token. The token itself is
+    never stored; only its unique id and mint metadata are.
+
+    Attributes:
+        id: Surrogate primary key.
+        family_id: The family this device is authorized for (NOT NULL).
+        authorized_by: The guardian ``User.id`` who minted the grant.
+        label: An optional guardian-facing name for the device
+            ("Kitchen tablet"), so the device-list UI can show something more
+            useful than a bare id. Never derived from request headers
+            (User-Agent, etc.) to avoid trusting client-supplied identity.
+        jti: The unique id embedded in the token's ``jti`` claim. Unique so a
+            lookup by jti (the revocation check) is unambiguous.
+        created_at: Wall-clock insert time (UTC, TIMESTAMPTZ).
+        revoked_at: Wall-clock revocation time, or ``None`` while active.
+            Nullable rather than a boolean flag so the guardian-facing device
+            list can show *when* a device was revoked.
+    """
+
+    __tablename__ = "device_grant"
+
+    id: Mapped[uuid.UUID] = mapped_column(Uuid, primary_key=True, default=uuid.uuid4)
+    family_id: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_FAMILY), index=True)
+    authorized_by: Mapped[uuid.UUID] = mapped_column(ForeignKey(_FK_USER))
+    label: Mapped[str | None] = mapped_column(String(120), default=None)
+    jti: Mapped[uuid.UUID] = mapped_column(Uuid, unique=True)
+    created_at: Mapped[datetime] = mapped_column(_TS, server_default=func.now())
+    revoked_at: Mapped[datetime | None] = mapped_column(_TS, default=None)

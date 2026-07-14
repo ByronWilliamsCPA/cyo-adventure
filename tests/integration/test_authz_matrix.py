@@ -474,6 +474,27 @@ _ROUTE_SPECS: list[RouteSpec] = [
         frozenset({Role.GUARDIAN, Role.ADMIN}),
         json_body=_child_session_body,
     ),
+    # -- device_grants.py: guardian-or-admin management (child rejected;
+    # a DEVICE principal is also rejected by this same gate, but DEVICE is
+    # not in ALL_ROLES so it is not exercised by this matrix; see
+    # test_device_grants.py::test_device_token_cannot_mint_another_device_grant
+    # for that coverage) -------------------------------------------------
+    RouteSpec(
+        "POST",
+        "/api/v1/device-grants",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
+    ),
+    RouteSpec(
+        "GET",
+        "/api/v1/device-grants",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
+    ),
+    RouteSpec(
+        "DELETE",
+        "/api/v1/device-grants/{grant_id}",
+        frozenset({Role.GUARDIAN, Role.ADMIN}),
+        path_params=_random_uuid_path("grant_id"),
+    ),
     # -- onboarding.py: JIT provisioning; any verified subject (P6-03) -------
     # Onboarding runs BEFORE a principal exists (its whole purpose is to accept
     # a verified subject that has no User row yet), so it has no role gate: each

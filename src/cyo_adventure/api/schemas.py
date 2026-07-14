@@ -1082,6 +1082,52 @@ class ChildSessionView(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Device grants (ADR-014 phase 1)
+# ---------------------------------------------------------------------------
+
+
+class DeviceGrantCreateBody(BaseModel):
+    """A guardian's (or admin's) request to mint a device grant.
+
+    ``family_id`` is optional and mirrors ``StoryRequestAuthoredCreateBody``:
+    a guardian must omit it (it always resolves to their own family) and an
+    admin-only caller must supply it (an admin has no family of its own to
+    default to). ``label`` is a free-text, guardian-facing name for the
+    device ("Kitchen tablet"); never derived from request headers.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    family_id: str | None = None
+    label: Annotated[str, StringConstraints(max_length=120)] | None = None
+
+
+class DeviceGrantView(BaseModel):
+    """A minted device grant token and its record.
+
+    The token is a backend-signed, durable (90-day) JWT the kid surface's
+    device-authorization check uses; see ``core/device_grant.py`` for the
+    trust model. Returned ONLY at mint time, never again: ``GET
+    /device-grants`` (``DeviceGrantListItem``) never includes it.
+    """
+
+    id: str
+    token: str
+    expires_at: datetime
+    family_id: str
+    authorized_by: str
+
+
+class DeviceGrantListItem(BaseModel):
+    """One row of a family's device-grant list. Never carries the token."""
+
+    id: str
+    label: str | None
+    created_at: datetime
+    revoked_at: datetime | None
+
+
+# ---------------------------------------------------------------------------
 # JIT guardian onboarding (P6-03)
 # ---------------------------------------------------------------------------
 

@@ -439,6 +439,43 @@ class Settings(BaseSettings):
         ),
     )
 
+    # --- Device grant tokens (ADR-014 phase 1) ---
+    # A guardian mints a durable, family-scoped, backend-signed (HS256) token
+    # once per shared device; core/device_grant.py mints/verifies it, and
+    # api/deps.py routes it to a third principal branch alongside the
+    # guardian OIDC and child-session branches. This secret is DISTINCT from
+    # both child_session_secret and the Supabase JWKS; a device grant must
+    # never verify against either of the other two signing keys. Optional
+    # here so local dev needs no config; _require_device_grant_secret_outside_local
+    # below fails fast outside "local", mirroring child_session_secret.
+    # #CRITICAL: security: this is the device-grant signing key; never log
+    # its value or echo it in an error message, and never reuse the
+    # child-session or any Supabase key for it.
+    # #VERIFY: core/device_grant.py reads it only via get_secret_value() at
+    # mint/verify time; no error message includes the secret.
+    device_grant_secret: SecretStr | None = Field(
+        default=None, validation_alias="DEVICE_GRANT_SECRET"
+    )
+    # Device-grant lifetime in seconds. Default 7,776,000 (90 days, ADR-014):
+    # long enough that a shared family device stays authorized between
+    # guardian visits, short enough to bound a lost/stolen device's exposure
+    # given that revocation cannot be enforced offline (ADR-014, "Negative /
+    # risks"). The model sets env_prefix="cyo_adventure_", so the unprefixed
+    # DEVICE_GRANT_TTL_SECONDS the .env templates document only binds because
+    # of this explicit alias; mirrors child_session_ttl_seconds.
+    # #EDGE: data integrity: ge=1 rejects a zero/negative TTL that would mint
+    # already-expired tokens; a misconfig fails fast at startup rather than
+    # at first read.
+    # #VERIFY: test_config parses DEVICE_GRANT_TTL_SECONDS and rejects TTL<=0.
+    device_grant_ttl_seconds: int = Field(
+        default=7_776_000,
+        ge=1,
+        validation_alias=AliasChoices(
+            "CYO_ADVENTURE_DEVICE_GRANT_TTL_SECONDS",
+            "DEVICE_GRANT_TTL_SECONDS",
+        ),
+    )
+
     # --- Proxy trust boundary (Task E1, audit Group A: A1 rate-limit keying / A2 HSTS) ---
     # #CRITICAL: security: this CIDR is a trust boundary, not just documentation.
     # It is consumed by uvicorn's --forwarded-allow-ips CLI flag (set from this same
@@ -654,6 +691,73 @@ class Settings(BaseSettings):
                 f"non-placeholder value of at least {min_secret_bytes} bytes to "
                 f"safely sign child session tokens; refusing to start in "
                 f"'{self.environment}' (G1 / P6-04)."
+            )
+            raise ConfigurationError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def _require_device_grant_secret_outside_local(self) -> Settings:
+        """Fail fast on a missing or weak device-grant signing secret outside local.
+
+        Mirrors ``_require_child_session_secret_outside_local`` (ADR-014
+        phase 1): outside "local" a device grant can neither be minted nor
+        verified without this secret, so a non-local process with no secret
+        could not authorize any device; refuse to start rather than silently
+        disable device authorization.
+
+        The same weak/placeholder-secret reasoning applies as for
+        ``child_session_secret``: an empty ``SecretStr("")`` passes a plain
+        ``is None`` check but makes ``jwt.encode`` raise ``InvalidKeyError``,
+        500ing every mint, and a short or placeholder secret signs real,
+        forgeable device grants with a weak HMAC key.
+
+        #CRITICAL: security: rejecting weak/placeholder keys here is the
+        device-grant forgery boundary; a short HMAC key lets an attacker mint
+        a valid device grant for any family.
+        #VERIFY: the error message never echoes the secret value; test_config
+        rejects empty, whitespace, sub-32-byte, and placeholder secrets.
+
+        Raises:
+            ConfigurationError: when ``environment`` is not ``local`` and
+                ``device_grant_secret`` is unset, empty, shorter than 32
+                bytes, or a known placeholder.
+        """
+        if self.environment == "local":
+            return self
+
+        if self.device_grant_secret is None:
+            msg = (
+                "DEVICE_GRANT_SECRET must be set in non-local environments; "
+                f"refusing to start in '{self.environment}' with no way to sign "
+                "or verify device grant tokens (ADR-014)."
+            )
+            raise ConfigurationError(msg)
+
+        secret = self.device_grant_secret.get_secret_value()
+        min_secret_bytes = 32
+        # Reject known scaffolding placeholders regardless of length so a
+        # copied .env template can never sign real tokens. Compared casefolded
+        # against the stripped value; never interpolate `secret` into an error.
+        placeholders = {
+            "replace_me",
+            "changeme",
+            "change_me",
+            "your_secret_here",
+            "your-secret-here",
+            "secret",
+            "xxx",
+        }
+        stripped = secret.strip()
+        if (
+            not stripped
+            or len(secret.encode("utf-8")) < min_secret_bytes
+            or stripped.casefold() in placeholders
+        ):
+            msg = (
+                "DEVICE_GRANT_SECRET is set but too weak: it must be a "
+                f"non-placeholder value of at least {min_secret_bytes} bytes to "
+                f"safely sign device grant tokens; refusing to start in "
+                f"'{self.environment}' (ADR-014)."
             )
             raise ConfigurationError(msg)
         return self
