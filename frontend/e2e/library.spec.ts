@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { seedDeviceGrant } from './support/auth'
+
 /**
  * Coverage for the C4a-3 kid library page (`/library/:profileId`): the
  * Continue Reading hero, the More to Explore shelf, tap-to-rate stars, and
@@ -59,6 +61,9 @@ test.beforeEach(async ({ context, page }) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-fox')
   })
+  // ADR-014: the kid surface is gated by DeviceAuthorizedRoute; without a
+  // valid device grant /library/* redirects to guardian login.
+  await seedDeviceGrant(context)
   await page.route('**/api/v1/profiles', (route) => route.fulfill({ json: PROFILES }))
 })
 

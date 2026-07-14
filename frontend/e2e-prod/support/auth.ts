@@ -47,14 +47,23 @@ export async function signInAsProdTestAdmin(page: Page): Promise<void> {
 }
 
 /**
- * Completes the ParentalGate re-auth challenge if `page.goto()` landed on it.
+ * Completes the AdultGate re-auth challenge if `page.goto()` landed on it.
+ * Defensive fallback: after a real Supabase sign-in the gate is usually
+ * already warm (see below), so this is typically a no-op, but it keeps the
+ * suite robust if a navigation ever lands cold.
  *
- * parentalGateState.ts keeps the gate's unlock state in module-level JS
- * memory only, by design (a page reload must always re-challenge). Every
- * test in this tier navigates via `page.goto()`, which is a full document
- * reload, so a gated route (`/guardian`, `/guardian/profiles`) always starts
- * cold here even though the underlying Supabase session (localStorage)
- * survives the navigation. No-op when the target route is not gated.
+ * ADR-014 reworked this boundary. The two former per-page ParentalGate
+ * placements collapsed into a single AdultGate at the adult-subtree root, and
+ * its warm state moved from module-level JS memory to sessionStorage: keyed by
+ * userId, with a 5-minute TTL, and warmed on the SIGNED_IN auth event
+ * (AuthContext). Two consequences for this tier:
+ *   1. A real sign-in warms the gate, so the first adult-console navigation is
+ *      generally NOT cold.
+ *   2. sessionStorage survives same-tab `page.goto()` navigation, so once the
+ *      gate is warm the remaining goto()s in this shared-page suite ride that
+ *      warmth (within the TTL) rather than each re-challenging.
+ * The gate re-locks only on TTL expiry, sign-out, or crossing down into the
+ * kid surface (which this suite never does).
  */
 export async function unlockParentalGateIfPresent(page: Page): Promise<void> {
   const gateHeading = page.getByRole('heading', { name: 'Grown-ups only', level: 1 })

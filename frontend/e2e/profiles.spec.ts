@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test'
 
+import { seedDeviceGrant } from './support/auth'
+
 /**
  * Coverage for the C4a-2 profile-management flows: the kid-surface Profile
  * Picker (`/kids`) and its two states (populated, empty). Both mock
@@ -42,6 +44,9 @@ test.beforeEach(async ({ context }) => {
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'child-fox')
   })
+  // ADR-014: the kid surface is gated by DeviceAuthorizedRoute; without a
+  // valid device grant /kids redirects to guardian login.
+  await seedDeviceGrant(context)
 })
 
 test('picker renders both profile tiles and links to the guardian surface (US: profile picker)', async ({

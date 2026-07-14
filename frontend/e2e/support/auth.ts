@@ -74,6 +74,102 @@ export async function seedGuardianSession(
 }
 
 /**
+ * A password-identity session variant: app_metadata records the 'email'
+ * provider, so AdultGate's hasPassword check (AdultGate.tsx:180) is true. Every
+ * other seeded guardian session leaves app_metadata empty and therefore takes
+ * the OAuth-bypass branch, which is why the mocked tier never exercises a real
+ * locked "Grown-ups only" challenge. A seeded session fires INITIAL_SESSION,
+ * not SIGNED_IN, so the gate stays cold (AuthContext only warms on SIGNED_IN),
+ * and a cold + has-password entry renders the challenge.
+ */
+export function makePasswordGuardianSession(accessToken: string) {
+  const session = makeGuardianSession(accessToken)
+  return {
+    ...session,
+    user: { ...session.user, app_metadata: { provider: 'email', providers: ['email'] } },
+  }
+}
+
+/** Seed a cold password-identity session so a cold adult entry hits the gate. */
+export async function seedPasswordGuardianSession(
+  context: BrowserContext,
+  accessToken = 'e2e-guardian-token'
+): Promise<void> {
+  const payload = JSON.stringify(makePasswordGuardianSession(accessToken))
+  await context.addInitScript(
+    ([key, value, token]) => {
+      window.localStorage.setItem(key, value)
+      window.localStorage.setItem('auth_token', token)
+    },
+    [SUPABASE_SESSION_KEY, payload, accessToken] as const
+  )
+}
+
+export interface DeviceGrantSeed {
+  token: string
+  /** ISO 8601 timestamp; mirrors DeviceGrantView.expires_at (deviceGrant.ts). */
+  expiresAt: string
+  familyId: string
+  id: string
+}
+
+export const DEFAULT_DEVICE_GRANT: DeviceGrantSeed = {
+  token: 'e2e-device-grant-token',
+  expiresAt: '2100-01-01T00:00:00Z', // far future: never expires mid-test
+  familyId: 'fam-1',
+  id: 'device-1',
+}
+
+/**
+ * Seed a valid device grant into localStorage before any page loads, so
+ * DeviceAuthorizedRoute (ADR-014) renders the kid surface (/kids, /library/*,
+ * /read/*) on first render instead of redirecting to guardian login. The gate
+ * checks only the grant's shape and client-side expiry, not familyId, so any
+ * non-expired blob unlocks the kid routes. Pair with the existing auth_token
+ * seed for kid specs that also issue mocked API calls.
+ */
+export async function seedDeviceGrant(
+  context: BrowserContext,
+  overrides: Partial<DeviceGrantSeed> = {}
+): Promise<void> {
+  const grant = JSON.stringify({ ...DEFAULT_DEVICE_GRANT, ...overrides })
+  await context.addInitScript((value) => {
+    window.localStorage.setItem('device_grant', value)
+  }, grant)
+}
+
+/**
+ * Mock the device-grant CRUD endpoints for the guardian console's "This
+ * device" section and the authorize-device login intent (ADR-014). POST
+ * returns a DeviceGrantView-shaped body; GET lists the current grants; DELETE
+ * revokes. Call before navigating to a page that drives device authorization.
+ */
+export async function mockDeviceGrants(
+  page: Page,
+  grant: Partial<DeviceGrantSeed> = {}
+): Promise<void> {
+  const view = { ...DEFAULT_DEVICE_GRANT, ...grant }
+  const body = {
+    id: view.id,
+    token: view.token,
+    family_id: view.familyId,
+    expires_at: view.expiresAt,
+    label: 'This device',
+    created_at: '2026-07-13T00:00:00Z',
+    revoked_at: null,
+  }
+  await page.route('**/api/v1/device-grants', (route) => {
+    if (route.request().method() === 'POST') {
+      return route.fulfill({ status: 201, json: body })
+    }
+    return route.fulfill({ json: { device_grants: [body] } })
+  })
+  await page.route('**/api/v1/device-grants/*', (route) =>
+    route.fulfill({ status: 204, body: '' })
+  )
+}
+
+/**
  * Mock GET /api/v1/me. Pass { role: 'admin' } for admin-gate tests; the
  * is_admin capability defaults from the role so an 'admin' persona passes
  * the /admin route gate without every call site spelling out the flag. Pass
