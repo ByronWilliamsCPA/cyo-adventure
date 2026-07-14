@@ -70,6 +70,7 @@ export function LoginPage() {
     principal,
     authError,
     recovery,
+    recoveryError,
     signInWithOAuth,
     signInWithPassword,
     signOut,
@@ -80,7 +81,10 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [showReset, setShowReset] = useState(false)
+  // A failed recovery link (expired/already-used) means there is nothing to
+  // recover into, so pre-open the reset-request panel instead of leaving the
+  // guardian to rediscover "Forgot your password?" on their own.
+  const [showReset, setShowReset] = useState(Boolean(recoveryError))
   const [resetEmail, setResetEmail] = useState('')
   const [resetStatus, setResetStatus] = useState<'idle' | 'sent' | 'error'>('idle')
   const [resetSubmitting, setResetSubmitting] = useState(false)
@@ -136,7 +140,11 @@ export function LoginPage() {
   // #VERIFY: LoginPage.test.tsx "falls back to the normal redirect when the
   // mint is rejected (e.g. admin-only, no family)".
   useEffect(() => {
-    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal) return
+    // #EDGE: security: an unusual URL could combine a device-authorization
+    // intent with an active recovery landing; recovery must win so the
+    // guardian sets a new password before any device grant is minted on
+    // their behalf.
+    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal || recovery) return
     if (hasValidDeviceGrant()) {
       // Defensive: a grant already covers this device (e.g. a second tab
       // completed the mint first). Still shed the guardian session before
@@ -193,7 +201,7 @@ export function LoginPage() {
     return () => {
       cancelled = true
     }
-  }, [authorizeDeviceIntent, status, principal, api, navigate, signOut])
+  }, [authorizeDeviceIntent, status, principal, recovery, api, navigate, signOut])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the
@@ -257,7 +265,13 @@ export function LoginPage() {
     try {
       await requestPasswordReset(resetEmail)
       setResetStatus('sent')
-    } catch {
+    } catch (err) {
+      // The user-facing message stays the same generic "couldn't send a
+      // reset link" regardless of cause (no enumeration leak either way);
+      // logging the real cause here is what makes a genuine bug
+      // distinguishable from a transient network blip in production
+      // monitoring, since nothing else observes this rejection.
+      logApiError('password-reset request failed', err)
       setResetStatus('error')
     } finally {
       setResetSubmitting(false)
@@ -298,6 +312,11 @@ export function LoginPage() {
     <div className="guardian-login">
       <h1>Guardian sign-in</h1>
       <p>Sign in to review, approve, and request stories for your family.</p>
+      {recoveryError ? (
+        <p role="alert" className="guardian-login__error cyo-text-error">
+          That password reset link is invalid or has expired. Request a new one below.
+        </p>
+      ) : null}
       <button
         type="button"
         className="guardian-login__provider"

@@ -1,12 +1,18 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { AuthContextValue } from '../auth/authContext'
 import { SetNewPasswordForm } from './SetNewPasswordForm'
 
 const mockUpdatePassword = vi.fn()
 
+// Typed against AuthContextValue (via Pick) rather than a bare object literal
+// so a future rename/reshape of updatePassword's real signature fails to
+// typecheck here, instead of only failing at runtime.
 vi.mock('../auth/useAuth', () => ({
-  useAuth: () => ({ updatePassword: mockUpdatePassword }),
+  useAuth: (): Pick<AuthContextValue, 'updatePassword'> => ({
+    updatePassword: mockUpdatePassword,
+  }),
 }))
 
 function fillPasswords(newPassword: string, confirm: string) {
@@ -50,14 +56,49 @@ describe('SetNewPasswordForm', () => {
     expect(mockUpdatePassword).not.toHaveBeenCalled()
   })
 
-  it('surfaces a server-side failure from updatePassword', async () => {
+  it('surfaces the real Supabase rejection reason from updatePassword', async () => {
     // A backend password-policy rejection (or an expired recovery session) must
-    // be shown so the guardian can retry, not swallowed.
-    mockUpdatePassword.mockRejectedValue(new Error('New password should be different'))
+    // be shown verbatim so the guardian can fix the actual problem, not a
+    // generic message that leaves them guessing.
+    mockUpdatePassword.mockRejectedValue(
+      new Error('New password should be different from the old password')
+    )
+    render(<SetNewPasswordForm />)
+    fillPasswords('new-password-123', 'new-password-123')
+    fireEvent.click(screen.getByRole('button', { name: /set new password/i }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      /new password should be different from the old password/i
+    )
+  })
+
+  it('falls back to a generic message when updatePassword rejects with a non-Error value', async () => {
+    mockUpdatePassword.mockRejectedValue('boom')
     render(<SetNewPasswordForm />)
     fillPasswords('new-password-123', 'new-password-123')
     fireEvent.click(screen.getByRole('button', { name: /set new password/i }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't update your password/i)
+  })
+
+  it('submits via native Enter-key form submission, not only the button click', async () => {
+    render(<SetNewPasswordForm />)
+    fillPasswords('new-password-123', 'new-password-123')
+    fireEvent.submit(screen.getByRole('button', { name: /set new password/i }).closest('form')!)
+    await waitFor(() => expect(mockUpdatePassword).toHaveBeenCalledWith('new-password-123'))
+  })
+
+  it('does not submit a second time while the first update is still in flight', async () => {
+    let resolveUpdate: (value?: unknown) => void = () => {}
+    mockUpdatePassword.mockReturnValue(
+      new Promise((resolve) => {
+        resolveUpdate = resolve
+      })
+    )
+    render(<SetNewPasswordForm />)
+    fillPasswords('new-password-123', 'new-password-123')
+    fireEvent.click(screen.getByRole('button', { name: /set new password/i }))
+    fireEvent.click(await screen.findByRole('button', { name: /saving/i }))
+    expect(mockUpdatePassword).toHaveBeenCalledTimes(1)
+    resolveUpdate()
   })
 
   it('shows a busy state while the update is in flight and re-enables after a failure', async () => {

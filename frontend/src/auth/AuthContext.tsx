@@ -13,7 +13,12 @@ import {
 } from './authContext'
 import { clearChildSession } from './childSession'
 import { clearAdultGate, warmAdultGate } from './parentalGateState'
-import { isPasswordRecovery, supabase } from './supabaseClient'
+import {
+  isPasswordRecovery,
+  RECOVERY_BROADCAST_CHANNEL_NAME,
+  recoveryErrorFromUrl,
+  supabase,
+} from './supabaseClient'
 import { isRole, type Principal } from './types'
 
 const TOKEN_STORAGE_KEY = 'auth_token'
@@ -62,6 +67,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // event below, so a recovery landing is caught whether the flag or the event
   // wins the race. Cleared on a successful updatePassword or on sign-out.
   const [recovery, setRecovery] = useState(isPasswordRecovery)
+  // Frozen once per page load, same as isPasswordRecovery/recoveryErrorFromUrl
+  // themselves; a failed recovery link never transitions into a successful
+  // one within a single load, so this needs no setter.
+  const recoveryError = recoveryErrorFromUrl
 
   // #CRITICAL: concurrency: onAuthStateChange can fire several events in quick
   // succession (INITIAL_SESSION, then a near-immediate TOKEN_REFRESHED), each
@@ -175,6 +184,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // link's hash. Flip into recovery here (in addition to the module-level
       // seed) so the set-new-password form shows even when the event, not the
       // frozen flag, is what surfaces the recovery intent.
+      // #ASSUME: timing dependencies: this races the module-level
+      // isPasswordRecovery seed above (both can set recovery=true for the
+      // same landing); relying on either alone would miss the case where the
+      // other loses its race, so both stay in place.
+      // #VERIFY: AuthContext.test.tsx "sets recovery from the PASSWORD_RECOVERY
+      // event" and the module-level-seed recovery test.
       if (event === 'PASSWORD_RECOVERY') setRecovery(true)
       void syncPrincipal(session, event)
     })
@@ -185,12 +200,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [api])
 
+  // #CRITICAL: concurrency: see RECOVERY_BROADCAST_CHANNEL_NAME's doc comment
+  // in supabaseClient.ts. A stale second guardian tab never sees the recovery
+  // hash or a PASSWORD_RECOVERY event (both scoped to the tab that followed
+  // the link), so without this listener Supabase's cross-tab session sync
+  // would flip this tab straight to signed-in on the guardian's OLD password.
+  // #VERIFY: AuthContext.test.tsx "a second tab enters recovery when notified
+  // over the recovery broadcast channel".
+  useEffect(() => {
+    if (typeof BroadcastChannel === 'undefined') return
+    const channel = new BroadcastChannel(RECOVERY_BROADCAST_CHANNEL_NAME)
+    channel.onmessage = () => setRecovery(true)
+    return () => channel.close()
+  }, [])
+
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
       principal,
       authError,
       recovery,
+      recoveryError,
       // #ASSUME: data-integrity: supabase-js auth methods resolve with
       // { error } instead of throwing, so an unchecked await silently
       // swallows a failed OAuth redirect or sign-out. Rethrow so callers
@@ -256,7 +286,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearAdultGate()
         // Abandoning a recovery flow (signing out from the set-new-password
         // form) must not leave the provider stuck in recovery for the next
-        // session on this device.
+        // session on this device. Cleared unconditionally, before the network
+        // call, for the same fail-closed reason as safeRemoveToken() and
+        // clearAdultGate() above: a device must never be left parked on the
+        // set-new-password gate just because the network revoke below failed.
         setRecovery(false)
         const { error } = await supabase.auth.signOut()
         if (error) throw error
@@ -282,13 +315,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // console (the recovery session is now an ordinary signed-in session); a
       // failed update leaves recovery set and the form visible.
       // #VERIFY: AuthContext.test.tsx updatePassword clears/keeps recovery.
+      // #ASSUME: security: this does not revoke any OTHER active session for
+      // the account (e.g. a guardian signed in on a second device with the old
+      // password). supabase-js's client-side updateUser() has no session-scope
+      // parameter for this; only the Supabase Auth server config ("revoke
+      // sessions on password change") or the admin API (auth.admin.signOut with
+      // a scope) can do it, and neither is wired up here.
+      // #VERIFY: confirm the Supabase project's Auth settings before R2
+      // (revoke-other-sessions-on-password-change), or accept this as a known
+      // limitation and document it in SECURITY.md.
       updatePassword: async (newPassword) => {
         const { error } = await supabase.auth.updateUser({ password: newPassword })
         if (error) throw error
         setRecovery(false)
       },
     }),
-    [status, principal, authError, recovery]
+    [status, principal, authError, recovery, recoveryError]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -79,10 +79,13 @@ vi.mock('../auth/supabaseClient', () => ({
       updateUser: vi.fn(),
     },
   },
-  // AuthProvider reads this at mount (useState seed). Vitest mocks throw on
-  // access to an undeclared export, so it must be present even though these
-  // router tests never exercise the recovery flow.
+  // AuthProvider reads these at mount (useState seed / recoveryError const /
+  // BroadcastChannel name). Vitest mocks throw on access to an undeclared
+  // export, so all three must be present even though these router tests
+  // never exercise the recovery flow.
   isPasswordRecovery: false,
+  recoveryErrorFromUrl: null,
+  RECOVERY_BROADCAST_CHANNEL_NAME: 'cyo-guardian-recovery',
 }))
 
 function renderAt(initialPath: string) {
