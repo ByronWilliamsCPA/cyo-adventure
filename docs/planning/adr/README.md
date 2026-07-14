@@ -38,6 +38,7 @@ ADRs document significant architectural decisions along with their context and c
 | [ADR-011](./adr-011-story-scale-framework.md) | Story-scale framework (reading band x length x style) | Accepted | 2026-07-02 |
 | [ADR-012](./adr-012-supabase-cli-migrations.md) | Supabase CLI SQL migrations replace Alembic | Accepted | 2026-07-10 |
 | [ADR-013](./adr-013-hybrid-pqc-readiness.md) | Hybrid post-quantum cryptography readiness | Accepted | 2026-07-11 |
+| [ADR-014](./adr-014-device-authorized-kid-access.md) | Device-authorized kid access | Accepted | 2026-07-13 |
 
 ## Creating ADRs
 
