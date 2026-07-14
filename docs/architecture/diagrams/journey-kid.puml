@@ -6,7 +6,11 @@
 ' Node fill: white = shipped today, rose = planned (not yet built).
 '
 ' Source screens:
-'   frontend/src/router.tsx  (kid route tree: /, /library/:profileId, /read/...)
+'   frontend/src/router.tsx  (kid route tree: /kids, /library/:profileId, /read/...;
+'     DeviceAuthorizedRoute wraps the whole tree, ADR-014)
+'   frontend/src/auth/DeviceAuthorizedRoute.tsx, auth/deviceGrant.ts (ADR-014:
+'     local device-grant check, Supabase-free)
+'   frontend/src/landing/LandingPage.tsx  (device-state-aware Kids door)
 '   frontend/src/kid/ProfilePickerPage.tsx
 '   frontend/src/library/LibraryPage.tsx, BookCard.tsx, StarRating.tsx
 '   frontend/src/library/RequestStory.tsx  (child-initiated request, WS-B;
@@ -33,11 +37,18 @@ skinparam NoteBorderColor #c9b48f
 
 |#F0D9B8|Child|
 start
-:Open the app;
+:Open the app
+(tap the Kids door);
+if (Is this device authorized?\n(local device-grant check,\nno guardian login, no Supabase\nround-trip)) then (yes)
+else (no)
+  :Guardian signs in and
+  authorizes this device;
+  note right: /guardian/login?intent=authorize-device  •  shipped\nADR-014 -- mints a 90-day device grant, then\ndrops back here; a returning authorized device\nnever sees this step again
+endif
 :Tap my avatar
 (2-column picker,
 dashed circle if none);
-note right: /  (Profile Picker)  •  shipped
+note right: /kids  (Profile Picker)  •  shipped
 
 :See "new story ready!"
 on my avatar;
@@ -115,8 +126,11 @@ legend bottom
   |<back:#FFFDF8>  white  </back>| Shipped in the kid app today |
   |<back:#F3D9D4>  rose   </back>| Planned, not yet built |
   The kid surface is a separate route tree from the guardian console and shares
-  no navigation. See journey-guardian for the parent side, journey-end-to-end
-  for the whole loop, and journey-dev-coverage for test coverage.
+  no navigation. ADR-014: the whole tree sits behind a local device-grant check
+  (DeviceAuthorizedRoute), not a per-page gate, and stays Supabase-free.
+  See journey-guardian for the parent side, seq-device-grant for the mint/verify/
+  revoke mechanics, journey-end-to-end for the whole loop, and journey-dev-coverage
+  for test coverage.
 endlegend
 
 @enduml

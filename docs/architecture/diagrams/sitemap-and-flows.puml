@@ -1,0 +1,161 @@
+@startuml sitemap-and-flows
+' ============================================================
+' Component Diagram: Route / Page Sitemap and Navigation Flows
+' CYO Adventure (ADR-014: device-authorized kid access)
+'
+' A route/page graph in the style of component-api-persistence.puml, not a
+' user journey: every page, its purpose, and how the pages link to each
+' other. Three zones: the device-state-aware landing, the Kid zone (gated by
+' a local device-grant check), and the Adult zone (Guardian console with the
+' Admin console nested inside it, gated by a single AdultGate). Solid arrows
+' are ordinary in-zone navigation; the two auth-boundary crossings
+' (DeviceAuthorizedRoute, AdultGate) are drawn as distinctly styled dashed
+' arrows with notes, since those are the only edges that cost a credential
+' check.
+'
+' How to read it: left-to-right within a zone follows the typical click
+' path; top-to-bottom across zones follows the landing -> kid / landing ->
+' adult -> nested-admin structure. The legend at the bottom maps arrow style
+' to "free navigation" vs "crosses an auth boundary."
+'
+' Source files:
+'   frontend/src/router.tsx                (full route tree; three entry
+'                                            points: landing, kid, adult)
+'   frontend/src/routes.ts                  (path constants)
+'   frontend/src/landing/LandingPage.tsx    (device-state-aware two-door
+'                                            landing)
+'   frontend/src/auth/DeviceAuthorizedRoute.tsx (kid-tree gate, ADR-014)
+'   frontend/src/auth/AdultGate.tsx         (single kid-to-adult boundary,
+'                                            ADR-014)
+'   frontend/src/auth/ProtectedRoute.tsx    (role/capability gate beneath
+'                                            AdultGate)
+'   frontend/src/guardian/LoginPage.tsx     (?intent=authorize-device)
+'   frontend/src/kid/ProfilePickerPage.tsx, library/LibraryPage.tsx,
+'     reader/ReaderRoute.tsx
+'   frontend/src/guardian/ConsolePage.tsx, IntakePage.tsx, RequestsPage.tsx,
+'     BooksPage.tsx, ProfilesPage.tsx
+'   frontend/src/admin/AdminConsolePage.tsx, AdminRequestsPage.tsx,
+'     ReviewDetailPage.tsx, ModerationDashboardPage.tsx,
+'     ModerationThresholdsPage.tsx
+'   docs/planning/adr/adr-014-device-authorized-kid-access.md
+' ============================================================
+
+skinparam defaultFontName "Roboto"
+skinparam backgroundColor #FAFAFA
+skinparam roundCorner 8
+skinparam componentStyle uml2
+
+skinparam component {
+  BorderColor #555555
+  FontColor #222222
+}
+
+package "Landing / Device Boundary\n(chunk-neutral, no KidShell, no Supabase)" #FFF3E0 {
+  component "LandingPage\n/\nTwo doors: Kids + Grown-ups.\nKids door target depends on\nhasValidDeviceGrant()" as landing #FFE0B2
+  component "LoginPage\n/guardian/login\n[?intent=authorize-device]\nSupabase sign-in; mints a\ndevice grant when the intent\nis present" as login #FFE0B2
+}
+
+package "Kid Zone\nDeviceAuthorizedRoute: local device-grant check" #E0F7FA {
+  component "ProfilePickerPage\n/kids\nPick a profile + PIN\n(mints a child session via\nthe device grant)" as picker #B2EBF2
+  component "LibraryPage\n/library/:profileId\nShelf + Continue Reading" as library #B2EBF2
+  component "ReaderRoute\n/read/:profileId/:storybookId/:version\nOffline-first play" as reader #B2EBF2
+}
+
+package "Adult Zone\nAdultGate: one Supabase-session + warm step-up boundary" #E8F5E9 {
+
+  package "Guardian Console\nProtectedRoute(allowedRoles=[guardian,admin])" #C8E6C9 {
+    component "ConsolePage\n/guardian\nFamily home; admin-only adults\nland on /admin instead" as console #C8E6C9
+    component "IntakePage\n/guardian/intake\nAuthor a request directly" as intake #C8E6C9
+    component "RequestsPage\n/guardian/requests\nApprove/decline a child's idea" as requests #C8E6C9
+    component "BooksPage\n/guardian/books\nCatalog browse + assign (WS-E)" as books #C8E6C9
+    component "ProfilesPage\n/guardian/profiles\nChild profiles + device grants" as profiles #C8E6C9
+  }
+
+  package "Admin Console (nested)\nProtectedRoute(allowedRoles=[admin])" #A5D6A7 {
+    component "AdminConsolePage\n/admin\nReview queue: Flagged, Ready,\nStill processing" as admin_console #A5D6A7
+    component "AdminRequestsPage\n/admin/requests\nCross-family request queue" as admin_requests #A5D6A7
+    component "ReviewDetailPage\n/admin/review/:storybookId\nApprove / send back (ADR-005)" as review_detail #A5D6A7
+    component "ModerationDashboardPage\n/admin/moderation-dashboard" as mod_dashboard #A5D6A7
+    component "ModerationThresholdsPage\n/admin/moderation-thresholds" as mod_thresholds #A5D6A7
+  }
+}
+
+' --- Ordinary in-zone navigation (solid) ---
+picker --> library : "open a profile"
+library --> reader : "pick a book"
+reader --> library : "back to my books\n(ending screen)"
+
+console --> intake : "nav"
+console --> requests : "nav"
+console --> books : "nav"
+console --> profiles : "nav"
+intake --> console : "back"
+requests --> console : "back"
+books --> console : "back"
+profiles --> console : "back"
+
+admin_console --> admin_requests : "nav"
+admin_console --> review_detail : "open a story"
+admin_console --> mod_dashboard : "nav"
+admin_console --> mod_thresholds : "nav"
+review_detail --> admin_console : "approve / send back\n-> back to queue"
+
+console ..> admin_console : "dual-role adult:\n\"Admin console\" link\n(free, no re-challenge)"
+admin_console ..> console : "dual-role adult:\n\"Guardian console\" link\n(free, no re-challenge)"
+
+' --- Auth-boundary crossings (dashed, distinctly styled) ---
+landing -[#0e8f6f,dashed]-> picker : "**DeviceAuthorizedRoute**\nvalid device grant present\n(local check, no network)"
+landing -[#a8660a,dashed]-> login : "**no valid grant**\n(Kids door) OR\nGrown-ups door"
+login -[#a8660a,dashed]-> picker : "authorize-device intent:\nmint grant, then redirect\nto /kids"
+login -[#a8660a,dashed]-> console : "normal redirect:\nguardian-only or dual-role"
+login -[#a8660a,dashed]-> admin_console : "normal redirect:\nadmin-only"
+picker -[#a8660a,dashed]-> login : "**AdultGate step-up**\ncrossing UP from kid mode\n(password re-entry if not warm)"
+
+note bottom of landing
+  Device-state-aware Kids door (ADR-014):
+  hasValidDeviceGrant() picked synchronously
+  (no flicker); hydrateDeviceGrant() upgrades
+  the target after mount if IndexedDB has a
+  grant localStorage lost.
+end note
+
+note bottom of login
+  ?intent=authorize-device (ADR-014): once
+  signed in, mints a device grant for THIS
+  device instead of the normal role-based
+  redirect, then drops back to /kids. A
+  rejected mint (e.g. admin-only, no family)
+  falls through to the normal redirect.
+end note
+
+note right of picker
+  Kid zone is Supabase-free: no useAuth
+  import, so the guardian/admin auth chunk
+  never loads here. DeviceAuthorizedRoute
+  wraps the whole tree, not just the picker.
+end note
+
+note right of console
+  AdultGate sits ABOVE both ProtectedRoute
+  branches (guardian and admin), so React
+  Router never unmounts/remounts it while an
+  adult moves guardian<->guardian,
+  guardian<->admin, or admin<->guardian.
+  Warm state: sessionStorage, 5-min TTL,
+  parked on entering kid mode, cleared on
+  sign-out.
+end note
+
+legend bottom
+  |= Arrow |= Meaning |
+  | <back:#FFFFFF>solid</back> | Ordinary in-zone navigation; no credential check |
+  | <back:#FFFFFF><color:#0e8f6f>dashed, green</color></back> | Crosses the **DeviceAuthorizedRoute** boundary (local device-grant check) |
+  | <back:#FFFFFF><color:#a8660a>dashed, amber</color></back> | Crosses the **AdultGate** boundary (Supabase session + warm step-up) |
+  Zones: <b>Landing / Device Boundary</b> (orange), <b>Kid Zone</b> (cyan, device
+  grant), <b>Adult Zone</b> (green, Guardian console + nested Admin console,
+  single AdultGate). See docs/architecture/user-journeys.md for the
+  product/UX-altitude version of this same map, and seq-device-grant.puml for
+  the mint/verify/revoke mechanics behind the green boundary.
+endlegend
+
+@enduml

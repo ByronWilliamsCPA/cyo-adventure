@@ -93,6 +93,18 @@ via `core/config.py` (Pydantic Settings). The `model_validator` in `config.py`
 raises `ConfigurationError` if the localhost-only development database URL is
 detected in a non-local environment, preventing accidental credential leakage.
 
+Two backend-only signing secrets are validated at startup, not just read: a
+`model_validator` raises `ConfigurationError` outside the `local` environment if
+either is unset, empty, or shorter than the minimum key length.
+
+| Env var | Purpose | Validated at startup |
+|---------|---------|-----------------------|
+| `CHILD_SESSION_SECRET` | Signs/verifies the 12-hour, no-refresh child-session HS256 token (`core/child_session.py`) | Yes, outside `local` |
+| `DEVICE_GRANT_SECRET` | Signs/verifies the 90-day, revocable device-grant HS256 token, audience `cyo-device-grant` (`core/device_grant.py`, ADR-014) | Yes, outside `local`, mirroring `CHILD_SESSION_SECRET` |
+
+Neither secret is ever sent to the browser; both are backend-only signing keys
+distinct from the Supabase JWKS used to verify guardian/admin OIDC tokens.
+
 ## Authentication Flow
 
 **Production:** The PWA initiates an OIDC authorization code flow with Supabase Auth

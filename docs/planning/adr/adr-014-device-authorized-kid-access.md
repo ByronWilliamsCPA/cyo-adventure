@@ -93,9 +93,11 @@ now" (ephemeral), which is the property that makes the kid-to-adult boundary enf
 
 The device grant carries `family_id`, `authorized_by` (the guardian's user id), and a `jti`. It
 is signed with a new `DEVICE_GRANT_SECRET` (validated at startup like `CHILD_SESSION_SECRET`,
-`config.py:591-653`) and recorded in a new `device_grants` table so a guardian can list and
-revoke authorized devices. Revocation is enforced on online calls (jti checked against the
-table); it cannot be enforced offline, which is an accepted limitation bounded by the grant TTL.
+`config.py:591-653`) and recorded in a new `device_grant` table (singular, matching the
+SQLAlchemy `__tablename__`; the REST surface below is plural, `/v1/device-grants`, since it
+names a collection endpoint, not the table) so a guardian can list and revoke authorized
+devices. Revocation is enforced on online calls (jti checked against the table); it cannot be
+enforced offline, which is an accepted limitation bounded by the grant TTL.
 
 ### 2. The child-session mint accepts the device grant
 
@@ -158,7 +160,7 @@ enters the `AdultGate`.
 
 ### Neutral
 
-- Adds one table (`device_grants`, via Supabase CLI migration per ADR-012), one env var
+- Adds one table (`device_grant`, via Supabase CLI migration per ADR-012), one env var
   (`DEVICE_GRANT_SECRET`), and three endpoints (`POST`/`GET`/`DELETE /v1/device-grants`). The
   OpenAPI client is regenerated and the contract-drift CI job gates the diff.
 

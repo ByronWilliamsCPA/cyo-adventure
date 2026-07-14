@@ -482,6 +482,18 @@ child-session split. Child tokens are scoped to reader and library endpoints. Se
 [ADR-009](./adr/adr-009-supabase-platform.md). Homelab/family-tier deployment remains per
 [ADR-004](./adr/adr-004-homelab-first-deployment.md).
 
+A third token type, the **device grant** (ADR-014), sits between the guardian's
+Supabase JWT and the child session: a guardian mints a durable (90-day, revocable),
+family-scoped grant once per shared device (`POST /v1/device-grants`), signed HS256
+with a distinct audience (`cyo-device-grant`) and a dedicated `DEVICE_GRANT_SECRET`.
+A verified device grant then authorizes exactly two routes as an additional bearer
+alongside the guardian/admin Supabase token: minting a child session
+(`POST /v1/child-sessions`) and listing the family's profiles (`GET /v1/profiles`),
+so a child can keep reading, online or offline, without a live guardian session on
+the device. `Role.DEVICE` in `api/deps.py` can never hold the admin capability and
+carries no `profile_ids`, so it is refused on every other route. See
+[ADR-014](./adr/adr-014-device-authorized-kid-access.md).
+
 ### Authorization
 
 Enforced server-side on every endpoint. The token subject maps to an allowed-profile set;
@@ -492,19 +504,22 @@ single approve-and-publish action reserved for the global admin role (`Role.ADMI
 including one acting on their own family's story, may perform it. See
 [ADR-005](./adr/adr-005-mandatory-human-approval.md) (amended 2026-06-30).
 
-| Action | Guardian | Child (own profile) | Enforcement |
-|--------|----------|---------------------|-------------|
-| Read own library / story / state | Any family profile | Own profile only | Token subject to allowed-profile set; 403 otherwise |
-| Write own reading state | Any family profile | Own profile only | Same, plus `state_revision` and version guards |
-| Record a completion | Any family profile | Own profile only | `ending_id` must belong to the published version |
-| Generate / submit concept for review | Yes | No (403) | Guardian role required; scoped to own family |
-| Approve and publish (single `in_review -> published` transition) | No (403) | No (403) | Global admin role required (`Role.ADMIN` / `is_admin`), cross-family; there is no guardian path |
-| Access another family's data | No (403) | No (403) | Family ownership checked on every resource |
+| Action | Guardian | Child (own profile) | Device (own family, ADR-014) | Enforcement |
+|--------|----------|---------------------|-------------------------------|-------------|
+| Read own library / story / state | Any family profile | Own profile only | No (403) | Token subject to allowed-profile set; 403 otherwise |
+| Write own reading state | Any family profile | Own profile only | No (403) | Same, plus `state_revision` and version guards |
+| Record a completion | Any family profile | Own profile only | No (403) | `ending_id` must belong to the published version |
+| List profiles / mint a child session | Any family profile | No (403) | Own family only | Guardian/admin bearer, or a matching device grant (ADR-014) |
+| Generate / submit concept for review | Yes | No (403) | No (403) | Guardian role required; scoped to own family |
+| Approve and publish (single `in_review -> published` transition) | No (403) | No (403) | No (403) | Global admin role required (`Role.ADMIN` / `is_admin`), cross-family; there is no guardian path |
+| Access another family's data | No (403) | No (403) | No (403) | Family ownership checked on every resource |
 
 **IDOR negative tests** (each expects 403): child A requesting child B's library or state;
 a child mutating `profile_id` in a reading-state `PUT`; a child calling approve or publish;
 a guardian calling approve or publish, including on their own family's story; a guardian
-from another family accessing a story.
+from another family accessing a story; a device grant token calling any endpoint other
+than its two allowlisted routes (`POST /child-sessions`, `GET /profiles`), including its
+own device-grant management endpoints.
 
 ### Data Protection
 
