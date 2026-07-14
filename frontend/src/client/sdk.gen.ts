@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddAllowlistEntryApiV1AdminProviderAllowlistPostData, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateChildSessionApiV1ChildSessionsPostData, CreateChildSessionApiV1ChildSessionsPostErrors, CreateChildSessionApiV1ChildSessionsPostResponses, CreateConceptApiV1ConceptsPostData, CreateConceptApiV1ConceptsPostErrors, CreateConceptApiV1ConceptsPostResponses, CreateProfileApiV1ProfilesPostData, CreateProfileApiV1ProfilesPostErrors, CreateProfileApiV1ProfilesPostResponses, CreateStoryRequestApiV1StoryRequestsPostData, CreateStoryRequestApiV1StoryRequestsPostErrors, CreateStoryRequestApiV1StoryRequestsPostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetData, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetData, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReviewQueueApiV1ReviewQueueGetData, GetReviewQueueApiV1ReviewQueueGetErrors, GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, ListAllowlistApiV1AdminProviderAllowlistGetData, ListAllowlistApiV1AdminProviderAllowlistGetErrors, ListAllowlistApiV1AdminProviderAllowlistGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListFamiliesApiV1AdminFamiliesGetData, ListFamiliesApiV1AdminFamiliesGetErrors, ListFamiliesApiV1AdminFamiliesGetResponses, ListGenerationJobsApiV1GenerationJobsGetData, ListGenerationJobsApiV1GenerationJobsGetErrors, ListGenerationJobsApiV1GenerationJobsGetResponses, ListGuardianBooksApiV1GuardianBooksGetData, ListGuardianBooksApiV1GuardianBooksGetErrors, ListGuardianBooksApiV1GuardianBooksGetResponses, ListLibraryApiV1LibraryGetData, ListLibraryApiV1LibraryGetErrors, ListLibraryApiV1LibraryGetResponses, ListProfilesApiV1ProfilesGetData, ListProfilesApiV1ProfilesGetErrors, ListProfilesApiV1ProfilesGetResponses, ListRatingsApiV1RatingsProfileIdGetData, ListRatingsApiV1RatingsProfileIdGetErrors, ListRatingsApiV1RatingsProfileIdGetResponses, ListStoryRequestsAdminApiV1AdminStoryRequestsGetData, ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors, ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses, ListStoryRequestsApiV1StoryRequestsGetData, ListStoryRequestsApiV1StoryRequestsGetErrors, ListStoryRequestsApiV1StoryRequestsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetData, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ListThresholdsApiV1AdminModerationThresholdsGetResponses, LivenessHealthLiveGetData, LivenessHealthLiveGetResponses, ModerationDashboardApiV1AdminModerationDashboardGetData, ModerationDashboardApiV1AdminModerationDashboardGetErrors, ModerationDashboardApiV1AdminModerationDashboardGetResponses, ModerationSuggestionsApiV1AdminModerationSuggestionsGetData, ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors, ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses, OnboardApiV1OnboardingPostData, OnboardApiV1OnboardingPostErrors, OnboardApiV1OnboardingPostResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, ReadinessHealthReadyGetData, ReadinessHealthReadyGetErrors, ReadinessHealthReadyGetResponses, RecordCompletionApiV1CompletionsPostData, RecordCompletionApiV1CompletionsPostErrors, RecordCompletionApiV1CompletionsPostResponses, RecordRatingApiV1RatingsPostData, RecordRatingApiV1RatingsPostErrors, RecordRatingApiV1RatingsPostResponses, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, StartupHealthStartupGetData, StartupHealthStartupGetResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateProfileApiV1ProfilesProfileIdPatchData, UpdateProfileApiV1ProfilesProfileIdPatchErrors, UpdateProfileApiV1ProfilesProfileIdPatchResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, WhoamiApiV1MeGetData, WhoamiApiV1MeGetErrors, WhoamiApiV1MeGetResponses } from './types.gen';
+import type { AddAllowlistEntryApiV1AdminProviderAllowlistPostData, AddAllowlistEntryApiV1AdminProviderAllowlistPostErrors, AddAllowlistEntryApiV1AdminProviderAllowlistPostResponses, ApproveStorybookApiV1StorybooksStorybookIdApprovePostData, ApproveStorybookApiV1StorybooksStorybookIdApprovePostErrors, ApproveStorybookApiV1StorybooksStorybookIdApprovePostResponses, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostData, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostErrors, ApproveStoryRequestEndpointApiV1StoryRequestsRequestIdApprovePostResponses, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostData, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostErrors, ArchiveStorybookApiV1StorybooksStorybookIdArchivePostResponses, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostData, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostErrors, AssignStorybookApiV1StorybooksStorybookIdAssignmentsPostResponses, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetData, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetErrors, CoverStatusApiV1StorybooksStorybookIdVersionsVersionCoverGetResponses, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostData, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostErrors, CreateAuthoredStoryRequestApiV1StoryRequestsAuthoredPostResponses, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostData, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostErrors, CreateAuthoringPlanApiV1StoryRequestsRequestIdAuthoringPlanPostResponses, CreateChildSessionApiV1ChildSessionsPostData, CreateChildSessionApiV1ChildSessionsPostErrors, CreateChildSessionApiV1ChildSessionsPostResponses, CreateConceptApiV1ConceptsPostData, CreateConceptApiV1ConceptsPostErrors, CreateConceptApiV1ConceptsPostResponses, CreateDeviceGrantApiV1DeviceGrantsPostData, CreateDeviceGrantApiV1DeviceGrantsPostErrors, CreateDeviceGrantApiV1DeviceGrantsPostResponses, CreateProfileApiV1ProfilesPostData, CreateProfileApiV1ProfilesPostErrors, CreateProfileApiV1ProfilesPostResponses, CreateStoryRequestApiV1StoryRequestsPostData, CreateStoryRequestApiV1StoryRequestsPostErrors, CreateStoryRequestApiV1StoryRequestsPostResponses, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostData, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostErrors, DeclineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePostResponses, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteData, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteErrors, DeleteAllowlistEntryApiV1AdminProviderAllowlistEntryIdDeleteResponses, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteData, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteErrors, DeleteThresholdApiV1AdminModerationThresholdsAgeBandDeleteResponses, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostData, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostErrors, EnqueueConceptGenerationApiV1ConceptsConceptIdGeneratePostResponses, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetData, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetErrors, GetContentSummaryApiV1StorybooksStorybookIdContentSummaryGetResponses, GetGenerationJobApiV1GenerationJobsJobIdGetData, GetGenerationJobApiV1GenerationJobsJobIdGetErrors, GetGenerationJobApiV1GenerationJobsJobIdGetResponses, GetNoiseFloorApiV1AdminModerationNoiseFloorGetData, GetNoiseFloorApiV1AdminModerationNoiseFloorGetErrors, GetNoiseFloorApiV1AdminModerationNoiseFloorGetResponses, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetData, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetErrors, GetReadingStateApiV1ReadingStateProfileIdStorybookIdGetResponses, GetReviewQueueApiV1ReviewQueueGetData, GetReviewQueueApiV1ReviewQueueGetErrors, GetReviewQueueApiV1ReviewQueueGetResponses, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetData, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetErrors, GetReviewSurfaceApiV1StorybooksStorybookIdReviewGetResponses, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetData, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetErrors, GetSeriesNextApiV1SeriesNextProfileIdStorybookIdGetResponses, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetData, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetErrors, GetStorybookVersionApiV1StorybooksStorybookIdVersionsVersionGetResponses, ListAllowlistApiV1AdminProviderAllowlistGetData, ListAllowlistApiV1AdminProviderAllowlistGetErrors, ListAllowlistApiV1AdminProviderAllowlistGetResponses, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetData, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetErrors, ListAssignmentsApiV1StorybooksStorybookIdAssignmentsGetResponses, ListDeviceGrantsApiV1DeviceGrantsGetData, ListDeviceGrantsApiV1DeviceGrantsGetErrors, ListDeviceGrantsApiV1DeviceGrantsGetResponses, ListFamiliesApiV1AdminFamiliesGetData, ListFamiliesApiV1AdminFamiliesGetErrors, ListFamiliesApiV1AdminFamiliesGetResponses, ListGenerationJobsApiV1GenerationJobsGetData, ListGenerationJobsApiV1GenerationJobsGetErrors, ListGenerationJobsApiV1GenerationJobsGetResponses, ListGuardianBooksApiV1GuardianBooksGetData, ListGuardianBooksApiV1GuardianBooksGetErrors, ListGuardianBooksApiV1GuardianBooksGetResponses, ListLibraryApiV1LibraryGetData, ListLibraryApiV1LibraryGetErrors, ListLibraryApiV1LibraryGetResponses, ListProfilesApiV1ProfilesGetData, ListProfilesApiV1ProfilesGetErrors, ListProfilesApiV1ProfilesGetResponses, ListRatingsApiV1RatingsProfileIdGetData, ListRatingsApiV1RatingsProfileIdGetErrors, ListRatingsApiV1RatingsProfileIdGetResponses, ListStoryRequestsAdminApiV1AdminStoryRequestsGetData, ListStoryRequestsAdminApiV1AdminStoryRequestsGetErrors, ListStoryRequestsAdminApiV1AdminStoryRequestsGetResponses, ListStoryRequestsApiV1StoryRequestsGetData, ListStoryRequestsApiV1StoryRequestsGetErrors, ListStoryRequestsApiV1StoryRequestsGetResponses, ListThresholdsApiV1AdminModerationThresholdsGetData, ListThresholdsApiV1AdminModerationThresholdsGetErrors, ListThresholdsApiV1AdminModerationThresholdsGetResponses, LivenessHealthLiveGetData, LivenessHealthLiveGetResponses, ModerationDashboardApiV1AdminModerationDashboardGetData, ModerationDashboardApiV1AdminModerationDashboardGetErrors, ModerationDashboardApiV1AdminModerationDashboardGetResponses, ModerationSuggestionsApiV1AdminModerationSuggestionsGetData, ModerationSuggestionsApiV1AdminModerationSuggestionsGetErrors, ModerationSuggestionsApiV1AdminModerationSuggestionsGetResponses, OnboardApiV1OnboardingPostData, OnboardApiV1OnboardingPostErrors, OnboardApiV1OnboardingPostResponses, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutData, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutErrors, PutReadingStateApiV1ReadingStateProfileIdStorybookIdPutResponses, ReadinessHealthReadyGetData, ReadinessHealthReadyGetErrors, ReadinessHealthReadyGetResponses, RecordCompletionApiV1CompletionsPostData, RecordCompletionApiV1CompletionsPostErrors, RecordCompletionApiV1CompletionsPostResponses, RecordRatingApiV1RatingsPostData, RecordRatingApiV1RatingsPostErrors, RecordRatingApiV1RatingsPostResponses, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostData, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostErrors, RequestCoverApiV1StorybooksStorybookIdVersionsVersionCoverPostResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostData, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostErrors, SendBackStorybookApiV1StorybooksStorybookIdSendBackPostResponses, StartupHealthStartupGetData, StartupHealthStartupGetResponses, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostData, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostErrors, SubmitStorybookApiV1StorybooksStorybookIdSubmitPostResponses, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutData, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutErrors, UpdateAllowlistEntryApiV1AdminProviderAllowlistEntryIdPutResponses, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutData, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutErrors, UpdateNoiseFloorApiV1AdminModerationNoiseFloorPutResponses, UpdateProfileApiV1ProfilesProfileIdPatchData, UpdateProfileApiV1ProfilesProfileIdPatchErrors, UpdateProfileApiV1ProfilesProfileIdPatchResponses, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutData, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutErrors, UpsertThresholdApiV1AdminModerationThresholdsAgeBandPutResponses, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostData, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostErrors, ValidateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionValidatePostResponses, WhoamiApiV1MeGetData, WhoamiApiV1MeGetErrors, WhoamiApiV1MeGetResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -346,7 +346,9 @@ export const validateStorybookVersionApiV1StorybooksStorybookIdVersionsVersionVa
  * ctx: The request context (principal + unit-of-work session).
  *
  * Returns:
- * ProfileListView: All family profiles for a guardian; the single
+ * ProfileListView: All family profiles for a guardian or a DEVICE
+ * principal (ADR-014 phase 2: the picker needs the family's
+ * profiles to offer without a live guardian bearer); the single
  * assigned profile for a child; empty if the principal has none.
  */
 export const listProfilesApiV1ProfilesGet = <ThrowOnError extends boolean = false>(options?: Options<ListProfilesApiV1ProfilesGetData, ThrowOnError>): RequestResult<ListProfilesApiV1ProfilesGetResponses, ListProfilesApiV1ProfilesGetErrors, ThrowOnError> => (options?.client ?? client).get<ListProfilesApiV1ProfilesGetResponses, ListProfilesApiV1ProfilesGetErrors, ThrowOnError>({
@@ -1243,7 +1245,12 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
 /**
  * Create Child Session
  *
- * Mint a child session token for one profile (guardian or admin only).
+ * Mint a child session token for one profile.
+ *
+ * Callable by a guardian (own family), an admin (any family), or a
+ * family-scoped ``DEVICE`` principal (own family only; ADR-014 phase 2):
+ * a device grant lets an authorized device mint a reading session for one
+ * of its own family's profiles without a live guardian bearer.
  *
  * Args:
  * body: The target child profile id, plus the profile's picker PIN when
@@ -1255,9 +1262,9 @@ export const declineStoryRequestEndpointApiV1StoryRequestsRequestIdDeclinePost =
  *
  * Raises:
  * AuthorizationError: If a child token reaches this endpoint, a
- * guardian names a profile outside its own family, or the profile
- * has a picker PIN and the body's ``pin`` is missing or wrong
- * (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
+ * guardian or device grant names a profile outside its own family,
+ * or the profile has a picker PIN and the body's ``pin`` is missing
+ * or wrong (all -> 403; the PIN case carries code ``PIN_MISMATCH``).
  * ResourceNotFoundError: If the profile does not exist (-> 404).
  * ValidationError: If ``profile_id`` is not a valid UUID (-> 422).
  */
@@ -1270,6 +1277,96 @@ export const createChildSessionApiV1ChildSessionsPost = <ThrowOnError extends bo
         ...options.headers
     }
 });
+
+/**
+ * List Device Grants
+ *
+ * List the caller's family's currently-active device grants.
+ *
+ * Never returns the token (it is returned only once, at mint time). Scoped
+ * to the caller's own family for both a guardian and an admin; unlike the
+ * mint endpoint, an admin does not get a cross-family override here (no
+ * ``family_id`` filter is accepted), since a device-list view is a
+ * per-family, guardian-facing surface, not a global admin one.
+ *
+ * Args:
+ * ctx: The request context (principal and session).
+ *
+ * Returns:
+ * list[DeviceGrantListItem]: The family's non-revoked device grants.
+ *
+ * Raises:
+ * AuthorizationError: If a device or child principal reaches this
+ * endpoint (-> 403).
+ */
+export const listDeviceGrantsApiV1DeviceGrantsGet = <ThrowOnError extends boolean = false>(options?: Options<ListDeviceGrantsApiV1DeviceGrantsGetData, ThrowOnError>): RequestResult<ListDeviceGrantsApiV1DeviceGrantsGetResponses, ListDeviceGrantsApiV1DeviceGrantsGetErrors, ThrowOnError> => (options?.client ?? client).get<ListDeviceGrantsApiV1DeviceGrantsGetResponses, ListDeviceGrantsApiV1DeviceGrantsGetErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/device-grants',
+    ...options
+});
+
+/**
+ * Create Device Grant
+ *
+ * Mint a device grant for a family (guardian or admin only).
+ *
+ * Args:
+ * ctx: The request context (principal and session).
+ * body: The optional target family id (admin only; a guardian must
+ * omit it) and an optional guardian-facing device label. Mirrors
+ * ``onboarding.py::onboard``'s ``body: OnboardingBody | None = None``
+ * pattern: every field is itself optional, so an entirely absent
+ * request body (no ``Content-Type``, not just ``{}``) is also
+ * valid, not just a 422.
+ *
+ * Returns:
+ * DeviceGrantView: The signed token, its expiry, and the grant record.
+ * The token is returned ONLY here; ``GET /device-grants`` never
+ * includes it.
+ *
+ * Raises:
+ * AuthorizationError: If a device or child principal reaches this
+ * endpoint, or a guardian names a family other than its own
+ * (-> 403).
+ * ResourceNotFoundError: If an admin-named family does not exist
+ * (-> 404).
+ * ValidationError: If an admin-only caller omits ``family_id``, or the
+ * supplied id is malformed (-> 422).
+ */
+export const createDeviceGrantApiV1DeviceGrantsPost = <ThrowOnError extends boolean = false>(options?: Options<CreateDeviceGrantApiV1DeviceGrantsPostData, ThrowOnError>): RequestResult<CreateDeviceGrantApiV1DeviceGrantsPostResponses, CreateDeviceGrantApiV1DeviceGrantsPostErrors, ThrowOnError> => (options?.client ?? client).post<CreateDeviceGrantApiV1DeviceGrantsPostResponses, CreateDeviceGrantApiV1DeviceGrantsPostErrors, ThrowOnError>({
+    responseType: 'json',
+    url: '/api/v1/device-grants',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options?.headers
+    }
+});
+
+/**
+ * Revoke Device Grant
+ *
+ * Revoke a device grant belonging to the caller's family.
+ *
+ * Sets ``revoked_at``; the row is kept (not deleted) so the guardian-facing
+ * list can show when a device was revoked. Revocation is enforced only on
+ * the online path (phase 2's device-principal-consuming endpoints check
+ * this column); an already-offline device is not affected until it
+ * reconnects (ADR-014, "Negative / risks").
+ *
+ * Args:
+ * grant_id: The device grant's id (path).
+ * ctx: The request context (principal and session).
+ *
+ * Raises:
+ * AuthorizationError: If a device or child principal reaches this
+ * endpoint (-> 403).
+ * ResourceNotFoundError: If no grant with ``grant_id`` exists in the
+ * caller's own family (-> 404). Deliberately the same 404 whether
+ * the id does not exist at all or belongs to another family, so
+ * this is not a cross-family existence oracle.
+ */
+export const revokeDeviceGrantApiV1DeviceGrantsGrantIdDelete = <ThrowOnError extends boolean = false>(options: Options<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteData, ThrowOnError>): RequestResult<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError> => (options.client ?? client).delete<RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteResponses, RevokeDeviceGrantApiV1DeviceGrantsGrantIdDeleteErrors, ThrowOnError>({ url: '/api/v1/device-grants/{grant_id}', ...options });
 
 /**
  * Onboard
