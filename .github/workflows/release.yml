@@ -192,6 +192,7 @@ jobs:
           GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           NEXT: ${{ steps.version.outputs.next }}
         run: |
+          set -euo pipefail
           BRANCH="release/v${NEXT}"
           # #EDGE external: a re-run after a partial run (or after the hard-fail
           # auto-merge path below) can reach here with the bump already applied
@@ -236,14 +237,18 @@ jobs:
           # the kernel's execve() argument-list limit ("jq: Argument list too
           # long", exit 126) -- observed on the first real run of this
           # pipeline. `--rawfile` reads file content directly instead of
-          # putting it on the command line. #VERIFY large lockfile growth
-          # does not reintroduce an argv-size failure here.
+          # putting it on the command line, so lockfile growth cannot
+          # reintroduce an argv-size failure through this path. #VERIFY if
+          # uv.lock or CHANGELOG.md ever approach GitHub's GraphQL request
+          # body-size limit (a distinct ceiling from execve() argv), split
+          # fileChanges across multiple mutations rather than reverting to
+          # --arg/--argjson.
           PYPROJECT_B64="$(mktemp)"
           UVLOCK_B64="$(mktemp)"
           CHANGELOG_B64="$(mktemp)"
-          base64 -w0 pyproject.toml | tr -d '\n' > "${PYPROJECT_B64}"
-          base64 -w0 uv.lock | tr -d '\n' > "${UVLOCK_B64}"
-          base64 -w0 CHANGELOG.md | tr -d '\n' > "${CHANGELOG_B64}"
+          base64 -w0 pyproject.toml > "${PYPROJECT_B64}"
+          base64 -w0 uv.lock > "${UVLOCK_B64}"
+          base64 -w0 CHANGELOG.md > "${CHANGELOG_B64}"
 
           COMMIT_OID=""
           ATTEMPT=1
@@ -260,9 +265,11 @@ jobs:
             # failure falling through to `POST .../git/refs` on a branch
             # that DOES exist would hard-fail under `set -e` outside this
             # retry loop.
+            set +e
             LOOKUP_ERR="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${BRANCH}" \
               2>&1 >/dev/null)"
             LOOKUP_STATUS=$?
+            set -e
             if [ "${LOOKUP_STATUS}" -eq 0 ]; then
               gh api -X PATCH "repos/${GITHUB_REPOSITORY}/git/refs/heads/${BRANCH}" \
                 -f sha="${BASE_SHA}" -F force=true >/dev/null
