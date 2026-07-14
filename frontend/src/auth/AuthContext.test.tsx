@@ -477,9 +477,15 @@ describe('AuthProvider', () => {
     expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
-  it('keeps warm adult-gate state when sign-out itself fails', async () => {
-    // A failed sign-out leaves the session in place, so the gate state should
-    // stay consistent with it rather than half-clearing.
+  it('clears the local credential and adult gate even when the network revoke fails', async () => {
+    // #CRITICAL: security (C1): on a shared kid device the guardian bearer must
+    // not survive a sign-out just because the network revoke failed. Supabase's
+    // GoTrueClient._signOut removes the local session only AFTER a successful or
+    // 4xx revoke, so a transport failure/5xx would otherwise strand auth_token
+    // in localStorage for the useApi fallthrough to attach on a kid route.
+    // AuthContext therefore clears the token (and the now-meaningless warm adult
+    // gate) up front, before the revoke and independently of its outcome; the
+    // revoke error still propagates to the caller.
     mockGetSession.mockResolvedValue({ data: { session: null } })
     mockSignOut.mockResolvedValue({ error: new Error('revoke failed') })
     warmAdultGate('u1')
@@ -489,11 +495,15 @@ describe('AuthProvider', () => {
       </AuthProvider>
     )
     await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    // A bearer still in storage at sign-out time (set after mount settles so
+    // the initial signed-out resolution does not clear it first).
+    localStorage.setItem('auth_token', 'guardian-bearer')
 
     fireEvent.click(screen.getByText('sign out'))
 
     await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('revoke failed'))
-    expect(adultGateRemainingMs('u1')).toBeGreaterThan(0)
+    expect(localStorage.getItem('auth_token')).toBeNull()
+    expect(adultGateRemainingMs('u1')).toBe(0)
   })
 
   it('warms the adult gate on a genuine SIGNED_IN event', async () => {

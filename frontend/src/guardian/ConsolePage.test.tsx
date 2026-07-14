@@ -15,12 +15,16 @@ vi.mock('../hooks/useApi', () => ({
 }))
 
 const mockUseAuth = vi.fn()
+const mockSignOut = vi.fn()
 vi.mock('../auth/useAuth', () => ({
   useAuth: (): unknown => mockUseAuth(),
 }))
 
 function principal(role: 'guardian' | 'admin', isAdmin = role === 'admin') {
-  return { principal: { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] } }
+  return {
+    principal: { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] },
+    signOut: mockSignOut,
+  }
 }
 
 function renderPage() {
@@ -49,6 +53,8 @@ beforeEach(() => {
   mockDelete.mockReset()
   mockUseAuth.mockReset()
   mockUseAuth.mockReturnValue(principal('guardian'))
+  mockSignOut.mockReset()
+  mockSignOut.mockResolvedValue(undefined)
   localStorage.clear()
 })
 
@@ -220,7 +226,7 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('offers to hand the device to a child once a valid grant exists, and navigates to /kids', async () => {
+  it('signs the guardian out and navigates to /kids when handing the device to a child', async () => {
     const user = userEvent.setup()
     setDeviceGrant({
       token: 'tok-1',
@@ -233,7 +239,88 @@ describe('ConsolePage device authorization (ADR-014 Phase 3)', () => {
     const handButton = await screen.findByRole('button', { name: /hand device to a child/i })
     await user.click(handButton)
 
+    // #CRITICAL: security (C1): the handoff must shed the guardian session so
+    // the bearer cannot linger on the now-kid surface, not merely navigate.
+    expect(mockSignOut).toHaveBeenCalled()
     expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+  })
+
+  it('still drops to /kids when the network sign-out on handoff fails', async () => {
+    // The local credential clear happens synchronously inside signOut(); a
+    // failed network revoke must not trap the child on the guardian console.
+    const user = userEvent.setup()
+    mockSignOut.mockRejectedValue(new Error('revoke failed'))
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /hand device to a child/i }))
+
+    expect(mockSignOut).toHaveBeenCalled()
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+  })
+
+  it('revokes the superseded grant when re-authorizing this device', async () => {
+    // #CRITICAL: security (I3): "Re-authorize" mints a replacement; the prior
+    // grant must be revoked server-side or it stays valid for its full 90-day
+    // life. The revoke rides after the new grant is stored so a revoke failure
+    // cannot strand the device without a usable credential.
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    mockPost.mockResolvedValue({
+      data: { id: 'grant-2', token: 'tok-2', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+    })
+    mockDelete.mockResolvedValue({ data: undefined })
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /re-authorize this device/i }))
+
+    await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('/v1/device-grants/grant-1'))
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-2',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-2',
+    })
+  })
+
+  it('keeps the freshly minted grant when revoking the superseded one fails', async () => {
+    // A best-effort revoke: if the old grant's DELETE fails, the re-authorize
+    // still succeeds with the new grant active (the failure is logged, not
+    // surfaced as a mint error).
+    const user = userEvent.setup()
+    setDeviceGrant({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    mockPost.mockResolvedValue({
+      data: { id: 'grant-2', token: 'tok-2', expires_at: '2099-01-01T00:00:00Z', family_id: 'fam-1' },
+    })
+    mockDelete.mockRejectedValue(new Error('revoke failed'))
+    renderPage()
+
+    await user.click(await screen.findByRole('button', { name: /re-authorize this device/i }))
+
+    await waitFor(() => expect(mockDelete).toHaveBeenCalledWith('/v1/device-grants/grant-1'))
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-2',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-2',
+    })
+    // No error state: the re-authorize is considered successful.
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 
   it('does not offer to hand the device to a child when the stored grant is expired', async () => {

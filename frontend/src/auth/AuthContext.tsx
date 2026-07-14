@@ -219,8 +219,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (error) throw error
       },
       signOut: async () => {
-        const { error } = await supabase.auth.signOut()
-        if (error) throw error
+        // #CRITICAL: security: clear the LOCAL guardian credential FIRST, before
+        // the network revoke and independently of its outcome. Supabase's
+        // GoTrueClient._signOut only calls _removeSession() (which clears
+        // auth_token and emits SIGNED_OUT) AFTER a successful or 4xx revoke; a
+        // transport failure or 5xx returns early and leaves auth_token in
+        // localStorage. On a shared kid device (frequently offline, the exact
+        // class ADR-014 targets) that stranded guardian bearer is then attached
+        // by the useApi fallthrough on any kid route that misses the
+        // child-session and device-grant branches, exposing the whole family's
+        // guardian-scoped library to the child. Clearing locally up front makes
+        // sign-out fail closed regardless of the revoke result. This runs
+        // synchronously before the first await, so `void signOut()` callers
+        // (LoginPage authorize-device, ConsolePage handoff) get it too.
+        // #VERIFY: AuthContext.test.tsx "sign-out clears the local credential
+        // even when the network revoke fails".
+        safeRemoveToken()
         // #ASSUME: security: an explicit sign-out hands the device over, so
         // any warm adult-gate state (ADR-014 Phase 5) must die with the
         // session rather than surviving in sessionStorage for the next
@@ -229,6 +243,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // #VERIFY: AuthContext.test.tsx "sign-out drops warm adult-gate
         // state".
         clearAdultGate()
+        const { error } = await supabase.auth.signOut()
+        if (error) throw error
       },
     }),
     [status, principal, authError]

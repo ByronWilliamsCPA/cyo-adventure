@@ -6,6 +6,7 @@ import {
   AUTHORIZE_DEVICE_INTENT_VALUE,
   GUARDIAN_LOGIN_PATH,
 } from '../routes'
+import { logApiError } from '../hooks/logApiError'
 import { hasValidDeviceGrant, hydrateDeviceGrant } from './deviceGrant'
 import { parkAdultGate } from './parentalGateState'
 
@@ -47,10 +48,23 @@ export function DeviceAuthorizedRoute() {
   useEffect(() => {
     if (status !== 'checking') return
     let cancelled = false
-    void hydrateDeviceGrant().then((grant) => {
-      if (cancelled) return
-      setStatus(grant ? 'authorized' : 'unauthorized')
-    })
+    void hydrateDeviceGrant()
+      .then((grant) => {
+        if (cancelled) return
+        setStatus(grant ? 'authorized' : 'unauthorized')
+      })
+      .catch((err: unknown) => {
+        // #CRITICAL: security: fail closed. A rejected IndexedDB-mirror read
+        // (private-mode/quota/corruption) must NOT leave status on 'checking',
+        // which strands the child on the "Loading…" screen indefinitely. Drop
+        // to 'unauthorized' so the guard bounces to guardian login instead of
+        // hanging on an unusable device.
+        // #VERIFY: DeviceAuthorizedRoute.test.tsx "fails closed when device
+        // grant hydration rejects".
+        if (cancelled) return
+        logApiError('device grant hydration failed', err)
+        setStatus('unauthorized')
+      })
     return () => {
       cancelled = true
     }

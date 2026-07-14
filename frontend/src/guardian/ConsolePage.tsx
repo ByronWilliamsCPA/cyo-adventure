@@ -31,7 +31,7 @@ export function ConsolePage() {
   const api = useApi()
   const navigate = useNavigate()
   const deviceGrantApi = useMemo(() => makeDeviceGrantApi(api), [api])
-  const { principal } = useAuth()
+  const { principal, signOut } = useAuth()
   // An admin-only adult (isAdmin without the guardian base role) has no
   // guardian family surface here: /v1/profiles always resolves to an empty
   // set for this role (api/deps.py::_resolve_profiles never scans a family's
@@ -61,6 +61,14 @@ export function ConsolePage() {
 
   async function authorizeDevice() {
     setDeviceStatus('busy')
+    // #CRITICAL: security: capture the grant this device currently holds BEFORE
+    // minting its replacement. "Re-authorize this device" reuses this action,
+    // and without revoking the prior grant that old 90-day family-scoped
+    // credential stays valid server-side (the online revocation check only
+    // rejects grants whose revoked_at is set), silently orphaning a live
+    // credential on every re-authorize. null on first-time setup.
+    // #VERIFY: ConsolePage.test.tsx "re-authorize revokes the superseded grant".
+    const previous = getDeviceGrant()
     try {
       const view = await deviceGrantApi.mint()
       setDeviceGrant({
@@ -70,11 +78,38 @@ export function ConsolePage() {
         id: view.id,
       })
       setGrant(getDeviceGrant())
+      // Revoke the superseded grant only after the replacement is minted and
+      // stored, so a revoke failure cannot strand this device without a usable
+      // credential. Best-effort: a failed revoke logs but does not fail the
+      // re-authorize (the new grant is already active). Skipped on first-time
+      // setup (no previous) and when the id is unchanged (defensive).
+      if (previous && previous.id !== view.id) {
+        await deviceGrantApi.revoke(previous.id).catch((err: unknown) => {
+          logApiError('superseded device grant revoke failed', err)
+        })
+      }
       setDeviceStatus('idle')
     } catch (err) {
       logApiError('device grant mint failed', err)
       setDeviceStatus('error')
     }
+  }
+
+  // #CRITICAL: security: shed the guardian session before this device becomes a
+  // kid surface. The launch button previously only navigated, leaving the
+  // guardian bearer in localStorage where the useApi fallthrough would attach
+  // it on a kid route that misses the child-session/device-grant branches,
+  // exposing the family library to the child. signOut() clears the local
+  // credential synchronously (fail closed) before its network revoke, so the
+  // token is gone the instant we hand off; the network revoke is best effort
+  // and navigation does not wait on it.
+  // #VERIFY: ConsolePage.test.tsx "hands the device to a child and signs the
+  // guardian out".
+  function handDeviceToChild() {
+    void signOut().catch((err: unknown) => {
+      logApiError('sign-out on device handoff failed', err)
+    })
+    void navigate(KID_PICKER_PATH)
   }
 
   // #CRITICAL: security: only clear the LOCAL grant after the server confirms
@@ -183,17 +218,19 @@ export function ConsolePage() {
               </p>
               <div className="console-device__actions">
                 {hasValidDeviceGrant() ? (
-                  // The launch affordance itself carries no authorization; it
-                  // only navigates. hasValidDeviceGrant() is the same local,
-                  // client-side pre-check DeviceAuthorizedRoute uses to gate
-                  // `/kids` (auth/deviceGrant.ts), so this button is never
-                  // shown when that gate would immediately bounce the child
-                  // back to guardian login.
+                  // The launch affordance carries no authorization of its own:
+                  // the durable device grant is what authorizes `/kids`.
+                  // hasValidDeviceGrant() is the same local, client-side
+                  // pre-check DeviceAuthorizedRoute uses to gate `/kids`
+                  // (auth/deviceGrant.ts), so this button is never shown when
+                  // that gate would immediately bounce the child back to
+                  // guardian login. handDeviceToChild() sheds the guardian
+                  // session before navigating (see its #CRITICAL note).
                   <Button
                     variant="primary"
                     size="sm"
                     disabled={deviceStatus === 'busy'}
-                    onClick={() => void navigate(KID_PICKER_PATH)}
+                    onClick={() => handDeviceToChild()}
                   >
                     Hand device to a child
                   </Button>
