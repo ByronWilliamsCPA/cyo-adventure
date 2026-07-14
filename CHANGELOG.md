@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Guardian login could loop back to the sign-in page indefinitely on a device
+  that had cached an older build. The frontend nginx config served the service
+  worker control scripts (`sw.js`, `registerSW.js`) with `Cache-Control:
+  public, immutable, max-age=1y`, the same rule meant only for content-hashed
+  `/assets/*` files. Because those scripts keep a stable filename across
+  deploys, an immutable header could pin a browser to a stale service worker
+  that kept serving an old precached app shell across reloads, so a fix never
+  reached that client. They are now served `no-cache` via exact-match nginx
+  locations, letting the PWA auto-update swap in a new service worker on the
+  next load. A browser already wedged on the old worker still needs a one-time
+  clear-site-data or hard reload; new and cleared clients self-heal.
+
 ## [0.4.0] - 2026-07-14
 
 ### Added
