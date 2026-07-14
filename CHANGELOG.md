@@ -26,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   from the REST-then-GraphQL write ordering, and stopped `set -e` from
   swallowing the intended failure diagnostic when GitHub returns a
   GraphQL-level error.
+- The `createCommitOnBranch` request body no longer fails with `jq: Argument
+  list too long` on real invocations: `uv.lock` alone base64-encodes to
+  roughly 1MB, and passing that (plus `pyproject.toml`/`CHANGELOG.md`) as
+  `jq --arg`/`--argjson` command-line arguments could exceed the runner's
+  `ARG_MAX` once combined with the environment footprint. File contents are
+  now read via `jq --rawfile` from temp files instead of the command line,
+  and both prior `jq` calls are collapsed into one so no intermediate
+  large-string variable is ever placed back on argv. Also distinguishes a
+  genuine `HTTP 404` (branch does not exist yet) from any other branch-
+  lookup failure, retrying the latter instead of misrouting it into a
+  branch-creation call against a branch that already exists.
 
 ### Added
 - Manual production smoke e2e tier (`frontend/e2e-prod/`, `npm run test:e2e:prod`):
