@@ -64,7 +64,8 @@ function isInvalidCredentials(err: unknown): boolean {
  * no new auth machinery, only a second entry point into the same flow.
  */
 export function LoginPage() {
-  const { status, principal, authError, signInWithOAuth, signInWithPassword } = useAuth()
+  const { status, principal, authError, signInWithOAuth, signInWithPassword, signOut } =
+    useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -125,8 +126,14 @@ export function LoginPage() {
     if (!authorizeDeviceIntent || status !== 'signed-in' || !principal) return
     if (hasValidDeviceGrant()) {
       // Defensive: a grant already covers this device (e.g. a second tab
-      // completed the mint first); nothing to do but continue the flow.
+      // completed the mint first). Still shed the guardian session before
+      // continuing, for the same reason the mint path does (see the #CRITICAL
+      // below): a signed-in guardian landing on the kid picker must not leave a
+      // live auth_token behind on a kid device.
       void navigate(KID_PICKER_PATH, { replace: true })
+      void signOut().catch((err: unknown) => {
+        logApiError('sign-out after device authorization failed', err)
+      })
       return
     }
     let cancelled = false
@@ -141,7 +148,28 @@ export function LoginPage() {
           familyId: view.family_id,
           id: view.id,
         })
+        // Hand the now kid-authorized device to the picker BEFORE signing the
+        // guardian out: signOut() flips status to 'signed-out', which trips
+        // this effect's cleanup (cancelled = true), so anything gated on
+        // `cancelled` after it would never run. Navigate first, clean up after.
         void navigate(KID_PICKER_PATH, { replace: true })
+        // #CRITICAL: security: the device now holds a durable, revocable device
+        // grant, so the guardian's live Supabase session (and its auth_token)
+        // must NOT linger on what is henceforth a kid device. If it did, the
+        // request interceptor's guardian-bearer fallthrough (useApi.ts) would
+        // attach the guardian token on /library and /read, letting a child read
+        // the whole family's library instead of only their assigned books.
+        // signOut() clears the Supabase session, auth_token, and any child
+        // session (via onAuthStateChange -> safeRemoveToken). Fire-and-forget
+        // and swallow-with-log: the grant already succeeded, so a signOut
+        // failure must neither present as an authorization failure nor block
+        // the hand-off, and it is deliberately NOT gated on `cancelled` because
+        // navigate() unmounts this page yet the cleanup must still run.
+        // #VERIFY: LoginPage.test.tsx "signs the guardian out after minting the
+        // device grant".
+        void signOut().catch((err: unknown) => {
+          logApiError('sign-out after device authorization failed', err)
+        })
       } catch (err) {
         if (cancelled) return
         logApiError('device grant mint failed', err)
@@ -152,7 +180,7 @@ export function LoginPage() {
     return () => {
       cancelled = true
     }
-  }, [authorizeDeviceIntent, status, principal, api, navigate])
+  }, [authorizeDeviceIntent, status, principal, api, navigate, signOut])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the

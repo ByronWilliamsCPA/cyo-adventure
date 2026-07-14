@@ -11,6 +11,7 @@ import { LoginPage } from './LoginPage'
 
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
+const mockSignOut = vi.fn()
 let authStatus: AuthContextValue['status'] = 'signed-out'
 let authErrorValue: AuthContextValue['authError'] = null
 let principalValue: Principal | null = null
@@ -29,7 +30,7 @@ vi.mock('../auth/useAuth', () => ({
     principal: principalValue,
     signInWithOAuth: mockSignInWithOAuth,
     signInWithPassword: mockSignInWithPassword,
-    signOut: vi.fn(),
+    signOut: mockSignOut,
   }),
 }))
 
@@ -69,6 +70,11 @@ beforeEach(() => {
   principalValue = null
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
+  mockSignOut.mockReset()
+  // Default: signOut resolves. LoginPage calls signOut().catch(...), so the
+  // mock must return a promise; a bare vi.fn() would return undefined and blow
+  // up on .catch. Individual tests override with mockRejectedValue.
+  mockSignOut.mockResolvedValue(undefined)
   mockPost.mockReset()
   localStorage.clear()
 })
@@ -281,6 +287,29 @@ describe('LoginPage authorize-device intent (ADR-014 section 5)', () => {
     })
     // Not the normal role-based redirect target.
     expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+    // #VERIFY (LoginPage.tsx #CRITICAL): the guardian's own session must not
+    // linger on what is now a kid device, or the interceptor's guardian-bearer
+    // fallthrough could attach it on /library and /read.
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledTimes(1))
+  })
+
+  it('still drops to the kid picker when the post-mint sign-out fails', async () => {
+    // The grant already succeeded, so a signOut failure must neither present as
+    // an authorization failure nor block the hand-off to the picker.
+    mockPost.mockResolvedValue(mintResponse)
+    mockSignOut.mockRejectedValue(new Error('supabase sign-out unreachable'))
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin(['/guardian/login?intent=authorize-device'])
+
+    expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
+    expect(getDeviceGrant()).toEqual({
+      token: 'tok-1',
+      expiresAt: '2099-01-01T00:00:00Z',
+      familyId: 'fam-1',
+      id: 'grant-1',
+    })
+    expect(mockSignOut).toHaveBeenCalledTimes(1)
   })
 
   it('falls back to the normal redirect when the mint is rejected (e.g. admin-only, no family)', async () => {
@@ -310,6 +339,8 @@ describe('LoginPage authorize-device intent (ADR-014 section 5)', () => {
 
     expect(await screen.findByText('kid picker landing')).toBeInTheDocument()
     expect(mockPost).not.toHaveBeenCalled()
+    // Even the already-authorized path sheds the guardian session.
+    await waitFor(() => expect(mockSignOut).toHaveBeenCalledTimes(1))
   })
 
   it('ignores the intent and uses the normal role-based redirect when absent', async () => {
