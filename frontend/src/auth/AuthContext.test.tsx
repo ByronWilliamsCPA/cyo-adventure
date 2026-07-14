@@ -1,7 +1,9 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useState } from 'react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { LoginPage } from '../guardian/LoginPage'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { AuthProvider } from './AuthContext'
 import { getChildSession, setChildSession } from './childSession'
@@ -23,6 +25,17 @@ const mockOnAuthStateChange = vi.fn()
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
 const mockSignOut = vi.fn()
+const mockResetPasswordForEmail = vi.fn()
+const mockUpdateUser = vi.fn()
+// Drives the recovery seed (AuthProvider's useState(isPasswordRecovery)).
+// A `mock`-prefixed let so vitest allows referencing it inside the hoisted
+// factory; a getter re-reads it at each mount so tests can flip it before
+// render to simulate a password-recovery landing.
+let mockIsPasswordRecovery = false
+// Drives AuthProvider's recoveryError (frozen from recoveryErrorFromUrl at
+// module load, same seeding pattern as mockIsPasswordRecovery above).
+let mockRecoveryErrorFromUrl: { code: string; description: string } | null = null
+const mockRecoveryBroadcastChannelName = 'test-cyo-guardian-recovery'
 // Each mock method's return type is annotated `unknown`, not inferred, so the
 // untyped vi.fn() mocks don't leak a bare `any` past this seam: the real
 // AuthContext.tsx compiles against supabaseClient.ts's actual Supabase types
@@ -35,18 +48,62 @@ vi.mock('./supabaseClient', () => ({
       signInWithOAuth: (...args: unknown[]): unknown => mockSignInWithOAuth(...args),
       signInWithPassword: (...args: unknown[]): unknown => mockSignInWithPassword(...args),
       signOut: (...args: unknown[]): unknown => mockSignOut(...args),
+      resetPasswordForEmail: (...args: unknown[]): unknown => mockResetPasswordForEmail(...args),
+      updateUser: (...args: unknown[]): unknown => mockUpdateUser(...args),
     },
+  },
+  get isPasswordRecovery(): boolean {
+    return mockIsPasswordRecovery
+  },
+  get recoveryErrorFromUrl(): { code: string; description: string } | null {
+    return mockRecoveryErrorFromUrl
+  },
+  // A getter, not a plain property: the hoisted factory runs before this
+  // file's own top-level `const` initializers, so eagerly referencing
+  // mockRecoveryBroadcastChannelName here would throw a TDZ error.
+  get RECOVERY_BROADCAST_CHANNEL_NAME(): string {
+    return mockRecoveryBroadcastChannelName
   },
 }))
 
 function Probe() {
-  const { status, principal, authError } = useAuth()
+  const { status, principal, authError, recovery, recoveryError } = useAuth()
   return (
     <div>
       <span data-testid="status">{status}</span>
       <span data-testid="role">{principal?.role ?? 'none'}</span>
       <span data-testid="isAdmin">{principal ? String(principal.isAdmin) : 'none'}</span>
       <span data-testid="authError">{authError ?? 'none'}</span>
+      <span data-testid="recovery">{String(recovery)}</span>
+      <span data-testid="recoveryError">{recoveryError?.code ?? 'none'}</span>
+    </div>
+  )
+}
+
+/** Exercises the recovery actions and surfaces the rejections they rethrow. */
+function RecoveryProbe() {
+  const { recovery, requestPasswordReset, updatePassword } = useAuth()
+  const [caught, setCaught] = useState('none')
+  return (
+    <div>
+      <span data-testid="recovery">{String(recovery)}</span>
+      <span data-testid="caught">{caught}</span>
+      <button
+        type="button"
+        onClick={() =>
+          void requestPasswordReset('reset@example.com').catch((e: Error) => setCaught(e.message))
+        }
+      >
+        request reset
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          void updatePassword('new-password-123').catch((e: Error) => setCaught(e.message))
+        }
+      >
+        update password
+      </button>
     </div>
   )
 }
@@ -111,6 +168,10 @@ beforeEach(() => {
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
   mockSignOut.mockReset()
+  mockResetPasswordForEmail.mockReset()
+  mockUpdateUser.mockReset()
+  mockIsPasswordRecovery = false
+  mockRecoveryErrorFromUrl = null
 })
 
 describe('AuthProvider', () => {
@@ -602,5 +663,255 @@ describe('AuthProvider', () => {
       return null
     }
     expect(() => render(<Bare />)).toThrow('useAuth must be used within an AuthProvider')
+  })
+})
+
+describe('AuthProvider password recovery', () => {
+  it('seeds recovery=false on an ordinary load', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('status')).toHaveTextContent('signed-out'))
+    expect(screen.getByTestId('recovery')).toHaveTextContent('false')
+  })
+
+  it('seeds recovery=true when the page load is a recovery-link landing', async () => {
+    // supabaseClient froze isPasswordRecovery=true from the #type=recovery hash
+    // before createClient stripped it; the provider must start in recovery mode
+    // so LoginPage shows the set-new-password form instead of redirecting.
+    mockIsPasswordRecovery = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
+  })
+
+  it('enters recovery on a PASSWORD_RECOVERY auth event', async () => {
+    // supabase-js fires PASSWORD_RECOVERY when it processes the recovery hash
+    // after mount (the event can arrive slightly after the initial seed race),
+    // so the provider must also flip into recovery on the event itself.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    let changeHandler: ((event: string, session: unknown) => void) | undefined
+    mockOnAuthStateChange.mockImplementation((cb: (event: string, session: unknown) => void) => {
+      changeHandler = cb
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('false'))
+
+    act(() => {
+      changeHandler?.('PASSWORD_RECOVERY', { access_token: 'tok-r', user: { id: 'u1' } })
+    })
+
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
+  })
+
+  it('requestPasswordReset delegates to supabase with a login-page redirect', async () => {
+    // The reset email links back to the guardian login page, the only surface
+    // that loads supabase-js and can process the recovery hash (same constraint
+    // as the OAuth redirectTo).
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockResetPasswordForEmail.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('request reset'))
+    await waitFor(() =>
+      expect(mockResetPasswordForEmail).toHaveBeenCalledWith('reset@example.com', {
+        redirectTo: `${window.location.origin}${GUARDIAN_LOGIN_PATH}`,
+      })
+    )
+  })
+
+  it('rejects requestPasswordReset when supabase reports an error', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockResetPasswordForEmail.mockResolvedValue({ data: {}, error: new Error('rate limited') })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('request reset'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('rate limited'))
+  })
+
+  it('updatePassword delegates to supabase.auth.updateUser', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockUpdateUser.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('update password'))
+    await waitFor(() =>
+      expect(mockUpdateUser).toHaveBeenCalledWith({ password: 'new-password-123' })
+    )
+  })
+
+  it('rejects updatePassword when supabase reports an error', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    mockUpdateUser.mockResolvedValue({ data: {}, error: new Error('weak password') })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(mockGetSession).toHaveBeenCalled())
+    fireEvent.click(screen.getByText('update password'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('weak password'))
+  })
+
+  it('clears recovery after a successful password update (auto-continue)', async () => {
+    // Once the new password is saved, the recovery session is a normal signed-in
+    // session; clearing recovery lets LoginPage fall through to its role-based
+    // redirect (the approved "auto-continue to console" behavior).
+    mockIsPasswordRecovery = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockUpdateUser.mockResolvedValue({ data: {}, error: null })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
+    fireEvent.click(screen.getByText('update password'))
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('false'))
+  })
+
+  it('leaves recovery set when the password update fails', async () => {
+    // A failed update must keep the user on the set-new-password form to retry,
+    // not drop them into the console with the old password still active.
+    mockIsPasswordRecovery = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockUpdateUser.mockResolvedValue({ data: {}, error: new Error('weak password') })
+    render(
+      <AuthProvider>
+        <RecoveryProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
+    fireEvent.click(screen.getByText('update password'))
+    await waitFor(() => expect(screen.getByTestId('caught')).toHaveTextContent('weak password'))
+    expect(screen.getByTestId('recovery')).toHaveTextContent('true')
+  })
+
+  it('clears recovery on sign-out', async () => {
+    // Abandoning recovery (signing out from the set-new-password form) must not
+    // leave the provider stuck in recovery for the next session on this device.
+    mockIsPasswordRecovery = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockSignOut.mockResolvedValue({ error: null })
+    render(
+      <AuthProvider>
+        <Probe />
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('false'))
+  })
+
+  it('drops the rendered set-new-password form on sign-out, not just the internal recovery flag', async () => {
+    // Same scenario as the test above, but asserted at the UI level LoginPage
+    // actually renders, not just AuthContext's internal recovery flag.
+    mockIsPasswordRecovery = true
+    mockGetSession.mockResolvedValue({
+      data: { session: { access_token: 'tok-1', user: { id: 'u1' } } },
+    })
+    mockGet.mockResolvedValue({
+      data: { subject: 'sub-1', role: 'guardian', family_id: 'fam-1', profile_ids: [] },
+    })
+    mockSignOut.mockResolvedValue({ error: null })
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/guardian/login']}>
+          <Routes>
+            <Route path="/guardian/login" element={<LoginPage />} />
+            <Route path="/guardian" element={<div>console landing</div>} />
+          </Routes>
+        </MemoryRouter>
+        <ActionsProbe />
+      </AuthProvider>
+    )
+    expect(await screen.findByLabelText('New password')).toBeInTheDocument()
+    fireEvent.click(screen.getByText('sign out'))
+    await waitFor(() => expect(screen.queryByLabelText('New password')).not.toBeInTheDocument())
+  })
+
+  it('seeds recoveryError from a failed recovery-link landing', async () => {
+    // Supabase's expired/already-used redirect carries #error=... with no
+    // type=recovery, so isPasswordRecovery never fires; LoginPage instead
+    // needs recoveryError to show an actionable message.
+    mockRecoveryErrorFromUrl = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recoveryError')).toHaveTextContent('otp_expired'))
+    expect(screen.getByTestId('recovery')).toHaveTextContent('false')
+  })
+
+  it('a second tab enters recovery when notified over the recovery broadcast channel', async () => {
+    // A stale second guardian tab never sees the recovery hash or the
+    // PASSWORD_RECOVERY event (both scoped to the tab that followed the
+    // link); it must instead learn about the recovery landing from the
+    // cross-tab broadcast supabaseClient.ts sends.
+    mockGetSession.mockResolvedValue({ data: { session: null } })
+    render(
+      <AuthProvider>
+        <Probe />
+      </AuthProvider>
+    )
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('false'))
+
+    const sender = new BroadcastChannel(mockRecoveryBroadcastChannelName)
+    act(() => {
+      sender.postMessage('recovery')
+    })
+    sender.close()
+
+    await waitFor(() => expect(screen.getByTestId('recovery')).toHaveTextContent('true'))
   })
 })

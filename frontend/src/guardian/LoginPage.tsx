@@ -17,6 +17,7 @@ import {
   KID_PICKER_PATH,
 } from '../routes'
 import './guardian.css'
+import { SetNewPasswordForm } from './SetNewPasswordForm'
 
 /**
  * Whether `pathname` is a location `principal` can actually land on, mirroring
@@ -64,13 +65,29 @@ function isInvalidCredentials(err: unknown): boolean {
  * no new auth machinery, only a second entry point into the same flow.
  */
 export function LoginPage() {
-  const { status, principal, authError, signInWithOAuth, signInWithPassword, signOut } =
-    useAuth()
+  const {
+    status,
+    principal,
+    authError,
+    recovery,
+    recoveryError,
+    signInWithOAuth,
+    signInWithPassword,
+    signOut,
+    requestPasswordReset,
+  } = useAuth()
   const [signInError, setSignInError] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [formError, setFormError] = useState<'credentials' | 'connection' | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  // A failed recovery link (expired/already-used) means there is nothing to
+  // recover into, so pre-open the reset-request panel instead of leaving the
+  // guardian to rediscover "Forgot your password?" on their own.
+  const [showReset, setShowReset] = useState(Boolean(recoveryError))
+  const [resetEmail, setResetEmail] = useState('')
+  const [resetStatus, setResetStatus] = useState<'idle' | 'sent' | 'error'>('idle')
+  const [resetSubmitting, setResetSubmitting] = useState(false)
   const [deviceAuthState, setDeviceAuthState] = useState<'idle' | 'authorizing' | 'failed'>('idle')
   const location = useLocation()
   const navigate = useNavigate()
@@ -123,7 +140,11 @@ export function LoginPage() {
   // #VERIFY: LoginPage.test.tsx "falls back to the normal redirect when the
   // mint is rejected (e.g. admin-only, no family)".
   useEffect(() => {
-    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal) return
+    // #EDGE: security: an unusual URL could combine a device-authorization
+    // intent with an active recovery landing; recovery must win so the
+    // guardian sets a new password before any device grant is minted on
+    // their behalf.
+    if (!authorizeDeviceIntent || status !== 'signed-in' || !principal || recovery) return
     if (hasValidDeviceGrant()) {
       // Defensive: a grant already covers this device (e.g. a second tab
       // completed the mint first). Still shed the guardian session before
@@ -180,7 +201,7 @@ export function LoginPage() {
     return () => {
       cancelled = true
     }
-  }, [authorizeDeviceIntent, status, principal, api, navigate, signOut])
+  }, [authorizeDeviceIntent, status, principal, recovery, api, navigate, signOut])
 
   // #ASSUME: security: a submitted password leaves `submitting` true on success
   // because sign-in completes out-of-band (status -> signed-in fires the
@@ -231,6 +252,46 @@ export function LoginPage() {
     }
   }
 
+  // #ASSUME: security: requestPasswordReset resolves whether or not the address
+  // is registered (Supabase does not disclose it), so a resolution always maps
+  // to the neutral "if an account exists" confirmation, never a "sent" that
+  // would confirm the email. Only an operational rejection (rate limit, network,
+  // 5xx) surfaces a distinct, retryable connection error. Enumeration-resistant
+  // by construction, matching the login form's generic-credentials stance.
+  // #VERIFY: LoginPage.test.tsx forgot-password neutral-confirmation + error.
+  async function submitReset() {
+    setResetStatus('idle')
+    setResetSubmitting(true)
+    try {
+      await requestPasswordReset(resetEmail)
+      setResetStatus('sent')
+    } catch (err) {
+      // The user-facing message stays the same generic "couldn't send a
+      // reset link" regardless of cause (no enumeration leak either way);
+      // logging the real cause here is what makes a genuine bug
+      // distinguishable from a transient network blip in production
+      // monitoring, since nothing else observes this rejection.
+      logApiError('password-reset request failed', err)
+      setResetStatus('error')
+    } finally {
+      setResetSubmitting(false)
+    }
+  }
+
+  // Recovery-link return leg (ADR-009 password reset). The link established a
+  // session, so `status` is (or is becoming) 'signed-in', but the guardian must
+  // set a new password before continuing rather than being redirected to the
+  // console. Checked BEFORE the signed-in redirect for exactly that reason. On a
+  // successful update the context clears `recovery`, this branch falls away, and
+  // the signed-in redirect below auto-continues them to their console.
+  if (recovery) {
+    return (
+      <div className="guardian-login">
+        <SetNewPasswordForm />
+      </div>
+    )
+  }
+
   if (status === 'signed-in') {
     // While the device-authorization mint is in flight, hold here instead of
     // firing the normal redirect; the effect above navigates to the kid
@@ -251,6 +312,11 @@ export function LoginPage() {
     <div className="guardian-login">
       <h1>Guardian sign-in</h1>
       <p>Sign in to review, approve, and request stories for your family.</p>
+      {recoveryError ? (
+        <p role="alert" className="guardian-login__error cyo-text-error">
+          That password reset link is invalid or has expired. Request a new one below.
+        </p>
+      ) : null}
       <button
         type="button"
         className="guardian-login__provider"
@@ -327,6 +393,54 @@ export function LoginPage() {
           </p>
         ) : null}
       </form>
+
+      <button
+        type="button"
+        className="guardian-login__link"
+        onClick={() => setShowReset((open) => !open)}
+        aria-expanded={showReset}
+      >
+        Forgot your password?
+      </button>
+      {showReset ? (
+        <form
+          className="guardian-login__form"
+          onSubmit={(event) => {
+            event.preventDefault()
+            void submitReset()
+          }}
+        >
+          <label className="guardian-login__field cyo-field">
+            <span>Email for reset link</span>
+            <input
+              type="email"
+              name="reset-email"
+              autoComplete="email"
+              required
+              className="cyo-field__control"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+            />
+          </label>
+          <button
+            type="submit"
+            className="guardian-login__provider"
+            disabled={resetSubmitting}
+          >
+            {resetSubmitting ? 'Sending...' : 'Send reset link'}
+          </button>
+          {resetStatus === 'sent' ? (
+            <p role="status" aria-live="polite" className="guardian-login__note">
+              If an account exists for that email, we&apos;ve sent a reset link. Check your inbox.
+            </p>
+          ) : null}
+          {resetStatus === 'error' ? (
+            <p role="alert" className="guardian-login__error cyo-text-error">
+              We couldn&apos;t send a reset link. Check your connection and try again.
+            </p>
+          ) : null}
+        </form>
+      ) : null}
     </div>
   )
 }

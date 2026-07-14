@@ -186,6 +186,14 @@
   font-size: var(--text-sm, 0.9375rem);
 }
 
+/* Neutral confirmation (e.g. the enumeration-safe "reset link sent" note):
+   same rhythm as the error line but a calm, non-alarming ink color. */
+.guardian-login__note {
+  margin: 1rem 1.5rem 0;
+  font-size: var(--text-sm, 0.9375rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
 .guardian-login__link {
   display: block;
   width: 100%;

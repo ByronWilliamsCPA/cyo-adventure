@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Guardian password recovery (ADR-009). The sign-in page now offers a "Forgot
+  your password?" request that emails a reset link, with an
+  enumeration-resistant confirmation that never reveals whether an account
+  exists. Following the link back to the login page detects the recovery
+  session and shows a "Choose a new password" form (client-side match and
+  minimum-length checks) instead of dropping the guardian into the console;
+  once the new password is saved, the app auto-continues to the role-based
+  console. Previously a recovery link established a session but offered no way
+  to actually set a new password.
+
+### Fixed
+
+- Guardian login could loop back to the sign-in page indefinitely on a device
+  that had cached an older build. The frontend nginx config served the service
+  worker control scripts (`sw.js`, `registerSW.js`) with `Cache-Control:
+  public, immutable, max-age=1y`, the same rule meant only for content-hashed
+  `/assets/*` files. Because those scripts keep a stable filename across
+  deploys, an immutable header could pin a browser to a stale service worker
+  that kept serving an old precached app shell across reloads, so a fix never
+  reached that client. They are now served `no-cache` via exact-match nginx
+  locations, letting the PWA auto-update swap in a new service worker on the
+  next load. A browser already wedged on the old worker still needs a one-time
+  clear-site-data or hard reload; new and cleared clients self-heal.
+
 ## [0.4.0] - 2026-07-14
 
 ### Added

@@ -12,25 +12,44 @@ import { LoginPage } from './LoginPage'
 const mockSignInWithOAuth = vi.fn()
 const mockSignInWithPassword = vi.fn()
 const mockSignOut = vi.fn()
+const mockRequestPasswordReset = vi.fn()
+const mockUpdatePassword = vi.fn()
 let authStatus: AuthContextValue['status'] = 'signed-out'
 let authErrorValue: AuthContextValue['authError'] = null
 let principalValue: Principal | null = null
+let recoveryValue = false
+let recoveryErrorValue: AuthContextValue['recoveryError'] = null
 
 function principal(role: 'guardian' | 'admin' | 'child', isAdmin = role === 'admin'): Principal {
   return { subject: 's', role, isAdmin, familyId: 'f', profileIds: [] }
 }
 
+// The mock covers the full AuthContextValue surface the login page and its
+// recovery child (SetNewPasswordForm, which imports the same useAuth) consume.
 vi.mock('../auth/useAuth', () => ({
   useAuth: (): Pick<
     AuthContextValue,
-    'status' | 'authError' | 'signInWithOAuth' | 'signInWithPassword' | 'signOut' | 'principal'
+    | 'status'
+    | 'authError'
+    | 'recovery'
+    | 'recoveryError'
+    | 'signInWithOAuth'
+    | 'signInWithPassword'
+    | 'signOut'
+    | 'principal'
+    | 'requestPasswordReset'
+    | 'updatePassword'
   > => ({
     status: authStatus,
     authError: authErrorValue,
+    recovery: recoveryValue,
+    recoveryError: recoveryErrorValue,
     principal: principalValue,
     signInWithOAuth: mockSignInWithOAuth,
     signInWithPassword: mockSignInWithPassword,
     signOut: mockSignOut,
+    requestPasswordReset: mockRequestPasswordReset,
+    updatePassword: mockUpdatePassword,
   }),
 }))
 
@@ -68,9 +87,15 @@ beforeEach(() => {
   authStatus = 'signed-out'
   authErrorValue = null
   principalValue = null
+  recoveryValue = false
+  recoveryErrorValue = null
   mockSignInWithOAuth.mockReset()
   mockSignInWithPassword.mockReset()
   mockSignOut.mockReset()
+  mockRequestPasswordReset.mockReset()
+  mockRequestPasswordReset.mockResolvedValue(undefined)
+  mockUpdatePassword.mockReset()
+  mockUpdatePassword.mockResolvedValue(undefined)
   // Default: signOut resolves. LoginPage calls signOut().catch(...), so the
   // mock must return a promise; a bare vi.fn() would return undefined and blow
   // up on .catch. Individual tests override with mockRejectedValue.
@@ -130,6 +155,37 @@ describe('LoginPage password form', () => {
     const button = screen.getByRole('button', { name: 'Sign in' })
     expect(button).toBeInTheDocument()
     expect(button).not.toBeDisabled()
+  })
+
+  it('submits via native Enter-key form submission, not only the button click', async () => {
+    mockSignInWithPassword.mockResolvedValue(undefined)
+    renderLogin()
+    fillCredentials('parent@example.com', 'test-password')
+    fireEvent.submit(screen.getByRole('button', { name: 'Sign in' }).closest('form')!)
+    await waitFor(() =>
+      expect(mockSignInWithPassword).toHaveBeenCalledWith({
+        email: 'parent@example.com',
+        password: 'test-password',
+      })
+    )
+  })
+
+  it('does not submit a second time while the first attempt is still in flight', async () => {
+    // The button disables on `busy`; a double-click (or a slow network plus
+    // an impatient parent) must not fire signInWithPassword twice.
+    let resolveSignIn: (value?: unknown) => void = () => {}
+    mockSignInWithPassword.mockReturnValue(
+      new Promise((resolve) => {
+        resolveSignIn = resolve
+      })
+    )
+    renderLogin()
+    fillCredentials('parent@example.com', 'test-password')
+    const button = screen.getByRole('button', { name: 'Sign in' })
+    fireEvent.click(button)
+    fireEvent.click(await screen.findByRole('button', { name: /signing in/i }))
+    expect(mockSignInWithPassword).toHaveBeenCalledTimes(1)
+    resolveSignIn()
   })
 
   it('shows the account-unresolved message when a session cannot resolve a principal', () => {
@@ -262,6 +318,116 @@ describe('LoginPage OAuth buttons (startSignIn)', () => {
     fireEvent.click(screen.getByRole('button', { name: /Continue with Google/ }))
     const alert = await screen.findByRole('alert')
     expect(alert).toHaveTextContent(/sign-in didn't start/i)
+  })
+})
+
+describe('LoginPage forgot-password request', () => {
+  it('reveals the reset-request field when "Forgot your password?" is clicked', () => {
+    renderLogin()
+    // Hidden until asked for, so it does not clutter the primary sign-in path.
+    expect(screen.queryByLabelText('Email for reset link')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    expect(screen.getByLabelText('Email for reset link')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send reset link/i })).toBeInTheDocument()
+  })
+
+  it('sends a reset link to the entered email', async () => {
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    fireEvent.change(screen.getByLabelText('Email for reset link'), {
+      target: { value: 'parent@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
+    await waitFor(() =>
+      expect(mockRequestPasswordReset).toHaveBeenCalledWith('parent@example.com')
+    )
+  })
+
+  it('shows a neutral confirmation that does not reveal whether the account exists', async () => {
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    fireEvent.change(screen.getByLabelText('Email for reset link'), {
+      target: { value: 'parent@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
+    expect(await screen.findByRole('status')).toHaveTextContent(/if an account exists/i)
+  })
+
+  it('shows a connection error when the reset request fails operationally', async () => {
+    // A rate-limit / network failure must be distinguishable from the neutral
+    // success so the guardian knows to retry, without leaking account existence.
+    mockRequestPasswordReset.mockRejectedValue(new Error('rate limited'))
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    fireEvent.change(screen.getByLabelText('Email for reset link'), {
+      target: { value: 'parent@example.com' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
+    expect(await screen.findByRole('alert')).toHaveTextContent(/couldn't send a reset link/i)
+  })
+
+  it('blocks submission via native required/type=email validation when the field is empty', () => {
+    // The input is `type="email" required`; the browser's own constraint
+    // validation must stop the click from ever reaching submitReset(), not
+    // just our own application logic.
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
+    expect(mockRequestPasswordReset).not.toHaveBeenCalled()
+  })
+
+  it('blocks submission via native type=email validation when the value is not an email address', () => {
+    renderLogin()
+    fireEvent.click(screen.getByRole('button', { name: /forgot your password/i }))
+    fireEvent.change(screen.getByLabelText('Email for reset link'), {
+      target: { value: 'not-an-email' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: /send reset link/i }))
+    expect(mockRequestPasswordReset).not.toHaveBeenCalled()
+  })
+})
+
+describe('LoginPage recovery landing (set new password)', () => {
+  it('renders the set-new-password form instead of redirecting while in recovery', () => {
+    // The recovery link established a session (status signed-in), but the app
+    // must let the guardian set a new password rather than bouncing them to the
+    // console.
+    recoveryValue = true
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin()
+    expect(screen.getByLabelText('New password')).toBeInTheDocument()
+    expect(screen.getByLabelText('Confirm password')).toBeInTheDocument()
+    expect(screen.queryByText('console landing')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Sign in' })).not.toBeInTheDocument()
+  })
+
+  it('auto-continues to the console once recovery clears after the password update', () => {
+    // updatePassword clears recovery in the context; on the next render the
+    // recovery branch is gone and the normal signed-in redirect takes over.
+    recoveryValue = false
+    authStatus = 'signed-in'
+    principalValue = principal('guardian')
+    renderLogin()
+    expect(screen.getByText('console landing')).toBeInTheDocument()
+    expect(screen.queryByLabelText('New password')).not.toBeInTheDocument()
+  })
+})
+
+describe('LoginPage failed recovery-link landing', () => {
+  it('shows an alert explaining the link is invalid or expired', () => {
+    recoveryErrorValue = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    renderLogin()
+    expect(screen.getByRole('alert')).toHaveTextContent(/invalid or has expired/i)
+  })
+
+  it('pre-opens the reset-request panel instead of leaving it collapsed', () => {
+    // A guardian who just landed on a dead recovery link should not have to
+    // rediscover "Forgot your password?" on their own.
+    recoveryErrorValue = { code: 'otp_expired', description: 'Email link is invalid or has expired' }
+    renderLogin()
+    expect(screen.getByLabelText('Email for reset link')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /send reset link/i })).toBeInTheDocument()
   })
 })
 
