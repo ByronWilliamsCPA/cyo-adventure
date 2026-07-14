@@ -173,6 +173,65 @@ project-side upgrade path exists until Debian ships a fix.
 - Discovered by the Container Security workflow (Trivy) on
   [PR #165](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/165)
 
+---
+
+## CVE-2026-40467, CVE-2026-40468, CVE-2026-40469, CVE-2026-40553 | gawk | Critical/High
+
+| Field | Value |
+|-------|-------|
+| **CVE ID** | CVE-2026-40468, CVE-2026-40469 (Critical); CVE-2026-40467, CVE-2026-40553 (High) |
+| **Package** | gawk (Debian binary package from the `gawk` source package) |
+| **Affected Version** | 1:5.2.1-2+b1 (Debian 13 "trixie") |
+| **Fixed Version** | No fix available |
+| **Severity** | Critical (CVE-2026-40468, CVE-2026-40469); High (CVE-2026-40467, CVE-2026-40553) |
+| **CVSS Score** | Not yet assigned (NVD status RESERVED as of 2026-07-14) |
+| **Discovered** | 2026-07-14 |
+| **Reassessment Due** | 2026-09-12 |
+| **Blocking Release** | No |
+
+### Description
+
+Four memory-safety defects in GNU Awk reported against the `gawk` binary
+package: integer overflows in `builtin.c` (CVE-2026-40468, CVE-2026-40469), a
+use-after-free in `io.c` (CVE-2026-40467), and a buffer overflow
+(CVE-2026-40553). Exploitation requires processing an attacker-controlled awk
+program or crafted input through gawk.
+
+### Impact on This Project
+
+`gawk` ships in the production runtime base image
+(`ghcr.io/byronwilliamscpa/dhi-python:3.12-debian13`); the application does not
+install it and does not invoke it. The container runs a FastAPI web service
+that never shells out to `gawk` nor feeds it untrusted input, so none of the
+vulnerable code paths are reachable through the application surface. Exposure
+is negligible.
+
+### Remediation Plan
+
+- [ ] Monitor the [Debian security tracker](https://security-tracker.debian.org/tracker/source-package/gawk)
+  for a fixed `gawk` package in trixie
+- [ ] Once a fix ships, let the patched package flow in on the next image
+  rebuild, then remove the four `.trivyignore` entries
+- [ ] Reassess by 2026-09-12 whether a fixed Debian package or NVD analysis
+  (CVSS, exploitability detail) is available
+
+### Why Not Fixed Yet
+
+Debian has not released a patched `gawk` for trixie (Trivy reports an empty
+Fixed Version with status `affected` for all four CVEs). The package is
+provided by the hardened base image, not managed by this project's dependency
+set, so no project-side upgrade path exists until Debian ships a fix.
+
+### References
+
+- [Aqua AVD CVE-2026-40468](https://avd.aquasec.com/nvd/cve-2026-40468)
+- [Aqua AVD CVE-2026-40469](https://avd.aquasec.com/nvd/cve-2026-40469)
+- [Aqua AVD CVE-2026-40467](https://avd.aquasec.com/nvd/cve-2026-40467)
+- [Aqua AVD CVE-2026-40553](https://avd.aquasec.com/nvd/cve-2026-40553)
+- [Debian security tracker: gawk](https://security-tracker.debian.org/tracker/source-package/gawk)
+- Discovered by the Container Security workflow (Trivy) on
+  [PR #256](https://github.com/ByronWilliamsCPA/cyo-adventure/pull/256)
+
 ## Resolved Entries
 
 | CVE | Package | Resolved Date | Resolution |
@@ -184,3 +243,4 @@ project-side upgrade path exists until Debian ships a fix.
 |-------------|----------------|-----------------------------------------------------------------------|
 | 2026-MM-DD  | Byron Williams | Initial creation.                                                     |
 | 2026-07-08  | Byron Williams | Added CVE-2026-53615 (libuuid1, runtime base image; no upstream fix). |
+| 2026-07-14  | Byron Williams | Added gawk CVE-2026-40467/40468/40469/40553 (runtime base image; no upstream fix). |
