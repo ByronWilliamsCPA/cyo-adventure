@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Kid devices could hit a dead-end crash on the "I am a grown-up" link and a
+  bounce-to-login on "Add Child". Two independent stale-deploy and device-grant
+  bugs are fixed. First, a returning client whose service worker still served an
+  older app shell referenced deleted, content-hashed chunk filenames; the next
+  cross-chunk navigation 404'd and dropped the reader into the "Something went
+  wrong" boundary. Route chunks now load through `lazyWithReload`, which forces
+  exactly one `location.reload()` on a stale-deploy chunk-load failure (guarded
+  by a per-chunk one-shot flag so a genuinely missing asset does not loop, a
+  watchdog so a no-op reload surfaces the error instead of hanging, and a
+  chunk-load-error check so transient or unrelated failures fall straight
+  through). Second, on an ADR-014 device-grant-only kid device the "Add Child"
+  tile linked to the guardian-gated profile route, bouncing the child to the
+  password screen; the tile is now shown only when a guardian session is present
+  on the device and stays in sync with a cross-tab guardian sign-in or sign-out.
+
 ## [0.5.1] - 2026-07-14
 
 ## [0.5.0] - 2026-07-14
