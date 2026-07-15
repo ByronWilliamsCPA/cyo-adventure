@@ -6,21 +6,17 @@
  * the guardian subtree so the kid chunk never imports @supabase/supabase-js
  * and never needs the VITE_SUPABASE_* env vars. That means kid-surface code
  * cannot call `useAuth()`. The presence of the guardian bearer that
- * `useApi`/AuthContext persist under the `auth_token` localStorage key is the
- * lightweight, Supabase-free proxy the kid surface can read instead.
+ * `useApi`/AuthContext persist under the {@link TOKEN_STORAGE_KEY} localStorage
+ * key is the lightweight, Supabase-free proxy the kid surface can read instead.
  *
  * This is intentionally a coarse presence check, not a validity check: an
  * expired-but-present token still renders the grown-up affordance, and the
  * guardian route's own ProtectedRoute/AdultGate does the real session check on
- * navigation. The common handed-off-kid device has no `auth_token` at all, so
+ * navigation. The common handed-off-kid device has no guardian token at all, so
  * this returns false and kid-surface guardian affordances stay hidden.
  */
 
-// Mirrors AuthContext.tsx's TOKEN_STORAGE_KEY and useApi.ts's literal usage.
-// It cannot be imported from AuthContext without pulling the Supabase client
-// (and its env requirement) into the kid chunk, so the key is duplicated here
-// with this note as the single point of coordination.
-const TOKEN_STORAGE_KEY = 'auth_token'
+import { TOKEN_STORAGE_KEY } from './tokenStorageKey'
 
 export function hasGuardianSession(): boolean {
   // #EDGE: browser-compat: localStorage access can throw in hardened privacy

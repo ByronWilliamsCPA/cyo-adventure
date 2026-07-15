@@ -19,9 +19,8 @@ import {
   recoveryErrorFromUrl,
   supabase,
 } from './supabaseClient'
+import { TOKEN_STORAGE_KEY } from './tokenStorageKey'
 import { isRole, type Principal } from './types'
-
-const TOKEN_STORAGE_KEY = 'auth_token'
 
 /**
  * Clears the stored bearer token, swallowing the DOMException that some

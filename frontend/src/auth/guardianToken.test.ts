@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { hasGuardianSession } from './guardianToken'
+import { TOKEN_STORAGE_KEY } from './tokenStorageKey'
 
 describe('hasGuardianSession', () => {
   beforeEach(() => {
@@ -13,6 +14,16 @@ describe('hasGuardianSession', () => {
 
   it('is true when a guardian bearer is stored under auth_token', () => {
     localStorage.setItem('auth_token', 'guardian-jwt')
+    expect(hasGuardianSession()).toBe(true)
+  })
+
+  it('reads the shared TOKEN_STORAGE_KEY, so the kid and guardian halves cannot drift', () => {
+    // Guards the ADR-014 split: guardianToken.ts must key off the SAME constant
+    // AuthContext/useApi persist under, without importing them (which would pull
+    // Supabase into the kid chunk). Both now import ./tokenStorageKey, so a
+    // token written under that shared key is what hasGuardianSession detects.
+    expect(TOKEN_STORAGE_KEY).toBe('auth_token')
+    localStorage.setItem(TOKEN_STORAGE_KEY, 'guardian-jwt')
     expect(hasGuardianSession()).toBe(true)
   })
 

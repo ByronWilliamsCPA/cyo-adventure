@@ -12,6 +12,7 @@ import {
   routeProfileId,
 } from '../auth/childSession'
 import { clearDeviceGrant, getValidDeviceGrant, isDeviceGrantAuthRoute } from '../auth/deviceGrant'
+import { TOKEN_STORAGE_KEY } from '../auth/tokenStorageKey'
 import { GUARDIAN_LOGIN_PATH } from '../routes'
 import { logApiError } from './logApiError'
 
@@ -146,7 +147,7 @@ function refreshGuardianToken(): Promise<string | null> {
       // value.
       // #VERIFY: useApi.test.ts "stores the refreshed token" retry cases.
       try {
-        localStorage.setItem('auth_token', token)
+        localStorage.setItem(TOKEN_STORAGE_KEY, token)
       } catch {
         // #EDGE: browser-compat: storage unavailable (private/locked-down mode
         // or quota). The retry still carries the fresh token explicitly (the
@@ -267,7 +268,7 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
           }
         }
         // Add auth token if available
-        const token = localStorage.getItem('auth_token')
+        const token = localStorage.getItem(TOKEN_STORAGE_KEY)
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
         }
@@ -373,7 +374,7 @@ export function useApi(config?: AxiosRequestConfig): AxiosInstance {
             // ask-a-grown-up gate as above).
             // #VERIFY: only navigate off a guardian path, and never navigate
             // away from the login page itself (redirect-loop guard).
-            localStorage.removeItem('auth_token')
+            localStorage.removeItem(TOKEN_STORAGE_KEY)
             const path = window.location.pathname
             if (path.startsWith('/guardian') && path !== GUARDIAN_LOGIN_PATH) {
               // Use replace(), not assign(): the expired guardian URL must not stay
