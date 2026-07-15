@@ -212,3 +212,136 @@ export function choose(story: Storybook, state: ReadingState, choiceId: string):
   next.path.push(choice.target)
   return next
 }
+
+// ---------------------------------------------------------------------------
+// Go back one page (kid mis-tap recovery). A frontend-only affordance built on
+// replay: the previous state is recomputed by replaying the recorded node path
+// from the start through this same deterministic engine, never by reversing
+// effects, so a post-back state is exactly the state of a shorter read. No new
+// state semantic is introduced, so nothing needs mirroring in the Python engine.
+// ---------------------------------------------------------------------------
+
+// #EDGE: timing: the path replay backtracks across same-target sibling choices
+// (a node may offer two choices to the same target with different effects,
+// like the lantern story's take/ignore pair), which is exponential in the
+// pathological case. Real stories are short and near-deterministic; this
+// budget bounds the search and fails closed (no Go back) if exhausted.
+// #VERIFY: engine.test.ts replays the ambiguous lantern ignore-lantern branch.
+const MAX_REPLAY_STEPS = 5000
+
+function sameVarState(a: VarState, b: VarState): boolean {
+  const aKeys = Object.keys(a)
+  return aKeys.length === Object.keys(b).length && aKeys.every((key) => a[key] === b[key])
+}
+
+/** Order-independent id-set equality, mirroring how the backend replay gate
+ * compares visit_set (player/replay.py::_check_replay uses set equality). */
+function sameIdSet(a: string[], b: string[]): boolean {
+  const aSet = new Set(a)
+  const bSet = new Set(b)
+  return aSet.size === bSet.size && [...aSet].every((id) => bSet.has(id))
+}
+
+interface ReplayBudget {
+  remaining: number
+}
+
+/** Depth-first reconstruction of live.path: at each step try every visible
+ * choice whose target is the next recorded node, and accept only a branch
+ * whose end state reproduces the live state. Appends to states in place;
+ * states[i] is the state after i choices when the search succeeds. */
+function searchPathReplay(
+  story: Storybook,
+  live: ReadingState,
+  states: ReadingState[],
+  budget: ReplayBudget
+): boolean {
+  const depth = states.length - 1
+  const current = states[depth]
+  if (depth === live.path.length - 1) {
+    // current_node and path match by construction; the variables and visit set
+    // must match too, so an unfaithful reconstruction (a different same-target
+    // sibling than the one actually taken) is rejected, not rewritten into
+    // the child's history.
+    return sameVarState(current.var_state, live.var_state) && sameIdSet(current.visit_set, live.visit_set)
+  }
+  const targetId = live.path[depth + 1]
+  for (const candidate of visibleChoices(story, current)) {
+    if (candidate.target !== targetId) continue
+    if (budget.remaining <= 0) return false
+    budget.remaining -= 1
+    let next: ReadingState
+    try {
+      next = choose(story, current, candidate.id)
+    } catch {
+      // A dangling target throws inside choose(); treat the branch as dead and
+      // fail closed rather than crash the reader on a corrupt story.
+      continue
+    }
+    states.push(next)
+    if (searchPathReplay(story, live, states, budget)) return true
+    states.pop()
+  }
+  return false
+}
+
+/** Replay live.path from the story's start, returning the state after each
+ * recorded step (result[i] is the state after i choices), or null when no
+ * replay of the recorded path reproduces the live state. */
+function replayRecordedPath(story: Storybook, live: ReadingState): ReadingState[] | null {
+  // #EDGE: data-integrity: a continuation read starts mid-story with carried
+  // variables (see the #CRITICAL note on startContinuation) and can never be
+  // reproduced by replaying from start_node, so it gets no Go back rather
+  // than a wrong one.
+  // #VERIFY: engine.test.ts "fails closed for a continuation state".
+  if (live.path.length === 0 || live.path[0] !== story.start_node) return null
+  let initial: ReadingState
+  try {
+    initial = start(story)
+  } catch {
+    // A dangling start node: fail closed, same as the dead-branch case above.
+    return null
+  }
+  const states = [initial]
+  return searchPathReplay(story, live, states, { remaining: MAX_REPLAY_STEPS }) ? states : null
+}
+
+// #ASSUME: data-integrity: a state saved after Go back is indistinguishable
+// from having simply made fewer choices, so the existing save path needs no
+// change. Verified against src/cyo_adventure/api/reading.py::put_reading_state
+// (revision-based optimistic concurrency: 409 only on version/state_revision
+// mismatch; nothing requires path to grow between saves) and
+// player/replay.py::_check_structure (known node ids, current_node ===
+// path[path.length - 1], complete in-bounds var_state), all of which a
+// replayed shorter state satisfies by construction; choice_path is optional
+// and the frontend does not send it.
+// #VERIFY: ReaderPage stamps state_revision from its own revisionRef before
+// each PUT, so the revision carried over below never fights the server
+// counter; tests/unit/test_replay.py pins the structural floor server-side.
+/** The reading state as if the child had made every recorded choice except
+ * the last one, recomputed via replay (never by reversing effects); null when
+ * there is nothing to undo or the recorded path cannot be faithfully replayed
+ * from the start (continuation reads). The input is not mutated. */
+export function back(story: Storybook, state: ReadingState): ReadingState | null {
+  if (state.path.length <= 1) return null
+  const states = replayRecordedPath(story, state)
+  if (states === null) return null
+  const previous = states[states.length - 2]
+  return {
+    current_node: previous.current_node,
+    var_state: { ...previous.var_state },
+    path: [...previous.path],
+    visit_set: [...previous.visit_set],
+    version: previous.version,
+    // Rewind only what choices produced: the server-revision counter and save
+    // slots are owned outside the choice history and carry over unchanged.
+    state_revision: state.state_revision,
+    save_slots: { ...state.save_slots },
+  }
+}
+
+/** Whether Go back is available: at least one recorded choice, and the
+ * recorded path is faithfully replayable from the start. */
+export function canGoBack(story: Storybook, state: ReadingState): boolean {
+  return back(story, state) !== null
+}

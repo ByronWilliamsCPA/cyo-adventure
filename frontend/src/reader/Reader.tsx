@@ -7,7 +7,7 @@
  * design-system components (PassageText, ChoiceButton) and a persistent top bar.
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { Button } from '@ds/components/Button'
@@ -16,7 +16,7 @@ import { PassageText } from '@ds/components/PassageText'
 import { useMachine } from '@xstate/react'
 
 import type { SeriesNextBookInfo } from '../api/readerApi'
-import { currentEndingId, visibleChoices } from '../player/engine'
+import { canGoBack, currentEndingId, visibleChoices } from '../player/engine'
 import { Mascot } from '../kid/Mascot'
 import { readerMachine } from '../player/machine'
 import { SATISFYING_ENDING_KINDS, seriesMeta } from '../player/series'
@@ -98,11 +98,12 @@ export function Reader({
     send({ type: 'CHOOSE', choiceId })
   }
 
-  // After a choice, bring the new passage into view from its top and move
-  // focus to it so a screen reader announces the passage from its start. Keyed
-  // on the last-seen node (not a first-run flag) so the initial mount never
-  // steals focus, and the StrictMode double-invoke of this effect stays a
-  // no-op (the ref already matches on the second run).
+  // Whenever the node changes, in either direction (a choice forward or Go
+  // back), bring the passage into view from its top and move focus to it so a
+  // screen reader announces the passage from its start. Keyed on the last-seen
+  // node (not a first-run flag) so the initial mount never steals focus, and
+  // the StrictMode double-invoke of this effect stays a no-op (the ref already
+  // matches on the second run).
   const passageRef = useRef<HTMLDivElement>(null)
   const lastNodeRef = useRef(reading.current_node)
   useEffect(() => {
@@ -144,6 +145,29 @@ export function Reader({
       Leave
     </button>
   )
+
+  // Kids mis-tap constantly; Go back undoes just the last choice by replaying
+  // the recorded path through the deterministic engine (machine BACK event),
+  // instead of forcing a full restart. Hidden entirely (not disabled) when
+  // there is nothing to undo: at the start node, and for states the engine
+  // cannot faithfully replay (continuation reads). canGoBack replays the path
+  // to answer, so memoize it per reading state rather than per render.
+  const canUndo = useMemo(() => canGoBack(story, reading), [story, reading])
+  const goBackButton = canUndo ? (
+    <Button variant="ghost" data-testid="go-back" onClick={() => send({ type: 'BACK' })}>
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M15 5 L8 12 L15 19"
+        />
+      </svg>
+      Go back
+    </Button>
+  ) : null
 
   // showLabel is left at its default (hidden): the percent's denominator is all
   // of the story's nodes, not the reachable subset for this branch, so it can
@@ -221,6 +245,9 @@ export function Reader({
             >
               Read again
             </Button>
+            {/* "Go back a page" is where try-the-other-path value peaks: it
+                returns into the story one step before this ending. */}
+            {goBackButton}
             <BackToLibrary profileId={profileId} />
             {showContinue && meta && fetchSeriesNext ? (
               <ContinueSeries
@@ -261,6 +288,9 @@ export function Reader({
             </li>
           ))}
         </ul>
+        {/* Below the choices, not among them, so undoing a mis-tap never
+            competes with the story's own options. */}
+        {goBackButton ? <div className="reader-back-row">{goBackButton}</div> : null}
       </section>
     </div>
   )

@@ -321,6 +321,14 @@
   width: 100%;
 }
 
+/* Go back one page: a modest ghost action under the choice list, left-aligned
+   so it reads as reader chrome rather than another story choice. The 44px tap
+   target comes from the design-system button floor (Button.css .cyo-btn). */
+.reader-back-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .reader-ending__title {
   font-family: var(--font-serif);
   font-size: var(--text-2xl);
