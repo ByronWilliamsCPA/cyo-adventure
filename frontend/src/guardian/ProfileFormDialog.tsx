@@ -57,9 +57,9 @@ type PinChoice = 'keep' | 'set' | 'clear'
 
 /**
  * Shared create/edit form for the guardian Profiles page: name, age band,
- * reading level cap, illustrated avatar, TTS toggle (the fields backing the
- * wireframe 4.1 picker's profiles), and, when editing, the optional picker
- * PIN (set/change/remove). Photos are deliberately absent; see the avatar
+ * reading level cap, illustrated avatar (the fields backing the wireframe
+ * 4.1 picker's profiles), and, when editing, the optional picker PIN
+ * (set/change/remove). Photos are deliberately absent; see the avatar
  * catalog's module docstring.
  */
 export function ProfileFormDialog(props: ProfileFormDialogProps) {
@@ -68,7 +68,6 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   const [ageBand, setAgeBand] = useState(initial?.age_band ?? '5-8')
   const [cap, setCap] = useState(String(initial?.reading_level_cap ?? 99))
   const [avatar, setAvatar] = useState<string | null>(initial?.avatar ?? null)
-  const [tts, setTts] = useState(initial?.tts_enabled ?? false)
   // Picker-PIN controls (edit mode only). `keep` leaves the stored PIN (or
   // its absence) untouched; the typed value is held only in this state and
   // discarded with the dialog; it is never echoed back by the server.
@@ -90,7 +89,10 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
         age_band: ageBand,
         reading_level_cap: Number(cap),
         avatar,
-        tts_enabled: tts,
+        // No form control backs this field (see the note near the removed
+        // checkbox below): edits pass the stored value through unchanged;
+        // creates default to off.
+        tts_enabled: initial?.tts_enabled ?? false,
       }
       // Narrow on the discriminant so create mode structurally cannot emit
       // a pin; only edit mode builds the wider body.
@@ -227,14 +229,10 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
             </label>
           ))}
         </fieldset>
-        <label className="cyo-field">
-          <input
-            type="checkbox"
-            checked={tts}
-            onChange={(e) => setTts(e.target.checked)}
-          />
-          Read-aloud (TTS) enabled
-        </label>
+        {/* The read-aloud (TTS) checkbox that lived here is hidden until the
+            reader actually ships read-aloud support; the tts_enabled field
+            stays in the payload (pass-through on edit, false on create) so
+            re-adding the toggle later needs no API change. */}
         {initial ? (
           <fieldset className="profile-form__pin">
             <legend>Picker PIN</legend>

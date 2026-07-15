@@ -93,7 +93,6 @@ export function ProfilesPage() {
                 <span className="profiles__name">{profile.display_name}</span>
                 <span className="profiles__caps">
                   Ages {profile.age_band} · Reading cap {profile.reading_level_cap}
-                  {profile.tts_enabled ? ' · Read-aloud on' : ''}
                 </span>
               </div>
               <Button
