@@ -81,9 +81,22 @@ export function ProfilePickerPage() {
   // grant and no guardian session. Adding a child is a guardian action gated by
   // ProtectedRoute, so on a kid-only device the tile would bounce a child to
   // the guardian password screen (a dead end). Show it only when a grown-up is
-  // actually signed in. Snapshot once on mount: a guardian signing in happens
-  // on the guardian tree, which remounts this page on return.
-  const guardianSignedIn = useMemo(() => hasGuardianSession(), [])
+  // actually signed in.
+  // #ASSUME: concurrency: the value is seeded once at mount, but a guardian
+  // sign-in or sign-out can also happen in ANOTHER tab on the same device while
+  // this picker stays open (a grown-up signs out elsewhere, then hands the
+  // tablet over). The `storage` event fires in every OTHER tab when
+  // localStorage changes, so re-reading on it keeps the tile in sync without a
+  // remount. A same-tab change cannot strand this snapshot: the kid surface is
+  // mounted outside AuthProvider and never mutates the guardian token itself.
+  // #VERIFY: ProfilePickerPage.test.tsx "reveals/hides the Add Child tile when
+  // a guardian session appears/disappears in another tab".
+  const [guardianSignedIn, setGuardianSignedIn] = useState(hasGuardianSession)
+  useEffect(() => {
+    const sync = () => setGuardianSignedIn(hasGuardianSession())
+    window.addEventListener('storage', sync)
+    return () => window.removeEventListener('storage', sync)
+  }, [])
 
   // #ASSUME: external-resources: minting the child session (G1 / P6-04) can
   // fail (network blip, a guardian session that expired between page load

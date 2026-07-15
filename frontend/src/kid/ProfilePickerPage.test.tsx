@@ -100,6 +100,42 @@ describe('ProfilePickerPage', () => {
     expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
   })
 
+  it('reveals the Add Child tile when a guardian signs in from another tab', async () => {
+    // Starts as a kid-only device (no auth_token), so the tile is hidden.
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    renderPicker()
+    await screen.findByRole('link', { name: /Reader A/ })
+    expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
+
+    // A grown-up signs in in ANOTHER tab: localStorage gains the token and the
+    // browser fires a `storage` event in this tab. The tile must appear without
+    // a remount.
+    localStorage.setItem('auth_token', 'guardian-jwt')
+    fireEvent(window, new StorageEvent('storage', { key: 'auth_token' }))
+
+    expect(await screen.findByRole('link', { name: /Add Child/i })).toHaveAttribute(
+      'href',
+      '/guardian/profiles'
+    )
+  })
+
+  it('hides the Add Child tile when a guardian signs out from another tab', async () => {
+    // A guardian is signed in when the picker mounts, so the tile shows.
+    localStorage.setItem('auth_token', 'guardian-jwt')
+    mockGet.mockResolvedValue({ data: ONE_PROFILE })
+    renderPicker()
+    expect(await screen.findByRole('link', { name: /Add Child/i })).toBeInTheDocument()
+
+    // Cross-tab sign-out clears the token and fires a `storage` event; the
+    // grown-up affordance must disappear so a handed-off child cannot reach it.
+    localStorage.removeItem('auth_token')
+    fireEvent(window, new StorageEvent('storage', { key: 'auth_token' }))
+
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: /Add Child/i })).not.toBeInTheDocument()
+    )
+  })
+
   it('shows the empty state when no profiles exist', async () => {
     mockGet.mockResolvedValue({ data: { profiles: [] } })
     renderPicker()
