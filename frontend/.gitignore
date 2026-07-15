@@ -45,6 +45,9 @@ blob-report/
 # `infisical run --env=prod` instead so this file never needs to exist.
 .env.e2e-prod
 
+# e2e-staging credentials (use .env.e2e-staging.example as template)
+.env.e2e-staging
+
 # Generated API client: TRACKED, not ignored. It is committed build output
 # (regenerate with `npm run generate-client`) so a CI drift check has a
 # baseline to diff against; see docs/template_feedback.md "Generated API

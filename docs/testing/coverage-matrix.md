@@ -10,11 +10,10 @@ relate to the Supabase project constraints.
 
 - **Layer**: Unit/Component (Vitest + Testing Library), E2E-mocked (Playwright
   against route-intercepted API, `frontend/e2e/`), E2E-real (Playwright
-  against a real local backend, `frontend/e2e-real/`), E2E-prod (Playwright
-  against live production, `frontend/e2e-prod/`, run manually/scheduled only).
-- A **staging** E2E layer does not exist yet (see Gaps below); once
-  `frontend/e2e-staging/` lands per the environment proposal, add a column
-  here.
+  against a real local backend, `frontend/e2e-real/`), E2E-staging (Playwright
+  against the shared staging Supabase project's seeded fixtures,
+  `frontend/e2e-staging/`, scheduled + manual), E2E-prod (Playwright against
+  live production, `frontend/e2e-prod/`, manual only, never CI).
 - "NONE FOUND" means no test at that layer touches this journey. It does not
   necessarily mean the journey is unimplemented, only untested at that layer.
 
@@ -31,6 +30,7 @@ relate to the Supabase project constraints.
 
 - E2E-mocked: `frontend/e2e/guardian-auth.spec.ts`, `frontend/e2e/guardian-console.spec.ts` (redirect matrix), `frontend/e2e/intake.spec.ts` (unauth redirect), `frontend/e2e/naive-user/naive-misuse-shared.spec.ts` (expired-session redirect)
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts` (access-control checks)
+- E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (real Supabase sign-in as both seeded guardian and admin accounts)
 - E2E-prod: `frontend/e2e-prod/landing-login.spec.ts`, `frontend/e2e-prod/guardian-admin-smoke.spec.ts`
 - Component: `frontend/src/guardian/LoginPage.test.tsx`, `frontend/src/guardian/SetNewPasswordForm.test.tsx`, `frontend/src/auth/AuthContext.test.tsx`, `frontend/src/auth/AdultGate.test.tsx`, `frontend/src/auth/ProtectedRoute.test.tsx`, `frontend/src/auth/guardianToken.test.ts`, `frontend/src/auth/supabaseClient.test.ts`, `frontend/src/guardian/GuardianShell.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx`
 - Integration: `frontend/src/test/App.test.tsx`
@@ -82,20 +82,23 @@ relate to the Supabase project constraints.
 - E2E-mocked: `frontend/e2e/guardian-review.spec.ts`, `frontend/e2e/guardian-console.spec.ts` (navigation), `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`, `frontend/e2e/naive-user/naive-misuse-shared.spec.ts`
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
 - Component: `frontend/src/admin/ReviewDetailPage.test.tsx`, `frontend/src/admin/AdminConsolePage.test.tsx` (links into it), `frontend/src/guardian/reviewApi.test.ts`, `frontend/src/guardian/coverApi.test.ts` (cover generation on review page)
+- **Gap**: no E2E-staging coverage, `/admin/review/:id` needs a real storybook id and is excluded from the render-only staging smoke for the same reason `e2e-prod` excludes it.
 
 ## Admin: cross-family request queue
 
 - E2E-mocked: `frontend/e2e/guardian-console.spec.ts`, `frontend/e2e/naive-user/naive-admin-misuse.spec.ts`
 - E2E-real: `frontend/e2e-real/approval-flow.spec.ts`
+- E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (render only)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render only)
 - Component: `frontend/src/admin/AdminConsolePage.test.tsx`, `frontend/src/admin/AdminRequestsPage.test.tsx`, `frontend/src/guardian/RequestStoryForm.test.tsx` (admin-mode family selector), `frontend/src/guardian/authoredRequestApi.test.ts` (listFamilies)
 
 ## Admin: moderation dashboard/thresholds
 
 - E2E-mocked: **NONE FOUND**
+- E2E-staging: `frontend/e2e-staging/guardian-admin-smoke.spec.ts` (render smoke only)
 - E2E-prod: `frontend/e2e-prod/guardian-admin-smoke.spec.ts` (render smoke only)
 - Component: `frontend/src/admin/ModerationDashboardPage.test.tsx`, `frontend/src/admin/ModerationThresholdsPage.test.tsx`, `frontend/src/admin/AdminShell.test.tsx` (nav link only)
-- **Gap**: solid component coverage, but no dedicated mocked or real-backend E2E spec exercises this journey end-to-end. See Gaps section.
+- **Gap**: solid component coverage and now a staging render smoke, but no dedicated mocked or real-backend E2E spec exercises the actual thresholds-editing or dashboard-filtering workflow end-to-end. See Gaps section.
 
 ## Admin: provider allowlist management
 
@@ -112,6 +115,7 @@ relate to the Supabase project constraints.
 
 - E2E-mocked: `frontend/e2e/library.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`, `frontend/e2e/story-requests-kid.spec.ts`
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts` (cross-family 403)
+- E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (populated-library render, via mint/revoke device grant)
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (empty-state render)
 - Component: `frontend/src/library/LibraryPage.test.tsx`, `frontend/src/library/BookCard.test.tsx`, `frontend/src/library/pickHero.test.ts`, `frontend/src/library/libraryApi.test.ts`, `frontend/src/library/RequestStory.test.tsx`, `frontend/src/library/storyRequestApi.test.ts`
 - Integration: `frontend/src/test/App.test.tsx`
@@ -139,6 +143,7 @@ relate to the Supabase project constraints.
 
 - E2E-mocked: `frontend/e2e/device-authorization.spec.ts`, `frontend/e2e/landing.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts`
 - E2E-real: `frontend/e2e-real/kid-reads.spec.ts`, `frontend/e2e-real/naive-kid-misuse-real.spec.ts`, `frontend/e2e-real/series-continue-real.spec.ts`, `frontend/e2e-real/real-stack.ts` (helper)
+- E2E-staging: `frontend/e2e-staging/kid-library-smoke.spec.ts` (the one staging spec that writes, with `afterAll` cleanup, mirroring the prod pattern)
 - E2E-prod: `frontend/e2e-prod/kid-device-grant.spec.ts` (the one prod spec that writes, with `afterAll` cleanup)
 - Component: `frontend/src/auth/DeviceAuthorizedRoute.test.tsx`, `frontend/src/auth/deviceGrant.test.ts`, `frontend/src/auth/deviceGrantApi.test.ts`, `frontend/src/landing/LandingPage.test.tsx`, `frontend/src/guardian/ConsolePage.test.tsx` (mint/re-authorize/revoke), `frontend/src/guardian/LoginPage.test.tsx` (authorize-device intent), `frontend/src/offline/db.test.ts` (device-grant mirror + migration), `frontend/src/hooks/useApi.test.ts` (device-grant bearer selection/clearing)
 - Integration: `frontend/src/test/App.test.tsx`
@@ -147,7 +152,7 @@ relate to the Supabase project constraints.
 
 - E2E-mocked: `frontend/e2e/library.spec.ts`, `frontend/e2e/naive-user/naive-kid-misuse.spec.ts` (double-rating keeps latest)
 - Component: `frontend/src/library/StarRating.test.tsx`, `frontend/src/library/LibraryPage.test.tsx` (rate POST + optimistic/revert), `frontend/src/library/libraryApi.test.ts` (`rate()`)
-- **Gap**: no `e2e-real` or `e2e-prod` coverage.
+- **Gap**: no `e2e-real`, `e2e-staging`, or `e2e-prod` coverage.
 
 ---
 
@@ -159,22 +164,29 @@ relate to the Supabase project constraints.
    protected transitively by intake/request E2E specs.
 2. **Moderation dashboard/thresholds**: strong component coverage, but no
    dedicated mocked-tier (`frontend/e2e/`) or real-backend (`frontend/e2e-real/`)
-   spec, only a prod render-smoke assertion. Priority: High, this gates what
-   content reaches production and has no workflow-level regression coverage.
+   spec that actually exercises editing thresholds or filtering the
+   dashboard, only render-only smoke on staging and prod. Priority: High,
+   this gates what content reaches production and has no workflow-level
+   regression coverage.
 3. **Provider allowlist management**: no coverage found at any layer; no
    admin UI page appears to exist in the frontend for this at all. Priority:
    needs confirmation, first determine with the team whether this is
    intentionally backend/CLI-only or a missing page before treating it as a
    test gap.
-4. **Ratings**: no `e2e-real`/`e2e-prod` coverage, mocked-tier and component
-   coverage only. Priority: Low, low-risk UI action, component coverage is
-   adequate for now.
-5. **No staging-tier E2E layer exists yet.** Every journey above has zero
-   staging coverage today; this is the primary motivation for adding the
-   `dev`/`staging` E2E workflows described in `docs/testing/README.md`.
-6. **Offline sync/conflict resolution has no real-backend or prod coverage.**
-   Mocked-tier and component coverage is strong, but the conflict-resolution
-   path has never been exercised against a real database.
+4. **Ratings**: no `e2e-real`/`e2e-staging`/`e2e-prod` coverage, mocked-tier
+   and component coverage only. Priority: Low, low-risk UI action, component
+   coverage is adequate for now.
+5. **The new E2E-staging tier is smoke-only, not full-journey.** It covers
+   only render checks (`guardian-admin-smoke.spec.ts`) and one populated-
+   library check via device grant (`kid-library-smoke.spec.ts`); it does not
+   exercise intake, screening, approval, assignments, or moderation
+   workflows end to end the way `e2e-real` does locally. There is also still
+   no `dev`-tier environment (see `docs/testing/README.md`); that requires a
+   frontend deploy pipeline this repo does not own.
+6. **Offline sync/conflict resolution has no real-backend, staging, or prod
+   coverage.** Mocked-tier and component coverage is strong, but the
+   conflict-resolution path has never been exercised against a real
+   database.
 
 ## Keeping this matrix current
 
