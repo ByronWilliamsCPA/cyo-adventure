@@ -5,10 +5,12 @@ import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
+import { useToast } from '../notifications/useToast'
 import { FlagBadge, verdictTone } from './FlagBadge'
 import { AGE_BANDS, LENGTHS, TEEN_BANDS } from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
+  STORY_REQUESTS_CHANGED_EVENT,
   type StoryRequestQueueScope,
   type StoryRequestView,
 } from './storyRequestQueueApi'
@@ -48,9 +50,26 @@ function declinePreview(req: StoryRequestView): string {
  * family's requests ('family'), the admin console reviews every family's
  * ('all', backed by the admin-only GET /v1/admin/story-requests).
  * Approve/decline are the same per-id endpoints either way.
+ *
+ * A server-confirmed approve or decline shows a closing toast (the removed
+ * row is otherwise the only signal the action landed) and dispatches
+ * STORY_REQUESTS_CHANGED_EVENT so the guardian shell's nav badge refreshes.
  */
-export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) {
+export function StoryRequestQueue({
+  scope,
+  approveSuccessMessage = 'Approved! The story is being made.',
+}: {
+  scope: StoryRequestQueueScope
+  /**
+   * Toast copy for a successful Approve. The default stays neutral so the
+   * shared queue is truthful on any surface; the guardian call site
+   * (RequestsPage) overrides it with a family-scoped tracking hint that
+   * would be wrong on the admin cross-family queue.
+   */
+  approveSuccessMessage?: string
+}) {
   const api = useApi()
+  const { showToast } = useToast()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api, scope), [api, scope])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
@@ -143,8 +162,12 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
   // #VERIFY: RequestsPage.test.tsx double-click test asserts exactly one
   // adapter call and that both buttons are disabled while the promise is
   // unresolved.
-  async function runRowAction(id: string, action: () => Promise<unknown>) {
-    if (pendingIds.has(id)) return
+  //
+  // Returns whether the action was confirmed by the backend, so callers can
+  // attach success-only feedback (toasts) without duplicating the error
+  // handling below.
+  async function runRowAction(id: string, action: () => Promise<unknown>): Promise<boolean> {
+    if (pendingIds.has(id)) return false
     setPendingIds((prev) => new Set(prev).add(id))
     setRowErrors((prev) => {
       if (!(id in prev)) return prev
@@ -155,6 +178,11 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
     try {
       await action()
       removeRow(id)
+      // Signal passive listeners (GuardianShell's pending-count badge) to
+      // refetch. Fired only after the backend confirmed the transition, so
+      // the badge never drops a request the server still holds as pending.
+      window.dispatchEvent(new Event(STORY_REQUESTS_CHANGED_EVENT))
+      return true
     } catch (err) {
       // #ASSUME: external-resources: approve/decline call the backend, which
       // can fail (network, session expiry, server error, a race with another
@@ -166,6 +194,7 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
       // visible alert and that the row remains in the list.
       console.error('story-request action failed:', err instanceof Error ? err.message : err)
       setRowErrors((prev) => ({ ...prev, [id]: true }))
+      return false
     } finally {
       setPendingIds((prev) => {
         const next = new Set(prev)
@@ -184,11 +213,17 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
       narrative_style: decision.narrative_style,
       ...(title.length > 0 ? { series_title: title } : {}),
     }
-    await runRowAction(req.id, () => queueApi.approve(req.id, payload))
+    const approved = await runRowAction(req.id, () => queueApi.approve(req.id, payload))
+    // Success-only: a failed action keeps the row visible with its inline
+    // alert (runRowAction's catch), so a toast would be contradictory noise.
+    if (approved) showToast(approveSuccessMessage, { tone: 'success' })
   }
 
   async function decline(id: string) {
-    await runRowAction(id, () => queueApi.decline(id))
+    const declined = await runRowAction(id, () => queueApi.decline(id))
+    // Closure for the reviewer: the row disappearing is otherwise the only
+    // signal the (confirmed) decline actually landed.
+    if (declined) showToast('Request declined.', { tone: 'info' })
   }
 
   // Close the dialog before firing so the row-level error/pending states stay
