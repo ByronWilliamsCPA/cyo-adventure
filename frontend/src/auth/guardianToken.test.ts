@@ -37,7 +37,12 @@ describe('hasGuardianSession', () => {
   })
 
   it('returns false instead of throwing when localStorage access throws', () => {
-    vi.spyOn(window.localStorage, 'getItem').mockImplementation(() => {
+    // Spy on Storage.prototype, not the window.localStorage instance: jsdom's
+    // getItem lives on the prototype, so an instance-level spy never shadows
+    // the method the code calls, the mock silently no-ops, and the catch path
+    // (guardianToken.ts) goes unexercised. This matches deviceGrant.test.ts /
+    // childSession.test.ts, which spy the prototype to genuinely throw.
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('SecurityError: storage disabled')
     })
     expect(hasGuardianSession()).toBe(false)
