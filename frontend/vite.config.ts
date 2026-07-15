@@ -17,6 +17,20 @@ export default defineConfig({
         background_color: '#f1faee',
         display: 'standalone',
         start_url: '/',
+        // Chrome suppresses the install prompt without a 192px and a 512px
+        // icon plus a maskable variant, so this array is what makes the PWA
+        // actually installable. PNGs live in public/ (generated from the Pip
+        // mascot art in src/kid/Mascot.tsx on the design-system parchment).
+        icons: [
+          { src: '/pwa-icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/pwa-icon-512.png', sizes: '512x512', type: 'image/png' },
+          {
+            src: '/pwa-icon-maskable-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
       },
       workbox: {
         // #ASSUME: external-resources: Workbox's default globPatterns
@@ -28,11 +42,27 @@ export default defineConfig({
         // pattern and confirm the asset renders with the network disabled.
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webp}'],
         // Story version blobs are immutable: cache-first, long-lived.
-        // Reading state and other API calls: network-first with a cache fallback
-        // so a downloaded story still plays offline.
+        // Other API GETs: network-first with a cache fallback, so reads the
+        // client has fetched before survive a flaky network. This is a
+        // best-effort assist only; Workbox runtime caching handles GETs, and
+        // durable offline reading lives in the IndexedDB store (src/offline/).
+        //
+        // Patterns are start-anchored against the full request URL: Workbox
+        // applies a RegExp route to a cross-origin request only when the match
+        // starts at the beginning of the URL, so a path-only pattern such as
+        // the former /\/api\/v1\/.*/ silently never matched (no SW caching at
+        // all) once VITE_API_URL pointed the client at another origin. The
+        // optional 'api/' segment accepts both the same-origin proxy shape
+        // ('/api/v1/...') and a cross-origin backend serving '/v1/...'.
+        // #ASSUME: external-resources: the API is mounted at '/api/v1'
+        // (same-origin proxy) or '/v1' (cross-origin host); any other prefix
+        // silently disables SW caching for the API again.
+        // #VERIFY: after changing VITE_API_URL or the backend route prefix,
+        // load a story and confirm 'storybook-blobs' and 'api-cache' populate
+        // under DevTools > Application > Cache Storage.
         runtimeCaching: [
           {
-            urlPattern: /\/api\/v1\/storybooks\/.*\/versions\/.*/,
+            urlPattern: /^https?:\/\/[^/]+\/(?:api\/)?v1\/storybooks\/.*\/versions\/.*/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'storybook-blobs',
@@ -41,7 +71,7 @@ export default defineConfig({
             },
           },
           {
-            urlPattern: /\/api\/v1\/.*/,
+            urlPattern: /^https?:\/\/[^/]+\/(?:api\/)?v1\/.*/,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
