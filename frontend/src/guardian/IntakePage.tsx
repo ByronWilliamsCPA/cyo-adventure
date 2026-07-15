@@ -23,6 +23,14 @@ import {
 // polling shape (setInterval + clearInterval cleanup), tuned to ~8s here.
 const POLL_MS = 8000
 
+// Client cap on the premise textarea; mirrored by the "N / 2000" counter.
+const PREMISE_MAX = 2000
+
+// The counter is always visible but only becomes a polite live region near
+// the cap (>=90%), so screen readers hear the shrinking budget when it
+// matters instead of on every keystroke.
+const PREMISE_WARN_AT = PREMISE_MAX * 0.9
+
 // Transient (network / 5xx) copy per surface. classifyApiError swaps in a
 // distinct message for a 401/403 so a permanent auth/role failure no longer
 // reads as a retryable blip (naive-UX report F1); these are the fallbacks.
@@ -148,6 +156,22 @@ export function IntakePage() {
   const selected = profiles.find((p) => p.id === selectedId) ?? null
   const canSubmit = selected !== null && premise.trim().length > 0 && !saving
 
+  // Names what still blocks Request Story while it is disabled for missing
+  // inputs. Derived from the same conditions as canSubmit; suppressed while
+  // saving and for a childless family (the chips row already links to
+  // profile creation, so "pick a child" would point at nothing).
+  const premiseMissing = premise.trim().length === 0
+  let submitHint: string | null = null
+  if (!saving && profiles.length > 0) {
+    if (selected === null && premiseMissing) {
+      submitHint = 'Pick a child and write a premise to continue.'
+    } else if (selected === null) {
+      submitHint = 'Pick a child to continue.'
+    } else if (premiseMissing) {
+      submitHint = 'Write a premise to continue.'
+    }
+  }
+
   async function submit() {
     if (selected === null) return
     setSaving(true)
@@ -271,11 +295,19 @@ export function IntakePage() {
             className="cyo-field__control"
             value={premise}
             onChange={(e) => setPremise(e.target.value)}
-            maxLength={2000}
+            maxLength={PREMISE_MAX}
             rows={4}
             required
           />
         </label>
+        {/* Sibling of the label, not a child: the counter must not leak into
+            the textarea's accessible name. */}
+        <p
+          className="intake-form__counter cyo-text-muted"
+          aria-live={premise.length >= PREMISE_WARN_AT ? 'polite' : 'off'}
+        >
+          {premise.length} / {PREMISE_MAX}
+        </p>
 
         <fieldset className="intake-form__chips">
           <legend>Tone</legend>
@@ -286,6 +318,9 @@ export function IntakePage() {
           ))}
         </fieldset>
 
+        {submitHint !== null ? (
+          <p className="intake-form__hint cyo-text-muted">{submitHint}</p>
+        ) : null}
         <Button type="submit" disabled={!canSubmit}>
           {saving ? 'Requesting…' : 'Request Story'}
         </Button>

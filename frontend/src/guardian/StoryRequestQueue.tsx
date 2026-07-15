@@ -7,7 +7,8 @@ import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { useToast } from '../notifications/useToast'
 import { FlagBadge, verdictTone } from './FlagBadge'
-import { AGE_BANDS, LENGTHS, TEEN_BANDS } from './storyRequestOptions'
+import { formatRelativeTime } from './intakeApi'
+import { AGE_BANDS, LENGTHS, TEEN_BANDS, ageBandLabel } from './storyRequestOptions'
 import {
   makeStoryRequestQueueApi,
   STORY_REQUESTS_CHANGED_EVENT,
@@ -72,6 +73,11 @@ export function StoryRequestQueue({
   const { showToast } = useToast()
   const queueApi = useMemo(() => makeStoryRequestQueueApi(api, scope), [api, scope])
   const [state, setState] = useState<LoadState>({ kind: 'loading' })
+  // "Now" for the "Asked N minutes ago" provenance lines, stamped when the
+  // list loads (IntakePage's jobsSyncedAt pattern): render stays pure (the
+  // react-hooks/purity rule forbids Date.now() during render) and rows only
+  // exist after a fetch has stamped it, so the 0 initial value never shows.
+  const [loadedAt, setLoadedAt] = useState(0)
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
   const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
   const [decisions, setDecisions] = useState<Record<string, RowDecision>>({})
@@ -116,7 +122,10 @@ export function StoryRequestQueue({
     async function load() {
       try {
         const requests = await queueApi.listPending()
-        if (!cancelled) setState({ kind: 'ready', requests })
+        if (!cancelled) {
+          setLoadedAt(Date.now())
+          setState({ kind: 'ready', requests })
+        }
       } catch (err) {
         // #CRITICAL: security: a 403 is an expected capability outcome (e.g.
         // an adult whose admin capability was just revoked still has the
@@ -286,6 +295,11 @@ export function StoryRequestQueue({
             // machine holds if the fetch ever widens.
             const isActionable = req.status === 'pending'
             const decision = decisionFor(req)
+            // Approve stays disabled until a length is chosen; without a
+            // visible reason that reads as a broken button, so name the one
+            // missing input while that is the only thing blocking it.
+            const needsLength = isActionable && !isInFlight && decision.length === ''
+            const askedAgo = formatRelativeTime(req.created_at, loadedAt)
             return (
               <li key={req.id} className="console-row cyo-card" data-testid={`request-${req.id}`}>
                 <div className="console-row__body">
@@ -295,6 +309,14 @@ export function StoryRequestQueue({
                   <p className="console-row__title">
                     {req.request_text ?? 'Idea hidden by content check'}
                   </p>
+                  {askedAgo !== null ? (
+                    <p
+                      className="console-row__age cyo-text-muted"
+                      title={new Date(req.created_at).toLocaleString()}
+                    >
+                      Asked {askedAgo}
+                    </p>
+                  ) : null}
                   {req.moderation_flags.length > 0 ? (
                     <div className="console-row__flags">
                       {req.moderation_flags.map((flag, i) => (
@@ -325,7 +347,7 @@ export function StoryRequestQueue({
                     >
                       {AGE_BANDS.map((b) => (
                         <option key={b} value={b}>
-                          {b}
+                          {ageBandLabel(b)}
                         </option>
                       ))}
                     </select>
@@ -387,6 +409,11 @@ export function StoryRequestQueue({
                   >
                     Decline
                   </Button>
+                  {needsLength ? (
+                    <p className="console-row__approve-hint cyo-text-muted">
+                      Choose a length to approve
+                    </p>
+                  ) : null}
                 </div>
               </li>
             )

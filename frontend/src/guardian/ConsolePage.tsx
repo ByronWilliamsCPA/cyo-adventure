@@ -226,31 +226,46 @@ export function ConsolePage() {
                   // that gate would immediately bounce the child back to
                   // guardian login. handDeviceToChild() sheds the guardian
                   // session before navigating (see its #CRITICAL note).
+                  <div className="console-device__action">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      disabled={deviceStatus === 'busy'}
+                      aria-describedby="device-hand-hint"
+                      onClick={() => handDeviceToChild()}
+                    >
+                      Hand device to a child
+                    </Button>
+                    <p id="device-hand-hint" className="console-device__hint cyo-text-muted">
+                      This signs you out so your child can read safely.
+                    </p>
+                  </div>
+                ) : null}
+                <div className="console-device__action">
                   <Button
-                    variant="primary"
+                    variant="ghost"
                     size="sm"
                     disabled={deviceStatus === 'busy'}
-                    onClick={() => handDeviceToChild()}
+                    onClick={() => void authorizeDevice()}
                   >
-                    Hand device to a child
+                    Re-authorize this device
                   </Button>
-                ) : null}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={deviceStatus === 'busy'}
-                  onClick={() => void authorizeDevice()}
-                >
-                  Re-authorize this device
-                </Button>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  disabled={deviceStatus === 'busy'}
-                  onClick={() => void removeFromThisDevice()}
-                >
-                  Remove from this device
-                </Button>
+                </div>
+                <div className="console-device__action">
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    disabled={deviceStatus === 'busy'}
+                    aria-describedby="device-remove-hint"
+                    onClick={() => void removeFromThisDevice()}
+                  >
+                    Remove from this device
+                  </Button>
+                  <p id="device-remove-hint" className="console-device__hint cyo-text-muted">
+                    Kids can no longer read on this device until you authorize
+                    it again.
+                  </p>
+                </div>
               </div>
             </>
           ) : (

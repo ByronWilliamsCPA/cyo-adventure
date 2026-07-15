@@ -344,6 +344,18 @@
   margin: 0;
 }
 
+/* Live "N / MAX" character counters under the premise (IntakePage.tsx) and
+   request-text (RequestStoryForm.tsx) textareas. Rendered as a sibling of
+   the label (never inside it, which would leak into the field's accessible
+   name); the negative top margin tucks it under its textarea despite the
+   form's 1rem flex gap. Color comes from cyo-text-muted. */
+.intake-form__counter,
+.request-form__counter {
+  margin: -0.75rem 0 0;
+  align-self: flex-end;
+  font-size: 0.75rem;
+}
+
 .profiles__header {
   display: flex;
   align-items: center;
@@ -605,8 +617,35 @@
 
 .console-row__actions {
   display: flex;
+  align-items: flex-end;
+  /* Up to 4 selects + 2 buttons share this row; let controls fall to the
+     next line instead of squeezing or overflowing at middling widths. The
+     ~640px query below stacks the row to a full-width column. */
+  flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0 1rem 0.75rem;
+}
+
+.console-row__actions select,
+.console-row__actions input[type='text'] {
+  /* Touch-target floor: native form controls do not inherit the design
+     system Button's 44px minimum. */
+  min-height: 44px;
+}
+
+/* "Asked N minutes ago" provenance line under the request text; color comes
+   from the cyo-text-muted class added alongside it in StoryRequestQueue.tsx. */
+.console-row__age {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+/* Inline reason next to the disabled Approve while no length is chosen;
+   color comes from the cyo-text-muted class added alongside it. */
+.console-row__approve-hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  align-self: center;
 }
 
 /* color comes from the cyo-text-muted class added alongside this one in
@@ -869,6 +908,31 @@
   text-align: center;
 }
 
+/* ============================================================================
+   Family console device section (ConsolePage.tsx, ADR-014 Phase 3): each
+   device action pairs its button with a one-line consequence so a guardian
+   knows what Hand-to-a-child and Remove actually do before clicking.
+   ============================================================================ */
+.console-device__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.console-device__action {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* Consequence line under its device action button; color comes from the
+   cyo-text-muted class added alongside it in ConsolePage.tsx. */
+.console-device__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
 .assign__list {
   list-style: none;
   margin: 0;
@@ -876,6 +940,12 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/* No-profiles guidance inside the assign dialog (AssignChildrenDialog.tsx);
+   color comes from the cyo-text-muted class added alongside it. */
+.assign__empty {
+  margin: 0;
 }
 
 .assign__row label {
@@ -923,6 +993,13 @@
 
 .request-form__notice--blocked {
   color: var(--color-error, #9b2c2c);
+}
+
+/* Disabled-submit reason above Send request; color comes from the
+   cyo-text-muted class added alongside it in RequestStoryForm.tsx. */
+.request-form__hint {
+  font-size: 0.875rem;
+  margin: 0;
 }
 
 /* ============================================================================
@@ -997,4 +1074,41 @@
    wash so gate-crossing evidence stands out at a glance. */
 .moderation-insight--at-gate {
   background: rgb(193 123 42 / 8%);
+}
+
+/* ============================================================================
+   Mobile breakpoint (~640px): guardian surfaces are managed from a phone as
+   often as a desktop. Desktop layouts above are left untouched; this block
+   only relaxes the row/action layouts that would otherwise overflow or
+   crush controls on a narrow screen. */
+@media (max-width: 640px) {
+  .console-row__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .console-row__actions select,
+  .console-row__actions input[type='text'],
+  .console-row__actions label {
+    width: 100%;
+  }
+
+  .console-row__actions > .cyo-btn {
+    width: 100%;
+  }
+
+  .profiles__card,
+  .books__row .books__main {
+    flex-wrap: wrap;
+  }
+
+  .profiles__card {
+    align-items: flex-start;
+  }
+
+  .guardian-shell__main table,
+  .guardian-table {
+    display: block;
+    overflow-x: auto;
+  }
 }

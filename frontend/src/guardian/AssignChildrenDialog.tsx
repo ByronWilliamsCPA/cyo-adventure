@@ -213,25 +213,34 @@ export function AssignChildrenDialog({
           ) : summary ? (
             <ContentSummarySection summary={summary} />
           ) : null}
-          <ul className="assign__list">
-            {profiles.map((profile) => {
-              const already = assigned.has(profile.id)
-              return (
-                <li key={profile.id} className="assign__row">
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={already || picked.has(profile.id)}
-                      disabled={already}
-                      onChange={() => toggle(profile.id)}
-                    />
-                    <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
-                    {profile.display_name}
-                  </label>
-                </li>
-              )
-            })}
-          </ul>
+          {profiles.length === 0 ? (
+            // A family with no profiles would otherwise see a bare empty
+            // checklist with a permanently disabled Assign button and no way
+            // to tell why.
+            <p className="assign__empty cyo-text-muted">
+              Add a child profile first, then assign books.
+            </p>
+          ) : (
+            <ul className="assign__list">
+              {profiles.map((profile) => {
+                const already = assigned.has(profile.id)
+                return (
+                  <li key={profile.id} className="assign__row">
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={already || picked.has(profile.id)}
+                        disabled={already}
+                        onChange={() => toggle(profile.id)}
+                      />
+                      <AvatarCircle avatar={profile.avatar} name={profile.display_name} />
+                      {profile.display_name}
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
         </>
       )}
     </Dialog>

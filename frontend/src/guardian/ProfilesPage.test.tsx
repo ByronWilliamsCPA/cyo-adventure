@@ -42,7 +42,7 @@ describe('ProfilesPage', () => {
     renderPage()
     expect(await screen.findByText('Reader A')).toBeInTheDocument()
     expect(screen.getByText(/Ages 10-13/)).toBeInTheDocument()
-    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
+    expect(screen.getByText(/Ages 10-13 · No reading limit/)).toBeInTheDocument()
   })
 
   it('creates a profile through the dialog', async () => {
@@ -108,7 +108,7 @@ describe('ProfilesPage', () => {
     await user.click(await screen.findByRole('button', { name: /Edit Reader A/i }))
     await user.click(screen.getByRole('button', { name: /Save/i }))
     expect(await screen.findByRole('alert')).toHaveTextContent(/could not save/i)
-    expect(screen.getByText(/Ages 10-13 · Reading cap 99/)).toBeInTheDocument()
+    expect(screen.getByText(/Ages 10-13 · No reading limit/)).toBeInTheDocument()
   })
 
   it('sends the picked avatar id from the radio group', async () => {

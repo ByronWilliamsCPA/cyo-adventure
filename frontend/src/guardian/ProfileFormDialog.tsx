@@ -10,6 +10,7 @@ import {
   type ProfileCreateBody,
   type ProfileView,
 } from '../profiles/profilesApi'
+import { ageBandLabel } from './storyRequestOptions'
 
 /**
  * Create-mode submit payload: exactly the create fields. `pin` is
@@ -125,13 +126,22 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
   // Mirrors the backend PinCode constraint (4-8 digits) so a bad PIN is
   // caught before the request rather than surfacing as a 422.
   const pinValid = pinChoice !== 'set' || PIN_SHAPE.test(pinValue)
-  const valid =
-    displayName.trim().length > 0 &&
-    cap.trim() !== '' &&
-    Number.isFinite(capNum) &&
-    capNum >= 0 &&
-    capNum <= 99 &&
-    pinValid
+  const nameMissing = displayName.trim().length === 0
+  const capInvalid =
+    cap.trim() === '' || !Number.isFinite(capNum) || capNum < 0 || capNum > 99
+  const valid = !nameMissing && !capInvalid && pinValid
+
+  // Names what still blocks Save while it is disabled for missing/invalid
+  // inputs (null while saving or once everything is filled). Derived from
+  // the same booleans as `valid` so the hint can never contradict the button.
+  const missingInputs: string[] = []
+  if (nameMissing) missingInputs.push('a name')
+  if (capInvalid) missingInputs.push('a reading level from 0 to 99')
+  if (!pinValid) missingInputs.push('a 4-8 digit PIN')
+  const saveHint =
+    !saving && missingInputs.length > 0
+      ? `Enter ${missingInputs.join(' and ')} to save.`
+      : null
 
   return (
     <Dialog
@@ -179,7 +189,7 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           >
             {AGE_BANDS.map((band) => (
               <option key={band} value={band}>
-                {band}
+                {ageBandLabel(band)}
               </option>
             ))}
           </select>
@@ -198,7 +208,8 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
           />
         </label>
         <p id="reading-level-cap-help" className="profile-form__hint">
-          99 means no limit.
+          Rough reading grade level for stories (2 = early reader, 5 =
+          confident reader). 99 means no limit.
         </p>
         <fieldset className="profile-form__avatars">
           <legend>Avatar</legend>
@@ -288,6 +299,9 @@ export function ProfileFormDialog(props: ProfileFormDialogProps) {
               </label>
             ) : null}
           </fieldset>
+        ) : null}
+        {saveHint !== null ? (
+          <p className="profile-form__hint cyo-text-muted">{saveHint}</p>
         ) : null}
       </form>
     </Dialog>
