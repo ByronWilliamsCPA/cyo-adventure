@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { Button } from '@ds/components/Button'
+import { Dialog } from '@ds/components/Dialog'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
 import { AGE_BANDS, type AgeBandValue } from '../profiles/profilesApi'
 import { makeThresholdsApi } from './moderationThresholdsApi'
-import type { ThresholdListView } from '../client/types.gen'
+import type { ThresholdListView, ThresholdView } from '../client/types.gen'
 
 const VERDICTS = ['advisory', 'flag', 'block'] as const
 type VerdictValue = (typeof VERDICTS)[number]
@@ -13,6 +15,20 @@ type LoadState =
   | { kind: 'loading' }
   | { kind: 'error'; message: string }
   | { kind: 'ready'; data: ThresholdListView }
+
+// Every mutation on this page changes live safety behavior for families, so
+// each one is gated behind a confirm dialog (the ReviewDetailPage pattern)
+// instead of firing on a single click. Only one confirm can be pending at a
+// time.
+type PendingConfirm =
+  | { kind: 'remove'; row: ThresholdView }
+  | { kind: 'noise-floor'; value: number }
+  | { kind: 'new-category'; category: string }
+  | null
+
+// Above this floor most advisory findings score lower and would be hidden
+// from reviewers, so the confirm dialog adds an explicit warning line.
+const NOISE_FLOOR_WARN_ABOVE = 0.3
 
 const isFloorInRange = (value: number) => value >= 0 && value <= 1
 
@@ -37,6 +53,7 @@ export function ModerationThresholdsPage() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [noiseFloorInput, setNoiseFloorInput] = useState('')
   const [savingFloor, setSavingFloor] = useState(false)
+  const [pendingConfirm, setPendingConfirm] = useState<PendingConfirm>(null)
 
   // Mount-time load, matching ReviewDetailPage's cancelled-guard idiom so an
   // unmount before the request resolves never calls setState on a gone
@@ -123,6 +140,12 @@ export function ModerationThresholdsPage() {
   const canSave = trimmedCategory.length > 0 && scoreValid && !submitting
   const noiseFloorValid = noiseFloorInput !== '' && isFloorInRange(Number(noiseFloorInput))
   const canSaveFloor = noiseFloorValid && !savingFloor
+  // known_categories is advisory, never a gate (backend KNOWN_CATEGORIES:
+  // classifier categories are open-ended, provider-defined strings), so an
+  // unknown category is legal but usually a typo that would create an
+  // override that never matches a finding. It routes through an extra
+  // confirm instead of a hard block.
+  const isKnownCategory = data.known_categories.includes(trimmedCategory)
 
   async function save() {
     if (!canSave) return
@@ -221,7 +244,20 @@ export function ModerationThresholdsPage() {
             aria-describedby="noise-floor-help"
           />
         </label>
-        <button type="button" disabled={!canSaveFloor} onClick={() => void saveNoiseFloor()}>
+        {/*
+          #CRITICAL: security: the noise floor hides advisory findings from
+          every reviewer, so the save is gated behind a confirm dialog that
+          states the concrete consequence instead of firing on one click.
+          #VERIFY: ModerationThresholdsPage.test.tsx noise-floor confirm and
+          cancel tests (cancel fires no PUT; confirm fires exactly one).
+        */}
+        <button
+          type="button"
+          disabled={!canSaveFloor}
+          onClick={() =>
+            setPendingConfirm({ kind: 'noise-floor', value: Number(noiseFloorInput) })
+          }
+        >
           Save noise floor
         </button>
       </section>
@@ -248,10 +284,19 @@ export function ModerationThresholdsPage() {
                 <td>{row.min_verdict}</td>
                 <td>{row.min_score ?? '-'}</td>
                 <td>
+                  {/*
+                    #CRITICAL: security: removing an override instantly changes
+                    what this band/category surfaces to families, so the
+                    delete is gated behind a confirm dialog naming the default
+                    it reverts to instead of firing on one click.
+                    #VERIFY: ModerationThresholdsPage.test.tsx remove confirm
+                    and cancel tests (cancel fires no DELETE; confirm fires
+                    exactly one).
+                  */}
                   <button
                     type="button"
                     disabled={submitting}
-                    onClick={() => void remove(row.age_band, row.category)}
+                    onClick={() => setPendingConfirm({ kind: 'remove', row })}
                   >
                     Remove {row.category} override for {row.age_band}
                   </button>
@@ -265,7 +310,15 @@ export function ModerationThresholdsPage() {
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          void save()
+          if (!canSave) return
+          // An unknown category is not blocked (categories are open-ended and
+          // provider-defined) but it needs a deliberate extra confirmation:
+          // a typo here silently creates an override that never applies.
+          if (isKnownCategory) {
+            void save()
+          } else {
+            setPendingConfirm({ kind: 'new-category', category: trimmedCategory })
+          }
         }}
       >
         <label>
@@ -321,6 +374,99 @@ export function ModerationThresholdsPage() {
           Save override
         </button>
       </form>
+
+      {pendingConfirm?.kind === 'remove' ? (
+        <Dialog
+          title={`Remove the ${pendingConfirm.row.category} override for ${pendingConfirm.row.age_band}?`}
+          onClose={() => setPendingConfirm(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setPendingConfirm(null)}>
+                Cancel
+              </Button>
+              <Button
+                variant="danger"
+                disabled={submitting}
+                onClick={() => {
+                  const { row } = pendingConfirm
+                  setPendingConfirm(null)
+                  void remove(row.age_band, row.category)
+                }}
+              >
+                Confirm remove
+              </Button>
+            </>
+          }
+        >
+          <p>
+            {pendingConfirm.row.category} findings for {pendingConfirm.row.age_band} revert to
+            the default surfacing level: <strong>{data.default_min_verdict}</strong>.
+          </p>
+        </Dialog>
+      ) : null}
+
+      {pendingConfirm?.kind === 'noise-floor' ? (
+        <Dialog
+          title="Save admin noise floor?"
+          onClose={() => setPendingConfirm(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setPendingConfirm(null)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={savingFloor}
+                onClick={() => {
+                  setPendingConfirm(null)
+                  void saveNoiseFloor()
+                }}
+              >
+                Confirm noise floor
+              </Button>
+            </>
+          }
+        >
+          <p>
+            Advisory findings scoring below {pendingConfirm.value} will be hidden from reviewers
+            on the review surface.
+          </p>
+          {pendingConfirm.value > NOISE_FLOOR_WARN_ABOVE ? (
+            <p className="cyo-text-error">
+              Warning: a noise floor above {NOISE_FLOOR_WARN_ABOVE} will hide most advisory
+              findings.
+            </p>
+          ) : null}
+        </Dialog>
+      ) : null}
+
+      {pendingConfirm?.kind === 'new-category' ? (
+        <Dialog
+          title={`Create override for new category '${pendingConfirm.category}'?`}
+          onClose={() => setPendingConfirm(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setPendingConfirm(null)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={submitting}
+                onClick={() => {
+                  setPendingConfirm(null)
+                  void save()
+                }}
+              >
+                Create new-category override
+              </Button>
+            </>
+          }
+        >
+          <p>
+            '{pendingConfirm.category}' is not in the known category list. It only applies if
+            classifiers emit this exact name; if this is a typo, the override will never match a
+            finding.
+          </p>
+        </Dialog>
+      ) : null}
     </main>
   )
 }

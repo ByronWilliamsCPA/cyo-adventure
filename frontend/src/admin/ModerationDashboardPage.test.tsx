@@ -86,15 +86,100 @@ describe('ModerationDashboardPage', () => {
     expect(screen.getByText(/raise to block/i)).toBeInTheDocument()
     expect(screen.getByText(/threshold_changed/)).toBeInTheDocument()
 
-    // Locate the 8-11/violence insights row and assert its override-rate and
-    // decided cells render the values the fixture defines, not just that the
-    // word "violence" appears somewhere on the page.
+    // Locate the 8-11/violence insights row and assert its override-rate,
+    // decided, and last-seen cells render the values the fixture defines, not
+    // just that the word "violence" appears somewhere on the page.
     const table = screen.getByRole('table')
     const row = within(table).getByText('violence').closest('tr')
     if (!row) throw new Error('expected a table row for the violence insight')
     const cells = within(row).getAllByRole('cell')
     expect(cells[4]).toHaveTextContent('6') // decided
     expect(cells[6]).toHaveTextContent('100%') // override rate
+    // last_seen renders through the same locale formatting the page uses.
+    expect(cells[7]).toHaveTextContent(new Date('2026-07-01T12:00:00Z').toLocaleString())
+  })
+
+  it('sorts override evidence by override rate descending with null rates last', async () => {
+    mockGetByPath({
+      dashboard: {
+        insights: [
+          {
+            age_band: '5-8',
+            category: 'toxicity',
+            advisory_findings: 1,
+            flag_findings: 0,
+            decided_versions: 0,
+            released_versions: 0,
+            override_rate: null,
+            last_seen: '2026-07-01T12:00:00Z',
+          },
+          {
+            age_band: '8-11',
+            category: 'scary-imagery',
+            advisory_findings: 3,
+            flag_findings: 1,
+            decided_versions: 4,
+            released_versions: 2,
+            override_rate: 0.5,
+            last_seen: '2026-07-01T12:00:00Z',
+          },
+          {
+            age_band: '8-11',
+            category: 'violence',
+            advisory_findings: 2,
+            flag_findings: 4,
+            decided_versions: 6,
+            released_versions: 6,
+            override_rate: 1.0,
+            last_seen: '2026-07-01T12:00:00Z',
+          },
+        ],
+        recent_changes: [],
+      },
+    })
+    render(<ModerationDashboardPage />)
+    const table = await screen.findByRole('table')
+    const bodyRows = within(table).getAllByRole('row').slice(1) // skip header
+    const categories = bodyRows.map((row) => within(row).getAllByRole('cell')[1].textContent)
+    expect(categories).toEqual(['violence', 'scary-imagery', 'toxicity'])
+  })
+
+  it('emphasizes rows at or above the suggestion gate', async () => {
+    mockGetByPath({
+      dashboard: {
+        insights: [
+          {
+            age_band: '8-11',
+            category: 'violence',
+            advisory_findings: 2,
+            flag_findings: 4,
+            decided_versions: 6,
+            released_versions: 6,
+            override_rate: 1.0,
+            last_seen: '2026-07-01T12:00:00Z',
+          },
+          {
+            age_band: '8-11',
+            category: 'scary-imagery',
+            advisory_findings: 3,
+            flag_findings: 1,
+            decided_versions: 4,
+            released_versions: 2,
+            override_rate: 0.5,
+            last_seen: '2026-07-01T12:00:00Z',
+          },
+        ],
+        recent_changes: [],
+      },
+    })
+    render(<ModerationDashboardPage />)
+    const table = await screen.findByRole('table')
+    // 1.0 >= min_override_rate (0.8): emphasized; 0.5 < 0.8: not.
+    const atGateRow = within(table).getByText('violence').closest('tr')
+    const belowGateRow = within(table).getByText('scary-imagery').closest('tr')
+    if (!atGateRow || !belowGateRow) throw new Error('expected both insight rows')
+    expect(atGateRow).toHaveClass('moderation-insight--at-gate')
+    expect(belowGateRow).not.toHaveClass('moderation-insight--at-gate')
   })
 
   it('renders "n/a" for an insight row with a null override rate', async () => {
@@ -160,7 +245,7 @@ describe('ModerationDashboardPage', () => {
     expect(screen.getByText('No threshold changes recorded.')).toBeInTheDocument()
   })
 
-  it('applies a suggestion through the thresholds upsert and refreshes', async () => {
+  it('confirms a suggestion apply echoing the change, then upserts and refreshes', async () => {
     const user = userEvent.setup()
     mockGetByPath()
     mockPut.mockResolvedValue({
@@ -173,7 +258,18 @@ describe('ModerationDashboardPage', () => {
     })
     render(<ModerationDashboardPage />)
     await screen.findByText(/raise to block/i)
-    await user.click(screen.getByRole('button', { name: /apply/i }))
+    await user.click(screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' }))
+
+    // Nothing fires until the echoed change is confirmed: category, age band,
+    // and current -> suggested verdict.
+    expect(mockPut).not.toHaveBeenCalled()
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent(
+      'violence in 8-11: surfacing level changes from flag to block.'
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
+    expect(mockPut).toHaveBeenCalledTimes(1)
     expect(mockPut).toHaveBeenCalledWith(
       '/v1/admin/moderation-thresholds/8-11',
       { min_verdict: 'block', min_score: null },
@@ -181,6 +277,20 @@ describe('ModerationDashboardPage', () => {
     )
     // Initial load fires 2 GETs; the post-apply refresh fires 2 more.
     expect(mockGet).toHaveBeenCalledTimes(4)
+  })
+
+  it('cancelling the apply confirm fires no upsert', async () => {
+    const user = userEvent.setup()
+    mockGetByPath()
+    render(<ModerationDashboardPage />)
+    await screen.findByText(/raise to block/i)
+    await user.click(screen.getByRole('button', { name: 'Apply: raise violence (8-11) to block' }))
+    await user.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    expect(mockPut).not.toHaveBeenCalled()
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    // No refresh either: the initial 2 GETs are all that ever fired.
+    expect(mockGet).toHaveBeenCalledTimes(2)
   })
 
   it('passes a non-null current_min_score through to the PUT payload', async () => {
@@ -211,6 +321,7 @@ describe('ModerationDashboardPage', () => {
       name: 'Apply: raise violence (8-11) to block',
     })
     await user.click(applyButton)
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
     expect(mockPut).toHaveBeenCalledWith(
       '/v1/admin/moderation-thresholds/8-11',
       { min_verdict: 'block', min_score: 0.42 },
@@ -259,12 +370,14 @@ describe('ModerationDashboardPage', () => {
     })
 
     await user.click(buttonA)
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
     // A is in flight: only A's button is disabled; B stays independently
     // clickable.
     expect(buttonA).toBeDisabled()
     expect(buttonB).toBeEnabled()
 
     await user.click(buttonB)
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
     // Regression for the shared-state bug: starting B's apply must NOT
     // re-enable A's still-in-flight button.
     expect(buttonA).toBeDisabled()
@@ -361,6 +474,7 @@ describe('ModerationDashboardPage', () => {
       name: 'Apply: raise violence (8-11) to block',
     })
     await user.click(applyButton)
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
 
     const alert = await screen.findByRole('alert')
     // The message names which suggestion failed, so two failing suggestions
@@ -403,6 +517,7 @@ describe('ModerationDashboardPage', () => {
       name: 'Apply: raise violence (8-11) to block',
     })
     await user.click(applyButton)
+    await user.click(screen.getByRole('button', { name: 'Confirm apply' }))
 
     // The apply itself succeeded; only the post-apply refresh GET failed. The
     // page must not blank: the last-good dashboard (table + recent changes)
@@ -415,5 +530,57 @@ describe('ModerationDashboardPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'Dismiss' }))
     expect(screen.queryByText(/could not refresh/i)).not.toBeInTheDocument()
+  })
+
+  it('renders recent changes human-readably from payload fields with a raw fallback', async () => {
+    mockGetByPath({
+      dashboard: {
+        insights: [],
+        recent_changes: [
+          {
+            occurred_at: '2026-07-02T09:00:00Z',
+            event_type: 'threshold_changed',
+            entity_id: '8-11',
+            payload: {
+              age_band: '8-11',
+              category: 'violence',
+              action: 'upsert',
+              min_verdict: 'block',
+              min_score: 0.4,
+            },
+          },
+          {
+            occurred_at: '2026-07-02T08:00:00Z',
+            event_type: 'threshold_changed',
+            entity_id: '5-8',
+            payload: { age_band: '5-8', category: 'toxicity', action: 'delete' },
+          },
+          {
+            occurred_at: '2026-07-02T07:00:00Z',
+            event_type: 'noise_floor_changed',
+            entity_id: 'admin_noise_floor',
+            payload: { value: 0.05 },
+          },
+          {
+            occurred_at: '2026-07-02T06:00:00Z',
+            event_type: 'threshold_changed',
+            entity_id: '12-15',
+            payload: {},
+          },
+        ],
+      },
+    })
+    render(<ModerationDashboardPage />)
+    expect(
+      await screen.findByText(/violence in 8-11: now surfaces at block \(score floor 0\.4\)/)
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/toxicity in 5-8: override removed, the default applies again/)
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Admin noise floor set to 0\.05/)).toBeInTheDocument()
+    // A payload without usable fields falls back to the raw event type; the
+    // event log has no actor field, so no author is invented anywhere.
+    expect(screen.getByText('threshold_changed')).toBeInTheDocument()
+    expect(screen.getByText(/12-15/)).toBeInTheDocument()
   })
 })
