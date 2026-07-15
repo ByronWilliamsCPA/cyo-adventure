@@ -909,6 +909,94 @@
 }
 
 /* ============================================================================
+   Version compare (ReviewDetailPage.tsx): the "Compare with version N-1"
+   toggle and its collapsible diff panel, plus the auto-repaired hint that
+   points a reviewer at it. Sits between the moderation summary strip and the
+   flagged-passages section.
+   ============================================================================ */
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; margin stays local. */
+.review-repaired-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.review-compare {
+  margin-top: 0.75rem;
+}
+
+.review-compare__panel {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+  border-radius: 8px;
+  background: var(--color-parchment-dark, #ede6d0);
+}
+
+.review-compare__status {
+  margin: 0;
+}
+
+.review-compare__summary {
+  margin: 0 0 0.5rem;
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__list {
+  margin: 0 0 0.5rem;
+  padding-left: 1.25rem;
+}
+
+.review-compare__node {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-compare__node summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.review-compare__before,
+.review-compare__after {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.review-compare__before h4,
+.review-compare__after h4 {
+  margin: 0 0 0.25rem;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-compare__choices {
+  margin-top: 0.5rem;
+}
+
+.review-compare__choices p {
+  margin: 0 0 0.25rem;
+}
+
+.review-compare__choices ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+/* ============================================================================
    Family console device section (ConsolePage.tsx, ADR-014 Phase 3): each
    device action pairs its button with a one-line consequence so a guardian
    knows what Hand-to-a-child and Remove actually do before clicking.

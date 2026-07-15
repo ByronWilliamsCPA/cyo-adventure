@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { isAxiosError } from 'axios'
 
 import { Button } from '@ds/components/Button'
 import { Dialog } from '@ds/components/Dialog'
@@ -174,6 +175,192 @@ function passageDomId(nodeId: string): string {
 function pluralize(count: number, noun: string): string {
   return `${count} ${noun}${count === 1 ? '' : 's'}`
 }
+
+interface ChangedNodeDiff {
+  id: string
+  previous: StoryNodeView
+  current: StoryNodeView
+  bodyChanged: boolean
+  choicesChanged: boolean
+}
+
+interface VersionDiff {
+  added: StoryNodeView[]
+  removed: StoryNodeView[]
+  changed: ChangedNodeDiff[]
+}
+
+/**
+ * Passage-level diff between two review surfaces' blobs, reusing readNodes so
+ * a malformed node is handled identically to the main read-through (a
+ * synthetic id rather than a silent drop). Nodes are keyed by id, first
+ * occurrence wins (matching buildReadThrough's duplicate-id rule): a node id
+ * only on one side is added/removed, and a node id on both sides is
+ * `changed` when its body text differs OR its choices array differs (by
+ * JSON.stringify; ChoiceView's shape is stable, so this also catches a
+ * reworded label, an added/removed choice, or a retargeted/reordered one).
+ *
+ * #ASSUME: data integrity: this is a reviewer-facing summary, not the
+ * safety-critical read-through above; it does not attempt to distinguish a
+ * reordered node list from an untouched one, and a duplicate id still
+ * collapses to its first occurrence on each side.
+ * #VERIFY: ReviewDetailPage.test.tsx compare-diff tests assert added/removed/
+ * changed counts and that an untouched node produces no changed entry.
+ */
+function diffNodes(previousBlob: Record<string, unknown>, currentBlob: Record<string, unknown>): VersionDiff {
+  const byId = (blob: Record<string, unknown>): Map<string, StoryNodeView> => {
+    const map = new Map<string, StoryNodeView>()
+    for (const node of readNodes(blob)) {
+      if (!map.has(node.id)) map.set(node.id, node)
+    }
+    return map
+  }
+  const previousById = byId(previousBlob)
+  const currentById = byId(currentBlob)
+  const added: StoryNodeView[] = []
+  const changed: ChangedNodeDiff[] = []
+  for (const [id, node] of currentById) {
+    const prior = previousById.get(id)
+    if (!prior) {
+      added.push(node)
+      continue
+    }
+    const bodyChanged = prior.body !== node.body
+    const choicesChanged = JSON.stringify(prior.choices) !== JSON.stringify(node.choices)
+    if (bodyChanged || choicesChanged) {
+      changed.push({ id, previous: prior, current: node, bodyChanged, choicesChanged })
+    }
+  }
+  const removed: StoryNodeView[] = []
+  for (const [id, node] of previousById) {
+    if (!currentById.has(id)) removed.push(node)
+  }
+  return { added, removed, changed }
+}
+
+interface ChoiceDiff {
+  added: ChoiceView[]
+  removed: ChoiceView[]
+  reworded: { target: string; from: string; to: string }[]
+}
+
+/**
+ * Choice-level detail for one changed passage. Choices carry no id, so a
+ * choice is matched across versions by its target node id, not position.
+ *
+ * #EDGE: data integrity: two choices sharing the same target (a duplicate
+ * link) collapse to one entry here. This is display-only detail under an
+ * already-changed passage, not the safety-critical read-through, so the
+ * simplification is acceptable; a full positional diff would be scope creep
+ * for a "what changed" hint.
+ */
+function diffChoices(previous: ChoiceView[], current: ChoiceView[]): ChoiceDiff {
+  const previousByTarget = new Map(previous.map((choice) => [choice.target, choice]))
+  const currentByTarget = new Map(current.map((choice) => [choice.target, choice]))
+  const added: ChoiceView[] = []
+  const reworded: { target: string; from: string; to: string }[] = []
+  for (const [target, choice] of currentByTarget) {
+    const prior = previousByTarget.get(target)
+    if (!prior) {
+      added.push(choice)
+    } else if (prior.label !== choice.label) {
+      reworded.push({ target, from: prior.label, to: choice.label })
+    }
+  }
+  const removed: ChoiceView[] = []
+  for (const [target, choice] of previousByTarget) {
+    if (!currentByTarget.has(target)) removed.push(choice)
+  }
+  return { added, removed, reworded }
+}
+
+/** One changed passage: old vs new body (when the body itself changed), plus
+ * a choices note. Collapsed behind <details> since a version can change many
+ * passages and the reviewer scans the summary line first. */
+function ChangedNodeDetail({ entry }: { entry: ChangedNodeDiff }) {
+  const choiceDiff = diffChoices(entry.previous.choices, entry.current.choices)
+  const hasChoiceDetail =
+    choiceDiff.added.length > 0 || choiceDiff.removed.length > 0 || choiceDiff.reworded.length > 0
+  return (
+    <details className="review-compare__node">
+      <summary>Passage {entry.id} changed</summary>
+      {entry.bodyChanged ? (
+        <div className="review-compare__body">
+          <div className="review-compare__before">
+            <h4>Previous</h4>
+            <PassageText text={entry.previous.body} />
+          </div>
+          <div className="review-compare__after">
+            <h4>Current</h4>
+            <PassageText text={entry.current.body} />
+          </div>
+        </div>
+      ) : null}
+      {entry.choicesChanged ? (
+        <div className="review-compare__choices">
+          <p>Choices changed{hasChoiceDetail ? ':' : '.'}</p>
+          {hasChoiceDetail ? (
+            <ul>
+              {choiceDiff.reworded.map((change) => (
+                <li key={`reworded-${change.target}`}>
+                  &quot;{change.from}&quot; reworded to &quot;{change.to}&quot;
+                </li>
+              ))}
+              {choiceDiff.added.map((choice) => (
+                <li key={`added-${choice.target}`}>
+                  Added choice &quot;{choice.label || '(missing label)'}&quot;
+                </li>
+              ))}
+              {choiceDiff.removed.map((choice) => (
+                <li key={`removed-${choice.target}`}>
+                  Removed choice &quot;{choice.label || '(missing label)'}&quot;
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      ) : null}
+    </details>
+  )
+}
+
+/** Compact diff summary line first, then expandable per-node detail for
+ * changed passages; added/removed passages get a one-line list entry since
+ * there is no "old" or "new" body to show for either. */
+function VersionDiffView({ diff }: { diff: VersionDiff }) {
+  return (
+    <div className="review-compare__diff">
+      <p className="review-compare__summary">
+        {pluralize(diff.added.length, 'passage')} added, {diff.changed.length} changed,{' '}
+        {diff.removed.length} removed
+      </p>
+      {diff.added.length > 0 ? (
+        <ul className="review-compare__list">
+          {diff.added.map((node) => (
+            <li key={node.id}>Added: passage {node.id}</li>
+          ))}
+        </ul>
+      ) : null}
+      {diff.removed.length > 0 ? (
+        <ul className="review-compare__list">
+          {diff.removed.map((node) => (
+            <li key={node.id}>Removed: passage {node.id}</li>
+          ))}
+        </ul>
+      ) : null}
+      {diff.changed.map((entry) => (
+        <ChangedNodeDetail key={entry.id} entry={entry} />
+      ))}
+    </div>
+  )
+}
+
+type CompareState =
+  | { kind: 'idle' }
+  | { kind: 'loading' }
+  | { kind: 'unavailable' }
+  | { kind: 'error'; message: string }
+  | { kind: 'ready'; previous: ReviewSurface }
 
 type LoadState =
   | { kind: 'loading' }
@@ -408,6 +595,56 @@ export function ReviewDetailPage() {
     }
   }, [coverApi, state, storybookId])
 
+  const [compareOpen, setCompareOpen] = useState(false)
+  const [compareState, setCompareState] = useState<CompareState>({ kind: 'idle' })
+
+  // #ASSUME: external resources: the previous version may no longer exist
+  // (pruned, or the current version is 1 with no version 0 at all); the
+  // backend 404s the surface fetch in that case, which axios surfaces as a
+  // normal error response, not a thrown/rejected navigation.
+  // #ASSUME: timing dependencies: the reviewer can navigate away mid-fetch;
+  // isMountedRef (already used by generateCover above) guards every setState
+  // after the await so a late response never writes into an unmounted page.
+  // #VERIFY: ReviewDetailPage.test.tsx compare tests cover the loading state,
+  // the ready diff, and the 404-to-"no longer available" branch.
+  const loadCompare = useCallback(
+    async (previousVersion: number) => {
+      setCompareState({ kind: 'loading' })
+      try {
+        const previous = await reviewApi.surface(storybookId, previousVersion)
+        if (isMountedRef.current) setCompareState({ kind: 'ready', previous })
+      } catch (err) {
+        console.error('compare version load failed:', err instanceof Error ? err.message : err)
+        if (!isMountedRef.current) return
+        if (isAxiosError(err) && err.response?.status === 404) {
+          setCompareState({ kind: 'unavailable' })
+        } else {
+          setCompareState({
+            kind: 'error',
+            message: classifyApiError(err, {
+              transient: 'We could not load the previous version for comparison.',
+              server: 'We could not load the previous version for comparison.',
+            }).message,
+          })
+        }
+      }
+    },
+    [reviewApi, storybookId]
+  )
+
+  // Toggling closed just hides the panel; the fetched (or failed) comparison
+  // stays cached so reopening does not refetch. Only the first open for a
+  // given page load triggers loadCompare, since compareState starts 'idle'
+  // and never resets back to it afterward.
+  function toggleCompare(previousVersion: number) {
+    if (compareOpen) {
+      setCompareOpen(false)
+      return
+    }
+    setCompareOpen(true)
+    if (compareState.kind === 'idle') void loadCompare(previousVersion)
+  }
+
   async function runAction(action: () => Promise<unknown>) {
     setSubmitting(true)
     setActionError(false)
@@ -496,6 +733,44 @@ export function ReviewDetailPage() {
                 : 'Not independently reviewed'
             }
           />
+        </div>
+      ) : null}
+
+      {surface.summary?.repaired ? (
+        <p className="review-repaired-hint cyo-text-muted">
+          This story was auto-repaired. Compare with the previous version to see what changed.
+        </p>
+      ) : null}
+
+      {surface.version > 1 ? (
+        <div className="review-compare">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => toggleCompare(surface.version - 1)}
+            aria-expanded={compareOpen}
+          >
+            {compareOpen ? 'Hide comparison' : `Compare with version ${surface.version - 1}`}
+          </Button>
+          {compareOpen ? (
+            <div className="review-compare__panel">
+              {compareState.kind === 'loading' ? (
+                <p className="review-compare__status" role="status" aria-live="polite">
+                  Loading version {surface.version - 1}…
+                </p>
+              ) : compareState.kind === 'unavailable' ? (
+                <p className="review-compare__status cyo-text-muted">
+                  Version {surface.version - 1} is no longer available.
+                </p>
+              ) : compareState.kind === 'error' ? (
+                <p role="alert" className="review-compare__status cyo-text-error">
+                  {compareState.message}
+                </p>
+              ) : compareState.kind === 'ready' ? (
+                <VersionDiffView diff={diffNodes(compareState.previous.blob, surface.blob)} />
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
