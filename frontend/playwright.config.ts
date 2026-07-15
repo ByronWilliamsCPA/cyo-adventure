@@ -38,9 +38,20 @@ export default defineConfig({
     // flow (and thus the unauthenticated redirect) instead of the missing-env
     // errorElement. The kid surface never imports supabaseClient, so the values
     // are inert there. They are not real credentials.
+    //
+    // VITE_API_URL is forced empty so a developer's local .env.local (which may
+    // set VITE_API_URL=http://localhost:8000 for `npm run dev`) cannot leak into
+    // this tier's PROD build. useApi.ts resolves the axios baseURL as
+    // `import.meta.env.PROD ? VITE_API_URL || '/api' : '/api'`; an absolute base
+    // would make the browser call :8000 directly, bypassing both the preview
+    // proxy and Playwright's same-origin `**/api/v1/**` route mocks (67/75 fail).
+    // The empty string means the build always uses the `/api` fallback. This is
+    // the enforcement of the README warning "Never set VITE_API_URL when building
+    // for this tier"; the mocked tier must stay hermetic regardless of .env.local.
     env: {
       VITE_SUPABASE_URL: 'https://example.supabase.co',
       VITE_SUPABASE_ANON_KEY: 'dummy-anon-key-for-e2e-build',
+      VITE_API_URL: '',
     },
   },
   projects: [

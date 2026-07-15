@@ -34,6 +34,7 @@ from cyo_adventure.api import (
     reading,
     story_requests,
 )
+from cyo_adventure.core.config import settings
 from cyo_adventure.core.exceptions import (
     AuthenticationError,
     AuthorizationError,
@@ -206,7 +207,15 @@ def create_app() -> FastAPI:
     )
     # Correlation must wrap everything else so every log line carries the id.
     app.add_middleware(CorrelationMiddleware)
-    add_security_middleware(app)
+    # #CRITICAL: security: the in-memory rate limiter (60 rpm/IP) is a public
+    # deployment defense. It is disabled ONLY in ENVIRONMENT=local, where the
+    # single-user dev stack and the e2e-real serial suite legitimately exceed
+    # that ceiling from one localhost IP; every deployed tier (dev, staging,
+    # production) keeps it on. Mirrors the local-relaxation pattern used for the
+    # OIDC and signing-secret guards in core/config.py.
+    # #VERIFY: tests/unit/test_app.py::TestRateLimitingByEnvironment asserts the
+    # limiter is absent in local and present otherwise.
+    add_security_middleware(app, enable_rate_limiting=settings.environment != "local")
     app.add_exception_handler(ProjectBaseError, _handle_project_error)
     app.add_exception_handler(RequestValidationError, _handle_request_validation_error)
     app.add_exception_handler(

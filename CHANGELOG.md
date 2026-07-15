@@ -24,6 +24,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   password screen; the tile is now shown only when a guardian session is present
   on the device and stays in sync with a cross-tab guardian sign-in or sign-out.
 
+### Security
+
+- Refuse to start a deployment that is silently defaulting to the `local`
+  environment. When `ENVIRONMENT` is unset, `Settings` falls back to `local`,
+  which trusts the dev auth stub (the bearer string is accepted as the request
+  subject) and disables the in-memory rate limiter. A deployment that forgot to
+  set `ENVIRONMENT` would therefore come up fully open. Startup now fails fast
+  with a `ConfigurationError` when `ENVIRONMENT` is unset but OIDC verification
+  config is present (the marker of a real deployment, never set by local, CI,
+  or e2e runs), naming the fix. Local, CI, and e2e runs are unaffected because
+  they set no OIDC config.
+- The in-memory rate limiter now activates only outside `ENVIRONMENT=local`,
+  matching the dev auth stub's own gate so local and e2e runs are not throttled
+  while every deployed environment keeps per-IP limiting.
+
 ## [0.5.1] - 2026-07-14
 
 ## [0.5.0] - 2026-07-14

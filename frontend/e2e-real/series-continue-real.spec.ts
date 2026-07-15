@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-import { requireBackend } from './real-stack'
+import type { DeviceGrant } from '../src/auth/deviceGrant'
+
+import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
 
 /**
  * Real-API series continuation: the seeded dev reader plays "Ember Trail 1"
@@ -11,11 +13,23 @@ import { requireBackend } from './real-stack'
  * subject (ENVIRONMENT=local trusts the bearer token).
  */
 
+let deviceGrant: DeviceGrant | null = null
+
 test.beforeEach(async ({ context }) => {
   await requireBackend()
+  deviceGrant = await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })
+})
+
+test.afterEach(async () => {
+  // Revoke the per-test grant so a reused dev stack does not accumulate one
+  // live grant row per run; best-effort (see revokeDevice), never fails a test.
+  if (deviceGrant) {
+    await revokeDevice(deviceGrant)
+    deviceGrant = null
+  }
 })
 
 test('the seeded child continues a real series into book 2', async ({ page }) => {
