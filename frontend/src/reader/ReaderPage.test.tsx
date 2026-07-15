@@ -267,7 +267,16 @@ describe('ReaderPage', () => {
     // The mount-time save (Reader's initial progress report) hits the mocked
     // rejection; a single local-write failure is real loss, so it must not
     // wait for a second occurrence before surfacing.
-    expect(await screen.findByTestId('save-warning')).toHaveTextContent("couldn't save that step")
+    const warning = await screen.findByTestId('save-warning')
+    expect(warning).toHaveTextContent("We couldn't save your last step.")
+    expect(warning).toHaveTextContent(
+      'Your story will keep going, but that step might not be remembered.'
+    )
+    expect(warning).toHaveTextContent('Ask a grown-up if this keeps happening.')
+    // The step is stored nowhere and nothing ever retries it (see persist's
+    // LocalWriteError branch), so the banner must not borrow the transient
+    // state's retry promise.
+    expect(warning).not.toHaveTextContent('keep trying')
   })
 
   it('warns after repeated remote save failures but not after just one', async () => {
@@ -290,11 +299,47 @@ describe('ReaderPage', () => {
     await screen.findByTestId('reader')
     await waitFor(() => expect(screen.queryByTestId('save-warning')).toBeNull())
     // A second, consecutive failure (from the next progress report) crosses
-    // the threshold.
+    // the threshold. Unlike the 'lost' banner, this one may promise a retry:
+    // every next choice really does attempt another save.
     fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
-    expect(await screen.findByTestId('save-warning')).toHaveTextContent(
-      'trouble saving your progress'
+    const warning = await screen.findByTestId('save-warning')
+    expect(warning).toHaveTextContent(
+      "We're having trouble saving your progress. Keep reading; we'll keep trying."
     )
+    expect(warning).not.toHaveTextContent('might not be remembered')
+  })
+
+  it('replaces the transient retry banner with the honest lost copy on a local write failure', async () => {
+    // Remote saves always fail, so the transient 'failing' banner appears
+    // first; then a local write failure means a step is stored nowhere at
+    // all, which must swap in the honest permanent-loss copy rather than
+    // keep promising a retry that will never happen.
+    const api: SyncApi = {
+      putReadingState: () => Promise.reject(new Error('500 server error')),
+    }
+    render(
+      <MemoryRouter>
+        <ReaderPage
+          api={api}
+          fetchStory={() => Promise.resolve(lantern)}
+          profileId="p_failing_then_lost"
+          storybookId="s_lantern_cave"
+          version={1}
+        />
+      </MemoryRouter>
+    )
+    await screen.findByTestId('reader')
+    // Second consecutive remote failure surfaces the transient banner.
+    fireEvent.click(await screen.findByTestId('choice-c_take_lantern'))
+    expect(await screen.findByTestId('save-warning')).toHaveTextContent("we'll keep trying")
+    // The next step's local write fails: this step is lost for real.
+    vi.spyOn(db, 'putReadingState').mockRejectedValueOnce(new Error('quota exceeded'))
+    fireEvent.click(await screen.findByTestId('choice-c_dark_passage'))
+    await waitFor(() => {
+      const warning = screen.getByTestId('save-warning')
+      expect(warning).toHaveTextContent("We couldn't save your last step.")
+      expect(warning).not.toHaveTextContent('keep trying')
+    })
   })
 
   it('surfaces the conflict dialog on a 409 and resolves it', async () => {
