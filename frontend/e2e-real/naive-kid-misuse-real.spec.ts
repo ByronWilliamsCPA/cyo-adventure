@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { requireBackend } from './real-stack'
+import { authorizeDevice, requireBackend } from './real-stack'
 
 /**
  * Real-API cross-family authorization: the mocked tier cannot exercise this
@@ -13,6 +13,7 @@ const UNRELATED_PROFILE_ID = '22222222-2222-2222-2222-222222222222'
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()
+  await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })

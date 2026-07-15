@@ -1,15 +1,18 @@
 import { expect, test } from '@playwright/test'
 
-import { requireBackend } from './real-stack'
+import { authorizeDevice, requireBackend } from './real-stack'
 
 /**
  * Real-API kid journey: picker -> library -> read to an ending. No route
  * mocks; every /api call hits uvicorn through the preview proxy, authorized
  * as the seeded dev-child subject (ENVIRONMENT=local trusts the bearer token).
+ * The kid surface is gated by DeviceAuthorizedRoute (ADR-014), so a real
+ * device grant is minted and injected before the dev-child bearer.
  */
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()
+  await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })
@@ -20,15 +23,13 @@ test('the seeded child reads a real story to an ending', async ({ page }) => {
   await page.getByText('Dev Reader').click()
   await expect(page).toHaveURL(/\/library\//)
 
-  // Two published seeded stories (tide pools, clockwork garden).
-  const shelfBooks = page.locator('.library__shelf > li')
-  const hero = page.getByRole('region', { name: 'Continue Reading' })
-  // Open whichever surface offers the first book (hero on revisit, shelf first time).
-  if (await hero.count()) {
-    await hero.getByRole('link').first().click()
-  } else {
-    await shelfBooks.first().getByRole('link').click()
-  }
+  // Open a specific standalone book by title. The library also carries the
+  // two-book "Ember Trail" series (WS-G seed), so clicking the shelf's first
+  // card blindly can land on a series book and leave server-side reading state
+  // that resumes series-continue-real.spec.ts past its start node (the reader
+  // restores the last persisted node). Pinning a standalone title keeps this
+  // smoke isolated from that spec regardless of shelf ordering.
+  await page.getByRole('link', { name: 'The Tide Pool Mystery' }).click()
   await expect(page).toHaveURL(/\/read\//)
   await expect(page.getByTestId('reader')).toBeVisible()
 

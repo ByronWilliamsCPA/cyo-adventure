@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-import { requireBackend } from './real-stack'
+import { authorizeDevice, requireBackend } from './real-stack'
 
 /**
  * Real-API series continuation: the seeded dev reader plays "Ember Trail 1"
@@ -13,6 +13,7 @@ import { requireBackend } from './real-stack'
 
 test.beforeEach(async ({ context }) => {
   await requireBackend()
+  await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })
