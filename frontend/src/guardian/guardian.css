@@ -566,6 +566,15 @@
   font-style: italic;
 }
 
+/* Quoted request text in the decline-confirm dialog (StoryRequestQueue.tsx);
+   color comes from the cyo-text-muted class added alongside it. */
+.decline-confirm__quote {
+  margin: 0.5rem 0 0;
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--color-amber-deep, #c17b2a);
+  font-style: italic;
+}
+
 .review-detail {
   padding-bottom: 5rem; /* room for the pinned action bar */
 }
@@ -600,10 +609,156 @@
   color: var(--color-ink-secondary, #5a3e28);
 }
 
+/* Moderation verdict strip under the title (summary badges + finding count). */
+.review-summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.review-summary__count {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-coverage {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.875rem;
+}
+
+.review-node {
+  margin-bottom: 1.25rem;
+  border-radius: 8px;
+  transition: background var(--duration-fast, 120ms) var(--easing-default, ease-in-out);
+}
+
 .review-node--flagged {
   border-left: 3px solid var(--color-amber, #e07f2e);
   padding-left: 0.75rem;
   background: rgb(193 123 42 / 8%);
+}
+
+/* Brief landing tint after a jump; stronger than the flagged tint so the
+   target passage stands out even when it is itself flagged. Declared after
+   --flagged so it wins their shared specificity. */
+.review-node--highlight {
+  background: rgb(224 127 46 / 22%);
+}
+
+.review-node__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 0.25rem;
+}
+
+.review-node__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.review-node__badge--start {
+  background: rgb(45 90 61 / 12%);
+  color: var(--color-forest, #2d5a3d);
+}
+
+.review-node__badge--ending {
+  background: var(--color-parchment-dark, #ede6d0);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+.review-choices {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.review-choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.review-choice__label {
+  font-weight: 600;
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-error class added alongside this one in
+   ReviewDetailPage.tsx; size stays local. */
+.review-choice__missing {
+  font-size: 0.8125rem;
+}
+
+/* Compact jump pill (choice targets, flagged-card "Show in story"). Same
+   small-text contrast constraint as .intake-request__assign above: a solid
+   amber-deep fill with ink text (4.86:1), because amber-deep text on
+   parchment cannot clear 4.5:1 at this size. */
+.review-jump {
+  border: 1px solid var(--color-amber-deep, #c17b2a);
+  background: var(--color-amber-deep, #c17b2a);
+  color: var(--color-ink, #2c1a0e);
+  border-radius: 999px;
+  padding: 0.15rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: var(--weight-semibold, 600);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.review-jump:hover {
+  background: var(--color-amber-hover, #c4681c);
+  border-color: var(--color-amber-hover, #c4681c);
+}
+
+.review-jump:focus-visible {
+  outline: 2px solid var(--color-amber-deep, #c17b2a);
+  outline-offset: 2px;
+}
+
+.review-card__jump {
+  margin-top: 0.5rem;
+  align-self: flex-start;
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-card__missing-node {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.review-unreachable {
+  margin-top: 1.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+.review-unreachable__heading {
+  margin: 0 0 0.25rem;
+  font-size: var(--text-base, 1.125rem);
+  color: var(--color-ink-secondary, #5a3e28);
+}
+
+/* color comes from the cyo-text-muted class added alongside this one in
+   ReviewDetailPage.tsx; size/margin stay local. */
+.review-unreachable__note {
+  margin: 0 0 0.75rem;
+  font-size: 0.875rem;
 }
 
 .review-detail__unscreened {
@@ -786,4 +941,11 @@
   padding: 0.3rem 0.6rem;
   text-align: left;
   border-bottom: 1px solid var(--color-border-soft, rgb(44 26 14 / 12%));
+}
+
+/* Moderation dashboard (ModerationDashboardPage.tsx): an override-evidence
+   row at or above the suggestion gate reuses the .review-node--flagged amber
+   wash so gate-crossing evidence stands out at a glance. */
+.moderation-insight--at-gate {
+  background: rgb(193 123 42 / 8%);
 }

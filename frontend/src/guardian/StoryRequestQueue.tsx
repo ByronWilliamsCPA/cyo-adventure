@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react'
 
 import { Button } from '@ds/components/Button'
+import { Dialog } from '@ds/components/Dialog'
 import { EmptyState } from '@ds/components/EmptyState'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { useApi } from '../hooks/useApi'
@@ -25,6 +26,18 @@ type RowDecision = {
   series_title: string
 }
 
+// Cap the quoted request text inside the decline-confirm dialog; the full
+// text already renders in the row, the dialog only needs enough of it to
+// identify what is being declined.
+const DECLINE_PREVIEW_MAX = 160
+
+function declinePreview(req: StoryRequestView): string {
+  const text = req.request_text ?? 'Idea hidden by content check'
+  return text.length > DECLINE_PREVIEW_MAX
+    ? `${text.slice(0, DECLINE_PREVIEW_MAX)}…`
+    : text
+}
+
 /**
  * The pending story-request review queue, shared by both adult surfaces
  * (Task 3.0). Lists pending child requests with the (screened) text and
@@ -43,6 +56,12 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
   const [pendingIds, setPendingIds] = useState<Set<string>>(new Set())
   const [rowErrors, setRowErrors] = useState<Record<string, boolean>>({})
   const [decisions, setDecisions] = useState<Record<string, RowDecision>>({})
+  // The request awaiting decline confirmation (null when the dialog is
+  // closed). Decline is destructive from the child's point of view (the idea
+  // silently disappears from the queue), so it gets a confirm step; Approve
+  // stays one-click. Role-agnostic: both the guardian and admin queues share
+  // this component.
+  const [confirmingDecline, setConfirmingDecline] = useState<StoryRequestView | null>(null)
 
   function decisionFor(req: StoryRequestView): RowDecision {
     return (
@@ -170,6 +189,16 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
 
   async function decline(id: string) {
     await runRowAction(id, () => queueApi.decline(id))
+  }
+
+  // Close the dialog before firing so the row-level error/pending states stay
+  // the single source of feedback; runRowAction's pendingIds guard still
+  // covers any duplicate submission.
+  function confirmDecline() {
+    if (confirmingDecline === null) return
+    const id = confirmingDecline.id
+    setConfirmingDecline(null)
+    void decline(id)
   }
 
   let content: ReactElement
@@ -319,7 +348,7 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
                   <Button
                     variant="danger"
                     disabled={isInFlight || !isActionable}
-                    onClick={() => void decline(req.id)}
+                    onClick={() => setConfirmingDecline(req)}
                   >
                     Decline
                   </Button>
@@ -332,5 +361,30 @@ export function StoryRequestQueue({ scope }: { scope: StoryRequestQueueScope }) 
     )
   }
 
-  return content
+  return (
+    <>
+      {content}
+      {confirmingDecline !== null ? (
+        <Dialog
+          title="Decline this request?"
+          onClose={() => setConfirmingDecline(null)}
+          actions={
+            <>
+              <Button variant="ghost" onClick={() => setConfirmingDecline(null)}>
+                Keep it
+              </Button>
+              <Button variant="danger" onClick={confirmDecline}>
+                Decline request
+              </Button>
+            </>
+          }
+        >
+          <p>No story will be made from this idea:</p>
+          <blockquote className="decline-confirm__quote cyo-text-muted">
+            {declinePreview(confirmingDecline)}
+          </blockquote>
+        </Dialog>
+      ) : null}
+    </>
+  )
 }

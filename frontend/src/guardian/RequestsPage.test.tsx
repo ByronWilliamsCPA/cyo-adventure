@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -270,13 +270,46 @@ describe('RequestsPage', () => {
     expect(screen.getByLabelText('Age band')).toBeDisabled()
   })
 
-  it('decline calls the adapter and removes the row', async () => {
+  // Decline is gated behind a confirm dialog (one misclick must not silently
+  // dismiss a child's idea); Approve stays one-click.
+  it('decline opens a confirm dialog quoting the request and fires no call yet', async () => {
+    render(<RequestsPage />)
+    await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    const dialog = screen.getByRole('dialog', { name: /decline this request/i })
+    expect(within(dialog).getByText('A story about a friendly dragon')).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('Keep it closes the dialog, keeps the row, and fires no call', async () => {
+    render(<RequestsPage />)
+    const title = await screen.findByText('A story about a friendly dragon')
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Keep it' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(title).toBeInTheDocument()
+    expect(mockPost).not.toHaveBeenCalled()
+  })
+
+  it('confirming decline calls the adapter and removes the row', async () => {
     mockPost.mockResolvedValue({ data: { id: 'req-1', status: 'declined' } })
     render(<RequestsPage />)
     const title = await screen.findByText('A story about a friendly dragon')
     fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Decline request' }))
     await waitFor(() => expect(mockPost).toHaveBeenCalledWith('/v1/story-requests/req-1/decline'))
     await waitFor(() => expect(title).not.toBeInTheDocument())
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('truncates a long request text in the decline confirm dialog', async () => {
+    const longText = 'x'.repeat(200)
+    mockPending([{ ...DRAGON_REQUEST, request_text: longText }])
+    render(<RequestsPage />)
+    await screen.findByText(longText)
+    fireEvent.click(screen.getByRole('button', { name: 'Decline' }))
+    const dialog = screen.getByRole('dialog', { name: /decline this request/i })
+    expect(within(dialog).getByText(`${'x'.repeat(160)}…`)).toBeInTheDocument()
   })
 
   it('shows the safety-reviewer notice on a 403 (plain guardian token)', async () => {
