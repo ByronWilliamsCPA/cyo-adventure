@@ -108,3 +108,44 @@ export async function authorizeDevice(context: BrowserContext): Promise<DeviceGr
   )
   return grant
 }
+
+/**
+ * Revoke a grant minted by `authorizeDevice` so a dev stack that is reused
+ * across runs does not accumulate one live device-grant row per test. This is
+ * the real tier's parallel to the prod tier's `afterAll` cleanup: the mint is
+ * a real POST, so it needs a real DELETE to undo it. Node-side fetch authorized
+ * as the same seeded guardian that minted the grant.
+ *
+ * Best-effort by design and never throws: it runs from spec teardown
+ * (`afterEach`), where throwing would mask the real test result with a cleanup
+ * error, and the local dev stack is disposable anyway (a stray row is reset by
+ * the next `seed_dev_data.py`). A revoke that does not confirm is surfaced as a
+ * warning, not a failure, so an accumulating stack is visible rather than
+ * silent.
+ *
+ * #EDGE: external-resource: the backend may be stopped or the grant already
+ * gone (404) by teardown; both are swallowed with a warning, never rethrown.
+ * #VERIFY: fetch() resolves on 4xx/5xx, so `res.ok` is checked explicitly and a
+ * 404 is treated as already-revoked (success for cleanup).
+ */
+export async function revokeDevice(grant: DeviceGrant): Promise<void> {
+  try {
+    const res = await fetch(`${BACKEND}/api/v1/device-grants/${grant.id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${SEEDED_GUARDIAN_BEARER}` },
+      signal: AbortSignal.timeout(5000),
+    })
+    if (!res.ok && res.status !== 404) {
+      console.warn(
+        `[real-stack] device-grant revoke did not confirm (HTTP ${res.status}) ` +
+          `for grant ${grant.id}; the dev stack may accumulate a row until the ` +
+          'next seed_dev_data.py run.'
+      )
+    }
+  } catch (err) {
+    console.warn(
+      `[real-stack] device-grant revoke errored for grant ${grant.id}: ` +
+        `${err instanceof Error ? err.message : String(err)}`
+    )
+  }
+}

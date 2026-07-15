@@ -5,9 +5,9 @@ import { signInAsProdTestAdmin, unlockParentalGateIfPresent } from './support/au
 
 /**
  * Read-only render smoke for both adult consoles on LIVE production, driven by
- * the dual-role test account (role='guardian' + is_admin=true, in its own
- * "E2E Test Family"; see docs/planning/handoff-prod-e2e-and-real-tier-2026-07-14.md
- * Task 1). It began as the PR #236 regression guard for the admin-only-account
+ * the dual-role test account (role='guardian' + is_admin=true), provisioned in
+ * its own isolated "E2E Test Family" so no real family data is touched. It
+ * began as the PR #236 regression guard for the admin-only-account
  * crash (an admin with no family-scoped profiles threw the error boundary on
  * every /guardian/* subpage); since the account is now dual-role it instead
  * asserts the broader PR #236 promise: a single adult holding both capabilities

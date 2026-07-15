@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 
 import { seedGuardianSession } from '../e2e/support/auth'
 
-import { authorizeDevice, requireBackend } from './real-stack'
+import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
 
 /**
  * The real ADR-005 write path. The GoTrue session is storage-seeded with an
@@ -75,11 +75,17 @@ test('the admin approves the story through the real API', async ({ page, context
 test('the approved story reaches the child library', async ({ page, context }) => {
   // The kid surface is gated by DeviceAuthorizedRoute (ADR-014); mint and inject
   // a real grant before the child bearer so /kids is reachable.
-  await authorizeDevice(context)
-  await context.addInitScript(() => {
-    window.localStorage.setItem('auth_token', 'dev-child')
-  })
-  await page.goto('/kids')
-  await page.getByText('Dev Reader').click()
-  await expect(page.getByText('The Bridge Builder')).toBeVisible()
+  const grant = await authorizeDevice(context)
+  try {
+    await context.addInitScript(() => {
+      window.localStorage.setItem('auth_token', 'dev-child')
+    })
+    await page.goto('/kids')
+    await page.getByText('Dev Reader').click()
+    await expect(page.getByText('The Bridge Builder')).toBeVisible()
+  } finally {
+    // Revoke the minted grant even if an assertion fails, so a reused dev stack
+    // does not keep a live grant row; best-effort (see revokeDevice).
+    await revokeDevice(grant)
+  }
 })

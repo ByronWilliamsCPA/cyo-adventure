@@ -36,29 +36,60 @@ test.describe('kid access via a real device grant', () => {
     // explicit "remove" test ran. Best-effort DELETE through the same-origin
     // API (baseURL resolves to /api in the prod build) using the guardian
     // bearer the app stores under `auth_token`; "Set up this device" never
-    // signs the guardian out, so that token is still valid here. Cleanup
-    // errors are swallowed: they must never mask or replace a real failure.
+    // signs the guardian out, so that token is still valid here. A failed
+    // revoke is never thrown from here (an afterAll that throws would replace a
+    // real test failure with a cleanup error); instead the evaluate reports the
+    // outcome and the Node side warns, so an orphaned grant is visible rather
+    // than silent.
     // #VERIFY: the explicit revoke test below is the primary path; this is the
-    // backstop, and list()ing grants after a run should show none.
+    // backstop. A "revoke did not confirm" warning here means list()ing grants
+    // after the run may show one, and it must be removed manually.
     try {
-      await sharedPage.evaluate(async ([key]) => {
+      const cleanup = await sharedPage.evaluate(async ([key]) => {
         const raw = window.localStorage.getItem(key)
         const token = window.localStorage.getItem('auth_token')
+        let outcome: { attempted: boolean; ok: boolean; status: number } = {
+          attempted: false,
+          ok: false,
+          status: 0,
+        }
         if (raw && token) {
           try {
             const grant = JSON.parse(raw) as { id?: string }
             if (grant.id) {
-              await fetch(`/api/v1/device-grants/${grant.id}`, {
+              const res = await fetch(`/api/v1/device-grants/${grant.id}`, {
                 method: 'DELETE',
                 headers: { Authorization: `Bearer ${token}` },
               })
+              // fetch() resolves (does not throw) on 4xx/5xx, so res.ok must be
+              // checked explicitly. A 404 means the grant is already gone (the
+              // explicit revoke test ran), which is success for a backstop;
+              // any other non-2xx means it may still be live on production.
+              outcome = {
+                attempted: true,
+                ok: res.ok || res.status === 404,
+                status: res.status,
+              }
             }
           } catch {
-            /* malformed blob or network error: nothing more we can do here */
+            // Malformed blob or network error: report an attempted-but-failed
+            // cleanup so the Node side warns; nothing more we can do here.
+            outcome = { attempted: true, ok: false, status: 0 }
           }
         }
+        // Clearing the local marker removes only browser state, never a
+        // server-side grant, so do it unconditionally: a wedged local blob must
+        // not leak into the next run.
         window.localStorage.removeItem(key)
+        return outcome
       }, [DEVICE_GRANT_KEY] as const)
+      if (cleanup.attempted && !cleanup.ok) {
+        console.warn(
+          '[kid-device-grant] backstop device-grant revoke did not confirm ' +
+            `(HTTP ${cleanup.status}); a grant may still be live on production. ` +
+            'List device grants and revoke it manually.'
+        )
+      }
     } catch {
       /* page already closed / evaluate unavailable: nothing to clean */
     }

@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 
-import { authorizeDevice, requireBackend } from './real-stack'
+import type { DeviceGrant } from '../src/auth/deviceGrant'
+
+import { authorizeDevice, requireBackend, revokeDevice } from './real-stack'
 
 /**
  * Real-API kid journey: picker -> library -> read to an ending. No route
@@ -10,12 +12,23 @@ import { authorizeDevice, requireBackend } from './real-stack'
  * device grant is minted and injected before the dev-child bearer.
  */
 
+let deviceGrant: DeviceGrant | null = null
+
 test.beforeEach(async ({ context }) => {
   await requireBackend()
-  await authorizeDevice(context)
+  deviceGrant = await authorizeDevice(context)
   await context.addInitScript(() => {
     window.localStorage.setItem('auth_token', 'dev-child')
   })
+})
+
+test.afterEach(async () => {
+  // Revoke the per-test grant so a reused dev stack does not accumulate one
+  // live grant row per run; best-effort (see revokeDevice), never fails a test.
+  if (deviceGrant) {
+    await revokeDevice(deviceGrant)
+    deviceGrant = null
+  }
 })
 
 test('the seeded child reads a real story to an ending', async ({ page }) => {
