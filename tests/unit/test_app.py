@@ -296,3 +296,49 @@ class TestCorsAllowlist:
         assert cors_mw is not None
         allow_headers = cors_mw.kwargs.get("allow_headers", [])
         assert "Authorization" in allow_headers
+
+
+# ---------------------------------------------------------------------------
+# Environment-aware rate limiting
+# ---------------------------------------------------------------------------
+
+
+class TestRateLimitingByEnvironment:
+    """create_app() must disable the in-memory rate limiter in ENVIRONMENT=local.
+
+    The single-user local stack (dev work, the e2e-real serial suite that now
+    drives full kid journeys) legitimately exceeds the 60 rpm public ceiling
+    from one localhost IP. Gating the limiter on environment mirrors the
+    codebase's existing local-relaxation pattern for the OIDC and signing-secret
+    guards, while keeping it active for every deployed tier.
+    """
+
+    @pytest.mark.unit
+    def test_rate_limiting_absent_in_local_environment(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """No RateLimitMiddleware is wired when environment is local."""
+        from cyo_adventure.core.config import settings
+        from cyo_adventure.middleware import RateLimitMiddleware
+
+        monkeypatch.setattr(settings, "environment", "local")
+        app = create_app()
+
+        assert not any(m.cls is RateLimitMiddleware for m in app.user_middleware), (
+            "RateLimitMiddleware must be disabled in ENVIRONMENT=local"
+        )
+
+    @pytest.mark.unit
+    def test_rate_limiting_present_outside_local_environment(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        """RateLimitMiddleware is wired for deployed (non-local) environments."""
+        from cyo_adventure.core.config import settings
+        from cyo_adventure.middleware import RateLimitMiddleware
+
+        monkeypatch.setattr(settings, "environment", "production")
+        app = create_app()
+
+        assert any(m.cls is RateLimitMiddleware for m in app.user_middleware), (
+            "RateLimitMiddleware must stay enabled outside ENVIRONMENT=local"
+        )
