@@ -103,6 +103,21 @@
   font-weight: var(--weight-bold, 700);
 }
 
+/* --color-error is deliberately brighter in dark mode (it is mostly used as
+   FOREGROUND text on the near-black page: see tokens.css's dark-mode block),
+   which would drop white-on-fill here to 2.52:1. A single token cannot serve
+   both roles (white text on it needs low luminance; text on a dark page needs
+   high luminance), the same tension tokens.css resolved for amber by
+   compressing a value into a shared band; here the fill role is scoped to
+   just this one badge, so it keeps the light-mode literal instead (white on
+   #9b2c2c is 7.53:1 regardless of theme, since both sides of that pairing are
+   fixed colors). */
+@media (prefers-color-scheme: dark) {
+  .admin-severity__hard-block {
+    background: #9b2c2c;
+  }
+}
+
 /* Repaired: small, calm provenance note (the pipeline rewrote a passage);
    amber-subtle wash with the AA amber text token (--color-amber-text,
    4.55:1 on amber-subtle), the pairing added for small amber text where a
