@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { EmptyState } from '@ds/components/EmptyState'
 import { clearChildSession, setChildSession } from '../auth/childSession'
+import { hasGuardianSession } from '../auth/guardianToken'
 import { classifyApiError } from '../hooks/classifyApiError'
 import { logApiError } from '../hooks/logApiError'
 import { useApi } from '../hooks/useApi'
@@ -74,6 +75,15 @@ export function ProfilePickerPage() {
   // same (or a different) profile. Every pick path ends in navigation, which
   // unmounts this page, so the flag is latched and never reset.
   const pickInFlightRef = useRef(false)
+  // Whether to surface the guardian-only "Add Child" tile. `/kids` is reached
+  // two ways: by a signed-in guardian (before they hand off the device) and,
+  // under ADR-014 device grants, by a kid on a device that holds only a device
+  // grant and no guardian session. Adding a child is a guardian action gated by
+  // ProtectedRoute, so on a kid-only device the tile would bounce a child to
+  // the guardian password screen (a dead end). Show it only when a grown-up is
+  // actually signed in. Snapshot once on mount: a guardian signing in happens
+  // on the guardian tree, which remounts this page on return.
+  const guardianSignedIn = useMemo(() => hasGuardianSession(), [])
 
   // #ASSUME: external-resources: minting the child session (G1 / P6-04) can
   // fail (network blip, a guardian session that expired between page load
@@ -330,11 +340,7 @@ export function ProfilePickerPage() {
             >
               Go back
             </button>
-            <button
-              type="submit"
-              className="picker-retry"
-              disabled={busy || pin.length < 4}
-            >
+            <button type="submit" className="picker-retry" disabled={busy || pin.length < 4}>
               Let&apos;s read!
             </button>
           </div>
@@ -384,12 +390,14 @@ export function ProfilePickerPage() {
             </Link>
           </li>
         ))}
-        <li>
-          <Link className="picker-tile picker-tile--add" to="/guardian/profiles">
-            <AvatarCircle avatar={null} name="+" />
-            <span className="picker-tile__name">Add Child</span>
-          </Link>
-        </li>
+        {guardianSignedIn ? (
+          <li>
+            <Link className="picker-tile picker-tile--add" to="/guardian/profiles">
+              <AvatarCircle avatar={null} name="+" />
+              <span className="picker-tile__name">Add Child</span>
+            </Link>
+          </li>
+        ) : null}
       </ul>
     </section>
   )
