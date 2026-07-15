@@ -18,6 +18,8 @@
   background: rgb(255 255 255 / 70%);
   font: inherit;
   color: var(--color-ink);
+  /* Touch-target floor; a multi-line textarea is already taller than this. */
+  min-height: 44px;
 }
 
 .cyo-field__control:focus-visible {

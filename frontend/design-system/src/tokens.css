@@ -31,6 +31,10 @@
      parchment (white 3.42:1, on-parchment 3.09:1; the bright amber fails
      both at 2.90/2.62 vs the 3:1 WCAG 1.4.11 minimum). */
   --color-amber-deep:      #c17b2a;
+  /* AA-safe amber for TEXT on parchment surfaces (4.52:1 on parchment,
+     4.55:1 on amber-subtle); amber-deep only reaches 3.09:1, fine for
+     borders and large fills but below the 4.5:1 normal-text minimum. */
+  --color-amber-text:      #a35f11;
 
   /* Forest: secondary (success, connected) */
   --color-forest:          #2d5a3d;
